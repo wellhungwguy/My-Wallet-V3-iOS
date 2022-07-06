@@ -113,7 +113,10 @@ final class SettingsService: SettingsServiceAPI {
             .map { WalletSettings(response: $0) }
             .do(onSuccess: { [weak self] settings in
                 self?.app.state.transaction { state in
-                    state.set(blockchain.user.currency.preferred.fiat.display.currency, to: settings.displayCurrency?.code)
+                    state.set(
+                        blockchain.user.currency.preferred.fiat.display.currency,
+                        to: settings.displayCurrency?.code
+                    )
                 }
                 self?.settingsRelay.accept(settings)
             })
