@@ -463,7 +463,7 @@ final class SettingsRouter: SettingsRouterAPI {
         let interactor = SelectionScreenInteractor(service: selectionService)
         let presenter = SelectionScreenPresenter(
             title: LocalizationConstants.Settings.SelectCurrency.title,
-            description:  LocalizationConstants.Settings.SelectCurrency.description,
+            description: LocalizationConstants.Settings.SelectCurrency.description,
             searchBarPlaceholder: LocalizationConstants.Settings.SelectCurrency.searchBarPlaceholder,
             interactor: interactor
         )
