@@ -146,6 +146,10 @@ let loggedInReducer = Reducer<
                     event: AnalyticsEvents.New.Navigation.signedIn
                 )
             },
+            environment.nabuUserService.fetchUser()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map(LoggedIn.Action.login),
             handleStartup(
                 context: context
             )
@@ -275,6 +279,11 @@ extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Envir
         combined(
             with: Reducer { _, action, environment in
                 switch action {
+                case .login(let result):
+                    guard let user = try? result.get() else { return .none }
+                    return .fireAndForget {
+                        environment.app.signIn(userId: user.identifier)
+                    }
                 case .logout:
                     return .fireAndForget {
                         environment.app.signOut()

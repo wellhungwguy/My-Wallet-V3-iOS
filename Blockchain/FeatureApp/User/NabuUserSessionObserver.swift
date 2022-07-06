@@ -30,12 +30,7 @@ final class NabuUserSessionObserver: Session.Observer {
 
         repository.sessionTokenPublisher
             .compactMap(\.wrapped)
-            .handleEvents(receiveOutput: { [app] nabu in
-                app.state.set(blockchain.user.token.nabu, to: nabu.token)
-            })
-            .map(\.userId)
-            .removeDuplicates()
-            .sink { [app] userId in app.signIn(userId: userId) }
+            .sink { [app] nabu in app.state.set(blockchain.user.token.nabu, to: nabu.token) }
             .store(in: &bag)
 
         app.on(blockchain.session.event.did.sign.in)
@@ -55,8 +50,6 @@ final class NabuUserSessionObserver: Session.Observer {
     func stop() {
         bag = []
     }
-
-    // ..
 
     func fetched(user: NabuUser) {
         app.state.transaction { state in
