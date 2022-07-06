@@ -202,7 +202,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
         userService
             .fetchUser()
             .map(\.currencies.usableFiatCurrencies)
-            .replaceError(with: [.USD, .GBP, .EUR, .ARS])
+            .replaceError(with: [.USD, .GBP, .EUR, .ARS, .BRL])
             .map(Set.init)
             .eraseToAnyPublisher()
     }

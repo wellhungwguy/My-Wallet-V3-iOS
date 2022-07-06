@@ -192,20 +192,9 @@ let loggedInReducer = Reducer<
         return .none
     case .logout:
         state = LoggedIn.State()
-        return .merge(
-            .cancel(id: LoggedInIdentifier()),
-            .fireAndForget {
-                environment.app.signOut()
-            }
-        )
+        return .cancel(id: LoggedInIdentifier())
     case .deleteWallet:
-        state = LoggedIn.State()
-        return .merge(
-            .cancel(id: LoggedInIdentifier()),
-            .fireAndForget {
-                environment.app.signOut()
-            }
-        )
+        return Effect(value: .logout)
     case .stop:
         // We need to cancel any running operations if we require pin entry.
         // Although this is the same as logout and .wallet(.authenticateForBiometrics)

@@ -22,5 +22,9 @@ extension LocalizationConstants {
             "Argentinian Peso",
             comment: "Name of the ARS (Argentinian Peso) fiat currency."
         )
+        static let brl = NSLocalizedString(
+            "Brazilian Real",
+            comment: "Name of the BRL (Brazilian Real) fiat currency."
+        )
     }
 }
