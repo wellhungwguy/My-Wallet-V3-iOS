@@ -21,6 +21,6 @@ public final class FiatTradingCurrencySelectionProvider: FiatCurrencySelectionPr
     public let currencies: Observable<[FiatCurrency]>
 
     public init(userService: NabuUserServiceAPI = resolve()) {
-        currencies = userService.fetchUser().map(\.currencies.userFiatCurrencies).asObservable()
+        currencies = userService.fetchUser().map(\.currencies.usableFiatCurrencies).asObservable()
     }
 }
