@@ -4,6 +4,7 @@ import DIKit
 import MoneyKit
 import PlatformKit
 import ToolKit
+import FeatureAuthenticationDomain
 
 final class NabuUserSessionObserver: Session.Observer {
 
@@ -11,19 +12,31 @@ final class NabuUserSessionObserver: Session.Observer {
 
     private var bag: Set<AnyCancellable> = []
     private let userService: NabuUserServiceAPI
+    private let repository: NabuTokenRepositoryAPI
 
     init(
         app: AppProtocol,
+        repository: NabuTokenRepositoryAPI = resolve(),
         userService: NabuUserServiceAPI = resolve()
     ) {
         self.app = app
+        self.repository = repository
         self.userService = userService
     }
 
     func start() {
 
-        app.publisher(for: blockchain.user.id, as: String.self)
-            .compactMap(\.value)
+        repository.sessionTokenPublisher
+            .compactMap(\.wrapped)
+            .handleEvents(receiveOutput: { [app] nabu in
+                app.state.set(blockchain.user.token.nabu, to: nabu.token)
+            })
+            .map(\.userId)
+            .removeDuplicates()
+            .sink { [app] userId in app.signIn(userId: userId) }
+            .store(in: &bag)
+
+        app.on(blockchain.session.event.did.sign.in)
             .flatMap { [userService] _ in userService.fetchUser() }
             .sink(to: NabuUserSessionObserver.fetched(user:), on: self)
             .store(in: &bag)

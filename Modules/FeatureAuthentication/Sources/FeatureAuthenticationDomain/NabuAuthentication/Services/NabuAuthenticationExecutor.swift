@@ -108,7 +108,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private func getToken() -> AnyPublisher<Token, NabuAuthenticationExecutorError> {
         Publishers
             .Zip(
-                store.sessionTokenPublisher.mapError(),
+                store.sessionTokenPublisher.prefix(1).mapError(),
                 retrieveOfflineTokenResponse()
             )
             .map { sessionToken, offlineToken
@@ -173,6 +173,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                 }
                 return store
                     .sessionTokenPublisher
+                    .prefix(1)
                     .mapError()
                     .flatMap { sessionToken
                         -> AnyPublisher<NabuSessionToken, NabuAuthenticationExecutorError> in

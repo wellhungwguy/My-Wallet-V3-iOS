@@ -1869,11 +1869,11 @@ public extension I_blockchain_user_currency {
 public final class L_blockchain_user_currency_available: L, I_blockchain_user_currency_available {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.available", comment: "") }
 }
-public protocol I_blockchain_user_currency_available: I_blockchain_type_currency, I_blockchain_db_array, I_blockchain_session_state_value {}
+public protocol I_blockchain_user_currency_available: I_blockchain_db_array, I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_currency_default: L, I_blockchain_user_currency_default {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.default", comment: "") }
 }
-public protocol I_blockchain_user_currency_default: I_blockchain_type_currency, I_blockchain_session_state_value {}
+public protocol I_blockchain_user_currency_default: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_currency_preferred: L, I_blockchain_user_currency_preferred {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred", comment: "") }
 }
@@ -1899,7 +1899,7 @@ public extension I_blockchain_user_currency_preferred_fiat_display {
 public final class L_blockchain_user_currency_preferred_fiat_display_currency: L, I_blockchain_user_currency_preferred_fiat_display_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.display.currency", comment: "") }
 }
-public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_type_currency, I_blockchain_session_state_preference_value {}
+public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_user_currency_preferred_fiat_trading: L, I_blockchain_user_currency_preferred_fiat_trading {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.trading", comment: "") }
 }
@@ -1910,11 +1910,11 @@ public extension I_blockchain_user_currency_preferred_fiat_trading {
 public final class L_blockchain_user_currency_preferred_fiat_trading_currency: L, I_blockchain_user_currency_preferred_fiat_trading_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.trading.currency", comment: "") }
 }
-public protocol I_blockchain_user_currency_preferred_fiat_trading_currency: I_blockchain_type_currency, I_blockchain_session_state_preference_value {}
+public protocol I_blockchain_user_currency_preferred_fiat_trading_currency: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_user_currency_value: L, I_blockchain_user_currency_value {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.value", comment: "") }
 }
-public protocol I_blockchain_user_currency_value: I_blockchain_type_currency, I_blockchain_db_array, I_blockchain_session_state_value {}
+public protocol I_blockchain_user_currency_value: I_blockchain_db_array, I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_email: L, I_blockchain_user_email {
 	public override class var localized: String { NSLocalizedString("blockchain.user.email", comment: "") }
 }
@@ -1999,6 +1999,7 @@ public final class L_blockchain_user_token: L, I_blockchain_user_token {
 public protocol I_blockchain_user_token: I {}
 public extension I_blockchain_user_token {
 	var `firebase`: L_blockchain_user_token_firebase { .init("\(__).firebase") }
+	var `nabu`: L_blockchain_user_token_nabu { .init("\(__).nabu") }
 }
 public final class L_blockchain_user_token_firebase: L, I_blockchain_user_token_firebase {
 	public override class var localized: String { NSLocalizedString("blockchain.user.token.firebase", comment: "") }
@@ -2011,6 +2012,10 @@ public final class L_blockchain_user_token_firebase_installation: L, I_blockchai
 	public override class var localized: String { NSLocalizedString("blockchain.user.token.firebase.installation", comment: "") }
 }
 public protocol I_blockchain_user_token_firebase_installation: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public final class L_blockchain_user_token_nabu: L, I_blockchain_user_token_nabu {
+	public override class var localized: String { NSLocalizedString("blockchain.user.token.nabu", comment: "") }
+}
+public protocol I_blockchain_user_token_nabu: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_wallet: L, I_blockchain_user_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.user.wallet", comment: "") }
 }

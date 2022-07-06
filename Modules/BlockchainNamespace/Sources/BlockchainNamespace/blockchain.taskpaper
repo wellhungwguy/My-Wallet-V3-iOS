@@ -500,6 +500,9 @@ blockchain:
 				installation:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
+			nabu:
+			+ blockchain.db.type.string
+			+ blockchain.session.state.value
 		wallet:
 		+ blockchain.db.collection
 			created:
