@@ -1,10 +1,10 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import FeatureAuthenticationDomain
 import MoneyKit
 import PlatformKit
 import ToolKit
-import FeatureAuthenticationDomain
 
 final class NabuUserSessionObserver: Session.Observer {
 

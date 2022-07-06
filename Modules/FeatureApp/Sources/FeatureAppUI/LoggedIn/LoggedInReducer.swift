@@ -273,7 +273,7 @@ extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Envir
 
     func namespace() -> Reducer {
         combined(
-            with: Reducer { state, action, environment in
+            with: Reducer { _, action, environment in
                 switch action {
                 case .logout:
                     return .fireAndForget {

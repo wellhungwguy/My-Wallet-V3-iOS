@@ -77,7 +77,6 @@ extension AnalyticsEvents {
                 return "settings_currency_selected"
             case .settingsTradingCurrencySelected:
                 return "settings_trading_currency_selected"
-
             }
         }
 
