@@ -40,7 +40,7 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
         custodialBalanceView.layoutToSuperview(.top, .bottom, .leading, .trailing)
         custodialBalanceViewWidthConstraint = custodialBalanceView.layout(
             dimension: .width,
-            to: UIScreen.main.bounds.width,
+            to: UIScreen.main.bounds.width - Spacing.outer,
             priority: .penultimateHigh
         )
     }

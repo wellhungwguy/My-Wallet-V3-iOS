@@ -233,6 +233,16 @@ final class SettingsRouter: SettingsRouterAPI {
                     self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
                 })
                 .disposed(by: disposeBag)
+        case .showTradingCurrencySelectionScreen:
+            let settingsService: FiatCurrencySettingsServiceAPI = resolve()
+            settingsService
+                .tradingCurrency
+                .asSingle()
+                .observe(on: MainScheduler.instance)
+                .subscribe(onSuccess: { [weak self] currency in
+                    self?.showFiatTradingCurrencySelectionScreen(selectedCurrency: currency)
+                })
+                .disposed(by: disposeBag)
         case .launchWebLogin:
             let presenter = WebLoginScreenPresenter(service: WebLoginQRCodeService())
             let viewController = WebLoginScreenViewController(presenter: presenter)
@@ -483,6 +493,53 @@ final class SettingsRouter: SettingsRouterAPI {
                     self.analyticsRecording.record(events: [
                         AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code),
                         AnalyticsEvents.New.Settings.settingsCurrencyClicked(currency: currency.code)
+                    ])
+                },
+                onFailure: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.alertPresenter.standardError(
+                        message: LocalizationConstants.GeneralError.loadingData
+                    )
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+
+    private func showFiatTradingCurrencySelectionScreen(selectedCurrency: FiatCurrency) {
+        let selectionService = FiatCurrencySelectionService(
+            defaultSelectedData: selectedCurrency,
+            provider: FiatTradingCurrencySelectionProvider()
+        )
+        let interactor = SelectionScreenInteractor(service: selectionService)
+        let presenter = SelectionScreenPresenter(
+            title: LocalizationConstants.Settings.SelectCurrency.trading,
+            searchBarPlaceholder: LocalizationConstants.Settings.SelectCurrency.searchBarPlaceholder,
+            interactor: interactor
+        )
+        let viewController = SelectionScreenViewController(presenter: presenter)
+        viewController.isModalInPresentation = true
+        navigationRouter.present(viewController: viewController)
+
+        interactor.selectedIdOnDismissal
+            .map { FiatCurrency(code: $0)! }
+            .flatMap { currency -> Single<FiatCurrency> in
+                let settings: FiatCurrencySettingsServiceAPI = resolve()
+                return settings
+                    .update(
+                        tradingCurrency: currency,
+                        context: .settings
+                    )
+                    .asSingle()
+                    .asCompletable()
+                    .andThen(Single.just(currency))
+            }
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] currency in
+                    guard let self = self else { return }
+                    self.analyticsRecording.record(events: [
+                        AnalyticsEvents.Settings.settingsTradingCurrencySelected(currency: currency.code),
+                        AnalyticsEvents.New.Settings.settingsTradingCurrencyClicked(currency: currency.code)
                     ])
                 },
                 onFailure: { [weak self] _ in

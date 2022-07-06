@@ -33,6 +33,7 @@ public final class FiatBalanceCollectionViewInteractor {
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let userService: NabuUserServiceAPI
     private let refreshRelay = PublishRelay<Void>()
     private let coincore: CoincoreAPI
     private let disposeBag = DisposeBag()
@@ -61,22 +62,19 @@ public final class FiatBalanceCollectionViewInteractor {
     private lazy var setup: Void = Observable
         .combineLatest(
             fiatCurrencyService.displayCurrencyPublisher.asObservable(),
-            refreshRelay.asObservable()
-        ) { (fiatCurrency: $0, _: $1) }
+            refreshRelay.asObservable(),
+            userService.fetchUser().asObservable()
+        ) { (fiatCurrency: $0, _: $1, user: $2) }
         .flatMapLatest(weak: self) { (self, data) in
             self.fiatAccounts()
                 .asObservable()
                 .map { accounts in
                     accounts
                         .filter { account in
-                            switch data.fiatCurrency {
-                            case .ARS:
-                                return ["ARS", "USD"].contains(account.currencyType.code)
-                            default:
-                                return true
-                            }
+                            guard let currency = account.currencyType.fiatCurrency
+                            else { return false }
+                            return data.user.currencies.userFiatCurrencies.contains(currency)
                         }
-                        .sorted { $0.currencyType.code < $1.currencyType.code }
                         .sorted { lhs, _ -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
                         .map(FiatCustodialBalanceViewInteractor.init(account:))
                 }
@@ -92,13 +90,15 @@ public final class FiatBalanceCollectionViewInteractor {
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        coincore: CoincoreAPI = resolve()
+        coincore: CoincoreAPI = resolve(),
+        userService: NabuUserServiceAPI = resolve()
     ) {
         self.coincore = coincore
         self.tiersService = tiersService
         self.paymentMethodsService = paymentMethodsService
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService
+        self.userService = userService
     }
 
     public func refresh() {

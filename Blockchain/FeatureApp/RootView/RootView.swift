@@ -64,7 +64,6 @@ struct RootView: View {
             }
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
-                    .if(viewStore.hideFAB, then: { view in view.hidden() })
                     .identity(blockchain.ux.frequent.action)
                     .background(
                         Circle()
@@ -75,7 +74,8 @@ struct RootView: View {
                     .padding([.leading, .trailing], 24.pt)
                     .offset(y: 6.pt)
                     .contentShape(Rectangle())
-                    .background(Color.white.invisible()),
+                    .background(Color.white.invisible())
+                    .if(viewStore.hideFAB, then: { view in view.hidden() }),
                 alignment: .bottom
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)

@@ -40,11 +40,11 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
         sdk.setApiKey(apiKey, forAppId: appId)
 
         app.on(blockchain.session.event.did.sign.in)
-            .map { [app] _ -> (FetchResult.Value<String>, FetchResult.Value<String>) in
-                (
-                    app.state.result(for: blockchain.user.id).decode(),
-                    app.state.result(for: blockchain.user.email.address).decode()
-                )
+            .flatMap { [app] _ -> AnyPublisher<(FetchResult.Value<String>, FetchResult.Value<String>), Never> in
+                app.publisher(for: blockchain.user.id, as: String.self)
+                    .zip(app.publisher(for: blockchain.user.email.address, as: String.self))
+                    .first()
+                    .eraseToAnyPublisher()
             }
             .sink { [weak self] id, email in self?.login(id: id, email: email) }
             .store(in: &bag)

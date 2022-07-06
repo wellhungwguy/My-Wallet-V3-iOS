@@ -283,25 +283,7 @@ extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Envir
                     guard let user = try? result.get() else { return .none }
                     return .fireAndForget {
                         let id = user.identifier
-                        environment.app.signIn(userId: id) { state in
-                            state.set(blockchain.user.email.address, to: user.email.address)
-                            state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
-                            state.set(blockchain.user.name.last, to: user.personalDetails.lastName)
-                            let tag: Tag
-                            if let tier = user.tiers?.current {
-                                switch tier {
-                                case .tier0:
-                                    tag = blockchain.user.account.tier.none[]
-                                case .tier1:
-                                    tag = blockchain.user.account.tier.silver[]
-                                case .tier2:
-                                    tag = blockchain.user.account.tier.gold[]
-                                }
-                            } else {
-                                tag = blockchain.user.account.tier.none[]
-                            }
-                            state.set(blockchain.user.account.tier, to: tag)
-                        }
+                        environment.app.signIn(userId: id)
                     }
                 case .logout:
                     return .fireAndForget {

@@ -53,6 +53,7 @@ extension AppProtocol {
             state.set(blockchain.app.deep_link.dsl.is.enabled, to: BuildFlag.isInternal)
         }
 
+        observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
         observers.insert(ReferralAppObserver(

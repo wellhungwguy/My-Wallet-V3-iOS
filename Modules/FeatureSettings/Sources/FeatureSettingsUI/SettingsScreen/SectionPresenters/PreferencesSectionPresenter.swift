@@ -16,20 +16,24 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
 
     private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
+    private let preferredTradingCurrencyCellPresenter: PreferredTradingCurrencyCellPresenter
 
     init(
         emailNotificationService: EmailNotificationSettingsServiceAPI,
         preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor,
+        preferredTradingCurrencyBadgeInteractor: PreferredTradingCurrencyBadgeInteractor,
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         emailNotificationsCellPresenter = .init(service: emailNotificationService)
         preferredCurrencyCellPresenter = .init(interactor: preferredCurrencyBadgeInteractor)
+        preferredTradingCurrencyCellPresenter = .init(interactor: preferredTradingCurrencyBadgeInteractor)
 
         var viewModel = SettingsSectionViewModel(
             sectionType: sectionType,
             items: [
                 .init(cellType: .switch(.emailNotifications, emailNotificationsCellPresenter)),
-                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter))
+                .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter)),
+                .init(cellType: .badge(.tradingCurrencyPreference, preferredTradingCurrencyCellPresenter))
             ]
         )
 
