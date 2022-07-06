@@ -16,7 +16,7 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
             switch presenter.presentationStyle {
             case .plain:
                 custodialBalanceView.layer.borderColor = Color.clear.cgColor
-                custodialBalanceViewWidthConstraint.constant = UIScreen.main.bounds.width
+                custodialBalanceViewWidthConstraint.constant = UIScreen.main.bounds.width - Spacing.outer
                 custodialBalanceViewWidthConstraint.isActive = true
             case .border:
                 custodialBalanceView.layer.borderColor = Color.lightBorder.cgColor
