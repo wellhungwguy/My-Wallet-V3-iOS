@@ -36,9 +36,8 @@ final class FeatureCustomerSupportTests: XCTestCase {
     }
 
     func test_sign_in() throws {
-        app.signIn(userId: "user-id") { state in
-            state.set(blockchain.user.email.address, to: "oliver@blockchain.com")
-        }
+        app.signIn(userId: "user-id")
+        app.state.set(blockchain.user.email.address, to: "oliver@blockchain.com")
         XCTAssertTrue(sdk.did.login)
         XCTAssertEqual(sdk.attributes.userId, "user-id")
         XCTAssertEqual(sdk.attributes.email, "oliver@blockchain.com")
