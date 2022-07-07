@@ -53,23 +53,19 @@ final class PasswordRepository: PasswordRepositoryAPI {
     }
 
     func set(password: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepository, walletRepo] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(password: password)
-                }
-                return walletRepo
-                    .set(keyPath: \.credentials.password, value: password)
-                    .get()
-                    .mapToVoid()
-                    .mapError()
-            }
+        walletRepository.set(password: password)
+            .zip(
+                walletRepo.set(keyPath: \.credentials.password, value: password).get()
+            )
+            .mapToVoid()
+            .mapError()
             .eraseToAnyPublisher()
     }
 
     func changePassword(password: String) -> AnyPublisher<Void, PasswordRepositoryError> {
         nativeWalletEnabled()
-            .flatMap { [walletRepository, changePasswordService] isEnabled -> AnyPublisher<Void, PasswordRepositoryError> in
+            .flatMap { [walletRepository, changePasswordService] isEnabled
+                -> AnyPublisher<Void, PasswordRepositoryError> in
                 guard isEnabled else {
                     return walletRepository.changePassword(password: password)
                 }

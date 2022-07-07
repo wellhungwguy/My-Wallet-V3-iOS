@@ -22,7 +22,8 @@ extension DependencyContainer {
         factory { () -> ForgetWalletAPI in
             ForgetWallet(
                 walletRepo: DIKit.resolve(),
-                walletState: DIKit.resolve()
+                walletState: DIKit.resolve(),
+                walletPersistence: DIKit.resolve()
             )
         }
 

@@ -18,4 +18,8 @@ public protocol WalletRepoPersistenceAPI {
     /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
     /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
     func retrieve() -> AnyPublisher<WalletRepoState, WalletRepoPersistenceError>
+
+    /// Deletes `WalletRepo` value from Keychain
+    /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
+    func delete() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError>
 }

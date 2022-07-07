@@ -50,17 +50,10 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
     }
 
     func set(sharedKey: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(sharedKey: sharedKey)
-                }
-                return walletRepo
-                    .set(keyPath: \.credentials.sharedKey, value: sharedKey)
-                    .get()
-                    .first()
-                    .mapToVoid()
-            }
+        walletRepository.set(sharedKey: sharedKey)
+            .zip(
+                walletRepo.set(keyPath: \.credentials.sharedKey, value: sharedKey).get()
+            )
             .mapToVoid()
             .eraseToAnyPublisher()
     }

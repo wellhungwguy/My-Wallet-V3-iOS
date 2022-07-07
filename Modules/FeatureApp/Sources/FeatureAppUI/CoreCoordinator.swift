@@ -756,7 +756,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // forget wallet
         environment.credentialsStore.erase()
         environment.walletManager.forgetWallet()
-        environment.forgetWalletService.forget()
 
         // update state
         state.loggedIn = nil
@@ -765,6 +764,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
         return .merge(
+            environment.forgetWalletService
+                .forget()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
             environment
                 .pushNotificationsRepository
                 .revokeToken()
