@@ -21,9 +21,9 @@ public struct Tag {
     var isGraphNode: Bool { self(\.isGraphNode) }
 
     @inlinable public var protonym: Tag? { self(\.protonym) }
-    @inlinable public var ownChildren: [Name: Tag]  { self(\.ownChildren) }
+    @inlinable public var ownChildren: [Name: Tag] { self(\.ownChildren) }
     @inlinable public var children: [Name: Tag] { self(\.children) }
-    @inlinable public var ownType: [ID: Tag]  { self(\.ownType) }
+    @inlinable public var ownType: [ID: Tag] { self(\.ownType) }
     @inlinable public var type: [ID: Tag] { self(\.type) }
     @inlinable public var lineage: UnfoldFirstSequence<Tag> { self(\.lineage) }
 
@@ -51,9 +51,7 @@ extension Tag {
 extension Tag {
 
     @usableFromInline func callAsFunction<T>(_ keyPath: KeyPath<Lazy, T>) -> T {
-        language.sync {
-            lazy[self][keyPath: keyPath]
-        }
+        language.sync { lazy[self][keyPath: keyPath] }
     }
 
     @usableFromInline class Lazy {
@@ -62,7 +60,7 @@ extension Tag {
 
         init() {}
         subscript(tag: Tag) -> Lazy {
-            (self.my = tag); return self
+            my = tag; return self
         }
 
         @usableFromInline lazy var parent: Tag? = my.parentID.flatMap(my.language.tag)

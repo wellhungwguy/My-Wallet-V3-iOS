@@ -77,7 +77,7 @@ final class SettingsService: SettingsServiceAPI {
         refresh = app.on(
             blockchain.session.event.did.sign.in,
             blockchain.session.event.did.sign.out
-        ) { [weak self]  _ in
+        ) { [weak self] _ in
             self?.settingsRelay.accept(nil)
         }
         .subscribe()
@@ -221,7 +221,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                     .replaceError(with: CurrencyUpdateError.fetchError(SettingsServiceError.timedOut))
             )
             .mapToVoid()
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 
     func update(

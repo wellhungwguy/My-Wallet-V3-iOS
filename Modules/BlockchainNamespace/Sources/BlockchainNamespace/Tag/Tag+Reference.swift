@@ -210,7 +210,7 @@ extension Tag.Reference {
         public private(set) var indices: [String] = []
 
         init(_ tag: Tag) {
-            self.tagId = tag.id
+            tagId = tag.id
             var id = ""
             for crumb in tag.breadcrumb {
                 if crumb.name == crumb.id {

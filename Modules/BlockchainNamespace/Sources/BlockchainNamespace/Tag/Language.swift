@@ -26,7 +26,7 @@ public final class Language {
             label: "com.blockchain.namespace.language.queue.\(Language.id)",
             qos: .userInitiated
         )
-        self.key = DispatchSpecificKey<Language.Type>(on: queue)
+        key = DispatchSpecificKey<Language.Type>(on: queue)
         root = Tag.add(parent: nil, node: graph.root, to: self)
         Self.unownedLanguageReferences.append(self)
     }
