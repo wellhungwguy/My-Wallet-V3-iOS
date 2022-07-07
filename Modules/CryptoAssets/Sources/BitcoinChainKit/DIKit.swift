@@ -3,6 +3,7 @@
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -107,6 +108,16 @@ extension DependencyContainer {
         // MARK: - Asset Agnostic
 
         factory { CoinSelection() as CoinSelector }
+
+        // MARK: - Sync PubKeys Address Providing
+
+        factory { () -> SyncPubKeysAddressesProviderAPI in
+            SyncPubKeysAddressesProvider(
+                addressProvider: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
+                mnemonicProvider: DIKit.resolve(),
+                fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
+            )
+        }
     }
 }
 

@@ -35,6 +35,7 @@ extension DependencyContainer {
                 payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
+                syncPubKeysAddressesProvider: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
             )
