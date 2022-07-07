@@ -15,17 +15,17 @@ public struct Tag {
     public let node: Lexicon.Graph.Node
     public unowned let language: Language
 
-    @inlinable public var parent: Tag? { self(\.parent) }
+    @inlinable public var parent: Tag? { lazy(\.parent) }
     private let parentID: ID?
 
-    var isGraphNode: Bool { self(\.isGraphNode) }
+    var isGraphNode: Bool { lazy(\.isGraphNode) }
 
-    @inlinable public var protonym: Tag? { self(\.protonym) }
-    @inlinable public var ownChildren: [Name: Tag] { self(\.ownChildren) }
-    @inlinable public var children: [Name: Tag] { self(\.children) }
-    @inlinable public var ownType: [ID: Tag] { self(\.ownType) }
-    @inlinable public var type: [ID: Tag] { self(\.type) }
-    @inlinable public var lineage: UnfoldFirstSequence<Tag> { self(\.lineage) }
+    @inlinable public var protonym: Tag? { lazy(\.protonym) }
+    @inlinable public var ownChildren: [Name: Tag] { lazy(\.ownChildren) }
+    @inlinable public var children: [Name: Tag] { lazy(\.children) }
+    @inlinable public var ownType: [ID: Tag] { lazy(\.ownType) }
+    @inlinable public var type: [ID: Tag] { lazy(\.type) }
+    @inlinable public var lineage: UnfoldFirstSequence<Tag> { lazy(\.lineage) }
 
     private var lazy = Lazy()
 
@@ -39,18 +39,18 @@ public struct Tag {
 
 extension Tag {
 
-    @usableFromInline var template: Tag.Reference.Template { self(\.template) }
+    @usableFromInline var template: Tag.Reference.Template { lazy(\.template) }
 
-    @usableFromInline var isCollection: Bool { self(\.isCollection) }
-    @usableFromInline var isLeaf: Bool { self(\.isLeaf) }
-    @usableFromInline var isLeafDescendant: Bool { self(\.isLeafDescendant) }
+    @usableFromInline var isCollection: Bool { lazy(\.isCollection) }
+    @usableFromInline var isLeaf: Bool { lazy(\.isLeaf) }
+    @usableFromInline var isLeafDescendant: Bool { lazy(\.isLeafDescendant) }
 
-    @usableFromInline var breadcrumb: [Tag] { self(\.breadcrumb) }
+    @usableFromInline var breadcrumb: [Tag] { lazy(\.breadcrumb) }
 }
 
 extension Tag {
 
-    @usableFromInline func callAsFunction<T>(_ keyPath: KeyPath<Lazy, T>) -> T {
+    @usableFromInline func lazy<T>(_ keyPath: KeyPath<Lazy, T>) -> T {
         language.sync { lazy[self][keyPath: keyPath] }
     }
 
@@ -59,7 +59,8 @@ extension Tag {
         var my: Tag!
 
         init() {}
-        subscript(tag: Tag) -> Lazy {
+
+        fileprivate subscript(tag: Tag) -> Lazy {
             my = tag; return self
         }
 
