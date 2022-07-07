@@ -29,7 +29,7 @@ final class BitcoinWallet: NSObject {
     }
 
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
-    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
+    typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & LegacyMnemonicAccessAPI
 
     @objc var delegate: BitcoinJSInteropDelegateAPI {
         dispatcher
@@ -468,7 +468,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 }
 
-extension BitcoinWallet: MnemonicAccessAPI {
+extension BitcoinWallet: LegacyMnemonicAccessAPI {
     var mnemonic: AnyPublisher<WalletPayloadKit.Mnemonic, MnemonicAccessError> {
         guard let wallet = wallet else {
             return .failure(.generic)

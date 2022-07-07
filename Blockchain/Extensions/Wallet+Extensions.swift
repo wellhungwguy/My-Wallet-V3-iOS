@@ -10,7 +10,7 @@ import FeatureAppUI
 /// `MnemonicAccessAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we check if the user needs to enter their
 /// secondary password if their wallet is double encrypted.
-extension Wallet: MnemonicAccessAPI {
+extension Wallet: LegacyMnemonicAccessAPI {
     public var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
         let prompter: SecondPasswordPromptable = resolve()
         return prompter

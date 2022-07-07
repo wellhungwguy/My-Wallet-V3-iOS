@@ -19,7 +19,7 @@ final class EthereumWallet: NSObject {
 
     typealias EthereumDispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
 
-    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
+    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & LegacyMnemonicAccessAPI
 
     enum EthereumWalletError: Error {
         case recordLastEthereumTransactionFailed

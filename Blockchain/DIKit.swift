@@ -279,23 +279,9 @@ extension DependencyContainer {
             return manager as WalletManagerAPI
         }
 
-        factory { () -> MnemonicAccessAPI in
-            let app: AppProtocol = DIKit.resolve()
-            let ref = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled[].reference
-            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
-            if isEnabled ?? false {
-                let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
-                let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
-                    secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
-                        .mapError { _ in MnemonicAccessError.wrongSecondPassword }
-                        .eraseToAnyPublisher()
-                }
-                return MnemonicAccessService(
-                    secondPasswordPrompter: secondPasswordIfNeeded
-                )
-            }
+        factory { () -> LegacyMnemonicAccessAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet as MnemonicAccessAPI
+            return walletManager.wallet as LegacyMnemonicAccessAPI
         }
 
         factory { () -> WalletRepositoryProvider in

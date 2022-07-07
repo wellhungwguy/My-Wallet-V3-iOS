@@ -9,7 +9,7 @@ import RxSwift
 import ToolKit
 import WalletPayloadKit
 
-class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
+class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, LegacyMnemonicAccessAPI {
     func checkIfEthereumAccountExists() -> Bool {
         unimplemented()
     }

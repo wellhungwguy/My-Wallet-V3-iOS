@@ -202,8 +202,22 @@ extension DependencyContainer {
             )
         }
 
+        single { () -> MnemonicAccessAPI in
+            MnemonicAccessProvider(
+                legacyProvider: DIKit.resolve(),
+                nativeProvider: DIKit.resolve(),
+                nativeWalletFeatureFlag: { nativeWalletFlagEnabled() }
+            )
+        }
+
         factory { () -> MnemonicVerificationStatusProvider in
             provideMnemonicVerificationStatus(
+                walletHolder: DIKit.resolve()
+            )
+        }
+
+        factory { () -> NativeMnemonicAccessAPI in
+            MnemonicAccessService(
                 walletHolder: DIKit.resolve()
             )
         }
