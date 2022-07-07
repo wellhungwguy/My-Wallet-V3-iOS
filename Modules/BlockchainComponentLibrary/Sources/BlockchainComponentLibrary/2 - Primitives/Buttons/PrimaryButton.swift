@@ -48,7 +48,7 @@ extension PrimaryButton where LeadingView == EmptyView {
     public init(
         title: String,
         isLoading: Bool = false,
-        action: @escaping () -> Void
+        action: @escaping () -> Void = { }
     ) {
         self.init(
             title: title,

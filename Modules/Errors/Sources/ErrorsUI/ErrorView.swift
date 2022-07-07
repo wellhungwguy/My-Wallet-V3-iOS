@@ -117,7 +117,7 @@ public struct ErrorView<Fallback: View>: View {
             .typography(.body1)
             .foregroundColor(.semantic.body)
             .padding(.bottom, Spacing.padding2.pt)
-        if let action = ux.actions.dropFirst(2).first {
+        if let action = ux.actions.dropFirst(2).first, action.title.isNotEmpty {
             SmallMinimalButton(
                 title: action.title,
                 action: { post(action) }
@@ -173,7 +173,8 @@ public struct ErrorView<Fallback: View>: View {
 
     @ViewBuilder
     private var actions: some View {
-        ForEach(ux.actions.prefix(2).indexed(), id: \.element) { index, action in
+        let cta = ux.actions.prefix(2).filter(\.title.isNotEmpty)
+        ForEach(cta.indexed(), id: \.element) { index, action in
             if index == ux.actions.startIndex {
                 PrimaryButton(
                     title: action.title,

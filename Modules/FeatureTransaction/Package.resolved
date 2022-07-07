@@ -83,6 +83,15 @@
         }
       },
       {
+        "package": "Lottie",
+        "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "246bab7ef72bad56abefb88e84a08871cecf9cb8",
+          "version": "3.4.0"
+        }
+      },
+      {
         "package": "MetadataHDWalletKit",
         "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
         "state": {
@@ -159,8 +168,8 @@
         "repositoryURL": "https://github.com/stripe/stripe-ios",
         "state": {
           "branch": null,
-          "revision": "00fe1bc3b6abedd7b3a08776ac121d07289cd560",
-          "version": "21.9.0"
+          "revision": "ef0c465f84402af07565d637ffb5952d3d2cc37b",
+          "version": "22.6.0"
         }
       },
       {
@@ -186,8 +195,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
-          "version": "0.7.0"
+          "revision": "b4a872984463070c71e2e97e5c02c73a07d0fe36",
+          "version": "0.9.0"
         }
       },
       {
@@ -213,8 +222,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
-          "version": "0.32.0"
+          "revision": "b55977808fcc2ff75081b90f197f6e72a21214b4",
+          "version": "0.38.1"
         }
       },
       {
@@ -260,6 +269,15 @@
           "branch": null,
           "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
           "version": "1.9.0"
+        }
+      },
+      {
+        "package": "SwiftyGif",
+        "repositoryURL": "https://github.com/kirualex/SwiftyGif.git",
+        "state": {
+          "branch": null,
+          "revision": "db0c122b671bc9760385e0355be00eede3b7bb44",
+          "version": "5.4.3"
         }
       },
       {
