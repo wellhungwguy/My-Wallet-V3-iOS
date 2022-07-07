@@ -27,8 +27,6 @@ extension AssetModel {
                 ?? UIColor(hex: ERC20Code.spotColor(code: code))!
         case .celoToken:
             return spotUIColor ?? .black
-        case .fiat where code == FiatCurrency.ARS.rawValue:
-            return .fiatARS
         case .fiat:
             return .fiat
         }

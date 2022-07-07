@@ -134,4 +134,10 @@ final class KYCClientMock: KYCClientAPI {
     func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
         stubbedResults.submitAccountUsageForm
     }
+
+    func setTradingCurrency(
+        _ currency: String
+    ) -> AnyPublisher<Void, Nabu.Error> {
+        .just(())
+    }
 }

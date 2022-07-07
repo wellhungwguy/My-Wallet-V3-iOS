@@ -26,12 +26,5 @@ extension FiatCurrency {
         }
     }
 
-    public var brandColor: UIColor {
-        switch self {
-        case .ARS:
-            return .fiatARS
-        default:
-            return .fiat
-        }
-    }
+    public var brandColor: UIColor { .fiat }
 }

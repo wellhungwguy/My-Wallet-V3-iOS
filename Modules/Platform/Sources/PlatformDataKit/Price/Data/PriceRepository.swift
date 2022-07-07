@@ -81,7 +81,7 @@ final class PriceRepository: PriceRepositoryAPI {
                 indexMultiCachedValue
                     .get(
                         key: PriceRequest.IndexMulti.Key(
-                            base: Set(bases.map(\.code)).intersection(supportedBases),
+                            base: Set(bases.map { $0.code }).intersection(supportedBases),
                             quote: quote.currencyType,
                             time: time
                         )
