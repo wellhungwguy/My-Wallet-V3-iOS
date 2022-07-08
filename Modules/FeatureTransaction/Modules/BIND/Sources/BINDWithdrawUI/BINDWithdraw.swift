@@ -1,8 +1,9 @@
+@_exported import BINDWithdrawDomain
+
 import BlockchainComponentLibrary
 import BlockchainNamespace
 import Combine
 import Errors
-import BINDWithdrawDomain
 import SwiftUI
 import ToolKit
 
@@ -137,7 +138,7 @@ extension BIND {
     }
 
     fileprivate var ux: [Row] {
-        return [
+        [
             .init(title: "Bank Name", value: bankName),
             .init(title: "Alias", value: label),
             .init(title: "Account Holder", value: accountHolder),

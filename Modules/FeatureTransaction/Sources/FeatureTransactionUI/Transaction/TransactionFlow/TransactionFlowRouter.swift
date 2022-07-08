@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BINDWithdrawUI
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
@@ -418,10 +419,61 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func presentLinkABank(transactionModel: TransactionModel) {
+
+        analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
+
+        Task(priority: .userInitiated) {
+            let country: String = try app.state.get(blockchain.user.address.country.code)
+            switch country {
+            case "AR":
+                try await presentBINDLinkABank(transactionModel: transactionModel)
+            default:
+                presentDefaultLinkABank(transactionModel: transactionModel)
+            }
+        }
+    }
+
+    @MainActor
+    private func presentBINDLinkABank(
+        transactionModel: TransactionModel,
+        repository: BINDWithdrawRepositoryProtocol = resolve()
+    ) async throws {
+        guard let state = try await transactionModel.state.await() else { return }
+        let presentingViewController = viewController.uiviewController
+        presentingViewController.present(
+            UIHostingController(
+                rootView: PrimaryNavigationView {
+                    BINDWithdrawView { _ in
+                        transactionModel.process(action: .bankAccountLinked(state.action))
+                    }
+                    .primaryNavigation(
+                        title: "BIND",
+                        trailing: {
+                            IconButton(
+                                icon: .closeCirclev2,
+                                action: {
+                                    presentingViewController.presentedViewController?.dismiss(
+                                        animated: true,
+                                        completion: {
+                                            transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+                .environmentObject(BINDWithdrawService(repository: repository))
+            ),
+            animated: true,
+            completion: nil
+        )
+    }
+
+    private func presentDefaultLinkABank(transactionModel: TransactionModel) {
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
-        analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
             .asPublisher()

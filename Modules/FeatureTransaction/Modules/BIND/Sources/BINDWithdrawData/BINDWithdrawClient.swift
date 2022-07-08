@@ -1,5 +1,5 @@
-import Combine
 import BINDWithdrawDomain
+import Combine
 import Foundation
 import NetworkKit
 
@@ -11,7 +11,7 @@ public final class BINDWithdrawClient {
     private let requestBuilder: RequestBuilder
     private let network: NetworkAdapterAPI
 
-    init(requestBuilder: RequestBuilder, network: NetworkAdapterAPI) {
+    public init(requestBuilder: RequestBuilder, network: NetworkAdapterAPI) {
         self.requestBuilder = requestBuilder
         self.network = network
     }
