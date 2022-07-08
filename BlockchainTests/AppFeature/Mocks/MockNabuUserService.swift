@@ -1,8 +1,8 @@
 import Combine
 import Errors
+import MoneyKit
 import PlatformKit
 import ToolKit
-import MoneyKit
 
 final class MockNabuUserService: NabuUserServiceAPI {
 
