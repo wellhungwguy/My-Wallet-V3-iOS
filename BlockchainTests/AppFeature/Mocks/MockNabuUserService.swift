@@ -8,6 +8,7 @@ final class MockNabuUserService: NabuUserServiceAPI {
         var user: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
         var fetchUser: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
         var setInitialResidentialInfo: AnyPublisher<Void, NabuUserServiceError> = .empty()
+        var setTradingCurrency: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
     }
 
     var stubbedResults = StubbedResults()
@@ -25,5 +26,11 @@ final class MockNabuUserService: NabuUserServiceAPI {
         state: String?
     ) -> AnyPublisher<Void, NabuUserServiceError> {
         stubbedResults.setInitialResidentialInfo
+    }
+
+    func setTradingCurrency(
+        _ currency: FiatCurrency
+    ) -> AnyPublisher<Void, Nabu.Error> {
+        stubbedResults.setTradingCurrency
     }
 }
