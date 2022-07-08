@@ -67,6 +67,21 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
             }
             .eraseToAnyPublisher()
     }
+
+    func delete() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
+        Deferred { [keychainAccess] in
+            Future { promise in
+                let removalResult = keychainAccess.remove(for: KeychainAccessKey.walletState)
+                switch removalResult {
+                case .success:
+                    promise(.success(.noValue))
+                case .failure(let error):
+                    promise(.failure(WalletRepoPersistenceError.keychainFailure(error)))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Global Retrieval Method

@@ -35,6 +35,7 @@ extension LocalizationConstants.Settings {
         public static let confirmed = NSLocalizedString("Confirmed", comment: "Confirmed")
         public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
         public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")
+        public static let tradingCurrency = NSLocalizedString("Trading Currency", comment: "Trading Currency")
         public static let notifications = NSLocalizedString("Notifications", comment: "Notifications")
         public static let orderCard = NSLocalizedString("Order Card", comment: "Order Card")
         public static let expired = NSLocalizedString("Expired", comment: "Expired")
@@ -191,9 +192,21 @@ extension LocalizationConstants.Settings {
     }
 
     public enum SelectCurrency {
+        public static let trading = NSLocalizedString(
+            "Trading Currency",
+            comment: "App Trading Currency Selection Screen: title"
+        )
+        public static let tradingDescription = NSLocalizedString(
+            "This is the currency that you use to buy and sell crypto. ",
+            comment: "App Trading Currency Selection Screen: description"
+        )
         public static let title = NSLocalizedString(
             "Local Currency",
             comment: "App Currency Selection Screen: title"
+        )
+        public static let description = NSLocalizedString(
+            "This is the currency in which your balance will be displayed.",
+            comment: "App Currency Selection Screen: description"
         )
         public static let searchBarPlaceholder = NSLocalizedString(
             "Search Currency",

@@ -15,9 +15,9 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     // MARK: EnabledCurrenciesServiceAPI
 
-    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP, .ARS]
+    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP, .ARS, .BRL]
 
-    let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD, .ARS]
+    let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD, .ARS, .BRL]
 
     var allEnabledCurrencies: [CurrencyType] {
         defer { allEnabledCurrenciesLock.unlock() }

@@ -21,6 +21,7 @@ extension AnalyticsEvents {
         case settingsPinSelected
         case settingsPasswordSelected
         case settingsCurrencySelected(currency: String)
+        case settingsTradingCurrencySelected(currency: String)
 
         var name: String {
             switch self {
@@ -74,6 +75,8 @@ extension AnalyticsEvents {
             // Settings - change currency
             case .settingsCurrencySelected:
                 return "settings_currency_selected"
+            case .settingsTradingCurrencySelected:
+                return "settings_trading_currency_selected"
             }
         }
 

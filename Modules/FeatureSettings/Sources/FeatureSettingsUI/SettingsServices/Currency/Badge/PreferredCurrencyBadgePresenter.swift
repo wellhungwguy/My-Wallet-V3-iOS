@@ -15,11 +15,11 @@ final class PreferredCurrencyBadgePresenter: BadgeAssetPresenting {
 
     // MARK: - Private Accessors
 
-    private let interactor: PreferredCurrencyBadgeInteractor
+    private let interactor: DefaultBadgeAssetInteractor
     private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
 
-    init(interactor: PreferredCurrencyBadgeInteractor) {
+    init(interactor: DefaultBadgeAssetInteractor) {
         self.interactor = interactor
         interactor.state
             .map { .init(with: $0) }

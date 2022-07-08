@@ -17,6 +17,7 @@ public enum SettingsScreenAction {
     case showBackupScreen
     case showChangePinScreen
     case showCurrencySelectionScreen
+    case showTradingCurrencySelectionScreen
     case showUpdateEmailScreen
     case showUpdateMobileScreen
     case showURL(URL)

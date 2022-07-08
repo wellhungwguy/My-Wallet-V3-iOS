@@ -15,6 +15,7 @@ public final class SettingsScreenInteractor {
     let mobileVerificationBadgeInteractor: MobileVerificationBadgeInteractor
     let twoFactorVerificationBadgeInteractor: TwoFactorVerificationBadgeInteractor
     let preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
+    let preferredTradingCurrencyBadgeInteractor: PreferredTradingCurrencyBadgeInteractor
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
     let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
@@ -89,6 +90,7 @@ public final class SettingsScreenInteractor {
             settingsService: settingsService,
             fiatCurrencyService: fiatCurrencyService
         )
+        preferredTradingCurrencyBadgeInteractor = PreferredTradingCurrencyBadgeInteractor()
         cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
             service: settingsService
         )

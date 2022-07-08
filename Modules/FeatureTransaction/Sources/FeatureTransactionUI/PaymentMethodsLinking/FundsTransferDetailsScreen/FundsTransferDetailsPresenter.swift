@@ -189,6 +189,9 @@ extension FundsTransferDetailScreenPresenter {
             case .ARS:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
                 termsTextViewModel = nil
+            case .BRL:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
+                termsTextViewModel = nil
             default:
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil

@@ -452,6 +452,28 @@ blockchain:
 				code:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
+		currency:
+			available:
+			+ blockchain.db.array
+			+ blockchain.db.type.string
+			+ blockchain.session.state.value
+			default:
+			+ blockchain.db.type.string
+			+ blockchain.session.state.value
+			preferred:
+				fiat:
+					display:
+						currency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.preference.value
+					trading:
+						currency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.preference.value
+			value:
+			+ blockchain.db.array
+			+ blockchain.db.type.string
+			+ blockchain.session.state.value
 		email:
 			address:
 			+ blockchain.db.type.string
@@ -478,6 +500,9 @@ blockchain:
 				installation:
 				+ blockchain.db.type.string
 				+ blockchain.session.state.value
+			nabu:
+			+ blockchain.db.type.string
+			+ blockchain.session.state.value
 		wallet:
 		+ blockchain.db.collection
 			created:

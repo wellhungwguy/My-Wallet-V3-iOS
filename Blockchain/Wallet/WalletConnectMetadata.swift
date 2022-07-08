@@ -13,7 +13,7 @@ final class WalletConnectMetadata: NSObject, WalletConnectMetadataAPI {
 
     // MARK: Types
 
-    typealias WalletAPI = LegacyWalletAPI & MnemonicAccessAPI
+    typealias WalletAPI = LegacyWalletAPI & LegacyMnemonicAccessAPI
 
     // swiftlint:disable:next type_name
     private enum JS {

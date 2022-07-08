@@ -183,6 +183,15 @@ extension AddNewBankAccountPagePresenter {
                     textStyle: .init(color: .descriptionText, font: font),
                     linkStyle: .init(color: .linkableText, font: font)
                 )
+            case .BRL:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
+                termsTextViewModel = InteractableTextViewModel(
+                    inputs: [
+                        .text(string: FundsString.Notice.recipientNameBRL)
+                    ],
+                    textStyle: .init(color: .descriptionText, font: font),
+                    linkStyle: .init(color: .linkableText, font: font)
+                )
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
                 termsTextViewModel = InteractableTextViewModel(

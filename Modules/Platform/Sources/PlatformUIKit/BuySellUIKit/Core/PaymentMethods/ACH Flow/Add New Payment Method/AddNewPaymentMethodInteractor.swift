@@ -182,7 +182,9 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
 
             switch method.type {
             case .funds:
-                let title = paymentMethodType.currency == .fiat(.USD) || paymentMethodType.currency == .fiat(.ARS)
+                let title = paymentMethodType.currency == .fiat(.USD)
+                    || paymentMethodType.currency == .fiat(.ARS)
+                    || paymentMethodType.currency == .fiat(.BRL)
                     ? LocalizedString.DepositCash.usTitle
                     : LocalizedString.DepositCash.europeTitle
                 let paymentMethodTypeView = PaymentMethodTypeView(

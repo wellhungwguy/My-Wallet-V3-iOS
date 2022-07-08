@@ -11,6 +11,13 @@ public protocol BitcoinChainReceiveAddressProviderAPI {
     /// - Returns: `AnyPublisher<String, Error>`
     func receiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error>
 
+    /// Returns the address for the specified account index and receive index using the current loaded wallet
+    ///
+    /// - Parameter accountIndex: A `UInt32` which specifies the account index
+    /// - Parameter receiveIndex: A `UInt32` which specifies the receive index
+    /// - Returns: `AnyPublisher<String, Error>`
+    func receiveAddressProvider(_ accountIndex: UInt32, receiveIndex: UInt32) -> AnyPublisher<String, Error>
+
     /// Returns the first address for the specified account index using the current loaded wallet
     ///
     /// - Parameter accountIndex: A `UInt32` which specifies the account index
@@ -57,9 +64,8 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
         .eraseToAnyPublisher()
     }
 
-    func firstReceiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error> {
+    func receiveAddressProvider(_ accountIndex: UInt32, receiveIndex: UInt32) -> AnyPublisher<String, Error> {
         let account = BitcoinChainAccount(index: Int32(accountIndex), coin: Token.coin)
-        let firstReceiveIndex: UInt32 = 0
         return getAccountKeys(
             for: account,
             walletMnemonicProvider: mnemonicProvider
@@ -68,9 +74,16 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
             deriveReceiveAddress(
                 context: accountKeyContext,
                 coin: Token.coin,
-                receiveIndex: firstReceiveIndex
+                receiveIndex: receiveIndex
             )
         }
         .eraseToAnyPublisher()
+    }
+
+    func firstReceiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error> {
+        receiveAddressProvider(
+            accountIndex,
+            receiveIndex: 0
+        )
     }
 }

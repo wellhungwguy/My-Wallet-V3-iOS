@@ -36,6 +36,10 @@ public protocol KYCClientAPI: AnyObject {
         state: String?
     ) -> AnyPublisher<Void, NabuNetworkError>
 
+    func setTradingCurrency(
+        _ currency: String
+    ) -> AnyPublisher<Void, Nabu.Error>
+
     func selectCountry(
         country: String,
         state: String?,
@@ -222,6 +226,15 @@ final class KYCClient: KYCClientAPI {
         let request = requestBuilder.put(
             path: Path.initialAddress,
             body: try? payload.encode(),
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func setTradingCurrency(_ currency: String) -> AnyPublisher<Void, Nabu.Error> {
+        let request = requestBuilder.put(
+            path: "/users/current/currency",
+            body: try? ["fiatTradingCurrency": currency].json(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

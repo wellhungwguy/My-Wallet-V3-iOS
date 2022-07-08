@@ -69,6 +69,7 @@ enum SettingsSectionType: Int, Equatable {
             case emailVerification
             case mobileVerification
             case currencyPreference
+            case tradingCurrencyPreference
             case pitConnection
             case recoveryPhrase
             case cardIssuing

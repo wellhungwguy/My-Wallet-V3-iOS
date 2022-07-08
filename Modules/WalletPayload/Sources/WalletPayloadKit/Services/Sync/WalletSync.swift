@@ -21,6 +21,7 @@ public enum WalletSyncError: LocalizedError, Equatable {
     case unknown
     case notInitialized
     case failureSyncingWallet
+    case syncPubKeysFailure(SyncPubKeysAddressesProviderError)
     case encodingError(WalletEncodingError)
     case verificationFailure(EncryptAndVerifyError)
     case networkFailure(NetworkError)
@@ -35,6 +36,7 @@ final class WalletSync: WalletSyncAPI {
     private let walletEncoder: WalletEncodingAPI
     private let operationQueue: DispatchQueue
     private let saveWalletRepository: SaveWalletRepositoryAPI
+    private let syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI
     private let checksumProvider: (Data) -> String
 
     init(
@@ -43,6 +45,7 @@ final class WalletSync: WalletSyncAPI {
         payloadCrypto: PayloadCryptoAPI,
         walletEncoder: WalletEncodingAPI,
         saveWalletRepository: SaveWalletRepositoryAPI,
+        syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI,
         operationQueue: DispatchQueue,
         checksumProvider: @escaping (Data) -> String
     ) {
@@ -51,6 +54,7 @@ final class WalletSync: WalletSyncAPI {
         self.payloadCrypto = payloadCrypto
         self.walletEncoder = walletEncoder
         self.saveWalletRepository = saveWalletRepository
+        self.syncPubKeysAddressesProvider = syncPubKeysAddressesProvider
         self.operationQueue = operationQueue
         self.checksumProvider = checksumProvider
     }
@@ -68,7 +72,8 @@ final class WalletSync: WalletSyncAPI {
             walletEncoder: walletEncoder,
             payloadCrypto: payloadCrypto,
             checksumProvider: checksumProvider,
-            saveWalletRepository: saveWalletRepository
+            saveWalletRepository: saveWalletRepository,
+            syncPubKeysAddressesProvider: syncPubKeysAddressesProvider
         )
         return Just(wrapper)
             .receive(on: operationQueue)
@@ -128,7 +133,8 @@ private func saveOperations(
     walletEncoder: WalletEncodingAPI,
     payloadCrypto: PayloadCryptoAPI,
     checksumProvider: @escaping (Data) -> String,
-    saveWalletRepository: SaveWalletRepositoryAPI
+    saveWalletRepository: SaveWalletRepositoryAPI,
+    syncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI
 )
     -> (_ wrapper: Wrapper, _ password: String)
     -> AnyPublisher<WalletCreationPayload, WalletSyncError>
@@ -147,11 +153,25 @@ private func saveOperations(
                 .mapError(WalletSyncError.encodingError)
                 .eraseToAnyPublisher()
         }
-        .flatMap { [saveWalletRepository] payload -> AnyPublisher<WalletCreationPayload, WalletSyncError> in
-            // TODO: Construct addresses, if needed, to be sync based on `syncPubKeys` value
+        .flatMap { [syncPubKeysAddressesProvider] payload
+            -> AnyPublisher<(WalletCreationPayload, String?), WalletSyncError> in
+            guard wrapper.syncPubKeys else {
+                return .just((payload, nil))
+            }
+            // To get notifications working we need to pass a list of lookahead addresses
+            let accounts = wrapper.wallet.defaultHDWallet?.accounts ?? []
+            return syncPubKeysAddressesProvider.provideAddresses(
+                active: wrapper.wallet.spendableActiveAddresses,
+                accounts: accounts
+            )
+            .mapError(WalletSyncError.syncPubKeysFailure)
+            .map { addresses in (payload, addresses) }
+            .eraseToAnyPublisher()
+        }
+        .flatMap { [saveWalletRepository] payload, addresses -> AnyPublisher<WalletCreationPayload, WalletSyncError> in
             saveWalletRepository.saveWallet(
                 payload: payload,
-                addresses: nil
+                addresses: addresses
             )
             .mapError(WalletSyncError.networkFailure)
             .map { _ in payload }

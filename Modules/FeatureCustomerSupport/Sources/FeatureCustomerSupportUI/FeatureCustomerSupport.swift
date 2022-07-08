@@ -40,11 +40,12 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
         sdk.setApiKey(apiKey, forAppId: appId)
 
         app.on(blockchain.session.event.did.sign.in)
-            .map { [app] _ -> (FetchResult.Value<String>, FetchResult.Value<String>) in
-                (
-                    app.state.result(for: blockchain.user.id).decode(),
-                    app.state.result(for: blockchain.user.email.address).decode()
-                )
+            .flatMap { [app] _ -> AnyPublisher<(String, String), Never> in
+                app.publisher(for: blockchain.user.id, as: String.self)
+                    .compactMap(\.value)
+                    .zip(app.state.publisher(for: blockchain.user.email.address).decode().compactMap(\.value))
+                    .first()
+                    .eraseToAnyPublisher()
             }
             .sink { [weak self] id, email in self?.login(id: id, email: email) }
             .store(in: &bag)
@@ -79,10 +80,10 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
         bag.removeAll()
     }
 
-    private func login(id: FetchResult.Value<String>, email: FetchResult.Value<String>) {
+    private func login(id: String, email: String) {
         let attributes = Intercom.UserAttributes()
-        attributes.userId = id.value
-        attributes.email = email.value
+        attributes.userId = id
+        attributes.email = email
         attributes.languageOverride = Locale.preferredLanguages.first
         sdk.loginUser(with: attributes) { [app] result in
             switch result {

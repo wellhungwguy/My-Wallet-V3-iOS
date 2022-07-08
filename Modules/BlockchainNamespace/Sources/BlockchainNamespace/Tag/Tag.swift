@@ -15,42 +15,73 @@ public struct Tag {
     public let node: Lexicon.Graph.Node
     public unowned let language: Language
 
-    public var parent: Tag? { parentID.flatMap(language.tag) }
+    @inlinable public var parent: Tag? { lazy(\.parent) }
     private let parentID: ID?
 
-    var isGraphNode: Bool {
-        guard let parent = parent else { return true }
-        return parent.isGraphNode && parent.node.children.keys.contains(name)
-    }
+    var isGraphNode: Bool { lazy(\.isGraphNode) }
 
-    public var protonym: Tag? { Tag.protonym(of: self) }
-    public let ownChildren: [Name: Tag]
-    public var children: [Name: Tag] { Tag.children(of: self) }
-    public var ownType: [ID: Tag] { Tag.ownType(self) }
-    public var type: [ID: Tag] { Tag.type(of: self) }
-    public var lineage: UnfoldFirstSequence<Tag> { Tag.lineage(of: self) }
+    @inlinable public var protonym: Tag? { lazy(\.protonym) }
+    @inlinable public var ownChildren: [Name: Tag] { lazy(\.ownChildren) }
+    @inlinable public var children: [Name: Tag] { lazy(\.children) }
+    @inlinable public var ownType: [ID: Tag] { lazy(\.ownType) }
+    @inlinable public var type: [ID: Tag] { lazy(\.type) }
+    @inlinable public var lineage: UnfoldFirstSequence<Tag> { lazy(\.lineage) }
+
+    private var lazy = Lazy()
 
     init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
         parentID = parent
         id = parent?.dot(node.name) ?? node.name
         self.node = node
         self.language = language
-        var ownChildren: [Name: Tag] = [:]
-        for (name, node) in node.children {
-            ownChildren[name] = Tag.add(parent: id, node: node, to: language)
-        }
-        self.ownChildren = ownChildren
     }
 }
 
 extension Tag {
 
-    var isCollection: Bool { Tag.isCollection(self) }
-    var isLeaf: Bool { Tag.isLeaf(self) }
-    var isLeafDescendant: Bool { Tag.isLeafDescendant(self) }
+    @usableFromInline var template: Tag.Reference.Template { lazy(\.template) }
 
-    var template: Tag.Reference.Template { .init(self) }
-    var breadcrumb: [Tag] { lineage.reversed().prefix(while: \.isLeafDescendant.not) }
+    @usableFromInline var isCollection: Bool { lazy(\.isCollection) }
+    @usableFromInline var isLeaf: Bool { lazy(\.isLeaf) }
+    @usableFromInline var isLeafDescendant: Bool { lazy(\.isLeafDescendant) }
+
+    @usableFromInline var breadcrumb: [Tag] { lazy(\.breadcrumb) }
+}
+
+extension Tag {
+
+    @usableFromInline func lazy<T>(_ keyPath: KeyPath<Lazy, T>) -> T {
+        language.sync { lazy[self][keyPath: keyPath] }
+    }
+
+    @usableFromInline class Lazy {
+
+        var my: Tag!
+
+        init() {}
+
+        fileprivate subscript(tag: Tag) -> Lazy {
+            my = tag; return self
+        }
+
+        @usableFromInline lazy var parent: Tag? = my.parentID.flatMap(my.language.tag)
+        @usableFromInline lazy var isGraphNode: Bool = my.parent.map { parent in
+            parent.isGraphNode && parent.node.children.keys.contains(my.name)
+        } ?? true
+
+        @usableFromInline lazy var protonym: Tag? = Tag.protonym(of: my)
+        @usableFromInline lazy var children: [Name: Tag] = Tag.children(of: my)
+        @usableFromInline lazy var ownType: [ID: Tag] = Tag.ownType(my)
+        @usableFromInline lazy var ownChildren: [Name: Tag] = Tag.ownChildren(of: my)
+        @usableFromInline lazy var type: [ID: Tag] = Tag.type(of: my)
+        @usableFromInline lazy var lineage: UnfoldFirstSequence<Tag> = Tag.lineage(of: my)
+
+        @usableFromInline lazy var template: Tag.Reference.Template = .init(my)
+        @usableFromInline lazy var isCollection: Bool = Tag.isCollection(my)
+        @usableFromInline lazy var isLeaf: Bool = Tag.isLeaf(my)
+        @usableFromInline lazy var isLeafDescendant: Bool = Tag.isLeafDescendant(my)
+        @usableFromInline lazy var breadcrumb: [Tag] = lineage.reversed().prefix(while: \.isLeafDescendant.not)
+    }
 }
 
 extension Tag {
@@ -262,6 +293,14 @@ extension Tag {
         tag.language.nodes[tag.id] = protonym // MARK: always map synonym to its protonym
 
         return .init(protonym)
+    }
+
+    static func ownChildren(of tag: Tag) -> [Name: Tag] {
+        var ownChildren: [Name: Tag] = [:]
+        for (name, node) in tag.node.children {
+            ownChildren[name] = Tag.add(parent: tag.id, node: node, to: tag.language)
+        }
+        return ownChildren
     }
 
     static func children(of tag: Tag) -> [Name: Tag] {

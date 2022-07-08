@@ -192,20 +192,9 @@ let loggedInReducer = Reducer<
         return .none
     case .logout:
         state = LoggedIn.State()
-        return .merge(
-            .cancel(id: LoggedInIdentifier()),
-            .fireAndForget {
-                environment.app.signOut()
-            }
-        )
+        return .cancel(id: LoggedInIdentifier())
     case .deleteWallet:
-        state = LoggedIn.State()
-        return .merge(
-            .cancel(id: LoggedInIdentifier()),
-            .fireAndForget {
-                environment.app.signOut()
-            }
-        )
+        return Effect(value: .logout)
     case .stop:
         // We need to cancel any running operations if we require pin entry.
         // Although this is the same as logout and .wallet(.authenticateForBiometrics)
@@ -277,31 +266,12 @@ extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Envir
 
     func namespace() -> Reducer {
         combined(
-            with: Reducer { state, action, environment in
+            with: Reducer { _, action, environment in
                 switch action {
                 case .login(let result):
                     guard let user = try? result.get() else { return .none }
                     return .fireAndForget {
-                        let id = user.identifier
-                        environment.app.signIn(userId: id) { state in
-                            state.set(blockchain.user.email.address, to: user.email.address)
-                            state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
-                            state.set(blockchain.user.name.last, to: user.personalDetails.lastName)
-                            let tag: Tag
-                            if let tier = user.tiers?.current {
-                                switch tier {
-                                case .tier0:
-                                    tag = blockchain.user.account.tier.none[]
-                                case .tier1:
-                                    tag = blockchain.user.account.tier.silver[]
-                                case .tier2:
-                                    tag = blockchain.user.account.tier.gold[]
-                                }
-                            } else {
-                                tag = blockchain.user.account.tier.none[]
-                            }
-                            state.set(blockchain.user.account.tier, to: tag)
-                        }
+                        environment.app.signIn(userId: user.identifier)
                     }
                 case .logout:
                     return .fireAndForget {

@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
+import Combine
 import DIKit
 import MoneyKit
 import RxRelay
@@ -40,9 +42,12 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
     private let pairsService: SupportedPairsServiceAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
 
+    private var onTradingCurrency: AnyCancellable?
+
     // MARK: - Setup
 
     init(
+        app: AppProtocol = resolve(),
         pairsService: SupportedPairsServiceAPI = resolve(),
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()
     ) {
@@ -53,9 +58,10 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
             pairsRelay?.accept(nil)
         }
 
-        NotificationCenter.when(.tradingCurrencyChanged) { [weak pairsRelay] _ in
+        onTradingCurrency = app.on(blockchain.user.currency.preferred.fiat.trading.currency) { [weak pairsRelay] _ in
             pairsRelay?.accept(nil)
         }
+        .subscribe()
     }
 
     func fetch() -> Observable<SupportedPairs> {

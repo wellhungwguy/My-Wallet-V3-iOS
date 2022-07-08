@@ -98,11 +98,10 @@ public class App: AppProtocol {
 
 extension AppProtocol {
 
-    public func signIn(userId: String, transaction: ((Session.State) -> Void)? = nil) {
+    public func signIn(userId: String) {
         post(event: blockchain.session.event.will.sign.in)
         state.transaction { state in
             state.set(blockchain.user.id, to: userId)
-            transaction?(state)
         }
         post(event: blockchain.session.event.did.sign.in)
     }

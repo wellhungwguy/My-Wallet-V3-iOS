@@ -12,6 +12,7 @@ extension AnalyticsEvents.New {
         case walletReferralProgramClicked(origin: String)
         case notificationPreferencesUpdated(emailEnabled: Bool?, smsEnabled: Bool?)
         case settingsCurrencyClicked(currency: String)
+        case settingsTradingCurrencyClicked(currency: String)
         case settingsHyperlinkClicked(destination: Destination)
 
         enum Destination: String, StringRawRepresentable {

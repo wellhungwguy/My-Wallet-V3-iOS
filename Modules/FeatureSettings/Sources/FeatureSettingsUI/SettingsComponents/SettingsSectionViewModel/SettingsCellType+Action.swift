@@ -13,6 +13,8 @@ extension SettingsSectionType.CellType {
             switch type {
             case .currencyPreference:
                 return .showCurrencySelectionScreen
+            case .tradingCurrencyPreference:
+                return .showTradingCurrencySelectionScreen
             case .emailVerification:
                 return .showUpdateEmailScreen
             case .limits:

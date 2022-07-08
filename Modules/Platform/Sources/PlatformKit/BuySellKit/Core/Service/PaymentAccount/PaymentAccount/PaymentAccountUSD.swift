@@ -53,7 +53,6 @@ struct PaymentAccountUSDBIND: PaymentAccountDescribing, Equatable {
 
     var fields: [PaymentAccountProperty.Field] {
         [
-            .bankName(bankName),
             .field(
                 name: L10n.alias,
                 value: label,
@@ -67,10 +66,6 @@ struct PaymentAccountUSDBIND: PaymentAccountDescribing, Equatable {
             .field(
                 name: L10n.accountType,
                 value: accountType
-            ),
-            .field(
-                name: L10n.CUIT,
-                value: holderDocument
             ),
             .field(
                 name: L10n.CBU,
@@ -89,12 +84,10 @@ struct PaymentAccountUSDBIND: PaymentAccountDescribing, Equatable {
     let state: PaymentAccountProperty.State
     let currency: FiatCurrency = Self.currency
     let name: String
-    let bankName: String
     let code: String
     let recipientName: String
     let label: String
     let accountType: String
-    let holderDocument: String
     let address: String
 
     init?(response: PaymentAccount) {
@@ -102,16 +95,12 @@ struct PaymentAccountUSDBIND: PaymentAccountDescribing, Equatable {
         guard response.currency == My.currency else { return nil }
         guard
             let accountType: String = response.agent.accountType,
-            let bankName: String = response.agent.bankName,
             let code: String = response.agent.code,
-            let holderDocument: String = response.agent.holderDocument,
             let label: String = response.agent.label,
             let name: String = response.agent.name,
             let recipientName: String = response.agent.recipient
         else { return nil }
         self.accountType = accountType
-        self.bankName = bankName
-        self.holderDocument = holderDocument
         self.label = label
         self.name = name
         self.recipientName = recipientName

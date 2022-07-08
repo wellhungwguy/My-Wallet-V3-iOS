@@ -21,9 +21,9 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
     func test_can_provide_first_address_index_bitcoin() {
 
-        let mockMnemonicProvider: WalletMnemonicProvider = { () -> AnyPublisher<Mnemonic, Error> in
+        let mockMnemonicProvider: WalletMnemonicProvider = { () -> AnyPublisher<BitcoinChainKit.Mnemonic, Error> in
             .just(
-                Mnemonic(
+                BitcoinChainKit.Mnemonic(
                     words: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
                 )
             )

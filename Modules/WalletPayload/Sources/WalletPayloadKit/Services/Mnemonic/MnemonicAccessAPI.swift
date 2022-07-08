@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import Foundation
+import ToolKit
 
 public typealias Mnemonic = String
 
@@ -12,9 +13,7 @@ public enum MnemonicAccessError: Error {
     case couldNotRetrieveMnemonic(WalletError)
 }
 
-/// Users can double encrypt their wallet. If this is the case, sometimes users will
-/// need to enter in their secondary password before performing certain actions. This is
-/// **not** currency or asset specific
+/// Types adopting `MnemonicAccessAPI` should provide access to a mnemonic phrase.
 public protocol MnemonicAccessAPI {
 
     /// Returns a `AnyPublisher<Mnemonic, MnemonicAccessError>` emitting
@@ -30,9 +29,17 @@ public protocol MnemonicAccessAPI {
     var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> { get }
 }
 
-public final class MnemonicAccessService: MnemonicAccessAPI {
+// MARK: "Proxies"
 
-    public var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
+public protocol NativeMnemonicAccessAPI: MnemonicAccessAPI {}
+
+public protocol LegacyMnemonicAccessAPI: MnemonicAccessAPI {}
+
+// MARK: - Implementation
+
+final class MnemonicAccessService: NativeMnemonicAccessAPI {
+
+    var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         walletHolder.walletStatePublisher
             .flatMap { state -> AnyPublisher<NativeWallet, MnemonicAccessError> in
                 guard let wallet = state?.wallet else {
@@ -49,64 +56,19 @@ public final class MnemonicAccessService: MnemonicAccessAPI {
             .eraseToAnyPublisher()
     }
 
-    public var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
-        secondPasswordPrompter()
-            .flatMap { [walletHolder] secondPassword -> AnyPublisher<String, MnemonicAccessError> in
-                retrieveMnemonic(
-                    secondPassword: secondPassword,
-                    walletHolder: walletHolder
-                )
-            }
-            .eraseToAnyPublisher()
+    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
+        mnemonic
     }
 
     private let walletHolder: WalletHolderAPI
-    private let secondPasswordPrompter: () -> AnyPublisher<String?, MnemonicAccessError>
 
     init(
-        walletHolder: WalletHolderAPI,
-        secondPasswordPrompter: @escaping () -> AnyPublisher<String?, MnemonicAccessError>
+        walletHolder: WalletHolderAPI
     ) {
         self.walletHolder = walletHolder
-        self.secondPasswordPrompter = secondPasswordPrompter
     }
 
-    public convenience init(secondPasswordPrompter: @escaping () -> AnyPublisher<String?, MnemonicAccessError>) {
-        self.init(
-            walletHolder: DIKit.resolve(),
-            secondPasswordPrompter: secondPasswordPrompter
-        )
+    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
+        fatalError("iOS doesn't support second password")
     }
-
-    public func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
-        retrieveMnemonic(
-            secondPassword: secondPassword,
-            walletHolder: walletHolder
-        )
-    }
-}
-
-/// Retrieves a mnemonic from a given `Wallet`
-/// - Parameters:
-///   - secondPassword: An optional `String` value for a double encrypted wallet
-///   - walletHolder: A `WalletHolderAPI` object to retrieve the `Wallet` from
-/// - Returns: An `AnyPublisher<Mnemonic, MnemonicAccessError>` emitting a Mnemonic or failure
-private func retrieveMnemonic(
-    secondPassword: String?,
-    walletHolder: WalletHolderAPI
-) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
-    walletHolder.walletStatePublisher
-        .flatMap { state -> AnyPublisher<NativeWallet, MnemonicAccessError> in
-            guard let wallet = state?.wallet else {
-                return .failure(.generic)
-            }
-            return .just(wallet)
-        }
-        .flatMap { wallet -> AnyPublisher<Mnemonic, MnemonicAccessError> in
-            getMnemonic(from: wallet, secondPassword: secondPassword)
-                .publisher
-                .mapError(MnemonicAccessError.couldNotRetrieveMnemonic)
-                .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
 }

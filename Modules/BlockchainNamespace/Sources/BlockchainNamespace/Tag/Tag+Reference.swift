@@ -206,11 +206,11 @@ extension Tag.Reference {
 
     public struct Template {
 
-        private let tag: Tag
+        private let tagId: Tag.ID
         public private(set) var indices: [String] = []
 
         init(_ tag: Tag) {
-            self.tag = tag
+            tagId = tag.id
             var id = ""
             for crumb in tag.breadcrumb {
                 if crumb.name == crumb.id {
@@ -232,12 +232,12 @@ extension Tag.Reference {
             return try indices.map { id in
                 if let value = ids[id], value.isNotEmpty {
                     return value
-                } else if tag.id == id {
+                } else if tagId == id {
                     return "ø"
                 } else if let tag = app?.language[id], let value = try? app?.state.get(tag, as: String.self) {
                     return value
                 } else {
-                    throw tag.error(message: "Missing index \(id) for ref to \(tag.id)")
+                    throw blockchain.db.type.tag[].error(message: "Missing index \(id) for ref to \(tagId)")
                 }
             }
         }

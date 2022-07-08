@@ -50,15 +50,10 @@ final class GuidRepository: GuidRepositoryAPI {
     }
 
     func set(guid: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(guid: guid)
-                }
-                return walletRepo.set(keyPath: \.credentials.guid, value: guid)
-                    .get()
-                    .mapToVoid()
-            }
+        walletRepository.set(guid: guid)
+            .zip(
+                walletRepo.set(keyPath: \.credentials.guid, value: guid).get()
+            )
             .mapToVoid()
             .eraseToAnyPublisher()
     }

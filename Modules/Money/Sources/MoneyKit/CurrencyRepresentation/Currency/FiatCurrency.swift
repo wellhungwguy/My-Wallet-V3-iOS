@@ -966,6 +966,8 @@ extension FiatCurrency {
             return LocalizationConstants.Fiat.eur
         case .ARS:
             return LocalizationConstants.Fiat.ars
+        case .BRL:
+            return LocalizationConstants.Fiat.brl
         default:
             return currentLocale.localizedString(forCurrencyCode: code) ?? ""
         }

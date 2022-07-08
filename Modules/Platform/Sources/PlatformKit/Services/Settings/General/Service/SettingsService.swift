@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
@@ -33,33 +34,53 @@ final class SettingsService: SettingsServiceAPI {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let client: SettingsClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
     private let supportedPairsService: SupportedPairsServiceAPI
+    private let userService: NabuUserServiceAPI
 
     private let settingsRelay = BehaviorRelay<WalletSettings?>(value: nil)
     private let disposeBag = DisposeBag()
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
     private let semaphore = DispatchSemaphore(value: 1)
 
+    private var refresh: AnyCancellable?
+
     // MARK: - Setup
 
     init(
+        app: AppProtocol = resolve(),
         client: SettingsClientAPI = resolve(),
         credentialsRepository: CredentialsRepositoryAPI = resolve(),
-        supportedPairsService: SupportedPairsServiceAPI = resolve()
+        supportedPairsService: SupportedPairsServiceAPI = resolve(),
+        userService: NabuUserServiceAPI = resolve()
     ) {
+        self.app = app
         self.client = client
         self.credentialsRepository = credentialsRepository
         self.supportedPairsService = supportedPairsService
+        self.userService = userService
 
-        NotificationCenter.when(.login) { [weak self] _ in
+        tradingCurrencyPublisher = app.publisher(for: blockchain.user.currency.preferred.fiat.trading.currency)
+            .shareReplay()
+            .replaceError(with: .USD)
+
+        displayCurrencyPublisher = app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency)
+            .shareReplay()
+            .replaceError(with: Locale.current.currencyCode.flatMap(FiatCurrency.init(code:)) ?? .USD)
+
+        supportedFiatCurrencies = app.publisher(for: blockchain.user.currency.available)
+            .shareReplay()
+            .replaceError(with: [.USD, .GBP, .EUR, .ARS, .BRL])
+
+        refresh = app.on(
+            blockchain.session.event.did.sign.in,
+            blockchain.session.event.did.sign.out
+        ) { [weak self] _ in
             self?.settingsRelay.accept(nil)
         }
-
-        NotificationCenter.when(.logout) { [weak self] _ in
-            self?.settingsRelay.accept(nil)
-        }
+        .subscribe()
     }
 
     // MARK: - Public Methods
@@ -105,9 +126,19 @@ final class SettingsService: SettingsServiceAPI {
             }
             .map { WalletSettings(response: $0) }
             .do(onSuccess: { [weak self] settings in
+                self?.app.state.transaction { state in
+                    state.set(
+                        blockchain.user.currency.preferred.fiat.display.currency,
+                        to: settings.displayCurrency?.code
+                    )
+                }
                 self?.settingsRelay.accept(settings)
             })
     }
+
+    var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never>
+    var tradingCurrencyPublisher: AnyPublisher<FiatCurrency, Never>
+    var supportedFiatCurrencies: AnyPublisher<Set<FiatCurrency>, Never>
 }
 
 extension SettingsService {
@@ -163,45 +194,11 @@ extension SettingsService {
 
 extension SettingsService: FiatCurrencySettingsServiceAPI {
 
-    var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
-        valueObservable
-            .map { settings -> FiatCurrency in
-                guard let currency = settings.displayCurrency else {
-                    throw PlatformKitError.default
-                }
-                return currency
-            }
-            .distinctUntilChanged()
-            .asPublisher()
-            .replaceError(with: Locale.current.currencyCode.flatMap(FiatCurrency.init(code:)) ?? .USD)
-            .eraseToAnyPublisher()
-    }
-
-    var tradingCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
-        valueObservable
-            .distinctUntilChanged()
-            .asPublisher()
-            .flatMap { [displayCurrencyPublisher] settings -> AnyPublisher<FiatCurrency, Never> in
-                guard let currency = settings.tradingCurrency else {
-                    // fallback to the displayCurrency if a trading currency is not set
-                    return displayCurrencyPublisher
-                }
-                return .just(currency)
-            }
-            .replaceError(with: .USD)
-            .eraseToAnyPublisher()
-    }
-
-    var supportedFiatCurrencies: AnyPublisher<Set<FiatCurrency>, Never> {
-        supportedPairsService
-            .fetchSupportedTradingCurrencies()
-            .replaceError(with: [.USD, .GBP, .EUR, .ARS])
-            .eraseToAnyPublisher()
-    }
-
-    func update(displayCurrency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
-        let fetch = fetchPublisher(force: true)
-        return credentialsRepository.credentials
+    func update(
+        displayCurrency: FiatCurrency,
+        context: FlowContext
+    ) -> AnyPublisher<Void, CurrencyUpdateError> {
+        credentialsRepository.credentials
             .mapError(CurrencyUpdateError.credentialsError)
             .flatMap { [client] (guid: String, sharedKey: String) in
                 client.updatePublisher(
@@ -211,44 +208,32 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                     sharedKey: sharedKey
                 )
             }
+            .handleEvents(
+                receiveOutput: { [app] in
+                    app.post(
+                        value: displayCurrency.code,
+                        of: blockchain.user.currency.preferred.fiat.display.currency
+                    )
+                }
+            )
             .zip(
                 singleValuePublisher
                     .replaceError(with: CurrencyUpdateError.fetchError(SettingsServiceError.timedOut))
             )
-            .flatMap { _, settings -> AnyPublisher<Void, CurrencyUpdateError> in
-                fetch
-                    .mapToVoid()
-                    .mapError(CurrencyUpdateError.fetchError)
-                    .handleEvents(
-                        receiveSubscription: { _ in
-                            // when setting the currency succeeds, clear the trading currency
-                            // this way, the next time the trading currency is fetched, it will fallback to the new displayCurrency
-                            settings.clearTradingCurrency()
-                        }
-                    )
-                    .eraseToAnyPublisher()
-            }
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 
-    func update(tradingCurrency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
-        let fetch = fetchPublisher(force: true)
-        return valueSingle
-            .asPublisher()
-            .receive(on: DispatchQueue.main)
-            .map { settings -> Void in
-                settings.setTradingCurrency(to: tradingCurrency)
-            }
-            .mapError { error -> CurrencyUpdateError in
-                CurrencyUpdateError.fetchError(SettingsServiceError.fetchFailed(error))
-            }
-            .flatMap { _ -> AnyPublisher<Void, CurrencyUpdateError> in
-                fetch
-                    .mapToVoid()
-                    .mapError(CurrencyUpdateError.fetchError)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+    func update(
+        tradingCurrency: FiatCurrency,
+        context: FlowContext
+    ) -> AnyPublisher<Void, CurrencyUpdateError> {
+        .just(
+            app.post(
+                value: tradingCurrency.code,
+                of: blockchain.user.currency.preferred.fiat.trading.currency
+            )
+        )
     }
 }
 

@@ -32,6 +32,12 @@ final class FiatBalanceCollectionView: UICollectionView {
                     presenter.selected(currencyType: $0.currencyType)
                 })
                 .disposed(by: disposeBag)
+
+            presenter.presenters
+                .map(\.count)
+                .asObservable()
+                .subscribe(onNext: { [weak self] count in self?.isScrollEnabled = count > 1 })
+                .disposed(by: disposeBag)
         }
     }
 

@@ -479,12 +479,21 @@ extension LocalizationConstants.SimpleBuy {
                             "Funds will be credited to your ARS wallet as soon as we receive them. Funds are generally available within one business day.",
                             comment: "Funds will be credited to your ARS wallet as soon as we receive them. Funds are generally available within one business day."
                         )
+                        public static let BRL = NSLocalizedString(
+                            "Funds will be credited to your BRL wallet as soon as we receive them. Funds are generally available within one business day.",
+                            comment: "Funds will be credited to your BRL wallet as soon as we receive them. Funds are generally available within one business day."
+                        )
                     }
                 }
 
                 public static let recipientNameARS = NSLocalizedString(
                     "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",
-                    comment: "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
+                    comment: "ARS Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
+                )
+
+                public static let recipientNameBRL = NSLocalizedString(
+                    "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",
+                    comment: "BRL Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
                 )
 
                 public static let recipientNameUSD = NSLocalizedString(

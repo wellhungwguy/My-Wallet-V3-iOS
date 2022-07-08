@@ -11,8 +11,8 @@ public final class Language {
 
     public private(set) var root: Tag!
 
-    public let queue: DispatchQueue
-    private let key: DispatchSpecificKey<Void>
+    private let queue: DispatchQueue
+    private let key: DispatchSpecificKey<Language.Type>
 
     var _nodes: [Tag.ID: Tag] = [:]
     var nodes: [Tag.ID: Tag] {
@@ -26,9 +26,7 @@ public final class Language {
             label: "com.blockchain.namespace.language.queue.\(Language.id)",
             qos: .userInitiated
         )
-        let key = DispatchSpecificKey<Void>()
-        queue.setSpecific(key: key, value: ())
-        self.key = key
+        key = DispatchSpecificKey<Language.Type>(on: queue)
         root = Tag.add(parent: nil, node: graph.root, to: self)
         Self.unownedLanguageReferences.append(self)
     }
@@ -45,7 +43,7 @@ extension Language {
         return count
     }
 
-    private func sync<T>(execute work: () throws -> T) rethrows -> T {
+    func sync<T>(execute work: () throws -> T) rethrows -> T {
         DispatchQueue.getSpecific(key: key) == nil
             ? try queue.sync(execute: work)
             : try work()

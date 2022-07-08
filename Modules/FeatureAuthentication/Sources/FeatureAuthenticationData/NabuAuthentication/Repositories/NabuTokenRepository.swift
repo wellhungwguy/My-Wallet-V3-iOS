@@ -8,7 +8,7 @@ import ToolKit
 final class NabuTokenRepository: NabuTokenRepositoryAPI {
 
     var sessionTokenPublisher: AnyPublisher<NabuSessionToken?, Never> {
-        .just(sessionTokenData.value)
+        sessionTokenData.publisher
     }
 
     var sessionToken: String? {

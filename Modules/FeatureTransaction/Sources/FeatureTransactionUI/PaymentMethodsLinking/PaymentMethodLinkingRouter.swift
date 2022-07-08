@@ -154,7 +154,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
         switch currency {
-        case .USD, .ARS:
+        case .USD, .ARS, .BRL:
             routeToDirectBankLinkingFlow(from: viewController, completion: completion)
         case .GBP, .EUR:
             featureFlagsService

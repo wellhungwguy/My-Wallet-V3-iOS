@@ -94,7 +94,8 @@ public final class SettingsScreenPresenter {
 
         preferencesSectionPresenter = .init(
             emailNotificationService: interactor.emailNotificationsService,
-            preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor
+            preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor,
+            preferredTradingCurrencyBadgeInteractor: interactor.preferredTradingCurrencyBadgeInteractor
         )
 
         referralSectionPresenter = ReferralSectionPresenter(refferalAdapter: interactor.referralAdapter)

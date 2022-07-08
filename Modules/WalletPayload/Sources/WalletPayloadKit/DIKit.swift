@@ -22,7 +22,8 @@ extension DependencyContainer {
         factory { () -> ForgetWalletAPI in
             ForgetWallet(
                 walletRepo: DIKit.resolve(),
-                walletState: DIKit.resolve()
+                walletState: DIKit.resolve(),
+                walletPersistence: DIKit.resolve()
             )
         }
 
@@ -35,6 +36,7 @@ extension DependencyContainer {
                 payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
                 walletEncoder: DIKit.resolve(),
                 saveWalletRepository: DIKit.resolve(),
+                syncPubKeysAddressesProvider: DIKit.resolve(),
                 operationQueue: queue,
                 checksumProvider: checksumHex(data:)
             )
@@ -202,8 +204,22 @@ extension DependencyContainer {
             )
         }
 
+        single { () -> MnemonicAccessAPI in
+            MnemonicAccessProvider(
+                legacyProvider: DIKit.resolve(),
+                nativeProvider: DIKit.resolve(),
+                nativeWalletFeatureFlag: { nativeWalletFlagEnabled() }
+            )
+        }
+
         factory { () -> MnemonicVerificationStatusProvider in
             provideMnemonicVerificationStatus(
+                walletHolder: DIKit.resolve()
+            )
+        }
+
+        factory { () -> NativeMnemonicAccessAPI in
+            MnemonicAccessService(
                 walletHolder: DIKit.resolve()
             )
         }

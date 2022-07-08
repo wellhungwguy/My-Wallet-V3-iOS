@@ -150,8 +150,12 @@ public let passwordRequiredReducer = Reducer<
         return .none
     case .forgetWallet:
         environment.walletManager.forgetWallet()
-        environment.forgetWalletService.forget()
         return .merge(
+            environment.forgetWalletService
+                .forget()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
             environment
                 .pushNotificationsRepository
                 .revokeToken()
