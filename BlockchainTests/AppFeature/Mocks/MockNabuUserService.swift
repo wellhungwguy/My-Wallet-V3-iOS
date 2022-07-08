@@ -1,4 +1,5 @@
 import Combine
+import Errors
 import PlatformKit
 import ToolKit
 
@@ -8,7 +9,7 @@ final class MockNabuUserService: NabuUserServiceAPI {
         var user: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
         var fetchUser: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
         var setInitialResidentialInfo: AnyPublisher<Void, NabuUserServiceError> = .empty()
-        var setTradingCurrency: AnyPublisher<NabuUser, NabuUserServiceError> = .empty()
+        var setTradingCurrency: AnyPublisher<NabuUser, Nabu.Error> = .empty()
     }
 
     var stubbedResults = StubbedResults()
