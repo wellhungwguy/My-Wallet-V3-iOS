@@ -16,7 +16,6 @@ public struct BIND: Codable, Hashable {
     public let extraAttributes: Attributes
     public let isOwner: Bool
     public let label: String
-
 }
 
 extension BIND {

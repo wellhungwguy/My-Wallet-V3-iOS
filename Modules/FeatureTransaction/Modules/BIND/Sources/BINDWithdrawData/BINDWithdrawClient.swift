@@ -4,7 +4,7 @@ import Foundation
 import NetworkKit
 
 public typealias BINDWithdrawRepository = BINDWithdrawClient
-extension BINDWithdrawRepository: BINDWithdrawRepositoryProtocol { }
+extension BINDWithdrawRepository: BINDWithdrawRepositoryProtocol {}
 
 public final class BINDWithdrawClient {
 

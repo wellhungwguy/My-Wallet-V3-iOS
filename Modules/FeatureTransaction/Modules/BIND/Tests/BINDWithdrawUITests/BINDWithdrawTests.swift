@@ -1,6 +1,4 @@
-import XCTest
 @testable import FeatureBINDWithdrawUI
+import XCTest
 
-final class BINDWithdrawTests: XCTestCase {
-
-}
+final class BINDWithdrawTests: XCTestCase {}
