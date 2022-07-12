@@ -7,7 +7,7 @@ import MetadataHDWalletKit
 typealias DeriveSecondPasswordNode =
     (Credentials) -> Result<SecondPasswordNode, DeriveSecondPasswordNodeError>
 
-public enum DeriveSecondPasswordNodeError: Error {
+public enum DeriveSecondPasswordNodeError: Error, Equatable {
     case digestDataEncodingFailed
     case privateKeyInstantiationFailed
 }

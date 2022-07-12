@@ -67,7 +67,12 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             for: request,
             emptyPayloadHandler: { serverResponse in
                 guard serverResponse.response?.statusCode == 204 else {
-                    return .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
+                    return .failure(
+                        NetworkError(
+                            request: request.urlRequest,
+                            type: .payloadError(.emptyData, response: serverResponse.response)
+                        )
+                    )
                 }
                 return .success(nil)
             }
@@ -84,7 +89,12 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             for: request,
             emptyPayloadHandler: { serverResponse in
                 guard serverResponse.response?.statusCode == 204 else {
-                    return .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
+                    return .failure(
+                        NetworkError(
+                            request: request.urlRequest,
+                            type: .payloadError(.emptyData, response: serverResponse.response)
+                        )
+                    )
                 }
                 return .success(nil)
             }
@@ -107,8 +117,13 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         decode(
             response: response,
             for: request,
-            emptyPayloadHandler: { _ in
-                .failure(NetworkError(request: request.urlRequest, type: .payloadError(.emptyData)))
+            emptyPayloadHandler: { serverResponse in
+                .failure(
+                    NetworkError(
+                        request: request.urlRequest,
+                        type: .payloadError(.emptyData, response: serverResponse.response)
+                    )
+                )
             }
         )
     }
@@ -162,7 +177,10 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let message = String(data: payload, encoding: .utf8) ?? ""
             return .success(message as! ResponseType)
         }
-        return Result { try self.makeJSONDecoder().decode(ResponseType.self, from: payload) }
+        let decoder = makeJSONDecoder()
+        decoder.userInfo[.networkURLRequest] = request.urlRequest
+        decoder.userInfo[.networkHTTPResponse] = response.response
+        return Result { try decoder.decode(ResponseType.self, from: payload) }
             .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
@@ -180,7 +198,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 return .failure(
                     NetworkError(
                         request: request.urlRequest,
-                        type: .payloadError(.badData(rawPayload: rawPayload))
+                        type: .payloadError(.badData(rawPayload: rawPayload), response: response.response)
                     )
                 )
             }

@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import Localization
 import ToolKit
 import WalletCore
 
@@ -10,6 +11,19 @@ public enum EncryptAndVerifyError: LocalizedError, Equatable {
     case genericFailure
     case encryptionFailure
     case encodingError(WalletEncodingError)
+
+    public var errorDescription: String? {
+        switch self {
+        case .expectedEncodedPayload:
+            return LocalizationConstants.WalletPayloadKit.EncryptAndVerifyErrorConstants.expectedEncryptedPayload
+        case .genericFailure:
+            return LocalizationConstants.WalletPayloadKit.Error.unknown
+        case .encryptionFailure:
+            return LocalizationConstants.WalletPayloadKit.EncryptAndVerifyErrorConstants.encryptionFailure
+        case .encodingError(let walletEncodingError):
+            return walletEncodingError.errorDescription
+        }
+    }
 }
 
 /// Encrypts and verify the given wrapper with the provided password
@@ -25,7 +39,7 @@ func encryptAndVerifyWrapper(
         .mapError(EncryptAndVerifyError.encodingError)
         .flatMap { encodedPayload -> AnyPublisher<EncodedWalletPayload, EncryptAndVerifyError> in
             guard case .encoded(let payload) = encodedPayload.payloadContext else {
-                return .failure(.expectedEncodedPayload)
+                return .failure(.encodingError(.expectedEncryptedPayload))
             }
             guard let payloadValue = String(data: payload, encoding: .utf8) else {
                 return .failure(.genericFailure)

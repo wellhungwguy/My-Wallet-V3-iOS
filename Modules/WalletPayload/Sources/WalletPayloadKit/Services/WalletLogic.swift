@@ -144,7 +144,7 @@ final class WalletLogic: WalletLogicAPI {
             .first()
             .flatMap { walletState -> AnyPublisher<MetadataState, WalletError> in
                 guard let metadataState = walletState?.metadata else {
-                    return .failure(.initialization(.metadataInitialization))
+                    return .failure(.initialization(.missingWallet))
                 }
                 return .just(metadataState)
             }
@@ -186,7 +186,7 @@ final class WalletLogic: WalletLogicAPI {
         metadata.initializeAndRecoverCredentials(from: mnemonic)
             .subscribe(on: queue)
             .receive(on: queue)
-            .mapError { _ in WalletError.initialization(.metadataInitialization) }
+            .mapError { error in WalletError.initialization(.metadataInitializationRecovery(error)) }
             .flatMap { [holder] context -> AnyPublisher<RecoveryContext, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justMetadata(context.metadataState)))
                     .setFailureType(to: WalletError.self)
@@ -250,7 +250,7 @@ final class WalletLogic: WalletLogicAPI {
             .map { metadataState -> WalletState in
                 .loaded(wrapper: wrapper, metadata: metadataState)
             }
-            .replaceError(with: .initialization(.metadataInitialization))
+            .mapError { error in .initialization(.metadataInitialization(error)) }
             .eraseToAnyPublisher()
         }
         .flatMap { [holder] walletState
@@ -331,6 +331,6 @@ func provideMetadataInput(
 private func masterKeyFrom(seedHex: String) -> Result<MasterKey, WalletError> {
     MasterKey.from(seedHex: seedHex)
         .mapError { _ -> WalletError in
-            .initialization(.metadataInitialization)
+            .initialization(.unknown)
         }
 }

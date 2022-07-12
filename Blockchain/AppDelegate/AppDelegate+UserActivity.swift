@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Firebase
+import FirebaseCore
+import FirebaseDynamicLinks
 import UIKit
 
 extension AppDelegate {

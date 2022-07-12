@@ -19,7 +19,12 @@ final class WalletDecoder: WalletDecoderAPI {
         Result {
             try JSONDecoder().decode(WalletResponse.self, from: data)
         }
-        .mapError { WalletError.decryption(.decodeError($0)) }
+        .mapError { error in
+            guard let error = error as? DecodingError else {
+                return WalletError.decryption(.genericDecodeError)
+            }
+            return WalletError.decryption(.decodeError(error))
+        }
         .publisher
         .eraseToAnyPublisher()
     }

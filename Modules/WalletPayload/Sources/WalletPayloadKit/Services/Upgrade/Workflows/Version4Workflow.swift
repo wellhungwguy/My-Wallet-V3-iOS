@@ -58,6 +58,8 @@ final class Version4Workflow: WalletUpgradeWorkflow {
                     doubleEncrypted: wrapper.wallet.doubleEncrypted,
                     doublePasswordHash: wrapper.wallet.doublePasswordHash,
                     metadataHDNode: wrapper.wallet.metadataHDNode,
+                    txNotes: wrapper.wallet.txNotes,
+                    tagNames: wrapper.wallet.tagNames,
                     options: wrapper.wallet.options,
                     hdWallets: [hdWallet],
                     addresses: wrapper.wallet.addresses

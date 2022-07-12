@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import UIKit
 
 public enum ReferFriendModule {}
 
@@ -30,12 +31,17 @@ extension ReferFriendModule {
             case .onCopyTapped:
                 state.codeIsCopied = true
 
-                return Effect(value: .onCopyReturn)
-                    .delay(
-                        for: 2,
-                        scheduler: environment.mainQueue
-                    )
-                    .eraseToEffect()
+                return .merge(
+                    .fireAndForget { [referralCode = state.referralInfo.code] in
+                        UIPasteboard.general.string = referralCode
+                    },
+                    Effect(value: .onCopyReturn)
+                        .delay(
+                            for: 2,
+                            scheduler: environment.mainQueue
+                        )
+                        .eraseToEffect()
+                )
             }
         }
         .binding()

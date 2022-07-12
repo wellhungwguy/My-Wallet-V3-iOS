@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Nuke
 import SwiftUI
 
 public protocol OptionalDataInit {
@@ -18,14 +19,14 @@ public struct AsyncDataView<Success, Content>: View where Content: View {
     public init(
         url: URL?,
         transaction: Transaction = Transaction(),
-        session: URLSession = .shared,
+        pipeline: ImagePipeline = .shared,
         transform: @escaping (Data?) -> Success?,
         @ViewBuilder content: @escaping (AsyncPhase<Success>) -> Content
     ) {
         self.url = url
         self.transaction = transaction
         self.content = content
-        _loader = .init(wrappedValue: .init(session: session, transform: transform))
+        _loader = .init(wrappedValue: .init(pipeline: pipeline, transform: transform))
     }
 
     public var body: some View {
@@ -166,50 +167,45 @@ extension AsyncPhase {
 
 private class AsyncDataLoader<Success>: ObservableObject {
 
-    @Published private(set) var phase: AsyncPhase<Success> = .empty
+    @MainActor @Published private(set) var phase: AsyncPhase<Success> = .empty
 
-    private let session: URLSession
+    private let pipeline: ImagePipeline
     private let transform: (Data) -> Success?
-    private var cancellable: AnyCancellable?
+    private var task: Task<Void, Error>? {
+        didSet { oldValue?.cancel() }
+    }
 
     init(
-        session: URLSession = .shared,
+        pipeline: ImagePipeline = .shared,
         transform: @escaping (Data?) -> Success?
     ) {
-        self.session = session
+        self.pipeline = pipeline
         self.transform = transform
     }
 
     deinit { cancel() }
 
     func load(resource: URL?) {
-        switch resource {
-        case nil:
-            phase = .empty
-        case let url?:
-            cancellable = session.dataTaskPublisher(for: url)
-                .receive(on: DispatchQueue.main)
-                .sink(
-                    receiveCompletion: { [weak self] completion in
-                        switch completion {
-                        case .failure(let error):
-                            self?.phase = .failure(error)
-                        case .finished:
-                            break
-                        }
-                    },
-                    receiveValue: { [weak self] output in
-                        if let value = self?.transform(output.data) {
-                            self?.phase = .success(value)
-                        } else {
-                            self?.phase = .empty
-                        }
+        Task(priority: .userInitiated) { @MainActor in
+            switch resource {
+            case nil:
+                phase = .empty
+            case let url?:
+                do {
+                    let (data, _) = try await pipeline.data(for: url)
+                    if let value = transform(data) {
+                        phase = .success(value)
+                    } else {
+                        phase = .empty
                     }
-                )
+                } catch {
+                    phase = .failure(error)
+                }
+            }
         }
     }
 
     func cancel() {
-        cancellable?.cancel()
+        task?.cancel()
     }
 }

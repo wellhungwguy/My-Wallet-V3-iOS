@@ -4,7 +4,7 @@ import Foundation
 
 public struct Options: Equatable {
     public let pbkdf2Iterations: Int
-    public let feePerKB: Int
+    public let feePerKB: Int?
     public let html5Notifications: Bool
     public let logoutTime: Int
 
@@ -17,7 +17,7 @@ public struct Options: Equatable {
 
     public init(
         pbkdf2Iterations: Int,
-        feePerKB: Int,
+        feePerKB: Int?,
         html5Notifications: Bool,
         logoutTime: Int
     ) {

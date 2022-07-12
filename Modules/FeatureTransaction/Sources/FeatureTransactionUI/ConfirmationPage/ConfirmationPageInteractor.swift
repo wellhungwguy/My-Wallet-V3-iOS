@@ -44,7 +44,7 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             .asDriver(onErrorJustReturn: .empty)
 
         presenter.continueButtonTapped
-            .throttle(.milliseconds(400))
+            .throttle(.seconds(5), latest: false)
             .asObservable()
             .subscribe(onNext: { [transactionModel] in
                 transactionModel.process(action: .executeTransaction)

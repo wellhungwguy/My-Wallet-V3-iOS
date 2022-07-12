@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import MetadataKit
 import ToolKit
 
-// TODO: Add Localization
 public enum WalletError: LocalizedError, Equatable {
     case unknown
     case payloadNotFound
@@ -17,7 +17,7 @@ public enum WalletError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .payloadNotFound:
-            return "We could't find wallet data to decrypt"
+            return LocalizationConstants.WalletPayloadKit.Error.payloadNotFound
         case .decryption(let error):
             return error.errorDescription
         case .initialization(let error):
@@ -31,7 +31,7 @@ public enum WalletError: LocalizedError, Equatable {
         case .sync(let error):
             return error.errorDescription
         case .unknown:
-            return ""
+            return LocalizationConstants.WalletPayloadKit.Error.unknown
         }
     }
 
@@ -63,24 +63,33 @@ public enum WalletInitializationError: LocalizedError, Equatable {
     case unknown
     case missingWallet
     case missingSeedHex
-    case metadataInitialization
+    case metadataInitialization(MetadataInitialisationError)
+    case metadataInitializationRecovery(MetadataInitialisationAndRecoveryError)
     case needsSecondPassword
     case invalidSecondPassword
 
     public var errorDescription: String? {
         switch self {
         case .unknown:
-            return ""
+            return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.unknown
         case .missingWallet:
-            return "Initializating wallet failed due to missing data"
+            return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.missingWallet
         case .missingSeedHex:
-            return "Initializating wallet failed due to missing seedHex"
-        case .metadataInitialization:
-            return "Initializating wallet failed due to metadata error"
+            return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.missingSeedHex
+        case .metadataInitialization(let underlyingError):
+            return String(
+                format: LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.metadataInitialization,
+                underlyingError.localizedDescription
+            )
+        case .metadataInitializationRecovery(let underlyingError):
+            return String(
+                format: LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.metadataInitialization,
+                underlyingError.localizedDescription
+            )
         case .needsSecondPassword:
-            return "Wallet is double encrypted"
+            return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.needsSecondPassword
         case .invalidSecondPassword:
-            return "Second password is invalid"
+            return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.invalidSecondPassword
         }
     }
 }
@@ -94,11 +103,11 @@ public enum WalletRecoverError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .unknown:
-            return "Recovery failure"
+            return LocalizationConstants.WalletPayloadKit.WalletRecoverErrorConstants.unknown
         case .invalidMnemonic:
-            return "Recovery failed due to invalid mnemonic"
+            return LocalizationConstants.WalletPayloadKit.WalletRecoverErrorConstants.invalidMnemonic
         case .failedToRecoverWallet:
-            return "Failed to recover wallet"
+            return LocalizationConstants.WalletPayloadKit.WalletRecoverErrorConstants.failedToRecoverWallet
         case .unableToRecoverFromMetadata:
             // Intentionally nil
             // This error indicates that the wallet from a mnemonic was not previously created by Blockchain.com
@@ -110,7 +119,7 @@ public enum WalletRecoverError: LocalizedError, Equatable {
 
 public enum WalletDecryptionError: LocalizedError, Equatable {
     case decryptionError
-    case decodeError(Error)
+    case decodeError(DecodingError)
     case genericDecodeError
     case hdWalletCreation
 
@@ -119,7 +128,7 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
         case .decryptionError:
             return LocalizationConstants.WalletPayloadKit.Error.decryptionFailed
         case .decodeError(let error):
-            return error.localizedDescription
+            return error.formattedDescription
         case .genericDecodeError:
             return LocalizationConstants.WalletPayloadKit.Error.unknown
         case .hdWalletCreation:
@@ -146,6 +155,22 @@ public enum WalletEncodingError: LocalizedError, Equatable {
     case encodingError(EncodingError)
     case genericFailure
     case expectedEncryptedPayload
+
+    public var errorDescription: String? {
+        switch self {
+        case .encryptionFailure:
+            return LocalizationConstants.WalletPayloadKit.WalletEncodingErrorConstants.encryptionFailure
+        case .encodingError(let encodingError):
+            return String(
+                format: LocalizationConstants.WalletPayloadKit.WalletEncodingErrorConstants.encodingError,
+                encodingError.formattedDescription
+            )
+        case .genericFailure:
+            return LocalizationConstants.WalletPayloadKit.WalletEncodingErrorConstants.genericFailure
+        case .expectedEncryptedPayload:
+            return LocalizationConstants.WalletPayloadKit.WalletEncodingErrorConstants.expectedEncryptedPayload
+        }
+    }
 
     public static func == (lhs: WalletEncodingError, rhs: WalletEncodingError) -> Bool {
         switch (lhs, rhs) {

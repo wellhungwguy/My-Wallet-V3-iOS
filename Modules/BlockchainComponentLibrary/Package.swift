@@ -51,9 +51,9 @@ let package = Package(
             from: "3.3.0"
         ),
         .package(
-            name: "SwiftyGif",
-            url: "https://github.com/kirualex/SwiftyGif.git",
-            from: "5.4.3"
+            name: "NukeUI",
+            url: "https://github.com/kean/NukeUI.git",
+            from: "0.8.3"
         )
     ],
     targets: [
@@ -64,7 +64,7 @@ let package = Package(
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown"),
                 .product(name: "Lottie", package: "Lottie"),
-                .product(name: "SwiftyGif", package: "SwiftyGif")
+                .product(name: "NukeUI", package: "NukeUI")
             ],
             resources: [
                 .process("Resources/Fonts"),

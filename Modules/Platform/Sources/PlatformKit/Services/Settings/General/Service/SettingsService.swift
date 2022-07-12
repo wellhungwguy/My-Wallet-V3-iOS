@@ -72,7 +72,7 @@ final class SettingsService: SettingsServiceAPI {
 
         supportedFiatCurrencies = app.publisher(for: blockchain.user.currency.available)
             .shareReplay()
-            .replaceError(with: [.USD, .GBP, .EUR, .ARS, .BRL])
+            .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
 
         refresh = app.on(
             blockchain.session.event.did.sign.in,

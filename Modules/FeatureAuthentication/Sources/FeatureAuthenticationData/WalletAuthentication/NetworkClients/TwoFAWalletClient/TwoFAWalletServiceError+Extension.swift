@@ -30,7 +30,7 @@ extension TwoFAWalletServiceError: FromNetworkError {
 
     public static func from(_ networkError: NetworkError) -> TwoFAWalletServiceError {
         switch networkError.type {
-        case .payloadError(.badData(rawPayload: let payload)):
+        case .payloadError(.badData(rawPayload: let payload), _):
             guard let error = TwoFAWalletServiceError(plainServerError: payload) else {
                 return .networkError(networkError)
             }

@@ -336,8 +336,19 @@ public final class BlockchainSettings: NSObject {
         }
 
         /// - Warning: Calling This function will remove **ALL** settings in the application.
+        /// Resets secure keys from
         public func clear() {
-            UserDefaults.standard.removePersistentDomain(forName: MainBundleProvider.mainBundle.bundleIdentifier!)
+            let secureKeys: [UserDefaults.Keys] = [
+                .passwordPartHash,
+                .pinKey,
+                .encryptedPinPassword,
+                .legacyEncryptedPinPassword,
+                .secureChannelDeviceKey,
+                .secureChannelBrowserIdentities
+            ]
+            for key in secureKeys {
+                defaults.removeObject(forKey: key.rawValue)
+            }
             Logger.shared.info("Application settings have been cleared.")
         }
 

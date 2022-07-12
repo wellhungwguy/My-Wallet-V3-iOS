@@ -5,9 +5,9 @@ import WalletPayloadKit
 
 struct OptionsResponse: Equatable, Codable {
     let pbkdf2Iterations: Int
-    let feePerKB: Int
     let html5Notifications: Bool
     let logoutTime: Int
+    let feePerKB: Int?
 
     enum CodingKeys: String, CodingKey {
         case pbkdf2Iterations = "pbkdf2_iterations"
@@ -30,9 +30,9 @@ extension WalletPayloadKit.Options {
     var toOptionsReponse: OptionsResponse {
         OptionsResponse(
             pbkdf2Iterations: pbkdf2Iterations,
-            feePerKB: feePerKB,
             html5Notifications: html5Notifications,
-            logoutTime: logoutTime
+            logoutTime: logoutTime,
+            feePerKB: feePerKB
         )
     }
 }

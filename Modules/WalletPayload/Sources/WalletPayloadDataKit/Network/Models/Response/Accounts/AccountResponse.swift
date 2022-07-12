@@ -15,6 +15,27 @@ struct AccountResponse: Equatable, Codable {
         case defaultDerivation = "default_derivation"
         case derivations
     }
+
+    init(from decoder: Decoder) throws {
+        let keyed = try decoder.container(keyedBy: CodingKeys.self)
+        label = try keyed.decode(String.self, forKey: .label)
+        // some clients might not send the `archived` key/value, so we check this and default to `false`
+        archived = try keyed.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+        defaultDerivation = try keyed.decode(DerivationResponse.Format.self, forKey: .defaultDerivation)
+        derivations = try keyed.decode([DerivationResponse].self, forKey: .derivations)
+    }
+
+    init(
+        label: String,
+        archived: Bool,
+        defaultDerivation: DerivationResponse.Format,
+        derivations: [DerivationResponse]
+    ) {
+        self.label = label
+        self.archived = archived
+        self.defaultDerivation = defaultDerivation
+        self.derivations = derivations
+    }
 }
 
 extension WalletPayloadKit.Account {

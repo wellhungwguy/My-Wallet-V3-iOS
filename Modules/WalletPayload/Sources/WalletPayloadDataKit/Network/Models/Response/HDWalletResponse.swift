@@ -37,7 +37,7 @@ struct HDWalletResponse: Equatable, Codable {
 
         seedHex = try container.decode(String.self, forKey: .seedHex)
         passphrase = try container.decode(String.self, forKey: .passphrase)
-        mnemonicVerified = try container.decode(Bool.self, forKey: .mnemonicVerified)
+        mnemonicVerified = try container.decodeIfPresent(Bool.self, forKey: .mnemonicVerified) ?? false
         defaultAccountIndex = try container.decode(Int.self, forKey: .defaultAccountIndex)
 
         // attempt to decode version4 first and then version3, if both fail then an error will be thrown

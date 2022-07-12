@@ -18,6 +18,8 @@ class WalletUpgraderTests: XCTestCase {
         doubleEncrypted: false,
         doublePasswordHash: "",
         metadataHDNode: "",
+        txNotes: nil,
+        tagNames: nil,
         options: .default,
         hdWallets: [],
         addresses: []

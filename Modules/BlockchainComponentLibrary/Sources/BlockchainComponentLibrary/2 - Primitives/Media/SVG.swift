@@ -205,6 +205,8 @@ extension SVG: UIViewRepresentable {
         }
     }
 
+    public var view: View { View(self) }
+
     public func makeUIView(context: Context) -> View {
         View(self)
     }
@@ -234,6 +236,8 @@ extension SVG: NSViewRepresentable {
             svg.draw(in: context, size: rect.size)
         }
     }
+
+    public var view: View { View(self) }
 
     public func makeNSView(context: Context) -> some NSView {
         View(self)

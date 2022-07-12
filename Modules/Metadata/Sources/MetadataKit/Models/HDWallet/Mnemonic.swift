@@ -4,7 +4,7 @@ import Foundation
 import MetadataHDWalletKit
 import ToolKit
 
-public enum MnemonicError: Error {
+public enum MnemonicError: Error, Equatable {
     case invalidLength
     case invalidWords
 }

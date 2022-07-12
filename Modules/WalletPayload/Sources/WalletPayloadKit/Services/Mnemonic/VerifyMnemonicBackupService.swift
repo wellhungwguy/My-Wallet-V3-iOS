@@ -76,6 +76,8 @@ private func markMnemonicVerified(
             doubleEncrypted: currentWallet.doubleEncrypted,
             doublePasswordHash: currentWallet.doublePasswordHash,
             metadataHDNode: currentWallet.metadataHDNode,
+            txNotes: currentWallet.txNotes,
+            tagNames: currentWallet.tagNames,
             options: currentWallet.options,
             hdWallets: [updatedHDWallet],
             addresses: currentWallet.addresses

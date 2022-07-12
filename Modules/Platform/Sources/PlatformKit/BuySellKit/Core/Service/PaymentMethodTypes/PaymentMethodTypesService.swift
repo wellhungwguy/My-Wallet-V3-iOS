@@ -522,7 +522,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     case .crypto:
                         return true
                     case .fiat(let fiatCurrency):
-                        return [.USD, .GBP, .EUR, .ARS, .BRL].contains(fiatCurrency)
+                        return MoneyKit.allEnabledFiatCurrencies.contains(fiatCurrency)
                     }
                 }
             }

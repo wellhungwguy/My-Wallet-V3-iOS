@@ -17,16 +17,6 @@ protocol WalletSyncAPI {
     ) -> AnyPublisher<EmptyValue, WalletSyncError>
 }
 
-public enum WalletSyncError: LocalizedError, Equatable {
-    case unknown
-    case notInitialized
-    case failureSyncingWallet
-    case syncPubKeysFailure(SyncPubKeysAddressesProviderError)
-    case encodingError(WalletEncodingError)
-    case verificationFailure(EncryptAndVerifyError)
-    case networkFailure(NetworkError)
-}
-
 /// Responsible for syncing the latest changes of `Wallet` to backend
 final class WalletSync: WalletSyncAPI {
 

@@ -232,9 +232,10 @@ final class KYCClient: KYCClientAPI {
     }
 
     func setTradingCurrency(_ currency: String) -> AnyPublisher<Void, Nabu.Error> {
+        struct Payload: Codable { let fiatTradingCurrency: String }
         let request = requestBuilder.put(
-            path: "/users/current/currency",
-            body: try? ["fiatTradingCurrency": currency].json(),
+            path: ["users", "current", "currency"],
+            body: try? Payload(fiatTradingCurrency: currency).encode(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

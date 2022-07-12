@@ -57,24 +57,18 @@ public final class ReferralAppObserver: Session.Observer {
     private lazy var featureFlagPublisher = featureFlagService
         .isEnabled(.referral)
 
-    lazy var walletCreated = app.on(blockchain.user.wallet.created) { [weak self] _ in
-        guard let self = self else { return }
-        Publishers
-            .CombineLatest(
-                self.featureFlagPublisher,
-                self.referralCodePublisher
-            )
-            .map { isEnabled, referralCode in
-                guard isEnabled else { return }
-                _ = self.referralService.createReferral(with: referralCode)
-            }
-            .sink(receiveValue: { _ in })
-            .store(in: &self.cancellables)
+    lazy var walletCreated = app.on(blockchain.user.wallet.created) { [unowned self] _ in
+        featureFlagPublisher
+            .zip(referralCodePublisher)
+            .filter(\.0)
+            .map(\.1)
+            .flatMap(referralService.createReferral(with:))
+            .subscribe()
+            .store(in: &cancellables)
     }
 
-    lazy var signIn = app.on(blockchain.session.event.did.sign.in) { [weak self] _ in
-        guard let self = self else { return }
-        self.fetchReferralCampaign()
+    lazy var signIn = app.on(blockchain.session.event.did.sign.in) { [unowned self] _ in
+        fetchReferralCampaign()
     }
 
     private func fetchReferralCampaign() {

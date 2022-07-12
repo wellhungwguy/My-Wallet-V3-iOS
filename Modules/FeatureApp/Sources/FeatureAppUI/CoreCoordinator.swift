@@ -788,10 +788,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 .catchToEffect()
                 .fireAndForget()
         )
-
     case .onboarding(.welcomeScreen(.informWalletFetched(let context))):
         return Effect(value: .wallet(.walletFetched(.success(context))))
-
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):
         // reset

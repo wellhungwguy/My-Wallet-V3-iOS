@@ -9,7 +9,7 @@ public struct NetworkError: Error {
         case urlError(URLError)
         case serverError(HTTPRequestServerError)
         case rawServerError(ServerErrorResponse)
-        case payloadError(HTTPRequestPayloadError)
+        case payloadError(HTTPRequestPayloadError, response: HTTPURLResponse? = nil)
         case authentication(Error)
     }
 
@@ -56,8 +56,10 @@ extension NetworkError: CustomStringConvertible {
 
     public var response: HTTPURLResponse? {
         switch type {
-        case .authentication, .payloadError, .serverError, .urlError:
+        case .authentication, .serverError, .urlError:
             return nil
+        case .payloadError(_, let o):
+            return o
         case .rawServerError(let error):
             return error.response
         }
@@ -65,8 +67,10 @@ extension NetworkError: CustomStringConvertible {
 
     public var code: Int? {
         switch type {
-        case .authentication, .payloadError, .serverError:
+        case .authentication, .serverError:
             return nil
+        case .payloadError(_, let response):
+            return response?.statusCode
         case .urlError(let error):
             return error.errorCode
         case .rawServerError(let error):
@@ -78,7 +82,7 @@ extension NetworkError: CustomStringConvertible {
         switch type {
         case .authentication(let error), .urlError(let error as Error):
             return error.localizedDescription
-        case .payloadError(let error as Error), .serverError(let error as Error):
+        case .payloadError(let error as Error, _), .serverError(let error as Error):
             return String(describing: error)
         case .rawServerError(let error):
             do {

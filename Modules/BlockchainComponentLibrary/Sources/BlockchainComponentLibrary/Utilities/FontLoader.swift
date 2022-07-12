@@ -2,12 +2,16 @@
 
 import CoreText
 import Foundation
+import Lottie
+import Nuke
+import NukeUI
 
 func loadCustomFonts() {
     DispatchQueue.once {
         Typography.FontResource.allCases
             .map(\.rawValue)
             .forEach { registerFont(fileName: $0) }
+        registerImageFormats()
     }
 }
 
@@ -21,5 +25,42 @@ func registerFont(fileName: String, bundle: Bundle = Bundle.componentLibrary) {
     CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
     if error == nil {
         print("Successfully registered font: \(fileName)")
+    }
+}
+
+extension AssetType {
+    public static let svg: AssetType = "public.svg"
+    public static let lottie: AssetType = "public.lottie"
+}
+
+func registerImageFormats() {
+
+    ImageDecoderRegistry.shared.register { context in
+        guard let uniformTypeIdentifier = context.urlResponse?.url?.uniformTypeIdentifier else { return nil }
+        if uniformTypeIdentifier.conforms(to: .svg) {
+            return ImageDecoders.Empty(assetType: .svg, isProgressive: false)
+        } else if uniformTypeIdentifier.conforms(to: .json) {
+            return ImageDecoders.Empty(assetType: .lottie, isProgressive: false)
+        } else {
+            return nil
+        }
+    }
+
+    ImageView.registerContentView { container in
+        container.type == .svg ? SVG(container.data)?.view : nil
+    }
+
+    ImageView.registerContentView { container in
+        guard container.type == .lottie, let json = container.data else { return nil }
+        do {
+            let view = try AnimationView(
+                animation: JSONDecoder().decode(Animation.self, from: json)
+            )
+            view.loopMode = .loop
+            view.play()
+            return view
+        } catch {
+            return nil
+        }
     }
 }

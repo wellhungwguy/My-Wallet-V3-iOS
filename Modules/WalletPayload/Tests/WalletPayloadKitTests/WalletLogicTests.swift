@@ -177,7 +177,7 @@ class WalletLogicTests: XCTestCase {
 
         metadataService.initializeValue = .just(MetadataState.mock)
 
-        walletSyncMock.syncResult = .failure(.failureSyncingWallet)
+        walletSyncMock.syncResult = .failure(.unknown)
 
         let expectation = expectation(description: "wallet-fetching-expectation")
 

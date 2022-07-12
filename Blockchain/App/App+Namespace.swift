@@ -8,8 +8,10 @@ import FeatureCoinUI
 import FeatureCustomerSupportUI
 import FeatureReferralDomain
 import FeatureReferralUI
-import Firebase
+import FirebaseCore
+import FirebaseInstallations
 import FirebaseProtocol
+import FirebaseRemoteConfig
 import FraudIntelligence
 import ObservabilityKit
 import ToolKit

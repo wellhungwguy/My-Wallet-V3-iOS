@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum MetadataInitialisationAndRecoveryError: Error {
+public enum MetadataInitialisationAndRecoveryError: Error, Equatable {
     case failedToDeriveSecondPasswordNode(DeriveSecondPasswordNodeError)
     case failedToDeriveRemoteMetadataNode(MetadataDerivationError)
     case failedToDeriveMasterKey(MasterKeyError)

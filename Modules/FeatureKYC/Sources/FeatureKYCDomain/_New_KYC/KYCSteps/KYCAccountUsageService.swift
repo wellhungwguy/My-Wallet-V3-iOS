@@ -21,6 +21,17 @@ final class KYCAccountUsageService: KYCAccountUsageServiceAPI {
 
     func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
         apiClient.fetchAccountUsageForm()
+            .catch { error -> AnyPublisher<[FormQuestion], Nabu.Error> in
+                if error.code.rawValue == 204 {
+                    return Just([])
+                        .setFailureType(to: Nabu.Error.self)
+                        .eraseToAnyPublisher()
+                } else {
+                    return Fail(outputType: [FormQuestion].self, failure: error)
+                        .eraseToAnyPublisher()
+                }
+            }
+            .eraseToAnyPublisher()
     }
 
     func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {

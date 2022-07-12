@@ -36,6 +36,7 @@ public struct ReferFriendView: View {
             }
             shareButton
         }
+        .ignoresSafeArea(.all, edges: .bottom)
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationBarStyle()
         .trailingNavigationButton(.close) {
@@ -94,19 +95,21 @@ extension ReferFriendView {
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
 
-            VStack(alignment: .center, spacing: 10, content: {
+            VStack(alignment: .center, spacing: Spacing.padding2, content: {
                 Text(viewStore.referralInfo.code)
                     .typography(.title2)
                     .fontWeight(.medium)
                     .kerning(15)
+                    .padding(.top, Spacing.padding3)
                 Button(viewStore.state.codeIsCopied ?
                     LocalizedStrings.copiedLabel :
                     LocalizedStrings.copyLabel) {
                         viewStore.send(.onCopyTapped)
                     }
+                    .typography(.paragraph2)
+                    .padding(.bottom, Spacing.padding3)
                     .foregroundColor(Color.WalletSemantic.primary)
             })
-            .frame(height: 120)
             .frame(maxWidth: .infinity)
             .background(Color("color_code_background", bundle: .module))
         })
@@ -125,7 +128,7 @@ extension ReferFriendView {
                         HStack {
                             numberView(with: index + 1)
                             Text(steps[index].text)
-                                .typography(.caption1)
+                                .typography(.paragraph1)
                                 .foregroundColor(Color.textTitle)
                         }
                     }
@@ -141,7 +144,7 @@ extension ReferFriendView {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Spacing.padding3)
-        .padding(.bottom, Spacing.padding5)
+        .padding(.bottom, Spacing.padding4)
     }
 
     @ViewBuilder func numberView(with number: Int) -> some View {

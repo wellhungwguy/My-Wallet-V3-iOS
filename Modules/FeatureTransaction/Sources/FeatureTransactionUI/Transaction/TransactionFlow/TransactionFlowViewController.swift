@@ -58,6 +58,7 @@ final class TransactionFlowViewController: UINavigationController,
     }
 
     func present(viewController: ViewControllable?, animated: Bool) {
+        activityIndicator.isHidden = viewController != nil
         guard let viewController = viewController else {
             return
         }
@@ -71,6 +72,7 @@ final class TransactionFlowViewController: UINavigationController,
     }
 
     func push(viewController: ViewControllable?) {
+        activityIndicator.isHidden = viewController != nil
         guard let viewController = viewController else {
             return
         }

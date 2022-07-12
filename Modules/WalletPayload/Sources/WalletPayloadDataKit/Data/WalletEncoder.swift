@@ -47,7 +47,7 @@ final class WalletEncoder: WalletEncodingAPI {
                 )
             }
             .publisher
-            .mapError { _ in .genericFailure }
+            .mapError(WalletEncodingError.encodingError)
             .eraseToAnyPublisher()
     }
 }

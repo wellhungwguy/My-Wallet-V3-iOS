@@ -21,7 +21,7 @@ func provideWalletCoreHDWallet(
         walletHolder.walletStatePublisher
             .flatMap { state -> AnyPublisher<WalletCore.HDWallet, WalletError> in
                 guard let wallet = state?.wallet else {
-                    return .failure(.initialization(.unknown))
+                    return .failure(.initialization(.missingWallet))
                 }
                 return getSeedHex(from: wallet)
                     .map(Data.init(hex:))

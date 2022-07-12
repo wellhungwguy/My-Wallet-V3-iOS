@@ -4,7 +4,7 @@ import Combine
 import DIKit
 import Foundation
 
-public enum SyncPubKeysAddressesProviderError: Error {
+public enum SyncPubKeysAddressesProviderError: Error, Equatable {
     case failureProvidingAddresses
 }
 

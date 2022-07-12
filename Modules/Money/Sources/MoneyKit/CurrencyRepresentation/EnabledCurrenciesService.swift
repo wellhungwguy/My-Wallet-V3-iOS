@@ -11,11 +11,13 @@ public protocol EnabledCurrenciesServiceAPI {
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] { get }
 }
 
+public let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP, .ARS]
+
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     // MARK: EnabledCurrenciesServiceAPI
 
-    let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP, .ARS, .BRL]
+    let allEnabledFiatCurrencies: [FiatCurrency] = MoneyKit.allEnabledFiatCurrencies
 
     let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD, .ARS, .BRL]
 
