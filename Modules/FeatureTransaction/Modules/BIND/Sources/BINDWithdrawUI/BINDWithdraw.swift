@@ -31,6 +31,11 @@ public struct BINDWithdrawView: View {
                     Text(error.title)
                         .typography(.caption1)
                         .foregroundColor(.semantic.error)
+                    if error.message.isNotEmpty {
+                        Text(error.message)
+                            .typography(.caption2)
+                            .foregroundColor(.semantic.error)
+                    }
                 }
             }
             .padding([.leading, .trailing])

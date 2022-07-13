@@ -450,7 +450,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                         transactionModel.process(action: .bankAccountLinked(state.action))
                     }
                     .primaryNavigation(
-                        title: "BIND",
+                        title: Localization.withdraw,
                         trailing: {
                             IconButton(
                                 icon: .closeCirclev2,
