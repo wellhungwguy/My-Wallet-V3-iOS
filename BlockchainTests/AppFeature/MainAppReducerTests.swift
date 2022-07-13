@@ -3,12 +3,13 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import DelegatedSelfCustodyDomain
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import ObservabilityKit
-import PlatformKit
+@testable import PlatformKit
 import PlatformUIKit
 import RxSwift
 import WalletPayloadKit
@@ -21,41 +22,41 @@ import XCTest
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
+// swiftlint:disable all
 final class MainAppReducerTests: XCTestCase {
 
-    var mockNabuUserService: MockNabuUserService!
-    var mockWalletManager: WalletManager!
-    var mockMobileAuthSyncService: MockMobileAuthSyncService!
-    var mockResetPasswordService: MockResetPasswordService!
     var mockAccountRecoveryService: MockAccountRecoveryService!
-    var mockDeviceVerificationService: MockDeviceVerificationService!
-    var mockExternalAppOpener: MockExternalAppOpener!
-    var mockWallet: MockWallet! = MockWallet()
-    var mockReactiveWallet = MockReactiveWallet()
-    var mockSettingsApp: MockBlockchainSettingsApp!
-    var mockCredentialsStore: CredentialsStoreAPIMock!
     var mockAlertPresenter: MockAlertViewPresenter!
-    var mockWalletUpgradeService: MockWalletUpgradeService!
-    var mockExchangeAccountRepository: MockExchangeAccountRepository!
-    var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
-    var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
-    var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
-    var mockSiftService: MockSiftService!
-    var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    var mockAppStoreOpener: MockAppStoreOpener!
+    var mockCoincore: MockCoincore!
+    var mockCredentialsStore: CredentialsStoreAPIMock!
     var mockDeepLinkHandler: MockDeepLinkHandler!
     var mockDeepLinkRouter: MockDeepLinkRouter!
+    var mockDelegatedCustodySubscriptionsService: DelegatedCustodySubscriptionsServiceMock!
+    var mockDeviceVerificationService: MockDeviceVerificationService!
+    var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
+    var mockExchangeAccountRepository: MockExchangeAccountRepository!
+    var mockExternalAppOpener: MockExternalAppOpener!
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
-    var mockAppStoreOpener: MockAppStoreOpener!
-    var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
-
-    var mockWalletService: WalletService!
-    var mockWalletPayloadService: MockWalletPayloadService!
     var mockForgetWalletService: ForgetWalletService!
+    var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    var mockMobileAuthSyncService: MockMobileAuthSyncService!
+    var mockNabuUser: NabuUser!
+    var mockNabuUserService: MockNabuUserService!
+    var mockReactiveWallet = MockReactiveWallet()
+    var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
+    var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
+    var mockResetPasswordService: MockResetPasswordService!
+    var mockSettingsApp: MockBlockchainSettingsApp!
+    var mockSiftService: MockSiftService!
+    var mockWallet: MockWallet! = MockWallet()
+    var mockWalletManager: WalletManager!
+    var mockWalletPayloadService: MockWalletPayloadService!
+    var mockWalletService: FeatureAppDomain.WalletService!
     var mockWalletStateProvider: WalletStateProvider!
+    var mockWalletUpgradeService: MockWalletUpgradeService!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -104,7 +105,7 @@ final class MainAppReducerTests: XCTestCase {
         mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockAppStoreOpener = MockAppStoreOpener()
         mockERC20CryptoAssetService = ERC20CryptoAssetServiceMock()
-
+        mockDelegatedCustodySubscriptionsService = DelegatedCustodySubscriptionsServiceMock()
         mockWalletService = WalletService(
             fetch: { _ in .empty() },
             fetchUsingSecPassword: { _, _ in .empty() },
@@ -119,47 +120,72 @@ final class MainAppReducerTests: XCTestCase {
 
         mockPerformanceTracing = PerformanceTracing.mock
 
+        mockNabuUser = NabuUser(
+            identifier: "1234567890",
+            personalDetails: .init(id: nil, first: nil, last: nil, birthday: nil),
+            address: nil,
+            email: Email(address: "test", verified: true),
+            mobile: nil,
+            status: KYC.AccountStatus.none,
+            state: NabuUser.UserState.none,
+            currencies: Currencies(
+                preferredFiatTradingCurrency: .USD,
+                usableFiatCurrencies: [.USD],
+                defaultWalletCurrency: .USD,
+                userFiatCurrencies: [.USD]
+            ),
+            tags: Tags(blockstack: nil),
+            tiers: nil,
+            needsDocumentResubmission: nil,
+            productsUsed: NabuUser.ProductsUsed(exchange: false),
+            settings: NabuUserSettings(mercuryEmailVerified: false)
+        )
+        mockNabuUserService.stubbedResults.user = .just(mockNabuUser)
+        mockNabuUserService.stubbedResults.fetchUser = .just(mockNabuUser)
+        mockNabuUserService.stubbedResults.setInitialResidentialInfo = .just(())
+        mockNabuUserService.stubbedResults.setTradingCurrency = .just(())
+
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
+                accountRecoveryService: mockAccountRecoveryService,
+                alertPresenter: mockAlertPresenter,
+                analyticsRecorder: mockAnalyticsRecorder,
                 app: App.test,
-                nabuUserService: mockNabuUserService,
-                loadingViewPresenter: LoadingViewPresenter(),
-                externalAppOpener: mockExternalAppOpener,
+                appStoreOpener: mockAppStoreOpener,
+                appUpgradeState: { .just(nil) },
+                blockchainSettings: mockSettingsApp,
+                buildVersionProvider: { "" },
+                coincore: mockCoincore,
+                credentialsStore: mockCredentialsStore,
                 deeplinkHandler: mockDeepLinkHandler,
                 deeplinkRouter: mockDeepLinkRouter,
-                walletManager: mockWalletManager,
-                mobileAuthSyncService: mockMobileAuthSyncService,
-                pushNotificationsRepository: MockPushNotificationsRepository(),
-                resetPasswordService: mockResetPasswordService,
-                accountRecoveryService: mockAccountRecoveryService,
-                userService: MockNabuUserService(),
+                delegatedCustodySubscriptionsService: mockDelegatedCustodySubscriptionsService,
                 deviceVerificationService: mockDeviceVerificationService,
+                erc20CryptoAssetService: mockERC20CryptoAssetService,
+                exchangeRepository: mockExchangeAccountRepository,
+                externalAppOpener: mockExternalAppOpener,
                 featureFlagsService: mockFeatureFlagsService,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
-                blockchainSettings: mockSettingsApp,
-                credentialsStore: mockCredentialsStore,
-                alertPresenter: mockAlertPresenter,
-                walletUpgradeService: mockWalletUpgradeService,
-                exchangeRepository: mockExchangeAccountRepository,
-                remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
-                coincore: mockCoincore,
-                erc20CryptoAssetService: mockERC20CryptoAssetService,
-                sharedContainer: SharedContainerUserDefaults(),
-                analyticsRecorder: mockAnalyticsRecorder,
-                siftService: mockSiftService,
+                forgetWalletService: mockForgetWalletService,
+                loadingViewPresenter: LoadingViewPresenter(),
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
-                appStoreOpener: mockAppStoreOpener,
+                mobileAuthSyncService: mockMobileAuthSyncService,
+                nabuUserService: mockNabuUserService,
+                nativeWalletFlagEnabled: { .just(false) },
+                performanceTracing: mockPerformanceTracing,
+                pushNotificationsRepository: MockPushNotificationsRepository(),
+                remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
+                resetPasswordService: mockResetPasswordService,
+                secondPasswordPrompter: SecondPasswordPromptableMock(),
+                sharedContainer: SharedContainerUserDefaults(),
+                siftService: mockSiftService,
+                walletManager: mockWalletManager,
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
-                forgetWalletService: mockForgetWalletService,
-                secondPasswordPrompter: SecondPasswordPromptableMock(),
-                nativeWalletFlagEnabled: { .just(false) },
-                buildVersionProvider: { "" },
-                performanceTracing: mockPerformanceTracing,
-                appUpgradeState: { .just(nil) },
-                walletStateProvider: mockWalletStateProvider
+                walletStateProvider: mockWalletStateProvider,
+                walletUpgradeService: mockWalletUpgradeService
             )
         )
     }
@@ -441,6 +467,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.onboarding = nil
             state.loggedIn = .init()
@@ -530,6 +557,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.walletUpgrade(.completed)))
         mockMainQueue.advance()
         testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
@@ -547,6 +575,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
@@ -569,6 +598,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
@@ -736,5 +766,11 @@ final class ERC20CryptoAssetServiceMock: ERC20CryptoAssetServiceAPI {
     func initialize() -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
         initializeCalled = true
         return .just(())
+    }
+}
+
+final class DelegatedCustodySubscriptionsServiceMock: DelegatedCustodySubscriptionsServiceAPI {
+    func subscribe() -> AnyPublisher<Void, Error> {
+        .just(())
     }
 }

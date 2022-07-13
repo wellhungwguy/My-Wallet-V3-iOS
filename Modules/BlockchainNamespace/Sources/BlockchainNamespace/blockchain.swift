@@ -94,6 +94,7 @@ public extension I_blockchain_app_configuration {
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
 	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
+	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
@@ -374,6 +375,24 @@ public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_pubkey: L, I_blockchain_app_configuration_pubkey {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey", comment: "") }
+}
+public protocol I_blockchain_app_configuration_pubkey: I {}
+public extension I_blockchain_app_configuration_pubkey {
+	var `service`: L_blockchain_app_configuration_pubkey_service { .init("\(__).service") }
+}
+public final class L_blockchain_app_configuration_pubkey_service: L, I_blockchain_app_configuration_pubkey_service {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey.service", comment: "") }
+}
+public protocol I_blockchain_app_configuration_pubkey_service: I {}
+public extension I_blockchain_app_configuration_pubkey_service {
+	var `auth`: L_blockchain_app_configuration_pubkey_service_auth { .init("\(__).auth") }
+}
+public final class L_blockchain_app_configuration_pubkey_service_auth: L, I_blockchain_app_configuration_pubkey_service_auth {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey.service.auth", comment: "") }
+}
+public protocol I_blockchain_app_configuration_pubkey_service_auth: I_blockchain_db_type_array_of_strings, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_app_configuration_redesign: L, I_blockchain_app_configuration_redesign {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign", comment: "") }
 }

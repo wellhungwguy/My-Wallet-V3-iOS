@@ -4,6 +4,7 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import DelegatedSelfCustodyData
 @_exported import DIKit
 import ERC20DataKit
 import EthereumDataKit
@@ -146,7 +147,8 @@ func defineDependencies() {
         DependencyContainer.featureCardIssuingUI
         DependencyContainer.featureCardPaymentUI
         DependencyContainer.featureCardPaymentData
-        DependencyContainer.delegatedSelfCustodyDataKit
+        DependencyContainer.delegatedSelfCustodyData
+        DependencyContainer.blockchainDelegatedSelfCustody
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

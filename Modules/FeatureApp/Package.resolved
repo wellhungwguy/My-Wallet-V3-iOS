@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
       "state" : {
-        "revision" : "917efddacf253a09c17921d268c0aa817a5011d5",
-        "version" : "1.1.1"
+        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
+        "version" : "1.2.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
       "state" : {
-        "revision" : "4cf088c29a20f52be0f2ca54992b492c54e0076b",
-        "version" : "0.5.3"
+        "revision" : "0ba3a562716efabb585ccb169450c5389107286b",
+        "version" : "0.6.0"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
-        "revision" : "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
-        "version" : "1.4.2"
+        "revision" : "12f2389aca4a07e0dd54c86ec23d0721ed88b8db",
+        "version" : "1.4.3"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/embrace-io/embrace-spm",
       "state" : {
-        "revision" : "f4ffbad1745ada5f379391e7080052036429f05a",
-        "version" : "5.8.1"
+        "revision" : "d7508718cabff9925a03b0ed3cd1916a56d18da1",
+        "version" : "5.9.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/checkout/frames-ios.git",
       "state" : {
-        "revision" : "021a6f500744f975306b73595bc4409f4a5b1a61",
-        "version" : "3.5.2"
+        "revision" : "659b4c58b0987fc68d197e21dcb0ec90e55a4fc0",
+        "version" : "3.5.3"
       }
     },
     {
@@ -90,6 +90,15 @@
       }
     },
     {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "state" : {
+        "revision" : "246bab7ef72bad56abefb88e84a08871cecf9cb8",
+        "version" : "3.4.0"
+      }
+    },
+    {
       "identity" : "metadatahdwalletkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jackpooleybc/MetadataHDWalletKit",
@@ -102,8 +111,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke.git",
       "state" : {
-        "revision" : "472a03c15f39592007d94f25abe554350bc8aa2b",
-        "version" : "10.5.1"
+        "revision" : "a002b7fd786f2df2ed4333fe73a9727499fd9d97",
+        "version" : "10.11.2"
       }
     },
     {
@@ -111,8 +120,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/NukeUI.git",
       "state" : {
-        "revision" : "08e953d8d80b409bebcd95ba0635fdd748934ce0",
-        "version" : "0.7.0"
+        "revision" : "db55022a8e483774ebbf3568727071477546d9ea",
+        "version" : "0.8.3"
       }
     },
     {
@@ -120,8 +129,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "1ef0431b971f69c48ca5eb4cdba07f2c5da54c35",
-        "version" : "3.3.3"
+        "revision" : "4ab804c31e095fa2372aa81baba4a855c8d9cf59",
+        "version" : "3.4.2"
       }
     },
     {
@@ -129,8 +138,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/uber/RIBs.git",
       "state" : {
-        "revision" : "0103871f373a65e912868d7a3fc303a8095e81e1",
-        "version" : "0.12.1"
+        "revision" : "4220cbf013383418af14cce4aae96b3822806de3",
+        "version" : "0.13.0"
       }
     },
     {
@@ -147,8 +156,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift.git",
       "state" : {
-        "revision" : "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
-        "version" : "6.2.0"
+        "revision" : "b4307ba0b6425c0ba4178e138799946c3da594f8",
+        "version" : "6.5.0"
       }
     },
     {
@@ -156,8 +165,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Boilertalk/secp256k1.swift.git",
       "state" : {
-        "revision" : "823281fe9def21b384099b72a9a53ca988317b20",
-        "version" : "0.1.4"
+        "revision" : "45e458ec3be46cf0a6eb68bc947f797852dc65d8",
+        "version" : "0.1.6"
       }
     },
     {
@@ -183,8 +192,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stripe/stripe-ios",
       "state" : {
-        "revision" : "294dac6bb5b60b236c0f88d835ed768d7c25ef4d",
-        "version" : "22.3.0"
+        "revision" : "ef0c465f84402af07565d637ffb5952d3d2cc37b",
+        "version" : "22.6.0"
       }
     },
     {
@@ -210,8 +219,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
       "state" : {
-        "revision" : "ce9c0d897db8a840c39de64caaa9b60119cf4be8",
-        "version" : "0.8.1"
+        "revision" : "b4a872984463070c71e2e97e5c02c73a07d0fe36",
+        "version" : "0.9.0"
       }
     },
     {
@@ -220,7 +229,7 @@
       "location" : "https://github.com/apple/swift-cmark.git",
       "state" : {
         "branch" : "gfm",
-        "revision" : "7fc530e5f12432db9768326ff74dc46de72a24e2"
+        "revision" : "476f7b4fcf12eba381b4aaed8987006fd8fcec9c"
       }
     },
     {
@@ -228,8 +237,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections",
       "state" : {
-        "revision" : "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
-        "version" : "1.0.1"
+        "revision" : "48254824bb4248676bf7ce56014ff57b142b77eb",
+        "version" : "1.0.2"
       }
     },
     {
@@ -237,8 +246,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
-        "revision" : "2828dc44f6e3f81d84bcaba72c1ab1c0121d66f6",
-        "version" : "0.34.0"
+        "revision" : "d0ba4b87358a11d5be26d125ef3d3d492a07d8cf",
+        "version" : "0.38.2"
       }
     },
     {
@@ -246,8 +255,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-custom-dump",
       "state" : {
-        "revision" : "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
-        "version" : "0.3.0"
+        "revision" : "21ec1d717c07cea5a026979cb0471dd95c7087e7",
+        "version" : "0.5.0"
       }
     },
     {
@@ -255,8 +264,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-identified-collections",
       "state" : {
-        "revision" : "680bf440178a78a627b1c2c64c0855f6523ad5b9",
-        "version" : "0.3.2"
+        "revision" : "2d6b7ffcc67afd9077fac5e5a29bcd6d39b71076",
+        "version" : "0.4.0"
       }
     },
     {
@@ -326,8 +335,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "50a70a9d3583fe228ce672e8923010c8df2deddd",
-        "version" : "0.2.1"
+        "revision" : "ef8e14e7ce1c0c304c644c6ba365d06c468ded6b",
+        "version" : "0.3.3"
+      }
+    },
+    {
+      "identity" : "yenombitcoinkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/paulo-bc/YenomBitcoinKit.git",
+      "state" : {
+        "branch" : "paulo/dust-mixing",
+        "revision" : "491bd82496575108a52fa466b6d24d8e15634550"
       }
     },
     {

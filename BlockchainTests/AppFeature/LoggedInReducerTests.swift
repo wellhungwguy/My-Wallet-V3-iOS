@@ -74,20 +74,20 @@ final class LoggedInReducerTests: XCTestCase {
             initialState: LoggedIn.State(),
             reducer: loggedInReducer,
             environment: LoggedIn.Environment(
-                mainQueue: mockMainQueue.eraseToAnyScheduler(),
-                app: App.test,
                 analyticsRecorder: mockAnalyticsRecorder,
-                loadingViewPresenter: LoadingViewPresenter(),
-                exchangeRepository: mockExchangeAccountRepository,
-                remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
-                remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
-                nabuUserService: mockNabuUserService,
-                walletManager: mockWalletManager,
+                app: App.test,
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,
+                exchangeRepository: mockExchangeAccountRepository,
                 featureFlagsService: mockFeatureFlagsService,
                 fiatCurrencySettingsService: fiatCurrencySettingsServiceMock,
-                performanceTracing: performanceTracingMock
+                loadingViewPresenter: LoadingViewPresenter(),
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                nabuUserService: mockNabuUserService,
+                performanceTracing: performanceTracingMock,
+                remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
+                remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
+                walletManager: mockWalletManager
             )
         )
     }

@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 struct BalanceResponse: Decodable {
     struct BalanceEntry: Decodable {
         struct Account: Decodable {
@@ -14,8 +16,9 @@ struct BalanceResponse: Decodable {
 
         let account: Account
         let amount: CurrencyAmount
-        let unconfirmedAmount: CurrencyAmount
-        let price: Int?
+        let price: Decimal?
+        let ticker: String
+        let unconfirmed: CurrencyAmount
     }
 
     struct SubscriptionEntry: Decodable {
@@ -24,6 +27,6 @@ struct BalanceResponse: Decodable {
         let pubkeyCount: Int
     }
 
-    let balances: [BalanceEntry]
+    let currencies: [BalanceEntry]
     let subscriptions: [SubscriptionEntry]
 }

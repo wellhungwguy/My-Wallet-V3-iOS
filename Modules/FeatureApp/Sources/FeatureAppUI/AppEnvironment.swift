@@ -3,7 +3,7 @@
 import AnalyticsKit
 import BlockchainNamespace
 import ComposableArchitecture
-import DIKit
+import DelegatedSelfCustodyDomain
 import ERC20Kit
 import FeatureAppDomain
 import FeatureAttributionDomain
@@ -22,157 +22,152 @@ import ToolKit
 import WalletPayloadKit
 
 public struct AppEnvironment {
-    var app: AppProtocol
-    var nabuUserService: NabuUserServiceAPI
-    var loadingViewPresenter: LoadingViewPresenting
-    var blurEffectHandler: BlurVisualEffectHandlerAPI
-    var cacheSuite: CacheSuite
-    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
-    var certificatePinner: CertificatePinnerAPI
-    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
+    var accountRecoveryService: AccountRecoveryServiceAPI
     var alertViewPresenter: AlertViewPresenterAPI
+    var analyticsRecorder: AnalyticsEventRecorderAPI
+    var app: AppProtocol
+    var appStoreOpener: AppStoreOpening
+    var backgroundAppHandler: BackgroundAppHandlerAPI
+    var blockchainSettings: BlockchainSettings.App
+    var blurEffectHandler: BlurVisualEffectHandlerAPI
+    var buildVersionProvider: () -> String
+    var cacheSuite: CacheSuite
+    var cardService: CardServiceAPI
+    var certificatePinner: CertificatePinnerAPI
+    var coincore: CoincoreAPI
+    var crashlyticsRecorder: Recording
+    var credentialsStore: CredentialsStoreAPI
     var deeplinkAppHandler: AppDeeplinkHandlerAPI
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
-    var backgroundAppHandler: BackgroundAppHandlerAPI
-    var mobileAuthSyncService: MobileAuthSyncServiceAPI
-    var pushNotificationsRepository: PushNotificationsRepositoryAPI
-    var resetPasswordService: ResetPasswordServiceAPI
-    var accountRecoveryService: AccountRecoveryServiceAPI
-    var userService: NabuUserServiceAPI
+    var delegatedCustodySubscriptionsService: DelegatedCustodySubscriptionsServiceAPI
+    var deviceInfo: DeviceInfo
     var deviceVerificationService: DeviceVerificationServiceAPI
+    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
+    var exchangeRepository: ExchangeAccountRepositoryAPI
+    var externalAppOpener: ExternalAppOpener
     var featureFlagsService: FeatureFlagsServiceAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
-    var sharedContainer: SharedContainerUserDefaults
-    var analyticsRecorder: AnalyticsEventRecorderAPI
-    var crashlyticsRecorder: Recording
-    var openBanking: OpenBanking
-    var cardService: CardServiceAPI
+    var forgetWalletService: ForgetWalletService
+    var loadingViewPresenter: LoadingViewPresenting
+    var mainQueue: AnySchedulerOf<DispatchQueue>
+    var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var nabuUserService: NabuUserServiceAPI
     var observabilityService: ObservabilityServiceAPI
+    var openBanking: OpenBanking
     var performanceTracing: PerformanceTracingServiceAPI
-
-    var coincore: CoincoreAPI
-    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
-
+    var pushNotificationsRepository: PushNotificationsRepositoryAPI
+    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
+    var resetPasswordService: ResetPasswordServiceAPI
+    var secondPasswordPrompter: SecondPasswordPromptable
+    var sharedContainer: SharedContainerUserDefaults
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
+    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
+    var urlSession: URLSession
+    var walletManager: WalletManagerAPI
+    var walletPayloadService: WalletPayloadServiceAPI
+    var walletRepoPersistence: WalletRepoPersistenceAPI
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
-    var forgetWalletService: ForgetWalletService
-    var walletPayloadService: WalletPayloadServiceAPI
-    var secondPasswordPrompter: SecondPasswordPromptable
-
-    var walletManager: WalletManagerAPI
     var walletUpgradeService: WalletUpgradeServicing
-    var walletRepoPersistence: WalletRepoPersistenceAPI
-    var exchangeRepository: ExchangeAccountRepositoryAPI
-
-    var blockchainSettings: BlockchainSettings.App
-    var credentialsStore: CredentialsStoreAPI
-
-    var urlSession: URLSession
-    var mainQueue: AnySchedulerOf<DispatchQueue>
-    var appStoreOpener: AppStoreOpening
-    var buildVersionProvider: () -> String
-    var externalAppOpener: ExternalAppOpener
-    var deviceInfo: DeviceInfo
 
     public init(
-        app: AppProtocol,
-        nabuUserService: NabuUserServiceAPI,
-        loadingViewPresenter: LoadingViewPresenting,
-        blurEffectHandler: BlurVisualEffectHandlerAPI,
-        cacheSuite: CacheSuite,
-        remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
-        certificatePinner: CertificatePinnerAPI,
-        siftService: FeatureAuthenticationDomain.SiftServiceAPI,
+        accountRecoveryService: AccountRecoveryServiceAPI,
         alertViewPresenter: AlertViewPresenterAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        app: AppProtocol,
+        appStoreOpener: AppStoreOpening,
+        backgroundAppHandler: BackgroundAppHandlerAPI,
+        blockchainSettings: BlockchainSettings.App,
+        blurEffectHandler: BlurVisualEffectHandlerAPI,
+        buildVersionProvider: @escaping () -> String,
+        cacheSuite: CacheSuite,
+        cardService: CardServiceAPI,
+        certificatePinner: CertificatePinnerAPI,
+        coincore: CoincoreAPI,
+        crashlyticsRecorder: Recording,
+        credentialsStore: CredentialsStoreAPI,
         deeplinkAppHandler: AppDeeplinkHandlerAPI,
         deeplinkHandler: DeepLinkHandling,
         deeplinkRouter: DeepLinkRouting,
-        backgroundAppHandler: BackgroundAppHandlerAPI,
-        mobileAuthSyncService: MobileAuthSyncServiceAPI,
-        pushNotificationsRepository: PushNotificationsRepositoryAPI,
-        resetPasswordService: ResetPasswordServiceAPI,
-        accountRecoveryService: AccountRecoveryServiceAPI,
-        userService: NabuUserServiceAPI,
+        delegatedCustodySubscriptionsService: DelegatedCustodySubscriptionsServiceAPI,
+        deviceInfo: DeviceInfo,
         deviceVerificationService: DeviceVerificationServiceAPI,
+        erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
+        exchangeRepository: ExchangeAccountRepositoryAPI,
+        externalAppOpener: ExternalAppOpener,
         featureFlagsService: FeatureFlagsServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
-        supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
-        sharedContainer: SharedContainerUserDefaults,
-        analyticsRecorder: AnalyticsEventRecorderAPI,
-        crashlyticsRecorder: Recording,
+        forgetWalletService: ForgetWalletService,
+        loadingViewPresenter: LoadingViewPresenting,
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        mobileAuthSyncService: MobileAuthSyncServiceAPI,
+        nabuUserService: NabuUserServiceAPI,
+        observabilityService: ObservabilityServiceAPI,
         openBanking: OpenBanking,
-        cardService: CardServiceAPI,
-        coincore: CoincoreAPI,
-        erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
+        performanceTracing: PerformanceTracingServiceAPI,
+        pushNotificationsRepository: PushNotificationsRepositoryAPI,
+        remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
+        resetPasswordService: ResetPasswordServiceAPI,
+        secondPasswordPrompter: SecondPasswordPromptable,
+        sharedContainer: SharedContainerUserDefaults,
+        siftService: FeatureAuthenticationDomain.SiftServiceAPI,
+        supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
+        urlSession: URLSession,
+        walletManager: WalletManagerAPI,
+        walletPayloadService: WalletPayloadServiceAPI,
+        walletRepoPersistence: WalletRepoPersistenceAPI,
         walletService: WalletService,
         walletStateProvider: WalletStateProvider,
-        forgetWalletService: ForgetWalletService,
-        walletPayloadService: WalletPayloadServiceAPI,
-        walletManager: WalletManagerAPI,
-        walletUpgradeService: WalletUpgradeServicing,
-        walletRepoPersistence: WalletRepoPersistenceAPI,
-        exchangeRepository: ExchangeAccountRepositoryAPI,
-        blockchainSettings: BlockchainSettings.App,
-        credentialsStore: CredentialsStoreAPI,
-        urlSession: URLSession,
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        appStoreOpener: AppStoreOpening,
-        secondPasswordPrompter: SecondPasswordPromptable,
-        buildVersionProvider: @escaping () -> String,
-        externalAppOpener: ExternalAppOpener,
-        observabilityService: ObservabilityServiceAPI,
-        performanceTracing: PerformanceTracingServiceAPI,
-        deviceInfo: DeviceInfo
+        walletUpgradeService: WalletUpgradeServicing
     ) {
-        self.app = app
-        self.nabuUserService = nabuUserService
-        self.loadingViewPresenter = loadingViewPresenter
-        self.blurEffectHandler = blurEffectHandler
-        self.cacheSuite = cacheSuite
-        self.remoteNotificationServiceContainer = remoteNotificationServiceContainer
-        self.certificatePinner = certificatePinner
-        self.siftService = siftService
+        self.accountRecoveryService = accountRecoveryService
         self.alertViewPresenter = alertViewPresenter
+        self.analyticsRecorder = analyticsRecorder
+        self.app = app
+        self.appStoreOpener = appStoreOpener
+        self.backgroundAppHandler = backgroundAppHandler
+        self.blockchainSettings = blockchainSettings
+        self.blurEffectHandler = blurEffectHandler
+        self.buildVersionProvider = buildVersionProvider
+        self.cacheSuite = cacheSuite
+        self.cardService = cardService
+        self.certificatePinner = certificatePinner
+        self.coincore = coincore
+        self.crashlyticsRecorder = crashlyticsRecorder
+        self.credentialsStore = credentialsStore
         self.deeplinkAppHandler = deeplinkAppHandler
         self.deeplinkHandler = deeplinkHandler
         self.deeplinkRouter = deeplinkRouter
-        self.backgroundAppHandler = backgroundAppHandler
-        self.mobileAuthSyncService = mobileAuthSyncService
-        self.pushNotificationsRepository = pushNotificationsRepository
-        self.resetPasswordService = resetPasswordService
-        self.accountRecoveryService = accountRecoveryService
-        self.userService = userService
+        self.delegatedCustodySubscriptionsService = delegatedCustodySubscriptionsService
+        self.deviceInfo = deviceInfo
         self.deviceVerificationService = deviceVerificationService
+        self.erc20CryptoAssetService = erc20CryptoAssetService
+        self.exchangeRepository = exchangeRepository
+        self.externalAppOpener = externalAppOpener
         self.featureFlagsService = featureFlagsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
-        self.supportedAssetsRemoteService = supportedAssetsRemoteService
-        self.sharedContainer = sharedContainer
-        self.analyticsRecorder = analyticsRecorder
-        self.crashlyticsRecorder = crashlyticsRecorder
+        self.forgetWalletService = forgetWalletService
+        self.loadingViewPresenter = loadingViewPresenter
+        self.mainQueue = mainQueue
+        self.mobileAuthSyncService = mobileAuthSyncService
+        self.nabuUserService = nabuUserService
+        self.observabilityService = observabilityService
         self.openBanking = openBanking
-        self.coincore = coincore
-        self.erc20CryptoAssetService = erc20CryptoAssetService
+        self.performanceTracing = performanceTracing
+        self.pushNotificationsRepository = pushNotificationsRepository
+        self.remoteNotificationServiceContainer = remoteNotificationServiceContainer
+        self.resetPasswordService = resetPasswordService
+        self.secondPasswordPrompter = secondPasswordPrompter
+        self.sharedContainer = sharedContainer
+        self.siftService = siftService
+        self.supportedAssetsRemoteService = supportedAssetsRemoteService
+        self.urlSession = urlSession
+        self.walletManager = walletManager
+        self.walletPayloadService = walletPayloadService
+        self.walletRepoPersistence = walletRepoPersistence
         self.walletService = walletService
         self.walletStateProvider = walletStateProvider
-        self.forgetWalletService = forgetWalletService
-        self.walletPayloadService = walletPayloadService
-        self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
-        self.exchangeRepository = exchangeRepository
-        self.blockchainSettings = blockchainSettings
-        self.credentialsStore = credentialsStore
-        self.urlSession = urlSession
-        self.mainQueue = mainQueue
-        self.appStoreOpener = appStoreOpener
-        self.buildVersionProvider = buildVersionProvider
-        self.walletRepoPersistence = walletRepoPersistence
-        self.secondPasswordPrompter = secondPasswordPrompter
-        self.cardService = cardService
-        self.externalAppOpener = externalAppOpener
-        self.observabilityService = observabilityService
-        self.performanceTracing = performanceTracing
-        self.deviceInfo = deviceInfo
     }
 }

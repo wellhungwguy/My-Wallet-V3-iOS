@@ -12,6 +12,8 @@ import ToolKit
 import UIKit
 import WalletPayloadKit
 
+// swiftformat:disable indent
+
 enum AppCancellations {
     struct DeeplinkId: Hashable {}
     struct WalletPersistenceId: Hashable {}
@@ -73,41 +75,11 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.core,
             environment: { env in
                 CoreAppEnvironment(
-                    app: env.app,
-                    nabuUserService: env.nabuUserService,
-                    loadingViewPresenter: env.loadingViewPresenter,
-                    externalAppOpener: env.externalAppOpener,
-                    deeplinkHandler: env.deeplinkHandler,
-                    deeplinkRouter: env.deeplinkRouter,
-                    walletManager: env.walletManager,
-                    mobileAuthSyncService: env.mobileAuthSyncService,
-                    pushNotificationsRepository: env.pushNotificationsRepository,
-                    resetPasswordService: env.resetPasswordService,
                     accountRecoveryService: env.accountRecoveryService,
-                    userService: env.userService,
-                    deviceVerificationService: env.deviceVerificationService,
-                    featureFlagsService: env.featureFlagsService,
-                    fiatCurrencySettingsService: env.fiatCurrencySettingsService,
-                    blockchainSettings: env.blockchainSettings,
-                    credentialsStore: env.credentialsStore,
                     alertPresenter: env.alertViewPresenter,
-                    walletUpgradeService: env.walletUpgradeService,
-                    exchangeRepository: env.exchangeRepository,
-                    remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
-                    coincore: env.coincore,
-                    erc20CryptoAssetService: env.erc20CryptoAssetService,
-                    sharedContainer: env.sharedContainer,
                     analyticsRecorder: env.analyticsRecorder,
-                    siftService: env.siftService,
-                    mainQueue: env.mainQueue,
+                    app: env.app,
                     appStoreOpener: env.appStoreOpener,
-                    walletPayloadService: env.walletPayloadService,
-                    walletService: env.walletService,
-                    forgetWalletService: env.forgetWalletService,
-                    secondPasswordPrompter: env.secondPasswordPrompter,
-                    nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
-                    buildVersionProvider: env.buildVersionProvider,
-                    performanceTracing: env.performanceTracing,
                     appUpgradeState: {
                         let service = AppUpgradeStateService(
                             deviceInfo: env.deviceInfo,
@@ -115,7 +87,37 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                         )
                         return service.state
                     },
-                    walletStateProvider: env.walletStateProvider
+                    blockchainSettings: env.blockchainSettings,
+                    buildVersionProvider: env.buildVersionProvider,
+                    coincore: env.coincore,
+                    credentialsStore: env.credentialsStore,
+                    deeplinkHandler: env.deeplinkHandler,
+                    deeplinkRouter: env.deeplinkRouter,
+                    delegatedCustodySubscriptionsService: env.delegatedCustodySubscriptionsService,
+                    deviceVerificationService: env.deviceVerificationService,
+                    erc20CryptoAssetService: env.erc20CryptoAssetService,
+                    exchangeRepository: env.exchangeRepository,
+                    externalAppOpener: env.externalAppOpener,
+                    featureFlagsService: env.featureFlagsService,
+                    fiatCurrencySettingsService: env.fiatCurrencySettingsService,
+                    forgetWalletService: env.forgetWalletService,
+                    loadingViewPresenter: env.loadingViewPresenter,
+                    mainQueue: env.mainQueue,
+                    mobileAuthSyncService: env.mobileAuthSyncService,
+                    nabuUserService: env.nabuUserService,
+                    nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
+                    performanceTracing: env.performanceTracing,
+                    pushNotificationsRepository: env.pushNotificationsRepository,
+                    remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
+                    resetPasswordService: env.resetPasswordService,
+                    secondPasswordPrompter: env.secondPasswordPrompter,
+                    sharedContainer: env.sharedContainer,
+                    siftService: env.siftService,
+                    walletManager: env.walletManager,
+                    walletPayloadService: env.walletPayloadService,
+                    walletService: env.walletService,
+                    walletStateProvider: env.walletStateProvider,
+                    walletUpgradeService: env.walletUpgradeService
                 )
             }
         ),

@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-struct SubscriptionEntry: Encodable {
-    struct Account: Encodable {
+struct SubscriptionEntry: Encodable, Equatable {
+    struct Account: Encodable, Equatable {
         let index: Int
         let name: String
     }
 
-    struct PubKey: Encodable {
+    struct PubKey: Encodable, Equatable {
         let pubkey: String
         let style: String
         let descriptor: Int

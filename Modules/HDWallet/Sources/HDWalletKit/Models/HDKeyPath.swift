@@ -1,10 +1,36 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Parsing
 import ToolKit
 
-enum DerivationComponent: Equatable {
+public enum HDKeyPathError: Error, Equatable {
+    case invalidIndex
+    case parsingError(Error)
+
+    public static func == (lhs: HDKeyPathError, rhs: HDKeyPathError) -> Bool {
+        switch (lhs, rhs) {
+        case (.parsingError(let lhsError), .parsingError(let rhsError)):
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.invalidIndex, .invalidIndex):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+public enum DerivationComponent: Equatable {
     case normal(UInt32)
     case hardened(UInt32)
+
+    var description: String {
+        switch self {
+        case .hardened(let index):
+            return "\(index)'"
+        case .normal(let index):
+            return "\(index)"
+        }
+    }
 
     var isHardened: Bool {
         switch self {
@@ -15,14 +41,13 @@ enum DerivationComponent: Equatable {
         }
     }
 
-//    var libWallyComponent: BIP32Derivation {
-//        switch self {
-//        case .normal(let value):
-//            return .normal(value)
-//        case .hardened(let value):
-//            return .hardened(value)
-//        }
-//    }
+    static func normal(intValue: Int) -> Self {
+        .normal(UInt32(intValue))
+    }
+
+    static func hardened(intValue: Int) -> Self {
+        .hardened(UInt32(intValue))
+    }
 }
 
 extension Array where Element == DerivationComponent {
@@ -36,102 +61,122 @@ extension Array where Element == DerivationComponent {
     }
 }
 
-// extension BIP32Derivation {
-//    var component: DerivationComponent {
-//        switch self {
-//        case .normal(let value):
-//            return .normal(value)
-//        case .hardened(let value):
-//            return .hardened(value)
-//        }
-//    }
-// }
+public struct HDKeyPath: LosslessStringConvertible, Equatable {
 
-// extension BIP32Path {
-//    var derivationComponents: [DerivationComponent] {
-//        components.map { $0.component }
-//    }
-// }
-
-struct HDKeyPath: LosslessStringConvertible {
-
-    var description: String {
-        unimplemented()
+    public var description: String {
+        components
+            .map(\.description)
+            .reduce(into: "m") { acc, item in
+                acc += "/" + item
+            }
     }
 
-    let components: [DerivationComponent]
+    public let components: [DerivationComponent]
 
-    init(_ component: DerivationComponent, relative: Bool = true) throws {
-        try self.init([component], relative: relative)
+    init(component: DerivationComponent) {
+        self.init(components: [component])
     }
 
-    init(_ index: Int, relative: Bool = true) throws {
-        try self.init([.normal(UInt32(index))], relative: relative)
-    }
-
-    init(_ components: [DerivationComponent], relative: Bool = true) throws {
-        unimplemented()
-        // let libWallyComponents = components.map { $0.libWallyComponent }
-        // let libWallyPath: BIP32Path
-        // do {
-        //     libWallyPath = try BIP32Path(libWallyComponents, relative: relative)
-        // } catch {
-        //     throw HDWalletKitError.libWallyError(error)
-        // }
-        // self.libWallyPath = libWallyPath
-        // self.components = libWallyPath.derivationComponents
-    }
-
-    init?(_ description: String) {
-        unimplemented()
-        // guard let libWallyPath = BIP32Path(description) else { return nil }
-        // self.components = libWallyPath.derivationComponents
-        // self.libWallyPath = libWallyPath
-    }
-}
-
-extension HDKeyPath {
-
-    static func from(components: [DerivationComponent], relative: Bool = true) -> Result<HDKeyPath, HDWalletKitError> {
-        Result { try HDKeyPath(components, relative: relative) }
-            .mapError { $0 as! HDWalletKitError }
-    }
-
-    static func from(component: DerivationComponent, relative: Bool = true) -> Result<HDKeyPath, HDWalletKitError> {
-        Result { try HDKeyPath(component, relative: relative) }
-            .mapError { $0 as! HDWalletKitError }
-    }
-
-    static func from(index: Int, relative: Bool = true) -> Result<HDKeyPath, HDWalletKitError> {
-        Result { try HDKeyPath(index, relative: relative) }
-            .mapError { $0 as! HDWalletKitError }
-    }
-}
-
-extension HDKeyPath {
-
-    func with(normal index: UInt32, relative: Bool = true) -> Result<Self, HDWalletKitError> {
-        Result { try HDKeyPath(components + [.normal(index)], relative: relative) }
-            .mapError { $0 as! HDWalletKitError }
-    }
-
-    func with(hardened index: UInt32, relative: Bool = true) -> Result<Self, HDWalletKitError> {
-        Result { try HDKeyPath(components + [.hardened(index)], relative: relative) }
-            .mapError { $0 as! HDWalletKitError }
-    }
-}
-
-extension Result where Success == HDKeyPath, Failure == HDWalletKitError {
-
-    func with(normal index: UInt32, relative: Bool = true) -> Result<Success, Failure> {
-        flatMap { path -> Result<Success, Failure> in
-            path.with(normal: index, relative: relative)
+    public init(index: Int, hardened: Bool) {
+        switch hardened {
+        case false:
+            self.init(components: [.normal(UInt32(index))])
+        case true:
+            self.init(components: [.hardened(UInt32(index))])
         }
     }
 
-    func with(hardened index: UInt32, relative: Bool = true) -> Result<Success, Failure> {
-        flatMap { path -> Result<Success, Failure> in
-            path.with(hardened: index, relative: relative)
+    public init(components: [DerivationComponent]) {
+        self.components = components
+    }
+
+    public init?(_ description: String) {
+        guard let hdKeyPath = try? Self.from(string: description).get() else {
+            return nil
+        }
+        components = hdKeyPath.components
+    }
+}
+
+extension HDKeyPath {
+
+    public static func from(string: String) -> Result<Self, HDKeyPathError> {
+
+        let indexParser = Parse {
+            "/"
+            Int.parser()
+        }
+        .flatMap { value in
+            if value <= Int32.max {
+                Always(value)
+            } else {
+                Fail<Substring, Int>(throwing: HDKeyPathError.invalidIndex)
+            }
+        }
+
+        let normalDerivationIndexParser = indexParser
+            .map(DerivationComponent.normal(intValue:))
+
+        let hardenedDerivationIndexParser = Parse {
+            indexParser
+            OneOf {
+                "'"
+                "h"
+                "H"
+            }
+        }
+        .map(DerivationComponent.hardened(intValue:))
+
+        let derivationIndexParser = OneOf {
+            hardenedDerivationIndexParser
+            normalDerivationIndexParser
+        }
+
+        let pathComponentsParser = Parse {
+            OneOf {
+                "M"
+                "m"
+            }
+            Many { derivationIndexParser }
+            Optionally { "/" }
+        }
+        .map(\.0)
+
+        return Result { try pathComponentsParser.parse(string) }
+            .mapError(HDKeyPathError.parsingError)
+            .map(HDKeyPath.from(components:))
+    }
+}
+
+extension HDKeyPath {
+
+    static func from(components: [DerivationComponent]) -> Self {
+        Self(components: components)
+    }
+}
+
+extension HDKeyPath {
+
+    func with(normal index: UInt32) -> Self {
+        HDKeyPath(components: components + [.normal(index)])
+    }
+
+    func with(hardened index: UInt32) -> Self {
+        HDKeyPath(components: components + [.hardened(index)])
+    }
+}
+
+extension Result where Success == HDKeyPath {
+
+    func with(normal index: UInt32) -> Result<Success, Failure> {
+        map { path -> Success in
+            path.with(normal: index)
+        }
+    }
+
+    func with(hardened index: UInt32) -> Result<Success, Failure> {
+        map { path -> Success in
+            path.with(hardened: index)
         }
     }
 }

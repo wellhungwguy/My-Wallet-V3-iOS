@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DelegatedSelfCustodyDataKit
+import DelegatedSelfCustodyDomain
 import Foundation
 import MoneyKit
 import RxSwift
@@ -18,7 +18,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
         .never()
     }
 
-    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         .empty()
     }
 
@@ -29,8 +29,8 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     var balance: AnyPublisher<MoneyValue, Error> {
         balanceRepository
             .balances
-            .map { [asset] in
-                $0.balance(index: 0, currency: asset) ?? MoneyValue.zero(currency: asset)
+            .map { [asset] balances in
+                balances.balance(index: 0, currency: asset) ?? MoneyValue.zero(currency: asset)
             }
             .eraseToAnyPublisher()
     }
@@ -50,47 +50,33 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
     let accountType: AccountType = .nonCustodial
 
     private let balanceRepository: DelegatedCustodyBalanceRepositoryAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
     private let priceService: PriceServiceAPI
 
     init(
         asset: CryptoCurrency,
         balanceRepository: DelegatedCustodyBalanceRepositoryAPI,
-        featureFlagsService: FeatureFlagsServiceAPI,
         priceService: PriceServiceAPI
     ) {
         self.asset = asset
         self.balanceRepository = balanceRepository
-        self.featureFlagsService = featureFlagsService
         self.priceService = priceService
     }
 
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
-        case .buy:
+        case .buy,
+             .deposit,
+             .interestTransfer,
+             .interestWithdraw,
+             .sell,
+             .send,
+             .sign,
+             .swap,
+             .withdraw,
+             .linkToDebitCard:
             return .just(false)
-        case .deposit:
-            return .just(false)
-        case .interestTransfer:
-            return .just(false)
-        case .interestWithdraw:
-            return .just(false)
-        case .receive:
+        case .receive, .viewActivity:
             return .just(true)
-        case .sell:
-            return .just(false)
-        case .send:
-            return .just(false)
-        case .sign:
-            return .just(false)
-        case .swap:
-            return .just(false)
-        case .viewActivity:
-            return .just(true)
-        case .withdraw:
-            return .just(false)
-        case .linkToDebitCard:
-            return .just(false)
         }
     }
 

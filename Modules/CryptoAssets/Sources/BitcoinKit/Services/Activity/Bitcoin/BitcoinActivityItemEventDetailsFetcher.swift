@@ -9,25 +9,26 @@ import RxSwift
 final class BitcoinActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
     typealias Model = BitcoinActivityItemEventDetails
 
-    private let bridge: BitcoinWalletBridgeAPI
+    private let repository: BitcoinWalletAccountRepository
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
 
     init(
         transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
-        bridge: BitcoinWalletBridgeAPI = resolve()
+        repository: BitcoinWalletAccountRepository = resolve()
     ) {
         self.transactionsService = transactionsService
-        self.bridge = bridge
+        self.repository = repository
     }
 
     func details(
         for identifier: String,
         cryptoCurrency: CryptoCurrency
     ) -> Observable<BitcoinActivityItemEventDetails> {
-        bridge.wallets
-            .map { wallet -> [XPub] in
-                wallet.map(\.publicKeys).flatMap(\.xpubs)
+        repository.accounts
+            .map { accounts -> [XPub] in
+                accounts.map(\.publicKeys).flatMap(\.xpubs)
             }
+            .asSingle()
             .flatMap { [transactionsService] publicKeys -> Single<BitcoinActivityItemEventDetails> in
                 transactionsService
                     .transaction(publicKeys: publicKeys, identifier: identifier)

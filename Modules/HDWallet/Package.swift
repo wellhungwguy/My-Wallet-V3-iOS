@@ -9,6 +9,10 @@ let package = Package(
         .library(name: "HDWalletKit", targets: ["HDWalletKit"])
     ],
     dependencies: [
+        .package(
+            url: "https://github.com/pointfreeco/swift-parsing",
+            from: "0.10.0"
+        ),
         .package(path: "../CommonCrypto"),
         .package(path: "../Tool")
     ],
@@ -16,6 +20,7 @@ let package = Package(
         .target(
             name: "HDWalletKit",
             dependencies: [
+                .product(name: "Parsing", package: "swift-parsing"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "ToolKit", package: "Tool")
             ]

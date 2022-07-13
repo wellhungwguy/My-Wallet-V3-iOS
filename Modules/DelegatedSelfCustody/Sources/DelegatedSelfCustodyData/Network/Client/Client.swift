@@ -22,7 +22,6 @@ final class Client {
 
     // MARK: - Init
 
-    // TODO: Initialiser must resolve DIKitContext.retail
     init(
         networkAdapter: NetworkAdapterAPI,
         requestBuilder: RequestBuilder

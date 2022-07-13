@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DelegatedSelfCustodyDomain
 import DIKit
 import MoneyKit
 import RxSwift
@@ -36,7 +37,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let addressFactory: ExternalAssetAddressFactory
     private let featureFetcher: FeatureFetching
-    private let nabuUserService: NabuUserServiceAPI
+    private let delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI
 
     // MARK: - Setup
 
@@ -46,14 +47,14 @@ final class CustodialCryptoAsset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        nabuUserService: NabuUserServiceAPI = resolve()
+        delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI = resolve()
     ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
         self.exchangeAccountProvider = exchangeAccountProvider
         self.errorRecorder = errorRecorder
         self.featureFetcher = featureFetcher
-        self.nabuUserService = nabuUserService
+        self.delegatedCustodyAccountRepository = delegatedCustodyAccountRepository
         addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
     }
 
@@ -132,7 +133,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
-        dynamicSelfCustodySupported
+        delegatedSelfCustodySupported
             .map { [asset] isEnabled in
                 guard isEnabled else {
                     return CryptoAccountNonCustodialGroup(
@@ -143,7 +144,6 @@ final class CustodialCryptoAsset: CryptoAsset {
                 let account = CryptoDelegatedCustodyAccount(
                     asset: asset,
                     balanceRepository: resolve(),
-                    featureFlagsService: resolve(),
                     priceService: resolve()
                 )
                 return CryptoAccountNonCustodialGroup(
@@ -154,28 +154,12 @@ final class CustodialCryptoAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    private var dynamicSelfCustodySupported: AnyPublisher<Bool, Never> {
-        // Initially only possible for Stacks.
-        guard asset.code == "STX" else {
-            return .just(false)
-        }
-        return Publishers.Zip3(
-            featureFetcher.isEnabled(.stxForAllUsers),
-            featureFetcher.isEnabled(.stxForAirdropUsers),
-            stxAirdropRegistered
-        )
-        .map { stxForAllUsers, stxForAirdropUsers, stxAirdropRegistered in
-            // Enabled if 'All' feature flag is one
-            stxForAllUsers
-                // Or if 'Airdrop' feature flag is on and user is registered.
-                || (stxForAirdropUsers && stxAirdropRegistered)
-        }
-        .eraseToAnyPublisher()
-    }
-
-    private var stxAirdropRegistered: AnyPublisher<Bool, Never> {
-        nabuUserService.user
-            .map(\.isBlockstackAirdropRegistered)
+    private var delegatedSelfCustodySupported: AnyPublisher<Bool, Never> {
+        delegatedCustodyAccountRepository
+            .accountsCurrencies()
+            .map { [asset] accountsCurrencies in
+                accountsCurrencies.contains(asset)
+            }
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }

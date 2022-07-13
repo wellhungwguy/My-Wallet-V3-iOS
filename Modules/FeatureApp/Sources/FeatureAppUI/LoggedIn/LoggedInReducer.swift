@@ -28,7 +28,6 @@ public enum LoggedIn {
     public enum Action: Equatable {
         case none
         case start(LoggedIn.Context)
-        case login(Result<NabuUser, NabuUserServiceError>)
         case stop
         case logout
         case deleteWallet
@@ -57,20 +56,20 @@ public enum LoggedIn {
     }
 
     public struct Environment {
-        var mainQueue: AnySchedulerOf<DispatchQueue>
-        var app: AppProtocol
         var analyticsRecorder: AnalyticsEventRecorderAPI
-        var loadingViewPresenter: LoadingViewPresenting
-        var exchangeRepository: ExchangeAccountRepositoryAPI
-        var remoteNotificationTokenSender: RemoteNotificationTokenSending
-        var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
-        var nabuUserService: NabuUserServiceAPI
-        var walletManager: WalletManagerAPI
+        var app: AppProtocol
         var appSettings: BlockchainSettingsAppAPI
         var deeplinkRouter: DeepLinkRouting
+        var exchangeRepository: ExchangeAccountRepositoryAPI
         var featureFlagsService: FeatureFlagsServiceAPI
         var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
+        var loadingViewPresenter: LoadingViewPresenting
+        var mainQueue: AnySchedulerOf<DispatchQueue>
+        var nabuUserService: NabuUserServiceAPI
         var performanceTracing: PerformanceTracingServiceAPI
+        var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
+        var remoteNotificationTokenSender: RemoteNotificationTokenSending
+        var walletManager: WalletManagerAPI
     }
 
     public enum WalletAction: Equatable {
@@ -146,16 +145,10 @@ let loggedInReducer = Reducer<
                     event: AnalyticsEvents.New.Navigation.signedIn
                 )
             },
-            environment.nabuUserService.fetchUser()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map(LoggedIn.Action.login),
             handleStartup(
                 context: context
             )
         )
-    case .login:
-        return .none
     case .deeplink(let content):
         let context = content.context
         guard context == .executeDeeplinkRouting else {
@@ -265,22 +258,16 @@ private func handleStartup(
 extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Environment {
 
     func namespace() -> Reducer {
-        combined(
-            with: Reducer { _, action, environment in
-                switch action {
-                case .login(let result):
-                    guard let user = try? result.get() else { return .none }
-                    return .fireAndForget {
-                        environment.app.signIn(userId: user.identifier)
-                    }
-                case .logout:
-                    return .fireAndForget {
-                        environment.app.signOut()
-                    }
-                default:
-                    return .none
+        Reducer { _, action, environment in
+            switch action {
+            case .logout:
+                return .fireAndForget {
+                    environment.app.signOut()
                 }
+            default:
+                return .none
             }
-        )
+        }
+        .combined(with: self)
     }
 }

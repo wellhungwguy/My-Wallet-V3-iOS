@@ -180,12 +180,6 @@ final class OnboardingHostingController: UIViewController {
                 message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
             )
             alertViewPresenter.notify(content: content, in: self)
-        case .proceedToLoggedIn(.erc20Service(let error)):
-            let content = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
-            )
-            alertViewPresenter.notify(content: content, in: self)
         case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
             handleFailedToLoadWalletAlert()
         case .walletAuthentication(let error) where error.code == .noInternet:

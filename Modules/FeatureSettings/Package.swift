@@ -90,6 +90,7 @@ let package = Package(
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment"),
                 .product(name: "FeatureNotificationPreferencesUI", package: "FeatureNotificationPreferences"),
                 .product(name: "FeatureReferralUI", package: "FeatureReferral"),
+                .product(name: "FeatureUserDeletionData", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion")
             ]

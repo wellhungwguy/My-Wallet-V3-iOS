@@ -2,6 +2,7 @@
 
 import Combine
 import Errors
+import HDWalletKit
 import MoneyKit
 import ToolKit
 import WalletCore
@@ -12,12 +13,15 @@ func getWalletKeyPairs(
     accountKeyContext: AccountKeyContext
 ) -> [WalletKeyPair] {
     unspentOutputs
-        .map { utxo -> (UnspentOutput, WalletCoreKeyPair) in
-            let walletCoreKeyPair = walletCoreKeyPair(
+        .compactMap { utxo -> (UnspentOutput, WalletCoreKeyPair)? in
+            let walletCoreKeyPair = try? walletCoreKeyPair(
                 for: utxo,
                 context: accountKeyContext
-            )
-            return (utxo, walletCoreKeyPair)
+            ).get()
+            guard let keyPair = walletCoreKeyPair else {
+                return nil
+            }
+            return (utxo, keyPair)
         }
         .map { utxo, walletCoreKeyPair -> WalletKeyPair in
             WalletKeyPair(
@@ -55,34 +59,48 @@ public struct WalletCoreKeyPair {
 private func walletCoreKeyPair(
     for unspentOutput: UnspentOutput,
     context: AccountKeyContext
-) -> WalletCoreKeyPair {
-    let childKeyPath = derivationPath(
-        for: unspentOutput
-    )
-    let unspentOutputIsSegWit = unspentOutput.isSegwit
-    let derivation = context.derivations.all
-        .first(where: { derivation in
-            derivation.type.isSegwit == unspentOutputIsSegWit
-        })!
-    let key = derivation.childKey(with: childKeyPath)
-    let xpriv = derivation.xpriv
-    let xpub = derivation.xpub
-    return WalletCoreKeyPair(
-        privateKey: key,
-        xpriv: xpriv,
-        xpub: xpub
-    )
+) -> Result<WalletCoreKeyPair, Error> {
+    derivationPath(for: unspentOutput)
+        .map(\.walletCoreComponents)
+        .map { childKeyPath -> WalletCoreKeyPair in
+            let unspentOutputIsSegWit = unspentOutput.isSegwit
+            let derivation = context.derivations.all
+                .first(where: { derivation in
+                    derivation.type.isSegwit == unspentOutputIsSegWit
+                })!
+            let key = derivation.childKey(with: childKeyPath)
+            let xpriv = derivation.xpriv
+            let xpub = derivation.xpub
+            return WalletCoreKeyPair(
+                privateKey: key,
+                xpriv: xpriv,
+                xpub: xpub
+            )
+        }
 }
 
-private func derivationPath(
+func derivationPath(
     for unspentOutput: UnspentOutput
-) -> [WalletCore.DerivationPath.Index] {
-    let path = unspentOutput.xpub.path.removing(prefix: "M/")
-    let pathComponents = path.split(separator: "/")
-    return pathComponents
-        .map { component -> WalletCore.DerivationPath.Index in
-            let isHardened = component.contains("'")
-            let value = UInt32(component.replacingOccurrences(of: "'", with: ""))!
-            return WalletCore.DerivationPath.Index(value, hardened: isHardened)
+) -> Result<HDWalletKit.HDKeyPath, Error> {
+    HDKeyPath.from(string: unspentOutput.xpub.path)
+        .eraseError()
+}
+
+extension DerivationComponent {
+
+    fileprivate var walletCoreDerivationComponent: WalletCore.DerivationPath.Index {
+        switch self {
+        case .normal(let index):
+            return .init(index, hardened: false)
+        case .hardened(let index):
+            return .init(index, hardened: true)
         }
+    }
+}
+
+extension HDKeyPath {
+
+    fileprivate var walletCoreComponents: [WalletCore.DerivationPath.Index] {
+        components.map(\.walletCoreDerivationComponent)
+    }
 }

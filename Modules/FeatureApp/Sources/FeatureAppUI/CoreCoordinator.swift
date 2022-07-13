@@ -4,7 +4,7 @@ import AnalyticsKit
 import BlockchainNamespace
 import Combine
 import ComposableArchitecture
-import DIKit
+import DelegatedSelfCustodyDomain
 import ERC20Kit
 import FeatureAppDomain
 import FeatureAppUpgradeDomain
@@ -22,6 +22,8 @@ import UIKit
 import WalletPayloadKit
 
 // swiftlint:disable file_length
+// swiftformat:disable indent
+
 public struct CoreAppState: Equatable {
     public var onboarding: Onboarding.State? = .init()
     public var loggedIn: LoggedIn.State?
@@ -46,7 +48,6 @@ public struct CoreAppState: Equatable {
 
 public enum ProceedToLoggedInError: Error, Equatable {
     case coincore(CoincoreError)
-    case erc20Service(ERC20CryptoAssetServiceError)
 }
 
 public indirect enum CoreAlertAction: Equatable {
@@ -65,6 +66,7 @@ public enum CoreAppAction: Equatable {
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
     case prepareForLoggedIn
+    case fetchedUser(Result<NabuUser, NabuUserServiceError>)
     case proceedToLoggedIn(Result<Bool, ProceedToLoggedInError>)
     case appForegrounded
     case deeplink(DeeplinkOutcome)
@@ -105,43 +107,43 @@ public enum CoreAppAction: Equatable {
 }
 
 struct CoreAppEnvironment {
+    var accountRecoveryService: AccountRecoveryServiceAPI
+    var alertPresenter: AlertViewPresenterAPI
+    var analyticsRecorder: AnalyticsEventRecorderAPI
     var app: AppProtocol
-    var nabuUserService: NabuUserServiceAPI
-    var loadingViewPresenter: LoadingViewPresenting
-    var externalAppOpener: ExternalAppOpener
+    var appStoreOpener: AppStoreOpening
+    var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
+    var blockchainSettings: BlockchainSettingsAppAPI
+    var buildVersionProvider: () -> String
+    var coincore: CoincoreAPI
+    var credentialsStore: CredentialsStoreAPI
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
-    var walletManager: WalletManagerAPI
-    var mobileAuthSyncService: MobileAuthSyncServiceAPI
-    var pushNotificationsRepository: PushNotificationsRepositoryAPI
-    var resetPasswordService: ResetPasswordServiceAPI
-    var accountRecoveryService: AccountRecoveryServiceAPI
-    var userService: NabuUserServiceAPI
+    var delegatedCustodySubscriptionsService: DelegatedCustodySubscriptionsServiceAPI
     var deviceVerificationService: DeviceVerificationServiceAPI
+    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
+    var exchangeRepository: ExchangeAccountRepositoryAPI
+    var externalAppOpener: ExternalAppOpener
     var featureFlagsService: FeatureFlagsServiceAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-    var blockchainSettings: BlockchainSettingsAppAPI
-    var credentialsStore: CredentialsStoreAPI
-    var alertPresenter: AlertViewPresenterAPI
-    var walletUpgradeService: WalletUpgradeServicing
-    var exchangeRepository: ExchangeAccountRepositoryAPI
-    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
-    var coincore: CoincoreAPI
-    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
-    var sharedContainer: SharedContainerUserDefaults
-    var analyticsRecorder: AnalyticsEventRecorderAPI
-    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
+    var forgetWalletService: ForgetWalletService
+    var loadingViewPresenter: LoadingViewPresenting
     var mainQueue: AnySchedulerOf<DispatchQueue>
-    var appStoreOpener: AppStoreOpening
+    var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var nabuUserService: NabuUserServiceAPI
+    var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
+    var performanceTracing: PerformanceTracingServiceAPI
+    var pushNotificationsRepository: PushNotificationsRepositoryAPI
+    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
+    var resetPasswordService: ResetPasswordServiceAPI
+    var secondPasswordPrompter: SecondPasswordPromptable
+    var sharedContainer: SharedContainerUserDefaults
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
+    var walletManager: WalletManagerAPI
     var walletPayloadService: WalletPayloadServiceAPI
     var walletService: WalletService
-    var forgetWalletService: ForgetWalletService
-    var secondPasswordPrompter: SecondPasswordPromptable
-    var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
-    var buildVersionProvider: () -> String
-    var performanceTracing: PerformanceTracingServiceAPI
-    var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
     var walletStateProvider: WalletStateProvider
+    var walletUpgradeService: WalletUpgradeServicing
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -177,20 +179,20 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.loggedIn,
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
-                    mainQueue: environment.mainQueue,
-                    app: environment.app,
                     analyticsRecorder: environment.analyticsRecorder,
-                    loadingViewPresenter: environment.loadingViewPresenter,
-                    exchangeRepository: environment.exchangeRepository,
-                    remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
-                    remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
-                    nabuUserService: environment.nabuUserService,
-                    walletManager: environment.walletManager,
+                    app: environment.app,
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
+                    exchangeRepository: environment.exchangeRepository,
                     featureFlagsService: environment.featureFlagsService,
                     fiatCurrencySettingsService: environment.fiatCurrencySettingsService,
-                    performanceTracing: environment.performanceTracing
+                    loadingViewPresenter: environment.loadingViewPresenter,
+                    mainQueue: environment.mainQueue,
+                    nabuUserService: environment.nabuUserService,
+                    performanceTracing: environment.performanceTracing,
+                    remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
+                    remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
+                    walletManager: environment.walletManager
                 )
             }
         ),
@@ -641,17 +643,26 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
 
     case .prepareForLoggedIn:
+        return environment.nabuUserService.fetchUser()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map(CoreAppAction.fetchedUser)
+    case .fetchedUser:
         let coincoreInit = environment.coincore
             .initialize()
             .mapError(ProceedToLoggedInError.coincore)
-        let erc20Init = environment.erc20CryptoAssetService
-            .initialize()
-            .replaceError(with: ())
-            .eraseToAnyPublisher()
-
         return coincoreInit
-            .flatMap { _ in
-                erc20Init
+            .flatMap { [environment] _ in
+                environment.erc20CryptoAssetService
+                    .initialize()
+                    .replaceError(with: ())
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { [environment] _ in
+                environment.delegatedCustodySubscriptionsService
+                    .subscribe()
+                    .replaceError(with: ())
+                    .eraseToAnyPublisher()
             }
             .receive(on: environment.mainQueue)
             .catchToEffect { result in
@@ -895,6 +906,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 }
 .walletReducer()
 .alertReducer()
+.namespace()
 
 // MARK: - Alert Reducer
 
@@ -1025,4 +1037,22 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: AppSettingsAut
     }
 
     appSettings.clearPin()
+}
+
+extension Reducer where Action == CoreAppAction, Environment == CoreAppEnvironment {
+
+    func namespace() -> Reducer {
+        Reducer { _, action, environment in
+            switch action {
+            case .fetchedUser(let result):
+                guard let user = try? result.get() else { return .none }
+                return .fireAndForget {
+                    environment.app.signIn(userId: user.identifier)
+                }
+            default:
+                return .none
+            }
+        }
+        .combined(with: self)
+    }
 }

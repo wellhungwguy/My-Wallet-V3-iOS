@@ -6,28 +6,30 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 
+// swiftlint:disable type_name
 final class BitcoinCashActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
     typealias Model = BitcoinCashActivityItemEventDetails
 
-    private let bridge: BitcoinCashWalletBridgeAPI
+    private let repository: BitcoinCashWalletAccountRepository
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
 
     init(
         transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
-        bridge: BitcoinCashWalletBridgeAPI = resolve()
+        repository: BitcoinCashWalletAccountRepository = resolve()
     ) {
         self.transactionsService = transactionsService
-        self.bridge = bridge
+        self.repository = repository
     }
 
     func details(
         for identifier: String,
         cryptoCurrency: CryptoCurrency
     ) -> Observable<BitcoinCashActivityItemEventDetails> {
-        bridge.wallets
-            .map { wallet -> [XPub] in
-                wallet.map(\.publicKey)
+        repository.accounts
+            .map { accounts -> [XPub] in
+                accounts.map(\.publicKey)
             }
+            .asSingle()
             .flatMap { [transactionsService] publicKeys -> Single<BitcoinCashActivityItemEventDetails> in
                 transactionsService
                     .transaction(publicKeys: publicKeys, identifier: identifier)
