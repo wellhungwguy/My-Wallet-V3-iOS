@@ -439,6 +439,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         repository: BINDWithdrawRepositoryProtocol = resolve()
     ) async throws {
         guard let state = try await transactionModel.state.await() else { return }
+        guard let fiat = (state.source?.currencyType ?? state.destination?.currencyType)?.fiatCurrency else {
+            return assertionFailure("Expected one fiat currency to create a BIND beneficiary")
+        }
         let presentingViewController = viewController.uiviewController
         presentingViewController.present(
             UIHostingController(
@@ -463,7 +466,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                         }
                     )
                 }
-                .environmentObject(BINDWithdrawService(repository: repository))
+                    .environmentObject(BINDWithdrawService(repository: repository.currency(fiat.code)))
             ),
             animated: true,
             completion: nil

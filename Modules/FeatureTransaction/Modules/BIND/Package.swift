@@ -14,8 +14,9 @@ let package = Package(
         .package(path: "../../../BlockchainNamespace"),
         .package(path: "../../../BlockchainComponentLibrary"),
         .package(path: "../../../Errors"),
-        .package(path: "../../../Network"),
+        .package(path: "../../../Localization"),
         .package(path: "../../../Money"),
+        .package(path: "../../../Network"),
         .package(path: "../../../Tool")
     ],
     targets: [
@@ -23,7 +24,8 @@ let package = Package(
             name: "BINDWithdrawUI",
             dependencies: [
                 .target(name: "BINDWithdrawDomain"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "Localization", package: "Localization")
             ]
         ),
         .target(

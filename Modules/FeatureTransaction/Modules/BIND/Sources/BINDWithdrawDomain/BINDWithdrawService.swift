@@ -1,3 +1,4 @@
+import BlockchainNamespace
 import Combine
 import Errors
 import Foundation
@@ -6,13 +7,13 @@ import ToolKit
 @MainActor
 public class BINDWithdrawService: ObservableObject {
 
-    @Published public private(set) var result: Result<BIND, UX.Error>?
+    @Published public private(set) var result: Result<BINDBeneficiary, UX.Error>?
     @Published public private(set) var isLoading: Bool = false
 
     private let repository: BINDWithdrawRepositoryProtocol
 
     public init(
-        initialResult result: Result<BIND, UX.Error>? = nil,
+        initialResult result: Result<BINDBeneficiary, UX.Error>? = nil,
         repository: BINDWithdrawRepositoryProtocol
     ) {
         self.result = result
@@ -23,18 +24,23 @@ public class BINDWithdrawService: ObservableObject {
         guard text.isNotEmpty else {
             return (result = nil)
         }
-        isLoading = true
-        repository.search(text)
-            .mapError(UX.Error.init(nabu:))
-            .result()
-            .receive(on: DispatchQueue.main)
-            .handleEvents(receiveCompletion: { [weak self] _ in self?.isLoading = false })
-            .assign(to: &$result)
+
+        Task(priority: .userInitiated) {
+            isLoading = true
+            do {
+                if let beneficiary = try await repository.search(address: text).await() {
+                    result = .success(beneficiary)
+                }
+            } catch {
+                result = .failure(UX.Error(error: error))
+            }
+            isLoading = false
+        }
     }
 
-    public func link(_ bind: BIND) async throws {
+    public func link(_ beneficiary: BINDBeneficiary) async throws {
         isLoading = true
-        try await repository.link(bind.label).values.first
+        try await repository.link(beneficiary: beneficiary.id).await()
         isLoading = false
     }
 }

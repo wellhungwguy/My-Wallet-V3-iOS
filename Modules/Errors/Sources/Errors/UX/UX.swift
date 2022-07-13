@@ -127,6 +127,8 @@ extension UX.Error {
 
     public init(error: Swift.Error?) {
         switch error {
+        case let ux as UX.Error:
+            self = ux
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:

@@ -10,12 +10,12 @@ import ToolKit
 public struct BINDWithdrawView: View {
 
     @EnvironmentObject private var service: BINDWithdrawService
-    @ObservedObject private var search = DebounceTextFieldObserver(delay: .milliseconds(500))
+    @ObservedObject private var search = DebounceTextFieldObserver(delay: .seconds(1))
 
-    @MainActor private let action: (BIND) -> Void
+    @MainActor private let success: (BINDBeneficiary) -> Void
 
-    public init(action: @escaping (BIND) -> Void) {
-        self.action = action
+    public init(success: @escaping (BINDBeneficiary) -> Void) {
+        self.success = success
     }
 
     public var body: some View {
@@ -24,7 +24,7 @@ public struct BINDWithdrawView: View {
                 searchView
                 switch service.result {
                 case .none:
-                    infoView
+                    emptyView
                 case .success(let bind):
                     detailsView(bind)
                 case .failure(let error):
@@ -43,34 +43,26 @@ public struct BINDWithdrawView: View {
     @State private var isFirstResponder: Bool = false
 
     @ViewBuilder private var searchView: some View {
-        Text("Alias/CBU/CVU")
+        Text(L10n.search.title)
             .typography(.paragraph2)
             .foregroundColor(.semantic.title)
         Input(
             text: $search.input,
             isFirstResponder: $isFirstResponder,
-            placeholder: "Search"
+            placeholder: L10n.search.placeholder
         )
         .onChange(of: search.output) { term in
             service.search(term)
         }
     }
 
-    @ViewBuilder private var infoView: some View {
-        Text(
-            """
-            Please, enter your bank Alias/CBU/CVU to link a new bank account in your name.
-
-            If you enter an alias:
-            - It has to be between 6 and 20 characters (letters, numbers, dash and dot)
-            - Don’t include the letter “ñ”, accents, gaps and other special characters.
-            """
-        )
-        .typography(.caption1)
-        .foregroundColor(.semantic.body)
+    @ViewBuilder private var emptyView: some View {
+        Text(L10n.empty.info)
+            .typography(.caption1)
+            .foregroundColor(.semantic.body)
     }
 
-    @ViewBuilder private func detailsView(_ bind: BIND) -> some View {
+    @ViewBuilder private func detailsView(_ bind: BINDBeneficiary) -> some View {
         Color.clear
             .frame(height: 8.pt)
         List {
@@ -94,9 +86,9 @@ public struct BINDWithdrawView: View {
                     .aspectRatio(1, contentMode: .fit)
                     .frame(width: 24.pt)
                 VStack(alignment: .leading) {
-                    Text("Bank Transfers Only")
+                    Text(L10n.disclaimer.title)
                         .foregroundColor(.semantic.title)
-                    Text("Only send funds to a bank account in your name. If not, your withdrawal could be delayed or rejected.")
+                    Text(L10n.disclaimer.description)
                         .foregroundColor(.semantic.body)
                 }
                 .typography(.caption1)
@@ -104,15 +96,18 @@ public struct BINDWithdrawView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             Group {
                 if case .success(let bind) = service.result {
-                    PrimaryButton(title: "Next", isLoading: service.isLoading) {
-                        Task {
+                    PrimaryButton(
+                        title: L10n.action.next,
+                        isLoading: service.isLoading
+                    ) {
+                        Task(priority: .userInitiated) {
                             try await service.link(bind)
-                            action(bind)
+                            success(bind)
                         }
                     }
                 } else {
                     PrimaryButton(
-                        title: "Next",
+                        title: L10n.action.next,
                         isLoading: service.isLoading
                     )
                     .disabled(true)
@@ -130,7 +125,7 @@ public struct BINDWithdrawView: View {
     }
 }
 
-extension BIND {
+extension BINDBeneficiary {
 
     fileprivate struct Row: Hashable {
         let title: String
@@ -139,13 +134,12 @@ extension BIND {
 
     fileprivate var ux: [Row] {
         [
-            .init(title: "Bank Name", value: bankName),
-            .init(title: "Alias", value: label),
-            .init(title: "Account Holder", value: accountHolder),
-            .init(title: "Account Type", value: accountType),
-            .init(title: "CBU", value: address),
-            .init(title: "Account Number", value: accountNumber),
-            .init(title: "CUIL", value: extraAttributes.documentId)
+            .init(title: L10n.information.bankName, value: agent.bankName),
+            .init(title: L10n.information.alias, value: agent.label),
+            .init(title: L10n.information.accountHolder, value: agent.name),
+            .init(title: L10n.information.accountType, value: agent.accountType),
+            .init(title: L10n.information.CBU, value: agent.address),
+            .init(title: L10n.information.CUIL, value: agent.holderDocument)
         ]
     }
 }
@@ -154,7 +148,7 @@ struct BINDWithdrawViewPreviews: PreviewProvider {
 
     static var previews: some View {
 
-        BINDWithdrawView(action: { _ in })
+        BINDWithdrawView(success: { _ in })
             .environmentObject(
                 BINDWithdrawService(
                     initialResult: nil,
@@ -162,7 +156,7 @@ struct BINDWithdrawViewPreviews: PreviewProvider {
                 )
             )
 
-        BINDWithdrawView(action: { _ in })
+        BINDWithdrawView(success: { _ in })
             .environmentObject(
                 BINDWithdrawService(
                     initialResult: .failure(
@@ -175,7 +169,7 @@ struct BINDWithdrawViewPreviews: PreviewProvider {
                 )
             )
 
-        BINDWithdrawView(action: { _ in })
+        BINDWithdrawView(success: { _ in })
             .environmentObject(
                 BINDWithdrawService(
                     initialResult: .success(.preview),
@@ -185,18 +179,22 @@ struct BINDWithdrawViewPreviews: PreviewProvider {
     }
 }
 
-class BINDWithdrawPreviewRepository: BINDWithdrawRepositoryProtocol {
+final class BINDWithdrawPreviewRepository: BINDWithdrawRepositoryProtocol {
 
     init() {}
 
-    func search(_ address: String) -> AnyPublisher<BIND, Nabu.Error> {
+    func currency(_ currency: String) -> BINDWithdrawPreviewRepository {
+        self
+    }
+
+    func search(address: String) -> AnyPublisher<BINDBeneficiary, Nabu.Error> {
         Just(.preview)
             .setFailureType(to: NabuError.self)
             .delay(for: .seconds(1), scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
-    func link(_ address: String) -> AnyPublisher<Void, Nabu.Error> {
+    func link(beneficiary beneficiaryId: String) -> AnyPublisher<Void, Nabu.Error> {
         Just(())
             .setFailureType(to: NabuError.self)
             .eraseToAnyPublisher()
