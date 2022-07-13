@@ -1,7 +1,7 @@
 // swiftlint:disable all
 
-import enum Localization.LocalizationConstants
 import Foundation
+import enum Localization.LocalizationConstants
 
 typealias L10n = LocalizationConstants.BIND
 
@@ -23,7 +23,7 @@ extension LocalizationConstants {
                 - It has to be between 6 and 20 characters (letters, numbers, dash and dot)
                 - Don’t include the letter “ñ”, accents, gaps and other special characters.
                 """,
-            comment: "BIND Withdraw: Empty state information shown when the customer has not entered an alias"
+                comment: "BIND Withdraw: Empty state information shown when the customer has not entered an alias"
             ), ()
         )
 
