@@ -105,11 +105,11 @@ extension DependencyContainer {
             return client as BlockchainNameResolutionClientAPI
         }
 
-        single { () -> BINDWithdrawRepositoryProtocol in
+        factory {
             BINDWithdrawRepository(
                 requestBuilder: DIKit.resolve(tag: DIKitContext.retail),
                 network: DIKit.resolve(tag: DIKitContext.retail)
-            )
+            ) as BINDWithdrawRepositoryProtocol
         }
     }
 }
