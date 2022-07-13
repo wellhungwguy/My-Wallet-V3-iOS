@@ -19,7 +19,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     let allEnabledFiatCurrencies: [FiatCurrency] = MoneyKit.allEnabledFiatCurrencies
 
-    let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD, .ARS, .BRL]
+    let bankTransferEligibleFiatCurrencies: [FiatCurrency] = [.USD, .ARS]
 
     var allEnabledCurrencies: [CurrencyType] {
         defer { allEnabledCurrenciesLock.unlock() }
