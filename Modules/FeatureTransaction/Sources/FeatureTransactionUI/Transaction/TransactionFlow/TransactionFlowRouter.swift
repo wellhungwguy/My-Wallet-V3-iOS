@@ -466,7 +466,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                         }
                     )
                 }
-                    .environmentObject(BINDWithdrawService(repository: repository.currency(fiat.code)))
+                .environmentObject(BINDWithdrawService(repository: repository.currency(fiat.code)))
             ),
             animated: true,
             completion: nil
