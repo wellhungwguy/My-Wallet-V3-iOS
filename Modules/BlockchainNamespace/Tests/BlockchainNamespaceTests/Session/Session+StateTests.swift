@@ -119,7 +119,6 @@ final class SessionStateTests: XCTestCase {
                 forKey: "blockchain.session.state"
             )
             XCTAssertNoThrow(try state.get(blockchain.session.state.preference.value))
-            XCTAssertEqual(object["ø"] as? [String: Bool], ["blockchain.app.configuration.remote.is.stale": false])
             XCTAssertEqual(object[userId] as? [String: Bool], ["blockchain.session.state.preference.value": true])
         }
 

@@ -111,6 +111,7 @@ final class AppDeepLinkTests: XCTestCase {
     func test_handle_deep_link_is_deferred_until_ready() throws {
 
         let event = expectation(description: #function)
+        event.assertForOverFulfill = false
 
         app.on(blockchain.db.type.string)
             .sink { _ in event.fulfill() }
