@@ -111,36 +111,47 @@ final class ProductsRepositoryTests: XCTestCase {
         try stubClientProductsDataResponse(usingFileNamed: "stub_products")
         // return expected products from parsing the file
         return [
-            ProductValue.trading(
-                TradingProduct(
-                    id: .buy,
-                    enabled: true,
-                    maxOrdersCap: nil,
-                    maxOrdersLeft: nil,
-                    canPlaceOrder: true,
-                    suggestedUpgrade: nil
-                )
+            ProductValue(
+                id: .buy,
+                enabled: true
             ),
-            ProductValue.trading(
-                TradingProduct(
-                    id: .swap,
-                    enabled: true,
-                    maxOrdersCap: 1,
-                    maxOrdersLeft: 0,
-                    canPlaceOrder: false,
-                    suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
-                )
+            ProductValue(
+                id: .sell,
+                enabled: false,
+                maxOrdersCap: 1,
+                maxOrdersLeft: 0,
+                suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
             ),
-            ProductValue.custodialWallet(
-                CustodialWalletProduct(
-                    id: .custodialWallet,
-                    enabled: true,
-                    canDepositFiat: false,
-                    canDepositCrypto: false,
-                    canWithdrawCrypto: true,
-                    canWithdrawFiat: true,
-                    suggestedUpgrade: nil
-                )
+            ProductValue(
+                id: .swap,
+                enabled: true,
+                maxOrdersCap: 1,
+                maxOrdersLeft: 0
+            ),
+            ProductValue(
+                id: .trade,
+                enabled: false
+            ),
+            ProductValue(
+                id: .depositFiat,
+                enabled: false,
+                reasonNotEligible: ProductIneligibility(type: .sanction, message: "Error message", reason: .eu5Sanction)
+            ),
+            ProductValue(
+                id: .depositCrypto,
+                enabled: false
+            ),
+            ProductValue(
+                id: .depositInterest,
+                enabled: false
+            ),
+            ProductValue(
+                id: .withdrawFiat,
+                enabled: true
+            ),
+            ProductValue(
+                id: .withdrawCrypto,
+                enabled: true
             )
         ]
     }

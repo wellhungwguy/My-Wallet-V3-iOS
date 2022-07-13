@@ -239,6 +239,7 @@ extension UIColor {
     public static let iconDefault = grey400
     public static let iconSelected = grey400
     public static let iconWarning = orange600
+    public static let iconWarningBackground = orange100
 
     // MARK: Currency
 

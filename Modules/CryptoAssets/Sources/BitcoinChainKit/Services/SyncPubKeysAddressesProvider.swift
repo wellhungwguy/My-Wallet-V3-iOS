@@ -23,6 +23,7 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
         self.fetchMultiAddressFor = fetchMultiAddressFor
     }
 
+    // swiftlint:disable reduce_into
     func provideAddresses(
         active: [String],
         accounts: [Account]
@@ -32,12 +33,10 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
             coin: .bitcoin,
             lookupAheadCount: Self.defaultLookAheadCount
         )
-        .map { hdAddresses -> [String] in
-            let flattenedAddresses = hdAddresses.flatMap { $0 }
-            return active + flattenedAddresses
-        }
-        .map { addresses -> String in
-            addresses.joined(separator: "|")
+        .map { hdAddresses -> String in
+            let gathered = active + hdAddresses
+            let formatted = gathered.joined(separator: "|")
+            return formatted
         }
         .eraseToAnyPublisher()
     }
@@ -46,7 +45,7 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
         accounts: [Account],
         coin: BitcoinChainCoin,
         lookupAheadCount: UInt32
-    ) -> AnyPublisher<[[String]], SyncPubKeysAddressesProviderError> {
+    ) -> AnyPublisher<[String], SyncPubKeysAddressesProviderError> {
         accounts.publisher
             .flatMap { [mnemonicProvider, fetchMultiAddressFor] account
                 -> AnyPublisher<[String], SyncPubKeysAddressesProviderError> in
@@ -70,9 +69,12 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
                             )
                         }
                 }
+                .first()
                 .eraseToAnyPublisher()
             }
-            .collect()
+            .reduce([String]()) { previous, new in
+                previous + new
+            }
             .mapError { _ in SyncPubKeysAddressesProviderError.failureProvidingAddresses }
             .eraseToAnyPublisher()
     }

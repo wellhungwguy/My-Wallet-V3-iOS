@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import FeatureProductsDomain
+import Foundation
 import NetworkKit
 
 public protocol ProductsClientAPI {
@@ -25,8 +26,10 @@ public final class ProductsAPIClient: ProductsClientAPI {
     }
 
     public func fetchProductsData() -> AnyPublisher<ProductsAPIResponse, NabuNetworkError> {
+        let queryItem = URLQueryItem(name: "product", value: "SIMPLEBUY")
         let request = requestBuilder.get(
             path: Path.products,
+            parameters: [queryItem],
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

@@ -64,11 +64,29 @@
       }
     },
     {
+      "identity" : "gifu",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kaishin/Gifu",
+      "state" : {
+        "revision" : "51f2eab32903e336f590c013267cfa4d7f8b06c4",
+        "version" : "3.3.1"
+      }
+    },
+    {
       "identity" : "lexicon",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/screensailor/Lexicon",
       "state" : {
         "revision" : "160c4c417f8490658a8396d0283fb0d6fb98c327"
+      }
+    },
+    {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "state" : {
+        "revision" : "246bab7ef72bad56abefb88e84a08871cecf9cb8",
+        "version" : "3.4.0"
       }
     },
     {
@@ -89,12 +107,21 @@
       }
     },
     {
+      "identity" : "nukeui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/NukeUI.git",
+      "state" : {
+        "revision" : "db55022a8e483774ebbf3568727071477546d9ea",
+        "version" : "0.8.3"
+      }
+    },
+    {
       "identity" : "phonenumberkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "d4c094934237b23344cf948dd999c431feb8da06",
-        "version" : "3.4.1"
+        "revision" : "4ab804c31e095fa2372aa81baba4a855c8d9cf59",
+        "version" : "3.4.2"
       }
     },
     {
@@ -138,8 +165,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stripe/stripe-ios",
       "state" : {
-        "revision" : "5198b896b41636aef9ea8e3ecf2d43918cbf3c0d",
-        "version" : "22.5.1"
+        "revision" : "ef0c465f84402af07565d637ffb5952d3d2cc37b",
+        "version" : "22.6.0"
       }
     },
     {

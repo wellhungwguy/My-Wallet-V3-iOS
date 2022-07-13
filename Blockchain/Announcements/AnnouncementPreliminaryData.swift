@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureProductsDomain
 import MoneyKit
 import PlatformKit
 import WalletPayloadKit
@@ -66,6 +67,8 @@ struct AnnouncementPreliminaryData {
     /// Whether the user has a wallet balance in any account.
     let hasAnyWalletBalance: Bool
 
+    let majorProductBlocked: ProductIneligibility?
+
     private let simpleBuyEventCache: EventCache
 
     init(
@@ -73,6 +76,7 @@ struct AnnouncementPreliminaryData {
         authenticatorType: WalletAuthenticatorType,
         claimFreeDomainEligible: Bool,
         countries: [CountryData],
+        majorProductBlocked: ProductIneligibility?,
         hasAnyWalletBalance: Bool,
         isSDDEligible: Bool,
         newAsset: CryptoCurrency?,
@@ -86,6 +90,7 @@ struct AnnouncementPreliminaryData {
         self.claimFreeDomainEligible = claimFreeDomainEligible
         self.hasAnyWalletBalance = hasAnyWalletBalance
         self.isSDDEligible = isSDDEligible
+        self.majorProductBlocked = majorProductBlocked
         self.newAsset = newAsset
         self.simpleBuy = simpleBuy
         self.simpleBuyEventCache = simpleBuyEventCache

@@ -42,6 +42,7 @@ extension AnnouncementRecord {
         case ukEntitySwitch
         case walletConnect
         case applePay
+        case majorProductBlocked
 
         var string: String {
             let prefix = "announcement-"
@@ -103,6 +104,8 @@ extension AnnouncementRecord {
                 key = "wallet-connect"
             case .applePay:
                 key = "apple-pay"
+            case .majorProductBlocked:
+                key = "cache-major-product-blocked"
             }
 
             return prefix + key

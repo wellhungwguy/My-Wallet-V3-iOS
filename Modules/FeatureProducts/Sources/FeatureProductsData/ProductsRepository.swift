@@ -23,8 +23,9 @@ public final class ProductsRepository: ProductsRepositoryAPI {
         cachedProducts = CachedValueNew(
             cache: cache,
             fetch: { _ in
-                client.fetchProductsData()
-                    .map([ProductValue].init)
+                client
+                    .fetchProductsData()
+                    .map(\ProductsAPIResponse.products)
                     .eraseToAnyPublisher()
             }
         )
@@ -36,19 +37,5 @@ public final class ProductsRepository: ProductsRepositoryAPI {
 
     public func streamProducts() -> AnyPublisher<Result<[ProductValue], NabuNetworkError>, Never> {
         cachedProducts.stream(key: CacheKey.products)
-    }
-}
-
-// MARK: - Parsing Helpers
-
-extension Array where Element == ProductValue {
-
-    /// This may not be the best interface for this but works for now. To be revisited.
-    fileprivate init(_ response: ProductsAPIResponse) {
-        self = [
-            ProductValue.trading(response.buy),
-            ProductValue.trading(response.swap),
-            ProductValue.custodialWallet(response.custodialWallets)
-        ]
     }
 }

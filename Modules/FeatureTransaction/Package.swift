@@ -81,6 +81,7 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureKYC"),
+        .package(path: "../FeatureProducts"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
@@ -100,6 +101,7 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "FeatureProductsDomain", package: "FeatureProducts"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
             ]
@@ -167,7 +169,8 @@ let package = Package(
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "PlatformKitMock", package: "Platform")
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "FeatureProductsDomain", package: "FeatureProducts")
             ]
         ),
         .testTarget(

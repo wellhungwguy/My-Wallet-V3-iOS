@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Errors
+import FeatureProductsDomain
 import MoneyKit
 import PlatformKit
 
@@ -33,6 +34,9 @@ public enum TransactionValidationState: Equatable {
     /// The amount is over the user's maximum limit for the transaction.
     /// Takes the applicable Periodic Limit that has been exceeded, the available limit, and an optional suggested upgrade.
     case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, LimitsUpgrade?)
+    /// The account is restricted and cannot transact
+    /// Takes the ineligibility reason as a parameter
+    case accountIneligible(ProductIneligibility)
 
     // MARK: - Not checked
 

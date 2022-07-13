@@ -1,4 +1,4 @@
---exclude Carthage,Submodules,SourcePackages,vendor,scripts,Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift
+--exclude Carthage,Submodules,SourcePackages,vendor,scripts,Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift,Modules/FeatureApp/Sources/FeatureAppUI/CoreCoordinator.swift
 --disable blankLinesAtStartOfScope
 --disable spaceAroundParens
 --disable redundanttype

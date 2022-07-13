@@ -9,6 +9,7 @@ import FeatureCryptoDomainUI
 import FeatureDashboardUI
 import FeatureKYCDomain
 import FeatureNFTDomain
+import FeatureProductsDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -171,6 +172,9 @@ final class AnnouncementPresenter {
 
             let announcement: Announcement
             switch type {
+            case .majorProductBlocked:
+                let reason = preliminaryData.majorProductBlocked
+                announcement = majorProductBlocked(reason)
             case .claimFreeCryptoDomain:
                 announcement = claimFreeCryptoDomainAnnouncement(
                     claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
@@ -260,11 +264,25 @@ final class AnnouncementPresenter {
         return .none
     }
 
-    // MARK: - Accessors
+    // MARK: - Private Helpers
 
     /// Hides whichever announcement is now displaying
-    private func hideAnnouncement() {
-        announcementRelay.accept(.hide)
+    private var announcementDismissAction: CardAnnouncementAction {
+        { [weak self] in
+            self?.announcementRelay.accept(.hide)
+        }
+    }
+
+    private func actionForOpening(_ absoluteURL: String) -> CardAnnouncementAction {
+        { [weak self] in
+            guard let destination = self?.topMostViewControllerProvider.topMostViewController else {
+                return
+            }
+            self?.webViewServiceAPI.openSafari(
+                url: absoluteURL,
+                from: destination
+            )
+        }
     }
 }
 
@@ -293,9 +311,7 @@ extension AnnouncementPresenter {
             isEmailVerified: user.email.verified,
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: UIApplication.shared.openMailApplication,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
+            dismiss: announcementDismissAction
         )
     }
 
@@ -311,12 +327,10 @@ extension AnnouncementPresenter {
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                 guard let self = self else { return }
-                self.hideAnnouncement()
+                self.announcementDismissAction()
                 self.handleBuyCrypto()
             },
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
+            dismiss: announcementDismissAction
         )
     }
 
@@ -325,12 +339,10 @@ extension AnnouncementPresenter {
         TransferInCryptoAnnouncement(
             isKycSupported: isKycSupported,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let self = self else { return }
-                self.hideAnnouncement()
+                self.announcementDismissAction()
                 self.tabSwapping.switchTabToReceive()
             }
         )
@@ -340,9 +352,7 @@ extension AnnouncementPresenter {
     private func verifyIdentity(using user: NabuUser) -> Announcement {
         VerifyIdentityAnnouncement(
             isCompletingKyc: kycSettings.isCompletingKyc,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1
@@ -355,12 +365,25 @@ extension AnnouncementPresenter {
         )
     }
 
+    /// Computes Major Product Blocked announcement
+    private func majorProductBlocked(_ reason: ProductIneligibility?) -> Announcement {
+        MajorProductBlockedAnnouncement(
+            announcementMessage: reason?.message,
+            dismiss: announcementDismissAction,
+            action: { [actionForOpening] in
+                if let learnMoreURL = reason?.learnMoreUrl {
+                    return actionForOpening(learnMoreURL.absoluteString)
+                }
+                return {}
+            }(),
+            showLearnMoreButton: reason?.learnMoreUrl != nil
+        )
+    }
+
     /// Computes Bitpay announcement
     private var bitpay: Announcement {
         BitpayAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
+            dismiss: announcementDismissAction
         )
     }
 
@@ -377,9 +400,7 @@ extension AnnouncementPresenter {
     ) -> Announcement {
         AssetRenameAnnouncement(
             data: data,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let asset = data?.asset else {
                     return
@@ -392,41 +413,23 @@ extension AnnouncementPresenter {
     private func ukEntitySwitch(user: NabuUser) -> Announcement {
         UKEntitySwitchAnnouncement(
             userCountry: user.address?.country,
-            dismiss: hideAnnouncement,
-            action: { [topMostViewControllerProvider, webViewServiceAPI] in
-                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
-                    return
-                }
-                webViewServiceAPI.openSafari(
-                    url: "https://support.blockchain.com/hc/en-us/articles/4418431131668",
-                    from: topMostViewController
-                )
-            }
+            dismiss: announcementDismissAction,
+            action: actionForOpening("https://support.blockchain.com/hc/en-us/articles/4418431131668")
         )
     }
 
     private func walletConnect() -> Announcement {
-        WalletConnectAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [topMostViewControllerProvider, webViewServiceAPI] in
-                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
-                    return
-                }
-                webViewServiceAPI.openSafari(
-                    url: "https://medium.com/blockchain/introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9",
-                    from: topMostViewController
-                )
-            }
+        let absolutURL = "https://medium.com/blockchain/" +
+            "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
+        return WalletConnectAnnouncement(
+            dismiss: announcementDismissAction,
+            action: actionForOpening(absolutURL)
         )
     }
 
     private func applePay() -> Announcement {
         ApplePayAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: "APPLE_PAY")
                 self?.handleBuyCrypto(currency: .bitcoin)
@@ -441,9 +444,7 @@ extension AnnouncementPresenter {
         TaxCenterAnnouncement(
             userCountry: userCountry,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
+            dismiss: announcementDismissAction
         )
     }
 
@@ -451,9 +452,7 @@ extension AnnouncementPresenter {
     private func newAsset(cryptoCurrency: CryptoCurrency?) -> Announcement {
         NewAssetAnnouncement(
             cryptoCurrency: cryptoCurrency,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let cryptoCurrency = cryptoCurrency else {
                     return
@@ -467,9 +466,7 @@ extension AnnouncementPresenter {
     private func cashAnnouncement(isKYCVerified: Bool) -> Announcement {
         CashIdentityVerificationAnnouncement(
             shouldShowCashIdentityAnnouncement: !isKYCVerified,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak cashIdentityVerificationRouter] in
                 cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
             }
@@ -479,21 +476,8 @@ extension AnnouncementPresenter {
     /// Cash Support Announcement for users who have not KYC'd
     private var cloudBackupAnnouncement: Announcement {
         CloudBackupAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
-                    return
-                }
-                self.webViewServiceAPI.openSafari(
-                    url: "https://support.blockchain.com/hc/en-us/articles/360046143432",
-                    from: topMostViewController
-                )
-            }
+            dismiss: announcementDismissAction,
+            action: actionForOpening("https://support.blockchain.com/hc/en-us/articles/360046143432")
         )
     }
 
@@ -506,9 +490,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 self?.presentClaimIntroductionHostingController()
             },
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
+            dismiss: announcementDismissAction
         )
     }
 
@@ -596,9 +578,7 @@ extension AnnouncementPresenter {
     private func interestAnnouncement(isKYCVerified: Bool) -> Announcement {
         InterestIdentityVerificationAnnouncement(
             isKYCVerified: isKYCVerified,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak interestIdentityVerificationRouter] in
                 interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
             }
@@ -610,9 +590,7 @@ extension AnnouncementPresenter {
     private func fiatFundsLinkBank(isKYCVerified: Bool, hasLinkedBanks: Bool) -> Announcement {
         FiatFundsLinkBankAnnouncement(
             shouldShowLinkBankAnnouncement: false, // TODO: remove `false` and uncomment this: isKYCVerified && !hasLinkedBanks,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: {
                 // TODO: Route to bank linking
             }
@@ -630,9 +608,7 @@ extension AnnouncementPresenter {
         BuyBitcoinAnnouncement(
             isEnabled: tiers.isTier0 && isSDDEligible && !hasAnyWalletBalance,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.handleBuyCrypto(currency: .bitcoin)
             }
@@ -644,9 +620,7 @@ extension AnnouncementPresenter {
         BuyBitcoinAnnouncement(
             isEnabled: !wallet.isBitcoinWalletFunded,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.handleBuyCrypto(currency: .bitcoin)
             }
@@ -661,9 +635,7 @@ extension AnnouncementPresenter {
         NewSwapAnnouncement(
             isEligibleForSimpleBuy: data.simpleBuy.isEligible,
             isTier1Or2Verified: data.tiers.isTier1Approved || data.tiers.isTier2Approved,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.tabSwapping.switchTabToSwap()
                 self?.analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .dashboardPromo))
@@ -677,9 +649,7 @@ extension AnnouncementPresenter {
         return BackupFundsAnnouncement(
             shouldBackupFunds: shouldBackupFunds,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.backupFlowStarter.startBackupFlow()
             }
@@ -692,9 +662,7 @@ extension AnnouncementPresenter {
         return Enable2FAAnnouncement(
             shouldEnable2FA: shouldEnable2FA,
             reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 self?.settingsStarter.showSettingsView()
             }
@@ -703,9 +671,8 @@ extension AnnouncementPresenter {
 
     private func viewNFTComingSoonAnnouncement() -> Announcement {
         ViewNFTComingSoonAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }, action: { [weak self] in
+            dismiss: announcementDismissAction,
+            action: { [weak self] in
                 guard let self = self else { return }
                 self.registerEmailForNFTViewWaitlist()
             }
@@ -717,9 +684,7 @@ extension AnnouncementPresenter {
         ResubmitDocumentsAnnouncement(
             needsDocumentResubmission: user.needsDocumentResubmission != nil
                 && user.needsDocumentResubmission?.reason != 1,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
+            dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let self = self else { return }
                 let tier = user.tiers?.selected ?? .tier1

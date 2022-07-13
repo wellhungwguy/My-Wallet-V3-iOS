@@ -4,6 +4,7 @@ import AnalyticsKit
 import Errors
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeatureProductsDomain
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -65,11 +66,17 @@ extension TransactionErrorState {
     func ux(action: AssetAction) -> UX.Error {
         if let error = extract(UX.Error.self, from: self) {
             return error
-        } else if let error = extract(Nabu.Error.self, from: self), error.ux.isNotNil {
+        }
+
+        if let error = extract(Nabu.Error.self, from: self), error.ux.isNotNil {
             return UX.Error(nabu: error)
-        } else if let error = extract(NetworkError.self, from: self).map(Nabu.Error.from), error.ux.isNotNil {
+        }
+
+        if let error = extract(NetworkError.self, from: self).map(Nabu.Error.from), error.ux.isNotNil {
             return UX.Error(nabu: error)
-        } else if let error = extract(OpenBanking.Error.self, from: self) {
+        }
+
+        if let error = extract(OpenBanking.Error.self, from: self) {
             let ob = BankState.UI.errors[error, default: .defaultError]
             return UX.Error(
                 source: error,
@@ -78,15 +85,15 @@ extension TransactionErrorState {
                 icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
                 actions: .default
             )
-        } else {
-            let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
-            return UX.Error(
-                source: self,
-                title: recoveryWarningTitle(for: action),
-                message: recoveryWarningMessage(for: action),
-                metadata: error?.metadata ?? [:]
-            )
         }
+
+        let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
+        return UX.Error(
+            source: self,
+            title: recoveryWarningTitle(for: action),
+            message: recoveryWarningMessage(for: action),
+            metadata: error?.metadata ?? [:]
+        )
     }
 
     func analytics(for action: AssetAction) -> ClientEvent? {

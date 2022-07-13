@@ -37,10 +37,6 @@ final class ReceiveRouter: ReceiveRouterAPI {
         guard let account = account as? SingleAccount else {
             return
         }
-        guard restrictionsProvider.canPerform(.receive, using: account) else {
-            presentKYCScreen()
-            return
-        }
         let interactor = ReceiveScreenInteractor(account: account)
         let presenter = ReceiveScreenPresenter(interactor: interactor)
         let receive = ReceiveScreenViewController(presenter: presenter)

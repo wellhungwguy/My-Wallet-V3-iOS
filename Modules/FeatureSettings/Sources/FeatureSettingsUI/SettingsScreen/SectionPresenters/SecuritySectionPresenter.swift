@@ -1,35 +1,50 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class SecuritySectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .security
 
     var state: Observable<SettingsSectionLoadingState> {
-        .just(
-            .loaded(next:
-                .some(
-                    .init(
-                        sectionType: sectionType,
-                        items: [
-                            .init(cellType: .switch(.sms2FA, smsTwoFactorSwitchCellPresenter)),
-                            .init(cellType: .switch(.cloudBackup, cloudBackupSwitchCellPresenter)),
-                            .init(cellType: .common(.changePassword)),
-                            .init(cellType: .badge(.recoveryPhrase, recoveryCellPresenter)),
-                            .init(cellType: .common(.changePIN)),
-                            .init(cellType: .switch(.bioAuthentication, bioAuthenticationCellPresenter)),
-                            .init(cellType: .common(.addresses)),
-                            .init(cellType: .common(.userDeletion))
-                        ]
+        nativeWalletFlagEnabled()
+            .asObservable()
+            .flatMap { [weak self] isEnabled -> Observable<SettingsSectionLoadingState> in
+                guard let self = self else {
+                    return .empty()
+                }
+                let showsAddressOption: Bool = !isEnabled
+                let top: [SettingsCellViewModel] = [
+                    .init(cellType: .switch(.sms2FA, self.smsTwoFactorSwitchCellPresenter)),
+                    .init(cellType: .switch(.cloudBackup, self.cloudBackupSwitchCellPresenter)),
+                    .init(cellType: .common(.changePassword)),
+                    .init(cellType: .badge(.recoveryPhrase, self.recoveryCellPresenter)),
+                    .init(cellType: .common(.changePIN)),
+                    .init(cellType: .switch(.bioAuthentication, self.bioAuthenticationCellPresenter))
+                ]
+                let optional: [SettingsCellViewModel] = showsAddressOption
+                    ? [.init(cellType: .common(.addresses))]
+                    : []
+                let afterOptional = [SettingsCellViewModel(cellType: .common(.userDeletion))]
+
+                let items = top + optional + afterOptional
+                return .just(
+                    .loaded(next:
+                        .some(
+                            .init(
+                                sectionType: self.sectionType,
+                                items: items
+                            )
+                        )
                     )
                 )
-            )
-        )
+            }
     }
 
     private let recoveryCellPresenter: RecoveryStatusCellPresenter

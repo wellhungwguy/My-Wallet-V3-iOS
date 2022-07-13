@@ -76,6 +76,7 @@ public struct UserDeletionView: View {
                 Text(LocalizedString.bulletPoints.first)
                     .typography(.body2)
                     .foregroundColor(.textTitle)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(16)
 
                 Spacer()
@@ -97,6 +98,7 @@ public struct UserDeletionView: View {
                 Text(LocalizedString.bulletPoints.second)
                     .typography(.body2)
                     .foregroundColor(.textTitle)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(16)
 
                 Spacer()
@@ -114,6 +116,7 @@ public struct UserDeletionView: View {
             message: LocalizedString.withdrawBanner.subtitle,
             variant: .warning
         )
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var footerActionsView: some View {

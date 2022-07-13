@@ -321,6 +321,8 @@ extension TransactionConfirmations {
                 return (LocalizedString.Error.title, error.description ?? LocalizedString.Error.generic)
             case .insufficientInterestWithdrawalBalance:
                 return (LocalizedString.Error.title, LocalizedString.Error.insufficientInterestWithdrawalBalance)
+            case .accountIneligible(let reason):
+                return (LocalizedString.Error.title, reason.message)
             case .noSourcesAvailable,
                  .incorrectSourceCurrency,
                  .incorrectDestinationCurrency:

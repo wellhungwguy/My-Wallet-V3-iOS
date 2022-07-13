@@ -49,4 +49,21 @@ extension LocalizationConstants {
             comment: "Not now button title"
         )
     }
+
+    enum MajorProductBlocked {
+        public static let title = NSLocalizedString(
+            "Trading Restricted",
+            comment: "EU_5_SANCTION card title."
+        )
+
+        public static let ctaButtonLearnMore = NSLocalizedString(
+            "Learn More",
+            comment: "EU_5_SANCTION card CTA button title."
+        )
+
+        public static let defaultMessage = NSLocalizedString(
+            "Default message for inelibility",
+            comment: "This operation cannot be performed at this time. Please try again later."
+        )
+    }
 }

@@ -18,7 +18,8 @@ let package = Package(
         .library(
             name: "FeatureUserDeletionUI",
             targets: ["FeatureUserDeletionUI"]
-        )
+        ),
+        .library(name: "FeatureUserDeletionMock", targets: ["FeatureUserDeletionDomainMock"])
     ],
     dependencies: [
         .package(
@@ -31,7 +32,9 @@ let package = Package(
         .package(path: "../Errors"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../Platform"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(
@@ -75,6 +78,26 @@ let package = Package(
                     name: "UIComponents",
                     package: "UIComponents"
                 )
+            ]
+        ),
+        .target(
+            name: "FeatureUserDeletionDomainMock",
+            dependencies: [
+                .target(name: "FeatureUserDeletionDomain"),
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "PlatformUIKit", package: "Platform")
+            ]
+        ),
+        .testTarget(
+            name: "FeatureUserDeletionUITests",
+            dependencies: [
+                .target(name: "FeatureUserDeletionDomain"),
+                .target(name: "FeatureUserDeletionUI"),
+                .target(name: "FeatureUserDeletionDomainMock"),
+                .product(name: "TestKit", package: "Test")
+            ],
+            exclude: [
+                "__Snapshots__"
             ]
         )
     ]

@@ -6,7 +6,27 @@ import FeatureProductsDomain
 /// - Note: Needs to be public to be able to make the APIClient interface public.
 public struct ProductsAPIResponse: Codable, Hashable {
 
-    public let buy: TradingProduct
-    public let swap: TradingProduct
-    public let custodialWallets: CustodialWalletProduct
+    public let buy: ProductValue
+    public let sell: ProductValue
+    public let swap: ProductValue
+    public let trade: ProductValue
+    public let depositFiat: ProductValue
+    public let depositCrypto: ProductValue
+    public let depositInterest: ProductValue
+    public let withdrawFiat: ProductValue
+    public let withdrawCrypto: ProductValue
+
+    var products: [ProductValue] {
+        [
+            buy,
+            sell,
+            swap,
+            trade,
+            depositFiat,
+            depositCrypto,
+            depositInterest,
+            withdrawFiat,
+            withdrawCrypto
+        ]
+    }
 }

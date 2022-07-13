@@ -1,25 +1,50 @@
 {
-    "swap": {
-        "id": "SWAP",
-        "enabled": true,
-        "canPlaceOrder": false,
+    "buy": {
+        "id": "BUY",
+        "enabled": true
+    },
+    "sell": {
+        "id": "SELL",
+        "enabled": false,
         "maxOrdersCap": 1,
         "maxOrdersLeft": 0,
         "suggestedUpgrade": {
             "requiredTier": 2
         }
     },
-    "buy": {
-        "id": "BUY",
+    "swap": {
+        "id": "SWAP",
         "enabled": true,
-        "canPlaceOrder": true
+        "maxOrdersCap": 1,
+        "maxOrdersLeft": 0,
     },
-    "custodialWallets": {
-        "id": "CUSTODIAL_WALLET",
-        "enabled": true,
-        "canDepositFiat": false,
-        "canDepositCrypto": false,
-        "canWithdrawCrypto": true,
-        "canWithdrawFiat": true
+    "depositFiat": {
+      "id": "DEPOSIT_FIAT",
+      "enabled": false,
+      "reasonNotEligible": {
+        "reason": "EU_5_SANCTION",
+        "type": "SANCTIONS",
+        "message": "Error message"
+      }
+    },
+    "trade": {
+      "id": "TRADE",
+      "enabled": false
+    },
+    "depositCrypto": {
+      "id": "DEPOSIT_CRYPTO",
+      "enabled": false
+    },
+    "depositInterest": {
+      "id": "DEPOSIT_INTEREST",
+      "enabled": false
+    },
+    "withdrawFiat": {
+      "id": "WITHDRAW_FIAT",
+      "enabled": true
+    },
+    "withdrawCrypto": {
+      "id": "WITHDRAW_CRYPTO",
+      "enabled": true
     }
 }

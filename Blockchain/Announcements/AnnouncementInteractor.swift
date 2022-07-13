@@ -6,6 +6,7 @@ import ERC20Kit
 import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureCryptoDomainDomain
+import FeatureProductsDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -115,6 +116,15 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             }
             .asSingle()
 
+        let majorProductBlocked = productsService
+            .fetchProducts()
+            .map { products in
+                products
+                    .first(where: { $0.reasonNotEligible?.reason == .eu5Sanction })?
+                    .reasonNotEligible
+            }
+            .asSingle()
+
         let data = Single.zip(
             nabuUser,
             tiers,
@@ -126,7 +136,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 assetRename,
                 simpleBuy,
                 sddEligibility,
-                claimFreeDomainEligible
+                claimFreeDomainEligible,
+                majorProductBlocked
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
@@ -141,7 +152,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     assetRename,
                     simpleBuy,
                     isSDDEligible,
-                    claimFreeDomainEligible
+                    claimFreeDomainEligible,
+                    majorProductBlocked
                 )
             ) = payload
             return AnnouncementPreliminaryData(
@@ -149,6 +161,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 authenticatorType: authenticatorType,
                 claimFreeDomainEligible: claimFreeDomainEligible,
                 countries: countries,
+                majorProductBlocked: majorProductBlocked,
                 hasAnyWalletBalance: hasAnyWalletBalance,
                 isSDDEligible: isSDDEligible,
                 newAsset: newAsset,
@@ -183,6 +196,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let tiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
+    private let productsService: FeatureProductsDomain.ProductsServiceAPI
     private let wallet: WalletProtocol
     private let walletStateProvider: WalletStateProvider
 
@@ -201,8 +215,9 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         userService: NabuUserServiceAPI = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet,
-        walletStateProvider: WalletStateProvider = resolve()
+        walletStateProvider: WalletStateProvider = resolve(),
+        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve(),
+        wallet: WalletProtocol = WalletManager.shared.wallet
     ) {
         self.beneficiariesService = beneficiariesService
         self.claimEligibilityRepository = claimEligibilityRepository
@@ -216,6 +231,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.tiersService = tiersService
         self.userService = userService
+        self.productsService = productsService
         self.wallet = wallet
         self.walletStateProvider = walletStateProvider
     }

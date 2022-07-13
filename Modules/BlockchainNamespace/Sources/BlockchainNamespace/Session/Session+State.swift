@@ -28,8 +28,7 @@ extension Session.State {
         internal var subjects: [Tag.Reference: Subject] = [:]
         private var dirty: (data: [Tag.Reference: Any], level: UInt) = ([:], 0)
 
-        private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
-        private var key: DispatchSpecificKey<Data.Type>
+        private let lock = NSRecursiveLock()
 
         var preferences: Preferences
 
@@ -39,7 +38,6 @@ extension Session.State {
         }
 
         init(preferences: Preferences) {
-            key = .init(on: queue)
             self.preferences = preferences
         }
     }
@@ -292,19 +290,12 @@ extension Session.State.Data {
 
     @discardableResult
     func sync<T>(execute work: () throws -> T) rethrows -> T {
-        DispatchQueue.getSpecific(key: key) == nil
-            ? try queue.sync(execute: work)
-            : try work()
+        lock.lock()
+        defer { lock.unlock() }
+        return try work()
     }
 }
 
 extension Session.State {
     public typealias Subject = PassthroughSubject<FetchResult, Never>
-}
-
-extension DispatchSpecificKey {
-    convenience init<K>(_: K.Type = K.self, on queue: DispatchQueue) where T == K.Type {
-        self.init()
-        queue.setSpecific(key: self, value: K.self)
-    }
 }

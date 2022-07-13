@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
+import FeatureProductsDomain
 import MoneyKit
 import NetworkKit
 import PlatformKit
@@ -19,6 +21,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
+    // Used to check product eligibility
+    private let productsService: FeatureProductsDomain.ProductsServiceAPI
 
     private var actionableBalance: Single<MoneyValue> {
         sourceAccount.actionableBalance.asSingle()
@@ -30,7 +34,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
-        orderCreationRepository: OrderCreationRepositoryAPI = resolve()
+        orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
+        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.walletCurrencyService = walletCurrencyService
@@ -38,6 +43,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         self.transactionLimitsService = transactionLimitsService
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
+        self.productsService = productsService
     }
 
     // MARK: - Transaction Engine
@@ -76,6 +82,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
+
                 let pendingTransaction = PendingTransaction(
                     amount: .zero(currency: self.sourceAsset),
                     available: actionableBalance,

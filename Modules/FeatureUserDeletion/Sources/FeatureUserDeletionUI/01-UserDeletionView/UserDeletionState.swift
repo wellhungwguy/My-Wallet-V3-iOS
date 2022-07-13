@@ -8,8 +8,10 @@ public struct UserDeletionState: Equatable, NavigationState {
     public var confirmViewState: DeletionConfirmState? = DeletionConfirmState()
 
     public init(
+        confirmViewState: DeletionConfirmState? = DeletionConfirmState(),
         route: RouteIntent<UserDeletionRoute>? = nil
     ) {
+        self.confirmViewState = confirmViewState
         self.route = route
     }
 }

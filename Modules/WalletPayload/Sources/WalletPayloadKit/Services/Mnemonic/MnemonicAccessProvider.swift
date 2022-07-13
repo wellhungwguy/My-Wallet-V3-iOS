@@ -42,11 +42,11 @@ final class MnemonicAccessProvider: MnemonicAccessAPI {
 
     func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
         nativeWalletFeatureFlag()
-            .flatMap { [legacyProvider] isEnabled -> AnyPublisher<Mnemonic, MnemonicAccessError> in
+            .flatMap { [legacyProvider, nativeProvider] isEnabled -> AnyPublisher<Mnemonic, MnemonicAccessError> in
                 guard isEnabled else {
-                    return legacyProvider.mnemonic
+                    return legacyProvider.mnemonic(with: secondPassword)
                 }
-                fatalError("Not supported by native wallet")
+                return nativeProvider.mnemonic(with: secondPassword)
             }
             .eraseToAnyPublisher()
     }

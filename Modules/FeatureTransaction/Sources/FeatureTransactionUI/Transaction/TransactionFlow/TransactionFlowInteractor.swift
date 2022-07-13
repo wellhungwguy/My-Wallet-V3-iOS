@@ -350,10 +350,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectDestinationAccount(target: TransactionTarget) {
-        guard canPerform(action, using: target) else {
-            presentKYCUpgradePrompt()
-            return
-        }
         transactionModel.process(action: .targetAccountSelected(target))
     }
 
@@ -366,10 +362,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     // MARK: - Private Functions
-
-    private func canPerform(_ action: AssetAction, using target: TransactionTarget) -> Bool {
-        restrictionsProvider.canPerform(action, using: target)
-    }
 
     private func doCloseFlow() {
         router?.closeFlow()

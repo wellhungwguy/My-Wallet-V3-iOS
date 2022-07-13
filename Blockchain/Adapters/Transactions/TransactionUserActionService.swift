@@ -55,31 +55,17 @@ final class TransactionUserActionService: UserActionServiceAPI {
 
 extension TransactionUserActionService: TransactionRestrictionsProviderAPI {
 
-    func canPerform(_ action: AssetAction, using target: TransactionTarget) -> Bool {
-        guard target.accountType.isCustodial else {
-            return true
-        }
-        guard let rawProduct = latestUserState?.product(id: .custodialWallet) else {
-            return true
-        }
-        guard case .custodialWallet(let custodialWalletProduct) = rawProduct else {
-            return true
-        }
-        return action.canBePerformed(custodialWalletProduct)
-    }
-
     func maximumNumbersOfTransactions(for action: AssetAction) -> Int? {
         // Ignore Tier 0 users
         guard latestUserState?.kycStatus != .unverified else {
             return nil
         }
-        guard let rawProduct = latestUserState?.product(id: action.productId) else {
+
+        guard let product = latestUserState?.product(id: action.productId) else {
             return nil
         }
-        guard case .trading(let tradingProduct) = rawProduct else {
-            return nil
-        }
-        return tradingProduct.maxOrdersCap ?? tradingProduct.maxOrdersLeft
+
+        return product.maxOrdersCap ?? product.maxOrdersLeft
     }
 }
 
@@ -91,61 +77,21 @@ extension AssetAction {
         case .buy:
             productId = .buy
         case .sell:
-            productId = nil
+            productId = .sell
         case .swap:
             productId = .swap
-        case .send:
-            productId = nil
-        case .receive:
-            productId = nil
         case .deposit:
-            productId = nil
+            productId = .depositFiat
         case .withdraw:
-            productId = nil
-        case .interestTransfer:
-            productId = nil
-        case .interestWithdraw:
-            productId = nil
-        case .linkToDebitCard:
-            productId = nil
-        case .sign:
-            productId = nil
-        case .viewActivity:
+            productId = .withdrawFiat
+        case .receive:
+            productId = .depositCrypto
+        case .send:
+            productId = .withdrawCrypto
+        default:
             productId = nil
         }
         return productId
-    }
-
-    // swiftlint:disable cyclomatic_complexity
-    func canBePerformed(_ product: CustodialWalletProduct) -> Bool {
-        let canPerformAction: Bool
-        switch self {
-        case .deposit:
-            canPerformAction = product.canDepositFiat
-        case .withdraw:
-            canPerformAction = product.canWithdrawFiat
-        case .receive:
-            canPerformAction = product.canDepositCrypto
-        case .send:
-            canPerformAction = product.canWithdrawCrypto
-        case .buy:
-            canPerformAction = true
-        case .interestTransfer:
-            canPerformAction = true
-        case .interestWithdraw:
-            canPerformAction = true
-        case .sell:
-            canPerformAction = true
-        case .sign:
-            canPerformAction = true
-        case .swap:
-            canPerformAction = true
-        case .viewActivity:
-            canPerformAction = true
-        case .linkToDebitCard:
-            canPerformAction = true
-        }
-        return canPerformAction
     }
 }
 
@@ -157,24 +103,18 @@ extension TransactionFlowAction {
         case .buy:
             productId = .buy
         case .sell:
-            productId = nil
+            productId = .sell
         case .swap:
             productId = .swap
-        case .send:
-            productId = nil
-        case .receive:
-            productId = nil
         case .deposit:
-            productId = nil
+            productId = .depositFiat
         case .withdraw:
-            productId = nil
-        case .interestTransfer:
-            productId = nil
-        case .interestWithdraw:
-            productId = nil
-        case .sign:
-            productId = nil
-        case .order:
+            productId = .withdrawFiat
+        case .receive:
+            productId = .depositCrypto
+        case .send:
+            productId = .withdrawCrypto
+        default:
             productId = nil
         }
         return productId
@@ -188,15 +128,11 @@ extension UserState {
         if productId == .buy, kycStatus == .unverified {
             return true
         }
-
         // For everyone else, check the actual product.
         guard let product = product(id: productId) else {
             // Let users use products we don't have information for
             return true
         }
-        guard product.enabled, case .trading(let tradingProduct) = product else {
-            return false
-        }
-        return tradingProduct.canPlaceOrder
+        return product.enabled
     }
 }

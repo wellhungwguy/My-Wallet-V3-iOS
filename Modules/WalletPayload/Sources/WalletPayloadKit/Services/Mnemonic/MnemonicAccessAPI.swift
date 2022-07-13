@@ -69,6 +69,12 @@ final class MnemonicAccessService: NativeMnemonicAccessAPI {
     }
 
     func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
-        fatalError("iOS doesn't support second password")
+        guard let secondPassword = secondPassword else {
+            return mnemonic
+        }
+        guard secondPassword.isEmpty else {
+            fatalError("iOS doesn't support second password")
+        }
+        return mnemonic
     }
 }

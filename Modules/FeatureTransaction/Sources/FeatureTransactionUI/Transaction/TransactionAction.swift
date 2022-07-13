@@ -574,7 +574,8 @@ extension TransactionValidationState {
             return .transactionInFlight
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
-        case .noSourcesAvailable,
+        case .accountIneligible,
+             .noSourcesAvailable,
              .incorrectSourceCurrency,
              .incorrectDestinationCurrency,
              .insufficientInterestWithdrawalBalance:

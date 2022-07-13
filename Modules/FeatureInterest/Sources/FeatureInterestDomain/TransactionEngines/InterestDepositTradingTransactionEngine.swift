@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureProductsDomain
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -39,6 +40,8 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
 
     public let walletCurrencyService: FiatCurrencyServiceAPI
     public let currencyConversionService: CurrencyConversionServiceAPI
+    // Used to check product eligibility
+    private let productsService: FeatureProductsDomain.ProductsServiceAPI
 
     // MARK: - Private Properties
 
@@ -85,13 +88,15 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
-        accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve()
+        accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve(),
+        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve()
     ) {
         self.walletCurrencyService = walletCurrencyService
         self.requireSecondPassword = requireSecondPassword
         self.currencyConversionService = currencyConversionService
         self.accountTransferRepository = accountTransferRepository
         self.accountLimitsRepository = accountLimitsRepository
+        self.productsService = productsService
     }
 
     public func assertInputsValid() {

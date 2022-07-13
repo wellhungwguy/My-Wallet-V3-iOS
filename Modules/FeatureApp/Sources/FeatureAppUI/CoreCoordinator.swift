@@ -237,7 +237,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     // do nothing if we're on the authentication state,
                     // meaning we either need to register, login or recover
                     guard isLoggedIn else {
-                        return .none
+                        return Effect.cancel(id: WalletCancelations.ForegroundInitCheckId())
                     }
                     // We need to send the `stop` action prior we show the pin entry,
                     // this clears any running operation from the logged-in state.
@@ -246,10 +246,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                         Effect(value: .requirePin)
                     )
                 }
-                return .none
+                return Effect.cancel(id: WalletCancelations.ForegroundInitCheckId())
             }
             .eraseToEffect()
-            .cancellable(id: WalletCancelations.ForegroundInitCheckId())
+            .cancellable(id: WalletCancelations.ForegroundInitCheckId(), cancelInFlight: true)
 
     case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
         // for context this performs side-effect to values in the appSettings
@@ -319,7 +319,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .requirePin:
         state.loggedIn = nil
         state.onboarding = Onboarding.State(pinState: .init())
-        return Effect(value: .onboarding(.start))
+        return .merge(
+            .cancel(id: WalletCancelations.ForegroundInitCheckId()),
+            Effect(value: .onboarding(.start))
+        )
 
     case .fetchWallet(let password):
         environment.loadingViewPresenter.showCircular()

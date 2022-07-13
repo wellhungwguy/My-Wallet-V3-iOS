@@ -82,36 +82,26 @@ final class ProductsServiceTests: XCTestCase {
 
     private func stubRepositoryWithDefaultProducts() throws -> [ProductValue] {
         let expectedProducts = [
-            ProductValue.trading(
-                TradingProduct(
-                    id: .swap,
-                    enabled: true,
-                    maxOrdersCap: 1,
-                    maxOrdersLeft: 0,
-                    canPlaceOrder: false,
-                    suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
-                )
+            ProductValue(
+                id: .swap,
+                enabled: false,
+                maxOrdersCap: 1,
+                maxOrdersLeft: 0,
+                suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
             ),
-            ProductValue.trading(
-                TradingProduct(
-                    id: .buy,
-                    enabled: true,
-                    maxOrdersCap: nil,
-                    maxOrdersLeft: nil,
-                    canPlaceOrder: true,
-                    suggestedUpgrade: nil
-                )
+            ProductValue(
+                id: .sell,
+                enabled: false,
+                maxOrdersCap: 1,
+                maxOrdersLeft: 0,
+                suggestedUpgrade: ProductSuggestedUpgrade(requiredTier: 2)
             ),
-            ProductValue.custodialWallet(
-                CustodialWalletProduct(
-                    id: .custodialWallet,
-                    enabled: true,
-                    canDepositFiat: false,
-                    canDepositCrypto: true,
-                    canWithdrawCrypto: true,
-                    canWithdrawFiat: true,
-                    suggestedUpgrade: nil
-                )
+            ProductValue(
+                id: .buy,
+                enabled: true,
+                maxOrdersCap: nil,
+                maxOrdersLeft: nil,
+                suggestedUpgrade: nil
             )
         ]
         try stubRepository(with: expectedProducts)
