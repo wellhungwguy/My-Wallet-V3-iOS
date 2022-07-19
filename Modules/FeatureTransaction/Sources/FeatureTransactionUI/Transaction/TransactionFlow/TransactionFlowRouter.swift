@@ -67,6 +67,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let cacheSuite: CacheSuite
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let bindRepository: BINDWithdrawRepositoryProtocol
 
     private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
@@ -89,7 +90,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        cacheSuite: CacheSuite = resolve()
+        cacheSuite: CacheSuite = resolve(),
+        bindRepository: BINDWithdrawRepositoryProtocol = resolve()
     ) {
         self.app = app
         self.paymentMethodLinker = paymentMethodLinker
@@ -102,6 +104,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.cacheSuite = cacheSuite
+        self.bindRepository = bindRepository
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -435,8 +438,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     @MainActor
     private func presentBINDLinkABank(
-        transactionModel: TransactionModel,
-        repository: BINDWithdrawRepositoryProtocol = resolve()
+        transactionModel: TransactionModel
     ) async throws {
         guard let state = try await transactionModel.state.await() else { return }
         guard let fiat = (state.source?.currencyType ?? state.destination?.currencyType)?.fiatCurrency else {
@@ -466,7 +468,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                         }
                     )
                 }
-                .environmentObject(BINDWithdrawService(repository: repository.currency(fiat.code)))
+                .environmentObject(BINDWithdrawService(repository: bindRepository.currency(fiat.code)))
             ),
             animated: true,
             completion: nil
