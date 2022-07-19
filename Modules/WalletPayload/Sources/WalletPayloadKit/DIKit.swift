@@ -120,6 +120,7 @@ extension DependencyContainer {
                 createWalletRepository: DIKit.resolve(),
                 usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
+                logger: DIKit.resolve(),
                 tracer: DIKit.resolve(),
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),
@@ -183,6 +184,21 @@ extension DependencyContainer {
             return BitcoinEntryFetcher(
                 walletHolder: holder,
                 metadataEntryService: metadata
+            )
+        }
+
+        factory { () -> WalletTxNoteServiceAPI in
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(
+                label: "wallet.txnote.service.op.queue",
+                qos: .userInitiated,
+                target: targetQueue
+            )
+            return WalletTxNoteService(
+                walletHolder: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                walletSync: DIKit.resolve(),
+                operationQueue: queue
             )
         }
 

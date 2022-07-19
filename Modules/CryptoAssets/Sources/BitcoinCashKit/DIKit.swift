@@ -13,7 +13,7 @@ extension DependencyContainer {
 
         factory { APIClient() as APIClientAPI }
 
-        factory { BitcoinCashWalletAccountRepository() }
+        single { BitcoinCashWalletAccountRepository() }
 
         factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
 
