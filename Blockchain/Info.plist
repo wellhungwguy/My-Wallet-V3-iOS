@@ -33,7 +33,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>202206.2.3</string>
+	<string>202206.2.4</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -48,7 +48,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>CHECKOUT_ENV</key>
 	<string>$(CHECKOUT_ENV)</string>
 	<key>COMMIT_HASH</key>

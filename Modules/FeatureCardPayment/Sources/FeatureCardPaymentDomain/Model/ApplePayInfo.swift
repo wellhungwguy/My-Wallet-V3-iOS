@@ -21,4 +21,10 @@ public struct ApplePayInfo: Codable, Equatable {
 
     /// Beneficiary ID to confirm the order
     public let beneficiaryID: String
+
+    /// Enable the credit cards
+    public let allowCreditCards: Bool?
+
+    /// Enable the prepaid cards if doable
+    public let allowPrepaidCards: Bool?
 }
