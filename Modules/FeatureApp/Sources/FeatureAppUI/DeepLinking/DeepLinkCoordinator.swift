@@ -11,6 +11,7 @@ import FeatureReferralUI
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -28,6 +29,7 @@ public final class DeepLinkCoordinator: Session.Observer {
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let transactionsRouter: TransactionsRouterAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
+    private let walletConnectService: WalletConnectServiceAPI
 
     private var bag: Set<AnyCancellable> = []
 
@@ -43,6 +45,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         topMostViewControllerProvider: TopMostViewControllerProviding,
         transactionsRouter: TransactionsRouterAPI,
         analyticsRecording: AnalyticsEventRecorderAPI,
+        walletConnectService: WalletConnectServiceAPI,
         accountsRouter: @escaping () -> AccountsRouting
     ) {
         self.accountsRouter = accountsRouter
@@ -54,6 +57,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.transactionsRouter = transactionsRouter
         self.analyticsRecording = analyticsRecording
+        self.walletConnectService = walletConnectService
     }
 
     var observers: [AnyCancellable] {
@@ -64,7 +68,8 @@ public final class DeepLinkCoordinator: Session.Observer {
             qr,
             send,
             kyc,
-            referrals
+            referrals,
+            walletConnect
         ]
     }
 
@@ -105,6 +110,10 @@ public final class DeepLinkCoordinator: Session.Observer {
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleReferral, on: self)
 
+    private lazy var walletConnect = app.on(blockchain.app.deep_link.walletconnect)
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.handleWalletConnect, on: self)
+
     func kyc(_ event: Session.Event) {
         guard let tier = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: KYC.Tier.self),
               let topViewController = topMostViewControllerProvider.topMostViewController
@@ -123,6 +132,17 @@ public final class DeepLinkCoordinator: Session.Observer {
         topMostViewControllerProvider
             .topMostViewController?
             .present(qrCodeScannerView)
+    }
+
+    func handleWalletConnect(_ event: Session.Event) {
+        guard let uri = try? event.context.decode(
+            blockchain.app.deep_link.walletconnect.uri,
+            as: String.self
+        ) else {
+            return
+        }
+
+        walletConnectService.connect(uri)
     }
 
     func handleReferral(_ event: Session.Event) {

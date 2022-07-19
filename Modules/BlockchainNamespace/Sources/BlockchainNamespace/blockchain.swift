@@ -617,6 +617,7 @@ public extension I_blockchain_app_deep__link {
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
 	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
 	var `send`: L_blockchain_app_deep__link_send { .init("\(__).send") }
+	var `walletconnect`: L_blockchain_app_deep__link_walletconnect { .init("\(__).walletconnect") }
 }
 public final class L_blockchain_app_deep__link_activity: L, I_blockchain_app_deep__link_activity {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.activity", comment: "") }
@@ -735,6 +736,17 @@ public final class L_blockchain_app_deep__link_send_destination: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.destination", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_send_destination: I_blockchain_db_type_string {}
+public final class L_blockchain_app_deep__link_walletconnect: L, I_blockchain_app_deep__link_walletconnect {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.walletconnect", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_walletconnect: I {}
+public extension I_blockchain_app_deep__link_walletconnect {
+	var `uri`: L_blockchain_app_deep__link_walletconnect_uri { .init("\(__).uri") }
+}
+public final class L_blockchain_app_deep__link_walletconnect_uri: L, I_blockchain_app_deep__link_walletconnect_uri {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.walletconnect.uri", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_walletconnect_uri: I_blockchain_db_type_string {}
 public final class L_blockchain_app_did: L, I_blockchain_app_did {
 	public override class var localized: String { NSLocalizedString("blockchain.app.did", comment: "") }
 }

@@ -166,6 +166,9 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+			walletconnect:
+				uri:
+				+ blockchain.db.type.string
 		did:
 			finish:
 				launching:

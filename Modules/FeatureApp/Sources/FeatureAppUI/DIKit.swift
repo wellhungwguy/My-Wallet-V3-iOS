@@ -71,6 +71,7 @@ extension DependencyContainer {
                 topMostViewControllerProvider: DIKit.resolve(),
                 transactionsRouter: DIKit.resolve(),
                 analyticsRecording: DIKit.resolve(),
+                walletConnectService: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
                 }
