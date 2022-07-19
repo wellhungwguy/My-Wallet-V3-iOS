@@ -94,8 +94,12 @@ struct RootView: View {
                 }
             }
         }
-        .on(blockchain.ux.home.tab.select) { event in
-            try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
+        .onReceive(app.on(blockchain.ux.home.tab.select)) { event in
+            do {
+                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
+            } catch {
+                app.post(error: error)
+            }
         }
         .onChange(of: viewStore.tab) { tab in
             app.post(event: tab.tag)
