@@ -31,7 +31,8 @@ class VerifyMnemonicBackupServiceTests: XCTestCase {
         let verifyMnemonicBackupService = VerifyMnemonicBackupService(
             walletHolder: walletHolder,
             walletSync: walletSync,
-            walletRepo: walletRepo
+            walletRepo: walletRepo,
+            logger: NoopNativeWalletLogging()
         )
 
         // When

@@ -8,7 +8,7 @@ import SwiftUI
 
 struct ActivityDetailsView: View {
 
-    let localized = LocalizationConstants.CardIssuing.Manage.Activity.self
+    typealias L10n = LocalizationConstants.CardIssuing.Manage.Activity
     let store: Store<Card.Transaction?, CardManagementAction>
 
     var body: some View {
@@ -27,65 +27,38 @@ struct ActivityDetailsView: View {
                     transactionAmount(transaction)
                     Group {
                         DetailsRow(
-                            leadingTitle: localized.DetailSections.merchant,
-                            trailingTitle: transaction.merchantName
+                            leadingTitle: L10n.DetailSections.merchant,
+                            trailingTitle: transaction.displayTitle
                         )
                         PrimaryDivider()
                         DetailsRow(
-                            leadingTitle: localized.DetailSections.dateTime,
+                            leadingTitle: L10n.DetailSections.type,
+                            trailingTitle: transaction.transactionType.displayString
+                        )
+                        PrimaryDivider()
+                        DetailsRow(
+                            leadingTitle: L10n.DetailSections.dateTime,
                             trailingTitle: transaction.displayDate,
                             trailingSubtitle: transaction.displayTime
                         )
                         PrimaryDivider()
                         DetailsRow(
-                            leadingTitle: localized.DetailSections.paymentMethod,
+                            leadingTitle: L10n.DetailSections.paymentMethod,
                             trailingTitle: transaction.counterAmount?.symbol ??
                                 transaction.originalAmount.symbol
                         )
                         PrimaryDivider()
                         DetailsRow(
-                            leadingTitle: localized.DetailSections.feesTitle,
+                            leadingTitle: L10n.DetailSections.feesTitle,
                             trailingTitle: transaction.fee.displayString,
-                            leadingSubtitle: localized.DetailSections.feesDescription
+                            leadingSubtitle: L10n.DetailSections.feesDescription
                         )
                         PrimaryDivider()
                     }
-                    if transaction.state == .completed {
-                        Group {
-                            DetailsRow(
-                                leadingTitle: localized.DetailSections.adjustedPaymentTitle,
-                                trailingTitle: transaction.clearedFundingAmount.displayString,
-                                leadingSubtitle: localized.DetailSections.adjustedPaymentDescription
-                            )
-                            PrimaryDivider()
-                            DetailsRow(
-                                leadingSubtitle: .caption(localized.DetailSections.initialAmount),
-                                trailingSubtitle: .caption("-" + transaction.fundingAmount.displayString)
-                            )
-                            PrimaryDivider()
-                            DetailsRow(
-                                leadingSubtitle: .caption(localized.DetailSections.returnedAmount),
-                                trailingSubtitle: .caption("+" + transaction.reversedAmount.displayString)
-                            )
-                            PrimaryDivider()
-                            DetailsRow(
-                                leadingSubtitle: .custom(
-                                    localized.DetailSections.settledAmount,
-                                    .semantic.title,
-                                    .caption1
-                                ),
-                                trailingSubtitle: .custom(
-                                    transaction.clearedFundingAmount.displayString,
-                                    .semantic.title,
-                                    .caption1
-                                )
-                            )
-                            PrimaryDivider()
-                        }
-                    }
+                    clearedFundingAmount(transaction)
                     Group {
                         DetailsRow(
-                            leadingTitle: .title(localized.status),
+                            leadingTitle: .title(L10n.status),
                             trailingTitle: .custom(
                                 transaction.displayStatus,
                                 transaction.statusColor,
@@ -96,7 +69,7 @@ struct ActivityDetailsView: View {
                     }
                 }
                 WithViewStore(store) { viewStore in
-                    SmallMinimalButton(title: localized.Button.help, action: {
+                    SmallMinimalButton(title: L10n.Button.help, action: {
                         viewStore.send(.showSupportFlow)
                     })
                     .padding(Spacing.padding2)
@@ -106,14 +79,54 @@ struct ActivityDetailsView: View {
         .frame(maxHeight: 60.vh)
     }
 
+    @ViewBuilder func clearedFundingAmount(_ transaction: Card.Transaction) -> some View {
+        if transaction.state == .completed,
+           !transaction.clearedFundingAmount.isZero
+        {
+            Group {
+                DetailsRow(
+                    leadingTitle: L10n.DetailSections.adjustedPaymentTitle,
+                    trailingTitle: transaction.clearedFundingAmount.displayString,
+                    leadingSubtitle: L10n.DetailSections.adjustedPaymentDescription
+                )
+                PrimaryDivider()
+                DetailsRow(
+                    leadingSubtitle: .caption(L10n.DetailSections.initialAmount),
+                    trailingSubtitle: .caption("-" + transaction.fundingAmount.displayString)
+                )
+                PrimaryDivider()
+                DetailsRow(
+                    leadingSubtitle: .caption(L10n.DetailSections.returnedAmount),
+                    trailingSubtitle: .caption("+" + transaction.reversedAmount.displayString)
+                )
+                PrimaryDivider()
+                DetailsRow(
+                    leadingSubtitle: .custom(
+                        L10n.DetailSections.settledAmount,
+                        .semantic.title,
+                        .caption1
+                    ),
+                    trailingSubtitle: .custom(
+                        transaction.clearedFundingAmount.displayString,
+                        .semantic.title,
+                        .caption1
+                    )
+                )
+                PrimaryDivider()
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
     @ViewBuilder func transactionAmount(_ transaction: Card.Transaction) -> some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(transaction.originalAmount.displayString)
+                Text(transaction.originalAmountDisplayString)
                     .typography(.title2)
                     .padding(.horizontal, Spacing.padding3)
                     .padding(.vertical, Spacing.padding2)
-                Text(localized.transactionDetails)
+                Text(L10n.transactionDetails)
                     .typography(.paragraph2)
                     .padding(.horizontal, Spacing.padding3)
                     .foregroundColor(.semantic.muted)
@@ -172,3 +185,20 @@ struct ActivityDetails_Previews: PreviewProvider {
 }
 
 #endif
+
+extension Card.Transaction.TransactionType {
+
+    var displayString: String {
+        typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.TransactionType
+        switch self {
+        case .cashback:
+            return L10n.cashback
+        case .chargeback:
+            return L10n.chargeback
+        case .refund:
+            return L10n.refund
+        case .payment, .funding:
+            return L10n.payment
+        }
+    }
+}

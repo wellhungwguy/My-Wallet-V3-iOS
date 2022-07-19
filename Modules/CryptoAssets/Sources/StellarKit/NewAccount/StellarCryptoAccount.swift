@@ -39,11 +39,13 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 
-    var activity: Single<[ActivityItemEvent]> {
-        Single.zip(nonCustodialActivity, swapActivity.asSingle())
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
+        nonCustodialActivity.zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     private var accountDetails: AnyPublisher<StellarAccountDetails, StellarNetworkError> {
@@ -70,14 +72,16 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+    private var nonCustodialActivity: AnyPublisher<[TransactionalActivityItemEvent], Never> {
         operationsService
             .transactions(accountID: publicKey, size: 50)
+            .asPublisher()
             .map { response in
                 response
                     .map(\.activityItemEvent)
             }
-            .catchAndReturn([])
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
 
     private var swapActivity: AnyPublisher<[SwapActivityItemEvent], Never> {

@@ -21,15 +21,16 @@ final class SharedKeyServiceMock: DelegatedCustodySharedKeyServiceAPI {
 }
 
 final class AccountRepositoryMock: AccountRepositoryAPI {
-    var result: Result<[DelegatedCustodyAccount], Error>!
-    func accounts() -> AnyPublisher<[DelegatedCustodyAccount], Error> {
+    var result: Result<[Account], Error>!
+    var accounts: AnyPublisher<[Account], Error> {
         result.publisher.eraseToAnyPublisher()
     }
 
-    func accountsCurrencies() -> AnyPublisher<[CryptoCurrency], Error> {
-        accounts()
-            .map { accounts in
-                accounts.map(\.coin)
+    var delegatedCustodyAccounts: AnyPublisher<[DelegatedCustodyAccount], Error> {
+        result
+            .publisher
+            .map { accounts -> [DelegatedCustodyAccount] in
+                accounts
             }
             .eraseToAnyPublisher()
     }

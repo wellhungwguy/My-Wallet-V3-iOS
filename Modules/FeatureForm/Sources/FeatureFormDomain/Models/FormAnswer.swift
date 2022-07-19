@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ToolKit
+
 public struct FormAnswer: Codable, Identifiable, Equatable {
 
-    public enum AnswerType: String, Codable {
-        case selection = "SELECTION"
-        case openEnded = "OPEN_ENDED"
+    public struct AnswerType: NewTypeString {
+        public let value: String
+        public init(_ value: String) { self.value = value }
+        public static let selection: Self = "SELECTION"
+        public static let openEnded: Self = "OPEN_ENDED"
     }
 
     public let id: String
@@ -13,6 +17,8 @@ public struct FormAnswer: Codable, Identifiable, Equatable {
     public var children: [FormAnswer]?
     public var hint: String?
     public var input: String?
+    public var instructions: String?
+    public let regex: String?
     public var checked: Bool?
 
     public init(
@@ -22,6 +28,8 @@ public struct FormAnswer: Codable, Identifiable, Equatable {
         children: [FormAnswer]?,
         input: String?,
         hint: String?,
+        regex: String?,
+        instructions: String? = nil,
         checked: Bool?
     ) {
         self.id = id
@@ -30,6 +38,8 @@ public struct FormAnswer: Codable, Identifiable, Equatable {
         self.hint = hint
         self.children = children
         self.input = input
+        self.regex = regex
+        self.instructions = instructions
         self.checked = checked
     }
 }

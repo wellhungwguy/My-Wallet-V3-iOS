@@ -300,10 +300,9 @@ final class TransactionInteractor {
             .eraseToAnyPublisher()
     }
 
-    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails, Swift.Error> {
+    func pollBuyOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails, OrdersServiceError> {
         ordersService
             .fetchOrder(with: orderId)
-            .asPublisher()
             .startPolling(
                 timeoutInterval: .seconds(30),
                 until: { $0.isFinal }

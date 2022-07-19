@@ -19,15 +19,14 @@ struct PortfolioView: UIViewControllerRepresentable {
         self.store = store
     }
 
-    private var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
     private var onboardingViewsFactory = OnboardingViewsFactory()
     private var userAdapter: UserAdapterAPI = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
-        let viewController = PortfolioViewController(
-            fiatBalanceCellProvider: fiatBalanceCellProvider,
+        let provider = PortfolioViewControllerProvider()
+        let viewController = provider.create(
             userHasCompletedOnboarding: userAdapter
                 .onboardingUserState
                 .map { $0.kycStatus == .verified && $0.hasEverPurchasedCrypto }
@@ -35,7 +34,7 @@ struct PortfolioView: UIViewControllerRepresentable {
             onboardingChecklistViewBuilder: { [onboardingViewsFactory] in
                 onboardingViewsFactory.makeOnboardingChecklistOverview()
             },
-            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer())
+            drawerRouter: NoDrawer()
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

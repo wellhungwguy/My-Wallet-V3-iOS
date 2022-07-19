@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import FeatureKYCUI
 import FeatureSettingsUI
 import FeatureTransactionUI
 import MoneyKit
@@ -57,10 +59,20 @@ extension PaymentMethodsLinkingAdapterAPI {
 
 final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
 
+    private let app: AppProtocol
     private let router: PaymentMethodLinkingRouterAPI
+    private let kycRouter: FeatureKYCUI.Routing
 
-    init(router: FeatureTransactionUI.PaymentMethodLinkingRouterAPI = resolve()) {
+    private var bag: Set<AnyCancellable> = []
+
+    init(
+        app: AppProtocol = resolve(),
+        router: FeatureTransactionUI.PaymentMethodLinkingRouterAPI = resolve(),
+        kycRouter: FeatureKYCUI.Routing = resolve()
+    ) {
+        self.app = app
         self.router = router
+        self.kycRouter = kycRouter
     }
 
     func routeToPaymentMethodLinkingFlow(
@@ -68,14 +80,30 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         filter: @escaping (PaymentMethodType) -> Bool,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        router.routeToPaymentMethodLinkingFlow(from: viewController, filter: filter, completion: completion)
+        app.post(event: blockchain.ux.payment.method.link)
+        kyc(presenter: viewController) { [router] result in
+            switch result {
+            case .abandoned:
+                completion(.abandoned)
+            case .completed:
+                router.routeToPaymentMethodLinkingFlow(from: viewController, filter: filter, completion: completion)
+            }
+        }
     }
 
     func routeToCardLinkingFlow(
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        router.routeToCardLinkingFlow(from: viewController, completion: completion)
+        app.post(event: blockchain.ux.payment.method.link.card)
+        kyc(presenter: viewController) { [router] result in
+            switch result {
+            case .abandoned:
+                completion(.abandoned)
+            case .completed:
+                router.routeToCardLinkingFlow(from: viewController, completion: completion)
+            }
+        }
     }
 
     func routeToBankLinkingFlow(
@@ -83,7 +111,15 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        router.routeToBankLinkingFlow(for: currency, from: viewController, completion: completion)
+        app.post(event: blockchain.ux.payment.method.link.bank)
+        kyc(presenter: viewController) { [router] result in
+            switch result {
+            case .abandoned:
+                completion(.abandoned)
+            case .completed:
+                router.routeToBankLinkingFlow(for: currency, from: viewController, completion: completion)
+            }
+        }
     }
 
     /// Presents the flow to link a bank account to the user's account via Open Banking or ACH.
@@ -93,7 +129,24 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        router.routeToBankWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
+        app.post(event: blockchain.ux.payment.method.link.bank.wire)
+        kyc(presenter: viewController) { [router] result in
+            switch result {
+            case .abandoned:
+                completion(.abandoned)
+            case .completed:
+                router.routeToBankWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
+            }
+        }
+    }
+
+    private func kyc(
+        presenter viewController: UIViewController,
+        then completion: @escaping (FlowResult) -> Void
+    ) {
+        kycRouter.presentKYCIfNeeded(from: viewController, requiredTier: .tier1)
+            .sink(receiveValue: completion)
+            .store(in: &bag)
     }
 }
 

@@ -3,6 +3,7 @@
 --disable spaceAroundParens
 --disable redundanttype
 --disable redundantvoidreturntype
+--disable indent
 --allman false
 --assetliterals visual-width
 --beforemarks 

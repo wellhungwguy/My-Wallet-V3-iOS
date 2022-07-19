@@ -6,6 +6,8 @@ import BlockchainNamespace
 import Combine
 import DIKit
 import ErrorsUI
+import FeatureFormDomain
+import FeatureKYCUI
 import FeatureProductsDomain
 import FeatureTransactionDomain
 import Localization
@@ -37,6 +39,7 @@ public protocol TransactionsRouterAPI {
 public enum UserActionServiceResult: Equatable {
     case canPerform
     case cannotPerform(upgradeTier: KYC.Tier?)
+    case questions
 }
 
 public protocol UserActionServiceAPI {
@@ -55,6 +58,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let eligibilityService: EligibilityServiceAPI
     private let userActionService: UserActionServiceAPI
     private let kycRouter: PlatformUIKit.KYCRouting
+    private let kyc: FeatureKYCUI.Routing
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
@@ -96,6 +100,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         depositFlowBuilder: DepositRootBuildable = DepositRootBuilder(),
         receiveCoordinator: ReceiveCoordinator = ReceiveCoordinator(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        kyc: FeatureKYCUI.Routing = resolve(),
         productsService: FeatureProductsDomain.ProductsServiceAPI = resolve()
     ) {
         self.app = app
@@ -118,6 +123,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.depositFlowBuilder = depositFlowBuilder
         self.receiveCoordinator = receiveCoordinator
         self.fiatCurrencyService = fiatCurrencyService
+        self.kyc = kyc
         self.productsService = productsService
     }
 
@@ -134,8 +140,15 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         to action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-
         isUserEligible(for: action)
+            .handleEvents(
+                receiveSubscription: { [app] _ in
+                    app.state.transaction { state in
+                        state.set(blockchain.ux.transaction.id, to: action.asset.rawValue)
+                    }
+                    app.post(event: blockchain.ux.transaction.event.will.start)
+                }
+            )
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] ineligibility -> AnyPublisher<TransactionFlowResult, Never> in
                 guard let self = self else { return .empty() }
@@ -197,6 +210,28 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         to action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
+        do {
+            guard try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty) else {
+                let subject = PassthroughSubject<TransactionFlowResult, Never>()
+                kyc.routeToKYC(
+                    from: presenter,
+                    requiredTier: .tier2,
+                    flowCompletion: { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case .abandoned:
+                            subject.send(.abandoned)
+                        case .completed:
+                            self.continuePresentingTransactionFlow(to: action, from: presenter)
+                                .sink(receiveValue: subject.send)
+                                .store(in: &self.cancellables)
+                        }
+                    }
+                )
+                return subject.eraseToAnyPublisher()
+            }
+        } catch { /* ignore */ }
+
         switch action {
         case .buy:
             return presentTradingCurrencySelectorIfNeeded(from: presenter)
@@ -233,7 +268,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
                     return self.pendingOrdersService.pendingOrderDetails
-                        .asPublisher()
                         .receive(on: DispatchQueue.main)
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self = self else { return .empty() }
@@ -251,6 +285,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                                 return self.presentNewTransactionFlow(action, from: presenter)
                             }
                         }
+                        .eraseError()
                         .eraseToAnyPublisher()
                 } else {
                     return self.presentTooManyPendingOrders(

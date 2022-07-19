@@ -25,7 +25,8 @@ class ChangePasswordServiceTests: XCTestCase {
         // given
         let service = ChangePasswordService(
             walletSync: walletSync,
-            walletHolder: walletHolderSpy
+            walletHolder: walletHolderSpy,
+            logger: NoopNativeWalletLogging()
         )
 
         let expectation = expectation(description: "change password should succeed")
@@ -37,11 +38,11 @@ class ChangePasswordServiceTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 5000,

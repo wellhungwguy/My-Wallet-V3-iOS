@@ -109,14 +109,18 @@ public struct ErrorView<Fallback: View>: View {
 
     @ViewBuilder
     private var content: some View {
-        Text(rich: ux.title)
-            .typography(.title3)
-            .foregroundColor(.semantic.title)
-            .padding(.bottom, Spacing.padding1.pt)
-        Text(rich: ux.message)
-            .typography(.body1)
-            .foregroundColor(.semantic.body)
-            .padding(.bottom, Spacing.padding2.pt)
+        if ux.title.isNotEmpty {
+            Text(rich: ux.title)
+                .typography(.title3)
+                .foregroundColor(.semantic.title)
+                .padding(.bottom, Spacing.padding1.pt)
+        }
+        if ux.message.isNotEmpty {
+            Text(rich: ux.message)
+                .typography(.body1)
+                .foregroundColor(.semantic.body)
+                .padding(.bottom, Spacing.padding2.pt)
+        }
         if let action = ux.actions.dropFirst(2).first, action.title.isNotEmpty {
             SmallMinimalButton(
                 title: action.title,
@@ -145,6 +149,9 @@ public struct ErrorView<Fallback: View>: View {
                     .accentColor(.semantic.light)
             }
             .typography(.micro)
+            .minimumScaleFactor(0.5)
+            .lineLimit(1)
+            .multilineTextAlignment(.leading)
             .foregroundColor(.semantic.body)
             .padding(8.pt)
             .background(
@@ -173,18 +180,21 @@ public struct ErrorView<Fallback: View>: View {
 
     @ViewBuilder
     private var actions: some View {
-        let cta = ux.actions.prefix(2).filter(\.title.isNotEmpty)
-        ForEach(cta.indexed(), id: \.element) { index, action in
-            if index == ux.actions.startIndex {
-                PrimaryButton(
-                    title: action.title,
-                    action: { post(action) }
-                )
-            } else {
-                MinimalButton(
-                    title: action.title,
-                    action: { post(action) }
-                )
+        VStack(spacing: Spacing.padding1) {
+            ForEach(ux.actions.prefix(2).indexed(), id: \.element) { index, action in
+                if action.title.isNotEmpty {
+                    if index == ux.actions.startIndex {
+                        PrimaryButton(
+                            title: action.title,
+                            action: { post(action) }
+                        )
+                    } else {
+                        MinimalButton(
+                            title: action.title,
+                            action: { post(action) }
+                        )
+                    }
+                }
             }
         }
     }
@@ -208,7 +218,7 @@ extension ErrorView where Fallback == AnyView {
         self.ux = ux
         fallback = {
             AnyView(
-                Icon.error.foregroundColor(.semantic.warning)
+                Icon.error.accentColor(.semantic.warning)
             )
         }
         self.dismiss = dismiss
@@ -230,7 +240,7 @@ struct ErrorView_Preview: PreviewProvider {
                         accessibility: nil
                     ),
                     metadata: [
-                        "ID": "bab80077-f1fb-424f-b52b-dbb935d0f7bf",
+                        "ID": "825ea2c0-9f5f-4e2a-be8f-0e3572f0bec2",
                         "Request": "825ea2c0-9f5f-4e2a-be8f-0e3572f0bec2"
                     ],
                     actions: [
@@ -244,8 +254,6 @@ struct ErrorView_Preview: PreviewProvider {
                 ),
                 dismiss: {}
             )
-            .previewDevice("iPhone SE (2nd generation)")
-            .previewDisplayName("iPhone SE (2nd generation)")
             .app(App.preview)
         }
     }

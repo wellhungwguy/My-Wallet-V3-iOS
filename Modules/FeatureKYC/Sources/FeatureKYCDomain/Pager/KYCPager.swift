@@ -1,20 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
+import Errors
+import FeatureFormDomain
 import PlatformKit
 import RxSwift
 
 public final class KYCPager: KYCPagerAPI {
 
+    private let app: AppProtocol
     private let nabuUserService: NabuUserServiceAPI
     public private(set) var tier: KYC.Tier
     public private(set) var tiersResponse: KYC.UserTiers
 
     public init(
+        app: AppProtocol = resolve(),
         nabuUserService: NabuUserServiceAPI = resolve(),
         tier: KYC.Tier,
         tiersResponse: KYC.UserTiers
     ) {
+        self.app = app
         self.nabuUserService = nabuUserService
         self.tier = tier
         self.tiersResponse = tiersResponse
@@ -28,6 +34,11 @@ public final class KYCPager: KYCPagerAPI {
             case .countrySelected(let country):
                 kycCountry = country
             case .sddVerification(let isVerified):
+                do {
+                    guard try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty) else {
+                        return .just(.accountUsageForm)
+                    }
+                } catch { /* ignore */ }
                 let shouldCompleteKYC = isVerified && tier < .tier2
                 return shouldCompleteKYC ? .empty() : .just(.accountUsageForm)
             case .stateSelected:
@@ -100,7 +111,8 @@ extension KYCPageType {
         requiredTier: KYC.Tier,
         tiersResponse: KYC.UserTiers,
         isSDDEligible: Bool,
-        isSDDVerified: Bool
+        isSDDVerified: Bool,
+        hasQuestions: Bool
     ) -> KYCPageType {
         guard user.email.verified else {
             return .enterEmail
@@ -126,6 +138,10 @@ extension KYCPageType {
 
         guard let mobile = user.mobile, mobile.verified else {
             return .enterPhone
+        }
+
+        if hasQuestions {
+            return .accountUsageForm
         }
 
         guard tiersResponse.canCompleteTier2 else {
@@ -178,7 +194,8 @@ extension KYCPageType {
                     requiredTier: requiredTier,
                     tiersResponse: tiersResponse,
                     isSDDEligible: true,
-                    isSDDVerified: false
+                    isSDDVerified: false,
+                    hasQuestions: false
                 )
             }
             return .enterEmail

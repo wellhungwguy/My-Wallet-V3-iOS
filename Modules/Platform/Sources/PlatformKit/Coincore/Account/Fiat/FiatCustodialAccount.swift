@@ -26,13 +26,15 @@ final class FiatCustodialAccount: FiatAccount {
             .eraseError()
     }
 
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         activityFetcher
             .activity(fiatCurrency: fiatCurrency)
             .map { items in
                 items.map(ActivityItemEvent.fiat)
             }
-            .asSingle()
+            .replaceError(with: [])
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var canWithdrawFunds: Single<Bool> {

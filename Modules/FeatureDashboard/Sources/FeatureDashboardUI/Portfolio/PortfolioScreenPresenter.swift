@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitectureExtensions
 import DIKit
@@ -13,7 +14,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class PortfolioScreenPresenter {
+final class PortfolioScreenPresenter {
 
     // MARK: - Types
 
@@ -23,7 +24,7 @@ public final class PortfolioScreenPresenter {
     struct Model {
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
-        var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
+        var fiatBalanceCollectionViewPresenter: FiatBalanceCollectionViewPresenter?
         var cryptoCurrencies: [CryptoCurrency: LoadingState<Bool>]
 
         func cellArrangement(
@@ -145,6 +146,7 @@ public final class PortfolioScreenPresenter {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let accountFetcher: BlockchainAccountFetching
     private let announcementPresenter: AnnouncementPresenting
     private let disposeBag = DisposeBag()
@@ -178,7 +180,8 @@ public final class PortfolioScreenPresenter {
 
     // MARK: - Init
 
-    public init(
+    init(
+        app: AppProtocol = resolve(),
         interactor: PortfolioScreenInteractor = PortfolioScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),
         drawerRouter: DrawerRouting = resolve(),
@@ -186,6 +189,7 @@ public final class PortfolioScreenPresenter {
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
+        self.app = app
         self.accountFetcher = accountFetcher
         self.announcementPresenter = announcementPresenter
         self.coincore = coincore
@@ -309,5 +313,6 @@ public final class PortfolioScreenPresenter {
         fiatBalancePresenter.refresh()
         model.totalBalancePresenter.refresh()
         notificationCenter.post(name: .dashboardPullToRefresh, object: nil)
+        app.post(event: blockchain.ux.home.event.did.pull.to.refresh)
     }
 }

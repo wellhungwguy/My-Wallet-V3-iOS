@@ -72,9 +72,9 @@ public protocol KYCClientAPI: AnyObject {
 
     func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError>
 
-    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError>
+    func fetchExtraKYCQuestions(context: String) -> AnyPublisher<Form, NabuNetworkError>
 
-    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
+    func submitExtraKYCQuestions(_ form: Form) -> AnyPublisher<Void, NabuNetworkError>
 }
 
 final class KYCClient: KYCClientAPI {
@@ -345,25 +345,20 @@ final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
-        struct RawResponse: Decodable {
-            let nodes: [FormQuestion]
-        }
-        let request = requestBuilder.get(path: Path.accountUsage, authenticated: true)!
-        return networkAdapter.perform(request: request, responseType: RawResponse.self)
-            .map(\.nodes)
+    func fetchExtraKYCQuestions(context: String) -> AnyPublisher<Form, Nabu.Error> {
+        let request = requestBuilder.get(
+            path: Path.accountUsage,
+            parameters: [URLQueryItem(name: "context", value: context)],
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request, responseType: Form.self)
             .eraseToAnyPublisher()
     }
 
-    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
-        struct Payload: Codable {
-            let nodes: [FormQuestion]
-        }
-
-        let payload = Payload(nodes: form)
+    func submitExtraKYCQuestions(_ form: Form) -> AnyPublisher<Void, NabuNetworkError> {
         let request = requestBuilder.put(
             path: Path.accountUsage,
-            body: try? payload.encode(),
+            body: try? form.encode(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

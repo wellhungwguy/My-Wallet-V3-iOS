@@ -19,6 +19,7 @@ extension AccountUsage {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: true
                 ),
                 FormAnswer(
@@ -28,6 +29,7 @@ extension AccountUsage {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: false
                 )
             ]
@@ -46,6 +48,7 @@ extension AccountUsage {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: true
                 ),
                 FormAnswer(
@@ -55,6 +58,7 @@ extension AccountUsage {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: false
                 ),
                 FormAnswer(
@@ -64,6 +68,7 @@ extension AccountUsage {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: true
                 )
             ]

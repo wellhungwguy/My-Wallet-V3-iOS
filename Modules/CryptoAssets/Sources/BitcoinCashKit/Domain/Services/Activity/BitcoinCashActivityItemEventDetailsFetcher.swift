@@ -29,8 +29,8 @@ final class BitcoinCashActivityItemEventDetailsFetcher: ActivityItemEventDetails
             .map { accounts -> [XPub] in
                 accounts.map(\.publicKey)
             }
-            .asSingle()
-            .flatMap { [transactionsService] publicKeys -> Single<BitcoinCashActivityItemEventDetails> in
+            .eraseError()
+            .flatMap { [transactionsService] publicKeys in
                 transactionsService
                     .transaction(publicKeys: publicKeys, identifier: identifier)
                     .map(BitcoinCashActivityItemEventDetails.init(transaction:))

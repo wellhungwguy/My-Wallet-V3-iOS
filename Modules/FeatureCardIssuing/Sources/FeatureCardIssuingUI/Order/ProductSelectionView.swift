@@ -9,7 +9,7 @@ import ToolKit
 
 struct ProductSelectionView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order
 
     private let store: Store<CardOrderingState, CardOrderingAction>
 
@@ -38,12 +38,12 @@ struct ProductSelectionView: View {
                 }
                 HStack {
                     Checkbox(isOn: viewStore.binding(\.$termsAccepted))
-                    Text(localizedStrings.Selection.acceptTerms)
+                    Text(L10n.Selection.acceptTerms)
                         .foregroundColor(.WalletSemantic.body)
                         .typography(.caption1)
                         .onTapGesture {}
                 }
-                PrimaryButton(title: localizedStrings.Selection.Button.Title.create) {
+                PrimaryButton(title: L10n.Selection.Button.Title.create) {
                     viewStore.send(.createCard)
                 }
                 .disabled(!viewStore.state.termsAccepted || viewStore.state.products.isEmpty)
@@ -63,7 +63,6 @@ struct ProductSelectionView: View {
                     else: EmptyView.init
                 )
             }
-
             PrimaryNavigationLink(
                 destination: LegalView(),
                 isActive: viewStore.binding(\.$isLegalViewVisible),
@@ -74,17 +73,14 @@ struct ProductSelectionView: View {
                 isActive: viewStore.binding(\.$isOrderProcessingVisible),
                 label: EmptyView.init
             )
-            .onAppear {
-                viewStore.send(.fetchProducts)
-            }
         }
-        .primaryNavigation(title: localizedStrings.Selection.Navigation.title)
+        .primaryNavigation(title: L10n.Selection.Navigation.title)
     }
 }
 
 struct ProductView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order
 
     private let product: Product
     private let action: () -> Void
@@ -112,7 +108,7 @@ struct ProductView: View {
                     .multilineTextAlignment(.center)
             }
             SmallMinimalButton(
-                title: localizedStrings.Selection.Button.Title.details,
+                title: L10n.Selection.Button.Title.details,
                 action: action
             )
             .padding(.bottom, Spacing.padding4)
@@ -139,32 +135,32 @@ struct ProductSelection_Previews: PreviewProvider {
 extension Card.CardType {
 
     var localizedTitle: String {
-        let localized = LocalizationConstants.CardIssuing.CardType.self
+        typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
         case .physical:
-            return localized.Physical.title
+            return L10n.Physical.title
         case .virtual:
-            return localized.Virtual.title
+            return L10n.Virtual.title
         }
     }
 
     var localizedLongTitle: String {
-        let localized = LocalizationConstants.CardIssuing.CardType.self
+        typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
         case .physical:
-            return localized.Physical.longTitle
+            return L10n.Physical.longTitle
         case .virtual:
-            return localized.Virtual.longTitle
+            return L10n.Virtual.longTitle
         }
     }
 
     var localizedDescription: String {
-        let localized = LocalizationConstants.CardIssuing.CardType.self
+        typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
         case .physical:
-            return localized.Physical.description
+            return L10n.Physical.description
         case .virtual:
-            return localized.Virtual.description
+            return L10n.Virtual.description
         }
     }
 }

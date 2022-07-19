@@ -70,7 +70,8 @@ let package = Package(
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "MoneyKit", package: "Money"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions")
             ]
         )
     ]

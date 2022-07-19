@@ -1,33 +1,35 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
-import FeatureCardPaymentDomain
+import Combine
+import FeatureActivityDomain
 import MoneyKit
 import PlatformKit
-import RxSwift
 
 final class BuySellActivityDetailsInteractor {
 
-    private let cardListService: CardListServiceAPI
+    private let cardDataService: ActivityCardDataServiceAPI
     private let ordersService: OrdersServiceAPI
 
     init(
-        cardListService: CardListServiceAPI = resolve(),
-        ordersService: OrdersServiceAPI = resolve()
+        cardDataService: ActivityCardDataServiceAPI,
+        ordersService: OrdersServiceAPI
     ) {
-        self.cardListService = cardListService
+        self.cardDataService = cardDataService
         self.ordersService = ordersService
     }
 
-    func fetchCardDetails(for paymentMethodId: String?) -> Single<CardData?> {
-        cardListService
-            .card(by: paymentMethodId ?? "")
-            .asSingle()
+    func fetchCardDisplayName(for paymentMethodId: String?) -> AnyPublisher<String?, Never> {
+        guard let paymentMethodId = paymentMethodId else {
+            return .just(nil)
+        }
+        return cardDataService
+            .fetchCardDisplayName(for: paymentMethodId)
     }
 
-    func fetchPrice(for orderId: String) -> Single<MoneyValue?> {
+    func fetchPrice(for orderId: String) -> AnyPublisher<MoneyValue?, OrdersServiceError> {
         ordersService
             .fetchOrder(with: orderId)
             .map(\.price)
+            .eraseToAnyPublisher()
     }
 }

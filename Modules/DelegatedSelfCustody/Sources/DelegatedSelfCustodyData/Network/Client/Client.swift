@@ -6,13 +6,15 @@ import NetworkKit
 final class Client {
 
     enum Endpoint {
-        static let balance = "/wallet-pubkey/balance"
+        static let addresses = "/wallet-pubkey/addresses"
         static let auth = "/wallet-pubkey/auth"
-        static let subscriptions = "/wallet-pubkey/subscriptions"
-        static let unsubscribe = "/wallet-pubkey/unsubscribe"
-        static let subscribe = "/wallet-pubkey/subscribe"
+        static let balance = "/wallet-pubkey/balance"
         static let buildTx = "/wallet-pubkey/buildTx"
         static let pushTx = "/wallet-pubkey/pushTx"
+        static let subscribe = "/wallet-pubkey/subscribe"
+        static let subscriptions = "/wallet-pubkey/subscriptions"
+        static let txHistory = "/wallet-pubkey/tx-history"
+        static let unsubscribe = "/wallet-pubkey/unsubscribe"
     }
 
     // MARK: - Properties

@@ -15,8 +15,8 @@ final class KYCClientMock: KYCClientAPI {
         var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
         var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
         var fetchLimitsOverview: AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> = .failure(NabuNetworkError.unknown)
-        var fetchAccountUsageForm: AnyPublisher<[FormQuestion], NabuNetworkError> = .failure(NabuNetworkError.unknown)
-        var submitAccountUsageForm: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var fetchExtraKYCQuestions: AnyPublisher<Form, NabuNetworkError> = .failure(NabuNetworkError.unknown)
+        var submitExtraKYCQuestions: AnyPublisher<Void, NabuNetworkError> = .failure(NabuNetworkError.unknown)
         // swiftlint:enable line_length
     }
 
@@ -127,12 +127,12 @@ final class KYCClientMock: KYCClientAPI {
         stubbedResults.fetchLimitsOverview
     }
 
-    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
-        stubbedResults.fetchAccountUsageForm
+    func fetchExtraKYCQuestions(context: String) -> AnyPublisher<Form, NabuNetworkError> {
+        stubbedResults.fetchExtraKYCQuestions
     }
 
-    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
-        stubbedResults.submitAccountUsageForm
+    func submitExtraKYCQuestions(_ form: Form) -> AnyPublisher<Void, NabuNetworkError> {
+        stubbedResults.submitExtraKYCQuestions
     }
 
     func setTradingCurrency(

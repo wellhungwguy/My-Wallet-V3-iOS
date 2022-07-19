@@ -132,17 +132,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .eraseError()
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         let swap = swapActivity
             .fetchActivity(cryptoCurrency: asset, directions: [.internal])
             .replaceError(with: [])
-            .asSingle()
-        return Single
-            .zip(
-                buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
-                ordersActivity.activity(cryptoCurrency: asset).asSingle().catchAndReturn([]),
-                swap
-            )
+        let buySell = buySellActivity
+            .buySellActivityEvents(cryptoCurrency: asset)
+            .replaceError(with: [])
+        let orders = ordersActivity
+            .activity(cryptoCurrency: asset)
+            .replaceError(with: [])
+        return Publishers.Zip3(buySell, orders, swap)
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
                     .map { item in
@@ -156,6 +156,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     + ordersActivity.map(ActivityItemEvent.crypto)
                     + swapAndSellActivityItemsEvents
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {

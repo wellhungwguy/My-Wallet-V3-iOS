@@ -11,11 +11,11 @@ import MoneyKit
 /// `OrderDetails` is the primary model that should be accessed by
 /// `Buy`, `Sell`, etc. It has an internal `value` of type `OrderDetailsValue`.
 /// There is a `buy` and `sell` type.
-public struct OrderDetails {
+public struct OrderDetails: Equatable {
 
     public typealias State = OrderDetailsState
 
-    private enum OrderDetailsValue {
+    private enum OrderDetailsValue: Equatable {
         /// A `Buy` order
         case buy(BuyOrderDetails)
 

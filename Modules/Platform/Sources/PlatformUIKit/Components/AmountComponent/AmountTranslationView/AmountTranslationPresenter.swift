@@ -1,8 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
+import Combine
 import DIKit
 import Localization
+import MoneyKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -67,7 +70,6 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         case delete
     }
 
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen.LimitView
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     // MARK: - Public Properties
@@ -96,6 +98,35 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         auxiliaryButtonEnabledRelay.asDriver()
     }
 
+    let maxLimitPublisher: AnyPublisher<FiatValue, Never>
+    var lastPurchasePublisher: AnyPublisher<FiatValue, Never> {
+        let amount = app.publisher(
+            for: blockchain.ux.transaction.source.target.previous.input.amount,
+            as: BigInt.self
+        )
+        .map(\.value)
+        let currency = app.publisher(
+            for: blockchain.ux.transaction.source.target.previous.input.currency.code,
+            as: FiatCurrency.self
+        )
+        .map(\.value)
+        let tradingCurrency = app.publisher(
+            for: blockchain.user.currency.preferred.fiat.trading.currency,
+            as: FiatCurrency.self
+        )
+        .compactMap(\.value)
+        return amount.combineLatest(currency, tradingCurrency)
+            .map { amount, currency, tradingCurrency in
+                if let amount = amount, let currency = currency {
+                    return FiatValue(amount: amount, currency: currency)
+                } else {
+                    // If there's no previous purchase default to 50.00 of trading currency
+                    return FiatValue(amount: 5000, currency: tradingCurrency)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
     // MARK: - Injected
 
     let interactor: AmountTranslationInteractor
@@ -104,6 +135,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     let displayBundle: DisplayBundle
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let app: AppProtocol
 
     // MARK: - Accessors
 
@@ -116,14 +148,19 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         interactor: AmountTranslationInteractor,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         displayBundle: DisplayBundle,
-        inputTypeToggleVisibility: Visibility
+        inputTypeToggleVisibility: Visibility,
+        app: AppProtocol,
+        maxLimitPublisher: AnyPublisher<FiatValue, Never> = .empty()
     ) {
-        self.displayBundle = displayBundle
-        swapButtonVisibilityRelay.accept(inputTypeToggleVisibility)
         self.interactor = interactor
+        self.analyticsRecorder = analyticsRecorder
+        self.displayBundle = displayBundle
+        self.app = app
+        self.maxLimitPublisher = maxLimitPublisher
+
+        swapButtonVisibilityRelay.accept(inputTypeToggleVisibility)
         fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
         cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
-        self.analyticsRecorder = analyticsRecorder
 
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)

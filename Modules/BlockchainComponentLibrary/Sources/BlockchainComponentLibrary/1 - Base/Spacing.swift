@@ -284,7 +284,8 @@ struct Spacing_Previews: PreviewProvider {
                 columns: grid.items,
                 alignment: .leading
             ) {
-                ForEach(0..<grid.columns) { _ in
+                let column = 0..<grid.columns
+                ForEach(column, id: \.self) { _ in
                     Rectangle()
                         .foregroundColor(.red.opacity(0.5))
                         .frame(height: Spacing.baseline * 5)

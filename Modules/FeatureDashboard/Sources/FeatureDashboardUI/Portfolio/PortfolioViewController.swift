@@ -18,7 +18,7 @@ import ToolKit
 import UIComponentsKit
 
 /// A view controller that displays the dashboard
-public final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewController {
+final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewController {
 
     // MARK: - Private Types
 
@@ -28,7 +28,6 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     private let app: AppProtocol
     private let disposeBag = DisposeBag()
-    private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let presenter: PortfolioScreenPresenter
     private let tableView = UITableView()
     private let onboardingChecklistViewBuilder: () -> OnboardingChecklist
@@ -59,15 +58,13 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     // MARK: - Setup
 
-    public init(
+    init(
         app: AppProtocol = DIKit.resolve(),
-        fiatBalanceCellProvider: FiatBalanceCellProviding,
         userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
         @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
         presenter: PortfolioScreenPresenter
     ) {
         self.app = app
-        self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.userHasCompletedOnboarding = userHasCompletedOnboarding
         self.onboardingChecklistViewBuilder = onboardingChecklistViewBuilder
         self.presenter = presenter
@@ -81,7 +78,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupNavigationBar()
@@ -96,7 +93,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
         }
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
@@ -121,7 +118,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
-        fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
+        tableView.register(FiatCustodialBalancesTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
         tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
@@ -151,7 +148,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
                 case .withdrawalLock:
                     cell = self.withdrawalLockCell(for: indexPath)
                 case .fiatCustodialBalances(let presenter):
-                    cell = self.fiatCustodialBalancesCell(for: indexPath, presenter: presenter)
+                    cell = self.fiatCustodialBalancesCell(indexPath: indexPath, presenter: presenter)
                 case .totalBalance(let presenter):
                     cell = self.balanceCell(for: indexPath, presenter: presenter)
                 case .crypto(let presenter):
@@ -239,7 +236,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 
     // MARK: - Navigation
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 
@@ -262,15 +259,13 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
         return cell
     }
 
-    private func fiatCustodialBalancesCell(
-        for indexPath: IndexPath,
-        presenter: CurrencyViewPresenter
+    func fiatCustodialBalancesCell(
+        indexPath: IndexPath,
+        presenter: FiatBalanceCollectionViewPresenter
     ) -> UITableViewCell {
-        fiatBalanceCellProvider.dequeueReusableFiatBalanceCell(
-            for: tableView,
-            indexPath: indexPath,
-            presenter: presenter
-        )
+        let cell = tableView.dequeue(FiatCustodialBalancesTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
     }
 
     private func announcementCell(for indexPath: IndexPath, model: AnnouncementCardViewModel) -> UITableViewCell {
@@ -297,7 +292,7 @@ public final class PortfolioViewController<OnboardingChecklist: View>: BaseScree
 }
 
 extension PortfolioViewController: SegmentedViewScreenViewController {
-    public func adjustInsetForBottomButton(withHeight height: CGFloat) {
+    func adjustInsetForBottomButton(withHeight height: CGFloat) {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
     }
 }

@@ -11,7 +11,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class PricesScreenPresenter {
+final class PricesScreenPresenter {
 
     // MARK: - Types
 
@@ -37,7 +37,7 @@ public final class PricesScreenPresenter {
 
     // MARK: - Init
 
-    public init(
+    init(
         drawerRouter: DrawerRouting = resolve(),
         interactor: PricesScreenInteractor
     ) {

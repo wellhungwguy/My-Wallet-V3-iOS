@@ -9,7 +9,7 @@ import XCTest
 final class SubscriptionsServiceTests: XCTestCase {
 
     enum TestData {
-        static let account = DelegatedCustodyAccount(
+        static let account = Account(
             coin: .bitcoin,
             derivationPath: "derivationPath",
             style: "style",

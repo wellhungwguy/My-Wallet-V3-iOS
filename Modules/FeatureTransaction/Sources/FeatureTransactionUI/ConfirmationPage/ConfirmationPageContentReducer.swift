@@ -135,6 +135,14 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                         paymentMethod: paymentMethod,
                         lockDays: $0.lockDays
                     ).attributed
+                        + " ".attributed
+                        + TransactionFlowDescriptor.confirmDisclaimerText(
+                            action: state.action,
+                            currencyCode: state.asset.code,
+                            accountLabel: state.destination?.label ?? "",
+                            isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
+                                || (state.source as? LinkedBankAccount)?.data.partner == .yapily
+                        )
                 }
                 .sink(receiveValue: { text in
                     disclaimerViewModel.textSubject.send(text)

@@ -92,7 +92,7 @@ extension Tag.Reference {
 extension Tag.Reference {
 
     // swiftlint:disable:next force_try
-    public static let pattern = try! NSRegularExpression(pattern: #"\.(?<name>[\w_]+)(?:\[(?<id>[^\.]+)\])?"#)
+    public static let pattern = try! NSRegularExpression(pattern: #"\.(?<name>[\w_]+)(?:\[(?<id>[^\]]+)\])?"#)
 
     public init(id: String, in language: Language) throws {
 
@@ -105,7 +105,6 @@ extension Tag.Reference {
                 name: match.range(withName: "name"),
                 id: match.range(withName: "id")
             )
-
             tag = try tag.child(named: id[range.name].string)
             guard range.id.location != NSNotFound else { continue }
             try indices[

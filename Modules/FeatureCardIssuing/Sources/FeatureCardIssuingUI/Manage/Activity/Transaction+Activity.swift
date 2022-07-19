@@ -26,21 +26,37 @@ extension Card.Transaction {
 
     var displayDate: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.setLocalizedDateFormatFromTemplate("dd/MM")
+        dateFormatter.dateStyle = .short
         return dateFormatter.string(from: userTransactionTime)
     }
 
+    var displayTitle: String {
+        typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.TransactionType
+        switch transactionType {
+        case .payment:
+            return merchantName
+        case .cashback:
+            return [L10n.cashback, merchantName].joined(separator: " ")
+        case .refund:
+            return [L10n.refund, merchantName].joined(separator: " ")
+        case .chargeback:
+            return [L10n.chargeback, merchantName].joined(separator: " ")
+        case .funding:
+            return [L10n.payment, merchantName].joined(separator: " ")
+        }
+    }
+
     var displayStatus: String {
-        let localized = LocalizationConstants.CardIssuing.Manage.Transaction.Status.self
+        typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.Status
         switch state {
         case .pending:
-            return localized.pending
+            return L10n.pending
         case .cancelled:
-            return localized.cancelled
+            return L10n.cancelled
         case .declined:
-            return localized.declined
+            return L10n.declined
         case .completed:
-            return localized.completed
+            return L10n.completed
         }
     }
 
@@ -58,14 +74,18 @@ extension Card.Transaction {
     }
 
     var icon: Icon {
-        switch state {
-        case .pending:
+        switch (state, transactionType) {
+        case (.pending, _):
             return Icon.pending
-        case .cancelled:
+        case (.cancelled, _):
             return Icon.error
-        case .declined:
+        case (.declined, _):
             return Icon.error
-        case .completed:
+        case (.completed, .chargeback),
+             (.completed, .refund),
+             (.completed, .cashback):
+            return Icon.arrowDown
+        case (.completed, _):
             return Icon.creditcard
         }
     }
@@ -94,5 +114,13 @@ extension FeatureCardIssuingDomain.Money {
         }
 
         return MoneyValue.create(major: decimal, currency: currency).displayString
+    }
+
+    var isZero: Bool {
+        guard let decimal = Decimal(string: value) else {
+            return true
+        }
+
+        return decimal.isZero || decimal.isNaN
     }
 }

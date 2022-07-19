@@ -7,6 +7,7 @@
 @testable import WalletPayloadKitMock
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -44,7 +45,9 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSync,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
@@ -55,7 +58,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")
@@ -106,7 +110,9 @@ class WalletRecoveryServiceTests: XCTestCase {
             upgrader: upgrader,
             metadata: mockMetadata,
             walletSync: walletSyncMock,
-            notificationCenter: .default
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
 
         let response = WalletPayloadClient.Response(
@@ -126,7 +132,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
             walletRepo: walletRepo,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: queue
+            operationsQueue: queue,
+            tracer: LogMessageTracing.noop
         )
 
         let expectation = expectation(description: "wallet holding")

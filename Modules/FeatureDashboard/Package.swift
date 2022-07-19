@@ -1,22 +1,25 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureDashboard",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "FeatureDashboard", targets: ["FeatureDashboardUI"]),
         .library(name: "FeatureDashboardUI", targets: ["FeatureDashboardUI"])
     ],
     dependencies: [
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.2.0"
         ),
         .package(
-            name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "5.0.2"
         ),

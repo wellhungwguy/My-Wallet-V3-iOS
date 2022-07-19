@@ -104,9 +104,6 @@ extension UX.Error {
             if let id = request.allHTTPHeaderFields?["X-Request-ID"] {
                 metadata[L10n.request] = id
             }
-            if let id = request.allHTTPHeaderFields?["X-Session-ID"] {
-                metadata[L10n.session] = id
-            }
         }
 
         self.metadata = metadata

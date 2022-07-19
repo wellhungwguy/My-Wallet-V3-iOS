@@ -9,22 +9,22 @@ import ToolKit
 
 struct LegalView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.Details.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order.Details
 
     var body: some View {
         VStack(spacing: 0) {
-            TitleRow(localizedStrings.Legal.consumerFinancialProtectionBureau)
+            TitleRow(L10n.Legal.consumerFinancialProtectionBureau)
             PrimaryDivider()
-            Row(localizedStrings.Legal.shortFormDisclosure)
+            Row(L10n.Legal.shortFormDisclosure)
             PrimaryDivider()
-            TitleRow(localizedStrings.Legal.blockchainTermsAndConditions)
+            TitleRow(L10n.Legal.blockchainTermsAndConditions)
             PrimaryDivider()
-            Row(localizedStrings.Legal.termsAndConditions)
+            Row(L10n.Legal.termsAndConditions)
             Spacer()
         }
         .listStyle(PlainListStyle())
         .background(Color.semantic.background.ignoresSafeArea())
-        .navigationTitle(localizedStrings.Legal.navigationTitle)
+        .navigationTitle(L10n.Legal.navigationTitle)
     }
 
     struct Row: View {

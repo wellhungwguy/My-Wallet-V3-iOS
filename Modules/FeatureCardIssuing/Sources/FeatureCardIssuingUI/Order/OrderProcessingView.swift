@@ -11,7 +11,7 @@ import ToolKit
 
 struct OrderProcessingView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order
 
     private let store: Store<CardOrderingState, CardOrderingAction>
 
@@ -48,7 +48,7 @@ struct OrderProcessingView: View {
             ProgressView(value: 0.25)
                 .progressViewStyle(.indeterminate)
                 .frame(width: 52, height: 52)
-            Text(localizedStrings.Processing.Processing.title)
+            Text(L10n.Processing.Processing.title)
                 .typography(.title3)
                 .foregroundColor(.WalletSemantic.body)
                 .multilineTextAlignment(.center)
@@ -79,10 +79,10 @@ struct OrderProcessingView: View {
             }
             .padding(.top, Spacing.padding6)
             VStack(spacing: Spacing.padding1) {
-                Text(localizedStrings.Processing.Success.title)
+                Text(L10n.Processing.Success.title)
                     .typography(.title3)
                     .multilineTextAlignment(.center)
-                Text(localizedStrings.Processing.Success.caption)
+                Text(L10n.Processing.Success.caption)
                     .typography(.paragraph1)
                     .foregroundColor(.WalletSemantic.body)
                     .multilineTextAlignment(.center)
@@ -90,7 +90,7 @@ struct OrderProcessingView: View {
             .padding(.horizontal, Spacing.padding3)
             Spacer()
             WithViewStore(store) { viewStore in
-                PrimaryButton(title: LocalizationConstants.continueString) {
+                PrimaryButton(title: L10n.Processing.Success.goToDashboard) {
                     viewStore.send(.close(.created))
                 }
             }
@@ -118,31 +118,27 @@ struct OrderProcessing_Previews: PreviewProvider {
 extension Error {
 
     fileprivate var displayTitle: String {
-        let title = LocalizationConstants
-            .CardIssuing
-            .Errors
-            .GenericProcessingError
-            .title
-
         guard let error = self as? NabuNetworkError else {
-            return title
+            return LocalizationConstants
+                .CardIssuing
+                .Errors
+                .GenericProcessingError
+                .title
         }
 
-        return error.displayTitle(fallback: title)
+        return error.displayTitle
     }
 
     fileprivate var displayDescription: String {
-        let description = LocalizationConstants
-            .CardIssuing
-            .Errors
-            .GenericProcessingError
-            .description
-
         guard let error = self as? NabuNetworkError else {
-            return description
+            return LocalizationConstants
+                .CardIssuing
+                .Errors
+                .GenericProcessingError
+                .description
         }
 
-        return error.displayTitle(fallback: description)
+        return error.displayTitle
     }
 
     fileprivate func retryAction(

@@ -3,6 +3,8 @@
 import BlockchainComponentLibrary
 import Combine
 import DIKit
+import Errors
+import FeatureFormDomain
 import FeatureKYCDomain
 import Localization
 import PlatformKit
@@ -13,7 +15,8 @@ import UIKit
 final class KYCSDDVerificationController: KYCBaseViewController {
 
     private var kycTiersService: KYCTiersServiceAPI = resolve()
-    private var cancellabes = Set<AnyCancellable>()
+
+    private var bag = Set<AnyCancellable>()
     private var loadingView: KYCSDDVerificationLoadingView!
 
     private var viewLoadingObject = KYCSDDVerificationLoadingView.LoadingObservable()
@@ -56,7 +59,7 @@ final class KYCSDDVerificationController: KYCBaseViewController {
         kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: true)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: completion)
-            .store(in: &cancellabes)
+            .store(in: &bag)
     }
 }
 

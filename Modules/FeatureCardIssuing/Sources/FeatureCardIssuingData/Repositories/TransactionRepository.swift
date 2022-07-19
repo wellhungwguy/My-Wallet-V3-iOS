@@ -8,37 +8,43 @@ import ToolKit
 
 final class TransactionRepository: TransactionRepositoryAPI {
 
-    private let cachedValue: CachedValueNew<
-        String,
-        [Card.Transaction],
-        NabuNetworkError
-    >
-    private let cache: AnyCache<String, [Card.Transaction]>
+    private struct Key: Hashable {
+        let cardId: String?
+    }
+
+    private static let defaultKey = "all-debit-card-transactions"
+    private let cachedValue: CachedValueNew<Key, [Card.Transaction], NabuNetworkError>
+    private let cache: AnyCache<Key, [Card.Transaction]>
+
     private let client: TransactionClientAPI
 
     init(client: TransactionClientAPI) {
         self.client = client
 
-        cache = InMemoryCache(
-            configuration: .onLoginLogoutTransaction(),
+        let cache: AnyCache<Key, [Card.Transaction]> = InMemoryCache(
+            configuration: .onLoginLogoutDebitCardRefresh(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
+        self.cache = cache
+
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { _ in
-                client.fetchTransactions()
+            fetch: { key in
+                client.fetchTransactions(
+                    TransactionsParams(cardId: key.cardId)
+                )
             }
         )
     }
 
-    func fetchTransactions() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
-        cachedValue.get(key: #file)
+    func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        cachedValue.get(key: Key(cardId: card?.id))
     }
 
-    func fetchMore() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+    func fetchMore(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
         cachedValue
-            .get(key: #file)
+            .get(key: Key(cardId: card?.id))
             .flatMap { [weak self] transactions -> AnyPublisher<[Card.Transaction], NabuNetworkError> in
                 guard let self = self else {
                     return .empty()
@@ -50,20 +56,12 @@ final class TransactionRepository: TransactionRepositoryAPI {
 
                 return self.client
                     .fetchTransactions(
-                        TransactionsParams(
-                            cardId: nil,
-                            types: nil,
-                            from: nil,
-                            to: nil,
-                            toId: transaction.id,
-                            fromId: nil,
-                            limit: nil
-                        )
+                        TransactionsParams(toId: transaction.id)
                     )
                     .flatMap { requestedTransactions -> AnyPublisher<[Card.Transaction], NabuNetworkError> in
                         let mergedTransactions = transactions + requestedTransactions
                         return self.cache
-                            .set(mergedTransactions, for: #file)
+                            .set(mergedTransactions, for: Key(cardId: card?.id))
                             .map { _ in mergedTransactions }
                             .setFailureType(to: NabuNetworkError.self)
                             .eraseToAnyPublisher()

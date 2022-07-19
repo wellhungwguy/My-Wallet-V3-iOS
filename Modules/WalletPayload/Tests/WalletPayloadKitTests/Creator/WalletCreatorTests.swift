@@ -4,6 +4,7 @@
 @testable import WalletPayloadKit
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -84,6 +85,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
             generateWrapper: generateWrapperMock,
@@ -188,6 +190,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
             generateWrapper: generateWrapperMock,

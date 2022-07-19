@@ -4,16 +4,16 @@ import Localization
 import SwiftUI
 import UIKit
 
-public struct BuyButtonView: View {
-    public static let height: CGFloat = 80
+struct BuyButtonView: View {
+    static let height: CGFloat = 80
 
     private let viewStore: ViewStore<BuyButtonState, BuyButtonAction>
 
-    public init(store: Store<BuyButtonState, BuyButtonAction>) {
+    init(store: Store<BuyButtonState, BuyButtonAction>) {
         viewStore = ViewStore(store)
     }
 
-    public var body: some View {
+    var body: some View {
         ZStack(alignment: .center) {
             Rectangle()
                 .fill(verticalGradient)

@@ -15,6 +15,26 @@ struct OptionsResponse: Equatable, Codable {
         case html5Notifications = "html5_notifications"
         case logoutTime = "logout_time"
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        pbkdf2Iterations = try container.decode(Int.self, forKey: .pbkdf2Iterations)
+        html5Notifications = try container.decodeIfPresent(Bool.self, forKey: .html5Notifications) ?? false
+        logoutTime = try container.decode(Int.self, forKey: .logoutTime)
+        feePerKB = try container.decodeIfPresent(Int.self, forKey: .feePerKB)
+    }
+
+    init(
+        pbkdf2Iterations: Int,
+        html5Notifications: Bool,
+        logoutTime: Int,
+        feePerKB: Int?
+    ) {
+        self.pbkdf2Iterations = pbkdf2Iterations
+        self.html5Notifications = html5Notifications
+        self.logoutTime = logoutTime
+        self.feePerKB = feePerKB
+    }
 }
 
 extension WalletPayloadKit.Options {

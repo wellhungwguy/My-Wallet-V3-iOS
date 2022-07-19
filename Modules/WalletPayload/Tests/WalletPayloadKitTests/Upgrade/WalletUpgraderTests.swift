@@ -18,11 +18,11 @@ class WalletUpgraderTests: XCTestCase {
         doubleEncrypted: false,
         doublePasswordHash: "",
         metadataHDNode: "",
-        txNotes: nil,
-        tagNames: nil,
         options: .default,
         hdWallets: [],
-        addresses: []
+        addresses: [],
+        txNotes: nil,
+        addressBook: nil
     )
 
     var cancellables: Set<AnyCancellable>!

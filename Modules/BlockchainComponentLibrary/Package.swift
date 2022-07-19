@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -26,32 +26,26 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
         .package(
-            name: "swift-case-paths",
             url: "https://github.com/pointfreeco/swift-case-paths",
             from: "0.8.0"
         ),
         .package(
-            name: "swift-markdown",
             url: "https://github.com/apple/swift-markdown.git",
-            .revision("1023300b1d6847360ac9ceebbcff2bccacbcf2a5")
+            revision: "1023300b1d6847360ac9ceebbcff2bccacbcf2a5"
         ),
         .package(
-            name: "swift-algorithms",
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
         ),
         .package(
-            name: "Lottie",
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"
         ),
         .package(
-            name: "NukeUI",
             url: "https://github.com/kean/NukeUI.git",
             from: "0.8.3"
         )
@@ -63,7 +57,7 @@ let package = Package(
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown"),
-                .product(name: "Lottie", package: "Lottie"),
+                .product(name: "Lottie", package: "lottie-ios"),
                 .product(name: "NukeUI", package: "NukeUI")
             ],
             resources: [
@@ -74,9 +68,9 @@ let package = Package(
         .testTarget(
             name: "BlockchainComponentLibraryTests",
             dependencies: [
-                "BlockchainComponentLibrary",
-                "SnapshotTesting",
-                "Examples"
+                .target(name: "BlockchainComponentLibrary"),
+                .target(name: "Examples"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
             exclude: [
                 "1 - Base/__Snapshots__",

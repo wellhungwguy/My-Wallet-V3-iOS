@@ -47,7 +47,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([])
     }
 

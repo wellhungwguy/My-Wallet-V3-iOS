@@ -17,11 +17,7 @@ protocol PendingTransactionPageBuildable: Buildable {
 
 final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
 
-    private let pollingService: PendingSwapCompletionServiceAPI
-
-    init(pollingService: PendingSwapCompletionServiceAPI = resolve()) {
-        self.pollingService = pollingService
-    }
+    init() {}
 
     func build(
         withListener listener: PendingTransactionPageListener,

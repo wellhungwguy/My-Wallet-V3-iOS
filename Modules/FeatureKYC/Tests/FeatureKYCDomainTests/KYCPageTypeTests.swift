@@ -33,7 +33,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -43,7 +44,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -53,7 +55,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -63,7 +66,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -77,7 +81,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -92,7 +97,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -106,7 +112,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
         XCTAssertEqual(
@@ -121,7 +128,8 @@ class KYCPageTypeTests: XCTestCase {
                 requiredTier: .tier2,
                 tiersResponse: noTiersResponse,
                 isSDDEligible: false,
-                isSDDVerified: false
+                isSDDVerified: false,
+                hasQuestions: false
             )
         )
     }

@@ -19,12 +19,14 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.34.0"
         ),
-        .package(path: "../BlockchainComponentLibrary")
+        .package(path: "../BlockchainComponentLibrary"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
             name: "FeatureFormDomain",
             dependencies: [
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(

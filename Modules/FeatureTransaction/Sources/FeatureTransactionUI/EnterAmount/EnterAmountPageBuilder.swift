@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
 import Localization
 import PlatformKit
@@ -27,18 +28,21 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
     private let transactionModel: TransactionModel
     private let priceService: PriceServiceAPI
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
+    private let app: AppProtocol
 
     init(
         transactionModel: TransactionModel,
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         exchangeProvider: ExchangeProviding = resolve(),
-        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.priceService = priceService
         self.analyticsEventRecorder = analyticsEventRecorder
         self.transactionModel = transactionModel
         self.fiatCurrencyService = fiatCurrencyService
+        self.app = app
     }
 
     func build(
@@ -74,7 +78,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisibility: .visible
+                inputTypeToggleVisibility: .visible,
+                app: app
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
@@ -99,7 +104,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisibility: .visible
+                inputTypeToggleVisibility: .visible,
+                app: app
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
@@ -131,14 +137,25 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 initialActiveInput: .fiat
             )
 
+            let maxLimitPublisher = transactionModel.state.publisher
+                .compactMap { $0.source as? PaymentMethodAccount }
+                .compactMap(\.paymentMethodType.topLimit.fiatValue)
+                .ignoreFailure(setFailureType: Never.self)
+                .eraseToAnyPublisher()
             amountViewPresenting = AmountTranslationPresenter(
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisibility: .visible
+                inputTypeToggleVisibility: .visible,
+                app: app,
+                maxLimitPublisher: maxLimitPublisher
             )
-
-            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+            let ref = blockchain.app.configuration.prefill.is.enabled
+            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
+            amountViewable = AmountTranslationView(
+                presenter: amountViewPresenting as! AmountTranslationPresenter,
+                prefillButtonsEnabled: isEnabled ?? false
+            )
         default:
             unimplemented()
         }

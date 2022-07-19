@@ -1,49 +1,47 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import MoneyKit
 import PlatformKit
-import RxRelay
-import RxSwift
 
 final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI {
 
     private let ordersService: OrdersServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private var isTier2Approved: Single<Bool> {
+    private var isTier2Approved: AnyPublisher<Bool, Never> {
         kycTiersService
             .tiers
-            .asSingle()
             .map(\.isTier2Approved)
-            .catchAndReturn(false)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     init(
-        ordersService: OrdersServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        ordersService: OrdersServiceAPI,
+        kycTiersService: KYCTiersServiceAPI
     ) {
         self.ordersService = ordersService
         self.kycTiersService = kycTiersService
     }
 
-    func buySellActivityEvents(cryptoCurrency: CryptoCurrency) -> Single<[BuySellActivityItemEvent]> {
+    func buySellActivityEvents(cryptoCurrency: CryptoCurrency) -> AnyPublisher<[BuySellActivityItemEvent], OrdersServiceError> {
         isTier2Approved
-            .flatMap(weak: self) { (self, isTier2Approved) in
+            .setFailureType(to: OrdersServiceError.self)
+            .flatMap { [ordersService] isTier2Approved -> AnyPublisher<[BuySellActivityItemEvent], OrdersServiceError> in
                 guard isTier2Approved else {
-                    return Single.just([])
+                    return .just([])
                 }
-                return self.fetchBuySellActivityEvents(cryptoCurrency: cryptoCurrency)
+                return ordersService.orders
+                    .map { orders -> [BuySellActivityItemEvent] in
+                        orders
+                            .filter { order in
+                                order.outputValue.currency == cryptoCurrency
+                                || order.inputValue.currency == cryptoCurrency
+                            }
+                            .map(BuySellActivityItemEvent.init(with:))
+                    }
+                    .eraseToAnyPublisher()
             }
-    }
-
-    private func fetchBuySellActivityEvents(cryptoCurrency: CryptoCurrency) -> Single<[BuySellActivityItemEvent]> {
-        ordersService
-            .orders
-            .map { orders -> [OrderDetails] in
-                orders.filter {
-                    $0.outputValue.currency == cryptoCurrency || $0.inputValue.currency == cryptoCurrency
-                }
-            }
-            .map { items in items.map { BuySellActivityItemEvent(with: $0) } }
+            .eraseToAnyPublisher()
     }
 }

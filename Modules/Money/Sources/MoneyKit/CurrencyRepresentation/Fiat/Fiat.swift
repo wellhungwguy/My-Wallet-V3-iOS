@@ -15,6 +15,10 @@ extension Fiat {
         toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale)
     }
 
+    public func toDisplayString(includeSymbol: Bool, format: NumberFormatter.CurrencyFormat) -> String {
+        toDisplayString(includeSymbol: includeSymbol, format: format, locale: .current)
+    }
+
     /// Creates a displayable string, representing the currency amount in major units, in the given locale, using the given format, optionally including the currency symbol.
     ///
     /// - Parameters:

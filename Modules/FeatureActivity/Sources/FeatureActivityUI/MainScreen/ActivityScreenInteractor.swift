@@ -81,7 +81,14 @@ final class ActivityScreenInteractor {
             .map(\.0)
             .flatMapLatest { account -> Observable<[ActivityItemEvent]> in
                 if let group = account as? AccountGroup {
-                    return group.activityObservable
+                    return group
+                        .activityStream
+                        .throttle(
+                            for: .milliseconds(250),
+                            scheduler: DispatchQueue.global(qos: .userInitiated),
+                            latest: true
+                        )
+                        .asObservable()
                 }
                 return account.activity.asObservable()
             }

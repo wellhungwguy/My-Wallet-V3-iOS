@@ -8,7 +8,7 @@ import RxDataSources
 enum PortfolioCellType: Hashable {
     case announcement(AnnouncementCardViewModel)
     case withdrawalLock
-    case fiatCustodialBalances(CurrencyViewPresenter)
+    case fiatCustodialBalances(FiatBalanceCollectionViewPresenter)
     case totalBalance(TotalBalanceViewPresenter)
     case crypto(HistoricalBalanceCellPresenter)
     case cryptoSkeleton(Int)

@@ -524,7 +524,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .validateSource:
             switch action {
             case .buy:
-                linkPaymentMethodOrMoveToNextStep(for: newState)
+                router?.presentKYCFlowIfNeeded { [weak self, newState] isComplete in
+                    guard let self = self else { return }
+                    if isComplete {
+                        self.linkPaymentMethodOrMoveToNextStep(for: newState)
+                    }
+                }
             default:
                 // there's no need to validate the source account for these kinds of transactions
                 transactionModel.process(action: .prepareTransaction)
@@ -787,11 +792,13 @@ extension AssetAction {
 
 extension TransactionFlowInteractor {
 
-    // swiftlint:disable multiline_function_chains
     func onInit() {
 
-        app.post(event: blockchain.ux.transaction.did.start)
-        app.state.set(blockchain.app.configuration.transaction.id, to: action)
+        app.post(event: blockchain.ux.transaction.event.did.start)
+        app.state.transaction { state in
+            state.set(blockchain.app.configuration.transaction.id, to: action.rawValue)
+            state.set(blockchain.ux.transaction.id, to: action.rawValue)
+        }
 
         let intent = action
         transactionModel.actions.publisher
@@ -803,6 +810,8 @@ extension TransactionFlowInteractor {
                     case .initial:
                         state.set(blockchain.ux.transaction.source.id, to: tx.source?.currencyType.code)
                         state.set(blockchain.ux.transaction.source.target.id, to: tx.destination?.currencyType.code)
+                    case .closed:
+                        state.clear(blockchain.ux.transaction.id)
                     default:
                         break
                     }
@@ -814,10 +823,11 @@ extension TransactionFlowInteractor {
                         guard let value = tx.pendingTransaction?.amount else { break }
 
                         let amount = try value.amount.json()
+                        let previous = blockchain.ux.transaction.source.target.previous
 
-                        state.clear(blockchain.ux.transaction.source.target.previous.did.error)
-                        state.set(blockchain.ux.transaction.source.target.previous.input.amount, to: amount)
-                        state.set(blockchain.ux.transaction.source.target.previous.input.currency.code, to: value.currency.code)
+                        state.clear(previous.did.error)
+                        state.set(previous.input.amount, to: amount)
+                        state.set(previous.input.currency.code, to: value.currency.code)
 
                         if intent == .buy, let source = tx.source {
                             state.set(blockchain.ux.transaction.previous.payment.method.id, to: source.identifier)
@@ -830,6 +840,14 @@ extension TransactionFlowInteractor {
                         break
                     }
                 }
+                switch action {
+                case .validateSourceAccount:
+                    app.post(value: tx.source?.identifier, of: blockchain.ux.transaction.event.validate.source)
+                case .validateTransactionAfterKYC:
+                    app.post(event: blockchain.ux.transaction.event.validate.transaction)
+                default:
+                    break
+                }
             }
             .store(in: &bag)
 
@@ -837,32 +855,35 @@ extension TransactionFlowInteractor {
             .sink { [app] state in
                 switch state.step {
                 case .closed:
-                    app.post(event: blockchain.ux.transaction.did.finish)
+                    app.post(event: blockchain.ux.transaction.event.will.finish)
+                    app.post(event: blockchain.ux.transaction.event.did.finish)
                 case .inProgress:
-                    app.post(event: blockchain.ux.transaction.in.progress)
+                    app.post(event: blockchain.ux.transaction.event.in.progress)
                 case .enterAmount:
-                    app.post(event: blockchain.ux.transaction.enter.amount)
+                    app.post(event: blockchain.ux.transaction.event.enter.amount)
                 case .enterAddress:
-                    app.post(event: blockchain.ux.transaction.enter.address)
+                    app.post(event: blockchain.ux.transaction.event.enter.address)
                 case .linkABank:
-                    app.post(event: blockchain.ux.transaction.link.a.bank)
+                    app.post(event: blockchain.ux.transaction.event.link.a.bank)
                 case .linkACard:
-                    app.post(event: blockchain.ux.transaction.link.a.card)
+                    app.post(event: blockchain.ux.transaction.event.link.a.card)
                 case .linkPaymentMethod:
-                    app.post(event: blockchain.ux.transaction.link.payment.method)
+                    app.post(event: blockchain.ux.transaction.event.link.payment.method)
                 case .confirmDetail:
-                    app.post(event: blockchain.ux.transaction.checkout)
+                    app.post(event: blockchain.ux.transaction.event.checkout)
                 case .selectSource:
                     app.post(
-                        event: blockchain.ux.transaction.select.source,
-                        context: [blockchain.ux.transaction.select.source: state.source?.identifier as AnyHashable]
+                        event: blockchain.ux.transaction.event.select.source,
+                        context: [
+                            blockchain.ux.transaction.event.select.source: state.source?.identifier as AnyHashable
+                        ]
                     )
                 case .selectTarget:
-                    app.post(event: blockchain.ux.transaction.select.target)
+                    app.post(event: blockchain.ux.transaction.event.select.target)
                 case .error:
                     app.post(
                         value: state.errorState.ux(action: state.action),
-                        of: blockchain.ux.transaction.did.error
+                        of: blockchain.ux.transaction.event.did.error
                     )
                 default:
                     break

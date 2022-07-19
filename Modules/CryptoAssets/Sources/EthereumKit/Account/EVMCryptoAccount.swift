@@ -47,13 +47,14 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         .just(ethereumReceiveAddress)
     }
 
-    var activity: Single<[ActivityItemEvent]> {
+    var activity: AnyPublisher<[ActivityItemEvent], Error> {
         nonCustodialActivity
             .zip(swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     var nonce: AnyPublisher<BigUInt, EthereumNonceRepositoryError> {

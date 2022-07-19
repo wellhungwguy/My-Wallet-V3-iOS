@@ -235,7 +235,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                     .signed(rawTx: rawTransaction)
                 }
         case .send:
-            return transactionPublisher.asSingle()
+            return transactionPublisher
                 .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
@@ -247,6 +247,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 .map { transactionHash -> TransactionResult in
                     .hashed(txHash: transactionHash, amount: pendingTransaction.amount)
                 }
+                .asSingle()
         }
     }
 

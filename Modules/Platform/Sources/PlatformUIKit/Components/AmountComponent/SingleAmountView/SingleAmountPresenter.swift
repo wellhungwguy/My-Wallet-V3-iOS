@@ -18,7 +18,6 @@ public final class SingleAmountPresenter: AmountViewPresenting {
         case empty
     }
 
-    private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen.LimitView
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     let amountPresenter: InputAmountLabelPresenter

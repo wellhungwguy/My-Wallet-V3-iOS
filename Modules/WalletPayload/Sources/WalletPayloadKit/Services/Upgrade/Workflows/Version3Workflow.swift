@@ -20,13 +20,16 @@ import Localization
 final class Version3Workflow: WalletUpgradeWorkflow {
     private let entropyService: RNGServiceAPI
     private let operationQueue: DispatchQueue
+    private let logger: NativeWalletLoggerAPI
 
     init(
         entropyService: RNGServiceAPI,
+        logger: NativeWalletLoggerAPI,
         operationQueue: DispatchQueue
     ) {
         self.entropyService = entropyService
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     static var supportedVersion: WalletPayloadVersion {
@@ -43,14 +46,18 @@ final class Version3Workflow: WalletUpgradeWorkflow {
             queue: operationQueue,
             entropyProvider: entropyService.generateEntropy(count:)
         )
+        .logMessageOnOutput(logger: logger, message: { mnemonic in
+            "[v3 Upgrade] Mnemonic \(mnemonic)"
+        })
         .mapError(WalletUpgradeError.mnemonicFailure)
         .receive(on: operationQueue)
-        .flatMap { [provideAccount] mnemonic -> AnyPublisher<HDWallet, WalletUpgradeError> in
+        .flatMap { [provideAccount, logger] mnemonic -> AnyPublisher<HDWallet, WalletUpgradeError> in
             getHDWallet(from: mnemonic)
                 .flatMap { hdWallet -> Result<(account: Account, seedHex: String), WalletCreateError> in
                     let seedHex = hdWallet.entropy.toHexString()
                     let masterNode = hdWallet.seed.toHexString()
                     let account = provideAccount(masterNode)
+                    logger.log(message: "[v3 Upgrade] Account created: \(account)", metadata: nil)
                     return .success((account, seedHex))
                 }
                 .map { account, seedHex in
@@ -73,11 +80,11 @@ final class Version3Workflow: WalletUpgradeWorkflow {
                 doubleEncrypted: wrapper.wallet.doubleEncrypted,
                 doublePasswordHash: wrapper.wallet.doublePasswordHash,
                 metadataHDNode: wrapper.wallet.metadataHDNode,
-                txNotes: wrapper.wallet.txNotes,
-                tagNames: wrapper.wallet.tagNames,
                 options: wrapper.wallet.options,
                 hdWallets: [hdWallet],
-                addresses: wrapper.wallet.addresses
+                addresses: wrapper.wallet.addresses,
+                txNotes: wrapper.wallet.txNotes,
+                addressBook: wrapper.wallet.addressBook
             )
             return Wrapper(
                 pbkdf2Iterations: Int(wrapper.pbkdf2Iterations),
@@ -88,6 +95,9 @@ final class Version3Workflow: WalletUpgradeWorkflow {
                 wallet: wallet
             )
         }
+        .logMessageOnOutput(logger: logger, message: { wrapper in
+            "[v3 Upgrade] Wrapper: \(wrapper)"
+        })
         .eraseToAnyPublisher()
     }
 

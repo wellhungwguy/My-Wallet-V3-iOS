@@ -1,10 +1,15 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "Platform",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "PlatformKit", targets: ["PlatformKit"]),
         .library(name: "PlatformDataKit", targets: ["PlatformDataKit"]),
@@ -14,52 +19,42 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
         .package(
-            name: "Charts",
             url: "https://github.com/danielgindi/Charts.git",
             from: "3.6.0"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "RIBs",
             url: "https://github.com/uber/RIBs.git",
             from: "0.12.1"
         ),
         .package(
-            name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "5.0.2"
         ),
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.2.0"
         ),
         .package(
-            name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
-            from: "10.3.1"
+            from: "10.11.2"
         ),
         .package(
-            name: "PhoneNumberKit",
             url: "https://github.com/marmelroy/PhoneNumberKit.git",
             from: "3.3.3"
         ),
         .package(
-            name: "Zxcvbn",
             url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
-            .branch("swift-package-manager")
+            branch: "swift-package-manager"
         ),
         .package(
-            name: "swift-algorithms",
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
         ),
@@ -137,7 +132,7 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
-                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "Zxcvbn", package: "zxcvbn-ios"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),

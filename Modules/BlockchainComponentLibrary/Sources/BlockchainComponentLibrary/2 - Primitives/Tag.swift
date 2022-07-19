@@ -7,7 +7,7 @@ import SwiftUI
 /// # Figma
 ///
 /// [TagView](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=212%3A5974)
-public struct TagView: View {
+public struct TagView: View, Hashable {
 
     private let text: String
     private let variant: Variant
@@ -35,15 +35,25 @@ public struct TagView: View {
     }
 
     /// Style variant for TagView
-    public struct Variant {
+    public struct Variant: Hashable {
         fileprivate let backgroundColor: Color
         fileprivate let textColor: Color
     }
 
     /// Size variant for TagView
-    public struct Size {
+    public struct Size: Hashable {
         fileprivate let typography: Typography
         fileprivate let padding: EdgeInsets
+    }
+}
+
+extension EdgeInsets: Hashable {
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(top)
+        hasher.combine(leading)
+        hasher.combine(trailing)
+        hasher.combine(bottom)
     }
 }
 

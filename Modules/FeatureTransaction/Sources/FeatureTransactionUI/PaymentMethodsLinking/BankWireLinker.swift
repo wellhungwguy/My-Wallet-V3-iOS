@@ -54,7 +54,7 @@ final class BankWireLinker: BankWireLinkerAPI {
     /// The screen matches the wallet's currency
     /// - Returns: `Single<UIViewController>`
     private func fundsTransferDetailsViewController(completion: @escaping () -> Void) -> Single<UIViewController> {
-        fiatCurrencyService.displayCurrency
+        fiatCurrencyService.tradingCurrency
             .asSingle()
             .map(weak: self) { (self, fiatCurrency) in
                 self.fundsTransferDetailsViewController(

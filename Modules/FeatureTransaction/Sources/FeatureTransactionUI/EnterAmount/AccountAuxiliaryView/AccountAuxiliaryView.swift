@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIKit
 
 final class AccountAuxiliaryView: UIView {
 
@@ -61,6 +63,11 @@ final class AccountAuxiliaryView: UIView {
     init() {
         super.init(frame: UIScreen.main.bounds)
 
+        layer.cornerRadius = 16
+        layer.masksToBounds = true
+        layer.borderColor = UIColor(Color.semantic.light).cgColor
+        layer.borderWidth = 1
+
         addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subtitleLabel)
@@ -71,16 +78,13 @@ final class AccountAuxiliaryView: UIView {
 
         button.fillSuperview()
         badgeImageView.layoutToSuperview(.centerY)
-        badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
+        badgeImageView.layoutToSuperview(.leading, offset: Spacing.inner)
 
-        disclosureImageView.layoutToSuperview(.trailing, offset: -24)
+        disclosureImageView.layoutToSuperview(.trailing, offset: -Spacing.inner)
         disclosureImageView.layoutToSuperview(.centerY)
-
-        disclosureImageView.set(
-            ImageViewContent(
-                imageResource: .local(name: "icon-disclosure-small", bundle: .platformUIKit)
-            )
-        )
+        disclosureImageView.layout(size: CGSize(width: 14, height: 24))
+        disclosureImageView.contentMode = .scaleAspectFit
+        disclosureImageView.image = Icon.chevronRight.uiImage
 
         stackView.layoutToSuperview(.centerY)
         stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)

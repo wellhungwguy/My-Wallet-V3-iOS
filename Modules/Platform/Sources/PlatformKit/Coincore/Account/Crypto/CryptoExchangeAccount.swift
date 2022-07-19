@@ -78,7 +78,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(true)
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([])
     }
 

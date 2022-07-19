@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
-import FeatureCardPaymentDomain
 import Localization
 import MoneyKit
 import PlatformKit
@@ -39,10 +39,11 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let event: BuySellActivityItemEvent
     private let interactor: BuySellActivityDetailsInteractor
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: Private Properties (Model Relay)
 
-    private let cardDataRelay: BehaviorRelay<CardData?> = .init(value: nil)
+    private let cardDataRelay: BehaviorRelay<String?> = .init(value: nil)
     private let buyExchangeRateRelay: BehaviorRelay<MoneyValue?> = .init(value: nil)
 
     // MARK: Private Properties (LabelContentPresenting)
@@ -67,8 +68,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     init(
         event: BuySellActivityItemEvent,
-        interactor: BuySellActivityDetailsInteractor = .init(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        interactor: BuySellActivityDetailsInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.interactor = interactor
         self.event = event
@@ -153,7 +154,6 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         cardDataRelay
             .compactMap { $0 }
-            .map { "\($0.label) \($0.displaySuffix)" }
             .map { .loaded(next: .init(text: $0)) }
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
@@ -239,11 +239,14 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             break
         case .card(let paymentMethodId):
             interactor
-                .fetchCardDetails(for: paymentMethodId)
-                .asObservable()
-                .catchAndReturn(nil)
-                .bindAndCatch(to: cardDataRelay)
-                .disposed(by: disposeBag)
+                .fetchCardDisplayName(for: paymentMethodId)
+                .sink(
+                    receiveCompletion: { _ in },
+                    receiveValue: { [weak self] value in
+                        self?.cardDataRelay.accept(value)
+                    }
+                )
+                .store(in: &cancellables)
         }
     }
 }

@@ -7,8 +7,8 @@ import PlatformKit
 
 public protocol KYCAccountUsageServiceAPI {
 
-    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError>
-    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
+    func fetchExtraKYCQuestions(context: String) -> AnyPublisher<Form, Nabu.Error>
+    func submitExtraKYCQuestions(_ form: Form) -> AnyPublisher<Void, Nabu.Error>
 }
 
 final class KYCAccountUsageService: KYCAccountUsageServiceAPI {
@@ -19,22 +19,22 @@ final class KYCAccountUsageService: KYCAccountUsageServiceAPI {
         self.apiClient = apiClient
     }
 
-    func fetchAccountUsageForm() -> AnyPublisher<[FormQuestion], NabuNetworkError> {
-        apiClient.fetchAccountUsageForm()
-            .catch { error -> AnyPublisher<[FormQuestion], Nabu.Error> in
+    func fetchExtraKYCQuestions(context: String) -> AnyPublisher<Form, Nabu.Error> {
+        apiClient.fetchExtraKYCQuestions(context: context)
+            .catch { error -> AnyPublisher<Form, Nabu.Error> in
                 if error.code.rawValue == 204 {
-                    return Just([])
+                    return Just(Form(header: nil, context: context, nodes: [], blocking: false))
                         .setFailureType(to: Nabu.Error.self)
                         .eraseToAnyPublisher()
                 } else {
-                    return Fail(outputType: [FormQuestion].self, failure: error)
+                    return Fail(outputType: Form.self, failure: error)
                         .eraseToAnyPublisher()
                 }
             }
             .eraseToAnyPublisher()
     }
 
-    func submitAccountUsageForm(_ form: [FormQuestion]) -> AnyPublisher<Void, NabuNetworkError> {
-        apiClient.submitAccountUsageForm(form)
+    func submitExtraKYCQuestions(_ form: Form) -> AnyPublisher<Void, Nabu.Error> {
+        apiClient.submitExtraKYCQuestions(form)
     }
 }

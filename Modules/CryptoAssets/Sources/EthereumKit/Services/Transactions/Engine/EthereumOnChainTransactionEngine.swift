@@ -297,7 +297,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                             nonce: nonce,
                             chainID: evmCryptoAccount.network.chainID,
                             contractAddress: nil
-                        ).publisher
+                        )
+                        .publisher
                     }
                     .asSingle()
             }
@@ -308,6 +309,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                         secondPassword: secondPassword,
                         network: self.network
                     )
+                    .asSingle()
             }
             .map(\.transactionHash)
             .map { transactionHash -> TransactionResult in

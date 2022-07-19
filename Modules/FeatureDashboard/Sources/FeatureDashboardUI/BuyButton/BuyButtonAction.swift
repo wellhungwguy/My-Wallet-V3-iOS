@@ -1,3 +1,3 @@
-public enum BuyButtonAction: Equatable {
+enum BuyButtonAction: Equatable {
     case buyTapped
 }

@@ -9,11 +9,19 @@ import ToolKit
 
 struct ResidentialAddressModificationView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.KYC.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order.KYC
 
-    private let store: Store<CardOrderingState, CardOrderingAction>
+    private let store: Store<
+        ResidentialAddressModificationState,
+        ResidentialAddressModificationAction
+    >
 
-    init(store: Store<CardOrderingState, CardOrderingAction>) {
+    init(
+        store: Store<
+            ResidentialAddressModificationState,
+            ResidentialAddressModificationAction
+        >
+    ) {
         self.store = store
     }
 
@@ -22,72 +30,139 @@ struct ResidentialAddressModificationView: View {
             VStack(spacing: Spacing.padding3) {
                 VStack(spacing: Spacing.padding1) {
                     Input(
-                        text: viewStore.binding(\.$addressLine1),
+                        text: viewStore.binding(\.$line1),
                         isFirstResponder: viewStore
                             .binding(\.$selectedInputField)
                             .equals(.line1),
-                        label: localizedStrings.Address.Form.addressLine1,
-                        placeholder: localizedStrings.Address.Form.placeholder,
+                        label: L10n.Address.Form.addressLine1,
+                        placeholder: L10n.Address.Form.Placeholder.line,
+                        state: viewStore.state.line1.isEmpty ? .error : .default,
                         configuration: {
                             $0.textContentType = .streetAddressLine1
+                        },
+                        onReturnTapped: {
+                            viewStore.send(.binding(.set(\.$selectedInputField, .line2)))
                         }
                     )
                     Input(
-                        text: viewStore.binding(\.$addressLine2),
+                        text: viewStore.binding(\.$line2),
                         isFirstResponder: viewStore
                             .binding(\.$selectedInputField)
                             .equals(.line2),
-                        label: localizedStrings.Address.Form.addressLine2,
-                        placeholder: localizedStrings.Address.Form.placeholder,
+                        label: L10n.Address.Form.addressLine2,
+                        placeholder: L10n.Address.Form.Placeholder.line,
                         configuration: {
                             $0.textContentType = .streetAddressLine2
+                        },
+                        onReturnTapped: {
+                            viewStore.send(.binding(.set(\.$selectedInputField, .city)))
                         }
                     )
                     Input(
-                        text: viewStore.binding(\.$addressCity),
+                        text: viewStore.binding(\.$city),
                         isFirstResponder: viewStore
                             .binding(\.$selectedInputField)
                             .equals(.city),
-                        label: localizedStrings.Address.Form.city,
+                        label: L10n.Address.Form.city,
+                        state: viewStore.state.city.isEmpty ? .error : .default,
                         configuration: {
                             $0.textContentType = .addressCity
+                        },
+                        onReturnTapped: {
+                            viewStore.send(.binding(.set(\.$selectedInputField, .state)))
                         }
                     )
                     HStack(spacing: Spacing.padding2) {
                         Input(
-                            text: viewStore.binding(\.$addressState),
+                            text: viewStore.binding(\.$state),
                             isFirstResponder: viewStore
                                 .binding(\.$selectedInputField)
                                 .equals(.state),
-                            label: localizedStrings.Address.Form.state,
+                            label: L10n.Address.Form.state,
+                            placeholder: L10n.Address.Form.Placeholder.state,
+                            state: viewStore.state.state.isEmpty ? .error : .default,
                             configuration: {
                                 $0.textContentType = .addressState
+                            },
+                            onReturnTapped: {
+                                viewStore.send(.binding(.set(\.$selectedInputField, .zip)))
                             }
                         )
                         Input(
-                            text: viewStore.binding(\.$addressPostcode),
+                            text: viewStore.binding(\.$postcode),
                             isFirstResponder: viewStore
                                 .binding(\.$selectedInputField)
                                 .equals(.zip),
-                            label: localizedStrings.Address.Form.zip,
+                            label: L10n.Address.Form.zip,
+                            state: viewStore.state.postcode.isEmpty ? .error : .default,
                             configuration: {
                                 $0.textContentType = .postalCode
+                            },
+                            onReturnTapped: {
+                                viewStore.send(.binding(.set(\.$selectedInputField, nil)))
                             }
                         )
                     }
+                    Input(
+                        text: .constant(countryName(viewStore.state.country)),
+                        isFirstResponder: .constant(false),
+                        label: L10n.Address.Form.country
+                    )
+                    .disabled(true)
                 }
                 .padding(.horizontal, Spacing.padding3)
                 Spacer()
-                PrimaryButton(title: localizedStrings.Buttons.save) {
+                PrimaryButton(
+                    title: L10n.Buttons.save,
+                    isLoading: viewStore.state.loading
+                ) {
                     viewStore.send(.updateAddress)
                 }
+                .disabled(
+                    viewStore.state.line1.isEmpty
+                        || viewStore.state.postcode.isEmpty
+                        || viewStore.state.city.isEmpty
+                        || viewStore.state.state.isEmpty
+                )
                 .padding(Spacing.padding3)
                 .padding(.bottom, Spacing.padding4)
             }
             .padding(.vertical, Spacing.padding3)
-            .primaryNavigation(title: localizedStrings.Address.Navigation.title)
+            .primaryNavigation(title: L10n.Address.Navigation.title)
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .bottomSheet(
+                isPresented: viewStore.binding(
+                    get: { $0.error != nil },
+                    send: ResidentialAddressModificationAction.closeError
+                ),
+                content: {
+                    IfLetStore(store.scope(state: \.error)) { store in
+                        WithViewStore(store) { viewStore in
+                            ErrorView(
+                                title: viewStore.state.displayTitle,
+                                description: viewStore.state.displayDescription,
+                                cancelTitle: L10n.Buttons.cancel,
+                                isModal: true,
+                                cancelAction: {
+                                    viewStore.send(
+                                        ResidentialAddressModificationAction
+                                            .closeError
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+            )
         }
     }
+}
+
+func countryName(_ code: String) -> String {
+    let locale = NSLocale.current as NSLocale
+    return locale.displayName(forKey: NSLocale.Key.countryCode, value: code) ?? ""
 }
 
 #if DEBUG
@@ -96,9 +171,12 @@ struct ResidentialAddressModification_Previews: PreviewProvider {
         NavigationView {
             ResidentialAddressModificationView(
                 store: Store(
-                    initialState: CardOrderingState(address: MockServices.address),
-                    reducer: cardOrderingReducer,
-                    environment: .preview
+                    initialState: .init(address: MockServices.address, error: .unknown),
+                    reducer: residentialAddressModificationReducer,
+                    environment: .init(
+                        mainQueue: .main,
+                        residentialAddressService: MockServices()
+                    )
                 )
             )
         }

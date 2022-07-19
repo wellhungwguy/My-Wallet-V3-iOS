@@ -17,14 +17,16 @@ enum AccountUsage {
         case onAppear
         case onComplete
         case loadForm
-        case formDidLoad(Result<[FormQuestion], NabuNetworkError>)
+        case dismiss
+        case formDidLoad(Result<FeatureFormDomain.Form, NabuNetworkError>)
         case form(AccountUsage.Form.Action)
     }
 
     struct Environment {
         let onComplete: () -> Void
-        let loadForm: () -> AnyPublisher<[FormQuestion], NabuNetworkError>
-        let submitForm: ([FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
+        let dismiss: () -> Void
+        let loadForm: () -> AnyPublisher<FeatureFormDomain.Form, NabuNetworkError>
+        let submitForm: (FeatureFormDomain.Form) -> AnyPublisher<Void, NabuNetworkError>
         let analyticsRecorder: AnalyticsEventRecorderAPI
         let mainQueue: AnySchedulerOf<DispatchQueue> = .main
     }
@@ -39,6 +41,9 @@ enum AccountUsage {
             case .onComplete:
                 return .fireAndForget(environment.onComplete)
 
+            case .dismiss:
+                return .fireAndForget(environment.dismiss)
+
             case .loadForm:
                 state = .loading
                 return environment.loadForm()
@@ -49,24 +54,24 @@ enum AccountUsage {
 
             case .formDidLoad(let result):
                 switch result {
+                case .success(let form) where form.isEmpty:
+                    return Effect(value: .onComplete)
                 case .success(let form):
-                    state = .success(AccountUsage.Form.State(questions: form))
+                    state = .success(AccountUsage.Form.State(form: form))
                 case .failure(let error):
-                    // If we receive a 204, the user doesn't have to complete the form, so we can just complete
-                    if error.code.rawValue == 204 {
-                        state = .success(AccountUsage.Form.State(questions: []))
-                        return Effect(value: .onComplete)
-                    }
-
-                    // Otherwise, handle the failure
+                    let ux = UX.Error(nabu: error)
                     state = .failure(
                         FailureState(
-                            title: LocalizationConstants.NewKYC.GenericError.title,
-                            message: String(describing: error),
+                            title: ux.title,
+                            message: ux.message,
                             buttons: [
                                 .primary(
                                     title: LocalizationConstants.NewKYC.GenericError.retryButtonTitle,
                                     action: .loadForm
+                                ),
+                                .destructive(
+                                    title: LocalizationConstants.NewKYC.GenericError.retryButtonTitle,
+                                    action: .dismiss
                                 )
                             ]
                         )
@@ -108,6 +113,7 @@ extension AccountUsage.Environment {
 
     static let preview = AccountUsage.Environment(
         onComplete: {},
+        dismiss: {},
         loadForm: { .empty() },
         submitForm: { _ in .empty() },
         analyticsRecorder: NoOpAnalyticsRecorder()

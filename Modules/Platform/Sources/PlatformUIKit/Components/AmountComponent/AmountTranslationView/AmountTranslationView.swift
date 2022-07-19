@@ -4,6 +4,7 @@ import PlatformKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import SwiftUI
 import ToolKit
 import UIComponentsKit
 import UIKit
@@ -50,6 +51,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         return swapButton
     }()
 
+    private let prefillViewController: UIViewController?
     private let presenter: AmountTranslationPresenter
     private let labelsStackView: UIStackView
 
@@ -60,8 +62,26 @@ public final class AmountTranslationView: UIView, AmountViewable {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { unimplemented() }
 
-    public init(presenter: AmountTranslationPresenter) {
+    public init(
+        presenter: AmountTranslationPresenter,
+        prefillButtonsEnabled: Bool = false
+    ) {
         self.presenter = presenter
+        prefillViewController = prefillButtonsEnabled ? UIHostingController(
+            rootView: PrefillButtonsView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: prefillButtonsReducer,
+                    environment: PrefillButtonsEnvironment(
+                        lastPurchasePublisher: presenter.lastPurchasePublisher,
+                        maxLimitPublisher: presenter.maxLimitPublisher,
+                        onValueSelected: { [presenter] prefillMoneyValue in
+                            presenter.interactor.set(amount: prefillMoneyValue.moneyValue)
+                        }
+                    )
+                )
+            )
+        ) : nil
         labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
         labelsStackView.axis = .vertical
         super.init(frame: UIScreen.main.bounds)
@@ -91,16 +111,27 @@ public final class AmountTranslationView: UIView, AmountViewable {
         outerStackView.axis = .horizontal
         outerStackView.alignment = .center
 
+        let prefillViewHeight: CGFloat = 42
         addSubview(outerStackView)
-        outerStackView.constraint(
-            edgesTo: self,
-            insets: UIEdgeInsets(horizontal: Spacing.outer, vertical: Spacing.standard)
+        outerStackView.layoutToSuperview(.leading, offset: Spacing.outer)
+        outerStackView.layoutToSuperview(.trailing, offset: -Spacing.outer)
+        outerStackView.layoutToSuperview(.top)
+        outerStackView.layoutToSuperview(
+            .bottom,
+            offset: prefillButtonsEnabled ? -prefillViewHeight : -Spacing.standard
         )
 
         labelsStackView.maximizeResistanceAndHuggingPriorities()
 
         auxiliaryButton.layoutToSuperview(.leading, relation: .greaterThanOrEqual)
         auxiliaryButton.layoutToSuperview(.trailing, relation: .lessThanOrEqual)
+
+        if let prefillView = prefillViewController?.view {
+            addSubview(prefillView)
+            prefillView.layoutToSuperview(.bottom, .leading, .trailing)
+            prefillView.heightAnchor.constraint(equalToConstant: prefillViewHeight).isActive = true
+            prefillViewController?.willMove(toParent: nil)
+        }
 
         presenter.swapButtonVisibility
             .drive(swapButton.rx.visibility)

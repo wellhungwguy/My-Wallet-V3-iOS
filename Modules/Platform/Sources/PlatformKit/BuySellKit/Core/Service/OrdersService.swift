@@ -4,9 +4,6 @@ import AnalyticsKit
 import Combine
 import DIKit
 import Errors
-import RxRelay
-import RxSwift
-import RxToolKit
 import ToolKit
 
 public enum OrdersServiceError: Error {
@@ -20,13 +17,13 @@ public protocol OrdersServiceAPI: AnyObject {
 
     /// Streams all cached Simple Buy orders from cache, or fetch from
     /// remote if they are not cached
-    var orders: Single<[OrderDetails]> { get }
+    var orders: AnyPublisher<[OrderDetails], OrdersServiceError> { get }
 
     /// Fetches the orders from remote
-    func fetchOrders() -> Single<[OrderDetails]>
+    func fetchOrders() -> AnyPublisher<[OrderDetails], OrdersServiceError>
 
     /// Fetches the order for a given identifier
-    func fetchOrder(with identifier: String) -> Single<OrderDetails>
+    func fetchOrder(with identifier: String) -> AnyPublisher<OrderDetails, OrdersServiceError>
 }
 
 final class OrdersService: OrdersServiceAPI {
@@ -56,16 +53,15 @@ final class OrdersService: OrdersServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    var orders: Single<[OrderDetails]> {
-        ordersCachedValue.valueSingle
+    var orders: AnyPublisher<[OrderDetails], OrdersServiceError> {
+        cachedOrders.get(key: CacheKey())
     }
 
-    private let ordersCachedValue = CachedValue<[OrderDetails]>(
-        configuration: .periodic(
-            seconds: 60,
-            schedulerIdentifier: "OrdersService"
-        )
-    )
+    private let cachedOrders: CachedValueNew<
+        CacheKey,
+        [OrderDetails],
+        OrdersServiceError
+    >
 
     private let cachedAccumulatedTrades: CachedValueNew<
         CacheKey,
@@ -86,24 +82,34 @@ final class OrdersService: OrdersServiceAPI {
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
-        ordersCachedValue.setFetch { [client, analyticsRecorder] in
-            client.orderDetails(pendingOnly: false)
-                .asSingle()
-                .map { orders in
-                    orders.compactMap {
-                        OrderDetails(recorder: analyticsRecorder, response: $0)
-                    }
-                }
-        }
 
-        let accumulatedTrades: AnyCache<CacheKey, [AccumulatedTradeDetails]> = InMemoryCache(
+        let cacheOrders: AnyCache<CacheKey, [OrderDetails]> = InMemoryCache(
+            configuration: .onLoginLogoutTransactionAndDashboardRefresh(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
+        )
+        .eraseToAnyCache()
+        cachedOrders = CachedValueNew(
+            cache: cacheOrders,
+            fetch: { _ in
+                client
+                    .orderDetails(pendingOnly: false)
+                    .map { [analyticsRecorder] response in
+                        response.compactMap { order in
+                            OrderDetails(recorder: analyticsRecorder, response: order)
+                        }
+                    }
+                    .mapError(OrdersServiceError.network)
+                    .eraseToAnyPublisher()
+            }
+        )
+
+        let cacheAccumulatedTrades: AnyCache<CacheKey, [AccumulatedTradeDetails]> = InMemoryCache(
             configuration: .onLoginLogoutTransactionAndDashboardRefresh(),
             refreshControl: PerpetualCacheRefreshControl()
         )
         .eraseToAnyCache()
-
         cachedAccumulatedTrades = CachedValueNew(
-            cache: accumulatedTrades,
+            cache: cacheAccumulatedTrades,
             fetch: { _ in
                 client
                     .fetchAccumulatedTradeAmounts()
@@ -113,16 +119,17 @@ final class OrdersService: OrdersServiceAPI {
         )
     }
 
-    func fetchOrders() -> Single<[OrderDetails]> {
-        ordersCachedValue.fetchValue
+    func fetchOrders() -> AnyPublisher<[OrderDetails], OrdersServiceError> {
+        cachedOrders.get(key: CacheKey(), forceFetch: true)
     }
 
-    func fetchOrder(with identifier: String) -> Single<OrderDetails> {
+    func fetchOrder(with identifier: String) -> AnyPublisher<OrderDetails, OrdersServiceError> {
         client.orderDetails(with: identifier)
+            .mapError(OrdersServiceError.network)
             .map { [analyticsRecorder] response in
                 OrderDetails(recorder: analyticsRecorder, response: response)
             }
-            .asSingle()
-            .onNil(error: OrdersServiceError.mappingError)
+            .onNil(OrdersServiceError.mappingError)
+            .eraseToAnyPublisher()
     }
 }

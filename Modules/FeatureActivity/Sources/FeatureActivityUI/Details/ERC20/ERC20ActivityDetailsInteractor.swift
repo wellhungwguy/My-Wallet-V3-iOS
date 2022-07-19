@@ -63,7 +63,7 @@ final class ERC20ActivityDetailsInteractor {
             }
             return .failure(DetailsError.failed)
         }
-        let transaction = evmActivityRepository
+        let transaction: AnyPublisher<EVMHistoricalTransaction, Error> = evmActivityRepository
             .transactions(
                 cryptoCurrency: cryptoCurrency,
                 address: sourceIdentifier

@@ -20,7 +20,11 @@ final class AccountsRouter: AccountsRouting {
         routing: TabSwapping,
         backupRouter: FeatureDashboardUI.BackupRouterAPI = resolve()
     ) {
-        custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
+        let provider = CustodyActionRouterProvider()
+        custodyActionRouterAPI = provider.create(
+            backupRouterAPI: backupRouter,
+            tabSwapping: routing
+        )
     }
 
     private func routeToInterestAccount(for account: BlockchainAccount) {

@@ -2,34 +2,35 @@
 
 import Combine
 import DIKit
-import RxSwift
 import ToolKit
 
 public protocol PendingOrderDetailsServiceAPI: AnyObject {
-    var pendingOrderDetails: Single<[OrderDetails]> { get }
-    var pendingActionOrderDetails: Single<[OrderDetails]> { get }
+    var pendingOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> { get }
+    var pendingActionOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> { get }
 
     func cancel(_ order: OrderDetails) -> AnyPublisher<Void, OrderCancellationError>
 }
 
 final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
 
-    var pendingOrderDetails: Single<[OrderDetails]> {
+    var pendingOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> {
         ordersService.fetchOrders()
             .map { orders in
                 orders
                     .filter { !$0.isFinal }
                     .filter { $0.isAwaitingAction || $0.is3DSConfirmedCardOrder }
             }
+            .eraseToAnyPublisher()
     }
 
-    var pendingActionOrderDetails: Single<[OrderDetails]> {
+    var pendingActionOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> {
         ordersService.fetchOrders()
             .map { orders in
                 orders
                     .filter { !$0.isFinal }
                     .filter(\.isAwaitingAction)
             }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Injected

@@ -3,6 +3,7 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import Errors
 import FeatureAuthenticationDomain
 import MoneyKit
 import PlatformKit
@@ -42,8 +43,13 @@ final class NabuUserSessionObserver: Session.Observer {
             .compactMap(\.value)
             .removeDuplicates()
             .dropFirst()
-            .flatMap(userService.setTradingCurrency)
-            .subscribe()
+            .flatMap { [userService] currency -> AnyPublisher<NabuUser, Never> in
+                userService.setTradingCurrency(currency)
+                    .flatMap { userService.fetchUser().mapError(\.nabu) }
+                    .ignoreFailure()
+                    .eraseToAnyPublisher()
+            }
+            .sink(to: NabuUserSessionObserver.fetched(user:), on: self)
             .store(in: &bag)
     }
 
@@ -56,9 +62,9 @@ final class NabuUserSessionObserver: Session.Observer {
             state.set(blockchain.user.email.address, to: user.email.address)
             state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
             state.set(blockchain.user.name.last, to: user.personalDetails.lastName)
-            state.set(blockchain.user.currency.value, to: user.currencies.userFiatCurrencies.map(\.code))
+            state.set(blockchain.user.currency.currencies, to: user.currencies.userFiatCurrencies.map(\.code))
             state.set(blockchain.user.currency.preferred.fiat.trading.currency, to: user.currencies.preferredFiatTradingCurrency.code)
-            state.set(blockchain.user.currency.available, to: user.currencies.usableFiatCurrencies.map(\.code))
+            state.set(blockchain.user.currency.available.currencies, to: user.currencies.usableFiatCurrencies.map(\.code))
             state.set(blockchain.user.currency.default, to: user.currencies.defaultWalletCurrency.code)
             state.set(blockchain.user.address.line_1, to: user.address?.lineOne)
             state.set(blockchain.user.address.line_2, to: user.address?.lineTwo)

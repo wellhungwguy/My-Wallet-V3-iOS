@@ -101,14 +101,15 @@ extension ReferFriendView {
                     .fontWeight(.medium)
                     .kerning(15)
                     .padding(.top, Spacing.padding3)
-                Button(viewStore.state.codeIsCopied ?
-                    LocalizedStrings.copiedLabel :
-                    LocalizedStrings.copyLabel) {
-                        viewStore.send(.onCopyTapped)
-                    }
-                    .typography(.paragraph2)
-                    .padding(.bottom, Spacing.padding3)
-                    .foregroundColor(Color.WalletSemantic.primary)
+                let label = viewStore.state.codeIsCopied
+                    ? LocalizedStrings.copiedLabel
+                    : LocalizedStrings.copyLabel
+                Button(label) {
+                    viewStore.send(.onCopyTapped)
+                }
+                .typography(.paragraph2)
+                .padding(.bottom, Spacing.padding3)
+                .foregroundColor(Color.WalletSemantic.primary)
             })
             .frame(maxWidth: .infinity)
             .background(Color("color_code_background", bundle: .module))

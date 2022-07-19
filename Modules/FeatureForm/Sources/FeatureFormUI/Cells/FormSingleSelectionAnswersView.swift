@@ -31,6 +31,11 @@ struct FormSingleSelectionAnswersView: View {
                 }
         case .openEnded:
             FormOpenEndedAnswerView(answer: answer)
+
+        default:
+            Text(answer.wrappedValue.type.value)
+                .typography(.paragraph1)
+                .foregroundColor(.semantic.error)
         }
     }
 }
@@ -47,6 +52,7 @@ struct FormSingleSelectionAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 ),
                 FormAnswer(
@@ -56,6 +62,7 @@ struct FormSingleSelectionAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 )
             ]

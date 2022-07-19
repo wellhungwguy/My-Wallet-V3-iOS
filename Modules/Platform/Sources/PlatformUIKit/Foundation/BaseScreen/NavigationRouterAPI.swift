@@ -18,9 +18,6 @@ public protocol RoutingNextStateEmitterAPI: AnyObject {
     var nextRelay: PublishRelay<Void> { get }
 }
 
-/// Emits both previus and next state commands. Exposes a simple navigation API
-public typealias RoutingStateEmitterAPI = RoutingPreviousStateEmitterAPI & RoutingNextStateEmitterAPI
-
 public protocol NavigationRouterAPI: AnyObject {
     var navigationControllerAPI: NavigationControllerAPI? { get set }
     var topMostViewControllerProvider: TopMostViewControllerProviding! { get }

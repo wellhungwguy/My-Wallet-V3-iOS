@@ -59,4 +59,10 @@ extension CacheConfiguration {
             flushNotificationNames: [.login, .logout, .kycStatusChanged, .transaction, .dashboardPullToRefresh]
         )
     }
+
+    public static func onLoginLogoutDebitCardRefresh() -> CacheConfiguration {
+        CacheConfiguration(
+            flushNotificationNames: [.debitCardRefresh, .login, .logout, .kycStatusChanged]
+        )
+    }
 }

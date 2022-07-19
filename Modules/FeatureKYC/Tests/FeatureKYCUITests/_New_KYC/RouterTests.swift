@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import AnalyticsKitMock
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 @testable import FeatureKYCDomain
@@ -30,6 +31,7 @@ final class RouterTests: XCTestCase {
         mockKYCTiersService = MockKYCTiersService()
         mockLegacyKYCRouter = MockLegacyKYCRouter()
         router = .init(
+            app: App.test,
             analyticsRecorder: MockAnalyticsRecorder(),
             loadingViewPresenter: MockLoadingViewPresenter(),
             legacyRouter: mockLegacyKYCRouter,

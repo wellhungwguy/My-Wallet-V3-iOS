@@ -2,11 +2,13 @@
 
 import MoneyKit
 
-public enum ActivityItemEvent {
+public enum ActivityItemEvent: Equatable {
 
     case swap(SwapActivityItemEvent)
     // Send/Receive
     case transactional(TransactionalActivityItemEvent)
+    // Send/Receive
+    case simpleTransactional(SimpleTransactionalActivityItemEvent)
     // Buy Sell
     case buySell(BuySellActivityItemEvent)
     // Interest
@@ -50,6 +52,8 @@ public enum ActivityItemEvent {
             return event.insertedAt
         case .swap(let swap):
             return swap.date
+        case .simpleTransactional(let transaction):
+            return transaction.creationDate
         case .transactional(let transaction):
             return transaction.creationDate
         case .fiat(let model):
@@ -78,6 +82,9 @@ extension ActivityItemEvent: Hashable {
         case .swap(let event):
             hasher.combine("swap")
             hasher.combine(event.identifier)
+        case .simpleTransactional(let event):
+            hasher.combine("simpleTransactional")
+            hasher.combine(event.identifier)
         case .transactional(let event):
             hasher.combine("transactional")
             hasher.combine(event.identifier)
@@ -101,6 +108,12 @@ extension ActivityItemEvent {
             return event.value.moneyValue
         case .swap(let event):
             return event.amounts.deposit
+        case .simpleTransactional(let event):
+            if event.type == .send {
+                return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
+            } else {
+                return event.amount.moneyValue
+            }
         case .transactional(let event):
             if event.type == .send {
                 return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
@@ -133,6 +146,8 @@ extension ActivityItemEvent {
             return event.identifier
         case .swap(let event):
             return event.identifier
+        case .simpleTransactional(let event):
+            return event.identifier
         case .transactional(let event):
             return event.identifier
         case .fiat(let event):
@@ -150,6 +165,17 @@ extension ActivityItemEvent {
             return .product(.interest(event.state))
         case .swap(let event):
             return .product(.swap(event.status))
+        case .simpleTransactional(let event):
+            switch event.status {
+            case .complete:
+                return .complete
+            case .pending(confirmations: let confirmations):
+                return .pending(confirmations: .init(
+                    current: confirmations.current,
+                    total: confirmations.total
+                )
+                )
+            }
         case .transactional(let event):
             switch event.status {
             case .complete:
@@ -165,27 +191,6 @@ extension ActivityItemEvent {
             return .product(.custodial(event.state))
         case .crypto(let event):
             return .product(.custodial(event.state))
-        }
-    }
-}
-
-extension ActivityItemEvent: Equatable {
-    public static func == (lhs: ActivityItemEvent, rhs: ActivityItemEvent) -> Bool {
-        switch (lhs, rhs) {
-        case (.swap(let left), .swap(let right)):
-            return left == right
-        case (.interest(let left), .interest(let right)):
-            return left == right
-        case (.transactional(let left), .transactional(let right)):
-            return left == right
-        case (.buySell(let left), .buySell(let right)):
-            return left == right
-        case (.fiat(let left), .fiat(let right)):
-            return left == right
-        case (.crypto(let left), .crypto(let right)):
-            return left == right
-        default:
-            return false
         }
     }
 }

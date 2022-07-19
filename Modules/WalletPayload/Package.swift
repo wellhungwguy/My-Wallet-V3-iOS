@@ -18,6 +18,7 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
+        .package(path: "../Observability"),
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Keychain"),
@@ -31,6 +32,7 @@ let package = Package(
         .target(
             name: "WalletPayloadKit",
             dependencies: [
+                .product(name: "ObservabilityKit", package: "Observability"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "KeychainKit", package: "Keychain"),
@@ -64,6 +66,7 @@ let package = Package(
                 .target(name: "WalletPayloadDataKit"),
                 .target(name: "WalletPayloadKit"),
                 .target(name: "WalletPayloadKitMock"),
+                .product(name: "ObservabilityKit", package: "Observability"),
                 .product(name: "MetadataKitMock", package: "Metadata"),
                 .product(name: "KeychainKitMock", package: "Keychain"),
                 .product(name: "Errors", package: "Errors"),

@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import ObservabilityKit
 import ToolKit
 
 public struct WalletFetchedContext: Equatable {
@@ -42,6 +43,8 @@ final class WalletFetcher: WalletFetcherAPI {
     private let walletLogic: WalletLogic
     private let walletPayloadRepository: WalletPayloadRepositoryAPI
     private let operationsQueue: DispatchQueue
+    private let tracer: LogMessageServiceAPI
+    private let logger: NativeWalletLoggerAPI
 
     private let doLoadPayload: LoadAndInitializePayload
 
@@ -50,19 +53,25 @@ final class WalletFetcher: WalletFetcherAPI {
         payloadCrypto: PayloadCryptoAPI,
         walletLogic: WalletLogic,
         walletPayloadRepository: WalletPayloadRepositoryAPI,
-        operationsQueue: DispatchQueue
+        operationsQueue: DispatchQueue,
+        tracer: LogMessageServiceAPI,
+        logger: NativeWalletLoggerAPI
     ) {
         self.walletRepo = walletRepo
         self.payloadCrypto = payloadCrypto
         self.walletLogic = walletLogic
         self.walletPayloadRepository = walletPayloadRepository
         self.operationsQueue = operationsQueue
+        self.tracer = tracer
+        self.logger = logger
 
         doLoadPayload = loadPayload(
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletRepo: walletRepo,
-            queue: operationsQueue
+            queue: operationsQueue,
+            tracer: tracer,
+            logger: logger
         )
     }
 
@@ -122,9 +131,12 @@ private func loadPayload(
     payloadCrypto: PayloadCryptoAPI,
     walletLogic: WalletLogic,
     walletRepo: WalletRepoAPI,
-    queue: DispatchQueue
+    queue: DispatchQueue,
+    tracer: LogMessageServiceAPI,
+    logger: NativeWalletLoggerAPI
 ) -> LoadAndInitializePayload {
-    { [payloadCrypto, walletLogic, walletRepo] payload, password -> AnyPublisher<WalletFetchedContext, WalletError> in
+    { [payloadCrypto, walletLogic, walletRepo, tracer] payload, password
+        -> AnyPublisher<WalletFetchedContext, WalletError> in
         guard let payloadWrapper = payload.payloadWrapper, !payloadWrapper.payload.isEmpty else {
             return .failure(WalletError.payloadNotFound)
         }
@@ -136,6 +148,12 @@ private func loadPayload(
         .map { (payload, $0) }
         .mapError { _ in WalletError.decryption(.decryptionError) }
         .eraseToAnyPublisher()
+        .logMessageOnOutput(
+            logger: logger,
+            message: { _, decrypted in
+                "Decrypted payload: \(decrypted)"
+            }
+        )
         .flatMap { [walletLogic] walletPayload, decryptedPayload -> AnyPublisher<WalletState, WalletError> in
             guard let data = decryptedPayload.data(using: .utf8) else {
                 return .failure(.decryption(.decryptionError))
@@ -143,6 +161,7 @@ private func loadPayload(
             return walletLogic
                 .initialize(with: password, payload: walletPayload, decryptedWallet: data)
         }
+        .logErrorOrCrash(tracer: tracer)
         .receive(on: queue)
         .flatMap { walletState -> AnyPublisher<NativeWallet, WalletError> in
             guard let wallet = walletState.wallet else {

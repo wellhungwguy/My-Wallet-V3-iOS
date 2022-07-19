@@ -276,7 +276,7 @@ enum TransactionFlowDescriptor {
                     )
                 )
             } else {
-                return LocalizedString.Buy.confirmationDisclaimer.attributed
+                return "".attributed
             }
         case .interestWithdraw:
             return String(

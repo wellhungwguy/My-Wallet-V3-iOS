@@ -133,18 +133,22 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
-        delegatedSelfCustodySupported
-            .map { [asset] isEnabled in
-                guard isEnabled else {
+        delegatedCustodyAccount
+            .map { [asset, addressFactory] delegatedCustodyAccount in
+                guard let delegatedCustodyAccount = delegatedCustodyAccount else {
                     return CryptoAccountNonCustodialGroup(
                         asset: asset,
                         accounts: []
                     )
                 }
                 let account = CryptoDelegatedCustodyAccount(
-                    asset: asset,
+                    activityRepository: resolve(),
+                    addressesRepository: resolve(),
+                    addressFactory: addressFactory,
+                    asset: delegatedCustodyAccount.coin,
                     balanceRepository: resolve(),
-                    priceService: resolve()
+                    priceService: resolve(),
+                    publicKey: delegatedCustodyAccount.publicKey.hex
                 )
                 return CryptoAccountNonCustodialGroup(
                     asset: asset,
@@ -154,13 +158,13 @@ final class CustodialCryptoAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    private var delegatedSelfCustodySupported: AnyPublisher<Bool, Never> {
+    private var delegatedCustodyAccount: AnyPublisher<DelegatedCustodyAccount?, Never> {
         delegatedCustodyAccountRepository
-            .accountsCurrencies()
-            .map { [asset] accountsCurrencies in
-                accountsCurrencies.contains(asset)
+            .delegatedCustodyAccounts
+            .map { [asset] accounts in
+                accounts.first(where: { $0.coin == asset })
             }
-            .replaceError(with: false)
+            .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
 }

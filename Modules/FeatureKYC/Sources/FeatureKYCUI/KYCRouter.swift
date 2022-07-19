@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
+import FeatureFormDomain
 import FeatureKYCDomain
 import Localization
 import NetworkKit
@@ -67,6 +69,7 @@ final class KYCRouter: KYCRouterAPI {
     private let appSettings: AppSettingsAPI
     private let loadingViewPresenter: LoadingViewPresenting
 
+    private let app: AppProtocol
     private var userTiersResponse: KYC.UserTiers?
     private var kycSettings: KYCSettingsAPI
 
@@ -109,6 +112,7 @@ final class KYCRouter: KYCRouterAPI {
     }
 
     init(
+        app: AppProtocol = resolve(),
         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
         webViewServiceAPI: WebViewServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
@@ -121,6 +125,7 @@ final class KYCRouter: KYCRouterAPI {
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
     ) {
+        self.app = app
         self.requestBuilder = requestBuilder
         self.errorRecorder = errorRecorder
         self.alertPresenter = alertPresenter
@@ -159,6 +164,22 @@ final class KYCRouter: KYCRouterAPI {
             return
         }
         rootViewController = viewController
+
+        app.post(
+            event: blockchain.ux.kyc.event.did.start,
+            context: [
+                blockchain.ux.kyc.tier: {
+                    switch tier {
+                    case .tier0:
+                        return blockchain.ux.kyc.tier.none[]
+                    case .tier1:
+                        return blockchain.ux.kyc.tier.silver[]
+                    case .tier2:
+                        return blockchain.ux.kyc.tier.gold[]
+                    }
+                }()
+            ]
+        )
 
         switch tier {
         case .tier0:
@@ -222,7 +243,8 @@ final class KYCRouter: KYCRouterAPI {
                     requiredTier: tier,
                     tiersResponse: tiersResponse,
                     isSDDEligible: shouldCheckForSDDEligibility,
-                    isSDDVerified: shouldCheckForSDDVerification
+                    isSDDVerified: shouldCheckForSDDVerification,
+                    hasQuestions: strongSelf.hasQuestions
                 )
 
                 if startingPage != .accountStatus {
@@ -259,7 +281,7 @@ final class KYCRouter: KYCRouterAPI {
 
     // Called when the entire KYC process has been completed.
     func finish() {
-        dismiss { [tiersService, kycFinishedRelay, disposeBag] in
+        dismiss { [app, tiersService, kycFinishedRelay, disposeBag] in
             tiersService.fetchTiers()
                 .asObservable()
                 .map(\.latestApprovedTier)
@@ -271,18 +293,22 @@ final class KYCRouter: KYCRouterAPI {
                 object: nil
             )
             NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
+            app.post(event: blockchain.ux.kyc.event.did.finish)
+            app.post(event: blockchain.ux.kyc.event.status.did.change)
         }
     }
 
     // Called when the KYC process is stopped before completing.
     func stop() {
-        dismiss { [kycStoppedRelay] in
+        dismiss { [app, kycStoppedRelay] in
             kycStoppedRelay.accept(())
             NotificationCenter.default.post(
                 name: Constants.NotificationKeys.kycStopped,
                 object: nil
             )
             NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
+            app.post(event: blockchain.ux.kyc.event.did.cancel)
+            app.post(event: blockchain.ux.kyc.event.status.did.change)
         }
     }
 
@@ -385,6 +411,10 @@ final class KYCRouter: KYCRouterAPI {
             .disposed(by: disposeBag)
     }
 
+    var hasQuestions: Bool {
+        (try? app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty)) == false
+    }
+
     // MARK: View Restoration
 
     /// Restores the user to the most recent page if they dropped off mid-flow while KYC'ing
@@ -401,7 +431,8 @@ final class KYCRouter: KYCRouterAPI {
             requiredTier: tier,
             tiersResponse: response,
             isSDDEligible: isSDDEligible,
-            isSDDVerified: isSDDVerified
+            isSDDVerified: isSDDVerified,
+            hasQuestions: hasQuestions
         )
 
         if startingPage == .accountStatus {
@@ -484,7 +515,8 @@ final class KYCRouter: KYCRouterAPI {
             requiredTier: tier,
             tiersResponse: response,
             isSDDEligible: isSDDEligible,
-            isSDDVerified: isSDDVerified
+            isSDDVerified: isSDDVerified,
+            hasQuestions: hasQuestions
         )
         var controller: KYCBaseViewController
         if startingPage == .accountStatus {

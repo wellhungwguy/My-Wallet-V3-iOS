@@ -81,7 +81,10 @@ extension AccountAuxiliaryViewPresenter: AuxiliaryViewPresenting {
         accountAuxiliaryView.presenter = self
         let viewController = UIViewController()
         viewController.view.addSubview(accountAuxiliaryView)
-        accountAuxiliaryView.constraint(edgesTo: viewController.view)
+        accountAuxiliaryView.layoutToSuperview(.top)
+        accountAuxiliaryView.layoutToSuperview(.bottom, offset: -Spacing.inner)
+        accountAuxiliaryView.layoutToSuperview(.leading, offset: Spacing.outer)
+        accountAuxiliaryView.layoutToSuperview(.trailing, offset: -Spacing.outer)
         return viewController
     }
 }

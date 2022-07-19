@@ -3,6 +3,8 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import Errors
+import FeatureFormDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -113,7 +115,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .state
             .share(replay: 1, scope: .whileConnected)
 
-        // THIS IS NO AMOUNT CONVERSION. NAME IS CONFUSING.
         amountViewInteractor
             .effect
             .subscribe { [weak self] effect in

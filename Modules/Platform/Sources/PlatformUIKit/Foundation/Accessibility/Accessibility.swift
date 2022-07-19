@@ -84,7 +84,7 @@ extension Accessibility: Equatable {
 }
 
 extension Optional {
-    var printable: Any {
+    public var printable: Any {
         switch self {
         case .none:
             return ""

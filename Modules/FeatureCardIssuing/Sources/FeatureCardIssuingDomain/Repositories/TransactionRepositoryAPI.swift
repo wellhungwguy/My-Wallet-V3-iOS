@@ -6,7 +6,7 @@ import Foundation
 
 public protocol TransactionRepositoryAPI {
 
-    func fetchTransactions() -> AnyPublisher<[Card.Transaction], NabuNetworkError>
+    func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError>
 
-    func fetchMore() -> AnyPublisher<[Card.Transaction], NabuNetworkError>
+    func fetchMore(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError>
 }

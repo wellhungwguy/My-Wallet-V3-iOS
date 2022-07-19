@@ -12,7 +12,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class PricesViewController: BaseScreenViewController {
+final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Private Types
 
@@ -26,15 +26,14 @@ public final class PricesViewController: BaseScreenViewController {
     private let presenter: PricesScreenPresenter
     private let tableView = UITableView()
     private let searchBar = UISearchBar()
-    public typealias CustomSelectionActionClosure = (CryptoCurrency) -> Void
-    private let customSelectionActionClosure: CustomSelectionActionClosure?
+    private let customSelectionActionClosure: PricesCustomSelectionActionClosure?
 
     // MARK: - Setup
 
-    public init(
+    init(
         app: AppProtocol = DIKit.resolve(),
         presenter: PricesScreenPresenter,
-        customSelectionActionClosure: CustomSelectionActionClosure? = nil
+        customSelectionActionClosure: PricesCustomSelectionActionClosure? = nil
     ) {
         self.app = app
         self.presenter = presenter
@@ -47,7 +46,7 @@ public final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupTableView()
@@ -56,7 +55,7 @@ public final class PricesViewController: BaseScreenViewController {
         presenter.refreshRelay.accept(())
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
@@ -176,13 +175,13 @@ public final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 }
 
 extension PricesViewController: SegmentedViewScreenViewController {
-    public func adjustInsetForBottomButton(withHeight height: CGFloat) {
+    func adjustInsetForBottomButton(withHeight height: CGFloat) {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
     }
 }

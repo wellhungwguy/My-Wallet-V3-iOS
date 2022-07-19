@@ -149,13 +149,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var isNativeTransactionEnabled: AnyPublisher<Bool, Never> {
-        let event: Tag.Event
-        switch Token.coin {
-        case .bitcoin:
-            event = blockchain.app.configuration.native.bitcoin.is.enabled
-        case .bitcoinCash:
-            event = blockchain.app.configuration.native.bitcoin.cash.is.enabled
-        }
+        let event: Tag.Event = blockchain.app.configuration.native.wallet.payload.is.enabled
         return app.publisher(for: event, as: Bool.self)
             .prefix(1)
             .replaceError(with: false)

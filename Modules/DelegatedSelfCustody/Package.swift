@@ -5,7 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "DelegatedSelfCustody",
-    platforms: [.iOS(.v14), .macOS(.v12)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "DelegatedSelfCustodyKit",

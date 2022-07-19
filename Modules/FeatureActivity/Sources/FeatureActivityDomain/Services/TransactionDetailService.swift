@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import MoneyKit
 import NetworkKit
 import PlatformKit
@@ -19,7 +18,7 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
 
     private let blockchainAPI: BlockchainAPI
 
-    init(blockchainAPI: BlockchainAPI = resolve()) {
+    init(blockchainAPI: BlockchainAPI) {
         self.blockchainAPI = blockchainAPI
     }
 

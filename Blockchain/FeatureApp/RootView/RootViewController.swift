@@ -51,6 +51,7 @@ final class RootViewController: UIHostingController<RootView> {
 
         super.init(rootView: RootView(store: store))
 
+        subscribe(to: viewStore)
         subscribe(to: ViewStore(global))
 
         if !defaults.hasInteractedWithFrequentActionButton {
@@ -114,6 +115,13 @@ extension RootViewController {
 }
 
 extension RootViewController {
+
+    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
+        viewStore.publisher.tab.sink { [weak self] _ in
+            self?.presentedViewController?.dismiss(animated: true)
+        }
+        .store(in: &bag)
+    }
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {
 

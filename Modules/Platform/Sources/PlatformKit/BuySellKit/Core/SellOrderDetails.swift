@@ -5,7 +5,7 @@ import BigInt
 import Errors
 import MoneyKit
 
-public struct SellOrderDetails {
+public struct SellOrderDetails: Equatable {
 
     public typealias State = OrderDetailsState
 

@@ -28,11 +28,11 @@ enum CardOrderingAction: Equatable, BindableAction {
     case productsResponse(Result<[Product], NabuNetworkError>)
     case fetchAddress
     case addressResponse(Result<Card.Address, NabuNetworkError>)
-    case updateAddress
     case close(CardOrderingResult)
     case displayEligibleCountryList
     case displayEligibleStateList
     case selectProduct(Int)
+    case residentialAddressModificationAction(ResidentialAddressModificationAction)
     case binding(BindingAction<CardOrderingState>)
 }
 
@@ -75,14 +75,9 @@ struct CardOrderingState: Equatable {
     @BindableState var termsAccepted = false
     @BindableState var selectedProductIndex: Int = 0
 
-    @BindableState var addressLine1 = ""
-    @BindableState var addressLine2 = ""
-    @BindableState var addressCity = ""
-    @BindableState var addressState = ""
-    @BindableState var addressPostcode = ""
-    @BindableState var addressCountry = ""
     @BindableState var ssn: String = ""
-    @BindableState var selectedInputField: Field?
+
+    var residentialAddressModificationState: ResidentialAddressModificationState?
 
     var updatingAddress = false
     var products: [Product] = []
@@ -96,7 +91,7 @@ struct CardOrderingState: Equatable {
         products: [Product] = [],
         selectedProduct: Product? = nil,
         address: Card.Address? = nil,
-        ssn: String = Constants.tempAuthorizedSsn,
+        ssn: String = "",
         error: NabuNetworkError? = nil,
         orderProcessingState: CardOrderingState.OrderProcessingState = .none
     ) {
@@ -132,116 +127,110 @@ struct CardOrderingEnvironment {
     }
 }
 
-enum Constants {
-    static let tempAuthorizedSsn = "111111110"
-}
-
 // swiftlint:disable closure_body_length
-let cardOrderingReducer = Reducer<
+let cardOrderingReducer: Reducer<
     CardOrderingState,
     CardOrderingAction,
     CardOrderingEnvironment
-> { state, action, env in
-
-    switch action {
-    case .createCard:
-        state.orderProcessingState = .processing
-        state.isOrderProcessingVisible = true
-        guard let product = state.selectedProduct else {
-            state.orderProcessingState = .error(CardOrderingError.noProduct)
-            return .none
-        }
-        guard let address = state.address else {
-            state.orderProcessingState = .error(CardOrderingError.noAddress)
-            return .none
-        }
-        guard !state.ssn.isEmpty else {
-            state.orderProcessingState = .error(CardOrderingError.noSsn)
-            return .none
-        }
-        return env.cardService
-            .orderCard(product: product, at: address, with: state.ssn)
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.cardCreationResponse)
-    case .cardCreationResponse(.success(let card)):
-        state.orderProcessingState = .success
-        return .none
-    case .cardCreationResponse(.failure(let error)):
-        state.orderProcessingState = .error(error)
-        return .none
-    case .fetchAddress:
-        return env
-            .residentialAddressService
-            .fetchResidentialAddress()
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.addressResponse)
-    case .updateAddress:
-        state.updatingAddress = true
-        return env
-            .residentialAddressService
-            .update(
-                residentialAddress: Card.Address(
-                    line1: state.addressLine1,
-                    line2: state.addressLine2,
-                    city: state.addressCity,
-                    postCode: state.addressPostcode,
-                    state: state.addressState,
-                    country: state.addressCountry
-                )
+> = Reducer.combine(
+    residentialAddressModificationReducer.optional().pullback(
+        state: \.residentialAddressModificationState,
+        action: /CardOrderingAction.residentialAddressModificationAction,
+        environment: {
+            ResidentialAddressModificationEnvironment(
+                mainQueue: $0.mainQueue,
+                residentialAddressService: $0.residentialAddressService
             )
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.addressResponse)
-    case .addressResponse(.success(let address)):
-        state.isAddressModificationVisible = false
-        state.selectedInputField = nil
-        state.updatingAddress = false
-        state.address = address
-        state.addressLine1 = address.line1 ?? ""
-        state.addressLine2 = address.line2 ?? ""
-        state.addressCity = address.city ?? ""
-        state.addressState = address
-            .state?
-            .replacingOccurrences(
-                of: Card.Address.Constants.usPrefix,
-                with: ""
-            ) ?? ""
-        state.addressPostcode = address.postCode ?? ""
-        state.addressCountry = address.country ?? ""
-        return .none
-    case .addressResponse(.failure(let error)):
-        state.error = error
-        return .none
-    case .fetchProducts:
-        return env
-            .productsService
-            .fetchProducts()
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardOrderingAction.productsResponse)
-    case .productsResponse(.success(let products)):
-        state.products = products
-        state.selectedProductIndex = 0
-        state.selectedProduct = products[safe: 0]
-        return .none
-    case .productsResponse(.failure(let error)):
-        state.error = error
-        return .none
-    case .close(let result):
-        return .fireAndForget {
-            env.onComplete(result)
         }
-    case .displayEligibleStateList:
-        return .none
-    case .displayEligibleCountryList:
-        return .none
-    case .selectProduct(let index):
-        state.selectedProductIndex = index
-        state.selectedProduct = state.products[safe: index]
-        return .none
-    case .binding:
-        return .none
+    ),
+    Reducer<
+        CardOrderingState,
+        CardOrderingAction,
+        CardOrderingEnvironment
+    > { state, action, env in
+        switch action {
+        case .createCard:
+            state.orderProcessingState = .processing
+            state.isOrderProcessingVisible = true
+            guard let product = state.selectedProduct else {
+                state.orderProcessingState = .error(CardOrderingError.noProduct)
+                return .none
+            }
+            guard let address = state.address else {
+                state.orderProcessingState = .error(CardOrderingError.noAddress)
+                return .none
+            }
+            guard !state.ssn.isEmpty else {
+                state.orderProcessingState = .error(CardOrderingError.noSsn)
+                return .none
+            }
+            return env.cardService
+                .orderCard(product: product, at: address, with: state.ssn)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.cardCreationResponse)
+        case .cardCreationResponse(.success(let card)):
+            state.orderProcessingState = .success
+            return .none
+        case .cardCreationResponse(.failure(let error)):
+            state.orderProcessingState = .error(error)
+            return .none
+        case .fetchAddress:
+            return env
+                .residentialAddressService
+                .fetchResidentialAddress()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.addressResponse)
+        case .addressResponse(.success(let address)):
+            state.residentialAddressModificationState = .init(address: address, error: nil)
+            state.isAddressModificationVisible = false
+            state.updatingAddress = false
+            state.address = address
+            return .none
+        case .addressResponse(.failure(let error)):
+            state.residentialAddressModificationState = .init(address: nil, error: error)
+            state.error = error
+            return .none
+        case .fetchProducts:
+            return env
+                .productsService
+                .fetchProducts()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.productsResponse)
+        case .productsResponse(.success(let products)):
+            state.products = products
+            state.selectedProductIndex = 0
+            state.selectedProduct = products[safe: 0]
+            return .none
+        case .productsResponse(.failure(let error)):
+            state.error = error
+            return .none
+        case .close(let result):
+            return .fireAndForget {
+                env.onComplete(result)
+            }
+        case .displayEligibleStateList:
+            return .none
+        case .displayEligibleCountryList:
+            return .none
+        case .selectProduct(let index):
+            state.selectedProductIndex = index
+            state.selectedProduct = state.products[safe: index]
+            return .none
+        case .residentialAddressModificationAction(let modificationAction):
+            switch modificationAction {
+            case .updateAddressResponse(.success(let address)):
+                state.address = address
+                state.isAddressModificationVisible = false
+                return .none
+            default:
+                return .none
+            }
+        case .binding:
+            return .none
+        }
     }
-}
-.binding()
+    .binding()
+)
 
 #if DEBUG
 extension CardOrderingEnvironment {
@@ -267,7 +256,7 @@ struct MockServices: CardServiceAPI,
     static let address = Card.Address(
         line1: "614 Lorimer Street",
         line2: nil,
-        city: "Sacramento",
+        city: "",
         postCode: "11111",
         state: "CA",
         country: "US"
@@ -391,11 +380,11 @@ struct MockServices: CardServiceAPI,
 
 extension MockServices: TransactionServiceAPI {
 
-    func fetchMore() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+    func fetchMore(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
         .just([])
     }
 
-    func fetchTransactions() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+    func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
         .just([])
     }
 }

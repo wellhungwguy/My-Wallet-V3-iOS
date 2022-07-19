@@ -23,6 +23,10 @@ struct FormMultipleSelectionAnswersView: View {
             FormMultipleSelectionAnswerView(answer: answer)
         case .openEnded:
             FormOpenEndedAnswerView(answer: answer)
+        default:
+            Text(answer.wrappedValue.type.value)
+                .typography(.paragraph1)
+                .foregroundColor(.semantic.error)
         }
     }
 }
@@ -39,6 +43,7 @@ struct FormMultipleSelectionAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 ),
                 FormAnswer(
@@ -48,6 +53,7 @@ struct FormMultipleSelectionAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 )
             ]

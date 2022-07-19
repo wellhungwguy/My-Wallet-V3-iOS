@@ -10,7 +10,7 @@ import ToolKit
 
 struct CardManagementDetailsView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Manage.Details.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Manage.Details
 
     private let store: Store<CardManagementState, CardManagementAction>
 
@@ -39,16 +39,12 @@ struct CardManagementDetailsView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     header
-                    appleWalletButton
-                    PrimaryDivider()
                     PrimaryRow(
-                        title: localizedStrings.Lock.title,
-                        subtitle: localizedStrings.Lock.subtitle,
+                        title: L10n.Lock.title,
+                        subtitle: L10n.Lock.subtitle,
                         trailing: {
                             PrimarySwitch(
-                                accessibilityLabel: localizedStrings
-                                    .Lock
-                                    .title,
+                                accessibilityLabel: L10n.title,
                                 isOn: viewStore.binding(\.$isLocked)
                             )
                         },
@@ -56,23 +52,23 @@ struct CardManagementDetailsView: View {
                     )
                     PrimaryDivider()
                     PrimaryRow(
-                        title: localizedStrings.Personal.title,
-                        subtitle: localizedStrings.Personal.subtitle,
+                        title: L10n.Personal.title,
+                        subtitle: L10n.Personal.subtitle,
                         trailing: { chevronRight },
                         action: {
-                            viewStore.send(.showSupportFlow)
+                            viewStore.send(.binding(.set(\.$isPersonalDetailsVisible, true)))
                         }
                     )
                     PrimaryDivider()
                     PrimaryRow(
-                        title: localizedStrings.Support.title,
-                        subtitle: localizedStrings.Support.subtitle,
+                        title: L10n.Support.title,
+                        subtitle: L10n.Support.subtitle,
                         trailing: { chevronRight },
                         action: {
                             viewStore.send(.showSupportFlow)
                         }
                     )
-                    DestructiveMinimalButton(title: localizedStrings.delete) {
+                    DestructiveMinimalButton(title: L10n.delete) {
                         viewStore.send(.binding(.set(\.$isDeleteCardPresented, true)))
                     }
                     .padding(Spacing.padding3)
@@ -84,6 +80,17 @@ struct CardManagementDetailsView: View {
                 isPresented: viewStore.binding(\.$isDeleteCardPresented),
                 content: {
                     CloseCardView(store: store)
+                }
+            )
+            .bottomSheet(
+                isPresented: viewStore.binding(\.$isPersonalDetailsVisible),
+                content: {
+                    ResidentialAddressModificationView(store: store
+                        .scope(
+                            state: \.residentialAddressModificationState,
+                            action: CardManagementAction.residentialAddressModificationAction
+                        )
+                    )
                 }
             )
         }
@@ -106,7 +113,7 @@ struct CardManagementDetailsView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: Spacing.padding1) {
                         HStack {
-                            Text(localizedStrings.virtualCard)
+                            Text(L10n.virtualCard)
                                 .typography(.paragraph2)
                                 .foregroundColor(.semantic.title)
                             Spacer()
@@ -116,7 +123,7 @@ struct CardManagementDetailsView: View {
                         }
                         Text(viewStore.state.card?.status.localizedString ?? "-")
                             .typography(.caption2)
-                            .foregroundColor(.semantic.primaryMuted)
+                            .foregroundColor(viewStore.state.card?.status.color)
                     }
                     .padding(.leading, 16)
                     .padding(.vertical, 18)
@@ -139,7 +146,7 @@ struct CardManagementDetailsView: View {
             ZStack {
                 HStack {
                     Image("apple-wallet", bundle: .cardIssuing)
-                    Text(localizedStrings.addToAppleWallet)
+                    Text(L10n.addToAppleWallet)
                         .foregroundColor(Color.white)
                 }
                 .padding(12)
@@ -163,6 +170,24 @@ struct CardManagementDetailsView: View {
                 .semantic.muted
             )
             .flipsForRightToLeftLayoutDirection(true)
+    }
+}
+
+extension Card.Status {
+
+    var color: Color {
+        switch self {
+        case .initiated, .created, .unactivated:
+            return .semantic.primaryMuted
+        case .active:
+            return .semantic.success
+        case .locked:
+            return .semantic.error
+        case .terminated:
+            return .semantic.body
+        case .unsupported, .limited, .suspended:
+            return .semantic.orangeBG
+        }
     }
 }
 

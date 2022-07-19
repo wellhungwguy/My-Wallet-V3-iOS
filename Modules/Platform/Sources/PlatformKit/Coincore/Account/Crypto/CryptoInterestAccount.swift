@@ -89,18 +89,14 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .eraseError()
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
-        activityPublisher
-            .asSingle()
-    }
-
-    private var activityPublisher: AnyPublisher<[ActivityItemEvent], Never> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         interestActivityEventRepository
             .fetchInterestActivityItemEventsForCryptoCurrency(asset)
             .map { events in
                 events.map(ActivityItemEvent.interest)
             }
             .replaceError(with: [])
+            .eraseError()
             .eraseToAnyPublisher()
     }
 
@@ -154,9 +150,9 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         case .viewActivity:
-            return activityPublisher
+            return activity
                 .map { !$0.isEmpty }
-                .setFailureType(to: Error.self)
+                .eraseError()
                 .eraseToAnyPublisher()
         case .buy,
              .deposit,

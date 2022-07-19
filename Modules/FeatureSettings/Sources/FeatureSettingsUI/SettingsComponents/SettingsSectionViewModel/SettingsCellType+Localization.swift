@@ -51,6 +51,8 @@ extension SettingsSectionType.CellType.CommonCellType {
             return Icon.chat.uiImage
         case .logout:
             return Icon.logout.uiImage
+        case .cardIssuing:
+            return Icon.creditcard.uiImage
         default:
             return nil
         }

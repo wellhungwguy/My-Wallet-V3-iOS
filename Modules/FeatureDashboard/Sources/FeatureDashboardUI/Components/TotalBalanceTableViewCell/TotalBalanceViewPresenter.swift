@@ -52,7 +52,7 @@ final class TotalBalanceViewPresenter {
 }
 
 extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
-    public var state: Observable<DashboardAsset.State.AssetPrice.Interaction> {
+    var state: Observable<DashboardAsset.State.AssetPrice.Interaction> {
         changeObservable
             .map { state in
                 switch state {
@@ -72,7 +72,7 @@ extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
             }
     }
 
-    public func refresh() {
+    func refresh() {
         refreshBalance()
     }
 }

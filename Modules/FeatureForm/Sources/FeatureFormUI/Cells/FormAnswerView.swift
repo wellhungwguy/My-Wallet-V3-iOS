@@ -110,6 +110,7 @@ struct FormAnswerView_Previews: PreviewProvider {
                 children: nil,
                 input: nil,
                 hint: nil,
+                regex: nil,
                 checked: nil
             )
         )
@@ -127,6 +128,7 @@ struct FormAnswerView_Previews: PreviewProvider {
                         children: nil,
                         input: nil,
                         hint: nil,
+                        regex: nil,
                         checked: nil
                     ),
                     FormAnswer(
@@ -136,11 +138,13 @@ struct FormAnswerView_Previews: PreviewProvider {
                         children: nil,
                         input: nil,
                         hint: nil,
+                        regex: nil,
                         checked: nil
                     )
                 ],
                 input: nil,
                 hint: nil,
+                regex: nil,
                 checked: true
             )
         )

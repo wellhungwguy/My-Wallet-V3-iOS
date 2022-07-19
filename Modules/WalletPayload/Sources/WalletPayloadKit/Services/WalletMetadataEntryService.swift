@@ -38,15 +38,18 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
 
     private let walletHolder: WalletHolderAPI
     private let metadataService: MetadataServiceAPI
+    private let logger: NativeWalletLoggerAPI
     private let queue: DispatchQueue
 
     init(
         walletHolder: WalletHolderAPI,
         metadataService: MetadataServiceAPI,
+        logger: NativeWalletLoggerAPI,
         queue: DispatchQueue
     ) {
         self.walletHolder = walletHolder
         self.metadataService = metadataService
+        self.logger = logger
         self.queue = queue
     }
 
@@ -78,8 +81,14 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
                 return .just(metadata)
             }
             .receive(on: queue)
-            .flatMap { [metadataService] metadataState -> AnyPublisher<EmptyValue, WalletAssetSaveError> in
+            .logMessageOnOutput(logger: logger, message: { _ in
+                "About to save metadata entry: \(node)"
+            })
+            .flatMap { [metadataService, logger] metadataState -> AnyPublisher<EmptyValue, WalletAssetSaveError> in
                 metadataService.save(node: node, state: metadataState)
+                    .logMessageOnOutput(logger: logger, message: { _ in
+                        "Metadata entry saved"
+                    })
                     .mapError(WalletAssetSaveError.saveFailed)
                     .map { _ in .noValue }
                     .eraseToAnyPublisher()

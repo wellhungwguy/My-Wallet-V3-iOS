@@ -57,16 +57,6 @@ blockchain:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
 			native:
-				bitcoin:
-					cash:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
 				wallet:
 					payload:
 						is:
@@ -77,6 +67,11 @@ blockchain:
 				tracing:
 				+ blockchain.session.configuration.value
 			polygon:
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
+			prefill:
 				is:
 					enabled:
 					+ blockchain.db.type.boolean
@@ -459,6 +454,11 @@ blockchain:
 				+ blockchain.session.state.value
 		currency:
 			available:
+				currencies:
+				+ blockchain.db.array
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
+			currencies:
 			+ blockchain.db.array
 			+ blockchain.db.type.string
 			+ blockchain.session.state.value
@@ -474,11 +474,7 @@ blockchain:
 					trading:
 						currency:
 						+ blockchain.db.type.string
-						+ blockchain.session.state.preference.value
-			value:
-			+ blockchain.db.array
-			+ blockchain.db.type.string
-			+ blockchain.session.state.value
+						+ blockchain.session.state.value
 		email:
 			address:
 			+ blockchain.db.type.string
@@ -652,10 +648,52 @@ blockchain:
 				withdraw:
 				+ blockchain.ux.type.story
 		home:
+			event:
+				did:
+					pull:
+						to:
+							refresh:
+							+ blockchain.ux.type.analytics.event
 			tab:
 			+ blockchain.db.collection
 				select:
 				+ blockchain.ux.type.action
+		kyc:
+			event:
+				did:
+					cancel:
+					+ blockchain.ux.type.analytics.event
+					finish:
+					+ blockchain.ux.type.analytics.event
+					start:
+					+ blockchain.ux.type.analytics.event
+				status:
+					did:
+						change:
+						+ blockchain.ux.type.analytics.event
+			extra:
+				questions:
+					context:
+						observer:
+						+ blockchain.session.configuration.value
+					default:
+						context:
+						+ blockchain.db.type.string
+						+ blockchain.session.configuration.value
+					form:
+					+ blockchain.db.collection
+						data:
+						+ blockchain.session.state.value
+						is:
+							empty:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+			tier:
+			+ blockchain.db.type.enum
+				gold:
+				none:
+				platinum:
+				silver:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
@@ -671,6 +709,10 @@ blockchain:
 				select:
 		payment:
 			method:
+				link:
+					bank:
+						wire:
+					card:
 				open:
 					banking:
 						account:
@@ -718,6 +760,7 @@ blockchain:
 			QR:
 			+ blockchain.ux.type.story
 		transaction:
+		+ blockchain.db.collection
 			action:
 				add:
 					account:
@@ -736,50 +779,49 @@ blockchain:
 					wire:
 						transfer:
 							instructions:
-			checkout:
-			crypto:
-			+ blockchain.db.collection
-				buy:
-					previous:
-						input:
-							amount:
-							+ blockchain.db.type.bigint
-							+ blockchain.session.state.preference.value
-							currency:
-								code:
-								+ blockchain.db.type.string
-								+ blockchain.session.state.preference.value
-			did:
-				error:
-				finish:
-				start:
-			enter:
-				address:
-				amount:
-			in:
-				progress:
-			link:
-				a:
-					bank:
-					card:
-						credit:
-							card:
-								learn:
-									more:
-										url:
-										+ blockchain.db.type.url
-										+ blockchain.session.configuration.value
-				payment:
-					method:
+			configuration:
+				link:
+					a:
+						card:
+							credit:
+								card:
+									learn:
+										more:
+											url:
+											+ blockchain.db.type.url
+											+ blockchain.session.configuration.value
+			event:
+				checkout:
+				did:
+					error:
+					finish:
+					start:
+				enter:
+					address:
+					amount:
+				in:
+					progress:
+				link:
+					a:
+						bank:
+						card:
+					payment:
+						method:
+				select:
+					source:
+					target:
+				validate:
+					source:
+					transaction:
+				will:
+					finish:
+					start:
 			previous:
 				payment:
 					method:
 						id:
 						+ blockchain.db.type.string
 						+ blockchain.session.state.preference.value
-			select:
-				source:
-				target:
 			source:
 			+ blockchain.db.collection
 				target:

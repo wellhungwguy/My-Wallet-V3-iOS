@@ -24,8 +24,6 @@ class WalletEncoderTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [
                 HDWallet(
@@ -36,7 +34,9 @@ class WalletEncoderTests: XCTestCase {
                     accounts: []
                 )
             ],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,
@@ -75,11 +75,11 @@ class WalletEncoderTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,

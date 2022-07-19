@@ -22,14 +22,33 @@ enum ActivityDetailsPresenterFactory {
             return FiatActivityDetailsPresenter(event: fiat)
         case .crypto(let crypto):
             return CryptoActivityDetailsPresenter(event: crypto)
-        case .buySell(let buySell):
-            return BuySellActivityDetailsPresenter(event: buySell)
+        case .buySell(let event):
+            let interactor = BuySellActivityDetailsInteractor(
+                cardDataService: resolve(),
+                ordersService: resolve()
+            )
+            return BuySellActivityDetailsPresenter(
+                event: event,
+                interactor: interactor,
+                analyticsRecorder: resolve()
+            )
         case .swap(let swap):
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):
             return Self.presenter(
                 transactional: transactional,
                 router: router
+            )
+        case .simpleTransactional(let event):
+            let interactor = SimpleActivityDetailsInteractor(
+                fiatCurrencySettings: resolve(),
+                priceService: resolve()
+            )
+            return SimpleActivityDetailsPresenter(
+                event: event,
+                interactor: interactor,
+                alertViewPresenter: resolve(),
+                analyticsRecorder: resolve()
             )
         }
     }

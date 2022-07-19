@@ -11,8 +11,16 @@ import Foundation
 ///
 final class Version4Workflow: WalletUpgradeWorkflow {
 
+    private let logger: NativeWalletLoggerAPI
+
     static var supportedVersion: WalletPayloadVersion {
         .v4
+    }
+
+    init(
+        logger: NativeWalletLoggerAPI
+    ) {
+        self.logger = logger
     }
 
     func shouldPerformUpgrade(wrapper: Wrapper) -> Bool {
@@ -23,16 +31,21 @@ final class Version4Workflow: WalletUpgradeWorkflow {
         getMasterNode(from: wrapper.wallet)
             .publisher
             .mapError { _ in WalletUpgradeError.unableToRetrieveSeedHex }
-            .flatMap { masterNode -> AnyPublisher<HDWallet, WalletUpgradeError> in
+            .flatMap { [logger] masterNode -> AnyPublisher<HDWallet, WalletUpgradeError> in
                 guard let hdWallet = wrapper.wallet.defaultHDWallet else {
                     return .failure(.upgradeFailed)
                 }
                 // run through the accounts of default HD Wallet
+                logger.log(message: "[v4 Upgrade] Upgrading accounts", metadata: nil)
                 let upgradedAccounts = hdWallet.accounts.map { account -> Account in
                     // for sanity let's recreate all derivations from master node for this account
                     let derivations = generateDerivations(
                         masterNode: masterNode,
                         index: account.index
+                    )
+                    logger.log(
+                        message: "[v4 Upgrade] account index \(account.index) -> derivations \(derivations)",
+                        metadata: nil
                     )
                     return Account(
                         index: account.index,
@@ -58,11 +71,11 @@ final class Version4Workflow: WalletUpgradeWorkflow {
                     doubleEncrypted: wrapper.wallet.doubleEncrypted,
                     doublePasswordHash: wrapper.wallet.doublePasswordHash,
                     metadataHDNode: wrapper.wallet.metadataHDNode,
-                    txNotes: wrapper.wallet.txNotes,
-                    tagNames: wrapper.wallet.tagNames,
                     options: wrapper.wallet.options,
                     hdWallets: [hdWallet],
-                    addresses: wrapper.wallet.addresses
+                    addresses: wrapper.wallet.addresses,
+                    txNotes: wrapper.wallet.txNotes,
+                    addressBook: wrapper.wallet.addressBook
                 )
                 return Wrapper(
                     pbkdf2Iterations: Int(wrapper.pbkdf2Iterations),
@@ -73,6 +86,9 @@ final class Version4Workflow: WalletUpgradeWorkflow {
                     wallet: wallet
                 )
             }
+            .logMessageOnOutput(logger: logger, message: { wrapper in
+                "[v4 Upgrade] Wrapper: \(wrapper)"
+            })
             .eraseToAnyPublisher()
     }
 }

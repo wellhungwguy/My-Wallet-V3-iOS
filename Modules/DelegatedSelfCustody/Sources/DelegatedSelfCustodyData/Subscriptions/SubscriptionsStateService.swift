@@ -54,7 +54,7 @@ final class SubscriptionsStateService: SubscriptionsStateServiceAPI {
 
     private var activeAccounts: AnyPublisher<Set<String>, Never> {
         accountRepository
-            .accounts()
+            .accounts
             .replaceError(with: [])
             .map { $0.map(\.coin.code) }
             .map(Set.init)

@@ -2,8 +2,12 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
+import DIKit
+import Errors
+import FeatureFormDomain
 import FeatureKYCDomain
 import Localization
 import PlatformKit
@@ -116,6 +120,7 @@ public protocol Routing {
 /// A class that encapsulates routing logic for the KYC flow. Use this to present the app user with any part of the KYC flow.
 public final class Router: Routing {
 
+    private let app: AppProtocol
     private let legacyRouter: PlatformUIKit.KYCRouterAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let loadingViewPresenter: PlatformUIKit.LoadingViewPresenting
@@ -130,6 +135,7 @@ public final class Router: Routing {
     private var disposeBag = DisposeBag()
 
     public init(
+        app: AppProtocol = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI,
         loadingViewPresenter: PlatformUIKit.LoadingViewPresenting,
         legacyRouter: PlatformUIKit.KYCRouterAPI,
@@ -139,6 +145,7 @@ public final class Router: Routing {
         openURL: @escaping (URL) -> Void,
         userDefaults: UserDefaults = .standard
     ) {
+        self.app = app
         self.analyticsRecorder = analyticsRecorder
         self.loadingViewPresenter = loadingViewPresenter
         self.legacyRouter = legacyRouter
@@ -271,26 +278,9 @@ public final class Router: Routing {
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .flatMap { [routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in
-                // step 2a: Route to KYC if the current user's tier is less than Tier 2.
-                // NOTE: By guarding against Tier 1 we ensure SDD checks are performed for Tier 1 users to determine whether they are Tier 3.
-                guard userTiers.latestApprovedTier > .tier1 else {
-                    return Deferred { [routeToKYC] in
-                        Future<FlowResult, RouterError> { futureCompletion in
-                            routeToKYC(presenter, requiredTier) { result in
-                                futureCompletion(.success(result))
-                            }
-                        }
-                    }
-                    .eraseToAnyPublisher()
-                }
+            .flatMap { [app, routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in
 
-                // step 2a: if the current user's tier is greater or equal than the required tier, complete.
-                guard userTiers.latestApprovedTier < requiredTier else {
-                    return .just(.completed)
-                }
-                // step 2b: else present the kyc flow
-                return Deferred {
+                let presentKYC = Deferred {
                     Future<FlowResult, RouterError> { futureCompletion in
                         routeToKYC(presenter, requiredTier) { result in
                             futureCompletion(.success(result))
@@ -298,6 +288,26 @@ public final class Router: Routing {
                     }
                 }
                 .eraseToAnyPublisher()
+
+                // step 2a: Route to KYC if the current user's tier is less than Tier 2.
+                // NOTE: By guarding against Tier 1 we ensure SDD checks are performed for Tier 1 users to determine whether they are Tier 3.
+                guard userTiers.latestApprovedTier > .tier1 else {
+                    return presentKYC
+                }
+
+                // step 2a: if the current user has extra questions to answer, present kyc
+                do {
+                    guard try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty) else {
+                        return presentKYC
+                    }
+                } catch { /* ignore */ }
+
+                // step 2b: if the current user's tier is greater or equal than the required tier, complete.
+                guard userTiers.latestApprovedTier < requiredTier else {
+                    return .just(.completed)
+                }
+                // step 2c: else present the kyc flow
+                return presentKYC
             }
             .eraseToAnyPublisher()
     }

@@ -194,32 +194,6 @@ extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
     }
 }
 
-extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
-
-    public func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void) {
-        guard let presenter = presenter ?? UIApplication.shared.topMostViewController else {
-            fatalError("A view controller was expected to exist to run \(#function) in \(#file)")
-        }
-        router.presentPromptToUnlockMoreTrading(from: presenter)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { result in
-                // if the result is a successful completion, do nothing
-                // we should have called the completion block aready on receive value
-                guard case .failure = result else {
-                    return
-                }
-                completion()
-            }, receiveValue: { result in
-                guard case .completed = result else {
-                    // complete only if the KYC upgrade is successful
-                    return
-                }
-                completion()
-            })
-            .store(in: &cancellables)
-    }
-}
-
 extension KYCAdapter: FeatureSettingsUI.KYCRouterAPI {
 
     public func presentLimitsOverview(from presenter: UIViewController) {

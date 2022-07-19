@@ -134,6 +134,11 @@ extension LocalizationConstants.CardIssuing {
                     "Welcome to the club, to view your card dashboard please press Continue below.",
                     comment: "Card Issuing: Order success caption"
                 )
+
+                static let goToDashboard = NSLocalizedString(
+                    "Go To Dashboard",
+                    comment: "Card Issuing: Go To Dashboard"
+                )
             }
 
             enum Processing {
@@ -160,6 +165,11 @@ extension LocalizationConstants.CardIssuing.Order {
             static let save = NSLocalizedString(
                 "Save",
                 comment: "Card Issuing: Save Button"
+            )
+
+            static let cancel = NSLocalizedString(
+                "Cancel",
+                comment: "Card Issuing: Cancel Button"
             )
         }
 
@@ -213,10 +223,23 @@ extension LocalizationConstants.CardIssuing.Order {
                     comment: "Card Issuing: Form Zip"
                 )
 
-                static let placeholder = NSLocalizedString(
-                    "1234 Road Street",
-                    comment: "Card Issuing: Form Placeholder"
+                static let country = NSLocalizedString(
+                    "Country",
+                    comment: "Card Issuing: Form Country"
                 )
+
+                enum Placeholder {
+
+                    static let line = NSLocalizedString(
+                        "1234 Road Street",
+                        comment: "Card Issuing: Form Placeholder"
+                    )
+
+                    static let state = NSLocalizedString(
+                        "FL",
+                        comment: "Card Issuing: Form Placeholder"
+                    )
+                }
             }
         }
 

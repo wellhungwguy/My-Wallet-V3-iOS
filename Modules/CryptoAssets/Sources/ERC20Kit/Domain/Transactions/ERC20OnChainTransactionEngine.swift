@@ -276,6 +276,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                     secondPassword: secondPassword,
                     network: network
                 )
+                .asSingle()
             }
             .map(\.transactionHash)
             .map { transactionHash -> TransactionResult in

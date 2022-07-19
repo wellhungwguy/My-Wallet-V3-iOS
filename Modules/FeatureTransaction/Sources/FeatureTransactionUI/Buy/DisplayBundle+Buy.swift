@@ -5,7 +5,7 @@ import Localization
 import PlatformKit
 
 private class BuyAnalyticsEvent: AnalyticsEvent {
-    var name: String = "Buy" // TODO: check this
+    var name: String = "Buy"
 }
 
 extension DisplayBundle {

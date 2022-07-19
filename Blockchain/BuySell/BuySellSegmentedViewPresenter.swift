@@ -40,13 +40,10 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
 
     private(set) lazy var items: [SegmentedViewScreenItem] = {
         // Buy
-        let buyListViewController = PricesViewController(
-            presenter: PricesScreenPresenter(
-                drawerRouter: NoDrawer(),
-                interactor: PricesScreenInteractor(
-                    showSupportedPairsOnly: true
-                )
-            ),
+        let provider = PricesViewControllerProvider()
+        let buyListViewController = provider.create(
+            drawerRouter: NoDrawer(),
+            showSupportedPairsOnly: true,
             customSelectionActionClosure: { [weak self] currency in
                 guard let self = self else { return }
                 self.coincore.cryptoAccounts(for: currency, filter: .custodial)

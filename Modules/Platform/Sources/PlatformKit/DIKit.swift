@@ -151,10 +151,6 @@ extension DependencyContainer {
             return completeSettings
         }
 
-        // MARK: - KYC
-
-        factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
-
         // MARK: - ExchangeProvider
 
         single { ExchangeProvider() as ExchangeProviding }
@@ -278,8 +274,6 @@ extension DependencyContainer {
         single { OrdersService() as OrdersServiceAPI }
 
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
-
-        factory { PendingOrderCompletionService() as PendingOrderCompletionServiceAPI }
 
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
 

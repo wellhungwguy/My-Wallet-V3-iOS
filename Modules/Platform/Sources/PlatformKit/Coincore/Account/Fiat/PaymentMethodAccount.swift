@@ -29,7 +29,7 @@ public final class PaymentMethodAccount: FiatAccount {
 
     public let isDefault: Bool = false
 
-    public var activity: Single<[ActivityItemEvent]> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         .just([]) // no activity to report
     }
 

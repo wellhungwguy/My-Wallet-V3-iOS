@@ -112,6 +112,7 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 ),
                 FormAnswer(
@@ -121,6 +122,7 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 )
             ]
@@ -140,11 +142,13 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                             children: nil,
                             input: nil,
                             hint: "Provide info",
+                            regex: nil,
                             checked: nil
                         )
                     ],
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: true
                 ),
                 FormAnswer(
@@ -154,6 +158,7 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                     children: nil,
                     input: nil,
                     hint: nil,
+                    regex: nil,
                     checked: nil
                 )
             ]

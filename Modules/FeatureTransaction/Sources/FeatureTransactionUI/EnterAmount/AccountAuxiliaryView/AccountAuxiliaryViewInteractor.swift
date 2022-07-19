@@ -100,7 +100,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
             case let paymentMethodAccount as PaymentMethodAccount:
                 return .init(
                     title: paymentMethodAccount.label,
-                    subtitle: paymentMethodAccount.paymentMethodType.balance.displayString,
+                    subtitle: paymentMethodAccount.paymentMethodType.topLimit.displayString,
                     imageResource: paymentMethodAccount.logoResource,
                     imageBackgroundColor: paymentMethodAccount.logoBackgroundColor,
                     isEnabled: tapEnabled

@@ -4,6 +4,7 @@ import Combine
 import Errors
 import Foundation
 import MetadataKit
+import ObservabilityKit
 import ToolKit
 import WalletCore
 
@@ -62,6 +63,7 @@ final class WalletCreator: WalletCreatorAPI {
     private let createWalletRepository: CreateWalletRepositoryAPI
     private let usedAccountsFinder: UsedAccountsFinderAPI
     private let operationQueue: DispatchQueue
+    private let tracer: LogMessageServiceAPI
     private let uuidProvider: UUIDProvider
     private let generateWallet: GenerateWalletProvider
     private let generateWrapper: GenerateWrapperProvider
@@ -74,6 +76,7 @@ final class WalletCreator: WalletCreatorAPI {
         createWalletRepository: CreateWalletRepositoryAPI,
         usedAccountsFinder: UsedAccountsFinderAPI,
         operationQueue: DispatchQueue,
+        tracer: LogMessageServiceAPI,
         uuidProvider: @escaping UUIDProvider,
         generateWallet: @escaping GenerateWalletProvider,
         generateWrapper: @escaping GenerateWrapperProvider,
@@ -85,6 +88,7 @@ final class WalletCreator: WalletCreatorAPI {
         self.createWalletRepository = createWalletRepository
         self.usedAccountsFinder = usedAccountsFinder
         self.operationQueue = operationQueue
+        self.tracer = tracer
         self.entropyService = entropyService
         self.generateWallet = generateWallet
         self.generateWrapper = generateWrapper
@@ -120,6 +124,7 @@ final class WalletCreator: WalletCreatorAPI {
         .flatMap { [processCreationOfWallet] context -> AnyPublisher<WalletCreation, WalletCreateError> in
             processCreationOfWallet(context, email, password, language)
         }
+        .logErrorOrCrash(tracer: tracer)
         .eraseToAnyPublisher()
     }
 
@@ -168,6 +173,7 @@ final class WalletCreator: WalletCreatorAPI {
             .flatMap { [processCreationOfWallet] context -> AnyPublisher<WalletCreation, WalletCreateError> in
                 processCreationOfWallet(context, email, password, language)
             }
+            .logErrorOrCrash(tracer: tracer)
             .eraseToAnyPublisher()
     }
 
@@ -215,7 +221,8 @@ final class WalletCreator: WalletCreatorAPI {
                 .mapError(WalletCreateError.verificationFailure)
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletEncoder, checksumProvider] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
+            .flatMap { [walletEncoder, checksumProvider] payload
+                -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
                 walletEncoder.encode(payload: payload, applyChecksum: checksumProvider)
                     .mapError(WalletCreateError.encodingError)
                     .eraseToAnyPublisher()

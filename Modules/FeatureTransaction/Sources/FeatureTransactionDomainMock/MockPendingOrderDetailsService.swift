@@ -3,28 +3,27 @@
 import Combine
 import FeatureTransactionDomain
 import PlatformKit
-import RxSwift
 import ToolKit
 
 public final class MockPendingOrderDetailsService: PendingOrderDetailsServiceAPI {
 
     public struct StubbedResults {
-        public var pendingOrderDetails: Single<[OrderDetails]> = .just([])
-        public var pendingActionOrderDetails: Single<[OrderDetails]> = .just([])
-        public var cancel: Completable = .empty()
+        public var pendingOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> = .just([])
+        public var pendingActionOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> = .just([])
+        public var cancel: AnyPublisher<Void, OrderCancellationError> = .just(())
     }
 
     public var stubbedResults = StubbedResults()
 
-    public var pendingOrderDetails: Single<[OrderDetails]> {
+    public var pendingOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> {
         stubbedResults.pendingOrderDetails
     }
 
-    public var pendingActionOrderDetails: Single<[OrderDetails]> {
+    public var pendingActionOrderDetails: AnyPublisher<[OrderDetails], OrdersServiceError> {
         stubbedResults.pendingActionOrderDetails
     }
 
     public func cancel(_ order: OrderDetails) -> AnyPublisher<Void, OrderCancellationError> {
-        .just(())
+        stubbedResults.cancel
     }
 }

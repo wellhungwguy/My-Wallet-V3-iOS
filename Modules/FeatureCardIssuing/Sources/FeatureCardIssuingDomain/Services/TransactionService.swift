@@ -14,11 +14,11 @@ final class TransactionService: TransactionServiceAPI {
         self.repository = repository
     }
 
-    func fetchTransactions() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
-        repository.fetchTransactions()
+    func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        repository.fetchTransactions(for: card)
     }
 
-    func fetchMore() -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
-        repository.fetchMore()
+    func fetchMore(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        repository.fetchMore(for: card)
     }
 }

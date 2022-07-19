@@ -9,7 +9,7 @@ import ToolKit
 
 struct ResidentialAddressConfirmationView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.KYC.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order.KYC
 
     private let store: Store<CardOrderingState, CardOrderingAction>
 
@@ -21,10 +21,10 @@ struct ResidentialAddressConfirmationView: View {
         WithViewStore(store) { viewStore in
             VStack(spacing: Spacing.padding3) {
                 VStack(alignment: .leading, spacing: Spacing.padding1) {
-                    Text(localizedStrings.Address.title)
+                    Text(L10n.Address.title)
                         .typography(.title3)
                         .multilineTextAlignment(.center)
-                    Text(localizedStrings.Address.description)
+                    Text(L10n.Address.description)
                         .typography(.paragraph1)
                         .foregroundColor(.WalletSemantic.body)
                         .multilineTextAlignment(.leading)
@@ -33,7 +33,7 @@ struct ResidentialAddressConfirmationView: View {
                 VStack {
                     PrimaryDivider()
                     PrimaryRow(
-                        title: localizedStrings.Address.Navigation.title,
+                        title: L10n.Address.Navigation.title,
                         subtitle: viewStore.state.address?.shortDisplayString,
                         leading: { EmptyView() },
                         action: {
@@ -43,14 +43,14 @@ struct ResidentialAddressConfirmationView: View {
                     PrimaryDivider()
                 }
                 Spacer()
-                PrimaryButton(title: localizedStrings.Buttons.next) {
+                PrimaryButton(title: L10n.Buttons.next) {
                     viewStore.send(.binding(.set(\.$isSSNInputVisible, true)))
                 }
                 .disabled(viewStore.state.address == .none)
                 .padding(Spacing.padding2)
             }
             .padding(.vertical, Spacing.padding3)
-            .primaryNavigation(title: localizedStrings.Address.Navigation.title)
+            .primaryNavigation(title: L10n.Address.Navigation.title)
             .onAppear {
                 viewStore.send(.fetchAddress)
             }
@@ -61,8 +61,17 @@ struct ResidentialAddressConfirmationView: View {
                 label: EmptyView.init
             )
             PrimaryNavigationLink(
-                destination: ResidentialAddressModificationView(store: store),
-                isActive: viewStore.binding(\.$isAddressModificationVisible),
+                destination: IfLetStore(
+                    store.scope(
+                        state: \.residentialAddressModificationState,
+                        action: CardOrderingAction.residentialAddressModificationAction
+                    ),
+                    then: { store in
+                        ResidentialAddressModificationView(store: store)
+                    }
+                ),
+                isActive: viewStore
+                    .binding(\.$isAddressModificationVisible),
                 label: EmptyView.init
             )
         }

@@ -120,8 +120,8 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
                     mainContent()
                     if !tags.isEmpty {
                         HStack(spacing: 8) {
-                            ForEach(0..<tags.count) { index in
-                                tags[index]
+                            ForEach(tags, id: \.self) { view in
+                                view
                             }
                         }
                     }

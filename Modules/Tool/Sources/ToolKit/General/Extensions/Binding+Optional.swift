@@ -41,16 +41,6 @@ extension Binding where Value: Equatable, Value: OptionalProtocol {
     }
 }
 
-extension Binding {
-
-    @inlinable public subscript<T>(keyPath: WritableKeyPath<Value, T>) -> Binding<T> {
-        .init(
-            get: { wrappedValue[keyPath: keyPath] },
-            set: { transaction(transaction).wrappedValue[keyPath: keyPath] = $0 }
-        )
-    }
-}
-
 extension Binding where Value == Bool {
 
     @inlinable public func inverted() -> Binding {
@@ -63,37 +53,24 @@ extension Binding where Value == Bool {
 
 extension Binding {
 
-    @inlinable public subscript() -> DynamicMemberLookup {
-        .init(self)
-    }
-
-    @dynamicMemberLookup
-    public struct DynamicMemberLookup {
-
-        @usableFromInline let _binding: Binding
-
-        @inlinable public init(_ binding: Binding) {
-            _binding = binding
-        }
-
-        @inlinable public subscript<T>(
-            dynamicMember keyPath: WritableKeyPath<Value, T>
-        ) -> Binding<T>.DynamicMemberLookup {
-            .init(_binding[keyPath])
-        }
-
-        @inlinable public func binding() -> Binding { _binding }
-    }
-}
-
-extension Binding {
-
     public func didSet(_ perform: @escaping (Value) -> Void) -> Self {
         .init(
             get: { wrappedValue },
             set: { newValue, transaction in
                 self.transaction(transaction).wrappedValue = newValue
                 perform(newValue)
+            }
+        )
+    }
+
+    public func transform<T>(
+        get: @escaping (Value) -> T,
+        set: @escaping (T) -> Value
+    ) -> Binding<T> {
+        .init(
+            get: { get(wrappedValue) },
+            set: { newValue, tx in
+                transaction(tx).wrappedValue = set(newValue)
             }
         )
     }

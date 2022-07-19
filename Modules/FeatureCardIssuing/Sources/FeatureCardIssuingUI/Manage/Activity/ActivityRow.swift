@@ -71,13 +71,37 @@ struct ActivityRow: View {
 extension ActivityRow {
 
     init(_ transaction: Card.Transaction, action: @escaping () -> Void) {
-        merchant = transaction.merchantName
-        amount = transaction.originalAmount.displayString
-        counterAmount = transaction.counterAmount?.displayString ?? ""
+        merchant = transaction.displayTitle
+        amount = transaction.originalAmountDisplayString
+        counterAmount = transaction.counterAmountDisplayString
         date = transaction.displayDate
         icon = transaction.icon
         tag = transaction.tag
         self.action = action
+    }
+}
+
+extension Card.Transaction {
+
+    var originalAmountDisplayString: String {
+        switch transactionType {
+        case .funding, .payment:
+            return "-" + originalAmount.displayString
+        case .refund, .chargeback, .cashback:
+            return "+" + originalAmount.displayString
+        }
+    }
+
+    var counterAmountDisplayString: String {
+        guard let counterAmount = counterAmount else {
+            return ""
+        }
+        switch transactionType {
+        case .funding, .payment:
+            return "-" + counterAmount.displayString
+        case .refund, .chargeback, .cashback:
+            return "+" + counterAmount.displayString
+        }
     }
 }
 

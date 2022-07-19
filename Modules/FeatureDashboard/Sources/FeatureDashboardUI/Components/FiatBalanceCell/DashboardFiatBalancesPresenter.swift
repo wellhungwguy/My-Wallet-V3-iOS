@@ -2,7 +2,6 @@
 
 import DIKit
 import MoneyKit
-
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -19,7 +18,7 @@ final class DashboardFiatBalancesPresenter {
     }
 
     /// Streams only distinct actions
-    var action: Driver<DashboardItemDisplayAction<CurrencyViewPresenter>> {
+    var action: Driver<DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>> {
         _ = setup
         return actionRelay
             .asDriver()
@@ -29,16 +28,18 @@ final class DashboardFiatBalancesPresenter {
     // MARK: - Private Properties
 
     private let selectionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyType>>(value: .hide)
-    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyViewPresenter>>(value: .hide)
+    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<FiatBalanceCollectionViewPresenter>>(
+        value: .hide
+    )
 
-    private let fiatBalancePresenter: CurrencyViewPresenter
-    private let interactor: DashboardFiatBalancesInteractor
+    private let presenter: FiatBalanceCollectionViewPresenter
+    private let interactor: FiatBalanceCollectionViewInteractor
     private let disposeBag = DisposeBag()
 
     private lazy var setup: Void = {
-        let fiatBalancePresenter = self.fiatBalancePresenter
-        interactor.shouldAppear
-            .map { $0 ? .show(fiatBalancePresenter) : .hide }
+        let presenter = self.presenter
+        interactor.hasBalances
+            .map { $0 ? .show(presenter) : .hide }
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }()
@@ -46,17 +47,13 @@ final class DashboardFiatBalancesPresenter {
     // MARK: - Setup
 
     init(
-        interactor: DashboardFiatBalancesInteractor,
-        fiatBalancePresenter: FiatBalanceCollectionViewPresenting = resolve()
+        interactor: FiatBalanceCollectionViewInteractor
     ) {
-        guard let fiatBalancePresenter = fiatBalancePresenter as? CurrencyViewPresenter else {
-            fatalError("fiatBalancePresenter must conform to CurrencyViewPresenter")
-        }
         self.interactor = interactor
-        self.fiatBalancePresenter = fiatBalancePresenter
+        presenter = FiatBalanceCollectionViewPresenter(interactor: interactor)
 
-        fiatBalancePresenter
-            .tap?
+        presenter
+            .tap
             .emit(onNext: { [weak self] currencyType in
                 guard let self = self else { return }
                 self.selectionRelay.accept(.show(currencyType))

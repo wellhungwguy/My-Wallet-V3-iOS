@@ -7,6 +7,7 @@ import RxSwift
 
 public enum OrderCancellationError: Error {
     case network(NabuNetworkError)
+    case orders(OrdersServiceError)
 }
 
 public protocol OrderCancellationServiceAPI: AnyObject {
@@ -15,7 +16,7 @@ public protocol OrderCancellationServiceAPI: AnyObject {
     func cancelOrder(with identifier: String) -> AnyPublisher<Void, OrderCancellationError>
 
     /// Cancels an order associated with the given id
-    func cancel(order id: String) -> Completable
+    func cancel(order id: String) -> AnyPublisher<Void, OrderCancellationError>
 }
 
 final class OrderCancellationService: OrderCancellationServiceAPI {
@@ -44,14 +45,16 @@ final class OrderCancellationService: OrderCancellationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func cancel(order id: String) -> Completable {
+    func cancel(order id: String) -> AnyPublisher<Void, OrderCancellationError> {
         // Cancel the order
         client.cancel(order: id)
-            .asObservable()
-            .ignoreElements()
-            .asCompletable()
-            // Fetch the orders anew
-            .andThen(orderDetailsService.fetchOrders())
-            .asCompletable()
+            .mapError(OrderCancellationError.network)
+            .flatMap { [orderDetailsService] in
+                // Fetch the orders anew
+                orderDetailsService.fetchOrders()
+                    .mapError(OrderCancellationError.orders)
+            }
+            .ignoreOutput()
+            .eraseToAnyPublisher()
     }
 }

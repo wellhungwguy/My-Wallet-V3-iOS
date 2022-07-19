@@ -27,13 +27,26 @@ public protocol WalletOperationsRouting {
     func switchTabToSwap()
 }
 
-public final class CustodyActionRouter: CustodyActionRouterAPI {
+public final class CustodyActionRouterProvider {
+    public init() {}
+    public func create(
+        backupRouterAPI: BackupRouterAPI,
+        tabSwapping: TabSwapping
+    ) -> CustodyActionRouterAPI {
+        CustodyActionRouter(
+            backupRouterAPI: backupRouterAPI,
+            tabSwapping: tabSwapping
+        )
+    }
+}
+
+final class CustodyActionRouter: CustodyActionRouterAPI {
 
     // MARK: - `Router` Properties
 
-    public let completionRelay = PublishRelay<Void>()
-    public let analyticsService: SimpleBuyAnalayticsServicing
-    public let walletOperationsRouter: WalletOperationsRouting
+    let completionRelay = PublishRelay<Void>()
+    let analyticsService: SimpleBuyAnalayticsServicing
+    let walletOperationsRouter: WalletOperationsRouting
 
     private var stateService: CustodyActionStateServiceAPI!
     private let backupRouterAPI: BackupRouterAPI
@@ -52,7 +65,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let analyticsRecoder: AnalyticsEventRecorderAPI
     private var disposeBag = DisposeBag()
 
-    public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
+    convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
             tabSwapping: tabSwapping,
@@ -102,7 +115,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    public func start(with account: BlockchainAccount) {
+    func start(with account: BlockchainAccount) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.account = account
@@ -123,7 +136,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         stateService.nextRelay.accept(())
     }
 
-    public func next(to state: CustodyActionState) {
+    func next(to state: CustodyActionState) {
         switch state {
         case .start:
             showWalletActionSheet()
@@ -302,7 +315,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         }
     }
 
-    public func previous() {
+    func previous() {
         navigationRouter.dismiss()
     }
 

@@ -21,18 +21,15 @@ final class OrderCreationService: OrderCreationServiceAPI {
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: OrderCreationClientAPI
-    private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
 
     // MARK: - Setup
 
     init(
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        client: OrderCreationClientAPI = resolve(),
-        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()
+        client: OrderCreationClientAPI = resolve()
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
-        self.pendingOrderDetailsService = pendingOrderDetailsService
     }
 
     // MARK: - API

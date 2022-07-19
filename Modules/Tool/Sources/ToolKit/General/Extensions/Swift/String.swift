@@ -83,3 +83,43 @@ extension String {
             .joined(separator: "_")
     }
 }
+
+extension StaticString {
+
+    var string: String {
+        hasPointerRepresentation
+            ? withUTF8Buffer { String(decoding: $0, as: UTF8.self) }
+            : .init(unicodeScalar)
+    }
+}
+
+extension NSRegularExpression {
+
+    public convenience init(_ pattern: StaticString) {
+        do {
+            try self.init(pattern: pattern.string)
+        } catch {
+            preconditionFailure("Illegal regular expression: \(pattern).")
+        }
+    }
+}
+
+extension NSRegularExpression {
+
+    public func matches(_ string: String) -> Bool {
+        let range = NSRange(location: 0, length: string.utf16.count)
+        return firstMatch(in: string, options: [], range: range) != nil
+    }
+}
+
+extension String {
+
+    public static func ~= (lhs: String, rhs: String) -> Bool {
+        guard let regex = try? NSRegularExpression(pattern: rhs) else { return false }
+        return regex.matches(lhs)
+    }
+
+    public static func ~= (lhs: String, rhs: StaticString) -> Bool {
+        NSRegularExpression(rhs).matches(lhs)
+    }
+}

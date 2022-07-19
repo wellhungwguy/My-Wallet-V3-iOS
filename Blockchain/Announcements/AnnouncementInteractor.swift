@@ -59,7 +59,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .take(1)
             .asSingle()
         let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
-        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails.asSingle()
 
         let simpleBuy: Single<AnnouncementPreliminaryData.SimpleBuy> = Single
             .zip(

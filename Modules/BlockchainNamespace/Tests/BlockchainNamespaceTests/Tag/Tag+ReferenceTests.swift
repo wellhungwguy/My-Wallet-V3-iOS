@@ -49,8 +49,25 @@ final class TagReferenceTests: XCTestCase {
     }
 
     func test_init_id() throws {
-        let ref = try Tag.Reference(id: "blockchain.user[\(id)].name.first", in: app.language)
-        XCTAssertEqual(ref.string, "blockchain.user.name.first")
+        do {
+            let ref = try Tag.Reference(id: "blockchain.user.name.first", in: app.language)
+            XCTAssertEqual(ref.string, "blockchain.user.name.first")
+        }
+        do {
+            let ref = try Tag.Reference(id: "blockchain.user[\(id)].name.first", in: app.language)
+            XCTAssertEqual(ref.string, "blockchain.user.name.first")
+            XCTAssertEqual(ref.context[blockchain.user.id], id)
+        }
+        do {
+            let ref = try Tag.Reference(id: "blockchain.user[id].name.first", in: app.language)
+            XCTAssertEqual(ref.string, "blockchain.user.name.first")
+            XCTAssertEqual(ref.context[blockchain.user.id], "id")
+        }
+        do {
+            let ref = try Tag.Reference(id: "blockchain.user[blockchain.user.id].name.first", in: app.language)
+            XCTAssertEqual(ref.string, "blockchain.user.name.first")
+            XCTAssertEqual(ref.context[blockchain.user.id], "blockchain.user.id")
+        }
     }
 
     func test_init_id_missing_indices() throws {

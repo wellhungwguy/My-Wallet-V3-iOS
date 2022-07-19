@@ -105,9 +105,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchTabToDashboard() {
-        dismiss(animated: true) {
-            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.portfolio].select)
-        }
+        app.post(event: blockchain.ux.home.tab[blockchain.ux.user.portfolio].select)
     }
 
     func switchToSend() {
@@ -123,15 +121,11 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchToActivity() {
-        dismiss(animated: true) {
-            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
-        }
+        app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
-        dismiss(animated: true) {
-            app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
-        }
+        app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
     }
 
     func showCashIdentityVerificationScreen() {

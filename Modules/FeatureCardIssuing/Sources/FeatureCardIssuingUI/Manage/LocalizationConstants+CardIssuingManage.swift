@@ -59,6 +59,11 @@ extension LocalizationConstants.CardIssuing {
                     comment: "Card Issuing: Merchant"
                 )
 
+                static let type = NSLocalizedString(
+                    "Type",
+                    comment: "Card Issuing: Type"
+                )
+
                 static let dateTime = NSLocalizedString(
                     "Date & Time",
                     comment: "Card Issuing: Date & Time"
@@ -136,6 +141,29 @@ extension LocalizationConstants.CardIssuing {
                     comment: "Card Issuing: Transaction Status Completed"
                 )
             }
+
+            enum TransactionType {
+
+                static let payment = NSLocalizedString(
+                    "Payment",
+                    comment: "Card Issuing: Transaction Type Payment"
+                )
+
+                static let refund = NSLocalizedString(
+                    "Refund",
+                    comment: "Card Issuing: Transaction Type Refund"
+                )
+
+                static let chargeback = NSLocalizedString(
+                    "Chargeback",
+                    comment: "Card Issuing: Transaction Type Chargeback"
+                )
+
+                static let cashback = NSLocalizedString(
+                    "Cashback",
+                    comment: "Card Issuing: Transaction Type Cashback"
+                )
+            }
         }
 
         enum Button {
@@ -172,14 +200,24 @@ extension LocalizationConstants.CardIssuing {
         }
 
         enum RecentTransactions {
+
             static let title = NSLocalizedString(
                 "Recent Transactions",
                 comment: "Card Issuing: Recent Transactions"
             )
-            static let placeholder = NSLocalizedString(
-                "Your most recent purchases will show up here",
-                comment: "Card Issuing: placeholder when no transaction"
-            )
+
+            enum Placeholder {
+
+                static let title = NSLocalizedString(
+                    "Your Transactions Go Here",
+                    comment: "Card Issuing: placeholder title when no transaction"
+                )
+
+                static let message = NSLocalizedString(
+                    "Once you make a purchase with your card, those details will show up here.",
+                    comment: "Card Issuing: placeholder message when no transaction"
+                )
+            }
         }
 
         enum Card {

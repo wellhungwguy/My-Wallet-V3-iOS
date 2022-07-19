@@ -45,12 +45,12 @@ let package = Package(
         .package(
             name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
-            from: "10.3.1"
+            from: "10.11.2"
         ),
         .package(
             name: "NukeUI",
             url: "https://github.com/kean/NukeUI.git",
-            from: "0.6.5"
+            from: "0.8.3"
         ),
         .package(
             name: "BigInt",

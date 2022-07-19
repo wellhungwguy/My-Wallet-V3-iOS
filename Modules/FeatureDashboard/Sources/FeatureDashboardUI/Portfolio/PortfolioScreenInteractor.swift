@@ -9,11 +9,11 @@ import RxRelay
 import RxSwift
 import WalletPayloadKit
 
-public final class PortfolioScreenInteractor {
+final class PortfolioScreenInteractor {
 
     // MARK: - Properties
 
-    let fiatBalancesInteractor: DashboardFiatBalancesInteractor
+    let fiatBalancesInteractor: FiatBalanceCollectionViewInteractor
 
     var enabledCryptoCurrencies: [CryptoCurrency] {
         coincore.cryptoAssets.map(\.asset)
@@ -32,7 +32,7 @@ public final class PortfolioScreenInteractor {
 
     // MARK: - Init
 
-    public init(
+    init(
         historicalProvider: HistoricalFiatPriceProviding = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = resolve(),
@@ -46,7 +46,7 @@ public final class PortfolioScreenInteractor {
         self.historicalProvider = historicalProvider
         self.reactiveWallet = reactiveWallet
         self.userPropertyInteractor = userPropertyInteractor
-        fiatBalancesInteractor = DashboardFiatBalancesInteractor(fiatBalancesInteractor: resolve())
+        fiatBalancesInteractor = FiatBalanceCollectionViewInteractor()
 
         NotificationCenter.when(.walletInitialized) { [weak self] _ in
             self?.refresh()

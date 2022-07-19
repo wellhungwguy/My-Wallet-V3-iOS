@@ -1,7 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DIKit
+import Errors
 import FeatureAppDomain
+import FeatureFormDomain
+import FeatureKYCDomain
 import FeatureProductsDomain
 import FeatureTransactionDomain
 import FeatureTransactionUI
@@ -9,12 +13,20 @@ import PlatformKit
 
 final class TransactionUserActionService: UserActionServiceAPI {
 
+    private let app: AppProtocol
     private let userService: UserAdapterAPI
+    private let accountUsageService: KYCAccountUsageServiceAPI
     private(set) var latestUserState: UserState?
     private var cancellables = Set<AnyCancellable>()
 
-    init(userService: UserAdapterAPI) {
+    init(
+        userService: UserAdapterAPI,
+        app: AppProtocol = resolve(),
+        accountUsageService: KYCAccountUsageServiceAPI = resolve()
+    ) {
         self.userService = userService
+        self.app = app
+        self.accountUsageService = accountUsageService
         registerForUserStateUpdates()
     }
 
@@ -23,7 +35,13 @@ final class TransactionUserActionService: UserActionServiceAPI {
     ) -> AnyPublisher<UserActionServiceResult, Never> {
         userService.userState
             .first()
-            .map { userStateResult -> UserActionServiceResult in
+            .map { [app] userStateResult -> UserActionServiceResult in
+                do {
+                    guard try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty) else {
+                        return .questions
+                    }
+                } catch { /* ignore */ }
+
                 let productId = action.productId
                 if case .success(let userState) = userStateResult {
                     guard userState.canStartTransactionFlow(for: productId) else {

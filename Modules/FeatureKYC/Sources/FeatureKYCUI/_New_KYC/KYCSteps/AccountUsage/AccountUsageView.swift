@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
 import Errors
+import FeatureFormDomain
 import Localization
 import SwiftUI
 import ToolKit
@@ -56,7 +57,7 @@ struct AccountUsageView_Previews: PreviewProvider {
             store: .init(
                 initialState: AccountUsage.State.success(
                     AccountUsage.Form.State(
-                        questions: AccountUsage.previewQuestions
+                        form: FeatureFormDomain.Form(nodes: AccountUsage.previewQuestions)
                     )
                 ),
                 reducer: AccountUsage.reducer,
@@ -75,6 +76,10 @@ struct AccountUsageView_Previews: PreviewProvider {
                             .primary(
                                 title: "Retry",
                                 action: .loadForm
+                            ),
+                            .destructive(
+                                title: "Close",
+                                action: .dismiss
                             )
                         ]
                     )

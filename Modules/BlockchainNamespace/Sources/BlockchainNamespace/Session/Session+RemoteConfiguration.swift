@@ -107,6 +107,10 @@ extension Session {
             event.key().in(app)
         }
 
+        public func contains(_ event: Tag.Event) -> Bool {
+            fetched[firstOf: key(event).firebaseConfigurationKeys] != nil
+        }
+
         public func override(_ event: Tag.Event, with value: Any) {
             fetched[key(event).idToFirebaseConfigurationKeyImportant()] = value
         }

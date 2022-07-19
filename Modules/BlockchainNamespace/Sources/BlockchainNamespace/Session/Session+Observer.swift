@@ -1,4 +1,4 @@
-public protocol SessionObserver: AnyObject {
+public protocol SessionObserver: AnyObject, CustomStringConvertible {
     func start()
     func stop()
 }
@@ -20,6 +20,13 @@ extension Session {
         public func remove<O: Observer>(_ observer: O) {
             (observers.remove(AnyHashable(Box(observer))) as? Box<O>)?.value?.stop()
         }
+    }
+}
+
+extension SessionObserver {
+
+    public var description: String {
+        "\(type(of: self))"
     }
 }
 

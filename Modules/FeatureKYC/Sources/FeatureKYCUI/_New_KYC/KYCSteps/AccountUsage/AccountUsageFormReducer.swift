@@ -11,7 +11,7 @@ extension AccountUsage {
     enum Form {
 
         struct State: Equatable {
-            @BindableState var questions: [FormQuestion]
+            @BindableState var form: FeatureFormDomain.Form
             var submissionState: LoadingState<Empty, AlertState<Action>> = .idle
         }
 
@@ -24,7 +24,7 @@ extension AccountUsage {
         }
 
         struct Environment {
-            let submitForm: ([FormQuestion]) -> AnyPublisher<Void, NabuNetworkError>
+            let submitForm: (FeatureFormDomain.Form) -> AnyPublisher<Void, NabuNetworkError>
             let mainQueue: AnySchedulerOf<DispatchQueue>
         }
 
@@ -39,7 +39,7 @@ extension AccountUsage {
 
             case .submit:
                 state.submissionState = .loading
-                return environment.submitForm(state.questions)
+                return environment.submitForm(state.form)
                     .catchToEffect()
                     .map { result in
                         result.map(Empty.init)

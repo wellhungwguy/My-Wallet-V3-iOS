@@ -151,8 +151,8 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
             }
             if !tags.isEmpty {
                 HStack {
-                    ForEach(0..<tags.count) { index in
-                        tags[index]
+                    ForEach(tags, id: \.self) { view in
+                        view
                     }
                 }
                 .padding(.top, 10)

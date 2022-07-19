@@ -8,7 +8,7 @@ import ToolKit
 
 protocol AccountRepositoryAPI: DelegatedCustodyAccountRepositoryAPI {
 
-    func accounts() -> AnyPublisher<[DelegatedCustodyAccount], Error>
+    var accounts: AnyPublisher<[Account], Error> { get }
 }
 
 final class AccountRepository: AccountRepositoryAPI {
@@ -18,7 +18,7 @@ final class AccountRepository: AccountRepositoryAPI {
     private let assetSupportService: AssetSupportService
     private let derivationService: DelegatedCustodyDerivationServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    private let cachedValue: CachedValueNew<Key, [DelegatedCustodyAccount], Error>
+    private let cachedValue: CachedValueNew<Key, [Account], Error>
 
     init(
         assetSupportService: AssetSupportService,
@@ -29,7 +29,7 @@ final class AccountRepository: AccountRepositoryAPI {
         self.derivationService = derivationService
         self.enabledCurrenciesService = enabledCurrenciesService
 
-        let cache: AnyCache<Key, [DelegatedCustodyAccount]> = InMemoryCache(
+        let cache: AnyCache<Key, [Account]> = InMemoryCache(
             configuration: .onLoginLogout(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
@@ -39,9 +39,9 @@ final class AccountRepository: AccountRepositoryAPI {
             fetch: { _ in
                 assetSupportService
                     .supportedDerivations()
-                    .flatMap { supportedAssets -> AnyPublisher<[DelegatedCustodyAccount], Error> in
+                    .flatMap { supportedAssets -> AnyPublisher<[Account], Error> in
                         supportedAssets
-                            .compactMap { asset -> AnyPublisher<DelegatedCustodyAccount, Error>? in
+                            .compactMap { asset -> AnyPublisher<Account, Error>? in
                                 guard let cryptoCurrency = CryptoCurrency(
                                     code: asset.currencyCode,
                                     enabledCurrenciesService: enabledCurrenciesService
@@ -50,7 +50,7 @@ final class AccountRepository: AccountRepositoryAPI {
                                 }
                                 return derivationService.getKeys(path: asset.derivationPath)
                                     .map { keys in
-                                        DelegatedCustodyAccount(
+                                        Account(
                                             coin: cryptoCurrency,
                                             derivationPath: asset.derivationPath,
                                             style: asset.style,
@@ -67,14 +67,14 @@ final class AccountRepository: AccountRepositoryAPI {
         )
     }
 
-    func accounts() -> AnyPublisher<[DelegatedCustodyAccount], Error> {
+    var accounts: AnyPublisher<[Account], Error> {
         cachedValue.get(key: Key())
     }
 
-    func accountsCurrencies() -> AnyPublisher<[CryptoCurrency], Error> {
+    var delegatedCustodyAccounts: AnyPublisher<[DelegatedCustodyAccount], Error> {
         cachedValue.get(key: Key())
-            .map { accounts in
-                accounts.map(\.coin)
+            .map { accounts -> [DelegatedCustodyAccount] in
+                accounts
             }
             .eraseToAnyPublisher()
     }

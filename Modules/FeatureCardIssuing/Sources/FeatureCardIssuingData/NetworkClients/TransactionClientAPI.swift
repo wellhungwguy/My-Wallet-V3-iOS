@@ -38,4 +38,22 @@ struct TransactionsParams {
         case from
         case to
     }
+
+    init(
+        cardId: String? = nil,
+        types: [Card.Transaction.TransactionType]? = nil,
+        from: Date? = nil,
+        to: Date? = nil,
+        toId: String? = nil,
+        fromId: String? = nil,
+        limit: Int? = nil
+    ) {
+        self.cardId = cardId
+        self.types = types
+        self.from = from
+        self.to = to
+        self.toId = toId
+        self.fromId = fromId
+        self.limit = limit
+    }
 }

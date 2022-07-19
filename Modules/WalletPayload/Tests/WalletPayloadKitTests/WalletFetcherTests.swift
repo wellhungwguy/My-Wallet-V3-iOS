@@ -7,6 +7,7 @@
 @testable import WalletPayloadKitMock
 
 import Combine
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -42,14 +43,18 @@ class WalletFetcherTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: notificationCenterSpy
+            notificationCenter: notificationCenterSpy,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: dispatchQueue
+            operationsQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
+            logger: NoopNativeWalletLogging()
         )
 
         let encryptedPayload = String(data: jsonV4, encoding: .utf8)!
@@ -137,14 +142,18 @@ class WalletFetcherTests: XCTestCase {
             upgrader: upgrader,
             metadata: metadataService,
             walletSync: walletSyncMock,
-            notificationCenter: notificationCenterSpy
+            notificationCenter: notificationCenterSpy,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletPayloadRepository: walletPayloadRepository,
-            operationsQueue: dispatchQueue
+            operationsQueue: dispatchQueue,
+            tracer: LogMessageTracing.noop,
+            logger: NoopNativeWalletLogging()
         )
 
         let encryptedPayload = String(data: jsonV4, encoding: .utf8)!

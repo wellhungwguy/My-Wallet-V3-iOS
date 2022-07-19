@@ -85,6 +85,7 @@ public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI
                             currencyCode: self.interactor.fiatCurrency.code
                         )
                     )
+                    self.error()
                 case .value(let account):
                     self.setup(account: account)
                 case .calculating, .invalid(.empty):
@@ -92,6 +93,15 @@ public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI
                 }
             }
             .disposed(by: disposeBag)
+    }
+
+    private func error() {
+        titleViewRelay.accept(.text(value: LocalizedString.error))
+        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
+        continueButtonViewModel.tapRelay
+            .bindAndCatch(to: backRelay)
+            .disposed(by: disposeBag)
+        buttons.append(continueButtonViewModel)
     }
 
     private func setup(account: PaymentAccountDescribing) {

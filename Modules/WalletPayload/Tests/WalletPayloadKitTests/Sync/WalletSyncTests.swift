@@ -8,6 +8,7 @@
 
 import Combine
 import Errors
+import ObservabilityKit
 import TestKit
 import ToolKit
 import XCTest
@@ -47,11 +48,11 @@ class WalletSyncTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,
@@ -93,6 +94,8 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            tracer: LogMessageTracing.noop,
+            logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum
         )
@@ -159,11 +162,11 @@ class WalletSyncTests: XCTestCase {
             doubleEncrypted: false,
             doublePasswordHash: nil,
             metadataHDNode: nil,
-            txNotes: nil,
-            tagNames: nil,
             options: .default,
             hdWallets: [],
-            addresses: []
+            addresses: [],
+            txNotes: nil,
+            addressBook: nil
         )
         let wrapper = Wrapper(
             pbkdf2Iterations: 1,
@@ -207,6 +210,8 @@ class WalletSyncTests: XCTestCase {
             walletEncoder: mockWalletEncoder,
             saveWalletRepository: saveWalletRepositoryMock,
             syncPubKeysAddressesProvider: syncPubKeysAddressesProviderMock,
+            tracer: LogMessageTracing.noop,
+            logger: NoopNativeWalletLogging(),
             operationQueue: DispatchQueue.main,
             checksumProvider: applyChecksum
         )

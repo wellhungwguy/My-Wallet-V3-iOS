@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CloseCardView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Manage.Details.Close.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Manage.Details.Close
 
     private let store: Store<CardManagementState, CardManagementAction>
 
@@ -47,17 +47,17 @@ struct CloseCardView: View {
                         .padding(.trailing, -8)
                     }
                     VStack(spacing: Spacing.padding1) {
-                        Text(String(format: localizedStrings.title, viewStore.state.card?.last4 ?? ""))
+                        Text(String(format: L10n.title, viewStore.state.card?.last4 ?? ""))
                             .typography(.title3)
                             .multilineTextAlignment(.center)
-                        Text(localizedStrings.message)
+                        Text(L10n.message)
                             .typography(.paragraph1)
                             .foregroundColor(.WalletSemantic.body)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.horizontal, Spacing.padding3)
                     DestructivePrimaryButton(
-                        title: localizedStrings.confirmation,
+                        title: L10n.confirmation,
                         action: {
                             viewStore.send(.delete)
                         }

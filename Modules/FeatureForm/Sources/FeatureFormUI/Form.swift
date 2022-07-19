@@ -6,18 +6,18 @@ import SwiftUI
 
 public struct PrimaryForm: View {
 
-    @Binding private var questions: [FormQuestion]
+    @Binding private var form: FeatureFormDomain.Form
     private let submitActionTitle: String
     private let submitActionLoading: Bool
     private let submitAction: () -> Void
 
     public init(
-        questions: Binding<[FormQuestion]>,
+        form: Binding<FeatureFormDomain.Form>,
         submitActionTitle: String,
         submitActionLoading: Bool,
         submitAction: @escaping () -> Void
     ) {
-        _questions = questions
+        _form = form
         self.submitActionTitle = submitActionTitle
         self.submitActionLoading = submitActionLoading
         self.submitAction = submitAction
@@ -26,7 +26,21 @@ public struct PrimaryForm: View {
     public var body: some View {
         ScrollView {
             LazyVStack(spacing: Spacing.padding4) {
-                ForEach($questions) { question in
+
+                if let header = form.header {
+                    VStack {
+                        Icon.user
+                            .frame(width: 32.pt, height: 32.pt)
+                        Text(header.title)
+                            .typography(.title2)
+                        Text(header.description)
+                            .typography(.paragraph1)
+                    }
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.semantic.title)
+                }
+
+                ForEach($form.nodes) { question in
                     FormQuestionView(question: question)
                 }
 
@@ -35,7 +49,7 @@ public struct PrimaryForm: View {
                     isLoading: submitActionLoading,
                     action: submitAction
                 )
-                .disabled(!questions.isValidForm)
+                .disabled(!form.nodes.isValidForm)
             }
             .padding(Spacing.padding3)
             .background(Color.semantic.background)
@@ -45,24 +59,20 @@ public struct PrimaryForm: View {
 
 struct PrimaryForm_Previews: PreviewProvider {
 
-    struct FormRawData: Codable {
-        let nodes: [FormQuestion]
-    }
-
     static var previews: some View {
         let jsonData = formPreviewJSON.data(using: .utf8)!
         // swiftlint:disable:next force_try
-        let formRawData = try! JSONDecoder().decode(FormRawData.self, from: jsonData)
-        PreviewHelper(questions: formRawData.nodes)
+        let formRawData = try! JSONDecoder().decode(FeatureFormDomain.Form.self, from: jsonData)
+        PreviewHelper(form: formRawData)
     }
 
     struct PreviewHelper: View {
 
-        @State var questions: [FormQuestion]
+        @State var form: FeatureFormDomain.Form
 
         var body: some View {
             PrimaryForm(
-                questions: $questions,
+                form: $form,
                 submitActionTitle: "Next",
                 submitActionLoading: false,
                 submitAction: {}

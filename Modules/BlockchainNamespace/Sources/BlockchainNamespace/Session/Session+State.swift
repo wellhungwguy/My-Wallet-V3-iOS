@@ -92,6 +92,10 @@ extension Session.State {
         data.set(key(event), to: value as Any)
     }
 
+    public func set(_ reference: Tag.Reference, to value: Any?) {
+        data.set(reference, to: value as Any)
+    }
+
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
         let key = key(event)
         data.set(key, to: Data.Computed(key: key, yield: value))
@@ -107,6 +111,16 @@ extension Session.State {
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {
         try decoder.decode(T.self, from: get(event) as Any)
+    }
+
+    @_disfavoredOverload
+    public func get<T>(
+        _ event: Tag.Event,
+        as type: T.Type = T.self
+    ) throws -> T {
+        try (get(event) as? T).or(
+            throw: FetchResult.Error.decoding(.init(message: "Error casting \(event) to \(T.self)", at: []))
+        )
     }
 
     public func result(for event: Tag.Event) -> FetchResult {

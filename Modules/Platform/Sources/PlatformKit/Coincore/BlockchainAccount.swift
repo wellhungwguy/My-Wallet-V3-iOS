@@ -25,7 +25,7 @@ public protocol BlockchainAccount: Account {
     /// Emits `Set` containing all actions this account can execute.
     var actions: AnyPublisher<AvailableActions, Error> { get }
 
-    var activity: Single<[ActivityItemEvent]> { get }
+    var activity: AnyPublisher<[ActivityItemEvent], Error> { get }
 
     /// The reason why the BlockchainAccount is ineligible for Interest.
     /// This will be `.eligible` if the account is eligible

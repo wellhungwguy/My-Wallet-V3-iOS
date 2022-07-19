@@ -81,7 +81,8 @@ final class SubscriptionsService: DelegatedCustodySubscriptionsServiceAPI {
     }
 
     private var accounts: AnyPublisher<[SubscriptionEntry], Error> {
-        accountRepository.accounts()
+        accountRepository
+            .accounts
             .map { accounts -> [SubscriptionEntry] in
                 accounts.map { account -> SubscriptionEntry in
                     SubscriptionEntry(

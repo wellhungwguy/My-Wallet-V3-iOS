@@ -1,23 +1,39 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BitcoinCashKit
-import BitcoinKit
 import DIKit
-import ERC20Kit
-import EthereumKit
 import PlatformKit
-import StellarKit
 
 extension DependencyContainer {
 
     public static var featureActivityDomain = module {
 
-        factory { TransactionDetailService() as TransactionDetailServiceAPI }
+        factory { () -> TransactionDetailServiceAPI in
+            TransactionDetailService(
+                blockchainAPI: DIKit.resolve()
+            )
+        }
 
-        factory { ActivityServiceContainer() as ActivityServiceContaining }
+        factory { () -> ActivityServiceContaining in
+            ActivityServiceContainer(
+                exchangeProviding: DIKit.resolve(),
+                fiatCurrency: DIKit.resolve(),
+                selectionService: DIKit.resolve()
+            )
+        }
+
+        factory { () -> WalletPickerSelectionServiceAPI in
+            WalletPickerSelectionService(
+                coincore: DIKit.resolve()
+            )
+        }
 
         // MARK: Public
 
-        factory { BuySellActivityItemEventService() as BuySellActivityItemEventServiceAPI }
+        factory { () -> BuySellActivityItemEventServiceAPI in
+            BuySellActivityItemEventService(
+                ordersService: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            )
+        }
     }
 }

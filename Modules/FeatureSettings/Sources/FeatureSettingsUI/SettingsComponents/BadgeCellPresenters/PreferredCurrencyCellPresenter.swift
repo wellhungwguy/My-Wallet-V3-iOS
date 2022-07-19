@@ -28,7 +28,7 @@ final class PreferredCurrencyCellPresenter: BadgeCellPresenting {
 
     init(interactor: PreferredCurrencyBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
-            knownValue: LocalizationConstants.Settings.Badge.localCurrency,
+            knownValue: LocalizationConstants.Settings.Badge.walletDisplayCurrency,
             descriptors: .settings
         )
         badgeAssetPresenting = PreferredCurrencyBadgePresenter(

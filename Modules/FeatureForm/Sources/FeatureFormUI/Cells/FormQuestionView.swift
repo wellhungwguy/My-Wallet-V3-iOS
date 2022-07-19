@@ -10,15 +10,17 @@ struct FormQuestionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding2) {
-            VStack(alignment: .leading, spacing: Spacing.textSpacing) {
-                Text(question.text)
-                    .typography(.paragraph2)
-                    .foregroundColor(.semantic.title)
+            if question.type != .openEnded {
+                VStack(alignment: .leading, spacing: Spacing.textSpacing) {
+                    Text(question.text)
+                        .typography(.paragraph2)
+                        .foregroundColor(.semantic.title)
 
-                if let instructions = question.instructions {
-                    Text(instructions)
-                        .typography(.caption1)
-                        .foregroundColor(.semantic.body)
+                    if let instructions = question.instructions {
+                        Text(instructions)
+                            .typography(.caption1)
+                            .foregroundColor(.semantic.body)
+                    }
                 }
             }
 
@@ -37,6 +39,11 @@ struct FormQuestionView: View {
 
         case .singleSelection:
             FormSingleSelectionAnswersView(answers: $question.children)
+
+        case .openEnded:
+            FormSingleSelectionAnswersView(
+                answers: $question.own.transform(get: { [$0] }, set: { $0[0] })
+            )
         }
     }
 }
@@ -68,6 +75,7 @@ struct FormQuestionView_Previews: PreviewProvider {
                         children: nil,
                         input: nil,
                         hint: nil,
+                        regex: nil,
                         checked: true
                     ),
                     FormAnswer(
@@ -77,6 +85,7 @@ struct FormQuestionView_Previews: PreviewProvider {
                         children: nil,
                         input: nil,
                         hint: nil,
+                        regex: nil,
                         checked: false
                     )
                 ]

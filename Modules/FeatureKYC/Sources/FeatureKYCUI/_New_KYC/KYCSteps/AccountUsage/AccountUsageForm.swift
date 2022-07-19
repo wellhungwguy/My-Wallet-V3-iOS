@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
 import Errors
+import FeatureFormDomain
 import FeatureFormUI
 import Localization
 import SwiftUI
@@ -17,7 +18,7 @@ struct AccountUsageForm: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if viewStore.questions.isEmpty {
+            if viewStore.form.nodes.isEmpty {
                 emptyFormView(viewStore)
             } else {
                 filledFormView(viewStore)
@@ -59,7 +60,7 @@ struct AccountUsageForm: View {
             dismiss: .dismissSubmissionError
         ) {
             PrimaryForm(
-                questions: viewStore.binding(\.$questions),
+                form: viewStore.binding(\.$form),
                 submitActionTitle: L10n.submitActionTitle,
                 submitActionLoading: viewStore.submissionState == .loading,
                 submitAction: {
@@ -76,7 +77,7 @@ struct AccountUsageForm_Previews: PreviewProvider {
         AccountUsageForm(
             store: .init(
                 initialState: AccountUsage.Form.State(
-                    questions: AccountUsage.previewQuestions
+                    form: FeatureFormDomain.Form(nodes: AccountUsage.previewQuestions)
                 ),
                 reducer: AccountUsage.Form.reducer,
                 environment: AccountUsage.Form.Environment(
@@ -90,7 +91,7 @@ struct AccountUsageForm_Previews: PreviewProvider {
         AccountUsageForm(
             store: .init(
                 initialState: AccountUsage.Form.State(
-                    questions: []
+                    form: Form(nodes: [])
                 ),
                 reducer: AccountUsage.Form.reducer,
                 environment: AccountUsage.Form.Environment(

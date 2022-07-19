@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
 import ToolKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -99,7 +101,27 @@ extension DependencyContainer {
 
         factory { EthereumSigner() as EthereumSignerAPI }
 
-        factory { EthereumTransactionDispatcher() as EthereumTransactionDispatcherAPI }
+        factory { () -> EthereumTransactionDispatcherAPI in
+            let bridge: EthereumWalletBridgeAPI = DIKit.resolve()
+            return EthereumTransactionDispatcher(
+                keyPairProvider: DIKit.resolve(),
+                transactionSendingService: DIKit.resolve(),
+                recordLastTransaction: { transaction in
+                    nativeWalletFlagEnabled()
+                        .flatMap { isEnabled
+                            -> AnyPublisher<EthereumTransactionPublished, Never> in
+                            guard isEnabled else {
+                                return bridge.recordLast(transaction: transaction)
+                                    .asPublisher()
+                                    .replaceError(with: transaction)
+                                    .eraseToAnyPublisher()
+                            }
+                            return .just(transaction)
+                        }
+                        .eraseToAnyPublisher()
+                }
+            )
+        }
 
         single(tag: Tags.EthereumAccountService.isContractAddressCache) {
             Atomic<[String: Bool]>([:])

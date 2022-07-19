@@ -5,7 +5,7 @@ import Errors
 import FeatureCardPaymentDomain
 import MoneyKit
 
-public struct BuyOrderDetails {
+public struct BuyOrderDetails: Equatable {
 
     public typealias State = OrderDetailsState
 

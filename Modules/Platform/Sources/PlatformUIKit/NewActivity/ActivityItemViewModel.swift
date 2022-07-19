@@ -84,6 +84,17 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             }
             text += " \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
 
+        case .simpleTransactional(let event):
+            switch (event.status, event.type) {
+            case (.pending, .receive):
+                text = LocalizationStrings.receiving + " \(event.currency.displayCode)"
+            case (.pending, .send):
+                text = LocalizationStrings.sending + " \(event.currency.displayCode)"
+            case (.complete, .receive):
+                text = LocalizationStrings.receive + " \(event.currency.displayCode)"
+            case (.complete, .send):
+                text = LocalizationStrings.send + " \(event.currency.displayCode)"
+            }
         case .transactional(let event):
             switch (event.status, event.type) {
             case (.pending, .receive):
@@ -260,6 +271,13 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .completed:
                 return event.amount.currencyType.brandUIColor
             }
+        case .simpleTransactional(let event):
+            switch event.status {
+            case .complete:
+                return event.currency.brandUIColor
+            case .pending:
+                return .mutedText
+            }
         case .transactional(let event):
             switch event.status {
             case .complete:
@@ -348,6 +366,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             }
             return .local(name: "swap-icon", bundle: .platformUIKit)
         case .transactional(let event):
+            switch (event.status, event.type) {
+            case (.pending, _):
+                return .local(name: "clock-icon", bundle: .platformUIKit)
+            case (_, .send):
+                return .local(name: "send-icon", bundle: .platformUIKit)
+            case (_, .receive):
+                return .local(name: "receive-icon", bundle: .platformUIKit)
+            }
+        case .simpleTransactional(let event):
             switch (event.status, event.type) {
             case (.pending, _):
                 return .local(name: "clock-icon", bundle: .platformUIKit)

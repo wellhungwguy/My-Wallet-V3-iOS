@@ -22,14 +22,10 @@ struct PricesView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
-        let presenter = PricesScreenPresenter(
+        let provider = PricesViewControllerProvider()
+        let viewController = provider.create(
             drawerRouter: NoDrawer(),
-            interactor: PricesScreenInteractor(
-                showSupportedPairsOnly: false
-            )
-        )
-        let viewController = PricesViewController(
-            presenter: presenter
+            showSupportedPairsOnly: false
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

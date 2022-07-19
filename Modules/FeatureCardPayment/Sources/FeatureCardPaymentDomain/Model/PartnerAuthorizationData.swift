@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct PartnerAuthorizationData {
+public struct PartnerAuthorizationData: Equatable {
     public init(state: PartnerAuthorizationData.State, paymentMethodId: String) {
         self.state = state
         self.paymentMethodId = paymentMethodId

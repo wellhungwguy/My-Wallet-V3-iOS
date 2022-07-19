@@ -9,7 +9,7 @@ import ToolKit
 
 struct ProductDetailsView: View {
 
-    private let localizedStrings = LocalizationConstants.CardIssuing.Order.Details.self
+    private typealias L10n = LocalizationConstants.CardIssuing.Order.Details
 
     private let store: Store<Product, CardOrderingAction>
     private let close: () -> Void
@@ -38,27 +38,27 @@ struct ProductDetailsView: View {
                 .padding(.bottom, Spacing.padding2)
                 PrimaryDivider()
                 PrimaryRow(
-                    title: localizedStrings.Fees.title,
-                    subtitle: localizedStrings.Fees.description,
+                    title: L10n.Fees.title,
+                    subtitle: L10n.Fees.description,
                     leading: { icon(.flag) },
                     trailing: EmptyView.init,
                     action: {}
                 )
                 PrimaryDivider()
                 PrimaryRow(
-                    title: localizedStrings.Rewards.title,
-                    subtitle: localizedStrings.Rewards.description,
+                    title: L10n.Rewards.title,
+                    subtitle: L10n.Rewards.description,
                     leading: { icon(.present) },
                     trailing: EmptyView.init,
                     action: {}
                 )
                 PrimaryDivider()
                 PrimaryRow(
-                    title: localizedStrings.Legal.title,
+                    title: L10n.Legal.title,
                     leading: { icon(.listBullets) },
                     action: {
                         viewStore.send(
-                            .binding(.set(\.isLegalViewVisible, true))
+                            .binding(.set(\.$isLegalViewVisible, true))
                         )
                     }
                 )

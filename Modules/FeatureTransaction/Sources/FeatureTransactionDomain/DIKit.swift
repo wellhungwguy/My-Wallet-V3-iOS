@@ -11,8 +11,6 @@ extension DependencyContainer {
 
         factory { AvailableTradingPairsService() as AvailableTradingPairsServiceAPI }
 
-        factory { PendingSwapCompletionService() as PendingSwapCompletionServiceAPI }
-
         factory { BlockchainNameResolutionService() as BlockchainNameResolutionServiceAPI }
 
         factory { () -> CryptoCurrenciesServiceAPI in

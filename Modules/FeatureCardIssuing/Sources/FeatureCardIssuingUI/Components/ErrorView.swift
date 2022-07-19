@@ -12,6 +12,7 @@ struct ErrorView: View {
     let description: String
     let retryTitle: String
     let cancelTitle: String
+    let isModal: Bool
 
     let retryAction: (() -> Void)?
     let cancelAction: () -> Void
@@ -27,6 +28,7 @@ struct ErrorView: View {
             .CardIssuing
             .Error
             .cancelGoBack,
+        isModal: Bool = false,
         retryAction: (() -> Void)? = nil,
         cancelAction: @escaping () -> Void
     ) {
@@ -34,6 +36,7 @@ struct ErrorView: View {
         self.description = description
         self.retryTitle = retryTitle
         self.cancelTitle = cancelTitle
+        self.isModal = isModal
         self.retryAction = retryAction
         self.cancelAction = cancelAction
     }
@@ -60,7 +63,7 @@ struct ErrorView: View {
                 .padding(.top, -4)
                 .padding(.trailing, -8)
             }
-            .padding(.top, Spacing.padding6)
+            .padding(.top, isModal ? 0 : Spacing.padding6)
             VStack(spacing: Spacing.padding1) {
                 Text(title)
                     .typography(.title3)
@@ -71,7 +74,9 @@ struct ErrorView: View {
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, Spacing.padding3)
-            Spacer()
+            if !isModal {
+                Spacer()
+            }
             if let retryAction = retryAction {
                 PrimaryButton(
                     title: retryTitle
@@ -106,6 +111,25 @@ struct Error_Previews: PreviewProvider {
             retryAction: {},
             cancelAction: {}
         )
+        .bottomSheet(
+            isPresented: .constant(true))
+        {
+                ErrorView(
+                    title: LocalizationConstants
+                        .CardIssuing
+                        .Errors
+                        .GenericProcessingError
+                        .title,
+                    description: LocalizationConstants
+                        .CardIssuing
+                        .Errors
+                        .GenericProcessingError
+                        .description,
+                    isModal: true,
+                    retryAction: {},
+                    cancelAction: {}
+                )
+        }
     }
 }
 #endif
@@ -117,12 +141,8 @@ extension ErrorView {
         cancelAction: @escaping () -> Void
     ) {
         self.init(
-            title: error.displayTitle(
-                fallback: LocalizationConstants.Errors.error
-            ),
-            description: error.displayDescription(
-                fallback: LocalizationConstants.Errors.genericError
-            ),
+            title: error.displayTitle,
+            description: error.displayDescription,
             cancelAction: cancelAction
         )
     }
@@ -130,7 +150,7 @@ extension ErrorView {
 
 extension NabuNetworkError {
 
-    func displayTitle(fallback: String) -> String {
+    var displayTitle: String {
         switch code {
         case .cardIssuingKycFailed:
             return LocalizationConstants
@@ -169,13 +189,13 @@ extension NabuNetworkError {
                 .NotFound
                 .title
         default:
-            return LocalizationConstants
+            return ux?.title ?? LocalizationConstants
                 .Errors
                 .error
         }
     }
 
-    func displayDescription(fallback: String) -> String {
+    var displayDescription: String {
         switch code {
         case .cardIssuingKycFailed:
             return LocalizationConstants
@@ -214,7 +234,9 @@ extension NabuNetworkError {
                 .NotFound
                 .description
         default:
-            return fallback
+            return ux?.message ?? LocalizationConstants
+                .Errors
+                .genericError
         }
     }
 

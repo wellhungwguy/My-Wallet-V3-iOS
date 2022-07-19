@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import MoneyKit
-import RxRelay
-import RxSwift
 
 public protocol BuySellActivityItemEventServiceAPI: AnyObject {
-    func buySellActivityEvents(cryptoCurrency: CryptoCurrency) -> Single<[BuySellActivityItemEvent]>
+    func buySellActivityEvents(
+        cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<[BuySellActivityItemEvent], OrdersServiceError>
 }

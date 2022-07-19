@@ -105,26 +105,26 @@ extension LocalizationConstants {
 extension Card.Status {
 
     var localizedString: String {
-        let constants = LocalizationConstants.CardIssuing.CardStatus.self
+        typealias L10n = LocalizationConstants.CardIssuing.CardStatus
         switch self {
         case .initiated:
-            return constants.initiated
+            return L10n.initiated
         case .created:
-            return constants.created
+            return L10n.created
         case .active:
-            return constants.active
+            return L10n.active
         case .terminated:
-            return constants.terminated
+            return L10n.terminated
         case .suspended:
-            return constants.suspended
+            return L10n.suspended
         case .unsupported:
-            return constants.unsupported
+            return L10n.unsupported
         case .unactivated:
-            return constants.unactivated
+            return L10n.unactivated
         case .limited:
-            return constants.limited
+            return L10n.limited
         case .locked:
-            return constants.locked
+            return L10n.locked
         }
     }
 }

@@ -11,6 +11,16 @@ public enum NabuUserServiceError: Error, Equatable {
     case failedToSetAddress(NabuNetworkError)
 }
 
+extension NabuUserServiceError {
+
+    public var nabu: Nabu.Error {
+        switch self {
+        case .failedToFetchUser(let error), .failedToSetAddress(let error):
+            return error
+        }
+    }
+}
+
 public protocol NabuUserServiceAPI: AnyObject {
 
     var user: AnyPublisher<NabuUser, NabuUserServiceError> { get }

@@ -22,13 +22,16 @@ final class ChangePasswordService: ChangePasswordServiceAPI {
 
     private let walletSync: WalletSyncAPI
     private let walletHolder: WalletHolderAPI
+    private let logger: NativeWalletLoggerAPI
 
     init(
         walletSync: WalletSyncAPI,
-        walletHolder: WalletHolderAPI
+        walletHolder: WalletHolderAPI,
+        logger: NativeWalletLoggerAPI
     ) {
         self.walletSync = walletSync
         self.walletHolder = walletHolder
+        self.logger = logger
     }
 
     func change(password: String) -> AnyPublisher<Void, ChangePasswordError> {
@@ -40,6 +43,9 @@ final class ChangePasswordService: ChangePasswordServiceAPI {
                 }
                 return .just(wrapper)
             }
+            .logMessageOnOutput(logger: logger, message: { _ in
+                "[ChangePassword] About to sync wallet"
+            })
             .flatMap { [walletSync] wrapper -> AnyPublisher<Void, ChangePasswordError> in
                 walletSync.sync(wrapper: wrapper, password: password)
                     .mapError { _ in

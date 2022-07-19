@@ -8,10 +8,7 @@ import NetworkKit
 import PlatformKit
 import ToolKit
 
-typealias FeatureActivityDataClientAPI =
-    InterestActivityItemEventClientAPI
-
-final class APIClient: FeatureActivityDataClientAPI {
+final class APIClient: InterestActivityItemEventClientAPI {
 
     private enum Path {
         static let activity = ["payments", "transactions"]
@@ -37,7 +34,7 @@ final class APIClient: FeatureActivityDataClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    // MARK: - FeatureActivityDataClientAPI
+    // MARK: - InterestActivityItemEventClientAPI
 
     func fetchInterestActivityItemEventsForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency

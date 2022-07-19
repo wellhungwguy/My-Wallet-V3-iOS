@@ -1,55 +1,64 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import DIKit
+import Combine
 import FeatureTransactionDomain
 import PlatformKit
-import RxSwift
+
+public typealias RecordLastTransaction =
+    (EthereumTransactionPublished) -> AnyPublisher<EthereumTransactionPublished, Never>
 
 public protocol EthereumTransactionDispatcherAPI {
+
     func send(
         transaction: EthereumTransactionCandidate,
         secondPassword: String,
         network: EVMNetwork
-    ) -> Single<EthereumTransactionPublished>
+    ) -> AnyPublisher<EthereumTransactionPublished, Error>
 }
 
 final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
-    private let bridge: EthereumWalletBridgeAPI
+    private let recordLastTransaction: RecordLastTransaction
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
 
     init(
-        with bridge: EthereumWalletBridgeAPI = resolve(),
-        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
-        transactionSendingService: EthereumTransactionSendingServiceAPI = resolve()
+        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>,
+        transactionSendingService: EthereumTransactionSendingServiceAPI,
+        recordLastTransaction: @escaping RecordLastTransaction
     ) {
-        self.bridge = bridge
         self.keyPairProvider = keyPairProvider
         self.transactionSendingService = transactionSendingService
+        self.recordLastTransaction = recordLastTransaction
     }
 
     func send(
         transaction: EthereumTransactionCandidate,
         secondPassword: String,
         network: EVMNetwork
-    ) -> Single<EthereumTransactionPublished> {
+    ) -> AnyPublisher<EthereumTransactionPublished, Error> {
         keyPairProvider.keyPair(with: secondPassword)
-            .flatMap { [transactionSendingService] keyPair -> Single<EthereumTransactionPublished> in
+            .asPublisher()
+            .flatMap { [transactionSendingService] keyPair
+                -> AnyPublisher<EthereumTransactionPublished, Error> in
                 transactionSendingService.signAndSend(
                     transaction: transaction,
                     keyPair: keyPair,
                     network: network
                 )
-                .asSingle()
+                .eraseError()
             }
-            .flatMap { [bridge] transaction -> Single<EthereumTransactionPublished> in
+            .flatMap { [recordLastTransaction] transaction
+                -> AnyPublisher<EthereumTransactionPublished, Error> in
                 if network == .ethereum {
-                    return bridge.recordLast(transaction: transaction)
+                    return recordLastTransaction(transaction)
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
                 } else {
                     return .just(transaction)
                 }
             }
+            .eraseToAnyPublisher()
     }
 }

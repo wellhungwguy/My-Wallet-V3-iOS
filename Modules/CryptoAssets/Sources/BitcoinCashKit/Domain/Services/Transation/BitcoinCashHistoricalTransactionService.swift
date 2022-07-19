@@ -1,14 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
+import Errors
 import PlatformKit
-import RxSwift
 import ToolKit
 
 protocol BitcoinCashHistoricalTransactionServiceAPI: AnyObject {
-    func transactions(publicKeys: [XPub]) -> Single<[BitcoinCashHistoricalTransaction]>
-    func transaction(publicKeys: [XPub], identifier: String) -> Single<BitcoinCashHistoricalTransaction>
+    func transactions(publicKeys: [XPub]) -> AnyPublisher<[BitcoinCashHistoricalTransaction], NetworkError>
+    func transaction(publicKeys: [XPub], identifier: String) -> AnyPublisher<BitcoinCashHistoricalTransaction, Error>
 }
 
 final class BitcoinCashHistoricalTransactionService: BitcoinCashHistoricalTransactionServiceAPI {
@@ -18,24 +19,32 @@ final class BitcoinCashHistoricalTransactionService: BitcoinCashHistoricalTransa
     }
 
     private let client: APIClientAPI
-    private let cache: Cache<[XPub], [BitcoinCashHistoricalTransaction]>
+    private let cachedValue: CachedValueNew<
+        Set<XPub>,
+        [BitcoinCashHistoricalTransaction],
+        NetworkError
+    >
 
     init(with client: APIClientAPI = resolve()) {
         self.client = client
-        cache = .init(entryLifetime: 60)
+        let cache: AnyCache<Set<XPub>, [BitcoinCashHistoricalTransaction]> = InMemoryCache(
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client] xPubs in
+                client
+                    .multiAddress(for: Array(xPubs))
+                    .map(\.transactions)
+                    .eraseToAnyPublisher()
+            }
+        )
     }
 
-    func transactions(publicKeys: [XPub]) -> Single<[BitcoinCashHistoricalTransaction]> {
-        guard let response = cache.value(forKey: publicKeys) else {
-            return client
-                .multiAddress(for: publicKeys)
-                .map(\.transactions)
-                .asSingle()
-                .do(onSuccess: { [cache] transactions in
-                    cache.set(transactions, forKey: publicKeys)
-                })
-        }
-        return .just(response)
+    func transactions(publicKeys: [XPub]) -> AnyPublisher<[BitcoinCashHistoricalTransaction], NetworkError> {
+        cachedValue
+            .get(key: Set(publicKeys))
     }
 
     // It is not possible to fetch a specific transaction detail from 'multiaddr' endpoints,
@@ -43,11 +52,12 @@ final class BitcoinCashHistoricalTransactionService: BitcoinCashHistoricalTransa
     //   This may cause a edge case where a user opens the last transaction of the list, but
     //   in the mean time there was a new transaction added, making it 'drop' out of the first
     //   page. The fix for this is to have a properly paginated multiaddr/details endpoint.
-    func transaction(publicKeys: [XPub], identifier: String) -> Single<BitcoinCashHistoricalTransaction> {
+    func transaction(publicKeys: [XPub], identifier: String) -> AnyPublisher<BitcoinCashHistoricalTransaction, Error> {
         transactions(publicKeys: publicKeys)
             .map { items -> BitcoinCashHistoricalTransaction? in
                 items.first { $0.identifier == identifier }
             }
-            .onNil(error: ServiceError.errorFetchingDetails)
+            .eraseError()
+            .onNil(ServiceError.errorFetchingDetails)
     }
 }

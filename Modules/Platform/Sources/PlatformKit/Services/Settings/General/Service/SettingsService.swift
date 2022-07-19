@@ -62,15 +62,23 @@ final class SettingsService: SettingsServiceAPI {
         self.supportedPairsService = supportedPairsService
         self.userService = userService
 
-        tradingCurrencyPublisher = app.publisher(for: blockchain.user.currency.preferred.fiat.trading.currency)
-            .shareReplay()
-            .replaceError(with: .USD)
+        tradingCurrencyPublisher = app.publisher(
+            for: blockchain.user.currency.preferred.fiat.trading.currency,
+            as: FiatCurrency.self
+        )
+        .compactMap(\.value)
+        .shareReplay()
 
-        displayCurrencyPublisher = app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency)
-            .shareReplay()
-            .replaceError(with: Locale.current.currencyCode.flatMap(FiatCurrency.init(code:)) ?? .USD)
+        displayCurrencyPublisher = app.publisher(
+            for: blockchain.user.currency.preferred.fiat.display.currency,
+            as: FiatCurrency.self
+        )
+        .tryMap { try $0.get() }
+        .catch { [tradingCurrencyPublisher] _ in tradingCurrencyPublisher }
+        .shareReplay()
+        .eraseToAnyPublisher()
 
-        supportedFiatCurrencies = app.publisher(for: blockchain.user.currency.available)
+        supportedFiatCurrencies = app.publisher(for: blockchain.user.currency.available.currencies)
             .shareReplay()
             .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
 

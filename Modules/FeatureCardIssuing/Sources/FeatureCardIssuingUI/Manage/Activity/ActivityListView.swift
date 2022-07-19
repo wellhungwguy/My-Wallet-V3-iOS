@@ -7,7 +7,7 @@ import SwiftUI
 
 struct ActivityListView: View {
 
-    let localized = LocalizationConstants.CardIssuing.Manage.Activity.self
+    typealias L10n = LocalizationConstants.CardIssuing.Manage.Activity
     let store: Store<CardManagementState, CardManagementAction>
 
     init(
@@ -32,7 +32,7 @@ struct ActivityListView: View {
                 }
             }
             .padding(0)
-            .navigationTitle(localized.transactionListTitle)
+            .navigationTitle(L10n.transactionListTitle)
             .bottomSheet(
                 isPresented: viewStore.binding(
                     get: {

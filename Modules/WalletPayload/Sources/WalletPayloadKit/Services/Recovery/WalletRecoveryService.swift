@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import ObservabilityKit
 import ToolKit
 import WalletCore
 
@@ -34,21 +35,23 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
     private let payloadCrypto: PayloadCryptoAPI
     private let walletRepo: WalletRepoAPI
     private let walletPayloadRepository: WalletPayloadRepositoryAPI
-
     private let operationsQueue: DispatchQueue
+    private let tracer: LogMessageServiceAPI
 
     init(
         walletLogic: WalletLogicAPI,
         payloadCrypto: PayloadCryptoAPI,
         walletRepo: WalletRepoAPI,
         walletPayloadRepository: WalletPayloadRepositoryAPI,
-        operationsQueue: DispatchQueue
+        operationsQueue: DispatchQueue,
+        tracer: LogMessageServiceAPI
     ) {
         self.walletLogic = walletLogic
         self.payloadCrypto = payloadCrypto
         self.walletRepo = walletRepo
         self.walletPayloadRepository = walletPayloadRepository
         self.operationsQueue = operationsQueue
+        self.tracer = tracer
     }
 
     func recover(
@@ -106,7 +109,8 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
                 }
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletLogic] decryptedWalletPayloadContext -> AnyPublisher<DecryptedPayloadContext, WalletError> in
+            .flatMap { [walletLogic] decryptedWalletPayloadContext
+                -> AnyPublisher<DecryptedPayloadContext, WalletError> in
                 guard let data = decryptedWalletPayloadContext.payload.data(using: .utf8) else {
                     return .failure(.decryption(.decryptionError))
                 }

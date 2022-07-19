@@ -8,7 +8,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-public final class PricesScreenInteractor {
+final class PricesScreenInteractor {
 
     // MARK: - Properties
 
@@ -42,7 +42,7 @@ public final class PricesScreenInteractor {
 
     // MARK: - Init
 
-    public init(
+    init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),

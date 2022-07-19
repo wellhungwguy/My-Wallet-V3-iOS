@@ -20,15 +20,18 @@ final class VerifyMnemonicBackupService: VerifyMnemonicBackupServiceAPI {
     private let walletHolder: WalletHolderAPI
     private let walletSync: WalletSyncAPI
     private let walletRepo: WalletRepoAPI
+    private let logger: NativeWalletLoggerAPI
 
     init(
         walletHolder: WalletHolderAPI,
         walletSync: WalletSyncAPI,
-        walletRepo: WalletRepoAPI
+        walletRepo: WalletRepoAPI,
+        logger: NativeWalletLoggerAPI
     ) {
         self.walletHolder = walletHolder
         self.walletSync = walletSync
         self.walletRepo = walletRepo
+        self.logger = logger
     }
 
     func markRecoveryPhraseAndSync() -> AnyPublisher<EmptyValue, VerifyMnemonicBackupServiceError> {
@@ -42,6 +45,9 @@ final class VerifyMnemonicBackupService: VerifyMnemonicBackupServiceAPI {
                 }
                 return .just((wrapper, password))
             }
+            .logMessageOnOutput(logger: logger) { wrapper, _ in
+                "[VerifyBackup] About to update mnemonic_verified on wrapper: \(wrapper)"
+            }
             .flatMap { currentWrapper, password -> AnyPublisher<(Wrapper, String), VerifyMnemonicBackupServiceError> in
                 let currentWallet = currentWrapper.wallet
                 let walletUpdater = markMnemonicVerified(updater: mnemonicVerifiedUpdater)
@@ -50,6 +56,9 @@ final class VerifyMnemonicBackupService: VerifyMnemonicBackupServiceAPI {
                 }
                 let updatedWrapper = updateWrapper(nativeWallet: updatedWallet)(currentWrapper)
                 return .just((updatedWrapper, password))
+            }
+            .logMessageOnOutput(logger: logger) { wrapper, _ in
+                "[VerifyBackup] Wrapper updated: \(wrapper)"
             }
             .flatMap { [walletSync] updatedWrapper, password
                 -> AnyPublisher<EmptyValue, VerifyMnemonicBackupServiceError> in
@@ -76,11 +85,11 @@ private func markMnemonicVerified(
             doubleEncrypted: currentWallet.doubleEncrypted,
             doublePasswordHash: currentWallet.doublePasswordHash,
             metadataHDNode: currentWallet.metadataHDNode,
-            txNotes: currentWallet.txNotes,
-            tagNames: currentWallet.tagNames,
             options: currentWallet.options,
             hdWallets: [updatedHDWallet],
-            addresses: currentWallet.addresses
+            addresses: currentWallet.addresses,
+            txNotes: currentWallet.txNotes,
+            addressBook: currentWallet.addressBook
         )
     }
 }

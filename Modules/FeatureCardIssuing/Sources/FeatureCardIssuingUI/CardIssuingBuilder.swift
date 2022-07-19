@@ -111,8 +111,10 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             mainQueue: .main,
             productsService: productService,
             transactionService: transactionService,
+            residentialAddressService: residentialAddressService,
             supportRouter: supportRouter,
             topUpRouter: topUpRouter,
+            notificationCenter: NotificationCenter.default,
             close: onComplete
         )
 

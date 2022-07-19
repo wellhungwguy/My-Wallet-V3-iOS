@@ -7,7 +7,6 @@ import SwiftUI
 import TestKit
 import XCTest
 
-//// swiftlint:disable type_body_length
 final class FeatureUserDeletionSnapshotTests: XCTestCase {
 
     private var environment: UserDeletionEnvironment!
