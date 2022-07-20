@@ -165,13 +165,18 @@ let appDelegateReducer = Reducer<
         )
     case .didEnterBackground(let application):
         return environment.backgroundAppHandler
-            .appEnteredBackground(application)
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
-            .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
-            .map { _ in .handleDelayedEnterBackground }
+                .appEnteredBackground(application)
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
+                .map { _ in .handleDelayedEnterBackground }
     case .handleDelayedEnterBackground:
-        return .cancel(id: BackgroundTaskId())
+        return .merge(
+            .fireAndForget {
+                environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: false)
+            },
+            .cancel(id: BackgroundTaskId())
+        )
     case .didBecomeActive:
         return .merge(
             removeBlurFilter(
