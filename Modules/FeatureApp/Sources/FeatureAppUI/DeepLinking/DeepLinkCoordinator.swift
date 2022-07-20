@@ -110,7 +110,9 @@ public final class DeepLinkCoordinator: Session.Observer {
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleReferral, on: self)
 
+    // Debouncing prevents the popup from being dismissed
     private lazy var walletConnect = app.on(blockchain.app.deep_link.walletconnect)
+        .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .background))
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleWalletConnect, on: self)
 
