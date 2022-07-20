@@ -54,7 +54,15 @@ public struct BINDWithdrawView: View {
         Input(
             text: $search.input,
             isFirstResponder: $isFirstResponder,
-            placeholder: L10n.search.placeholder
+            placeholder: L10n.search.placeholder,
+            trailing: {
+                if search.input.isNotEmpty {
+                    IconButton(
+                        icon: .close,
+                        action: { search.input = "" }
+                    )
+                }
+            }
         )
         .onChange(of: search.output) { term in
             service.search(term)
