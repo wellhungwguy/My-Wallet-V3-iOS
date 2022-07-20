@@ -825,10 +825,22 @@ blockchain:
 						id:
 						+ blockchain.db.type.string
 						+ blockchain.session.state.preference.value
+			smart:
+				sort:
+					order:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			source:
 			+ blockchain.db.collection
 				target:
 				+ blockchain.db.collection
+					count:
+						of:
+							completed:
+							+ blockchain.db.type.integer
+							+ blockchain.session.state.preference.value
 					previous:
 						did:
 							error:

@@ -291,7 +291,7 @@ extension AppProtocol {
     public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
         try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
             .stream()
-            .first.or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
+            .next().or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
             .get()
     }
 

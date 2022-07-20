@@ -2937,6 +2937,7 @@ public extension I_blockchain_ux_transaction {
 	var `configuration`: L_blockchain_ux_transaction_configuration { .init("\(__).configuration") }
 	var `event`: L_blockchain_ux_transaction_event { .init("\(__).event") }
 	var `previous`: L_blockchain_ux_transaction_previous { .init("\(__).previous") }
+	var `smart`: L_blockchain_ux_transaction_smart { .init("\(__).smart") }
 	var `source`: L_blockchain_ux_transaction_source { .init("\(__).source") }
 }
 public final class L_blockchain_ux_transaction_action: L, I_blockchain_ux_transaction_action {
@@ -3284,6 +3285,38 @@ public final class L_blockchain_ux_transaction_previous_payment_method_id: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.previous.payment.method.id", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_previous_payment_method_id: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
+public final class L_blockchain_ux_transaction_smart: L, I_blockchain_ux_transaction_smart {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.smart", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_smart: I {}
+public extension I_blockchain_ux_transaction_smart {
+	var `sort`: L_blockchain_ux_transaction_smart_sort { .init("\(__).sort") }
+}
+public final class L_blockchain_ux_transaction_smart_sort: L, I_blockchain_ux_transaction_smart_sort {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.smart.sort", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_smart_sort: I {}
+public extension I_blockchain_ux_transaction_smart_sort {
+	var `order`: L_blockchain_ux_transaction_smart_sort_order { .init("\(__).order") }
+}
+public final class L_blockchain_ux_transaction_smart_sort_order: L, I_blockchain_ux_transaction_smart_sort_order {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.smart.sort.order", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_smart_sort_order: I {}
+public extension I_blockchain_ux_transaction_smart_sort_order {
+	var `is`: L_blockchain_ux_transaction_smart_sort_order_is { .init("\(__).is") }
+}
+public final class L_blockchain_ux_transaction_smart_sort_order_is: L, I_blockchain_ux_transaction_smart_sort_order_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.smart.sort.order.is", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_smart_sort_order_is: I {}
+public extension I_blockchain_ux_transaction_smart_sort_order_is {
+	var `enabled`: L_blockchain_ux_transaction_smart_sort_order_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_ux_transaction_smart_sort_order_is_enabled: L, I_blockchain_ux_transaction_smart_sort_order_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.smart.sort.order.is.enabled", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_smart_sort_order_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_ux_transaction_source: L, I_blockchain_ux_transaction_source {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source", comment: "") }
 }
@@ -3296,8 +3329,27 @@ public final class L_blockchain_ux_transaction_source_target: L, I_blockchain_ux
 }
 public protocol I_blockchain_ux_transaction_source_target: I_blockchain_db_collection {}
 public extension I_blockchain_ux_transaction_source_target {
+	var `count`: L_blockchain_ux_transaction_source_target_count { .init("\(__).count") }
 	var `previous`: L_blockchain_ux_transaction_source_target_previous { .init("\(__).previous") }
 }
+public final class L_blockchain_ux_transaction_source_target_count: L, I_blockchain_ux_transaction_source_target_count {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.count", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_count: I {}
+public extension I_blockchain_ux_transaction_source_target_count {
+	var `of`: L_blockchain_ux_transaction_source_target_count_of { .init("\(__).of") }
+}
+public final class L_blockchain_ux_transaction_source_target_count_of: L, I_blockchain_ux_transaction_source_target_count_of {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.count.of", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_count_of: I {}
+public extension I_blockchain_ux_transaction_source_target_count_of {
+	var `completed`: L_blockchain_ux_transaction_source_target_count_of_completed { .init("\(__).completed") }
+}
+public final class L_blockchain_ux_transaction_source_target_count_of_completed: L, I_blockchain_ux_transaction_source_target_count_of_completed {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.count.of.completed", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_count_of_completed: I_blockchain_db_type_integer, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_ux_transaction_source_target_previous: L, I_blockchain_ux_transaction_source_target_previous {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.previous", comment: "") }
 }

@@ -14,6 +14,9 @@ public struct PriceQuoteAtTime: Equatable {
     /// The total market cap of the currency.
     public let marketCap: Double?
 
+    /// The total market cap of the currency.
+    public let volume24h: Double?
+
     /// Creates a quoted price.
     ///
     /// - Parameters:
@@ -22,10 +25,12 @@ public struct PriceQuoteAtTime: Equatable {
     public init(
         timestamp: Date,
         moneyValue: MoneyValue,
-        marketCap: Double? = nil
+        marketCap: Double? = nil,
+        volume24h: Double? = nil
     ) {
         self.timestamp = timestamp
         self.moneyValue = moneyValue
         self.marketCap = marketCap
+        self.volume24h = volume24h
     }
 }

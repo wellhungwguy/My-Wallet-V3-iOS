@@ -62,7 +62,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
     func test_fetch_type_mismatch() async throws {
 
         let announcements = try await app.publisher(for: blockchain.app.configuration.announcements, as: Bool.self)
-            .values.first
+            .values
+            .next()
             .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
@@ -71,7 +72,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
     func test_fetch_missing_value() async throws {
 
         let announcements = try await app.publisher(for: blockchain.user.email.address, as: String.self)
-            .values.first
+            .values
+            .next()
             .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
@@ -94,9 +96,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
     func test_all_keys() async throws {
 
-        _ = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled)
-            .values
-            .first
+        _ = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
+            .wait()
 
         XCTAssertEqual(
             app.remoteConfiguration.allKeys.set,
@@ -190,7 +191,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 extension Publisher where Output == FetchResult {
 
     func wait() async throws -> Any {
-        try await values.first
+        try await values
+            .next()
             .unwrap()
             .get()
     }
@@ -200,7 +202,8 @@ extension Publisher where Output == FetchResult {
 extension Publisher where Output: FetchResult.Decoded {
 
     func wait() async throws -> Output.Value {
-        try await values.first
+        try await values
+            .next()
             .unwrap()
             .get()
     }

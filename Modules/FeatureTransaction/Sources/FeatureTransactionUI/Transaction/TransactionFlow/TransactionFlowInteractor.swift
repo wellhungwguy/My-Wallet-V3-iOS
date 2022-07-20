@@ -798,6 +798,8 @@ extension TransactionFlowInteractor {
         app.state.transaction { state in
             state.set(blockchain.app.configuration.transaction.id, to: action.rawValue)
             state.set(blockchain.ux.transaction.id, to: action.rawValue)
+            state.set(blockchain.ux.transaction.source.id, to: sourceAccount?.currencyType.code)
+            state.set(blockchain.ux.transaction.source.target.id, to: target?.currencyType.code)
         }
 
         let intent = action
@@ -836,6 +838,11 @@ extension TransactionFlowInteractor {
                         state.set(blockchain.ux.transaction.source.id, to: source.currencyType.code)
                     case .targetAccountSelected(let target):
                         state.set(blockchain.ux.transaction.source.target.id, to: target.currencyType.code)
+                    case .executeTransaction:
+                        state.set(
+                            blockchain.ux.transaction.source.target.count.of.completed,
+                            to: (try? state.get(blockchain.ux.transaction.source.target.count.of.completed)).or(0) + 1
+                        )
                     default:
                         break
                     }
