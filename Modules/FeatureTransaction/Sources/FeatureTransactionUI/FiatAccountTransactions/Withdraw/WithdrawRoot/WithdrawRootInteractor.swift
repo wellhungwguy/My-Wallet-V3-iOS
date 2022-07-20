@@ -119,7 +119,7 @@ final class WithdrawRootInteractor: Interactor,
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
             let filteredLinkedBanks = linkedBanks.filter { $0.fiatCurrency == fiatCurrency }
             let country: String? = try? self.app.state.get(blockchain.user.address.country.code)
-            if filteredLinkedBanks.isEmpty && country?.isArgentina == false {
+            if filteredLinkedBanks.isEmpty, country?.isArgentina == false {
                 self.handleNoLinkedBanks(
                     paymentMethodTypes,
                     fiatCurrency: fiatCurrency
