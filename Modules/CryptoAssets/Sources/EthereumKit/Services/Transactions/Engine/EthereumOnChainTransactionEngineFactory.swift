@@ -10,10 +10,9 @@ class EthereumOnChainTransactionEngineFactory: OnChainTransactionEngineFactory {
         self.network = network
     }
 
-    func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine {
+    func build() -> OnChainTransactionEngine {
         EthereumOnChainTransactionEngine(
-            network: network,
-            requireSecondPassword: requiresSecondPassword
+            network: network
         )
     }
 }

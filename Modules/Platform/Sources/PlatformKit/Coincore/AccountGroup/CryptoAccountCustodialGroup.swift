@@ -16,10 +16,6 @@ public class CryptoAccountCustodialGroup: AccountGroup {
 
     public var accountType: AccountType = .group
 
-    public var requireSecondPassword: Single<Bool> {
-        account?.requireSecondPassword ?? .just(false)
-    }
-
     public var isFunded: AnyPublisher<Bool, Error> {
         account?.isFunded ?? .just(false)
     }

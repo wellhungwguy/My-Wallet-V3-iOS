@@ -63,6 +63,23 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
         testStore = nil
     }
 
+    func testInitialState() {
+        let state = testStore.state
+        XCTAssertEqual(state.searchText, "")
+        XCTAssertEqual(state.searchResults, [])
+
+        XCTAssertFalse(state.isSearchFieldSelected)
+        XCTAssertFalse(state.isPremiumDomainBottomSheetShown)
+        XCTAssertFalse(state.isSearchResultsLoading)
+
+        XCTAssertTrue(state.isAlertCardShown)
+        XCTAssertTrue(state.isSearchTextValid)
+
+        XCTAssertNil(state.selectedPremiumDomain)
+        XCTAssertNil(state.route)
+        XCTAssertNil(state.checkoutState)
+    }
+
     func test_on_appear_should_search_domains_by_firstname() throws {
         let expectedResults = try testStore
             .environment
@@ -86,10 +103,7 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
             .searchDomainRepository
             .searchResults(searchKey: "Firstname", freeOnly: true)
             .wait()
-        testStore.send(.set(\.$searchText, "")) { state in
-            state.isSearchTextValid = true
-            state.searchText = ""
-        }
+        testStore.send(.set(\.$searchText, ""))
         testStore.receive(.searchDomains(key: "", freeOnly: false))
         testStore.receive(.searchDomainsWithUsername)
         testStore.receive(.searchDomains(key: "Firstname", freeOnly: true)) { state in

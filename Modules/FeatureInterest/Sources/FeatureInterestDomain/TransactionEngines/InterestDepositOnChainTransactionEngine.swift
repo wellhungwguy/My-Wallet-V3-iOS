@@ -33,8 +33,6 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     public let currencyConversionService: CurrencyConversionServiceAPI
     public var askForRefreshConfirmation: AskForRefreshConfirmation!
 
-    public var requireSecondPassword: Bool
-
     public var transactionTarget: TransactionTarget!
     public var sourceAccount: BlockchainAccount!
 
@@ -77,7 +75,6 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
@@ -86,7 +83,6 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         onChainEngine: OnChainTransactionEngine
     ) {
         self.walletCurrencyService = walletCurrencyService
-        self.requireSecondPassword = requireSecondPassword
         self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
         self.hotWalletAddressService = hotWalletAddressService
@@ -206,8 +202,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     }
 
     public func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         createTransactionTarget()
             .flatMap(weak: self) { (self, transactionTarget) -> Single<TransactionResult> in
@@ -215,7 +210,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
                     .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
                     .flatMap(weak: self) { (self, pendingTransaction) in
                         self.onChainEngine
-                            .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+                            .execute(pendingTransaction: pendingTransaction)
                     }
             }
     }

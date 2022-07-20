@@ -21,7 +21,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    let requireSecondPassword: Bool
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -59,7 +58,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         network: EVMNetwork,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
@@ -79,7 +77,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.keyPairProvider = keyPairProvider
         self.network = network
         self.priceService = priceService
-        self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
         self.transactionSigningService = transactionSigningService
         self.pendingTransactionRepository = pendingTransactionRepository
@@ -188,8 +185,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard isCurrencyTypeValid(pendingTransaction.amount.currencyType) else {
             preconditionFailure("Not an \(network.rawValue) value.")
@@ -221,7 +217,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             return Single
                 .zip(
                     transactionPublisher.asSingle(),
-                    keyPairProvider.keyPair(with: secondPassword)
+                    keyPairProvider.keyPair(with: nil)
                 )
                 .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionEncoded> in
                     transactionSigningService.sign(
@@ -239,7 +235,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
-                        secondPassword: secondPassword,
+                        secondPassword: nil,
                         network: network
                     )
                 }

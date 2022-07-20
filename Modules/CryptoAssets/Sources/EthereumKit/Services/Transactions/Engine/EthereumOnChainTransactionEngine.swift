@@ -21,7 +21,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    let requireSecondPassword: Bool
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -57,7 +56,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         network: EVMNetwork,
-        requireSecondPassword: Bool,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumAccountService: EthereumAccountServiceAPI = resolve(),
         ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI = resolve(),
@@ -76,7 +74,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.network = network
         self.pendingTransactionRepository = pendingTransactionRepository
         self.receiveAddressFactory = receiveAddressFactory
-        self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
         self.walletCurrencyService = walletCurrencyService
         feeCache = CachedValue(
@@ -252,8 +249,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard isCurrencyTypeValid(pendingTransaction.amount.currency) else {
             fatalError("Not an ethereum value.")
@@ -306,7 +302,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 self.ethereumTransactionDispatcher
                     .send(
                         transaction: candidate,
-                        secondPassword: secondPassword,
+                        secondPassword: nil,
                         network: self.network
                     )
                     .asSingle()

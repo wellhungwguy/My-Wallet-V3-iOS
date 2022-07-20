@@ -12,10 +12,9 @@ final class ERC20OnChainTransactionEngineFactory: OnChainTransactionEngineFactor
         self.erc20Token = erc20Token
     }
 
-    func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine {
+    func build() -> OnChainTransactionEngine {
         ERC20OnChainTransactionEngine(
-            erc20Token: erc20Token,
-            requireSecondPassword: requiresSecondPassword
+            erc20Token: erc20Token
         )
     }
 }

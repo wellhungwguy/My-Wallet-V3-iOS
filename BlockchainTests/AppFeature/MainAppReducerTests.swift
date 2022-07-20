@@ -610,11 +610,11 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.loggedIn(.stop))
         testStore.receive(.requirePin) { state in
             state.loggedIn = nil
-            state.onboarding = Onboarding.State(pinState: .init())
+            state.onboarding = Onboarding.State(
+                pinState: PinCore.State()
+            )
         }
-        testStore.receive(.onboarding(.start)) { state in
-            state.onboarding?.pinState = .init()
-        }
+        testStore.receive(.onboarding(.start))
         testStore.receive(.onboarding(.proceedToFlow))
         testStore.receive(.onboarding(.pin(.authenticate))) { state in
             state.onboarding?.pinState?.authenticate = true
@@ -732,9 +732,12 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.mobileAuthSync(isLogin: true), file: file, line: line)
         mockMainQueue.advance()
         testStore.receive(.loggedIn(.handleExistingWalletSignIn), file: file, line: line)
-        testStore.receive(.loggedIn(.showPostSignInOnboardingFlow), file: file, line: line) {
-            $0.loggedIn?.displayPostSignInOnboardingFlow = true
-        }
+        testStore.receive(
+            .loggedIn(.showPostSignInOnboardingFlow),
+            { $0.loggedIn?.displayPostSignInOnboardingFlow = true },
+            file: file,
+            line: line
+        )
     }
 
     /// send logout to clear pending effects after logged in.

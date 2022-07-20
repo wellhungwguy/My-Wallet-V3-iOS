@@ -17,7 +17,6 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let quotesEngine: QuotesEngineAPI
-    let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
@@ -85,7 +84,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         }
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
             .map { (order: SwapOrder) in
                 TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: order.identifier)
@@ -97,8 +96,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         level: FeeLevel,
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.availableFeeLevels.contains(level))
-        return Single.just(pendingTransaction)
+        .just(pendingTransaction)
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

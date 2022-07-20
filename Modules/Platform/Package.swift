@@ -32,7 +32,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/uber/RIBs.git",
-            from: "0.12.1"
+            from: "0.13.0"
         ),
         .package(
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",

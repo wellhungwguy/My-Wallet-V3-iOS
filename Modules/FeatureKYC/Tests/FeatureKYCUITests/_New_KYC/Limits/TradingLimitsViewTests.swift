@@ -121,9 +121,7 @@ final class TradingLimitsViewTests: XCTestCase {
 
     func test_view_tiers_close_modal() throws {
         testStore.send(.listAction(.tiersStatusViewAction(.close)))
-        testStore.receive(.listAction(.dismiss())) {
-            $0.featuresList.route = nil
-        }
+        testStore.receive(.listAction(.dismiss()))
     }
 
     func test_presentKYC_tier1() throws {

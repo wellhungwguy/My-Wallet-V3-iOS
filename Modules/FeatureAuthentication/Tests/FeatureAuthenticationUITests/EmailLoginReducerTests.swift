@@ -93,62 +93,64 @@ final class EmailLoginReducerTests: XCTestCase {
         )
     }
 
-    func test_send_device_verification_email_failure() {
-        testStore.assert(
-            // should still go to verify device screen if it is a network error
-            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.unknown)))),
-            .receive(.navigate(to: .verifyDevice)) { state in
-                state.verifyDeviceState = .init(emailAddress: "")
-                state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
-            },
+    func test_send_device_verification_email_failure_network_error() {
+        // should still go to verify device screen if it is a network error
+        testStore.send(.didSendDeviceVerificationEmail(.failure(.networkError(.unknown))))
+        testStore.receive(.navigate(to: .verifyDevice)) { state in
+            state.verifyDeviceState = .init(emailAddress: "")
+            state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
+        }
+    }
 
-            // should not go to verify device screen if it is a missing session token error
-            .send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken))),
-            .receive(
-                .alert(
-                    .show(
-                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
-                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
-                    )
+    func test_send_device_verification_email_failure_missing_session_token() {
+        // should not go to verify device screen if it is a missing session token error
+        testStore.send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken)))
+        testStore.receive(
+            .alert(
+                .show(
+                    title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
+                    message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
                 )
-            ) { state in
-                state.alert = AlertState(
-                    title: TextState(
-                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
-                    ),
-                    message: TextState(
-                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
-                    ),
-                    dismissButton: .default(
-                        TextState(LocalizationConstants.continueString),
-                        action: .send(.alert(.dismiss))
-                    )
+            )
+        ) { state in
+            state.alert = AlertState(
+                title: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
+                ),
+                message: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
+                ),
+                dismissButton: .default(
+                    TextState(LocalizationConstants.continueString),
+                    action: .send(.alert(.dismiss))
                 )
-            },
+            )
+        }
+    }
 
-            // should not go to verify device screen if it is a recaptcha error
-            .send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError)))),
-            .receive(
-                .alert(
-                    .show(
-                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
-                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
-                    )
+    func test_send_device_verification_email_failure_recaptcha_error() {
+        // should not go to verify device screen if it is a recaptcha error
+        testStore.send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError))))
+        testStore.receive(
+            .alert(
+                .show(
+                    title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
+                    message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
                 )
-            ) { state in
-                state.alert = AlertState(
-                    title: TextState(
-                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
-                    ),
-                    message: TextState(
-                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
-                    ),
-                    dismissButton: .default(
-                        TextState(LocalizationConstants.continueString),
-                        action: .send(.alert(.dismiss))
-                    )
+            )
+        ) { state in
+            state.alert = AlertState(
+                title: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
+                ),
+                message: TextState(
+                    verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
+                ),
+                dismissButton: .default(
+                    TextState(LocalizationConstants.continueString),
+                    action: .send(.alert(.dismiss))
                 )
-            }
-        )
+            )
+        }
     }
 }

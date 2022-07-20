@@ -13,7 +13,6 @@ struct WalletConnectEngineFactory: WalletConnectEngineFactoryAPI {
             return WalletConnectSignMessageEngine()
         case let target as EthereumSendTransactionTarget:
             return WalletConnectTransactionEngine(
-                requireSecondPassword: false,
                 network: target.network
             )
         default:

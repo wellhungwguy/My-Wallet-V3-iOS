@@ -169,7 +169,7 @@ packages:
     version: 1.9.0
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    version: 0.34.0
+    version: 0.38.3
   Intercom:
     url: https://github.com/intercom/intercom-ios.git
     version: 12.1.0
@@ -184,10 +184,10 @@ packages:
     version: 6.5.0
   RIBs:
     url: https://github.com/uber/RIBs.git
-    version: 0.12.2
+    version: 0.13.0
   Pulse:
     url: https://github.com/kean/Pulse.git
-    version: 0.20.2
+    version: 1.1.0
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:

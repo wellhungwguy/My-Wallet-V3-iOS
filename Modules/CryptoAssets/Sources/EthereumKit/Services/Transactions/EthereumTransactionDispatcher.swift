@@ -12,7 +12,7 @@ public protocol EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        secondPassword: String,
+        secondPassword: String?,
         network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, Error>
 }
@@ -35,7 +35,7 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        secondPassword: String,
+        secondPassword: String?,
         network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, Error> {
         keyPairProvider.keyPair(with: secondPassword)

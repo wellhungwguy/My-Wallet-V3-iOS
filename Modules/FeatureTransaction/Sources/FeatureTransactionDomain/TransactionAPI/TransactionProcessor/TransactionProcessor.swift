@@ -165,13 +165,10 @@ public final class TransactionProcessor {
         engine.cancelOrder(with: identifier)
     }
 
-    public func execute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
+    public func execute(order: TransactionOrder?) -> Single<TransactionResult> {
         Logger.shared.debug("!TRANSACTION!> in `execute`")
         let pendingTransaction: PendingTransaction
         do {
-            if engine.requireSecondPassword, secondPassword.isEmpty {
-                throw PlatformKitError.illegalStateException(message: "Second password not supplied")
-            }
             pendingTransaction = try self.pendingTransaction()
         } catch {
             return .error(error)
@@ -188,8 +185,7 @@ public final class TransactionProcessor {
             .flatMap { [engine] transaction in
                 engine.execute(
                     pendingTransaction: transaction,
-                    pendingOrder: order,
-                    secondPassword: secondPassword
+                    pendingOrder: order
                 )
             }
             .flatMap { [engine] transactionResult in

@@ -83,7 +83,6 @@ public protocol TransactionEngine: AnyObject {
     /// The account the user is transacting from
     var sourceAccount: BlockchainAccount! { get set }
     var transactionTarget: TransactionTarget! { get set }
-    var requireSecondPassword: Bool { get }
 
     var canTransactFiat: Bool { get }
 
@@ -179,19 +178,16 @@ public protocol TransactionEngine: AnyObject {
     /// - Note:This method should be implemented by `TransactionEngine`s that don't require the creation of an order.
     /// - Parameters:
     ///   - pendingTransaction: The pending transaction so far.
-    ///   - secondPassword: The second password or a empty string if not needed.
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult>
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult>
 
     /// Execute the transaction, it will have been validated before this is called, so the expectation is that it will succeed.
-    /// - Note: This method is defaulted to call `execute(pendingTransaction:secondPassword:)`.
+    /// - Note: This method is defaulted to call `execute(pendingTransaction:)`.
     /// - Parameters:
     ///   - pendingTransaction: The pending transaction so far
     ///   - pendingOrder: The pending order if one was created by `createOrder`.
-    ///   - secondPassword: The second password or an empty string if not needed.
     func execute(
         pendingTransaction: PendingTransaction,
-        pendingOrder: TransactionOrder?,
-        secondPassword: String
+        pendingOrder: TransactionOrder?
     ) -> Single<TransactionResult>
 
     /// Action to be executed once the transaction has been executed, it will have been validated before this is called, so the expectation
@@ -445,17 +441,16 @@ extension TransactionEngine {
         .just(())
     }
 
-    public func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    public func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         // swiftlint:disable:next line_length
-        unimplemented("Override this method in your Engine implementation. If you need to execute an order, override \(String(describing: execute(pendingTransaction:pendingOrder:secondPassword:))) instead")
+        unimplemented("Override this method in your Engine implementation. If you need to execute an order, override 'execute(pendingTransaction:pendingOrder:)' instead")
     }
 
     public func execute(
         pendingTransaction: PendingTransaction,
-        pendingOrder: TransactionOrder?,
-        secondPassword: String
+        pendingOrder: TransactionOrder?
     ) -> Single<TransactionResult> {
-        execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+        execute(pendingTransaction: pendingTransaction)
     }
 
     public func doPostExecute(
