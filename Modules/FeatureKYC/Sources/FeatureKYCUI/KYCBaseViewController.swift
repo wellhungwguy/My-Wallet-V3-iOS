@@ -91,12 +91,20 @@ class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingN
 
     func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
         switch navControllerCTAType() {
-        case .none, .skip:
+        case .none:
             break
         case .dismiss:
+            onNavControllerRightBarButtonWillDismiss()
             router.stop()
         case .help:
             presentNeedSomeHelpAlert()
+        case .skip:
+            onNavControllerRightBarButtonSkip()
         }
     }
+
+    // MARK: - Optionally override
+
+    func onNavControllerRightBarButtonWillDismiss() {}
+    func onNavControllerRightBarButtonSkip() {}
 }

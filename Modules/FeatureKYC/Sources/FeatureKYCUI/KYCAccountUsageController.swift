@@ -66,20 +66,21 @@ final class KYCAccountUsageController: KYCBaseViewController {
     }
 
     @objc private func dismissWithAnimation() {
-        app.state.clear(blockchain.ux.kyc.extra.questions.form)
-        dismiss(animated: true)
+        app.state.clear(blockchain.ux.kyc.extra.questions.form.id)
+        router.stop()
     }
 
-    override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
-        switch navControllerCTAType() {
-        case .none, .help:
-            break
-        case .skip:
-            continueToNextStep()
-        case .dismiss:
-            app.state.clear(blockchain.ux.kyc.extra.questions.form)
-            dismiss(animated: true)
-        }
+    override func onNavControllerRightBarButtonWillDismiss() {
+        clearExtraQuestionsData()
+    }
+
+    override func onNavControllerRightBarButtonSkip() {
+        clearExtraQuestionsData()
+        continueToNextStep()
+    }
+
+    private func clearExtraQuestionsData() {
+        app.state.clear(blockchain.ux.kyc.extra.questions.form.id)
     }
 
     // MARK: - UI Configuration
