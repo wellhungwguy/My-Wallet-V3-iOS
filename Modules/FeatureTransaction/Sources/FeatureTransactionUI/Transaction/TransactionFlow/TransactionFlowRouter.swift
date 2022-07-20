@@ -19,6 +19,8 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+typealias CountryCode = String
+
 protocol TransactionFlowInteractable: Interactable,
     EnterAmountPageListener,
     ConfirmationPageListener,
@@ -427,10 +429,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
         Task(priority: .userInitiated) {
             let country: String = try app.state.get(blockchain.user.address.country.code)
-            switch country {
-            case "AR":
+            if country.isArgentina {
                 try await presentBINDLinkABank(transactionModel: transactionModel)
-            default:
+            } else {
                 presentDefaultLinkABank(transactionModel: transactionModel)
             }
         }
@@ -445,34 +446,32 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             return assertionFailure("Expected one fiat currency to create a BIND beneficiary")
         }
         let presentingViewController = viewController.uiviewController
-        presentingViewController.present(
-            UIHostingController(
-                rootView: PrimaryNavigationView {
-                    BINDWithdrawView { _ in
-                        transactionModel.process(action: .bankAccountLinked(state.action))
-                    }
-                    .primaryNavigation(
-                        title: Localization.withdraw,
-                        trailing: {
-                            IconButton(
-                                icon: .closeCirclev2,
-                                action: {
-                                    presentingViewController.presentedViewController?.dismiss(
-                                        animated: true,
-                                        completion: {
-                                            transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                    )
+        let hostedViewController = UIHostingController(
+            rootView: PrimaryNavigationView {
+                BINDWithdrawView { _ in
+                    transactionModel.process(action: .bankAccountLinked(state.action))
                 }
-                .environmentObject(BINDWithdrawService(repository: bindRepository.currency(fiat.code)))
-            ),
-            animated: true,
-            completion: nil
+                .primaryNavigation(
+                    title: Localization.withdraw,
+                    trailing: {
+                        IconButton(
+                            icon: .closeCirclev2,
+                            action: {
+                                presentingViewController.presentedViewController?.dismiss(
+                                    animated: true,
+                                    completion: {
+                                        transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+            .environmentObject(BINDWithdrawService(repository: bindRepository.currency(fiat.code)))
         )
+        hostedViewController.isModalInPresentation = true
+        presentingViewController.present(hostedViewController, animated: true, completion: nil)
     }
 
     private func presentDefaultLinkABank(transactionModel: TransactionModel) {
@@ -786,4 +785,8 @@ extension PaymentMethodAccount {
             paymentMethod: method
         )
     }
+}
+
+extension CountryCode {
+    var isArgentina: Bool { self == "AR" }
 }
