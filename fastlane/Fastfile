@@ -46,7 +46,7 @@ platform :ios do
   lane :alpha do | options |
     # Set a specific version number for alpha
     increment_version_number_in_plist(
-      version_number: '1.0.0',
+      version_number: '999999.9.9',
       scheme: 'Blockchain (Alpha)'
     )
     # Set a build number equal to number of commits for alpha
