@@ -15,21 +15,24 @@ final class NabuUserSessionObserver: Session.Observer {
 
     private var bag: Set<AnyCancellable> = []
     private let userService: NabuUserServiceAPI
-    private let repository: NabuTokenRepositoryAPI
+    private let tokenRepository: NabuTokenRepositoryAPI
+    private let offlineTokenRepository: NabuOfflineTokenRepositoryAPI
 
     init(
         app: AppProtocol,
-        repository: NabuTokenRepositoryAPI = resolve(),
+        tokenRepository: NabuTokenRepositoryAPI = resolve(),
+        offlineTokenRepository: NabuOfflineTokenRepositoryAPI = resolve(),
         userService: NabuUserServiceAPI = resolve()
     ) {
         self.app = app
-        self.repository = repository
+        self.tokenRepository = tokenRepository
+        self.offlineTokenRepository = offlineTokenRepository
         self.userService = userService
     }
 
     func start() {
 
-        repository.sessionTokenPublisher
+        tokenRepository.sessionTokenPublisher
             .compactMap(\.wrapped)
             .sink { [app] nabu in app.state.set(blockchain.user.token.nabu, to: nabu.token) }
             .store(in: &bag)

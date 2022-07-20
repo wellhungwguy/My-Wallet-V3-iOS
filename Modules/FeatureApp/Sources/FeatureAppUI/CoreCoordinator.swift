@@ -66,7 +66,6 @@ public enum CoreAppAction: Equatable {
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
     case prepareForLoggedIn
-    case fetchedUser(Result<NabuUser, NabuUserServiceError>)
     case proceedToLoggedIn(Result<Bool, ProceedToLoggedInError>)
     case appForegrounded
     case deeplink(DeeplinkOutcome)
@@ -643,11 +642,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
 
     case .prepareForLoggedIn:
-        return environment.nabuUserService.fetchUser()
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map(CoreAppAction.fetchedUser)
-    case .fetchedUser:
         let coincoreInit = environment.coincore
             .initialize()
             .mapError(ProceedToLoggedInError.coincore)
@@ -906,7 +900,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 }
 .walletReducer()
 .alertReducer()
-.namespace()
 
 // MARK: - Alert Reducer
 
@@ -1037,22 +1030,4 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: AppSettingsAut
     }
 
     appSettings.clearPin()
-}
-
-extension Reducer where Action == CoreAppAction, Environment == CoreAppEnvironment {
-
-    func namespace() -> Reducer {
-        Reducer { _, action, environment in
-            switch action {
-            case .fetchedUser(let result):
-                guard let user = try? result.get() else { return .none }
-                return .fireAndForget {
-                    environment.app.signIn(userId: user.identifier)
-                }
-            default:
-                return .none
-            }
-        }
-        .combined(with: self)
-    }
 }

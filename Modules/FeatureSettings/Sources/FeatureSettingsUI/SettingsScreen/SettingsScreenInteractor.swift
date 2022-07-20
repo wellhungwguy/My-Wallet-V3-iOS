@@ -86,10 +86,7 @@ public final class SettingsScreenInteractor {
         twoFactorVerificationBadgeInteractor = TwoFactorVerificationBadgeInteractor(
             service: settingsService
         )
-        preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor(
-            settingsService: settingsService,
-            fiatCurrencyService: fiatCurrencyService
-        )
+        preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor()
         preferredTradingCurrencyBadgeInteractor = PreferredTradingCurrencyBadgeInteractor()
         cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
             service: settingsService

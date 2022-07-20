@@ -69,6 +69,10 @@ extension Session.State {
         }
     }
 
+    public func doesNotContain(_ event: Tag.Event) -> Bool {
+        !data.store.keys.contains(key(event))
+    }
+
     public func contains(_ event: Tag.Event) -> Bool {
         data.store.keys.contains(key(event))
     }

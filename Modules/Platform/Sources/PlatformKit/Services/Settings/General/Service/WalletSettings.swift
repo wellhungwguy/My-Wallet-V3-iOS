@@ -10,7 +10,6 @@ public struct WalletSettings: Equatable {
         case segwit
     }
 
-    private let userDefaults: UserDefaults
     private let rawDisplayCurrency: String
 
     public let countryCode: String
@@ -27,8 +26,7 @@ public struct WalletSettings: Equatable {
         FiatCurrency(rawValue: rawDisplayCurrency)
     }
 
-    init(response: SettingsResponse, userDefaults: UserDefaults = .standard) {
-        self.userDefaults = userDefaults
+    init(response: SettingsResponse) {
         rawDisplayCurrency = response.currency
         countryCode = response.countryCode
         language = response.language

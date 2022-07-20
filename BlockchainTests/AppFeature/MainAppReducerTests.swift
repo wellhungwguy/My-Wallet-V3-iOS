@@ -467,7 +467,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.onboarding = nil
             state.loggedIn = .init()
@@ -557,7 +556,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.walletUpgrade(.completed)))
         mockMainQueue.advance()
         testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
@@ -575,7 +573,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
@@ -598,7 +595,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.checkWalletUpgrade)
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.fetchedUser(.success(mockNabuUser)))
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil

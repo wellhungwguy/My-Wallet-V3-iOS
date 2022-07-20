@@ -473,7 +473,7 @@ blockchain:
 					display:
 						currency:
 						+ blockchain.db.type.string
-						+ blockchain.session.state.preference.value
+						+ blockchain.session.state.value
 					trading:
 						currency:
 						+ blockchain.db.type.string

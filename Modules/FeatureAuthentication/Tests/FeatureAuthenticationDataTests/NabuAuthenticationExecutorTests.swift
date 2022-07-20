@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
@@ -41,6 +42,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         jwtService = JWTServiceMock()
         siftService = MockSiftService()
         subject = NabuAuthenticationExecutor(
+            app: App.test,
             store: store,
             errorBroadcaster: errorBroadcaster,
             nabuRepository: nabuRepository,

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import Foundation
@@ -39,6 +40,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         let offlineToken: NabuOfflineToken
     }
 
+    private let app: AppProtocol
     private let store: NabuTokenRepositoryAPI
     private let errorBroadcaster: UserAlreadyRestoredHandlerAPI
     private let credentialsRepository: CredentialsRepositoryAPI
@@ -54,6 +56,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private let fetchTokensPublisher: Atomic<AnyPublisher<Token, NabuAuthenticationExecutorError>?> = Atomic(nil)
 
     init(
+        app: AppProtocol = resolve(),
         store: NabuTokenRepositoryAPI = resolve(),
         errorBroadcaster: UserAlreadyRestoredHandlerAPI = resolve(),
         nabuRepository: NabuRepositoryAPI = resolve(),
@@ -69,6 +72,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
             qos: .background
         )
     ) {
+        self.app = app
         self.store = store
         self.errorBroadcaster = errorBroadcaster
         self.nabuRepository = nabuRepository
@@ -115,6 +119,13 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                 -> (sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken) in
                 (sessionToken: sessionToken, offlineToken: offlineToken)
             }
+            .handleEvents(
+                receiveOutput: { _, token in
+                    if app.state.doesNotContain(blockchain.user.id) {
+                        app.signIn(userId: token.userId)
+                    }
+                }
+            )
             // swiftlint:disable:next line_length
             .catch { _ -> AnyPublisher<(sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken), NabuAuthenticationExecutorError> in
                 fetchTokens()
