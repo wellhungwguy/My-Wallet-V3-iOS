@@ -9,12 +9,13 @@ import FeatureInterestUI
 import Localization
 import MoneyKit
 import SwiftUI
+import ErrorsUI
 
 struct Tab: Hashable, Identifiable, Codable {
     var id: AnyHashable { tag }
     var tag: Tag.Reference
     var name: String
-    var title, message: String?
+    var ux: Nabu.Error.UX?
     var url: URL?
     var icon: Icon
 }
@@ -149,30 +150,13 @@ struct RootView: View {
         }
     }
 
-    func maintenance(_ tab: Tab) -> some View {
-        VStack(spacing: Spacing.padding3) {
-            tab.icon
-                .frame(width: 30.vw)
-                .aspectRatio(contentMode: .fit)
-            if let title = tab.title {
-                Text(title.localized())
-                    .typography(.title3)
-                    .foregroundColor(.semantic.title)
-            }
-            if let message = tab.message {
-                Text(message.localized())
-                    .typography(.body1)
-                    .foregroundColor(.semantic.body)
-            }
-            Spacer()
-            if let url = tab.url {
-                Button(LocalizationConstants.openWebsite) {
-                    openURL(url)
-                }
-            }
+    @ViewBuilder func maintenance(_ tab: Tab) -> some View {
+        if let ux = tab.ux {
+            ErrorView(
+                ux: UX.Error(nabu: ux),
+                dismiss: { }
+            )
         }
-        .multilineTextAlignment(.center)
-        .padding()
     }
 
     @ViewBuilder func tabItem<Content>(

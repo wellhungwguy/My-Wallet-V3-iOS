@@ -234,7 +234,7 @@ extension Collection where Element == BlockchainAccount {
         app: AppProtocol,
         priceRepository: PriceRepositoryAPI
     ) -> AnyPublisher<[BlockchainAccountSnapshot], Never> {
-        Task<[BlockchainAccountSnapshot], Error>.ThrowingPublisher {
+        Task<[BlockchainAccountSnapshot], Error>.Publisher {
             guard try await app.get(blockchain.ux.transaction.smart.sort.order.is.enabled) else {
                 throw BlockchainAccountSnapshotError.isNotEnabled
             }

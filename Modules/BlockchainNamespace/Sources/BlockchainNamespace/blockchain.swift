@@ -1922,7 +1922,7 @@ public extension I_blockchain_user_currency_preferred_fiat_display {
 public final class L_blockchain_user_currency_preferred_fiat_display_currency: L, I_blockchain_user_currency_preferred_fiat_display_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.display.currency", comment: "") }
 }
-public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
+public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_currency_preferred_fiat_trading: L, I_blockchain_user_currency_preferred_fiat_trading {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.trading", comment: "") }
 }
@@ -1962,8 +1962,20 @@ public final class L_blockchain_user_is: L, I_blockchain_user_is {
 }
 public protocol I_blockchain_user_is: I {}
 public extension I_blockchain_user_is {
+	var `cowboy`: L_blockchain_user_is_cowboy { .init("\(__).cowboy") }
 	var `tier`: L_blockchain_user_is_tier { .init("\(__).tier") }
 }
+public final class L_blockchain_user_is_cowboy: L, I_blockchain_user_is_cowboy {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.cowboy", comment: "") }
+}
+public protocol I_blockchain_user_is_cowboy: I {}
+public extension I_blockchain_user_is_cowboy {
+	var `fan`: L_blockchain_user_is_cowboy_fan { .init("\(__).fan") }
+}
+public final class L_blockchain_user_is_cowboy_fan: L, I_blockchain_user_is_cowboy_fan {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.cowboy.fan", comment: "") }
+}
+public protocol I_blockchain_user_is_cowboy_fan: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
 public final class L_blockchain_user_is_tier: L, I_blockchain_user_is_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.tier", comment: "") }
 }

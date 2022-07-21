@@ -24,8 +24,8 @@ extension Publisher where Failure == Never {
         _ yield: @escaping (Output) async throws -> T
     ) -> AnyPublisher<T, Error> {
         setFailureType(to: Error.self)
-            .flatMap(maxPublishers: demand) { value -> Task<T, Error>.ThrowingPublisher in
-                Task<T, Error>.ThrowingPublisher(priority: priority) {
+            .flatMap(maxPublishers: demand) { value -> Task<T, Error>.Publisher in
+                Task<T, Error>.Publisher(priority: priority) {
                     try await yield(value)
                 }
             }
@@ -41,8 +41,8 @@ extension Publisher {
         _ yield: @escaping (Output) async throws -> T
     ) -> AnyPublisher<T, Error> {
         eraseError()
-            .flatMap(maxPublishers: demand) { value -> Task<T, Error>.ThrowingPublisher in
-                Task<T, Error>.ThrowingPublisher(priority: priority) {
+            .flatMap(maxPublishers: demand) { value -> Task<T, Error>.Publisher in
+                Task<T, Error>.Publisher(priority: priority) {
                     try await yield(value)
                 }
             }
@@ -50,36 +50,59 @@ extension Publisher {
     }
 }
 
-extension Task where Failure == Never {
+extension Task {
 
     public struct Publisher: Combine.Publisher {
 
+        private enum YieldingFailure {
+            case error(@Sendable () async throws -> Output)
+            case never(@Sendable () async -> Output)
+        }
+
         public typealias Output = Success
-        public typealias Yield = @Sendable () async -> Output
 
         private let priority: TaskPriority?
-        private let yield: Yield
+        private let yield: YieldingFailure
 
-        public init(priority: TaskPriority? = nil, _ yield: @escaping Yield) {
+        public init(
+            priority: TaskPriority? = nil,
+            _ yield: @escaping @Sendable () async -> Output
+        ) where Failure == Never {
             self.priority = priority
-            self.yield = yield
+            self.yield = .never(yield)
+        }
+
+        public init(
+            priority: TaskPriority? = nil,
+            _ yield: @escaping @Sendable () async throws -> Output
+        ) {
+            self.priority = priority
+            self.yield = .error(yield)
         }
 
         public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
-            let subscription = Subscription(priority: priority, yield: yield, downstream: subscriber)
-            subscriber.receive(subscription: subscription)
+            switch yield {
+            case .never(let yield):
+                subscriber.receive(
+                    subscription: Subscription(priority: priority, yield: yield, downstream: subscriber)
+                )
+            case .error(let yield):
+                subscriber.receive(
+                    subscription: ThrowingSubscription(priority: priority, yield: yield, downstream: subscriber)
+                )
+            }
         }
 
         actor Subscription: Combine.Subscription {
 
-            private let yield: Publisher.Yield
+            private let yield: @Sendable () async -> Output
             private let priority: TaskPriority?
             private var task: Task<Void, Never>?
             private var downstream: AnySubscriber<Output, Failure>?
 
             init<Downstream>(
                 priority: TaskPriority?,
-                yield: @escaping Publisher.Yield,
+                yield: @escaping @Sendable () async -> Output,
                 downstream: Downstream
             ) where Downstream: Subscriber, Output == Downstream.Input, Downstream.Failure == Failure {
                 self.priority = priority
@@ -117,39 +140,17 @@ extension Task where Failure == Never {
                 downstream = nil
             }
         }
-    }
-}
 
-extension Task where Failure: Error {
+        actor ThrowingSubscription: Combine.Subscription {
 
-    public struct ThrowingPublisher: Combine.Publisher {
-
-        public typealias Output = Success
-        public typealias Yield = @Sendable () async throws -> Output
-
-        private let priority: TaskPriority?
-        private let yield: Yield
-
-        public init(priority: TaskPriority? = nil, _ yield: @escaping Yield) {
-            self.priority = priority
-            self.yield = yield
-        }
-
-        public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
-            let subscription = Subscription(priority: priority, yield: yield, downstream: subscriber)
-            subscriber.receive(subscription: subscription)
-        }
-
-        actor Subscription: Combine.Subscription {
-
-            private let yield: ThrowingPublisher.Yield
+            private let yield: @Sendable () async throws -> Output
             private let priority: TaskPriority?
             private var task: Task<Void, Never>?
             private var downstream: AnySubscriber<Output, Failure>?
 
             init<Downstream>(
                 priority: TaskPriority?,
-                yield: @escaping ThrowingPublisher.Yield,
+                yield: @escaping @Sendable () async throws -> Output,
                 downstream: Downstream
             ) where Downstream: Subscriber, Output == Downstream.Input, Downstream.Failure == Failure {
                 self.priority = priority
@@ -165,13 +166,15 @@ extension Task where Failure: Error {
                 guard demand > 0 else { return }
                 guard task == nil else { return }
                 task = .detached(priority: priority) { [yield, weak self] in
+                    guard let self = self else { return }
                     do {
                         let value = try await yield()
-                        await self?.receive(value)
+                        await self.receive(value)
                     } catch let error as Failure {
-                        await self?.receive(error: error)
+                        await self.receive(error: error)
                     } catch {
-                        fatalError("Impossible - expected \(Failure.self), got \(type(of: error))")
+                        await self._cancel()
+                        assert(error is Failure, "Expected \(Failure.self), got \(type(of: error))")
                     }
                 }
             }

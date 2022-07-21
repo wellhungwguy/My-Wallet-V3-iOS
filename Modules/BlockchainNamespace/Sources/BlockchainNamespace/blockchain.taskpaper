@@ -485,6 +485,10 @@ blockchain:
 				verified:
 				+ blockchain.db.type.boolean
 		is:
+			cowboy:
+				fan:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
 			tier:
 				gold:
 				+ blockchain.db.type.boolean

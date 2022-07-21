@@ -207,7 +207,7 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
                     to: Date()
                 )
                 if let expirationDate = expirationDate?.timeIntervalSince1970 {
-                    timebounds = try? TimeBounds(
+                    timebounds = TimeBounds(
                         minTime: 0,
                         maxTime: UInt64(expirationDate)
                     )

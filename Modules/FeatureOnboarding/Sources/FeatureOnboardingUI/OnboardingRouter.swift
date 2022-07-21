@@ -6,6 +6,7 @@ import DIKit
 import SwiftUI
 import ToolKit
 import UIKit
+import BlockchainNamespace
 
 public protocol KYCRouterAPI {
     func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
@@ -22,6 +23,7 @@ public final class OnboardingRouter: OnboardingRouterAPI {
 
     // MARK: - Properties
 
+    let app: AppProtocol
     let kycRouter: KYCRouterAPI
     let transactionsRouter: TransactionsRouterAPI
     let featureFlagsService: FeatureFlagsServiceAPI
@@ -30,11 +32,13 @@ public final class OnboardingRouter: OnboardingRouterAPI {
     // MARK: - Init
 
     public init(
+        app: AppProtocol = resolve(),
         kycRouter: KYCRouterAPI = resolve(),
         transactionsRouter: TransactionsRouterAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         mainQueue: AnySchedulerOf<DispatchQueue> = .main
     ) {
+        self.app = app
         self.kycRouter = kycRouter
         self.transactionsRouter = transactionsRouter
         self.featureFlagsService = featureFlagsService
@@ -47,11 +51,16 @@ public final class OnboardingRouter: OnboardingRouterAPI {
         // Step 1: present email verification
         presentEmailVerification(from: presenter)
             .flatMap { [weak self] _ -> AnyPublisher<OnboardingResult, Never> in
-                guard let self = self else {
-                    return .just(.abandoned)
+                guard let self = self else { return .just(.abandoned) }
+                return Task<OnboardingResult, Error>.Publisher {
+                    if try await self.app.get(blockchain.user.is.cowboy.fan) {
+                        return await self.transactionsRouter.presentBuyFlow(from: presenter).await().or(.abandoned)
+                    } else {
+                        return await self.presentUITour(from: presenter).await().or(.abandoned)
+                    }
                 }
-                // Step 2: present the UI Tour
-                return self.presentUITour(from: presenter)
+                .replaceError(with: .abandoned)
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

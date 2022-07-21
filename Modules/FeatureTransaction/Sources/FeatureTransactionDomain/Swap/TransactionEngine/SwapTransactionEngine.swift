@@ -69,14 +69,13 @@ extension SwapTransactionEngine {
     }
 
     private func disposeQuotesFetching(pendingTransaction: PendingTransaction) {
-        var pendingTransaction = pendingTransaction
         pendingTransaction.quoteSubscription?.dispose()
         pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
         quotesEngine.stop()
     }
 
     func clearConfirmations(pendingTransaction oldValue: PendingTransaction) -> PendingTransaction {
-        var pendingTransaction = oldValue
+        let pendingTransaction = oldValue
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
         pendingTransaction.engineState.mutate { $0[.quoteSubscription] = nil }
@@ -167,7 +166,7 @@ extension SwapTransactionEngine {
         guard oldValue.quoteSubscription == nil else {
             return .just(oldValue)
         }
-        var pendingTransaction = oldValue
+        let pendingTransaction = oldValue
         pendingTransaction.engineState.mutate { $0[.quoteSubscription] = startQuotesFetching(pendingTransaction) }
         return .just(pendingTransaction)
     }

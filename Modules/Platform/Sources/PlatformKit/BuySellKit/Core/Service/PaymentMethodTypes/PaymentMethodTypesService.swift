@@ -468,7 +468,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     func clearPreferredPaymentIfNeeded(by id: String) {
-        if preferredPaymentMethodTypeRelay.value?.methodId == id {
+        if preferredPaymentMethodTypeRelay.value?.id == id {
             preferredPaymentMethodTypeRelay.accept(nil)
         }
     }

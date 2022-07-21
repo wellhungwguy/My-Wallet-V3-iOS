@@ -17,6 +17,11 @@ extension Publisher where Failure == Never {
     public var values: AsyncPublisher<Self> {
         AsyncPublisher(self)
     }
+
+    @discardableResult
+    public func await() async -> Output? {
+        await values.first
+    }
 }
 
 extension Publisher {
@@ -25,6 +30,11 @@ extension Publisher {
     @available(macOS, deprecated: 12.0, message: "Use publisher.values directly")
     public var values: AsyncThrowingPublisher<Self> {
         AsyncThrowingPublisher(self)
+    }
+
+    @discardableResult
+    public func await() async throws -> Output? {
+        try await values.first
     }
 }
 
