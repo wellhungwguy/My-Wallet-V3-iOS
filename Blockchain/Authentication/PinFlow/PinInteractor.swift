@@ -154,7 +154,7 @@ final class PinInteractor: PinInteracting {
     /// - Parameter pin: the pin value
     func persist(pin: Pin) {
         pin.save(using: appSettings)
-        appSettings.biometryEnabled = true
+        appSettings.set(biometryEnabled: true)
     }
 
     // MARK: - Accessors
@@ -223,9 +223,9 @@ final class PinInteractor: PinInteracting {
                 // Once the pin has been created successfully, the wallet is not longer marked as new.
                 self.wallet.isNew = false
                 // Update the cache
-                self.appSettings.encryptedPinPassword = data.encryptedPinPassword
-                self.appSettings.pinKey = payload.pinKey
-                self.appSettings.passwordPartHash = data.password.passwordPartHash
+                self.appSettings.set(encryptedPinPassword: data.encryptedPinPassword)
+                self.appSettings.set(pinKey: payload.pinKey)
+                self.appSettings.set(passwordPartHash: data.password.passwordPartHash)
                 try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 return Completable.empty()
             }
@@ -248,8 +248,8 @@ final class PinInteractor: PinInteracting {
             persist(pin: pinPayload.pin!)
         case .deleted:
             // Clear pin from keychain if the user exceeded the number of retries when entering the pin.
-            appSettings.pin = nil
-            appSettings.biometryEnabled = false
+            appSettings.set(pin: nil)
+            appSettings.set(biometryEnabled: false)
         default:
             break
         }

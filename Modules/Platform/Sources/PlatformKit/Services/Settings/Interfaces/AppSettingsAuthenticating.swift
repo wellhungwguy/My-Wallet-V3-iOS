@@ -4,13 +4,19 @@ import RxSwift
 import ToolKit
 
 public protocol AppSettingsAuthenticating: AnyObject {
-    var pin: String? { get set }
-    var pinKey: String? { get set }
-    var biometryEnabled: Bool { get set }
-    var passwordPartHash: String? { get set }
-    var encryptedPinPassword: String? { get set }
+    var pin: String? { get }
+    var pinKey: String? { get }
+    var biometryEnabled: Bool { get }
+    var passwordPartHash: String? { get }
+    var encryptedPinPassword: String? { get }
     var isPairedWithWallet: Bool { get }
     var isPinSet: Bool { get }
+
+    func set(pin: String?)
+    func set(pinKey: String?)
+    func set(biometryEnabled: Bool)
+    func set(passwordPartHash: String?)
+    func set(encryptedPinPassword: String?)
     func clearPin()
     func clear()
 }

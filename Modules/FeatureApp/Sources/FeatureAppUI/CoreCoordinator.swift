@@ -407,8 +407,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
 
         environment.loadingViewPresenter.showCircular()
-        environment.blockchainSettings.guid = decryption.guid
-        environment.blockchainSettings.sharedKey = decryption.sharedKey
+        environment.blockchainSettings.set(guid: decryption.guid)
+        environment.blockchainSettings.set(sharedKey: decryption.sharedKey)
 
         return .merge(
             // reset KYC verification if decrypted wallet under recovery context
@@ -486,8 +486,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         {
             // unfortunately during login we store the guid in the settings
             // we need to reset this if we detect a second password
-            environment.blockchainSettings.guid = nil
-            environment.blockchainSettings.sharedKey = nil
+            environment.blockchainSettings.set(guid: nil)
+            environment.blockchainSettings.set(sharedKey: nil)
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(
@@ -985,8 +985,8 @@ internal func syncPinKeyWithICloud(
 
         // Attempt to restore the pinKey from iCloud
         if let pinData = credentialsStore.pinData() {
-            blockchainSettings.pinKey = pinData.pinKey
-            blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
+            blockchainSettings.set(pinKey: pinData.pinKey)
+            blockchainSettings.set(encryptedPinPassword: pinData.encryptedPinPassword)
         }
     }
 }

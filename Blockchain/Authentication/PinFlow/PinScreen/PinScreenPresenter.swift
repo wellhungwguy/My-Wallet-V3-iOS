@@ -590,8 +590,8 @@ extension PinScreenPresenter {
                 .do(
                     onSuccess: { [weak self] data in
                         // Restore everything to settings so the app can progress normally
-                        self?.appSettings.guid = data.guid
-                        self?.appSettings.sharedKey = data.sharedKey
+                        self?.appSettings.set(guid: data.guid)
+                        self?.appSettings.set(sharedKey: data.sharedKey)
                     }
                 )
                 .asCompletable()
