@@ -386,6 +386,19 @@ blockchain:
 			precision:
 			+ blockchain.db.type.integer
 	ui:
+		device:
+			haptic:
+				feedback:
+					impact:
+						heavy:
+						light:
+						medium:
+						rigid:
+						soft:
+					notification:
+						error:
+						success:
+						warning:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
@@ -625,6 +638,7 @@ blockchain:
 					+ blockchain.db.type.integer
 					+ blockchain.session.state.value
 		error:
+		+ blockchain.ui.device.haptic.feedback.notification.error
 		+ blockchain.ux.type.story
 			then:
 				launch:
@@ -660,6 +674,7 @@ blockchain:
 			tab:
 			+ blockchain.db.collection
 				select:
+				+ blockchain.ui.device.haptic.feedback.impact.soft
 				+ blockchain.ux.type.action
 		kyc:
 			event:

@@ -1631,8 +1631,83 @@ public final class L_blockchain_ui: L, I_blockchain_ui {
 }
 public protocol I_blockchain_ui: I {}
 public extension I_blockchain_ui {
+	var `device`: L_blockchain_ui_device { .init("\(__).device") }
 	var `type`: L_blockchain_ui_type { .init("\(__).type") }
 }
+public final class L_blockchain_ui_device: L, I_blockchain_ui_device {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device", comment: "") }
+}
+public protocol I_blockchain_ui_device: I {}
+public extension I_blockchain_ui_device {
+	var `haptic`: L_blockchain_ui_device_haptic { .init("\(__).haptic") }
+}
+public final class L_blockchain_ui_device_haptic: L, I_blockchain_ui_device_haptic {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic: I {}
+public extension I_blockchain_ui_device_haptic {
+	var `feedback`: L_blockchain_ui_device_haptic_feedback { .init("\(__).feedback") }
+}
+public final class L_blockchain_ui_device_haptic_feedback: L, I_blockchain_ui_device_haptic_feedback {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback: I {}
+public extension I_blockchain_ui_device_haptic_feedback {
+	var `impact`: L_blockchain_ui_device_haptic_feedback_impact { .init("\(__).impact") }
+	var `notification`: L_blockchain_ui_device_haptic_feedback_notification { .init("\(__).notification") }
+}
+public final class L_blockchain_ui_device_haptic_feedback_impact: L, I_blockchain_ui_device_haptic_feedback_impact {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact: I {}
+public extension I_blockchain_ui_device_haptic_feedback_impact {
+	var `heavy`: L_blockchain_ui_device_haptic_feedback_impact_heavy { .init("\(__).heavy") }
+	var `light`: L_blockchain_ui_device_haptic_feedback_impact_light { .init("\(__).light") }
+	var `medium`: L_blockchain_ui_device_haptic_feedback_impact_medium { .init("\(__).medium") }
+	var `rigid`: L_blockchain_ui_device_haptic_feedback_impact_rigid { .init("\(__).rigid") }
+	var `soft`: L_blockchain_ui_device_haptic_feedback_impact_soft { .init("\(__).soft") }
+}
+public final class L_blockchain_ui_device_haptic_feedback_impact_heavy: L, I_blockchain_ui_device_haptic_feedback_impact_heavy {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact.heavy", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact_heavy: I {}
+public final class L_blockchain_ui_device_haptic_feedback_impact_light: L, I_blockchain_ui_device_haptic_feedback_impact_light {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact.light", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact_light: I {}
+public final class L_blockchain_ui_device_haptic_feedback_impact_medium: L, I_blockchain_ui_device_haptic_feedback_impact_medium {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact.medium", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact_medium: I {}
+public final class L_blockchain_ui_device_haptic_feedback_impact_rigid: L, I_blockchain_ui_device_haptic_feedback_impact_rigid {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact.rigid", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact_rigid: I {}
+public final class L_blockchain_ui_device_haptic_feedback_impact_soft: L, I_blockchain_ui_device_haptic_feedback_impact_soft {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.impact.soft", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_impact_soft: I {}
+public final class L_blockchain_ui_device_haptic_feedback_notification: L, I_blockchain_ui_device_haptic_feedback_notification {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.notification", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_notification: I {}
+public extension I_blockchain_ui_device_haptic_feedback_notification {
+	var `error`: L_blockchain_ui_device_haptic_feedback_notification_error { .init("\(__).error") }
+	var `success`: L_blockchain_ui_device_haptic_feedback_notification_success { .init("\(__).success") }
+	var `warning`: L_blockchain_ui_device_haptic_feedback_notification_warning { .init("\(__).warning") }
+}
+public final class L_blockchain_ui_device_haptic_feedback_notification_error: L, I_blockchain_ui_device_haptic_feedback_notification_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.notification.error", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_notification_error: I {}
+public final class L_blockchain_ui_device_haptic_feedback_notification_success: L, I_blockchain_ui_device_haptic_feedback_notification_success {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.notification.success", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_notification_success: I {}
+public final class L_blockchain_ui_device_haptic_feedback_notification_warning: L, I_blockchain_ui_device_haptic_feedback_notification_warning {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.notification.warning", comment: "") }
+}
+public protocol I_blockchain_ui_device_haptic_feedback_notification_warning: I {}
 public final class L_blockchain_ui_type: L, I_blockchain_ui_type {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type", comment: "") }
 }
@@ -1922,7 +1997,7 @@ public extension I_blockchain_user_currency_preferred_fiat_display {
 public final class L_blockchain_user_currency_preferred_fiat_display_currency: L, I_blockchain_user_currency_preferred_fiat_display_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.display.currency", comment: "") }
 }
-public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
+public protocol I_blockchain_user_currency_preferred_fiat_display_currency: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_user_currency_preferred_fiat_trading: L, I_blockchain_user_currency_preferred_fiat_trading {
 	public override class var localized: String { NSLocalizedString("blockchain.user.currency.preferred.fiat.trading", comment: "") }
 }
@@ -2437,7 +2512,7 @@ public protocol I_blockchain_ux_customer_support_unread_count: I_blockchain_db_t
 public final class L_blockchain_ux_error: L, I_blockchain_ux_error {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.error", comment: "") }
 }
-public protocol I_blockchain_ux_error: I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_error: I_blockchain_ux_type_story, I_blockchain_ui_device_haptic_feedback_notification_error {}
 public extension I_blockchain_ux_error {
 	var `then`: L_blockchain_ux_error_then { .init("\(__).then") }
 }
@@ -2562,7 +2637,7 @@ public extension I_blockchain_ux_home_tab {
 public final class L_blockchain_ux_home_tab_select: L, I_blockchain_ux_home_tab_select {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.home.tab.select", comment: "") }
 }
-public protocol I_blockchain_ux_home_tab_select: I_blockchain_ux_type_action {}
+public protocol I_blockchain_ux_home_tab_select: I_blockchain_ui_device_haptic_feedback_impact_soft, I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_kyc: L, I_blockchain_ux_kyc {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc", comment: "") }
 }

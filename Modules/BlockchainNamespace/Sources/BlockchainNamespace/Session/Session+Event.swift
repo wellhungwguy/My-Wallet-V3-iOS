@@ -94,13 +94,7 @@ extension AppProtocol {
         line: Int = #line,
         action: @escaping (Session.Event) throws -> Void
     ) -> BlockchainEventSubscription {
-        BlockchainEventSubscription(
-            app: self,
-            events: [first] + rest,
-            file: file,
-            line: line,
-            action: action
-        )
+        on([first] + rest, file: file, line: line, action: action)
     }
 
     @inlinable public func on(
@@ -111,9 +105,53 @@ extension AppProtocol {
         priority: TaskPriority? = nil,
         action: @escaping (Session.Event) async throws -> Void
     ) -> BlockchainEventSubscription {
+        on([first] + rest, file: file, line: line, priority: priority, action: action)
+    }
+
+    @inlinable public func on<Events>(
+        _ events: Events,
+        file: String = #fileID,
+        line: Int = #line,
+        action: @escaping (Session.Event) throws -> Void
+    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element: Tag.Event {
+        on(events.map { $0 as Tag.Event }, file: file, line: line, action: action)
+    }
+
+    @inlinable public func on<Events>(
+        _ events: Events,
+        file: String = #fileID,
+        line: Int = #line,
+        priority: TaskPriority? = nil,
+        action: @escaping (Session.Event) async throws -> Void
+    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element: Tag.Event {
+        on(events.map { $0 as Tag.Event }, file: file, line: line, priority: priority, action: action)
+    }
+
+    @inlinable public func on<Events>(
+        _ events: Events,
+        file: String = #fileID,
+        line: Int = #line,
+        action: @escaping (Session.Event) throws -> Void
+    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element == Tag.Event {
         BlockchainEventSubscription(
             app: self,
-            events: [first] + rest,
+            events: Array(events),
+            file: file,
+            line: line,
+            action: action
+        )
+    }
+
+    @inlinable public func on<Events>(
+        _ events: Events,
+        file: String = #fileID,
+        line: Int = #line,
+        priority: TaskPriority? = nil,
+        action: @escaping (Session.Event) async throws -> Void
+    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element == Tag.Event {
+        BlockchainEventSubscription(
+            app: self,
+            events: Array(events),
             file: file,
             line: line,
             priority: priority,
@@ -174,8 +212,9 @@ public final class BlockchainEventSubscription: Hashable {
 
     private var subscription: AnyCancellable?
 
-    public func start() {
-        guard subscription == nil else { return }
+    @discardableResult
+    public func start() -> Self {
+        guard subscription == nil else { return self }
         subscription = app.on(events).sink(
             receiveValue: { [weak self] event in
                 guard let self = self else { return }
@@ -197,11 +236,14 @@ public final class BlockchainEventSubscription: Hashable {
                 }
             }
         )
+        return self
     }
 
-    public func stop() {
+    @discardableResult
+    public func stop() -> Self {
         subscription?.cancel()
         subscription = nil
+        return self
     }
 }
 
