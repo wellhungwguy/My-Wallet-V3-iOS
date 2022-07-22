@@ -35,11 +35,15 @@ final class AppHapticObserver: Session.Observer {
 
     func start() {
         subscription.impact = app.on(impact.keys) { [impact] event in
-            impact[event.tag]?.impactOccurred()
+            for (type, feedback) in impact where event.tag.is(type) {
+                return feedback.impactOccurred()
+            }
         }
         .start()
         subscription.notification = app.on(notification.keys) { [notification, generator] event in
-            notification[event.tag].map(generator.notification.notificationOccurred)
+            for (type, feedback) in notification where event.tag.is(type) {
+                return generator.notification.notificationOccurred(feedback)
+            }
         }
         .start()
     }
