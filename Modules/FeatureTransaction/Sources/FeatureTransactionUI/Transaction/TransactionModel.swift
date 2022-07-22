@@ -22,6 +22,7 @@ final class TransactionModel {
     internal let interactor: TransactionInteractor
     internal private(set) var hasInitializedTransaction = false
 
+    private let app: AppProtocol
     private let analyticsHook: TransactionAnalyticsHook
     private let sendEmailNotificationService: SendEmailNotificationServiceAPI
     private var cancellables = Set<AnyCancellable>()
@@ -39,11 +40,13 @@ final class TransactionModel {
     // MARK: - Init
 
     init(
+        app: AppProtocol = resolve(),
         initialState: TransactionState,
         transactionInteractor: TransactionInteractor,
         analyticsHook: TransactionAnalyticsHook = resolve(),
         sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
+        self.app = app
         self.analyticsHook = analyticsHook
         self.sendEmailNotificationService = sendEmailNotificationService
         interactor = transactionInteractor
@@ -107,7 +110,8 @@ final class TransactionModel {
         case .showCardLinkingFlow:
             return nil
 
-        case .cardLinkingFlowCompleted:
+        case .cardLinkingFlowCompleted(let data):
+            app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: data.identifier)
             return processSourceAccountsListUpdate(
                 action: previousState.action,
                 targetAccount: nil

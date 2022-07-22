@@ -1,9 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
+import ErrorsUI
 import Localization
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
@@ -13,20 +16,15 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
 
     // MARK: - Properties
 
-    var tap: Observable<URL> {
-        viewModelRelay
-            .asObservable()
-            .compactMap { $0 }
-            .flatMap(\.tap)
-    }
-
-    var viewModel: Driver<PendingStateViewModel> {
-        viewModelRelay
+    var viewModel: Driver<PendingStateViewModel> = .empty()
+    var error: Driver<UX.Error> {
+        errorRelay
             .asDriver()
             .compactMap { $0 }
     }
 
-    private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
+    private let errorRelay = BehaviorRelay<UX.Error?>(value: nil)
+
     private let interactor: PendingCardStatusInteractor
     private let disposeBag = DisposeBag()
 
@@ -42,22 +40,14 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModelRelay.accept(
-            PendingStateViewModel(
-                compositeStatusViewType: .loader,
-                title: LocalizedString.LoadingScreen.title,
-                subtitle: LocalizedString.LoadingScreen.subtitle
-            )
-        )
-
         interactor.startPolling()
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onFailure: { [weak self] _ in
-                    self?.handle(state: .inactive)
+                onFailure: { [weak self] error in
+                    self?.handle(state: .inactive(error))
                 }
             )
             .disposed(by: disposeBag)
@@ -67,34 +57,16 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
         switch state {
         case .active(let cardData):
             interactor.endWithConfirmation(with: cardData)
-        case .inactive:
-            let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
-            button.tapRelay
-                .bindAndCatch(weak: self) { (self) in
-                    self.interactor.endWithoutConfirmation()
-                }
-                .disposed(by: disposeBag)
-            let viewModel = PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.imageResource),
-                title: LocalizationConstants.ErrorScreen.title,
-                subtitle: LocalizationConstants.ErrorScreen.subtitle,
-                button: button
-            )
-            viewModelRelay.accept(viewModel)
+        case .inactive(let error):
+            errorRelay.accept(UX.Error(error: error))
         case .timeout:
-            let button = ButtonViewModel.primary(with: LocalizationConstants.ErrorScreen.button)
-            button.tapRelay
-                .bindAndCatch(weak: self) { (self) in
-                    self.interactor.endWithoutConfirmation()
-                }
-                .disposed(by: disposeBag)
-            let viewModel = PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.imageResource),
-                title: LocalizationConstants.ErrorScreen.title,
-                subtitle: LocalizationConstants.ErrorScreen.subtitle,
-                button: button
+            errorRelay.accept(
+                UX.Error(
+                    title: LocalizedString.Error.title,
+                    message: LocalizedString.Error.subtitle,
+                    icon: URL(string: LocalizedString.Error.icon).map(UX.Icon.init(url:))
+                )
             )
-            viewModelRelay.accept(viewModel)
         }
     }
 }
