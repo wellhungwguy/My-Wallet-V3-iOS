@@ -86,7 +86,15 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
-        single { Coincore() as CoincoreAPI }
+        single { () -> CoincoreAPI in
+            let queue = DispatchQueue(label: "coincore.op.queue", qos: .userInitiated)
+            return Coincore(
+                assetLoader: DynamicAssetLoader(),
+                fiatAsset: FiatAsset(),
+                reactiveWallet: DIKit.resolve(),
+                queue: queue
+            )
+        }
 
         single { ReactiveWallet() as ReactiveWalletAPI }
 
