@@ -5,59 +5,52 @@ import Foundation
 import ToolKit
 import WalletPayloadKit
 
-// Provides a transaction note, if any as `AnyPublisher<String?, WalletTxNoteError>`
-public typealias BitcoinTxNoteProvider = (
-    _ txHash: String
-) -> AnyPublisher<String?, WalletTxNoteError>
+public protocol BitcoinTxNotesStrategyAPI: TxNoteUpdateProvideStrategyAPI {}
 
-// Updates a transaction note for a given hash, returns `AnyPublisher<EmptyValue, WalletTxNoteError>`
-public typealias BitcoinTxNoteUpdater = (
-    _ txHash: String,
-    _ value: String?
-) -> AnyPublisher<EmptyValue, WalletTxNoteError>
+final class BitcoinTxNotesStrategy: BitcoinTxNotesStrategyAPI {
 
-func bitcoinTxNoteProvider(
-    txNoteProvider: @escaping BitcoinTxNoteProvider,
-    bridge: BitcoinWalletBridgeAPI,
-    nativeWalletFeatureFlagEnabled: () -> AnyPublisher<Bool, Never>
-) -> BitcoinTxNoteProvider {
-    { [bridge, txNoteProvider] txHash -> AnyPublisher<String?, WalletTxNoteError> in
+    private let bridge: BitcoinWalletBridgeAPI
+    private let service: TxNoteUpdateProvideStrategyAPI
+    private let nativeWalletFeatureFlagEnabled: () -> AnyPublisher<Bool, Never>
+
+    init(
+        bridge: BitcoinWalletBridgeAPI,
+        service: TxNoteUpdateProvideStrategyAPI,
+        nativeWalletFeatureFlagEnabled: @escaping () -> AnyPublisher<Bool, Never>
+    ) {
+        self.bridge = bridge
+        self.service = service
+        self.nativeWalletFeatureFlagEnabled = nativeWalletFeatureFlagEnabled
+    }
+
+    func note(txHash: String) -> AnyPublisher<String?, TxNotesError> {
         nativeWalletFlagEnabled()
-            .mapError(to: WalletTxNoteError.self)
-            .flatMap { isEnabled
-                -> AnyPublisher<String?, WalletTxNoteError> in
+            .mapError(to: TxNotesError.self)
+            .flatMap { [service, bridge] isEnabled -> AnyPublisher<String?, TxNotesError> in
                 guard isEnabled else {
                     return bridge.note(for: txHash)
                         .asPublisher()
-                        .mapError { _ in WalletTxNoteError.unableToRetrieveNote }
+                        .mapError { _ in TxNotesError.unableToRetrieveNote }
                         .eraseToAnyPublisher()
                 }
-                return txNoteProvider(txHash)
-                    .eraseToAnyPublisher()
+                return service.note(txHash: txHash)
             }
             .eraseToAnyPublisher()
     }
-}
 
-func bitcoinTxNoteUpdater(
-    txNoteUpdater: @escaping BitcoinTxNoteUpdater,
-    bridge: BitcoinWalletBridgeAPI,
-    nativeWalletFeatureFlagEnabled: () -> AnyPublisher<Bool, Never>
-) -> BitcoinTxNoteUpdater {
-    { [bridge, txNoteUpdater] txHash, note -> AnyPublisher<EmptyValue, WalletTxNoteError> in
+    func updateNote(txHash: String, note: String?) -> AnyPublisher<EmptyValue, TxNotesError> {
         nativeWalletFlagEnabled()
-            .mapError(to: WalletTxNoteError.self)
-            .flatMap { [bridge, txNoteUpdater] isEnabled
-                -> AnyPublisher<EmptyValue, WalletTxNoteError> in
+            .mapError(to: TxNotesError.self)
+            .flatMap { [bridge, service] isEnabled
+                -> AnyPublisher<EmptyValue, TxNotesError> in
                 guard isEnabled else {
                     return bridge.updateNote(for: txHash, note: note)
                         .asPublisher()
-                        .mapError { _ in WalletTxNoteError.unableToRetrieveNote }
+                        .mapError { _ in TxNotesError.unableToRetrieveNote }
                         .map { _ in .noValue }
                         .eraseToAnyPublisher()
                 }
-                return txNoteUpdater(txHash, note)
-                    .eraseToAnyPublisher()
+                return service.updateNote(txHash: txHash, note: note)
             }
             .eraseToAnyPublisher()
     }

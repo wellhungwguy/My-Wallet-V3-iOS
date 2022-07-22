@@ -16,14 +16,29 @@ public struct BitcoinCashEntry: Equatable {
 
     public let payload: BitcoinCashEntryPayload
     public let accounts: [AccountEntry]
+    public let txNotes: [String: String]?
 
     public var defaultAccount: AccountEntry {
         precondition(payload.defaultAccountIndex < accounts.count)
         return accounts[payload.defaultAccountIndex]
     }
 
-    init(payload: BitcoinCashEntryPayload, wallet: NativeWallet) {
+    public init(
+        payload: BitcoinCashEntryPayload,
+        accounts: [AccountEntry],
+        txNotes: [String: String]?
+    ) {
         self.payload = payload
+        self.accounts = accounts
+        self.txNotes = txNotes
+    }
+
+    init(
+        payload: BitcoinCashEntryPayload,
+        wallet: NativeWallet
+    ) {
+        self.payload = payload
+        txNotes = payload.txNotes
         let accountsData = payload.accounts
         let hdWalletAccounts = wallet.defaultHDWallet?.accounts ?? []
         accounts = hdWalletAccounts
@@ -47,6 +62,7 @@ public struct BitcoinCashEntry: Equatable {
             accounts: accounts.map { $0.toMetadataEntry() },
             defaultAccountIndex: payload.defaultAccountIndex,
             hasSeen: payload.hasSeen,
+            txNotes: txNotes,
             addresses: payload.addresses
         )
     }

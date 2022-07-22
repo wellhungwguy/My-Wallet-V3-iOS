@@ -18,25 +18,22 @@ final class BitcoinActivityDetailsInteractor {
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails>
-    private let bitcoinTxNoteProvider: BitcoinTxNoteProvider
-    private let bitcoinTxNoteUpdater: BitcoinTxNoteUpdater
+    private let bitcoinTxNoteService: BitcoinTxNotesStrategyAPI
 
     init(
-        bitcoinTxNoteProvider: @escaping BitcoinTxNoteProvider = resolve(),
-        bitcoinTxNoteUpdater: @escaping BitcoinTxNoteUpdater = resolve(),
+        bitcoinTxNoteService: BitcoinTxNotesStrategyAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = resolve()
     ) {
-        self.bitcoinTxNoteProvider = bitcoinTxNoteProvider
-        self.bitcoinTxNoteUpdater = bitcoinTxNoteUpdater
+        self.bitcoinTxNoteService = bitcoinTxNoteService
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
     }
 
     private func note(for identifier: String) -> AnyPublisher<String?, BitcoinActivityDetailsError> {
-        bitcoinTxNoteProvider(identifier)
+        bitcoinTxNoteService.note(txHash: identifier)
             .mapError { _ in BitcoinActivityDetailsError.unableToRetrieveNote }
             .eraseToAnyPublisher()
     }
@@ -45,7 +42,7 @@ final class BitcoinActivityDetailsInteractor {
         for identifier: String,
         to note: String?
     ) -> AnyPublisher<EmptyValue, BitcoinActivityDetailsError> {
-        bitcoinTxNoteUpdater(identifier, note)
+        bitcoinTxNoteService.updateNote(txHash: identifier, note: note)
             .mapError { _ in BitcoinActivityDetailsError.unableToRetrieveNote }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
