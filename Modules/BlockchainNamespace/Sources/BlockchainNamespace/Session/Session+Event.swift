@@ -71,7 +71,7 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter(_ type: Tag.Reference) -> Publishers.Filter<Self> {
-        filter { event in event.reference.matches(type) }
+        filter([type])
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
@@ -79,42 +79,9 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
-        filter { event in types.contains(where: { type in event.reference.matches(type) }) }
-    }
-}
-
-extension Tag.Reference {
-
-    func matches(_ other: Tag.Reference) -> Bool {
-        if self == other { return true }
-        guard tag.is(other.tag) else { return false }
-        return indices.pairs().isSuperset(of: other.context.filterValues(String.self).pairs())
-    }
-}
-
-extension Tag.Context {
-
-    func filterValues<T: Hashable>(_ type: T.Type) -> Tag.Context {
-        Tag.Context(dictionary.compactMapValues { $0 as? T })
-    }
-}
-
-extension Tag.Context {
-
-    struct Pair: Hashable {
-        let key: Tag.Reference
-        let value: Value
-    }
-
-    func pairs() -> Set<Pair> {
-        map(Pair.init).set
-    }
-}
-
-extension Tag.Reference.Indices {
-
-    func pairs() -> Set<Tag.Context.Pair> {
-        map { event, value in .init(key: event.reference, value: value) }.set
+        filter { event in
+            types.contains(where: { type in event.reference == type || event.tag.is(type.tag) })
+        }
     }
 }
 

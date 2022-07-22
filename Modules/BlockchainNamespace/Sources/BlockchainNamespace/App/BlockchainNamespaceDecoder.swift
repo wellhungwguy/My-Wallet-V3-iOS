@@ -11,8 +11,6 @@ open class BlockchainNamespaceDecoder: AnyDecoder {
 
     override public func convert<T>(_ any: Any, to type: T.Type) throws -> Any? {
         switch (any, type) {
-        case (let any as Anything, _):
-            return try convert(any.wrapped, to: T.self)
         case (let tag as Tag, is Tag.Reference.Type):
             return tag.ref(to: context)
         case (let ref as Tag.Reference, is Tag.Type):
