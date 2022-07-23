@@ -187,23 +187,29 @@ struct BlockchainAccountSnapshot: Comparable {
     let account: BlockchainAccount
     let balance: FiatValue
     let count: Int
-    let volume24h: Double
+    let isSelectedAsset: Bool
+    let volume24h: BigInt
 
     static func == (lhs: BlockchainAccountSnapshot, rhs: BlockchainAccountSnapshot) -> Bool {
         lhs.account.identifier == rhs.account.identifier
             && lhs.balance == rhs.balance
             && lhs.count == rhs.count
             && lhs.volume24h == rhs.volume24h
+            && lhs.isSelectedAsset == rhs.isSelectedAsset
     }
 
     static func < (lhs: BlockchainAccountSnapshot, rhs: BlockchainAccountSnapshot) -> Bool {
         (
+            lhs.isSelectedAsset ? 1 : 0,
             lhs.count,
             lhs.balance.amount,
+            lhs.account.currencyType == .bitcoin ? 1 : 0,
             lhs.volume24h
         ) < (
+            rhs.isSelectedAsset ? 1 : 0,
             rhs.count,
             rhs.balance.amount,
+            rhs.account.currencyType == .bitcoin ? 1 : 0,
             rhs.volume24h
         )
     }
@@ -217,6 +223,7 @@ extension BlockchainAccount {
                 account: self,
                 balance: .zero(currency: .USD),
                 count: 0,
+                isSelectedAsset: false,
                 volume24h: 0
             ), ()
         )
@@ -255,6 +262,9 @@ extension Collection where Element == BlockchainAccount {
                 let count: Int? = try? await app.get(
                     blockchain.ux.transaction.source.target[account.currencyType.code].count.of.completed
                 )
+                let currentId: String? = try? await app.get(
+                    blockchain.ux.transaction.source.target.id
+                )
                 let balance = try? await account.fiatBalance(fiatCurrency: currency)
                     .stream()
                     .first
@@ -263,7 +273,10 @@ extension Collection where Element == BlockchainAccount {
                         account: account,
                         balance: balance?.fiatValue ?? .zero(currency: currency),
                         count: count ?? 0,
-                        volume24h: prices?["\(account.currencyType.code)-USD"]?.volume24h ?? 0
+                        isSelectedAsset: currentId == account.currencyType.code,
+                        volume24h: prices?["\(account.currencyType.code)-USD"].flatMap { quote in
+                            quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
+                        } ?? .zero
                     )
                 )
             }
