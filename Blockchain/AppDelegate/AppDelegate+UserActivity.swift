@@ -14,19 +14,19 @@ extension AppDelegate {
         if let webpageURL = userActivity.webpageURL {
             handled = DynamicLinks.dynamicLinks()
                 .handleUniversalLink(webpageURL) { dynamiclink, _ in
-                    if let url = dynamiclink?.url {
-                        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                        components?.query = webpageURL.query
-                        components?.fragment = webpageURL.fragment
-                        app.post(
-                            event: blockchain.app.process.deep_link,
-                            context: [
-                                blockchain.app.process.deep_link.url: components?.url ?? webpageURL
-                            ]
-                        )
-                    } else {
-                        self.handle(userActivity: userActivity)
+                    guard let url = dynamiclink?.url else {
+                        return
                     }
+
+                    var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    components?.query = webpageURL.query
+                    components?.fragment = webpageURL.fragment
+                    app.post(
+                        event: blockchain.app.process.deep_link,
+                        context: [
+                            blockchain.app.process.deep_link.url: components?.url ?? webpageURL
+                        ]
+                    )
                 }
         } else {
             handled = false
