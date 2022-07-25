@@ -4,10 +4,6 @@
 <dict>
 	<key>WEBSOCKET_CONVERSION_URL</key>
 	<string>$(WEBSOCKET_CONVERSION_URL)</string>
-	<key>intercomAPIKey</key>
-	<string>$(INTERCOM_API_KEY)</string>
-	<key>intercomAppId</key>
-	<string>$(INTERCOM_APP_ID)</string>
 	<key>embraceAppId</key>
 	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
