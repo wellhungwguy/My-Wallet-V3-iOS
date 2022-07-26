@@ -100,6 +100,9 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
                 guard let details = details else {
                     return .failure(OrderConfirmationServiceError.mappingError)
                 }
+                if [.failed, .expired].contains(details.state), let ux = details.ux {
+                    return .failure(ux)
+                }
                 return .just(details)
             }
             .map { checkoutData.checkoutData(byAppending: $0) }
