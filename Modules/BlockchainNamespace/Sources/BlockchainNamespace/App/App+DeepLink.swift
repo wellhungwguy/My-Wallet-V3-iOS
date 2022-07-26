@@ -25,14 +25,19 @@ extension App {
                 .store(in: &bag)
 
             app.on(blockchain.app.process.deep_link)
-                .combineLatest(
-                    app.publisher(for: blockchain.app.is.ready.for.deep_link, as: Bool.self)
+                .flatMap { [unowned self] event -> AnyPublisher<Session.Event, Never> in
+                    self.app.publisher(for: blockchain.app.is.ready.for.deep_link, as: Bool.self)
                         .compactMap(\.value)
-                        .removeDuplicates()
-                )
-                .filter(\.1)
-                .map(\.0)
-                .combineLatest(rules)
+                        .filter { $0 }
+                        .prefix(1)
+                        .map { _ in event }
+                        .eraseToAnyPublisher()
+                }
+                .flatMap { [unowned self] event -> AnyPublisher<(Session.Event, [Rule]), Never> in
+                    self.rules
+                        .map { rules in (event, rules) }
+                        .eraseToAnyPublisher()
+                }
                 .sink { [weak self] event, rules in
                     self?.process(event: event, with: rules)
                 }

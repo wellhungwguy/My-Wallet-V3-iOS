@@ -4,6 +4,7 @@ import BitcoinChainKit
 import DIKit
 import MoneyKit
 import PlatformKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -14,6 +15,13 @@ extension DependencyContainer {
         factory { APIClient() as APIClientAPI }
 
         single { BitcoinCashWalletAccountRepository() }
+
+        factory { () -> BitcoinCashTxNotesStrategyAPI in
+            BitcoinCashTxNotesStrategy(
+                repository: DIKit.resolve(),
+                updater: DIKit.resolve()
+            )
+        }
 
         factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
 

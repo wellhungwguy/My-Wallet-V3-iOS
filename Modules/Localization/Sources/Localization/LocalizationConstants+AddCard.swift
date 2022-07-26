@@ -77,6 +77,7 @@ extension LocalizationConstants {
     }
 
     public enum PendingCardStatusScreen {
+
         public enum LoadingScreen {
             public static let title = NSLocalizedString(
                 "Securely Linking Your Card",
@@ -85,6 +86,21 @@ extension LocalizationConstants {
             public static let subtitle = NSLocalizedString(
                 "This could take up to 1 minute.",
                 comment: "Pending active card screen: subtitle"
+            )
+        }
+
+        public enum Error {
+            public static let title = NSLocalizedString(
+                "Timeout",
+                comment: "Pending active card screen timeout error: title"
+            )
+            public static let subtitle = NSLocalizedString(
+                "The card issuer did not respond in time, please check your network connection and try again.",
+                comment: "Pending active card screen timeout error: subtitle"
+            )
+            public static let icon = NSLocalizedString(
+                "https://www.blockchain.com/static/img/icons/icon-card.svg",
+                comment: "https://www.blockchain.com/static/img/icons/icon-card.svg"
             )
         }
     }

@@ -410,8 +410,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 switch result {
                 case .abandoned:
                     transactionModel.process(action: .returnToPreviousStep)
-                case .completed:
-                    transactionModel.process(action: .cardLinkingFlowCompleted)
+                case .completed(let data):
+                    transactionModel.process(action: .cardLinkingFlowCompleted(data))
                 }
             }
         }

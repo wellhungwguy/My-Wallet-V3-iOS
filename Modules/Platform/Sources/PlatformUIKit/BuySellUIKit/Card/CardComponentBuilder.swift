@@ -64,7 +64,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
             routingInteractor: routingInteractor
         )
         let presenter = PendingCardStatusPresenter(interactor: interactor)
-        let viewController = PendingStateViewController(
+        let viewController = PendingStateViewUXErrorController(
             presenter: presenter
         )
         return viewController

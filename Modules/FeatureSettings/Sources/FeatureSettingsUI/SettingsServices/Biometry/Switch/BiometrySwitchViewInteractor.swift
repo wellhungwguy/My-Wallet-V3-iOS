@@ -55,8 +55,8 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
                 if $0 {
                     authenticationCoordinator.enableBiometrics()
                 } else {
-                    settingsAuthenticating.pin = nil
-                    settingsAuthenticating.biometryEnabled = false
+                    settingsAuthenticating.set(pin: nil)
+                    settingsAuthenticating.set(biometryEnabled: false)
                     self.refresh()
                 }
             })

@@ -51,22 +51,52 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
 
     // MARK: BlockchainSettingsAppAPI
 
-    var biometryEnabled: Bool = false
+    private(set) var biometryEnabled: Bool = false
+    func set(biometryEnabled: Bool) {
+        self.biometryEnabled = biometryEnabled
+    }
+
     var browserIdentities: String?
     var cloudBackupEnabled: Bool = true
     var deviceKey: String?
     var didRequestCameraPermissions: Bool = false
     var didRequestMicrophonePermissions: Bool = false
     var didRequestNotificationPermissions: Bool = false
-    var encryptedPinPassword: String?
-    var guid: String?
+
+    private(set) var encryptedPinPassword: String?
+    func set(encryptedPinPassword: String?) {
+        self.encryptedPinPassword = encryptedPinPassword
+    }
+
+    private(set) var guid: String?
+    func set(guid: String?) {
+        self.guid = guid
+    }
+
     var isPairedWithWallet: Bool = false
     var isPinSet: Bool = false
     var onSymbolLocalChanged: ((Bool) -> Void)?
-    var passwordPartHash: String?
-    var pin: String?
-    var pinKey: String?
-    var sharedKey: String?
+
+    private(set) var passwordPartHash: String?
+    func set(passwordPartHash: String?) {
+        self.passwordPartHash = passwordPartHash
+    }
+
+    private(set) var pin: String?
+    func set(pin: String?) {
+        self.pin = pin
+    }
+
+    private(set) var pinKey: String?
+    func set(pinKey: String?) {
+        self.pinKey = pinKey
+    }
+
+    private(set) var sharedKey: String?
+    func set(sharedKey: String?) {
+        self.sharedKey = sharedKey
+    }
+
     var symbolLocal: Bool = false {
         didSet {
             if oldValue != symbolLocal {

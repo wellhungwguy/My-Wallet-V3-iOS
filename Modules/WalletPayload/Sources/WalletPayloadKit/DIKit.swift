@@ -187,21 +187,6 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> WalletTxNoteServiceAPI in
-            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
-            let queue = DispatchQueue(
-                label: "wallet.txnote.service.op.queue",
-                qos: .userInitiated,
-                target: targetQueue
-            )
-            return WalletTxNoteService(
-                walletHolder: DIKit.resolve(),
-                walletRepo: DIKit.resolve(),
-                walletSync: DIKit.resolve(),
-                operationQueue: queue
-            )
-        }
-
         factory { () -> RNGServiceAPI in
             let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
             let queue = DispatchQueue(label: "rng.service.op.queue", qos: .userInitiated, target: targetQueue)

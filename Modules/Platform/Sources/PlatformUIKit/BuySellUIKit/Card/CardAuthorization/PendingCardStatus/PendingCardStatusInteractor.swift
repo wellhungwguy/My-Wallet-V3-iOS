@@ -13,7 +13,7 @@ final class PendingCardStatusInteractor: Interactor {
 
     enum State {
         case active(CardData)
-        case inactive
+        case inactive(Error)
         case timeout
     }
 
@@ -51,11 +51,11 @@ final class PendingCardStatusInteractor: Interactor {
                             .fetchCards(andPrefer: data.identifier)
                             .andThen(Single.just(.active(data)))
                     case .pending, .inactive:
-                        return .just(.inactive)
+                        return .just(.timeout)
                     }
                 case .failure(let error):
                     guard case .timeout = error else {
-                        return .just(.inactive)
+                        return .just(.inactive(error))
                     }
                     return .just(.timeout)
                 }

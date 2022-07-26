@@ -12,28 +12,7 @@ public enum WalletTxNoteError: LocalizedError, Equatable {
     case syncFailure(WalletSyncError)
 }
 
-public protocol WalletTxNoteServiceAPI {
-    /// Provides a note for a given transaction hash
-    /// - Note: **The operations occur on a background thread.**
-    /// - Parameter txHash: A `String` value
-    /// - Returns: `AnyPublisher<String?, WalletTxNoteError>`
-    func note(
-        txHash: String
-    ) -> AnyPublisher<String?, WalletTxNoteError>
-
-    /// Updates a note for the given transaction hash
-    /// - Note: **The operations occur on a background thread.**
-    /// - Parameters:
-    ///   - txHash: A `String` value
-    ///   - value: An optional `String` value
-    /// - Returns: `AnyPublisher<EmptyValue, WalletTxNoteError>`
-   func updateNote(
-       txHash: String,
-       value: String?
-   ) -> AnyPublisher<EmptyValue, WalletTxNoteError>
-}
-
-final class WalletTxNoteService: WalletTxNoteServiceAPI {
+final class WalletTxNoteStrategy: TxNoteUpdateProvideStrategyAPI {
 
     private let walletHolder: WalletHolderAPI
     private let walletRepo: WalletRepoAPI
@@ -54,9 +33,9 @@ final class WalletTxNoteService: WalletTxNoteServiceAPI {
 
     func note(
         txHash: String
-    ) -> AnyPublisher<String?, WalletTxNoteError> {
+    ) -> AnyPublisher<String?, TxNotesError> {
         getWallet(walletHolder: walletHolder)
-            .mapError { _ in WalletTxNoteError.notInitialized }
+            .mapError { _ in TxNotesError.notInitialized }
             .receive(on: operationQueue)
             .map { wallet -> String? in
                 guard let txNotes = wallet.txNotes else {
@@ -69,22 +48,22 @@ final class WalletTxNoteService: WalletTxNoteServiceAPI {
 
     func updateNote(
         txHash: String,
-        value: String?
-    ) -> AnyPublisher<EmptyValue, WalletTxNoteError> {
+        note: String?
+    ) -> AnyPublisher<EmptyValue, TxNotesError> {
         getWrapper(walletHolder: walletHolder)
             .zip(walletRepo.get().map(\.credentials.password).mapError(to: WalletError.self))
             .receive(on: operationQueue)
-            .mapError { _ in WalletTxNoteError.notInitialized }
+            .mapError { _ in TxNotesError.notInitialized }
             .map { currentWrapper, password -> (Wrapper, String) in
                 let currentWallet = currentWrapper.wallet
-                let walletUpdater = updateTxNotes(updater: transcationNotesUpdate, hash: txHash, note: value)
+                let walletUpdater = updateTxNotes(updater: transcationNotesUpdate, hash: txHash, note: note)
                 let updatedWallet = walletUpdater(currentWallet)
                 let updatedWrapper = updateWrapper(nativeWallet: updatedWallet)(currentWrapper)
                 return (updatedWrapper, password)
             }
-            .flatMap { [walletSync] wrapper, password -> AnyPublisher<EmptyValue, WalletTxNoteError> in
+            .flatMap { [walletSync] wrapper, password -> AnyPublisher<EmptyValue, TxNotesError> in
                 walletSync.sync(wrapper: wrapper, password: password)
-                    .mapError(WalletTxNoteError.syncFailure)
+                    .mapError(TxNotesError.syncFailure)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -112,21 +91,4 @@ private func updateTxNotes(
             addressBook: currentWallet.addressBook
         )
     }
-}
-
-func transcationNotesUpdate(
-    notes: [String: String]?,
-    hash: String,
-    note: String?
-) -> [String: String] {
-    guard let notes = notes else {
-        guard let note = note else {
-            return [:]
-        }
-        return [hash: note]
-    }
-    var updatedNotes: [String: String] = notes
-    // deletion will occur when `note` is `nil`
-    updatedNotes[hash] = note
-    return updatedNotes
 }

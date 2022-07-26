@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardPaymentDomain
 @testable import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
@@ -71,7 +72,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         let invocation = mockPaymentMethodsLinker.recordedInvocations.presentCardLinkingFlow.first
         XCTAssertNotNil(invocation)
         // WHEN: The flow completes
-        invocation?.completion(.completed)
+        invocation?.completion(.completed(.test))
         // THEN: The presenter is NOT asked to dismiss the flow
         XCTAssertNil(mockPresenter.recordedInvocations.dismiss.first)
         // AND: The completion called is called with the expected result
@@ -228,7 +229,7 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
         let linkingInvocation = mockPaymentMethodsLinker.recordedInvocations.presentCardLinkingFlow.first
         XCTAssertNotNil(linkingInvocation)
         // WHEN: The payment linking flow is complete
-        linkingInvocation?.completion(.completed)
+        linkingInvocation?.completion(.completed(.test))
         // THEN: Finally, the completion block is called with the expected result
         wait(for: [completionCalledExpectation], timeout: 10)
         XCTAssertEqual(result, .completed(nil))
@@ -559,4 +560,14 @@ final class MockPaymentMethodsLinker: PaymentMethodLinkingSelectorAPI, BankAccou
     ) {
         recordedInvocations.presentCardLinkingFlow.append((presenter, completion))
     }
+}
+
+extension CardData {
+
+    static let test: CardData = CardData(
+        ownerName: "Oliver",
+        number: "4263982640269299",
+        expirationDate: "22/27",
+        cvv: ""
+    )!
 }

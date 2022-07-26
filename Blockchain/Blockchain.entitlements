@@ -6,11 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:blockchainwallet.page.link</string>
-		<string>applinks:blockchainwalletstaging.page.link</string>
 		<string>applinks:blockchain.page.link</string>
 		<string>applinks:$(LOGIN_UNIVERSAL_LINK)$(UNIVERSAL_LINK_MODE)</string>
-		<string>applinks:blockchainwalletalpha.page.link</string>
+		<string>applinks:$(BLOCKCHAIN_WALLET_PAGE_LINK)</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array/>

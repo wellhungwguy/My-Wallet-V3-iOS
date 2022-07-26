@@ -47,6 +47,7 @@ class BitcoinCashFetcherTests: XCTestCase {
             accounts: accountsEntry,
             defaultAccountIndex: 0,
             hasSeen: false,
+            txNotes: [:],
             addresses: [:]
         )
         metadataServiceMock.fetchEntryResult = .success(
@@ -109,6 +110,7 @@ class BitcoinCashFetcherTests: XCTestCase {
             accounts: accountsEntry,
             defaultAccountIndex: 0,
             hasSeen: false,
+            txNotes: [:],
             addresses: [:]
         )
         metadataServiceMock.fetchEntryResult = .failure(.fetchFailed(.loadMetadataError(.notYetCreated)))

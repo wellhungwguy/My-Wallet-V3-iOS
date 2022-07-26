@@ -1,6 +1,7 @@
 import Foundation
 import Localization
 import OrderedCollections
+import ToolKit
 
 // swiftlint:disable type_name
 public enum UX {
@@ -129,15 +130,21 @@ extension UX.Error {
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:
-            self.init(
-                source: error,
-                title: L10n.oops.title,
-                message: L10n.oops.message,
-                icon: nil,
-                metadata: [:],
-                actions: .default
-            )
-            expected = false
+            if let ux = extract(UX.Error.self, from: error as Any) {
+                self = ux
+            } else if let ux = extract(Nabu.Error.UX.self, from: error as Any) {
+                self = Self(nabu: ux)
+            } else {
+                self.init(
+                    source: error,
+                    title: L10n.oops.title,
+                    message: L10n.oops.message,
+                    icon: nil,
+                    metadata: [:],
+                    actions: .default
+                )
+                expected = false
+            }
         }
     }
 }

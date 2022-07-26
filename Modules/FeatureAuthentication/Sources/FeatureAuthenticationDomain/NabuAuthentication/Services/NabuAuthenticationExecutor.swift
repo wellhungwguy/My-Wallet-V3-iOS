@@ -119,13 +119,6 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                 -> (sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken) in
                 (sessionToken: sessionToken, offlineToken: offlineToken)
             }
-            .handleEvents(
-                receiveOutput: { _, token in
-                    if app.state.doesNotContain(blockchain.user.id) {
-                        app.signIn(userId: token.userId)
-                    }
-                }
-            )
             // swiftlint:disable:next line_length
             .catch { _ -> AnyPublisher<(sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken), NabuAuthenticationExecutorError> in
                 fetchTokens()

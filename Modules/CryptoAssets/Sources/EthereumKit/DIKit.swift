@@ -64,6 +64,14 @@ extension DependencyContainer {
 
         // MARK: Other
 
+        factory { () -> EthereumTxNotesStrategyAPI in
+            EthereumTxNotesStrategy(
+                repository: DIKit.resolve(),
+                bridge: DIKit.resolve(),
+                updater: DIKit.resolve()
+            )
+        }
+
         factory {
             EthereumOnChainEngineCompanion(
                 hotWalletAddressService: DIKit.resolve()
@@ -74,7 +82,17 @@ extension DependencyContainer {
 
         single { EthereumBalanceRepository() as EthereumBalanceRepositoryAPI }
 
-        single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
+        single { EthereumWalletAccountRepository() }
+
+        factory { () -> EthereumWalletAccountRepositoryAPI in
+            let repo: EthereumWalletAccountRepository = DIKit.resolve()
+            return repo as EthereumWalletAccountRepositoryAPI
+        }
+
+        factory { () -> EthereumWalletRepositoryAPI in
+            let repo: EthereumWalletAccountRepository = DIKit.resolve()
+            return repo as EthereumWalletRepositoryAPI
+        }
 
         factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
             AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())

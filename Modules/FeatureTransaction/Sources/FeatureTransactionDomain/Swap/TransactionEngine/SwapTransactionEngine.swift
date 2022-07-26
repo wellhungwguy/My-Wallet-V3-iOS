@@ -193,7 +193,7 @@ extension SwapTransactionEngine {
     ) -> AnyPublisher<MoneyValue, PriceServiceError> {
         sourceExchangeRatePair.asPublisher()
             .map(\.quote)
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 

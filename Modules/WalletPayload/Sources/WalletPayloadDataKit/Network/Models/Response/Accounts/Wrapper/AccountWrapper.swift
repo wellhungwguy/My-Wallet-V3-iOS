@@ -20,6 +20,33 @@ enum AccountWrapper {
             case addressLabels = "address_labels"
             case cache
         }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            label = try container.decode(String.self, forKey: .label)
+            // some clients might not send the `archived` key/value, so we check this and default to `false`
+            archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+            xpriv = try container.decode(String.self, forKey: .xpriv)
+            xpub = try container.decode(String.self, forKey: .xpub)
+            addressLabels = try container.decode([AddressLabelResponse].self, forKey: .addressLabels)
+            cache = try container.decode(AddressCacheResponse.self, forKey: .cache)
+        }
+
+        init(
+            label: String,
+            archived: Bool,
+            xpriv: String,
+            xpub: String,
+            addressLabels: [AddressLabelResponse],
+            cache: AddressCacheResponse
+        ) {
+            self.label = label
+            self.archived = archived
+            self.xpriv = xpriv
+            self.xpub = xpub
+            self.addressLabels = addressLabels
+            self.cache = cache
+        }
     }
 
     struct Version4: Equatable, Codable {
@@ -33,6 +60,27 @@ enum AccountWrapper {
             case archived
             case defaultDerivation = "default_derivation"
             case derivations
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            label = try container.decode(String.self, forKey: .label)
+            // some clients might not send the `archived` key/value, so we check this and default to `false`
+            archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+            defaultDerivation = try container.decode(String.self, forKey: .defaultDerivation)
+            derivations = try container.decode([DerivationResponse].self, forKey: .derivations)
+        }
+
+        init(
+            label: String,
+            archived: Bool,
+            defaultDerivation: String,
+            derivations: [DerivationResponse]
+        ) {
+            self.label = label
+            self.archived = archived
+            self.defaultDerivation = defaultDerivation
+            self.derivations = derivations
         }
     }
 }

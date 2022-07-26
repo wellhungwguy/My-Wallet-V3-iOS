@@ -5,6 +5,7 @@ import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
+import ErrorsUI
 import FeatureInterestUI
 import Localization
 import MoneyKit
@@ -40,8 +41,6 @@ extension Tab {
 struct RootView: View {
 
     var app: AppProtocol = Blockchain.app
-
-    @Environment(\.openURL) var openURL
 
     let store: Store<RootViewState, RootViewAction>
     @ObservedObject private var viewStore: ViewStore<RootViewState, RootViewAction>
@@ -154,7 +153,7 @@ struct RootView: View {
         if let ux = tab.ux {
             ErrorView(
                 ux: UX.Error(nabu: ux),
-                dismiss: { }
+                dismiss: {}
             )
         }
     }

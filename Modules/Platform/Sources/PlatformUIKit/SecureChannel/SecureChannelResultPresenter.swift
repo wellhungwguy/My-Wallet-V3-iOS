@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Localization
 import PlatformKit
 import RIBs
@@ -13,6 +14,8 @@ final class SecureChannelResultPresenter: RibBridgePresenter, PendingStatePresen
     let pendingStatusViewMainContainerViewRatio: CGFloat = 1
     let pendingStatusViewSideContainerRatio: CGFloat = 0.55
     let pendingStatusViewEdgeSize: CGFloat = 72
+
+    var error: Driver<UX.Error> = .empty()
     var viewModel: Driver<PendingStateViewModel> {
         Driver.just(model)
     }

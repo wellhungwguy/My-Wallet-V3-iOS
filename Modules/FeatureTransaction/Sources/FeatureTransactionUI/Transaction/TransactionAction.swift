@@ -25,7 +25,7 @@ enum TransactionAction: MviAction {
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget)
     case showAddAccountFlow
     case showCardLinkingFlow
-    case cardLinkingFlowCompleted
+    case cardLinkingFlowCompleted(CardData)
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
