@@ -4,10 +4,6 @@
 <dict>
 	<key>WEBSOCKET_CONVERSION_URL</key>
 	<string>$(WEBSOCKET_CONVERSION_URL)</string>
-	<key>intercomAPIKey</key>
-	<string>$(INTERCOM_API_KEY)</string>
-	<key>intercomAppId</key>
-	<string>$(INTERCOM_APP_ID)</string>
 	<key>embraceAppId</key>
 	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
@@ -33,7 +29,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>202206.2.3</string>
+	<string>202207.1.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -48,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>6</string>
 	<key>CHECKOUT_ENV</key>
 	<string>$(CHECKOUT_ENV)</string>
 	<key>COMMIT_HASH</key>

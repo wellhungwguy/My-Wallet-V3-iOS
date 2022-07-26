@@ -86,10 +86,13 @@ final class PinScreenViewController: BaseScreenViewController {
         // Subscribe to digit pad visibility state
         presenter
             .digitPadIsEnabled
-            .subscribe(onNext: { isEnabled in
-                self.digitPadView.isUserInteractionEnabled = isEnabled
-                self.digitPadView.alpha = isEnabled ? 1 : 0.3
-            })
+            .subscribe(
+                with: self,
+                onNext: { (self, isEnabled) in
+                    self.digitPadView.isUserInteractionEnabled = isEnabled
+                    self.digitPadView.alpha = isEnabled ? 1 : 0.3
+                }
+            )
             .disposed(by: disposeBag)
 
         presenter
@@ -319,8 +322,8 @@ extension PinScreenViewController {
         errorLabel.text = text
         errorLabel.alpha = 1
         guard let durationTime = duration else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + durationTime) {
-            self.errorLabel.alpha = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + durationTime) { [weak self] in
+            self?.errorLabel.alpha = 0
         }
     }
 

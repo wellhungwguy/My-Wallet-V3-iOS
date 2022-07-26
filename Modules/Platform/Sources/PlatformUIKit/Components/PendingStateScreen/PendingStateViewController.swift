@@ -1,8 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
+import DIKit
+import Errors
+import ErrorsUI
+import Localization
 import RIBs
 import RxCocoa
 import RxSwift
+import SwiftUI
 
 public final class PendingStateViewController: BaseScreenViewController {
 
@@ -144,6 +150,102 @@ extension Reactive where Base: PendingStateViewController {
     var viewModel: Binder<PendingStateViewModel> {
         Binder(base) { viewController, viewModel in
             viewController.update(with: viewModel)
+        }
+    }
+}
+
+public final class PendingStateViewUXErrorController: BaseScreenViewController {
+
+    typealias L10n = LocalizationConstants.PendingCardStatusScreen.LoadingScreen
+
+    private let app: AppProtocol
+    private let presenter: PendingStatePresenterAPI & RibBridgePresenter
+    private let disposeBag = DisposeBag()
+
+    public required init(
+        presenter: PendingStatePresenterAPI & RibBridgePresenter,
+        app: AppProtocol = resolve()
+    ) {
+        self.presenter = presenter
+        self.app = app
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    public required init?(coder: NSCoder) { nil }
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        presenter.viewDidLoad()
+        setupNavigationBar()
+        setupUI()
+        presenter.error.drive(rx.error)
+            .disposed(by: disposeBag)
+    }
+
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter.viewWillAppear()
+    }
+
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        presenter.viewDidDisappear()
+    }
+
+    private func setupNavigationBar() {
+        titleViewStyle = .text(value: presenter.title)
+        set(barStyle: .darkContent())
+    }
+
+    private func setupUI() {
+        view.backgroundColor = .white
+        embed {
+            VStack {
+                Spacer()
+                ProgressView()
+                    .progressViewStyle(.blockchain)
+                    .frame(width: 30.vw)
+                    .aspectRatio(1, contentMode: .fit)
+                VStack {
+                    Text(L10n.title)
+                        .typography(.title2)
+                        .padding(.bottom, 8.pt)
+                    Text(L10n.subtitle)
+                        .typography(.paragraph2)
+                }
+                .padding()
+                .foregroundColor(.semantic.title)
+                Spacer()
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    // MARK: - View Update
+
+    fileprivate func update(with error: UX.Error) {
+        navigationControllerAPI?.pushViewController(
+            UIHostingController(
+                rootView: ErrorView(
+                    ux: error,
+                    dismiss: { [weak self] in
+                        self?.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+                    }
+                )
+                .app(app)
+            ),
+            animated: true
+        )
+    }
+}
+
+// MARK: - Rx
+
+extension Reactive where Base: PendingStateViewUXErrorController {
+    var error: Binder<UX.Error> {
+        Binder(base) { viewController, error in
+            viewController.update(with: error)
         }
     }
 }

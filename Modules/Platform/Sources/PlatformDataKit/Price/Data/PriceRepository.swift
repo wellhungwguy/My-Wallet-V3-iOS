@@ -26,11 +26,14 @@ final class PriceRepository: PriceRepositoryAPI {
 
     // MARK: - Setup
 
-    init(client: PriceClientAPI = resolve()) {
+    init(
+        client: PriceClientAPI = resolve(),
+        refreshControl: CacheRefreshControl = PeriodicCacheRefreshControl(refreshInterval: 60)
+    ) {
         self.client = client
         let indexMultiCache = InMemoryCache<PriceRequest.IndexMulti.Key, [String: PriceQuoteAtTime]>(
             configuration: .default(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
+            refreshControl: refreshControl
         )
         .eraseToAnyCache()
         indexMultiCachedValue = CachedValueNew(
@@ -138,7 +141,8 @@ extension PriceQuoteAtTime {
                 major: price,
                 currency: currency.currencyType
             ),
-            marketCap: response.marketCap
+            marketCap: response.marketCap,
+            volume24h: response.volume24h
         )
     }
 }

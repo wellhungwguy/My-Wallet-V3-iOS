@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "CryptoAssets",
     platforms: [
-        .macOS(.v10_12), .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(name: "BitcoinCashKit", targets: ["BitcoinCashKit"]),

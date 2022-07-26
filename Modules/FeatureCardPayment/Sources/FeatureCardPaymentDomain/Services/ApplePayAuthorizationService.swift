@@ -65,7 +65,7 @@ private func paymentRequest(
 
     paymentRequest.merchantIdentifier = info.applePayMerchantID
     paymentRequest.supportedNetworks = [.visa, .masterCard]
-    paymentRequest.merchantCapabilities = .capability3DS
+    paymentRequest.merchantCapabilities = info.capabilities
     paymentRequest.paymentSummaryItems = [
         PKPaymentSummaryItem(
             label: "Blockchain.com",
@@ -96,5 +96,15 @@ extension ApplePayAuthorizationService: PKPaymentAuthorizationControllerDelegate
 
         tokenSubject.send(.success(token))
         completion(.init(status: .success, errors: nil))
+    }
+}
+
+extension ApplePayInfo {
+
+    var capabilities: PKMerchantCapability {
+        guard let allowCreditCards = allowCreditCards, allowCreditCards else {
+            return [.capability3DS, .capabilityDebit]
+        }
+        return [.capability3DS, .capabilityDebit, .capabilityCredit]
     }
 }

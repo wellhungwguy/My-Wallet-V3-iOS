@@ -14,8 +14,4 @@ extension FiatAccount {
     public var currencyType: CurrencyType {
         fiatCurrency.currencyType
     }
-
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Localization
 import PlatformKit
 import RIBs
@@ -13,6 +14,7 @@ final class LinkBankFailureScreenPresenter: RibBridgePresenter, PendingStatePres
     // MARK: - Properties
 
     var viewModel: Driver<PendingStateViewModel> = .empty()
+    var error: Driver<UX.Error> = .empty()
 
     // MARK: - Private Properties
 

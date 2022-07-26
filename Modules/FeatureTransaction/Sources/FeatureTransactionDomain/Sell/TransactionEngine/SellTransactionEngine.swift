@@ -207,7 +207,7 @@ extension SellTransactionEngine {
                 }
                 return exchangeRate
             }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 
@@ -219,7 +219,7 @@ extension SellTransactionEngine {
             .compactMap { ratePair in
                 ratePair.inverseQuote.quote
             }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 
@@ -230,7 +230,7 @@ extension SellTransactionEngine {
         sourceExchangeRatePair.asPublisher()
             .map(\.quote)
             .compactMap { $0 }
-            .mapError { _ in PriceServiceError.missingPrice }
+            .mapError { _ in PriceServiceError.missingPrice(pendingTransaction.missingPriceDescription) }
             .eraseToAnyPublisher()
     }
 

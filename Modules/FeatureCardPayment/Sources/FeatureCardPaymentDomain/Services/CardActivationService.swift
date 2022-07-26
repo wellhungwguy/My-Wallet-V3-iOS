@@ -30,7 +30,7 @@ final class CardActivationService: CardActivationServiceAPI {
                 return CardActivationState(payload)
             }
             .mapError(CardActivationServiceError.nabu)
-            .poll(max: 20, until: { !$0.isPending }, delay: .seconds(3))
+            .poll(max: 40, until: { !$0.isPending }, delay: .seconds(3))
             .mapToResult()
     }
 }

@@ -45,7 +45,9 @@ final class SettingsService: SettingsServiceAPI {
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
     private let semaphore = DispatchSemaphore(value: 1)
 
+    private var subscription: Disposable?
     private var refresh: AnyCancellable?
+    private var bag: Set<AnyCancellable> = []
 
     // MARK: - Setup
 
@@ -62,33 +64,55 @@ final class SettingsService: SettingsServiceAPI {
         self.supportedPairsService = supportedPairsService
         self.userService = userService
 
-        tradingCurrencyPublisher = app.publisher(
-            for: blockchain.user.currency.preferred.fiat.trading.currency,
-            as: FiatCurrency.self
-        )
-        .compactMap(\.value)
-        .shareReplay()
-
-        displayCurrencyPublisher = app.publisher(
-            for: blockchain.user.currency.preferred.fiat.display.currency,
-            as: FiatCurrency.self
-        )
-        .tryMap { try $0.get() }
-        .catch { [tradingCurrencyPublisher] _ in tradingCurrencyPublisher }
-        .shareReplay()
+        tradingCurrencyPublisher = Deferred {
+            app.publisher(for: blockchain.user.currency.preferred.fiat.trading.currency)
+                .compactMap(\.value)
+                .shareReplay()
+        }
         .eraseToAnyPublisher()
 
-        supportedFiatCurrencies = app.publisher(for: blockchain.user.currency.available.currencies)
-            .shareReplay()
-            .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
+        displayCurrencyPublisher = Deferred {
+            app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency)
+                .compactMap(\.value)
+                .shareReplay()
+        }
+        .eraseToAnyPublisher()
 
-        refresh = app.on(
+        supportedFiatCurrencies = Deferred {
+            app.publisher(for: blockchain.user.currency.available.currencies)
+                .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
+                .shareReplay()
+        }
+        .eraseToAnyPublisher()
+
+        app.on(
             blockchain.session.event.did.sign.in,
             blockchain.session.event.did.sign.out
-        ) { [weak self] _ in
+        ) { [weak self] event in
             self?.settingsRelay.accept(nil)
+            switch event.tag {
+            case blockchain.session.event.did.sign.in:
+                self?.subscription = self?.settingsRelay
+                    .compactMap { $0 }
+                    .distinctUntilChanged()
+                    .subscribe(
+                        onNext: { settings in
+                            app.post(
+                                value: settings.displayCurrency?.code ?? (
+                                    try? app.state.get(blockchain.user.currency.preferred.fiat.trading.currency)
+                                ),
+                                of: blockchain.user.currency.preferred.fiat.display.currency
+                            )
+                        }
+                    )
+            case blockchain.session.event.did.sign.out:
+                self?.subscription = nil
+            default:
+                break
+            }
         }
         .subscribe()
+        .store(in: &bag)
     }
 
     // MARK: - Public Methods
@@ -133,15 +157,11 @@ final class SettingsService: SettingsServiceAPI {
                 .asSingle()
             }
             .map { WalletSettings(response: $0) }
-            .do(onSuccess: { [weak self] settings in
-                self?.app.state.transaction { state in
-                    state.set(
-                        blockchain.user.currency.preferred.fiat.display.currency,
-                        to: settings.displayCurrency?.code
-                    )
+            .do(
+                onSuccess: { [weak self] settings in
+                    self?.settingsRelay.accept(settings)
                 }
-                self?.settingsRelay.accept(settings)
-            })
+            )
     }
 
     var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never>
@@ -207,6 +227,15 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
         context: FlowContext
     ) -> AnyPublisher<Void, CurrencyUpdateError> {
         credentialsRepository.credentials
+            .handleEvents(
+                receiveOutput: { [app, weak self] _ in
+                    self?.settingsRelay.accept(nil)
+                    app.post(
+                        value: displayCurrency.code,
+                        of: blockchain.user.currency.preferred.fiat.display.currency
+                    )
+                }
+            )
             .mapError(CurrencyUpdateError.credentialsError)
             .flatMap { [client] (guid: String, sharedKey: String) in
                 client.updatePublisher(
@@ -216,18 +245,10 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                     sharedKey: sharedKey
                 )
             }
-            .handleEvents(
-                receiveOutput: { [app] in
-                    app.post(
-                        value: displayCurrency.code,
-                        of: blockchain.user.currency.preferred.fiat.display.currency
-                    )
-                }
-            )
-            .zip(
+            .flatMap { [singleValuePublisher] in
                 singleValuePublisher
                     .replaceError(with: CurrencyUpdateError.fetchError(SettingsServiceError.timedOut))
-            )
+            }
             .mapToVoid()
             .eraseToAnyPublisher()
     }

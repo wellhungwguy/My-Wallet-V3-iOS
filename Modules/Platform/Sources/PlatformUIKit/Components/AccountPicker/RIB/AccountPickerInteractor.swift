@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
+import Combine
 import DIKit
+import MoneyKit
 import PlatformKit
 import RIBs
 import RxCocoa
@@ -26,13 +29,20 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
     private let disposeBag = DisposeBag()
     private weak var listener: AccountPickerListener?
 
+    private let app: AppProtocol
+    private let priceRepository: PriceRepositoryAPI
+
     // MARK: - Init
 
     init(
         presenter: AccountPickerPresentable,
         accountProvider: AccountPickerAccountProviding,
-        listener: AccountPickerListenerBridge
+        listener: AccountPickerListenerBridge,
+        app: AppProtocol = resolve(),
+        priceRepository: PriceRepositoryAPI = resolve(tag: DIKitPriceContext.volume)
     ) {
+        self.app = app
+        self.priceRepository = priceRepository
         self.accountProvider = accountProvider
         switch listener {
         case .simple(let didSelect):
@@ -67,7 +77,9 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
         let interactorState: Driver<State> = Observable
             .combineLatest(
-                accountProvider.accounts,
+                accountProvider.accounts.flatMap { [app, priceRepository] accounts in
+                    accounts.snapshot(app: app, priceRepository: priceRepository).asObservable()
+                },
                 searchObservable
             )
             .map { [button] accounts, searchString -> State in
@@ -75,9 +87,11 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
                     .flatMap { !$0.isEmpty } ?? false
 
                 var interactors = accounts
-                    .filter { account in
-                        account.currencyType.matchSearch(searchString)
+                    .filter { snapshot in
+                        snapshot.account.currencyType.matchSearch(searchString)
                     }
+                    .sorted(by: >)
+                    .map(\.account)
                     .map(\.accountPickerCellItemInteractor)
 
                 if interactors.isEmpty {
@@ -165,5 +179,110 @@ extension BlockchainAccount {
         default:
             impossible()
         }
+    }
+}
+
+struct BlockchainAccountSnapshot: Comparable {
+
+    let account: BlockchainAccount
+    let balance: FiatValue
+    let count: Int
+    let isSelectedAsset: Bool
+    let volume24h: BigInt
+
+    static func == (lhs: BlockchainAccountSnapshot, rhs: BlockchainAccountSnapshot) -> Bool {
+        lhs.account.identifier == rhs.account.identifier
+            && lhs.balance == rhs.balance
+            && lhs.count == rhs.count
+            && lhs.volume24h == rhs.volume24h
+            && lhs.isSelectedAsset == rhs.isSelectedAsset
+    }
+
+    static func < (lhs: BlockchainAccountSnapshot, rhs: BlockchainAccountSnapshot) -> Bool {
+        (
+            lhs.isSelectedAsset ? 1 : 0,
+            lhs.count,
+            lhs.balance.amount,
+            lhs.account.currencyType == .bitcoin ? 1 : 0,
+            lhs.volume24h
+        ) < (
+            rhs.isSelectedAsset ? 1 : 0,
+            rhs.count,
+            rhs.balance.amount,
+            rhs.account.currencyType == .bitcoin ? 1 : 0,
+            rhs.volume24h
+        )
+    }
+}
+
+extension BlockchainAccount {
+
+    var empty: (snapshot: BlockchainAccountSnapshot, Void) {
+        (
+            snapshot: BlockchainAccountSnapshot(
+                account: self,
+                balance: .zero(currency: .USD),
+                count: 0,
+                isSelectedAsset: false,
+                volume24h: 0
+            ), ()
+        )
+    }
+}
+
+private enum BlockchainAccountSnapshotError: Error {
+    case isNotEnabled
+    case noTradingCurrency
+}
+
+extension Collection where Element == BlockchainAccount {
+
+    func snapshot(
+        app: AppProtocol,
+        priceRepository: PriceRepositoryAPI
+    ) -> AnyPublisher<[BlockchainAccountSnapshot], Never> {
+        Task<[BlockchainAccountSnapshot], Error>.ThrowingPublisher {
+            guard try await app.get(blockchain.ux.transaction.smart.sort.order.is.enabled) else {
+                throw BlockchainAccountSnapshotError.isNotEnabled
+            }
+            guard let currency: FiatCurrency = try await app.get(
+                blockchain.user.currency.preferred.fiat.display.currency
+            ) else {
+                throw BlockchainAccountSnapshotError.noTradingCurrency
+            }
+            let prices = try await priceRepository.prices(
+                of: map(\.currencyType),
+                in: FiatCurrency.USD,
+                at: .oneDay
+            )
+            .stream()
+            .first
+            var accounts = [BlockchainAccountSnapshot]()
+            for account in self {
+                let count: Int? = try? await app.get(
+                    blockchain.ux.transaction.source.target[account.currencyType.code].count.of.completed
+                )
+                let currentId: String? = try? await app.get(
+                    blockchain.ux.transaction.source.target.id
+                )
+                let balance = try? await account.fiatBalance(fiatCurrency: currency)
+                    .stream()
+                    .first
+                accounts.append(
+                    BlockchainAccountSnapshot(
+                        account: account,
+                        balance: balance?.fiatValue ?? .zero(currency: currency),
+                        count: count ?? 0,
+                        isSelectedAsset: currentId?.lowercased() == account.currencyType.code.lowercased(),
+                        volume24h: prices?["\(account.currencyType.code)-USD"].flatMap { quote in
+                            quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
+                        } ?? .zero
+                    )
+                )
+            }
+            return accounts
+        }
+        .replaceError(with: map(\.empty.snapshot))
+        .eraseToAnyPublisher()
     }
 }

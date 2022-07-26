@@ -2,6 +2,7 @@
 
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import ObservabilityKit
@@ -85,6 +86,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging(),
             tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
@@ -190,6 +192,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging(),
             tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,

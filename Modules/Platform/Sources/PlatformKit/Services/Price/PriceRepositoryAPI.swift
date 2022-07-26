@@ -5,6 +5,10 @@ import Errors
 import Foundation
 import MoneyKit
 
+public enum DIKitPriceContext: String {
+    case volume
+}
+
 public protocol PriceRepositoryAPI {
 
     /// Gets the quoted price of all given base `Currency` in the given quote `Currency`, at the given time.

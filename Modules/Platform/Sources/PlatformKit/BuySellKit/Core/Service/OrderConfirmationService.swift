@@ -17,6 +17,7 @@ public enum OrderConfirmationServiceError: Error {
     case mappingError
     case applePay(ApplePayError)
     case nabu(NabuNetworkError)
+    case ux(UX.Error)
 }
 
 final class OrderConfirmationService: OrderConfirmationServiceAPI {
@@ -99,6 +100,9 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
             .flatMap { details -> AnyPublisher<OrderDetails, OrderConfirmationServiceError> in
                 guard let details = details else {
                     return .failure(OrderConfirmationServiceError.mappingError)
+                }
+                if [.failed, .expired].contains(details.state), let ux = details.ux {
+                    return .failure(.ux(UX.Error(nabu: ux)))
                 }
                 return .just(details)
             }

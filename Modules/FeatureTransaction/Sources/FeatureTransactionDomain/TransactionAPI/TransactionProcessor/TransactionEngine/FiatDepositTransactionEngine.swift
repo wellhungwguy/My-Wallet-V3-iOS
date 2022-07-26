@@ -15,7 +15,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
 
-    let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
     var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
@@ -97,7 +96,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         sourceAccount
             .receiveAddress
             .asSingle()
@@ -120,8 +119,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         level: FeeLevel,
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
-        return .just(pendingTransaction)
+        .just(pendingTransaction)
     }
 
     // MARK: - Private Functions

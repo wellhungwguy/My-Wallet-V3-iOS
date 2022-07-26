@@ -16,7 +16,7 @@ protocol StellarTransactionDispatcherAPI {
 
     func isAddressValid(address: String) -> Bool
 
-    func sendFunds(sendDetails: SendDetails, secondPassword: String) -> Single<SendConfirmationDetails>
+    func sendFunds(sendDetails: SendDetails, secondPassword: String?) -> Single<SendConfirmationDetails>
 }
 
 final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
@@ -81,7 +81,7 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
         }
     }
 
-    func sendFunds(sendDetails: SendDetails, secondPassword: String) -> Single<SendConfirmationDetails> {
+    func sendFunds(sendDetails: SendDetails, secondPassword: String?) -> Single<SendConfirmationDetails> {
         Single
             .zip(
                 accountRepository.loadKeyPair(with: secondPassword).asObservable().take(1).asSingle(),

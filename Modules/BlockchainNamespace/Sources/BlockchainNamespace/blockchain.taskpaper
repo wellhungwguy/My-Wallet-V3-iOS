@@ -166,6 +166,9 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+			walletconnect:
+				uri:
+				+ blockchain.db.type.string
 		did:
 			finish:
 				launching:
@@ -383,6 +386,19 @@ blockchain:
 			precision:
 			+ blockchain.db.type.integer
 	ui:
+		device:
+			haptic:
+				feedback:
+					impact:
+						heavy:
+						light:
+						medium:
+						rigid:
+						soft:
+					notification:
+						error:
+						success:
+						warning:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
@@ -470,7 +486,7 @@ blockchain:
 					display:
 						currency:
 						+ blockchain.db.type.string
-						+ blockchain.session.state.preference.value
+						+ blockchain.session.state.value
 					trading:
 						currency:
 						+ blockchain.db.type.string
@@ -622,6 +638,7 @@ blockchain:
 					+ blockchain.db.type.integer
 					+ blockchain.session.state.value
 		error:
+		+ blockchain.ui.device.haptic.feedback.notification.error
 		+ blockchain.ux.type.story
 			then:
 				launch:
@@ -657,6 +674,7 @@ blockchain:
 			tab:
 			+ blockchain.db.collection
 				select:
+				+ blockchain.ui.device.haptic.feedback.impact.soft
 				+ blockchain.ux.type.action
 		kyc:
 			event:
@@ -822,10 +840,22 @@ blockchain:
 						id:
 						+ blockchain.db.type.string
 						+ blockchain.session.state.preference.value
+			smart:
+				sort:
+					order:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			source:
 			+ blockchain.db.collection
 				target:
 				+ blockchain.db.collection
+					count:
+						of:
+							completed:
+							+ blockchain.db.type.integer
+							+ blockchain.session.state.preference.value
 					previous:
 						did:
 							error:

@@ -23,6 +23,7 @@ public enum ClientEvent: AnalyticsEvent {
     public var type: AnalyticsEventType { .nabu }
 
     case clientError(
+        id: String?,
         error: String,
         networkEndpoint: String? = nil,
         networkErrorCode: String? = nil,

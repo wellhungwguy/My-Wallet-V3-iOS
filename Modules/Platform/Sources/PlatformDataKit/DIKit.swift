@@ -3,6 +3,7 @@
 import DIKit
 import Foundation
 import PlatformKit
+import ToolKit
 
 extension DependencyContainer {
 
@@ -35,6 +36,12 @@ extension DependencyContainer {
             return client as PriceClientAPI
         }
 
-        single { PriceRepository() as PriceRepositoryAPI }
+        single {
+            PriceRepository() as PriceRepositoryAPI
+        }
+
+        single(tag: DIKitPriceContext.volume) {
+            PriceRepository(refreshControl: PerpetualCacheRefreshControl()) as PriceRepositoryAPI
+        }
     }
 }

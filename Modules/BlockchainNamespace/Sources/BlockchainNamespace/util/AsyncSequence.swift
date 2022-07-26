@@ -2,12 +2,10 @@
 
 extension AsyncSequence {
 
-    public var first: Element? {
-        get async throws {
-            for try await o in self {
-                return o
-            }
-            return nil
+    public func next() async throws -> Element? {
+        for try await o in self {
+            return o
         }
+        return nil
     }
 }

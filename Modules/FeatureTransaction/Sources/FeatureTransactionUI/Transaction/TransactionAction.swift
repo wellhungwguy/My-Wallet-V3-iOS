@@ -10,24 +10,22 @@ import ToolKit
 
 enum TransactionAction: MviAction {
 
-    case initialiseWithNoSourceOrTargetAccount(action: AssetAction, passwordRequired: Bool)
-    case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount, passwordRequired: Bool)
+    case initialiseWithNoSourceOrTargetAccount(action: AssetAction)
+    case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount)
     case initialiseWithSourceAndPreferredTarget(
         action: AssetAction,
         sourceAccount: BlockchainAccount,
-        target: TransactionTarget,
-        passwordRequired: Bool
+        target: TransactionTarget
     )
     case initialiseWithSourceAndTargetAccount(
         action: AssetAction,
         sourceAccount: BlockchainAccount,
-        target: TransactionTarget,
-        passwordRequired: Bool
+        target: TransactionTarget
     )
-    case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
+    case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget)
     case showAddAccountFlow
     case showCardLinkingFlow
-    case cardLinkingFlowCompleted
+    case cardLinkingFlowCompleted(CardData)
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
@@ -138,58 +136,52 @@ extension TransactionAction {
         case .showBankWiringInstructions:
             return oldState.stateForMovingForward(to: .linkBankViaWire)
 
-        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target):
             // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
             // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
             // go directly to the confirmation detail screen.
             let next: TransactionFlowStep = target is StaticTransactionTarget ? .confirmDetail : .enterAmount
-            let step = passwordRequired ? .enterPassword : next
             return TransactionState(
                 action: action,
                 source: sourceAccount,
                 destination: target,
-                passwordRequired: passwordRequired,
-                step: step
+                step: next
             )
             .withUpdatedBackstack(oldState: oldState)
 
-        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, let passwordRequired):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target):
             return TransactionState(
                 action: action,
                 source: sourceAccount,
                 destination: target,
-                passwordRequired: passwordRequired,
                 step: .enterAmount
             )
             .withUpdatedBackstack(oldState: oldState)
 
-        case .initialiseWithTargetAndNoSource(let action, let target, let passwordRequired):
+        case .initialiseWithTargetAndNoSource(let action, let target):
             // On buy the source is always the default payment method returned by the API
             // The source should be loaded based on this fact by the `TransactionModel` when processing the state change.
             return TransactionState(
                 action: action,
                 source: nil,
                 destination: target,
-                passwordRequired: passwordRequired,
                 step: action == .buy ? .initial : .selectSource
             )
             .withUpdatedBackstack(oldState: oldState)
 
-        case .initialiseWithNoSourceOrTargetAccount(let action, let passwordRequired):
+        case .initialiseWithNoSourceOrTargetAccount(let action):
             // On buy the source is always the default payment method returned by the API
             // The source should be loaded based on this fact by the `TransactionModel` when processing the state change.
             return TransactionState(
                 action: action,
-                passwordRequired: passwordRequired,
                 step: action == .buy ? .initial : .selectSource
             )
             .withUpdatedBackstack(oldState: oldState)
 
-        case .initialiseWithSourceAccount(let action, let sourceAccount, let passwordRequired):
+        case .initialiseWithSourceAccount(let action, let sourceAccount):
             return TransactionState(
                 action: action,
-                source: sourceAccount,
-                passwordRequired: passwordRequired
+                source: sourceAccount
             )
 
         case .fetchTransactionExchangeRates:
@@ -252,10 +244,10 @@ extension TransactionAction {
             if oldState.source != nil, oldState.destination != nil {
                 // This operation could be done just to refresh the list of possible targets. E.g. for buy.
                 // If we have both source and destination, the next step should be to enter an amount.
-                newStep = oldState.passwordRequired ? .enterPassword : .enterAmount
+                newStep = .enterAmount
             } else {
                 // If there's not target account when this list is updated, we should have the user select one.
-                newStep = oldState.passwordRequired ? .enterPassword : .selectTarget
+                newStep = .selectTarget
             }
             return oldState
                 .update(keyPath: \.availableTargets, value: targets as! [TransactionTarget])

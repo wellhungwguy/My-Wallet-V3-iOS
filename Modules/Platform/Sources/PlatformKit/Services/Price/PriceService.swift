@@ -11,7 +11,7 @@ import ToolKit
 public enum PriceServiceError: Error {
 
     /// The requested price is missing,
-    case missingPrice
+    case missingPrice(String)
 
     /// A network error ocurred.
     case networkError(NetworkError)
@@ -164,7 +164,7 @@ final class PriceService: PriceServiceAPI {
             // Get price of pair.
             prices["\(baseCode)-\(quoteCode)"]
         }
-        .onNil(PriceServiceError.missingPrice)
+        .onNil(PriceServiceError.missingPrice("\(baseCode)-\(quoteCode)"))
         .eraseToAnyPublisher()
     }
 

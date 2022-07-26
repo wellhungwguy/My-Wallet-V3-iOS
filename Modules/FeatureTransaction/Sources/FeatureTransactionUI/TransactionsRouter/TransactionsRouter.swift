@@ -153,7 +153,11 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
             .flatMap { [weak self] ineligibility -> AnyPublisher<TransactionFlowResult, Never> in
                 guard let self = self else { return .empty() }
                 guard let ineligibility = ineligibility else {
-                    return self.continuePresentingTransactionFlow(to: action, from: presenter)
+                    return self.continuePresentingTransactionFlow(
+                        to: action,
+                        from: presenter,
+                        showKycQuestions: true
+                    )
                 }
 
                 // show kyc or bloqued
@@ -208,27 +212,16 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     /// Call this only after having checked that users can perform the requested action
     private func continuePresentingTransactionFlow(
         to action: TransactionFlowAction,
-        from presenter: UIViewController
+        from presenter: UIViewController,
+        showKycQuestions: Bool
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         do {
-            guard try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty) else {
-                let subject = PassthroughSubject<TransactionFlowResult, Never>()
-                kyc.routeToKYC(
-                    from: presenter,
-                    requiredTier: .tier2,
-                    flowCompletion: { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case .abandoned:
-                            subject.send(.abandoned)
-                        case .completed:
-                            self.continuePresentingTransactionFlow(to: action, from: presenter)
-                                .sink(receiveValue: subject.send)
-                                .store(in: &self.cancellables)
-                        }
-                    }
+            let isKycQuestionsEmpty: Bool = try app.state.get(blockchain.ux.kyc.extra.questions.form.is.empty)
+            if showKycQuestions, !isKycQuestionsEmpty {
+                return presentKycQuestionsIfNeeded(
+                    to: action,
+                    from: presenter
                 )
-                return subject.eraseToAnyPublisher()
             }
         } catch { /* ignore */ }
 
@@ -255,6 +248,33 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
              .deposit:
             return presentNewTransactionFlow(action, from: presenter)
         }
+    }
+
+    private func presentKycQuestionsIfNeeded(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        let subject = PassthroughSubject<TransactionFlowResult, Never>()
+        kyc.routeToKYC(
+            from: presenter,
+            requiredTier: .tier1,
+            flowCompletion: { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .abandoned:
+                    subject.send(.abandoned)
+                case .completed:
+                    self.continuePresentingTransactionFlow(
+                        to: action,
+                        from: presenter,
+                        showKycQuestions: false // if questions were skipped
+                    )
+                    .sink(receiveValue: subject.send)
+                    .store(in: &self.cancellables)
+                }
+            }
+        )
+        return subject.eraseToAnyPublisher()
     }
 
     private func presentBuyTransactionFlow(

@@ -21,12 +21,23 @@ final class KYCOnboardingNavigationController: UINavigationController {
 
     func setupBarButtonItem() {
         guard let CTA = onboardingDelegate?.navControllerCTAType() else { return }
-        let button = UIBarButtonItem(
-            image: CTA.image,
-            style: .plain,
-            target: self,
-            action: #selector(rightBarButtonTapped)
-        )
+        var button: UIBarButtonItem {
+            if let image = CTA.image {
+                return .init(
+                    image: image,
+                    style: .plain,
+                    target: self,
+                    action: #selector(rightBarButtonTapped)
+                )
+            } else {
+                return .init(
+                    title: CTA.title,
+                    style: .plain,
+                    target: self,
+                    action: #selector(rightBarButtonTapped)
+                )
+            }
+        }
         guard let navItem = visibleViewController?.navigationItem else { return }
         navItem.rightBarButtonItem = CTA.visibility.isHidden ? nil : button
     }

@@ -1,42 +1,54 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureKYC",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
-        .library(name: "FeatureKYC", targets: ["FeatureKYCDomain", "FeatureKYCUI"]),
-        .library(name: "FeatureKYCDomain", targets: ["FeatureKYCDomain"]),
-        .library(name: "FeatureKYCUI", targets: ["FeatureKYCUI"]),
-        .library(name: "FeatureKYCMock", targets: ["FeatureKYCDomainMock", "FeatureKYCUIMock"])
+        .library(
+            name: "FeatureKYC",
+            targets: ["FeatureKYCDomain", "FeatureKYCUI"]
+        ),
+        .library(
+            name: "FeatureKYCDomain",
+            targets: ["FeatureKYCDomain"]
+        ),
+        .library(
+            name: "FeatureKYCUI",
+            targets: ["FeatureKYCUI"]
+        ),
+        .library(
+            name: "FeatureKYCMock",
+            targets: ["FeatureKYCDomainMock", "FeatureKYCUIMock"]
+        )
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            from: "0.38.3"
         ),
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.2.0"
         ),
         .package(
-            name: "Veriff",
             url: "https://github.com/Veriff/veriff-ios-spm.git",
-            .exact("4.17.0")
+            exact: "4.17.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../FeatureAuthentication"),
@@ -82,7 +94,7 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "Veriff", package: "Veriff")
+                .product(name: "Veriff", package: "veriff-ios-spm")
             ],
             resources: [
                 .copy("Media.xcassets")

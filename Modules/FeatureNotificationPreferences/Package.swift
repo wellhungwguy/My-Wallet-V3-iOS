@@ -1,45 +1,68 @@
-// swift-tools-version:5.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureNotificationPreferences",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
-        .library(name: "FeatureNotificationPreferences", targets: [
-            "FeatureNotificationPreferencesDomain",
-            "FeatureNotificationPreferencesUI",
-            "FeatureNotificationPreferencesData"
-        ]),
-        .library(name: "FeatureNotificationPreferencesDetails", targets: ["FeatureNotificationPreferencesDetailsUI"]),
-        .library(name: "FeatureNotificationPreferencesMocks", targets: ["FeatureNotificationPreferencesMocks"]),
-        .library(name: "FeatureNotificationPreferencesDomain", targets: ["FeatureNotificationPreferencesDomain"]),
-        .library(name: "FeatureNotificationPreferencesUI", targets: ["FeatureNotificationPreferencesUI"]),
-        .library(name: "FeatureNotificationPreferencesData", targets: ["FeatureNotificationPreferencesData"]),
-        .library(name: "FeatureNotificationPreferencesDetailsUI", targets: ["FeatureNotificationPreferencesDetailsUI"])
+        .library(
+            name: "FeatureNotificationPreferences",
+            targets: [
+                "FeatureNotificationPreferencesDomain",
+                "FeatureNotificationPreferencesUI",
+                "FeatureNotificationPreferencesData"
+            ]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesDetails",
+            targets: ["FeatureNotificationPreferencesDetailsUI"]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesMocks",
+            targets: ["FeatureNotificationPreferencesMocks"]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesDomain",
+            targets: ["FeatureNotificationPreferencesDomain"]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesUI",
+            targets: ["FeatureNotificationPreferencesUI"]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesData",
+            targets: ["FeatureNotificationPreferencesData"]
+        ),
+        .library(
+            name: "FeatureNotificationPreferencesDetailsUI",
+            targets: ["FeatureNotificationPreferencesDetailsUI"]
+        )
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            from: "0.38.3"
         ),
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../Errors"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Errors"),
+        .package(path: "../Test"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents"),
-        .package(path: "../Test")
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -168,7 +191,7 @@ let package = Package(
                 .target(name: "FeatureNotificationPreferencesDomain"),
                 .target(name: "FeatureNotificationPreferencesMocks"),
                 .product(name: "AnalyticsKitMock", package: "Analytics"),
-                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 .product(name: "TestKit", package: "Test")
             ],
             exclude: ["__Snapshots__"]

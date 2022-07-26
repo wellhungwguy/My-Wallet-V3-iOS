@@ -24,7 +24,7 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
     func makeViewController() -> UIViewController {
         guard let account = transactionState.destination as? CryptoAccount else {
             if transactionState.destination as? CryptoAccount == nil {
-                let error = "\(type(of: self)) - Invalid destination for transaction state '\(dump(transactionState))'"
+                let error = "\(type(of: self)) - Invalid destination"
                 eventsRecorder.record(error)
                 ProbabilisticRunner.run(for: .tenPercent) {
                     fatalError(error)

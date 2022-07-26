@@ -94,9 +94,17 @@ class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingN
         case .none:
             break
         case .dismiss:
+            onNavControllerRightBarButtonWillDismiss()
             router.stop()
         case .help:
             presentNeedSomeHelpAlert()
+        case .skip:
+            onNavControllerRightBarButtonSkip()
         }
     }
+
+    // MARK: - Optionally override
+
+    func onNavControllerRightBarButtonWillDismiss() {}
+    func onNavControllerRightBarButtonSkip() {}
 }

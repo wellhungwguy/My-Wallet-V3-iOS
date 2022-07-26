@@ -98,8 +98,10 @@ public struct PendingTransaction: Equatable {
 
     public func update(selectedFeeLevel: FeeLevel, customFeeAmount: MoneyValue?) -> PendingTransaction {
         var copy = self
-        copy.feeSelection = copy.feeSelection
-            .update(customAmount: customFeeAmount, selectedLevel: selectedFeeLevel)
+        copy.feeSelection = copy.feeSelection.update(
+            customAmount: customFeeAmount,
+            selectedLevel: selectedFeeLevel
+        )
         return copy
     }
 
@@ -287,5 +289,12 @@ extension PendingTransaction {
             feeSelection: .empty(asset: currencyType),
             selectedFiatCurrency: .USD
         )
+    }
+}
+
+extension PendingTransaction {
+
+    public var missingPriceDescription: String {
+        "PendingTransaction(amount: \(amount), selectedFiatCurrency: \(selectedFiatCurrency))"
     }
 }

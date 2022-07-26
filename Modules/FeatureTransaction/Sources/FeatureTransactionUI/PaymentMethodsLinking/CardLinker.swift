@@ -2,15 +2,16 @@
 
 import Combine
 import DIKit
+import FeatureCardPaymentDomain
 import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
 import UIKit
 
-enum CardLinkingFlowResult {
+enum CardLinkingFlowResult: Equatable {
     case abandoned
-    case completed
+    case completed(CardData)
 }
 
 /// This protocol provides an interface to present the flow to link a credit or debit card to a user's account.
@@ -64,8 +65,8 @@ final class CardLinker: CardLinkerAPI {
                     Logger.shared.error(error)
                     completion(.abandoned)
                 }
-            } receiveValue: { _ in
-                completion(.completed)
+            } receiveValue: { data in
+                completion(.completed(data))
             }
             .store(in: &cancellables)
 

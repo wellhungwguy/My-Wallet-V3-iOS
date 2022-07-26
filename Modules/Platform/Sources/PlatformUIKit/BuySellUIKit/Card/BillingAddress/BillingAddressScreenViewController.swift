@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
-
+import BlockchainNamespace
 import DIKit
 import Errors
+import ErrorsUI
 import Localization
 import RxCocoa
 import RxRelay
@@ -15,6 +16,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 
     // MARK: - Injected
 
+    private let app: AppProtocol
     private let presenter: BillingAddressScreenPresenter
     private let alertViewPresenter: AlertViewPresenterAPI
 
@@ -28,9 +30,11 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 
     init(
         presenter: BillingAddressScreenPresenter,
+        app: AppProtocol = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
         self.presenter = presenter
+        self.app = app
         self.alertViewPresenter = alertViewPresenter
         super.init()
     }
@@ -41,6 +45,8 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     }
 
     // MARK: - Lifecycle
+
+    var subscription: BlockchainEventSubscription?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,11 +65,22 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         setupTableView()
         setupKeyboardObserver()
 
+        subscription = app.on(
+            blockchain.ux.transaction.action.add.card,
+            blockchain.ux.transaction.action.go.back.to.enter.amount
+        ) { [weak self] _ in
+            self?.navigationController?.popToRootViewControllerAnimated(animated: true)
+        }
+        .start()
+
         presenter.errorTrigger
             .emit(onNext: { [weak self] error in
                 guard let self = self else { return }
                 switch error {
-                case let nabu as NabuNetworkError:
+                case let nabu as Nabu.Error:
+                    if let ux = nabu.ux {
+                        return self.presentUXError(ux)
+                    }
                     switch nabu.code {
                     case .cardInsufficientFunds:
                         self.presentError(
@@ -133,6 +150,21 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                 }
             })
             .disposed(by: disposeBag)
+    }
+
+    private func presentUXError(_ error: Nabu.Error.UX) {
+        navigationController?
+            .pushViewController(
+                UIHostingController(
+                    rootView: ErrorView(
+                        ux: UX.Error(nabu: error),
+                        dismiss: { [weak self] in
+                            self?.navigationController?.popToRootViewControllerAnimated(animated: true)
+                        }
+                    )
+                ),
+                animated: true
+            )
     }
 
     private func presentError(title: String, subtitle: String? = nil) {

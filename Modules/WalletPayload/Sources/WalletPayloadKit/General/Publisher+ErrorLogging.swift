@@ -16,13 +16,11 @@ extension Publisher {
             guard case .failure(let error) = completion else {
                 return
             }
-            guard BuildFlag.isInternal else {
-                // log error on prod/alpha builds
-                tracer.logError(error: error, properties: nil)
-                return
-            }
-            // crash on internal builds
+            #if DEBUG
             fatalError("[Error]: \(String(describing: error))")
+            #else
+            tracer.logError(error: error, properties: nil)
+            #endif
         })
         .eraseToAnyPublisher()
     }

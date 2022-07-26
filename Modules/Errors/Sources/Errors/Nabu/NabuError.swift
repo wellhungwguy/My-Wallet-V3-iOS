@@ -140,6 +140,7 @@ extension Nabu.Error {
 
     // swiftlint:disable type_name
     public struct UX: Equatable, Hashable, Codable {
+        public var id: String?
         public var title: String
         public var message: String
         public var icon: Errors.UX.Icon?

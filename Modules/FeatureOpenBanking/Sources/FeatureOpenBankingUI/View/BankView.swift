@@ -186,6 +186,7 @@ extension Reducer where State == BankState, Action == BankAction, Environment ==
                     return .fireAndForget {
                         environment.analytics.record(
                             event: ClientEvent.clientError(
+                                id: error.code,
                                 error: BankState.UI.errors[error] != nil
                                     ? "OPEN_BANKING_ERROR"
                                     : "OPEN_BANKING_OOPS_ERROR",

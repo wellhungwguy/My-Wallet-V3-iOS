@@ -57,6 +57,8 @@ open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
     // swiftlint:disable cyclomatic_complexity
     open func convert<T>(_ any: Any, to type: T.Type) throws -> Any? {
         switch (any, T.self) {
+        case (let any as Anything, _):
+            return try convert(any.wrapped, to: T.self)
         case (let time as TimeInterval, is Date.Type):
             return Date(timeIntervalSince1970: time)
         case (let string as String, is URL.Type):

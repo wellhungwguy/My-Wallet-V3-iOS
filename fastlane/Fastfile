@@ -46,13 +46,13 @@ platform :ios do
   lane :alpha do | options |
     # Set a specific version number for alpha
     increment_version_number_in_plist(
-      version_number: '1.0.0',
+      version_number: '999999.9.9',
       scheme: 'Blockchain (Alpha)'
     )
     # Set a build number equal to number of commits for alpha
-    build_number = %x[git rev-list HEAD --count]
+    build_number = number_of_commits(all: false)
     increment_build_number_in_plist(
-      build_number: build_number,
+      build_number: build_number.to_s.strip,
       scheme: 'Blockchain (Alpha)'
     )
     final_options = options.merge(
@@ -69,6 +69,9 @@ platform :ios do
   desc "Builds are uploaded to AppCenter."
   desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
   lane :internal_release do | options |
+    
+    bump_release('Blockchain (Internal Production)')
+    
     final_options = options.merge(
       {
         scheme: "Blockchain (Internal Production)",
@@ -84,6 +87,14 @@ platform :ios do
   desc "Builds are uploaded to TestFlight."
   desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
   lane :release do | options |
+    
+    version, build_number = bump_release('Blockchain')
+
+    tag = "v#{version}-rc.#{build_number}"
+    add_git_tag(
+      tag: tag
+    )
+    
     final_options = options.merge(
       {
         scheme: "Blockchain",
@@ -91,7 +102,12 @@ platform :ios do
         build_type: "appstore"
       }
     )
+    
     produce_build(final_options)
+    
+    push_git_tags(
+      tag: tag
+    )
   end
   
   desc "Runs all unit tests on Blockchain (Staging) scheme"
@@ -257,6 +273,26 @@ platform :ios do
   end
   
   # ==== Helper Functions ====
+  
+  def bump_release(scheme)
+    if match = git_branch.match(/release\/(?<version>\d{6}\.\d+\.\d+)/i)
+      version = match[:version]
+      increment_version_number_in_plist(
+        version_number: version,
+        scheme: scheme
+      )
+    else 
+      UI.user_error!("You can only run this lane from a release branch. Exiting.")
+    end
+    
+    build_number = number_of_commits(all: false).to_s.strip
+    increment_build_number_in_plist(
+      build_number: build_number,
+      scheme: scheme
+    )
+    
+    return [version, build_number]
+  end
   
   def is_adhoc_build_type?(options)
     build_type = options[:build_type] || "adhoc"

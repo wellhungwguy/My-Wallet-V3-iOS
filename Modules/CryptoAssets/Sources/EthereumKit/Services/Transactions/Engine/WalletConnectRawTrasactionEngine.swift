@@ -38,8 +38,6 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
             .asObservable()
     }
 
-    let requireSecondPassword: Bool = false
-
     private var didExecute = false
     private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumRawTransactionTarget {
@@ -150,7 +148,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         didExecute = true
         let encodedTransaction = EthereumTransactionEncoded(
             encodedTransaction: walletConnectTarget.rawTransaction

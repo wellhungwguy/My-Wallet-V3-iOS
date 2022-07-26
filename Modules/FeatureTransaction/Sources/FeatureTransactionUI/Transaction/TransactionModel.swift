@@ -22,6 +22,7 @@ final class TransactionModel {
     internal let interactor: TransactionInteractor
     internal private(set) var hasInitializedTransaction = false
 
+    private let app: AppProtocol
     private let analyticsHook: TransactionAnalyticsHook
     private let sendEmailNotificationService: SendEmailNotificationServiceAPI
     private var cancellables = Set<AnyCancellable>()
@@ -39,11 +40,13 @@ final class TransactionModel {
     // MARK: - Init
 
     init(
+        app: AppProtocol = resolve(),
         initialState: TransactionState,
         transactionInteractor: TransactionInteractor,
         analyticsHook: TransactionAnalyticsHook = resolve(),
         sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
+        self.app = app
         self.analyticsHook = analyticsHook
         self.sendEmailNotificationService = sendEmailNotificationService
         interactor = transactionInteractor
@@ -67,7 +70,7 @@ final class TransactionModel {
         case .pendingTransactionStarted:
             return nil
 
-        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, _):
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
@@ -75,7 +78,7 @@ final class TransactionModel {
                 action: action
             )
 
-        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, _):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
@@ -83,13 +86,13 @@ final class TransactionModel {
                 action: action
             )
 
-        case .initialiseWithNoSourceOrTargetAccount(let action, _):
+        case .initialiseWithNoSourceOrTargetAccount(let action):
             return processSourceAccountsListUpdate(
                 action: action,
                 targetAccount: nil
             )
 
-        case .initialiseWithTargetAndNoSource(let action, let target, _):
+        case .initialiseWithTargetAndNoSource(let action, let target):
             return processSourceAccountsListUpdate(
                 action: action,
                 targetAccount: target
@@ -107,7 +110,8 @@ final class TransactionModel {
         case .showCardLinkingFlow:
             return nil
 
-        case .cardLinkingFlowCompleted:
+        case .cardLinkingFlowCompleted(let data):
+            app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: data.identifier)
             return processSourceAccountsListUpdate(
                 action: previousState.action,
                 targetAccount: nil
@@ -131,7 +135,7 @@ final class TransactionModel {
         case .showBankWiringInstructions:
             return nil
 
-        case .initialiseWithSourceAccount(let action, let sourceAccount, _):
+        case .initialiseWithSourceAccount(let action, let sourceAccount):
             return processTargetAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
             guard let source = previousState.source else {
@@ -168,8 +172,7 @@ final class TransactionModel {
             analyticsHook.onTransactionSubmitted(with: previousState)
             return processExecuteTransaction(
                 source: previousState.source,
-                order: previousState.order,
-                secondPassword: previousState.secondPassword
+                order: previousState.order
             )
         case .authorizedOpenBanking:
             return nil
@@ -402,8 +405,7 @@ final class TransactionModel {
 
     private func processExecuteTransaction(
         source: BlockchainAccount?,
-        order: TransactionOrder?,
-        secondPassword: String
+        order: TransactionOrder?
     ) -> Disposable {
         // If we are processing an OpenBanking transaction we do not want to execute the transaction
         // as this is done by the backend once the customer has authorised the payment via open banking
@@ -418,7 +420,7 @@ final class TransactionModel {
         }
 
         return interactor
-            .verifyAndExecute(order: order, secondPassword: secondPassword)
+            .verifyAndExecute(order: order)
             .subscribe(
                 onSuccess: { [weak self] result in
                     self?.triggerSendEmailNotification(source: source, transactionResult: result)

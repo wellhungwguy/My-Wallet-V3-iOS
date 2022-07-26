@@ -35,6 +35,9 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         setupSearchController()
         setupTableView()
 
+        view.backgroundColor = UIColor.white
+        view.isOpaque = true
+
         presenter.dismiss
             .emit(onNext: { [weak self] in
                 guard let self = self else { return }

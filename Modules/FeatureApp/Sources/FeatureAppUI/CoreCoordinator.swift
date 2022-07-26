@@ -66,7 +66,6 @@ public enum CoreAppAction: Equatable {
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
     case prepareForLoggedIn
-    case fetchedUser(Result<NabuUser, NabuUserServiceError>)
     case proceedToLoggedIn(Result<Bool, ProceedToLoggedInError>)
     case appForegrounded
     case deeplink(DeeplinkOutcome)
@@ -408,8 +407,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
 
         environment.loadingViewPresenter.showCircular()
-        environment.blockchainSettings.guid = decryption.guid
-        environment.blockchainSettings.sharedKey = decryption.sharedKey
+        environment.blockchainSettings.set(guid: decryption.guid)
+        environment.blockchainSettings.set(sharedKey: decryption.sharedKey)
 
         return .merge(
             // reset KYC verification if decrypted wallet under recovery context
@@ -487,8 +486,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         {
             // unfortunately during login we store the guid in the settings
             // we need to reset this if we detect a second password
-            environment.blockchainSettings.guid = nil
-            environment.blockchainSettings.sharedKey = nil
+            environment.blockchainSettings.set(guid: nil)
+            environment.blockchainSettings.set(sharedKey: nil)
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(
@@ -643,11 +642,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
 
     case .prepareForLoggedIn:
-        return environment.nabuUserService.fetchUser()
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map(CoreAppAction.fetchedUser)
-    case .fetchedUser:
         let coincoreInit = environment.coincore
             .initialize()
             .mapError(ProceedToLoggedInError.coincore)
@@ -906,7 +900,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 }
 .walletReducer()
 .alertReducer()
-.namespace()
 
 // MARK: - Alert Reducer
 
@@ -992,8 +985,8 @@ internal func syncPinKeyWithICloud(
 
         // Attempt to restore the pinKey from iCloud
         if let pinData = credentialsStore.pinData() {
-            blockchainSettings.pinKey = pinData.pinKey
-            blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
+            blockchainSettings.set(pinKey: pinData.pinKey)
+            blockchainSettings.set(encryptedPinPassword: pinData.encryptedPinPassword)
         }
     }
 }
@@ -1037,22 +1030,4 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: AppSettingsAut
     }
 
     appSettings.clearPin()
-}
-
-extension Reducer where Action == CoreAppAction, Environment == CoreAppEnvironment {
-
-    func namespace() -> Reducer {
-        Reducer { _, action, environment in
-            switch action {
-            case .fetchedUser(let result):
-                guard let user = try? result.get() else { return .none }
-                return .fireAndForget {
-                    environment.app.signIn(userId: user.identifier)
-                }
-            default:
-                return .none
-            }
-        }
-        .combined(with: self)
-    }
 }
