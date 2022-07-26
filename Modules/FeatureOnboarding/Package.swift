@@ -33,8 +33,8 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
-        .package(path: "../Platform"),
         .package(path: "../Test"),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents")
     ],
@@ -49,6 +49,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
@@ -57,7 +58,6 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOnboardingUI"),
                 .product(name: "AnalyticsKitMock", package: "Analytics"),
-                .product(name: "PlatformUIKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKitMock", package: "Tool")
             ]

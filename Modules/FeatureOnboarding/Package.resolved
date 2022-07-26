@@ -10,24 +10,6 @@
       }
     },
     {
-      "identity" : "charts",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/danielgindi/Charts.git",
-      "state" : {
-        "revision" : "66546404a6739173b8e436ab6bc1f2897cd08594",
-        "version" : "3.6.0"
-      }
-    },
-    {
-      "identity" : "checkout-event-logger-ios-framework",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/checkout/checkout-event-logger-ios-framework.git",
-      "state" : {
-        "revision" : "2ef34662f1525526aeb5681c6af5f69572ab36c9",
-        "version" : "1.2.0"
-      }
-    },
-    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
@@ -37,30 +19,12 @@
       }
     },
     {
-      "identity" : "cryptoswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
-      "state" : {
-        "revision" : "039f56c5d7960f277087a0be51f5eb04ed0ec073",
-        "version" : "1.5.1"
-      }
-    },
-    {
       "identity" : "dikit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jackpooleybc/DIKit.git",
       "state" : {
         "branch" : "safe-property-wrappers",
         "revision" : "1d20369ab59d123b4d0bf85dffbe045f4f405ec1"
-      }
-    },
-    {
-      "identity" : "frames-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/checkout/frames-ios.git",
-      "state" : {
-        "revision" : "659b4c58b0987fc68d197e21dcb0ec90e55a4fc0",
-        "version" : "3.5.3"
       }
     },
     {
@@ -90,14 +54,6 @@
       }
     },
     {
-      "identity" : "metadatahdwalletkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jackpooleybc/MetadataHDWalletKit",
-      "state" : {
-        "revision" : "cbd5bc9e2dfd9720a348c09392947fd37a83b304"
-      }
-    },
-    {
       "identity" : "nuke",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke.git",
@@ -113,60 +69,6 @@
       "state" : {
         "revision" : "db55022a8e483774ebbf3568727071477546d9ea",
         "version" : "0.8.3"
-      }
-    },
-    {
-      "identity" : "phonenumberkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
-      "state" : {
-        "revision" : "e58be4e8efcd468bd6236791080ec75a330a8f2a",
-        "version" : "3.4.4"
-      }
-    },
-    {
-      "identity" : "ribs",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/uber/RIBs.git",
-      "state" : {
-        "revision" : "4220cbf013383418af14cce4aae96b3822806de3",
-        "version" : "0.13.0"
-      }
-    },
-    {
-      "identity" : "rxdatasources",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/RxSwiftCommunity/RxDataSources.git",
-      "state" : {
-        "revision" : "90c29b48b628479097fe775ed1966d75ac374518",
-        "version" : "5.0.2"
-      }
-    },
-    {
-      "identity" : "rxswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ReactiveX/RxSwift.git",
-      "state" : {
-        "revision" : "b4307ba0b6425c0ba4178e138799946c3da594f8",
-        "version" : "6.5.0"
-      }
-    },
-    {
-      "identity" : "secp256k1.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Boilertalk/secp256k1.swift.git",
-      "state" : {
-        "revision" : "45e458ec3be46cf0a6eb68bc947f797852dc65d8",
-        "version" : "0.1.6"
-      }
-    },
-    {
-      "identity" : "stripe-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/stripe/stripe-ios",
-      "state" : {
-        "revision" : "ef0c465f84402af07565d637ffb5952d3d2cc37b",
-        "version" : "22.6.0"
       }
     },
     {
@@ -259,15 +161,6 @@
       }
     },
     {
-      "identity" : "swift-parsing",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-parsing",
-      "state" : {
-        "revision" : "bc92e84968990b41640214b636667f35b6e5d44c",
-        "version" : "0.10.0"
-      }
-    },
-    {
       "identity" : "swift-snapshot-testing",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
@@ -277,30 +170,12 @@
       }
     },
     {
-      "identity" : "wallet-core",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/oliveratkinson-bc/wallet-core.git",
-      "state" : {
-        "revision" : "5b4f031f62ad9acea38da1da30aa5678e001aa96",
-        "version" : "2.6.36-blockchain"
-      }
-    },
-    {
       "identity" : "xctest-dynamic-overlay",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
         "revision" : "ef8e14e7ce1c0c304c644c6ba365d06c468ded6b",
         "version" : "0.3.3"
-      }
-    },
-    {
-      "identity" : "zxcvbn-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
-      "state" : {
-        "branch" : "swift-package-manager",
-        "revision" : "c0db9d5278bbc07b28937278406cc042e4bebf68"
       }
     }
   ],

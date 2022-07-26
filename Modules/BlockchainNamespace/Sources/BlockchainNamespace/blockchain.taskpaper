@@ -402,6 +402,10 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
+				then:
+					launch:
+						url:
+						+ blockchain.db.type.url
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -643,12 +647,8 @@ blockchain:
 					+ blockchain.session.state.value
 		error:
 		+ blockchain.ui.device.haptic.feedback.notification.error
+		+ blockchain.ux.type.action
 		+ blockchain.ux.type.story
-			then:
-				launch:
-					url:
-					+ blockchain.db.type.url
-					+ blockchain.ux.type.analytics.action
 		frequent:
 			action:
 			+ blockchain.ux.type.story
@@ -729,6 +729,15 @@ blockchain:
 			wallet:
 			+ blockchain.db.collection
 				select:
+		onboarding:
+			promotion:
+				cowboys:
+					buy:
+						crypto:
+						+ blockchain.ux.type.action
+					verify:
+						email:
+						+ blockchain.ux.type.action
 		payment:
 			method:
 				link:
