@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @inlinable public func extract<T>(_: T.Type = T.self, from any: Any?) -> T? {
+    guard let any = any else { return nil }
     let mirror = Mirror(reflecting: any)
     for (_, child) in mirror.children {
         if let value = child as? T {
