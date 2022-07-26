@@ -13,7 +13,7 @@ import ToolKit
 // swiftlint:disable force_try
 
 public protocol NetworkDebugScreenProvider {
-    var viewController: UIViewController { get }
+    @ViewBuilder func buildDebugView() -> AnyView
 }
 
 struct DebugView: View {
@@ -263,15 +263,12 @@ extension DebugView {
         }
     }
 
-    struct Pulse: UIViewControllerRepresentable {
-
+    struct Pulse: View {
         @Inject var networkDebugScreenProvider: NetworkDebugScreenProvider
 
-        func makeUIViewController(context: Context) -> some UIViewController {
-            networkDebugScreenProvider.viewController
+        var body: some View {
+            networkDebugScreenProvider.buildDebugView()
         }
-
-        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
     }
 }
 

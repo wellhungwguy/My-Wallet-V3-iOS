@@ -507,6 +507,7 @@ extension AnnouncementPresenter {
                         analyticsRecorder
                             .record(
                                 event: ClientEvent.clientError(
+                                    id: nil,
                                     error: "VIEW_NFT_WAITLIST_EMAIL_ERROR",
                                     source: "WALLET",
                                     title: "",
@@ -518,6 +519,7 @@ extension AnnouncementPresenter {
                         analyticsRecorder
                             .record(
                                 event: ClientEvent.clientError(
+                                    id: nabuNetworkError.ux?.id,
                                     error: "VIEW_NFT_WAITLIST_REGISTRATION_ERROR",
                                     networkEndpoint: nabuNetworkError.request?.url?.absoluteString ?? "",
                                     networkErrorCode: "\(nabuNetworkError.code)",

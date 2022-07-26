@@ -11,6 +11,8 @@ public enum UX {
         public typealias Metadata = OrderedDictionary<String, String>
 
         public var source: Swift.Error?
+
+        public var id: String?
         public var title: String
         public var message: String
         public var expected: Bool = true
@@ -21,6 +23,7 @@ public enum UX {
 
         public init(
             source: Swift.Error? = nil,
+            id: String? = nil,
             title: String,
             message: String,
             icon: UX.Icon? = nil,
@@ -28,6 +31,7 @@ public enum UX {
             actions: [UX.Action] = .default
         ) {
             self.source = source
+            self.id = id ?? extract(Nabu.Error.self, from: source)?.ux?.id
             self.title = title
             self.message = message
             self.icon = icon
@@ -37,6 +41,7 @@ public enum UX {
 
         public init(
             source: Swift.Error? = nil,
+            id: String? = nil,
             title: String?,
             message: String?,
             icon: UX.Icon? = nil,
@@ -44,6 +49,7 @@ public enum UX {
             actions: [UX.Action] = .default
         ) {
             self.source = source
+            self.id = id ?? extract(Nabu.Error.self, from: source)?.ux?.id
             self.title = title ?? L10n.oops.title
             self.message = message ?? L10n.oops.message
             self.icon = icon
@@ -57,7 +63,8 @@ public enum UX {
 extension UX.Error: Equatable {
 
     public static func == (lhs: UX.Error, rhs: UX.Error) -> Bool {
-        lhs.title == rhs.title
+        lhs.id == rhs.id
+            && lhs.title == rhs.title
             && lhs.message == rhs.message
             && lhs.icon == rhs.icon
             && lhs.metadata == rhs.metadata
@@ -69,6 +76,7 @@ extension UX.Error: Equatable {
 extension UX.Error: Hashable {
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
         hasher.combine(title)
         hasher.combine(message)
         hasher.combine(icon)
@@ -88,12 +96,14 @@ extension UX.Error {
         source = nabu
 
         if let ux = nabu.ux {
+            id = ux.id
             title = ux.title
             message = ux.message
             icon = ux.icon
             actions = ux.actions ?? []
             categories = ux.categories ?? []
         } else {
+            id = nil
             title = L10n.networkError.title
             message = nabu.description ?? L10n.oops.message
             icon = nil
@@ -112,6 +122,7 @@ extension UX.Error {
 
     public init(nabu ux: Nabu.Error.UX) {
         source = nil
+        id = ux.id
         title = ux.title
         message = ux.message
         icon = ux.icon
