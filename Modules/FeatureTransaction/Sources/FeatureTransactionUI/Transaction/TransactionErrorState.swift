@@ -80,6 +80,7 @@ extension TransactionErrorState {
             if let ob = BankState.UI.errors[error] {
                 return UX.Error(
                     source: error,
+                    id: error.code,
                     title: ob.info.title,
                     message: ob.info.subtitle,
                     icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
@@ -88,6 +89,7 @@ extension TransactionErrorState {
             } else {
                 return UX.Error(
                     source: error,
+                    id: error.code,
                     title: nil,
                     message: nil,
                     metadata: ["code": error.code]
@@ -98,6 +100,7 @@ extension TransactionErrorState {
         let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
         return UX.Error(
             source: self,
+            id: error?.id,
             title: recoveryWarningTitle(for: action),
             message: recoveryWarningMessage(for: action),
             metadata: error?.metadata ?? [:]
@@ -110,6 +113,7 @@ extension TransactionErrorState {
         let nabu = error.source as? Nabu.Error
         let network = error.source as? NetworkError
         return ClientEvent.clientError(
+            id: error.id,
             error: error.expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
             networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
             networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
