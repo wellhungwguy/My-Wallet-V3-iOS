@@ -84,7 +84,7 @@ extension TransactionErrorState {
                     title: ob.info.title,
                     message: ob.info.subtitle,
                     icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
-                    metadata: ["code": error.code]
+                    metadata: error.code.map { ["code": $0] }.or([:])
                 )
             } else {
                 return UX.Error(
@@ -92,7 +92,7 @@ extension TransactionErrorState {
                     id: error.code,
                     title: nil,
                     message: nil,
-                    metadata: ["code": error.code]
+                    metadata: error.code.map { ["code": $0] }.or([:])
                 )
             }
         }
