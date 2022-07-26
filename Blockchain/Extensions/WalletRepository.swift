@@ -160,14 +160,14 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     /// Sets the guid
     func set(guid: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
-            self?.settings.guid = guid
+            self?.settings.set(guid: guid)
         }
     }
 
     /// Sets the shared key
     func set(sharedKey: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
-            self?.settings.sharedKey = sharedKey
+            self?.settings.set(sharedKey: sharedKey)
         }
     }
 

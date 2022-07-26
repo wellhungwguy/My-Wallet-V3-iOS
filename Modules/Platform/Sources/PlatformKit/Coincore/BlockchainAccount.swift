@@ -42,9 +42,6 @@ public protocol BlockchainAccount: Account {
     /// The first `ReceiveAddress` for the given first account (only for BTC and BCH)
     var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> { get }
 
-    /// Some wallets are double encrypted and have a second password.
-    var requireSecondPassword: Single<Bool> { get }
-
     // MARK: Balance
 
     /// The total balance on this account.

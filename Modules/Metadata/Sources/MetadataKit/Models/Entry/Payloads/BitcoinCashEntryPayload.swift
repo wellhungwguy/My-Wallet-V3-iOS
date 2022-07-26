@@ -8,6 +8,7 @@ public struct BitcoinCashEntryPayload: MetadataNodeEntry, Hashable {
         case accounts
         case defaultAccountIndex = "default_account_idx"
         case hasSeen = "has_seen"
+        case txNotes = "tx_notes"
         case addresses
     }
 
@@ -35,17 +36,20 @@ public struct BitcoinCashEntryPayload: MetadataNodeEntry, Hashable {
     public let accounts: [Account]
     public let defaultAccountIndex: Int
     public let hasSeen: Bool?
+    public let txNotes: [String: String]?
     public let addresses: [String: String]? // TODO:
 
     public init(
         accounts: [Account],
         defaultAccountIndex: Int,
         hasSeen: Bool?,
+        txNotes: [String: String]?,
         addresses: [String: String]?
     ) {
         self.accounts = accounts
         self.defaultAccountIndex = defaultAccountIndex
         self.hasSeen = hasSeen
+        self.txNotes = txNotes
         self.addresses = addresses
     }
 }

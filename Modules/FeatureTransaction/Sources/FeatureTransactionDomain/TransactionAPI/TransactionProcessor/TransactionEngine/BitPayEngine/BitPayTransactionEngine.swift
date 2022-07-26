@@ -21,10 +21,6 @@ final class BitPayTransactionEngine: TransactionEngine {
             .fiatExchangeRatePairs
     }
 
-    var requireSecondPassword: Bool {
-        onChainEngine.requireSecondPassword
-    }
-
     // MARK: - Private Properties
 
     /// This is due to the fact that the validation of the timeout occurs on completion of
@@ -151,9 +147,9 @@ final class BitPayTransactionEngine: TransactionEngine {
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         bitpayClientEngine
-            .doPrepareBitPayTransaction(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+            .doPrepareBitPayTransaction(pendingTransaction: pendingTransaction)
             .subscribe(on: MainScheduler.instance)
             .flatMap(weak: self) { (self, transaction) -> Single<String> in
                 self.doExecuteTransaction(
@@ -182,8 +178,7 @@ final class BitPayTransactionEngine: TransactionEngine {
     }
 
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
-        return .just(pendingTransaction)
+        .just(pendingTransaction)
     }
 
     // MARK: - Private Functions

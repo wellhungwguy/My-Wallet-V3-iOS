@@ -117,8 +117,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.guid = "a-guid"
-        settingsApp.sharedKey = "a-sharedKey"
+        settingsApp.set(guid: "a-guid")
+        settingsApp.set(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = true
 
         // then
@@ -139,8 +139,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.guid = "a-guid"
-        settingsApp.sharedKey = "a-sharedKey"
+        settingsApp.set(guid: "a-guid")
+        settingsApp.set(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = false
 
         // then
@@ -161,8 +161,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.pinKey = "a-pin-key"
-        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.set(pinKey: "a-pin-key")
+        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
         settingsApp.isPinSet = true
 
         // then
@@ -183,8 +183,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.pinKey = "a-pin-key"
-        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.set(pinKey: "a-pin-key")
+        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
         settingsApp.isPinSet = false
 
         // then
@@ -205,10 +205,10 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.guid = nil
-        settingsApp.sharedKey = nil
-        settingsApp.pinKey = nil
-        settingsApp.encryptedPinPassword = nil
+        settingsApp.set(guid: nil)
+        settingsApp.set(sharedKey: nil)
+        settingsApp.set(pinKey: nil)
+        settingsApp.set(encryptedPinPassword: nil)
 
         // then
         testStore.send(.start)
@@ -228,8 +228,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.pinKey = "a-pin-key"
-        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.set(pinKey: "a-pin-key")
+        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
         settingsApp.isPinSet = true
 
         // then
@@ -261,8 +261,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.pinKey = "a-pin-key"
-        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.set(pinKey: "a-pin-key")
+        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
         settingsApp.isPinSet = false
 
         // then

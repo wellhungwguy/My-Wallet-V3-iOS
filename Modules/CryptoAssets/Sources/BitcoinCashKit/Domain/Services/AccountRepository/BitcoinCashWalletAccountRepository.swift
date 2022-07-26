@@ -18,6 +18,11 @@ final class BitcoinCashWalletAccountRepository {
     struct BCHAccounts: Equatable {
         let defaultAccount: BitcoinCashWalletAccount
         let accounts: [BitcoinCashWalletAccount]
+
+        let entry: BitcoinCashEntry?
+        var txNotes: [String: String]? {
+            entry?.txNotes
+        }
     }
 
     // MARK: - Properties
@@ -28,6 +33,8 @@ final class BitcoinCashWalletAccountRepository {
     let accounts: AnyPublisher<[BitcoinCashWalletAccount], BitcoinCashWalletRepositoryError>
 
     let activeAccounts: AnyPublisher<[BitcoinCashWalletAccount], BitcoinCashWalletRepositoryError>
+
+    let bitcoinCashEntry: AnyPublisher<BitcoinCashEntry?, BitcoinCashWalletRepositoryError>
 
     private let bitcoinCashFetcher: BitcoinCashEntryFetcherAPI
     private let bridge: BitcoinCashWalletBridgeAPI
@@ -56,7 +63,7 @@ final class BitcoinCashWalletAccountRepository {
         let fetch_old = { [bridge] () -> AnyPublisher<BCHAccounts, BitcoinCashWalletRepositoryError> in
             bridge.defaultWallet.asPublisher()
                 .zip(bridge.wallets.asPublisher())
-                .map { BCHAccounts(defaultAccount: $0, accounts: $1) }
+                .map { BCHAccounts(defaultAccount: $0, accounts: $1, entry: nil) }
                 .mapError(BitcoinCashWalletRepositoryError.failedToFetchAccount)
                 .eraseToAnyPublisher()
         }
@@ -67,7 +74,7 @@ final class BitcoinCashWalletAccountRepository {
                 .map { entry in
                     let defaultAccount = bchWalletAccount(from: entry.defaultAccount)
                     let accounts = entry.accounts.map(bchWalletAccount(from:))
-                    return BCHAccounts(defaultAccount: defaultAccount, accounts: accounts)
+                    return BCHAccounts(defaultAccount: defaultAccount, accounts: accounts, entry: entry)
                 }
                 .eraseToAnyPublisher()
         }
@@ -99,6 +106,14 @@ final class BitcoinCashWalletAccountRepository {
                 accounts.filter(\.isActive)
             }
             .eraseToAnyPublisher()
+
+        bitcoinCashEntry = cachedValue.get(key: Key())
+            .map(\.entry)
+            .eraseToAnyPublisher()
+    }
+
+    func invalidateCache() {
+        cachedValue.invalidateCache()
     }
 }
 

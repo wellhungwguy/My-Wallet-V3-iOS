@@ -279,7 +279,12 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
                     .hide(loader: self.loadingViewPresenter)
                     .asObservable()
             }
-            .subscribe()
+            .subscribe(
+                onError: { [alertViewPresenter, loadingViewPresenter] _ in
+                    loadingViewPresenter.hide()
+                    alertViewPresenter.error(in: nil, action: nil)
+                }
+            )
             .disposed(by: disposeBag)
 
         explorerButton

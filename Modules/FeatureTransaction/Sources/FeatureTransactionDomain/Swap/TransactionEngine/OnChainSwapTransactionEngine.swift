@@ -23,14 +23,12 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let orderUpdateRepository: OrderUpdateRepositoryAPI
     let quotesEngine: QuotesEngineAPI
     let hotWalletAddressService: HotWalletAddressServiceAPI
-    let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     init(
-        requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
         quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
@@ -43,7 +41,6 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         hotWalletAddressService: HotWalletAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
-        self.requireSecondPassword = requireSecondPassword
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
@@ -153,7 +150,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
             .map { swapOrder -> (identifier: String, depositAddress: String) in
                 guard let depositAddress = swapOrder.depositAddress else {
@@ -170,8 +167,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                         return self.executeOnChain(
                             swapOrderIdentifier: swapOrder.identifier,
                             transactionTarget: transactionTarget,
-                            pendingTransaction: pendingTransaction,
-                            secondPassword: secondPassword
+                            pendingTransaction: pendingTransaction
                         )
                     }
             }
@@ -242,14 +238,13 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     private func executeOnChain(
         swapOrderIdentifier: String,
         transactionTarget: TransactionTarget,
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         onChainEngine
             .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
             .flatMap { [onChainEngine, orderUpdateRepository] pendingTransaction in
                 onChainEngine
-                    .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+                    .execute(pendingTransaction: pendingTransaction)
                     .catch { [orderUpdateRepository] error -> Single<TransactionResult> in
                         orderUpdateRepository
                             .updateOrder(identifier: swapOrderIdentifier, success: false)

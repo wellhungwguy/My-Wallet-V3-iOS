@@ -120,6 +120,7 @@ extension DependencyContainer {
                 createWalletRepository: DIKit.resolve(),
                 usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
+                logger: DIKit.resolve(),
                 tracer: DIKit.resolve(),
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),

@@ -46,7 +46,6 @@ extension OnChainTransactionEngine {
         level: FeeLevel,
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {
             return updateFeeSelection(
                 pendingTransaction: pendingTransaction,
@@ -63,7 +62,6 @@ extension OnChainTransactionEngine {
         newFeeLevel: FeeLevel,
         customFeeAmount: MoneyValue?
     ) -> Single<PendingTransaction> {
-        // TODO: Store default fee level
         let pendingTransaction = pendingTransaction
             .update(selectedFeeLevel: newFeeLevel, customFeeAmount: customFeeAmount)
 

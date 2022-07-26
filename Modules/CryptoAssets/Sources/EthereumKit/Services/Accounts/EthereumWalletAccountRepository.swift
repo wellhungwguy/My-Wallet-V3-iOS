@@ -19,7 +19,14 @@ public protocol EthereumWalletAccountRepositoryAPI {
     var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> { get }
 }
 
-final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI {
+protocol EthereumWalletRepositoryAPI {
+
+    var ethereumEntry: AnyPublisher<EthereumEntryPayload?, WalletAccountRepositoryError> { get }
+
+    func invalidateCache()
+}
+
+final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, EthereumWalletRepositoryAPI {
 
     // MARK: - Types
 
@@ -27,16 +34,16 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
 
     // MARK: - EthereumWalletAccountRepositoryAPI
 
-    var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
-        cachedValue.get(key: Key())
-    }
+    let defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError>
+
+    let ethereumEntry: AnyPublisher<EthereumEntryPayload?, WalletAccountRepositoryError>
 
     // MARK: - Private Properties
 
     private let accountBridge: EthereumWalletAccountBridgeAPI
     private let cachedValue: CachedValueNew<
         Key,
-        EthereumWalletAccount,
+        EthereumWallet,
         WalletAccountRepositoryError
     >
     private let walletCoreHDWalletProvider: WalletCoreHDWalletProvider
@@ -52,24 +59,25 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
         self.accountBridge = accountBridge
         self.walletCoreHDWalletProvider = walletCoreHDWalletProvider
 
-        let cache: AnyCache<Key, EthereumWalletAccount> = InMemoryCache(
+        let cache: AnyCache<Key, EthereumWallet> = InMemoryCache(
             configuration: .onLoginLogout(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        let fetch_old = { [accountBridge] () -> AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> in
+        let fetch_old = { [accountBridge] () -> AnyPublisher<EthereumWallet, WalletAccountRepositoryError> in
             accountBridge.wallets
                 .eraseError()
-                .map(\.first)
                 .mapError(WalletAccountRepositoryError.failedToFetchAccount)
-                .onNil(.missingWallet)
-                .map { account in
-                    EthereumWalletAccount(
-                        index: account.index,
-                        publicKey: account.publicKey,
-                        label: account.label,
-                        archived: account.archived
-                    )
+                .map { accounts in
+                    let walletAccounts = accounts.map { account in
+                        EthereumWalletAccount(
+                            index: account.index,
+                            publicKey: account.publicKey,
+                            label: account.label,
+                            archived: account.archived
+                        )
+                    }
+                    return EthereumWallet(entry: nil, accounts: walletAccounts)
                 }
                 .eraseToAnyPublisher()
         }
@@ -79,18 +87,21 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
             hdWalletProvider: walletCoreHDWalletProvider,
             label: LocalizationConstants.Account.myWallet
         )
-        .flatMap { entry -> AnyPublisher<EthereumWalletAccount, WalletAssetFetchError> in
-            guard let firstAccount = entry.ethereum?.accounts.first else {
+        .flatMap { entry -> AnyPublisher<EthereumWallet, WalletAssetFetchError> in
+            guard let ethereum = entry.ethereum else {
                 return .failure(.notInitialized)
             }
-            return .just(
+
+            let accounts = ethereum.accounts.enumerated().map { index, account in
                 EthereumWalletAccount(
-                    index: entry.ethereum?.defaultAccountIndex ?? 0,
-                    publicKey: firstAccount.address,
-                    label: firstAccount.label,
-                    archived: firstAccount.archived
+                    index: index,
+                    publicKey: account.address,
+                    label: account.label,
+                    archived: account.archived
                 )
-            )
+            }
+
+            return .just(EthereumWallet(entry: entry, accounts: accounts))
         }
         .mapError(WalletAccountRepositoryError.failedToFetchAccount)
         .eraseToAnyPublisher()
@@ -99,7 +110,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
             cache: cache,
             fetch: { [nativeWalletEnabled] _ in
                 nativeWalletEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> in
+                    .flatMap { isEnabled -> AnyPublisher<EthereumWallet, WalletAccountRepositoryError> in
                         guard isEnabled else {
                             return fetch_old()
                         }
@@ -108,5 +119,18 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI 
                     .eraseToAnyPublisher()
             }
         )
+
+        defaultAccount = cachedValue.get(key: Key())
+            .map(\.accounts)
+            .compactMap(\.first)
+            .eraseToAnyPublisher()
+
+        ethereumEntry = cachedValue.get(key: Key())
+            .map(\.entry)
+            .eraseToAnyPublisher()
+    }
+
+    func invalidateCache() {
+        cachedValue.invalidateCache()
     }
 }

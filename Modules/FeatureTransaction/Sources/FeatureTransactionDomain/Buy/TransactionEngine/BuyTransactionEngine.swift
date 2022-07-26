@@ -15,7 +15,6 @@ final class BuyTransactionEngine: TransactionEngine {
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
 
     // Used to convert fiat <-> crypto when user types an amount (mainly crypto -> fiat)
@@ -217,8 +216,7 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func execute(
         pendingTransaction: PendingTransaction,
-        pendingOrder: TransactionOrder?,
-        secondPassword: String
+        pendingOrder: TransactionOrder?
     ) -> Single<TransactionResult> {
         guard let order = pendingOrder as? OrderDetails else {
             return .error(TransactionValidationFailure(state: .optionInvalid))

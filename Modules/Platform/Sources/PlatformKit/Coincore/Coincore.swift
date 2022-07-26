@@ -77,22 +77,28 @@ final class Coincore: CoincoreAPI {
     private let assetLoader: AssetLoader
     private let reactiveWallet: ReactiveWalletAPI
 
+    private let queue: DispatchQueue
+
     // MARK: - Setup
 
     init(
-        assetLoader: AssetLoader = DynamicAssetLoader(),
-        fiatAsset: FiatAsset = FiatAsset(),
-        reactiveWallet: ReactiveWalletAPI = resolve()
+        assetLoader: AssetLoader,
+        fiatAsset: FiatAsset,
+        reactiveWallet: ReactiveWalletAPI,
+        queue: DispatchQueue
     ) {
         self.assetLoader = assetLoader
         self.fiatAsset = fiatAsset
         self.reactiveWallet = reactiveWallet
+        self.queue = queue
     }
 
     /// Gives a chance for all assets to initialize themselves.
     func initialize() -> AnyPublisher<Void, CoincoreError> {
         assetLoader
             .initAndPreload()
+            .subscribe(on: queue)
+            .receive(on: queue)
             .mapError(to: CoincoreError.self)
             .flatMap { [assetLoader] _ -> AnyPublisher<Void, CoincoreError> in
                 assetLoader.loadedAssets

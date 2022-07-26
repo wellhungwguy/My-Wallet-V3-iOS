@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import ToolKit
 import WalletCore
@@ -65,6 +66,31 @@ public struct NativeWallet: Equatable {
         self.txNotes = txNotes
         self.addressBook = addressBook
     }
+}
+
+// MARK: - Wallet Retriever
+
+/// Streams the current initiliazed wrapper
+func getWrapper(
+    walletHolder: WalletHolderAPI
+) -> AnyPublisher<Wrapper, WalletError> {
+    walletHolder.walletStatePublisher
+        .flatMap { walletState -> AnyPublisher<Wrapper, WalletError> in
+            guard let wrapper = walletState?.wrapper else {
+                return .failure(.payloadNotFound)
+            }
+            return .just(wrapper)
+        }
+        .eraseToAnyPublisher()
+}
+
+/// Streams the current initiliazed wrapper
+func getWallet(
+    walletHolder: WalletHolderAPI
+) -> AnyPublisher<NativeWallet, WalletError> {
+    getWrapper(walletHolder: walletHolder)
+        .map(\.wallet)
+        .eraseToAnyPublisher()
 }
 
 // MARK: - Wallet Creation

@@ -36,10 +36,15 @@ class NotificationPreferencesReducerTest: XCTestCase {
         )
     }
 
+    func test_initial_state() {
+        let state = testStore.state
+        XCTAssertNil(state.route)
+        XCTAssertNil(state.notificationDetailsState)
+        XCTAssertEqual(state.viewState, .loading)
+    }
+
     func test_fetchSettings_on_startup() {
-        testStore.send(.onAppear) { state in
-            state.viewState = .loading
-        }
+        testStore.send(.onAppear)
     }
 
     func test_reload_tap() {
