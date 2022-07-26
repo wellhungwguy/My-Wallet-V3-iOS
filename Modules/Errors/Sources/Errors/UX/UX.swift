@@ -103,7 +103,7 @@ extension UX.Error {
             actions = ux.actions ?? []
             categories = ux.categories ?? []
         } else {
-            id = ux?.id
+            id = nil
             title = L10n.networkError.title
             message = nabu.description ?? L10n.oops.message
             icon = nil

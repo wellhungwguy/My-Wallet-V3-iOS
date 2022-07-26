@@ -101,7 +101,7 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
                     return .failure(OrderConfirmationServiceError.mappingError)
                 }
                 if [.failed, .expired].contains(details.state), let ux = details.ux {
-                    return .failure(ux)
+                    return .failure(UX.Error(nabu: ux))
                 }
                 return .just(details)
             }
