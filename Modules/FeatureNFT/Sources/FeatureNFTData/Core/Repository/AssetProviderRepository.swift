@@ -19,74 +19,83 @@ public final class AssetProviderRepository: AssetProviderRepositoryAPI {
 
     public func fetchAssetsFromEthereumAddress(
         _ address: String
-    ) -> AnyPublisher<[Asset], NabuNetworkError> {
+    ) -> AnyPublisher<AssetPageResponse, NabuNetworkError> {
         client
             .fetchAssetsFromEthereumAddress(address)
-            .map { $0.map(Asset.init(response:)) }
+            .map(AssetPageResponse.init)
+            .eraseToAnyPublisher()
+    }
+
+    public func fetchAssetsFromEthereumAddress(
+        _ address: String,
+        pageKey: String
+    ) -> AnyPublisher<AssetPageResponse, NabuNetworkError> {
+        client
+            .fetchAssetsFromEthereumAddress(address, pageKey: pageKey)
+            .map(AssetPageResponse.init)
             .eraseToAnyPublisher()
     }
 }
 
-extension Asset {
-    init(response: AssetResponse) {
+extension AssetPageResponse {
+    init(_ nft: Nft) {
         self = .init(
-            name: response.name,
-            creator: response.creator,
-            tokenID: response.tokenID,
-            contractAddress: response.assetContract.address,
-            nftDescription: response.nftDescription,
-            identifier: response.identifier,
-            collection: .init(response: response.collection),
-            media: .init(response: response),
-            offers: response.offers.map(Offer.init(response:)),
-            owners: response.owners,
-            traits: response.traits
+            next: nft.next,
+            assets: nft.assets.map(Asset.init(response:))
         )
     }
 }
 
-extension AssetCollection {
-    init(response: CollectionResponse) {
+extension Asset {
+    init(response: AssetElement) {
         self = .init(
             name: response.name,
-            collectionDescription: response.collectionDescription,
-            payoutAddress: response.payoutAddress,
-            shortDescription: response.shortDescription,
-            slug: response.slug,
-            createdDate: response.createdDate,
-            externalURL: response.externalURL,
-            featured: response.featured,
-            hidden: response.hidden,
-            stats: response.stats
+            creator: response.creator.user?.username ?? response.creator.address,
+            tokenID: response.tokenID,
+            nftDescription: response.nftDescription,
+            identifier: "\(response.id)" + ".\(response.tokenID)",
+            contractId: response.assetContract.address,
+            collection: .init(response: response.collection),
+            // NOTE: Polygon not supported at this time
+            network: .ethereum,
+            media: .init(response: response),
+            traits: response.traits.map(Trait.init(attribute:))
+        )
+    }
+}
+
+extension Asset.Collection {
+    init(response: AssetCollectionResponse) {
+        self = .init(
+            name: response.name,
+            isVerified: response.safelistRequestStatus == .verified,
+            bannerImageURL: response.bannerImageURL,
+            collectionImageURL: response.imageURL,
+            collectionDescription: response.collectionDescription
         )
     }
 }
 
 extension Asset.Media {
-    init(response: AssetResponse) {
+    init(response: AssetElement) {
         self = .init(
             backgroundColor: response.backgroundColor,
             animationURL: response.animationURL,
-            imageOriginalURL: response.imageOriginalURL,
+            bannerImageURL: response.collection.bannerImageURL,
+            collectionImageUrl: response.collection.imageURL,
+            imageOriginalURL: response.imageOriginalURL ?? response.imageURL,
             imagePreviewURL: response.imagePreviewURL,
             imageThumbnailURL: response.imageThumbnailURL,
-            imageURL: response.imageURL,
-            largeImageURL: response.largeImageURL
+            imageURL: response.imageURL
         )
     }
 }
 
-extension Offer {
-    init(response: OfferResponse) {
+extension Asset.Trait {
+    init(attribute: AssetElement.Trait) {
         self = .init(
-            devSellerFeeBasisPoints: response.devSellerFeeBasisPoints,
-            identifier: response.identifier,
-            createdDate: response.createdDate,
-            bidAmount: response.bidAmount,
-            collectionSlug: response.collectionSlug,
-            contractAddress: response.contractAddress,
-            eventType: response.eventType,
-            quantity: response.quantity
+            type: attribute.traitType,
+            description: attribute.valueDescription
         )
     }
 }

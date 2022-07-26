@@ -652,6 +652,8 @@ blockchain:
 				+ blockchain.ux.type.story
 				deposit:
 				+ blockchain.ux.type.story
+				nft:
+				+ blockchain.ux.type.story
 				receive:
 				+ blockchain.ux.type.story
 				rewards:

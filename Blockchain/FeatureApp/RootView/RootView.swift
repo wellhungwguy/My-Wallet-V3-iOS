@@ -6,6 +6,7 @@ import ComposableArchitecture
 import ComposableNavigation
 import DIKit
 import ErrorsUI
+import FeatureAppUI
 import FeatureInterestUI
 import Localization
 import MoneyKit
@@ -131,6 +132,8 @@ struct RootView: View {
                     ActivityView()
                 case blockchain.ux.maintenance:
                     maintenance(tab)
+                case blockchain.ux.nft.collection:
+                    AssetListViewController()
                 case blockchain.ux.web:
                     if let url = tab.url {
                         WebView(url: url)

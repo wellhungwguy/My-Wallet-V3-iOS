@@ -14,6 +14,7 @@ import FeatureCoinUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureKYCUI
+import FeatureNFTUI
 import FeatureTransactionUI
 import MoneyKit
 import NetworkKit

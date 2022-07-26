@@ -1,12 +1,14 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureAppUI
 import FeatureInterestUI
 import FeatureOnboardingUI
 import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
+import SwiftUI
 import ToolKit
 import UIComponentsKit
 
@@ -293,6 +295,13 @@ extension RootViewController: LoggedInBridge {
         interestAccountList.delegate = self
         topMostViewController?.present(
             interestAccountList,
+            animated: true
+        )
+    }
+
+    func handleNFTAssetView() {
+        topMostViewController?.present(
+            AssetListHostingViewController(),
             animated: true
         )
     }
