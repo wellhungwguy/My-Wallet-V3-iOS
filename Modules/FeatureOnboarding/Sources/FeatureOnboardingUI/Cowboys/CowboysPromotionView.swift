@@ -20,10 +20,10 @@ struct PromotionView: View {
             }
             Spacer()
             Group {
-                Text(ux.title)
+                Text(rich: ux.title)
                     .typography(.title2)
                     .padding(.bottom, 16.pt)
-                Text(ux.message)
+                Text(rich: ux.message)
                     .typography(.body1)
             }
             .multilineTextAlignment(.center)
@@ -67,9 +67,9 @@ struct PromotionViewPreview: PreviewProvider {
                 title: "Almost there!",
                 message:
                 """
-                Verify your ID and start referring your friends!
+                **Verify your ID** and start referring your friends!
 
-                The person with the most referrals by MM/DD/YYYY will will the Grand Prize!
+                The person with the **most referrals** by MM/DD/YYYY will will the Grand Prize!
                 """,
                 icon: UX.Icon(url: "https://www.blockchain.com/static/img/icons/icon-card.svg"),
                 actions: [
