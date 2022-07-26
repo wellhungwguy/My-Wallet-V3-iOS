@@ -77,14 +77,22 @@ extension TransactionErrorState {
         }
 
         if let error = extract(OpenBanking.Error.self, from: self) {
-            let ob = BankState.UI.errors[error, default: .defaultError]
-            return UX.Error(
-                source: error,
-                title: ob.info.title,
-                message: ob.info.subtitle,
-                icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
-                actions: .default
-            )
+            if let ob = BankState.UI.errors[error] {
+                return UX.Error(
+                    source: error,
+                    title: ob.info.title,
+                    message: ob.info.subtitle,
+                    icon: (ob.info.media.image?.url).map(UX.Icon.init(url:)),
+                    metadata: ["code": error.code]
+                )
+            } else {
+                return UX.Error(
+                    source: error,
+                    title: nil,
+                    message: nil,
+                    metadata: ["code": error.code]
+                )
+            }
         }
 
         let error = extract(Nabu.Error.self, from: self).map(UX.Error.init(nabu:))
