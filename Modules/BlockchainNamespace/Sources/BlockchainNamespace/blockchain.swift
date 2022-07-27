@@ -2566,6 +2566,7 @@ public protocol I_blockchain_ux_frequent_action: I_blockchain_ux_type_story {}
 public extension I_blockchain_ux_frequent_action {
 	var `buy`: L_blockchain_ux_frequent_action_buy { .init("\(__).buy") }
 	var `deposit`: L_blockchain_ux_frequent_action_deposit { .init("\(__).deposit") }
+	var `nft`: L_blockchain_ux_frequent_action_nft { .init("\(__).nft") }
 	var `receive`: L_blockchain_ux_frequent_action_receive { .init("\(__).receive") }
 	var `rewards`: L_blockchain_ux_frequent_action_rewards { .init("\(__).rewards") }
 	var `sell`: L_blockchain_ux_frequent_action_sell { .init("\(__).sell") }
@@ -2581,6 +2582,10 @@ public final class L_blockchain_ux_frequent_action_deposit: L, I_blockchain_ux_f
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.deposit", comment: "") }
 }
 public protocol I_blockchain_ux_frequent_action_deposit: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_frequent_action_nft: L, I_blockchain_ux_frequent_action_nft {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.nft", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_nft: I_blockchain_ux_type_story {}
 public final class L_blockchain_ux_frequent_action_receive: L, I_blockchain_ux_frequent_action_receive {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.receive", comment: "") }
 }

@@ -469,14 +469,10 @@ targets:
         product: WalletPayloadKit
       - package: WalletPayload
         product: WalletPayloadDataKit
-      - package: FeatureAttribution
-        product: FeatureAttribution
       - package: FeatureReferral
         product: FeatureReferral
       - package: FraudIntelligence
         product: FraudIntelligence
-      - package: FeatureReferral
-        product: FeatureReferral
 
     platform: iOS
     postBuildScripts:

@@ -720,7 +720,7 @@ extension DependencyContainer {
                 .defaultAccount
                 .map(\.publicKey)
                 .eraseError()
-            return AsssetProviderService(
+            return AssetProviderService(
                 repository: AssetProviderRepository(
                     client: FeatureNFTData.APIClient(
                         retailNetworkAdapter: DIKit.resolve(tag: DIKitContext.retail),
