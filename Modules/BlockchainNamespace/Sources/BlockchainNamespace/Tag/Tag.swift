@@ -184,8 +184,16 @@ extension Tag {
         id.isDotPathAncestor(of: other.id)
     }
 
+    public func isNotAncestor(of other: Tag) -> Bool {
+        !isAncestor(of: other)
+    }
+
     public func isDescendant(of other: Tag) -> Bool {
         id.isDotPathDescendant(of: other.id)
+    }
+
+    public func isNotDescendant(of other: Tag) -> Bool {
+        !isDescendant(of: other)
     }
 
     public func idRemainder(after tag: Tag) throws -> Substring {
@@ -225,11 +233,15 @@ extension Tag {
     public subscript<Descendant>(
         descendant: Descendant
     ) -> Tag? where Descendant: Collection, Descendant.Element == Name {
+        try? self.descendant(descendant)
+    }
+
+    public func descendant<Descendant>(
+        _ descendant: Descendant
+    ) throws -> Tag where Descendant: Collection, Descendant.Element == Name {
         var result = self
         for name in descendant {
-            guard let tag = result.children[name] else {
-                return nil
-            }
+            let tag = try result.child(named: name)
             result = (try? tag.node.protonym.map { try Tag(id: $0, in: language) }) ?? tag
         }
         return result
@@ -323,11 +335,10 @@ extension Tag {
 
     static func ownType(_ tag: Tag) -> [ID: Tag] {
         var type: [ID: Tag] = [:]
-        if tag.isGraphNode {
-            for id in tag.node.type {
-                type[id] = tag.language.tag(id)
-            }
-        } else {
+        for id in tag.node.type {
+            type[id] = tag.language.tag(id)
+        }
+        if !tag.isGraphNode {
             for id in tag.parent?.node.type ?? [] {
                 guard let node = tag.language.tag(id)?[tag.node.name] else { continue }
                 type[node.id] = node

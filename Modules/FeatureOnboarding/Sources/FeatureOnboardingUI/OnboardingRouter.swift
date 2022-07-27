@@ -184,7 +184,10 @@ public final class OnboardingRouter: OnboardingRouterAPI {
             await MainActor.run {
                 presenter.present(UIHostingController(rootView: view), animated: true)
             }
-            guard let event = try await app.on(promotion.then.launch.url, promotion.then.close).stream().next() else {
+            guard let event = try await app.on(
+                promotion.then.launch.url,
+                promotion.then.close
+            ).stream().next() else {
                 return .abandoned
             }
             switch event.tag {

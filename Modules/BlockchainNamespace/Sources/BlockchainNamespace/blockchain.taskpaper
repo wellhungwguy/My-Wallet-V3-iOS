@@ -402,11 +402,14 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
+				leaf:
 				then:
 					close:
+					+ blockchain.ui.type.action.leaf
 					launch:
 						url:
 						+ blockchain.db.type.url
+						+ blockchain.ui.type.action.leaf
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element

@@ -62,7 +62,12 @@ public struct PromotionView: View {
     private func post(action ux: UX.Action) {
         switch ux.url {
         case let url?:
-            app.post(value: url, of: promotion.then.launch.url)
+            app.post(
+                event: promotion.then.launch.url,
+                context: [
+                    blockchain.ui.type.action.then.launch.url: url
+                ]
+            )
         case nil:
             app.post(
                 event: promotion.then.close,

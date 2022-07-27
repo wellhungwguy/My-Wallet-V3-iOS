@@ -1722,8 +1722,13 @@ public final class L_blockchain_ui_type_action: L, I_blockchain_ui_type_action {
 }
 public protocol I_blockchain_ui_type_action: I_blockchain_ux_type_analytics_action {}
 public extension I_blockchain_ui_type_action {
+	var `leaf`: L_blockchain_ui_type_action_leaf { .init("\(__).leaf") }
 	var `then`: L_blockchain_ui_type_action_then { .init("\(__).then") }
 }
+public final class L_blockchain_ui_type_action_leaf: L, I_blockchain_ui_type_action_leaf {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.leaf", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_leaf: I {}
 public final class L_blockchain_ui_type_action_then: L, I_blockchain_ui_type_action_then {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then", comment: "") }
 }
@@ -1735,7 +1740,7 @@ public extension I_blockchain_ui_type_action_then {
 public final class L_blockchain_ui_type_action_then_close: L, I_blockchain_ui_type_action_then_close {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.close", comment: "") }
 }
-public protocol I_blockchain_ui_type_action_then_close: I {}
+public protocol I_blockchain_ui_type_action_then_close: I_blockchain_ui_type_action_leaf {}
 public final class L_blockchain_ui_type_action_then_launch: L, I_blockchain_ui_type_action_then_launch {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.launch", comment: "") }
 }
@@ -1746,7 +1751,7 @@ public extension I_blockchain_ui_type_action_then_launch {
 public final class L_blockchain_ui_type_action_then_launch_url: L, I_blockchain_ui_type_action_then_launch_url {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.launch.url", comment: "") }
 }
-public protocol I_blockchain_ui_type_action_then_launch_url: I_blockchain_db_type_url {}
+public protocol I_blockchain_ui_type_action_then_launch_url: I_blockchain_db_type_url, I_blockchain_ui_type_action_leaf {}
 public final class L_blockchain_ui_type_control: L, I_blockchain_ui_type_control {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.control", comment: "") }
 }

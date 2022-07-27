@@ -93,13 +93,7 @@ extension Session.State {
     }
 
     public func set(_ event: Tag.Event, to value: Any?) {
-        let key = key(event)
-        transaction { state in
-            state.set(key, to: value)
-            for type in key.tag.type.values where type != key.tag {
-                state.set(type, to: value)
-            }
-        }
+        data.set(key(event), to: value as Any)
     }
 
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
