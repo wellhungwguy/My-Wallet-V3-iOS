@@ -93,16 +93,22 @@ extension Session.State {
     }
 
     public func set(_ event: Tag.Event, to value: Any?) {
-        data.set(key(event), to: value as Any)
-    }
-
-    public func set(_ reference: Tag.Reference, to value: Any?) {
-        data.set(reference, to: value as Any)
+        let key = key(event)
+        transaction { state in
+            state.set(key, to: value)
+            for type in key.tag.type.values where type != key.tag {
+                state.set(type, to: value)
+            }
+        }
     }
 
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
         let key = key(event)
-        data.set(key, to: Data.Computed(key: key, yield: value))
+        set(key, to: Data.Computed(key: key, yield: value))
+    }
+
+    public func set(_ reference: Tag.Reference, to value: Any?) {
+        data.set(reference, to: value as Any)
     }
 
     public func get(_ event: Tag.Event) throws -> Any {

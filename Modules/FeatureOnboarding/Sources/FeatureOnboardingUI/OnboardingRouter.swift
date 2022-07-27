@@ -4,6 +4,7 @@ import BlockchainNamespace
 import Combine
 import CombineSchedulers
 import DIKit
+import Errors
 import SwiftUI
 import ToolKit
 import UIKit
@@ -11,6 +12,7 @@ import UIKit
 public protocol KYCRouterAPI {
     func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
     func presentKYCUpgradePrompt(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
+    func presentTier1KYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
 }
 
 public protocol TransactionsRouterAPI {
@@ -54,7 +56,7 @@ public final class OnboardingRouter: OnboardingRouterAPI {
                 guard let self = self else { return .just(.abandoned) }
                 return Task<OnboardingResult, Error>.Publisher {
                     if try await self.app.get(blockchain.user.is.cowboy.fan) {
-                        return await self.transactionsRouter.presentBuyFlow(from: presenter).await().or(.abandoned)
+                        return try await self.presentCowboyPromotion(from: presenter)
                     } else {
                         return await self.presentUITour(from: presenter).await().or(.abandoned)
                     }
@@ -149,5 +151,50 @@ public final class OnboardingRouter: OnboardingRouterAPI {
                 return kycRouter.presentEmailVerification(from: presenter)
             }
             .eraseToAnyPublisher()
+    }
+
+    @MainActor
+    private func presentTier1KYCIfNeeded(from presenter: UIViewController) async -> OnboardingResult {
+        await kycRouter.presentTier1KYCIfNeeded(from: presenter)
+            .await()
+            .or(.abandoned)
+    }
+
+    private func presentCowboyPromotion(from presenter: UIViewController) async throws -> OnboardingResult {
+        let verifyEmail = await present(
+            promotion: blockchain.ux.onboarding.promotion.cowboys.verify.email,
+            from: presenter
+        )
+        guard case .completed = verifyEmail else { return .abandoned }
+        guard case .completed = await presentTier1KYCIfNeeded(from: presenter) else { return .abandoned }
+        return await present(
+            promotion: blockchain.ux.onboarding.promotion.cowboys.raffle,
+            from: presenter
+        )
+    }
+
+    @discardableResult
+    private func present(
+        promotion: I_blockchain_ux_onboarding_type_promotion,
+        from presenter: UIViewController
+    ) async -> OnboardingResult {
+        do {
+            let view = try await PromotionView(promotion, ux: app.get(promotion.story))
+                .app(app)
+            await MainActor.run {
+                presenter.present(UIHostingController(rootView: view), animated: true)
+            }
+            guard let event = try await app.on(promotion.then.launch.url, promotion.then.close).stream().next() else {
+                return .abandoned
+            }
+            switch event.tag {
+            case blockchain.ui.type.action.then.launch.url:
+                return .completed
+            default:
+                return .abandoned
+            }
+        } catch {
+            return .abandoned
+        }
     }
 }

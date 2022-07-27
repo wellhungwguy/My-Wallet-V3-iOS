@@ -16,7 +16,7 @@ struct Tab: Hashable, Identifiable, Codable {
     var id: AnyHashable { tag }
     var tag: Tag.Reference
     var name: String
-    var ux: Nabu.Error.UX?
+    var ux: UX.Dialog?
     var url: URL?
     var icon: Icon
 }

@@ -192,6 +192,20 @@ extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
             .replaceError(with: OnboardingResult.completed)
             .eraseToAnyPublisher()
     }
+
+    public func presentTier1KYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<OnboardingResult, Never> {
+        presentKYCIfNeeded(from: presenter, requiredTier: .tier1)
+            .catch(.abandoned)
+            .map { (result: KYCRoutingResult) -> OnboardingResult in
+                switch result {
+                case .abandoned: return .abandoned
+                case .completed: return .completed
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension KYCAdapter: FeatureSettingsUI.KYCRouterAPI {

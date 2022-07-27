@@ -120,7 +120,7 @@ extension UX.Error {
         self.metadata = metadata
     }
 
-    public init(nabu ux: Nabu.Error.UX) {
+    public init(nabu ux: UX.Dialog) {
         source = nil
         id = ux.id
         title = ux.title
@@ -143,7 +143,7 @@ extension UX.Error {
         default:
             if let ux = extract(UX.Error.self, from: error as Any) {
                 self = ux
-            } else if let ux = extract(Nabu.Error.UX.self, from: error as Any) {
+            } else if let ux = extract(UX.Dialog.self, from: error as Any) {
                 self = Self(nabu: ux)
             } else {
                 self.init(

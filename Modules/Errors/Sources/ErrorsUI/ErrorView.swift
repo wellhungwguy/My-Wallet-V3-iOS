@@ -204,7 +204,12 @@ public struct ErrorView<Fallback: View>: View {
         case let url?:
             app.post(value: url, of: blockchain.ux.error.then.launch.url)
         case nil:
-            dismiss()
+            app.post(
+                event: blockchain.ux.error.then.close,
+                context: [
+                    blockchain.ui.type.action.then.close: Tag.Context.Computed(dismiss)
+                ]
+            )
         }
     }
 }

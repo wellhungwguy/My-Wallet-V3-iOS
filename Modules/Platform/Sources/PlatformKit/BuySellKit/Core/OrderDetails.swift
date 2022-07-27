@@ -222,7 +222,7 @@ public struct OrderDetails: Equatable {
         }
     }
 
-    public var ux: Nabu.Error.UX? {
+    public var ux: UX.Dialog? {
         switch _value {
         case .buy(let details):
             return details.ux

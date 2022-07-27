@@ -17,7 +17,7 @@ public enum Nabu {
         public var code: ErrorCode
         public var type: ErrorType
         public var description: String?
-        public var ux: UX?
+        public var ux: UX.Dialog?
 
         public var request: URLRequest?
         public var response: HTTPURLResponse?
@@ -27,7 +27,7 @@ public enum Nabu {
             code: Nabu.ErrorCode,
             type: Nabu.ErrorType,
             description: String? = nil,
-            ux: Nabu.Error.UX? = nil,
+            ux: UX.Dialog? = nil,
             request: URLRequest? = nil,
             response: HTTPURLResponse? = nil
         ) {
@@ -117,7 +117,7 @@ extension Nabu.Error: Codable {
         let code: Nabu.ErrorCode
         let type: Nabu.ErrorType
         let description: String?
-        let ux: UX?
+        let ux: UX.Dialog?
     }
 }
 
@@ -133,19 +133,6 @@ extension Nabu.Error.JSON {
             request: request,
             response: response
         )
-    }
-}
-
-extension Nabu.Error {
-
-    // swiftlint:disable type_name
-    public struct UX: Equatable, Hashable, Codable {
-        public var id: String?
-        public var title: String
-        public var message: String
-        public var icon: Errors.UX.Icon?
-        public var actions: [Errors.UX.Action]?
-        public var categories: [String]?
     }
 }
 

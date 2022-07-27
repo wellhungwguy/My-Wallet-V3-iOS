@@ -3,6 +3,31 @@ import Foundation
 
 extension UX {
 
+    public struct Dialog: Equatable, Hashable, Codable {
+        public var id: String?
+        public var title: String
+        public var message: String
+        public var icon: Errors.UX.Icon?
+        public var actions: [Errors.UX.Action]?
+        public var categories: [String]?
+
+        public init(
+            id: String? = nil,
+            title: String,
+            message: String,
+            icon: UX.Icon? = nil,
+            actions: [UX.Action]? = nil,
+            categories: [String]? = nil
+        ) {
+            self.id = id
+            self.title = title
+            self.message = message
+            self.icon = icon
+            self.actions = actions
+            self.categories = categories
+        }
+    }
+
     public struct Action: Equatable, Hashable, Codable {
 
         public let title: String

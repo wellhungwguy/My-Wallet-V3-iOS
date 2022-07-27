@@ -403,6 +403,7 @@ blockchain:
 			action:
 			+ blockchain.ux.type.analytics.action
 				then:
+					close:
 					launch:
 						url:
 						+ blockchain.db.type.url
@@ -734,10 +735,18 @@ blockchain:
 				cowboys:
 					buy:
 						crypto:
-						+ blockchain.ux.type.action
+						+ blockchain.ux.onboarding.type.promotion
+					raffle:
+					+ blockchain.ux.onboarding.type.promotion
 					verify:
 						email:
-						+ blockchain.ux.type.action
+						+ blockchain.ux.onboarding.type.promotion
+			type:
+				promotion:
+				+ blockchain.ux.type.action
+					story:
+					+ blockchain.session.configuration.value
+					+ blockchain.ux.type.story
 		payment:
 			method:
 				link:

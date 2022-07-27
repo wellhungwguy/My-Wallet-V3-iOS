@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 extension Tag {
 
     @dynamicMemberLookup
@@ -81,7 +83,7 @@ extension Tag.Context {
 
 extension Tag.Context {
 
-    public func decode<K: TaggedEvent, T: Decodable>(
+    public func decode<K: Tag.Event, T: Decodable>(
         _ event: K,
         as type: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
@@ -117,6 +119,7 @@ extension Tag.Context {
 
 public protocol TaggedEvent: CustomStringConvertible {
     func key(to context: Tag.Context) -> Tag.Reference
+    subscript() -> Tag { get }
 }
 
 extension TaggedEvent {
@@ -137,6 +140,7 @@ extension Tag: TaggedEvent {
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         Tag.Reference(unchecked: self, context: context)
     }
+    public subscript() -> Tag { self }
 }
 
 extension Tag.Reference: TaggedEvent {
@@ -144,6 +148,7 @@ extension Tag.Reference: TaggedEvent {
         if context.isEmpty { return self }
         return ref(to: context)
     }
+    public subscript() -> Tag { tag }
 }
 
 extension TaggedEvent {
@@ -158,6 +163,36 @@ extension TaggedEvent {
             return reference.ref(to: context)
         default:
             return event.key(to: context)
+        }
+    }
+}
+
+extension Tag.Context {
+
+    public struct Computed: Hashable {
+
+        public let id: UUID = UUID()
+        public let yield: () throws -> Any
+
+        public init(_ yield: @escaping () -> Any) {
+            self.yield = yield
+        }
+
+        public init(_ yield: @escaping () throws -> Any) {
+            self.yield = yield
+        }
+
+        @discardableResult
+        public func callAsFunction() throws -> Any {
+            try yield()
+        }
+
+        public static func == (x: Computed, y: Computed) -> Bool {
+            x.id == y.id
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
         }
     }
 }

@@ -27,7 +27,7 @@ public struct BankState: Equatable {
         public internal(set) var action: [Action]?
     }
 
-    public internal(set) var error: Nabu.Error.UX?
+    public internal(set) var error: UX.Dialog?
     public internal(set) var ui: UI?
     public internal(set) var data: OpenBanking.Data
     public var showActions: Bool = false
