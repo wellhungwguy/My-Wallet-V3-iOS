@@ -57,6 +57,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let userActionService: UserActionServiceAPI
+    private let coincore: CoincoreAPI
     private let kycRouter: PlatformUIKit.KYCRouting
     private let kyc: FeatureKYCUI.Routing
     private let alertViewPresenter: AlertViewPresenterAPI
@@ -88,6 +89,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         userActionService: UserActionServiceAPI = resolve(),
         kycRouter: PlatformUIKit.KYCRouting = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        coincore: CoincoreAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
         transactionFlowBuilder: TransactionFlowBuildable = TransactionFlowBuilder(),
@@ -111,6 +113,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
+        self.coincore = coincore
         self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrdersService = pendingOrdersService
         self.transactionFlowBuilder = transactionFlowBuilder
@@ -383,7 +386,7 @@ extension TransactionsRouter {
             let listener = SellFlowListener()
             let interactor = SellFlowInteractor()
             let router = SellFlowBuilder().build(with: listener, interactor: interactor)
-            router.start(with: cryptoAccount, from: presenter)
+            startSellRouter(router, cryptoAccount: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
 
@@ -437,6 +440,32 @@ extension TransactionsRouter {
             router.start()
             mimicRIBAttachment(router: router)
             return .empty()
+        }
+    }
+
+    private func startSellRouter(
+        _ router: SellFlowRouting,
+        cryptoAccount: CryptoAccount?,
+        from presenter: UIViewController
+    ) {
+        @Sendable func startRouterOnMainThread(target: TransactionTarget?) async {
+            await MainActor.run {
+                router.start(with: cryptoAccount, target: target, from: presenter)
+            }
+        }
+        Task(priority: .userInitiated) {
+            do {
+                let currency: FiatCurrency = try await app.get(blockchain.user.currency.preferred.fiat.trading.currency)
+                let account = try await coincore
+                    .account(where: { $0.currencyType == currency })
+                    .values
+                    .next()
+                    .or([])
+                    .first as? TransactionTarget
+                await startRouterOnMainThread(target: account)
+            } catch {
+                await startRouterOnMainThread(target: nil)
+            }
         }
     }
 
