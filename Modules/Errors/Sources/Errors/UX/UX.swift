@@ -141,9 +141,11 @@ extension UX.Error {
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:
-            if let ux = extract(UX.Error.self, from: error as Any) {
+            if let ux = extract(UX.Error.self, from: error) {
                 self = ux
-            } else if let ux = extract(Nabu.Error.UX.self, from: error as Any) {
+            } else if let ux = extract(Nabu.Error.self, from: error) {
+                self = Self(nabu: ux)
+            } else if let ux = extract(Nabu.Error.UX.self, from: error) {
                 self = Self(nabu: ux)
             } else {
                 self.init(
