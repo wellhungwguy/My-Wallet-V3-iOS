@@ -141,9 +141,11 @@ extension UX.Error {
         case let nabu as Nabu.Error:
             self.init(nabu: nabu)
         default:
-            if let ux = extract(UX.Error.self, from: error as Any) {
+            if let ux = extract(UX.Error.self, from: error) {
                 self = ux
-            } else if let ux = extract(Nabu.Error.UX.self, from: error as Any) {
+            } else if let ux = extract(Nabu.Error.self, from: error) {
+                self = Self(nabu: ux)
+            } else if let ux = extract(Nabu.Error.UX.self, from: error) {
                 self = Self(nabu: ux)
             } else {
                 self.init(
@@ -166,3 +168,30 @@ extension Array where Element == UX.Action {
         UX.Action(title: L10n.ok)
     ]
 }
+
+#if canImport(AnalyticsKit)
+
+import AnalyticsKit
+
+extension UX.Error {
+
+    public func analytics(label: String, action: String) -> ClientEvent {
+        let nabu = extract(Nabu.Error.self, from: source)
+        let network = extract(NetworkError.self, from: source)
+        return ClientEvent.clientError(
+            id: id,
+            error: expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
+            networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
+            networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
+            networkErrorDescription: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
+            networkErrorId: nabu?.id,
+            networkErrorType: nabu?.type.rawValue,
+            source: nabu.isNotNil ? "NABU" : "CLIENT",
+            title: title,
+            action: action,
+            category: categories
+        )
+    }
+}
+
+#endif

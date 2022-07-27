@@ -1,5 +1,6 @@
 import AnyCoding
 import Foundation
+import ToolKit
 
 extension UX {
 
@@ -26,7 +27,7 @@ extension UX {
 
         public var url: URL
         public var accessibility: Accessibility?
-        public var status: Status?
+        @Optional.Codable public var status: Status?
 
         public init(url: URL, accessibility: UX.Accessibility? = nil, status: Status? = nil) {
             self.url = url

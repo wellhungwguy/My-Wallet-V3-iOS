@@ -109,21 +109,10 @@ extension TransactionErrorState {
 
     func analytics(for action: AssetAction) -> ClientEvent? {
         guard self != .none else { return nil }
-        let error = ux(action: action)
-        let nabu = error.source as? Nabu.Error
-        let network = error.source as? NetworkError
-        return ClientEvent.clientError(
-            id: error.id,
-            error: error.expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
-            networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
-            networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
-            networkErrorDescription: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
-            networkErrorId: nabu?.id,
-            networkErrorType: nabu?.type.rawValue,
-            source: nabu.isNotNil ? "NABU" : "CLIENT",
-            title: error.title,
-            action: action.description.snakeCase().uppercased(),
-            category: error.categories
-        )
+        return ux(action: action)
+            .analytics(
+                label: label,
+                action: action.description.snakeCase().uppercased()
+            )
     }
 }
