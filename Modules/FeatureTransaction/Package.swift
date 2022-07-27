@@ -76,7 +76,8 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "Modules/BIND")
     ],
     targets: [
         .target(
@@ -101,7 +102,8 @@ let package = Package(
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "BINDWithdrawData", package: "BIND")
             ]
         ),
         .target(
@@ -123,7 +125,10 @@ let package = Package(
                 .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "UIComponents", package: "UIComponents")
+                .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "ErrorsUI", package: "Errors"),
+                .product(name: "BINDWithdrawUI", package: "BIND"),
+                .product(name: "BINDWithdrawDomain", package: "BIND")
             ]
         ),
         .target(

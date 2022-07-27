@@ -32,3 +32,15 @@ extension Collection where Element: Equatable {
         }
     }
 }
+
+extension Collection {
+    @inlinable public var isNotEmpty: Bool { !isEmpty }
+}
+
+extension Collection where Element: Hashable {
+    @inlinable public var set: Set<Element> { Set(self) }
+}
+
+extension Collection {
+    @inlinable public var array: [Element] { Array(self) }
+}
