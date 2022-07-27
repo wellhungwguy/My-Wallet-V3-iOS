@@ -360,8 +360,8 @@ func provideMetadataInput(
     secondPassword: String?,
     wallet: NativeWallet
 ) -> AnyPublisher<MetadataInput, WalletError> {
-    getSeedHex(from: wallet, secondPassword: secondPassword)
-        .flatMap(masterKeyFrom(seedHex:))
+    getMasterNode(from: wallet)
+        .flatMap(masterKeyFrom(masterNode:))
         .map { masterKey -> MetadataInput in
             let credentials = Credentials(
                 guid: wallet.guid,
@@ -378,8 +378,8 @@ func provideMetadataInput(
         .eraseToAnyPublisher()
 }
 
-private func masterKeyFrom(seedHex: String) -> Result<MasterKey, WalletError> {
-    MasterKey.from(seedHex: seedHex)
+private func masterKeyFrom(masterNode: String) -> Result<MasterKey, WalletError> {
+    MasterKey.from(masterNode: masterNode)
         .mapError { _ -> WalletError in
             .initialization(.unknown)
         }
