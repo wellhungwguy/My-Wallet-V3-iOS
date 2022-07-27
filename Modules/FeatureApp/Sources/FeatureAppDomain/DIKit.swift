@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureCardIssuingDomain
 import FeatureCardPaymentDomain
 import FeatureSettingsDomain
 import FeatureWithdrawalLocksData
@@ -67,6 +68,10 @@ extension DependencyContainer {
                 productsService: DIKit.resolve(),
                 cardService: DIKit.resolve()
             ) as CardIssuingAdapterAPI
+        }
+
+        factory {
+            UserInfoProvider(userService: DIKit.resolve()) as UserInfoProviderAPI
         }
 
         factory {
