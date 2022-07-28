@@ -3,7 +3,7 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
-// swiftlint:disable type_body_length
+// swiftlint:disable all
 
 struct SVGExamples: View {
 
