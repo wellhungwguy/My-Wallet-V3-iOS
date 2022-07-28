@@ -7,7 +7,7 @@ extension UX {
     public struct Action: Equatable, Hashable, Codable {
 
         public let title: String
-        public let url: URL?
+        @Optional.Codable public var url: URL?
 
         public init(title: String, url: URL? = nil) {
             self.title = title
