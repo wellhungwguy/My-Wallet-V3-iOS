@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
+
 public struct CardPayload {
 
     public enum Partner: String {
@@ -33,6 +35,9 @@ public struct CardPayload {
     /// The addition date (e.g: `2020-04-07T23:23:26.761Z`)
     public let additionDate: String
 
+    public let lastError: String?
+    public let ux: Nabu.Error.UX?
+
     public init(
         identifier: String,
         partner: String,
@@ -40,7 +45,9 @@ public struct CardPayload {
         currency: String,
         state: State,
         card: CardDetails!,
-        additionDate: String
+        additionDate: String,
+        lastError: String? = nil,
+        ux: Nabu.Error.UX? = nil
     ) {
         self.identifier = identifier
         self.partner = Partner(rawValue: partner) ?? .unknown
@@ -49,6 +56,8 @@ public struct CardPayload {
         self.state = state
         self.card = card
         self.additionDate = additionDate
+        self.lastError = lastError
+        self.ux = ux
     }
 }
 
@@ -64,6 +73,8 @@ extension CardPayload: Decodable {
         case state
         case card
         case additionDate = "addedAt"
+        case lastError
+        case ux
     }
 
     public init(from decoder: Decoder) throws {
@@ -81,6 +92,8 @@ extension CardPayload: Decodable {
         additionDate = try values.decode(String.self, forKey: .additionDate)
 
         card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
+        lastError = try? values.decodeIfPresent(String.self, forKey: .lastError)
+        ux = try? values.decodeIfPresent(Nabu.Error.UX.self, forKey: .ux)
     }
 }
 

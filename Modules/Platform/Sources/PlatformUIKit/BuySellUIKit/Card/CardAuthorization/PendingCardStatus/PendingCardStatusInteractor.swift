@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
+import FeatureOpenBankingDomain
 import PlatformKit
 import RIBs
 import RxSwift
@@ -13,8 +15,12 @@ final class PendingCardStatusInteractor: Interactor {
 
     enum State {
         case active(CardData)
-        case inactive(Error)
+        case inactive(Swift.Error)
         case timeout
+    }
+
+    enum Error: Swift.Error {
+        case noData
     }
 
     // MARK: - Properties
@@ -50,7 +56,14 @@ final class PendingCardStatusInteractor: Interactor {
                         return self.paymentMethodTypesService
                             .fetchCards(andPrefer: data.identifier)
                             .andThen(Single.just(.active(data)))
-                    case .pending, .inactive:
+                    case .inactive(let data):
+                        let error: Swift.Error? = data?.ux.map(UX.Error.init(nabu:))
+                        return .just(
+                            .inactive(
+                                error ?? (data?.lastError).map(OpenBanking.Error.code) ?? Error.noData
+                            )
+                        )
+                    case .pending:
                         return .just(.timeout)
                     }
                 case .failure(let error):

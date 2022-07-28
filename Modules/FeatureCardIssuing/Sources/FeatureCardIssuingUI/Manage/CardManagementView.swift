@@ -169,11 +169,11 @@ struct CardManagementView: View {
                             viewStore.send(.cardHelperDidLoad)
                         }
                     )
-                    .frame(width: 305, height: 205)
+                    .frame(width: 300, height: 355)
                 }
             }
         }
-        .frame(height: 205)
+        .frame(height: 355)
     }
 
     @ViewBuilder var transactionPlaceholder: some View {
@@ -293,8 +293,9 @@ struct AccountRow: View {
 
 final class WebView: NSObject, UIViewRepresentable, WKNavigationDelegate {
 
-    let url: URL
-    let didLoad: () -> Void
+    private let url: URL
+    private let didLoad: () -> Void
+    private var isLoaded = false
 
     init(url: URL, didLoad: @escaping () -> Void) {
         self.url = url
@@ -311,11 +312,15 @@ final class WebView: NSObject, UIViewRepresentable, WKNavigationDelegate {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
+        guard !uiView.isLoading, !isLoaded else {
+            return
+        }
         uiView.load(URLRequest(url: url))
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         DispatchQueue.main.async { [weak self] in
+            self?.isLoaded = true
             self?.didLoad()
         }
     }

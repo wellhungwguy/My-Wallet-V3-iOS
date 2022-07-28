@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import Foundation
 import MoneyKit
 
@@ -17,7 +18,9 @@ public struct CardData {
         year: String,
         cvv: String,
         topLimit: FiatValue,
-        billingAddress: BillingAddress? = nil
+        billingAddress: BillingAddress? = nil,
+        lastError: String? = nil,
+        ux: Nabu.Error.UX? = nil
     ) {
         self.identifier = identifier
         self.state = state
@@ -32,6 +35,8 @@ public struct CardData {
         self.cvv = cvv
         self.topLimit = topLimit
         self.billingAddress = billingAddress
+        self.lastError = lastError
+        self.ux = ux
     }
 
     /// The identifier of the card
@@ -72,6 +77,12 @@ public struct CardData {
 
     /// The billing address associated with the card
     public var billingAddress: BillingAddress!
+
+    // Error
+    public let lastError: String?
+
+    // Error which should be displayed
+    public let ux: Nabu.Error.UX?
 
     public func data(byAppending billingAddress: BillingAddress) -> CardData {
         var data = self
@@ -128,6 +139,8 @@ extension CardData {
         self.currency = currency
         partner = response.partner
         self.billingAddress = BillingAddress(response: billingAddress)
+        ux = response.ux
+        lastError = response.lastError
     }
 }
 
@@ -185,6 +198,8 @@ extension CardData {
         label = "\(type.name) \(number.suffix(4))"
         identifier = ""
         topLimit = .zero(currency: .USD)
+        ux = nil
+        lastError = nil
     }
 }
 

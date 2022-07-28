@@ -22,10 +22,10 @@ public struct MasterKey: Equatable {
 extension MasterKey {
 
     public static func from(
-        seedHex: String
+        masterNode: String
     ) -> Result<MasterKey, MasterKeyError> {
         Result<PrivateKey, MasterKeyError>
-            .success(PrivateKey.bitcoinKeyFrom(seedHex: seedHex))
+            .success(PrivateKey.bitcoinKeyFrom(seedHex: masterNode))
             .mapError(MasterKeyError.failedToInstantiate)
             .map(MasterKey.init(privateKey:))
     }

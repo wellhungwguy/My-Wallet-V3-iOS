@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -83,6 +84,7 @@ final class WithdrawRootInteractor: Interactor,
             .map { $0.map(\.rawType) }
     }
 
+    private let app: AppProtocol
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
@@ -90,11 +92,13 @@ final class WithdrawRootInteractor: Interactor,
 
     init(
         sourceAccount: FiatAccount,
+        app: AppProtocol = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.sourceAccount = sourceAccount
+        self.app = app
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
@@ -114,8 +118,8 @@ final class WithdrawRootInteractor: Interactor,
             guard let self = self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
             let filteredLinkedBanks = linkedBanks.filter { $0.fiatCurrency == fiatCurrency }
-
-            if filteredLinkedBanks.isEmpty {
+            let country: String? = try? self.app.state.get(blockchain.user.address.country.code)
+            if filteredLinkedBanks.isEmpty, country?.isArgentina == false {
                 self.handleNoLinkedBanks(
                     paymentMethodTypes,
                     fiatCurrency: fiatCurrency

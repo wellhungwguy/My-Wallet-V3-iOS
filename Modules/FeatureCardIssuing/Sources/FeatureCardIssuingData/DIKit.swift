@@ -17,6 +17,7 @@ extension DependencyContainer {
                     networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                     requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
                 ),
+                userInfoProvider: DIKit.resolve(),
                 baseCardHelperUrl: BlockchainAPI.shared.walletHelper
             ) as CardRepositoryAPI
         }

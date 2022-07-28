@@ -248,6 +248,13 @@ extension AppProtocol {
         events.filter(tags.map { $0.key().in(self) })
             .eraseToAnyPublisher()
     }
+
+    public func on<Tags>(
+        _ tags: Tags,
+        bufferingPolicy: AsyncStream<Session.Event>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<Session.Event> where Tags: Sequence, Tags.Element == Tag.Event {
+        events.filter(tags.map { $0.key().in(self) }).stream(bufferingPolicy: bufferingPolicy)
+    }
 }
 
 private let e = (
