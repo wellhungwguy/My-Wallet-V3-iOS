@@ -57,5 +57,14 @@ extension DependencyContainer {
                 )
             ) as TransactionRepositoryAPI
         }
+
+        single {
+            LegalRepository(
+                client: LegalClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
+                )
+            ) as LegalRepositoryAPI
+        }
     }
 }

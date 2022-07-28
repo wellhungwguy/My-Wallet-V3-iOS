@@ -15,6 +15,12 @@ extension DependencyContainer {
         }
 
         factory {
+            LegalService(
+                repository: DIKit.resolve()
+            ) as LegalServiceAPI
+        }
+
+        factory {
             ProductsService(
                 repository: DIKit.resolve()
             ) as ProductsServiceAPI
