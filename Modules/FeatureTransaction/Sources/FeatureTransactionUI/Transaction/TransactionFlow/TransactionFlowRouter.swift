@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftlint:disable file_length
+
 import AnalyticsKit
 import BINDWithdrawUI
 import BlockchainComponentLibrary

@@ -22,6 +22,14 @@ blockchain:
 			argentinalinkbank:
 				is:
 					enabled:
+			asset:
+				chart:
+					asset:
+						color:
+							is:
+								enabled:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 			card:
 				issuing:
 					is:
@@ -586,6 +594,12 @@ blockchain:
 			buy:
 			+ blockchain.ux.type.action
 			chart:
+				asset:
+					color:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				deselected:
 				+ blockchain.ux.type.analytics.action
 				interval:
