@@ -84,6 +84,7 @@ public extension I_blockchain_app_configuration {
 	var `announcements`: L_blockchain_app_configuration_announcements { .init("\(__).announcements") }
 	var `app`: L_blockchain_app_configuration_app { .init("\(__).app") }
 	var `apple`: L_blockchain_app_configuration_apple { .init("\(__).apple") }
+	var `argentinalinkbank`: L_blockchain_app_configuration_argentinalinkbank { .init("\(__).argentinalinkbank") }
 	var `card`: L_blockchain_app_configuration_card { .init("\(__).card") }
 	var `customer`: L_blockchain_app_configuration_customer { .init("\(__).customer") }
 	var `debug`: L_blockchain_app_configuration_debug { .init("\(__).debug") }
@@ -146,6 +147,24 @@ public final class L_blockchain_app_configuration_apple_pay_is_enabled: L, I_blo
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.apple.pay.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_apple_pay_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_argentinalinkbank: L, I_blockchain_app_configuration_argentinalinkbank {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.argentinalinkbank", comment: "") }
+}
+public protocol I_blockchain_app_configuration_argentinalinkbank: I {}
+public extension I_blockchain_app_configuration_argentinalinkbank {
+	var `is`: L_blockchain_app_configuration_argentinalinkbank_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_argentinalinkbank_is: L, I_blockchain_app_configuration_argentinalinkbank_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.argentinalinkbank.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_argentinalinkbank_is: I {}
+public extension I_blockchain_app_configuration_argentinalinkbank_is {
+	var `enabled`: L_blockchain_app_configuration_argentinalinkbank_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_argentinalinkbank_is_enabled: L, I_blockchain_app_configuration_argentinalinkbank_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.argentinalinkbank.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_argentinalinkbank_is_enabled: I {}
 public final class L_blockchain_app_configuration_card: L, I_blockchain_app_configuration_card {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card", comment: "") }
 }
