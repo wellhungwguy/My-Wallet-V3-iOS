@@ -162,6 +162,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
                             self?.navigationController?.popToRootViewControllerAnimated(animated: true)
                         }
                     )
+                    .app(app)
                 ),
                 animated: true
             )

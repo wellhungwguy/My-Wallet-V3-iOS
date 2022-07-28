@@ -229,7 +229,10 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
 
     // MARK: - View Update
 
+    fileprivate var subscription: BlockchainEventSubscription?
+
     fileprivate func update(with error: UX.Error) {
+
         navigationControllerAPI?.pushViewController(
             UIHostingController(
                 rootView: ErrorView(
@@ -242,6 +245,15 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
             ),
             animated: true
         )
+
+        subscription = app.on(
+            blockchain.ux.transaction.action.add.card,
+            blockchain.ux.transaction.action.go.back.to.enter.amount
+        ) { [weak self] _ in
+            self?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+        }
+        .start()
+
         analytics.record(event: error.analytics(label: "LINK", action: "LINK"))
     }
 }
