@@ -510,6 +510,11 @@ extension TransactionEngine {
 
                 // For ERC20 don't include the fee in validation (because ERC20 fee is in ETH)
                 guard self.sourceAsset.cryptoCurrency?.isERC20 != true else {
+                    try self.validate(
+                        amountInSourceCurrency,
+                        hasAmountUpToSourceLimit: sourceBalance,
+                        sourceToAmountRate: sourceToInputAmountRate
+                    )
                     return
                 }
 
