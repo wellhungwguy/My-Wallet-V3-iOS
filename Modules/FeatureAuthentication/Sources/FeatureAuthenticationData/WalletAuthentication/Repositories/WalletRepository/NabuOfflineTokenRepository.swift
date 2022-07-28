@@ -8,6 +8,14 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
     let offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError>
 
+    lazy var offlineTokenPublisher: AnyPublisher<
+        Result<NabuOfflineToken, MissingCredentialsError>, Never
+    > = offlineTokenSubject.eraseToAnyPublisher()
+
+    let offlineTokenSubject: PassthroughSubject<
+        Result<NabuOfflineToken, MissingCredentialsError>, Never
+    >
+
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
     private let credentialsFetcher: AccountCredentialsFetcherAPI
@@ -24,6 +32,10 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
         self.credentialsFetcher = credentialsFetcher
         self.reactiveWallet = reactiveWallet
         self.nativeWalletEnabled = nativeWalletEnabled
+
+        let subject = PassthroughSubject<
+            Result<NabuOfflineToken, MissingCredentialsError>, Never
+        >()
 
         offlineToken = nativeWalletEnabled()
             .flatMap { isEnabled -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
@@ -47,11 +59,32 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                     }
                     .eraseToAnyPublisher()
             }
+            .handleEvents(
+                receiveOutput: { token in
+                    subject.send(.success(token))
+                },
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        subject.send(.failure(error))
+                    case .finished:
+                        break
+                    }
+                }
+            )
             .eraseToAnyPublisher()
+
+        offlineTokenSubject = subject
+        offlineTokenPublisher = subject.eraseToAnyPublisher()
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
         nativeWalletEnabled()
+            .handleEvents(
+                receiveSubscription: { [offlineTokenSubject] _ in
+                    offlineTokenSubject.send(.success(offlineToken))
+                }
+            )
             .flatMap { [walletRepository, credentialsFetcher] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
                 guard isEnabled else {
                     return walletRepository.set(offlineToken: offlineToken)

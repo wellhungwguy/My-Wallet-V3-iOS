@@ -31,7 +31,26 @@ public protocol ResultProtocol {
 }
 
 extension Result: ResultProtocol {
+
     public var result: Result<Success, Failure> { self }
+
+    @inlinable public var success: Success? {
+        switch result {
+        case .success(let success):
+            return success
+        case .failure:
+            return nil
+        }
+    }
+
+    @inlinable public var failure: Failure? {
+        switch result {
+        case .failure(let failure):
+            return failure
+        case .success:
+            return nil
+        }
+    }
 }
 
 // swiftlint:disable large_tuple
