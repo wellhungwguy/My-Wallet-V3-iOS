@@ -12,6 +12,8 @@ import WebKit
 
 struct CardManagementView: View {
 
+    @State private var isHelperReady: Bool = false
+
     private typealias L10n = LocalizationConstants.CardIssuing.Manage
 
     private let store: Store<CardManagementState, CardManagementAction>
@@ -154,24 +156,26 @@ struct CardManagementView: View {
 
     @ViewBuilder var card: some View {
         ZStack(alignment: .center) {
-            WithViewStore(store.scope(state: \.cardHelperIsReady)) { viewStore in
-                if !viewStore.state {
-                    ProgressView(value: 0.25)
-                        .progressViewStyle(.indeterminate)
-                        .frame(width: 52, height: 52)
-                }
+            if !isHelperReady {
+                ProgressView(value: 0.25)
+                    .progressViewStyle(.indeterminate)
+                    .frame(width: 52, height: 52)
             }
-            WithViewStore(store.scope(state: \.cardHelperUrl)) { viewStore in
-                if let url = viewStore.state {
-                    WebView(
-                        url: url,
-                        didLoad: {
-                            viewStore.send(.cardHelperDidLoad)
-                        }
-                    )
-                    .frame(width: 300, height: 355)
+            IfLetStore(
+                store.scope(state: \.cardHelperUrl),
+                then: { store in
+                    WithViewStore(store) { viewStore in
+                        WebView(
+                            url: viewStore.state,
+                            loading: $isHelperReady
+                        )
+                        .frame(width: 300, height: 355)
+                    }
+                },
+                else: {
+                    EmptyView()
                 }
-            }
+            )
         }
         .frame(height: 355)
     }
@@ -288,41 +292,6 @@ struct AccountRow: View {
                 .semantic.muted
             )
             .flipsForRightToLeftLayoutDirection(true)
-    }
-}
-
-final class WebView: NSObject, UIViewRepresentable, WKNavigationDelegate {
-
-    private let url: URL
-    private let didLoad: () -> Void
-    private var isLoaded = false
-
-    init(url: URL, didLoad: @escaping () -> Void) {
-        self.url = url
-        self.didLoad = didLoad
-    }
-
-    func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
-        webView.isOpaque = false
-        webView.backgroundColor = .clear
-        webView.scrollView.backgroundColor = .clear
-        webView.navigationDelegate = self
-        return webView
-    }
-
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        guard !uiView.isLoading, !isLoaded else {
-            return
-        }
-        uiView.load(URLRequest(url: url))
-    }
-
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        DispatchQueue.main.async { [weak self] in
-            self?.isLoaded = true
-            self?.didLoad()
-        }
     }
 }
 

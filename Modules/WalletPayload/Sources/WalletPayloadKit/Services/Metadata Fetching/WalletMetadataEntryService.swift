@@ -69,6 +69,7 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
                     .mapError(WalletAssetFetchError.fetchFailed)
                     .eraseToAnyPublisher()
             }
+            .first()
             .eraseToAnyPublisher()
     }
 

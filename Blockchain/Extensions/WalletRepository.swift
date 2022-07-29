@@ -126,8 +126,29 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 }
                 return self.getUnifiedOrLegacyNabuCredentials()
             }
+            .handleEvents(
+                receiveOutput: { [offlineTokenSubject] token in
+                    offlineTokenSubject.send(.success(token))
+                },
+                receiveCompletion: { [offlineTokenSubject] completion in
+                    switch completion {
+                    case .failure(let error):
+                        offlineTokenSubject.send(.failure(error))
+                    case .finished:
+                        break
+                    }
+                }
+            )
             .eraseToAnyPublisher()
     }
+
+    lazy var offlineTokenPublisher: AnyPublisher<
+        Result<NabuOfflineToken, MissingCredentialsError>, Never
+    > = offlineTokenSubject.eraseToAnyPublisher()
+
+    var offlineTokenSubject: PassthroughSubject<
+        Result<NabuOfflineToken, MissingCredentialsError>, Never
+    > = .init()
 
     private let settings: AppSettingsAPI
     private let jsScheduler: SerialDispatchQueueScheduler
@@ -219,6 +240,11 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
         featureFlagService.isEnabled(.accountCredentialsMetadataMigration)
+            .handleEvents(
+                receiveSubscription: { [offlineTokenSubject] _ in
+                    offlineTokenSubject.send(.success(offlineToken))
+                }
+            )
             .flatMap { [weak self] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
                 guard let self = self else {
                     return .failure(.offlineToken)

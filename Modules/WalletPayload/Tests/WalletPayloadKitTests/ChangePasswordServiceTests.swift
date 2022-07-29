@@ -22,10 +22,18 @@ class ChangePasswordServiceTests: XCTestCase {
         let walletHolderSpy = WalletHolderSpy(spyOn: WalletHolder())
         let walletSync = WalletSyncMock()
 
+        var checkAndSaveWalletCredentialsCalled = false
+        let checkAndSaveWalletCredentialsMock: CheckAndSaveWalletCredentials = { _, _, _
+            -> AnyPublisher<EmptyValue, Never> in
+            checkAndSaveWalletCredentialsCalled = true
+            return .just(.noValue)
+        }
+
         // given
         let service = ChangePasswordService(
             walletSync: walletSync,
             walletHolder: walletHolderSpy,
+            saveMetadataWalletCredetials: checkAndSaveWalletCredentialsMock,
             logger: NoopNativeWalletLogging()
         )
 
@@ -70,6 +78,7 @@ class ChangePasswordServiceTests: XCTestCase {
                 receiveValue: { _ in
                     XCTAssertTrue(walletHolderSpy.walletStatePublisherCalled)
                     XCTAssertTrue(walletSync.syncCalled)
+                    XCTAssertTrue(checkAndSaveWalletCredentialsCalled)
                     expectation.fulfill()
                 }
             )

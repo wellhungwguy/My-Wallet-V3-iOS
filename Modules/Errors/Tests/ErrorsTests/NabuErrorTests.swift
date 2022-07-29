@@ -51,6 +51,23 @@ final class NabuErrorTests: XCTestCase {
         XCTAssertEqual(value, re_decoded)
     }
 
+    func test_optional_decode() throws {
+
+        struct Test: Decodable {
+            @Optional.Codable var url: URL?
+        }
+
+        do {
+            let value = try AnyDecoder().decode(Test.self, from: ["url": ""])
+            XCTAssertNil(value.url)
+        }
+
+        do {
+            let value = try AnyDecoder().decode(Test.self, from: ["url": "https://blockchain.com/support"])
+            XCTAssertNotNil(value.url)
+        }
+    }
+
     func test_ux_from_nabu() throws {
 
         var request = URLRequest(url: "https://blockchain.com/ux")

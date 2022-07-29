@@ -129,7 +129,7 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> NabuOfflineTokenRepositoryAPI in
+        single { () -> NabuOfflineTokenRepositoryAPI in
             let repository: WalletRepositoryAPI = DIKit.resolve()
             return NabuOfflineTokenRepository(
                 walletRepository: repository,

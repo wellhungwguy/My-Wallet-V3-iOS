@@ -37,6 +37,13 @@ class WalletLogicTests: XCTestCase {
 
         let upgrader = WalletUpgrader(workflows: [])
 
+        var checkAndSaveWalletCredentialsCalled = false
+        let checkAndSaveWalletCredentialsMock: CheckAndSaveWalletCredentials = { _, _, _
+-> AnyPublisher<EmptyValue, Never> in
+            checkAndSaveWalletCredentialsCalled = true
+            return .just(.noValue)
+        }
+
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder,
@@ -45,7 +52,8 @@ class WalletLogicTests: XCTestCase {
             walletSync: walletSyncMock,
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
-            payloadHealthChecker: { .just($0) }
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
         )
 
         let walletPayload = WalletPayload(
@@ -67,6 +75,7 @@ class WalletLogicTests: XCTestCase {
                 //
             } receiveValue: { _ in
                 XCTAssertTrue(decoderWalletCalled)
+                XCTAssertTrue(checkAndSaveWalletCredentialsCalled)
                 expectation.fulfill()
             }
             .store(in: &cancellables)
@@ -100,7 +109,8 @@ class WalletLogicTests: XCTestCase {
             walletSync: walletSyncMock,
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
-            payloadHealthChecker: { .just($0) }
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
         )
 
         let walletPayload = WalletPayload(
@@ -169,7 +179,8 @@ class WalletLogicTests: XCTestCase {
             walletSync: walletSyncMock,
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
-            payloadHealthChecker: { .just($0) }
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
         )
 
         let walletPayload = WalletPayload(

@@ -131,7 +131,7 @@ extension KeyedDecodingContainer {
         _ type: T.Type,
         forKey key: KeyedDecodingContainer<K>.Key
     ) throws -> T where T: Decodable, T: OptionalCodingPropertyWrapper {
-        try decodeIfPresent(T.self, forKey: key) ?? T(wrappedValue: nil)
+        (try? decodeIfPresent(T.self, forKey: key)) ?? T(wrappedValue: nil)
     }
 }
 
@@ -158,7 +158,12 @@ extension Optional where Wrapped: Swift.Codable {
         }
 
         public init(from decoder: Decoder) throws {
-            wrappedValue = try? Wrapped(from: decoder)
+            do {
+                let container = try decoder.singleValueContainer()
+                wrappedValue = try container.decode(Wrapped.self)
+            } catch {
+                wrappedValue = try? Wrapped(from: decoder)
+            }
         }
 
         public func encode(to encoder: Encoder) throws {

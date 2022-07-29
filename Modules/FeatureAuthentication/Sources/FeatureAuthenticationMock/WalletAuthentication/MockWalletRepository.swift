@@ -45,6 +45,10 @@ final class MockWalletRepository: WalletRepositoryAPI {
         .just(expectedPayload)
     }
 
+    var offlineTokenPublisher: AnyPublisher<Result<NabuOfflineToken, MissingCredentialsError>, Never> {
+        Just(expectedOfflineToken).eraseToAnyPublisher()
+    }
+
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
         expectedOfflineToken.publisher.eraseToAnyPublisher()
     }

@@ -33,7 +33,8 @@ let app: AppProtocol = App(
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
             blockchain.app.configuration.stx.all.users.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
-            blockchain.app.configuration.unified.sign_in.is.enabled: false
+            blockchain.app.configuration.unified.sign_in.is.enabled: false,
+            blockchain.app.configuration.argentinalinkbank.is.enabled: false
         ]
     )
 )

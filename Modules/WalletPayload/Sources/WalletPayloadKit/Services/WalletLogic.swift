@@ -57,6 +57,7 @@ final class WalletLogic: WalletLogicAPI {
     private let notificationCenter: NotificationCenter
     private let logger: NativeWalletLoggerAPI
     private let payloadHealthChecker: PayloadHealthCheck
+    private let checkAndSaveWalletCredentials: CheckAndSaveWalletCredentials
 
     private var tempPassword: String?
 
@@ -68,7 +69,8 @@ final class WalletLogic: WalletLogicAPI {
         walletSync: WalletSyncAPI,
         notificationCenter: NotificationCenter,
         logger: NativeWalletLoggerAPI,
-        payloadHealthChecker: @escaping PayloadHealthCheck
+        payloadHealthChecker: @escaping PayloadHealthCheck,
+        checkAndSaveWalletCredentials: @escaping CheckAndSaveWalletCredentials
     ) {
         self.holder = holder
         self.decoder = decoder
@@ -78,6 +80,7 @@ final class WalletLogic: WalletLogicAPI {
         self.notificationCenter = notificationCenter
         self.logger = logger
         self.payloadHealthChecker = payloadHealthChecker
+        self.checkAndSaveWalletCredentials = checkAndSaveWalletCredentials
     }
 
     func initialize(
@@ -285,6 +288,16 @@ final class WalletLogic: WalletLogicAPI {
             holder.hold(walletState: walletState)
                 .setFailureType(to: WalletError.self)
                 .eraseToAnyPublisher()
+        }
+        .flatMap { [checkAndSaveWalletCredentials] walletState -> AnyPublisher<WalletState, WalletError> in
+            checkAndSaveWalletCredentials(
+                wrapper.wallet.guid,
+                wrapper.wallet.sharedKey,
+                password
+            )
+            .map { _ in walletState }
+            .mapError(to: WalletError.self)
+            .eraseToAnyPublisher()
         }
         .handleEvents(receiveOutput: { [notifyReactiveWallet] _ in
             // inform ReactiveWallet that we're initialised
