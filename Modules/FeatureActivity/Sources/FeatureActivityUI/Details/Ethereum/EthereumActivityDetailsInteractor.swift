@@ -20,13 +20,13 @@ final class EthereumActivityDetailsInteractor {
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     private let evmActivityRepository: EVMActivityRepositoryAPI
-    private let wallet: EthereumWalletBridgeAPI
+    private let txNotesStrategy: EthereumTxNotesStrategyAPI
     private let cryptoCurrency: CryptoCurrency
 
     // MARK: - Init
 
     init(
-        wallet: EthereumWalletBridgeAPI = resolve(),
+        txNotesStrategy: EthereumTxNotesStrategyAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
@@ -38,7 +38,7 @@ final class EthereumActivityDetailsInteractor {
         self.evmActivityRepository = evmActivityRepository
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
-        self.wallet = wallet
+        self.txNotesStrategy = txNotesStrategy
     }
 
     // MARK: - Public Functions
@@ -49,11 +49,11 @@ final class EthereumActivityDetailsInteractor {
     ) -> Completable {
         switch cryptoCurrency {
         case .ethereum:
-            return wallet
-                .updateNote(
-                    for: identifier,
-                    note: note
-                )
+            return txNotesStrategy.updateNote(
+                txHash: identifier,
+                note: note
+            )
+            .asCompletable()
         default:
             return .empty()
         }
@@ -145,9 +145,9 @@ final class EthereumActivityDetailsInteractor {
     }
 
     private func note(identifier: String) -> AnyPublisher<String?, Never> {
-        wallet.note(for: identifier)
-            .asPublisher()
-            .replaceError(with: nil)
+        txNotesStrategy.note(txHash: identifier)
+            .ignoreFailure()
+            .mapError(to: Never.self)
             .eraseToAnyPublisher()
     }
 

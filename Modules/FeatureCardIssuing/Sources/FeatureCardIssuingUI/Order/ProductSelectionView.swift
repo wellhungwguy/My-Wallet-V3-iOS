@@ -37,16 +37,28 @@ struct ProductSelectionView: View {
                     .tabViewStyle(PageTabViewStyle())
                 }
                 HStack {
-                    Checkbox(isOn: viewStore.binding(\.$termsAccepted))
-                    Text(L10n.Selection.acceptTerms)
+                    Checkbox(
+                        isOn: viewStore.binding(
+                            get: { state in
+                                state.acceptLegalState.accepted.value ?? false
+                            },
+                            send: CardOrderingAction.setLegalAccepted
+                        )
+                    )
+                    Text(LocalizationConstants.CardIssuing.Legal.Item.title)
                         .foregroundColor(.WalletSemantic.body)
                         .typography(.caption1)
-                        .onTapGesture {}
+                        .onTapGesture {
+                            viewStore.send(.binding(.set(\.$acceptLegalVisible, true)))
+                        }
                 }
                 PrimaryButton(title: L10n.Selection.Button.Title.create) {
                     viewStore.send(.createCard)
                 }
-                .disabled(!viewStore.state.termsAccepted || viewStore.state.products.isEmpty)
+                .disabled(
+                    !(viewStore.state.acceptLegalState.accepted.value ?? false)
+                    || viewStore.state.products.isEmpty
+                )
             }
             .padding(Spacing.padding3)
             .bottomSheet(isPresented: viewStore.binding(\.$isProductDetailsVisible)) {
@@ -63,11 +75,14 @@ struct ProductSelectionView: View {
                     else: EmptyView.init
                 )
             }
-            PrimaryNavigationLink(
-                destination: LegalView(),
-                isActive: viewStore.binding(\.$isLegalViewVisible),
-                label: EmptyView.init
-            )
+            .sheet(isPresented: viewStore.binding(\.$acceptLegalVisible)) {
+                AcceptLegalView(
+                    store: store.scope(
+                        state: \.acceptLegalState,
+                        action: CardOrderingAction.acceptLegalAction
+                    )
+                )
+            }
             PrimaryNavigationLink(
                 destination: OrderProcessingView(store: store),
                 isActive: viewStore.binding(\.$isOrderProcessingVisible),

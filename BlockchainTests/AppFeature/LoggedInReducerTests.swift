@@ -181,7 +181,7 @@ final class LoggedInReducerTests: XCTestCase {
             state.displaySendCryptoScreen = false
         }
 
-        performSignOut()
+        performSignOut(stageWillChangeToLoggedInState: false)
     }
 
     func test_reducer_handles_deeplink_executeDeeplinkRouting_correctly() {
@@ -194,7 +194,7 @@ final class LoggedInReducerTests: XCTestCase {
 
         XCTAssertTrue(mockDeepLinkRouter.routeIfNeededCalled)
 
-        performSignOut()
+        performSignOut(stageWillChangeToLoggedInState: false)
     }
 
     func test_verify_start_action_observers_symbol_changes() {
@@ -351,15 +351,25 @@ final class LoggedInReducerTests: XCTestCase {
     private func performSignIn(file: StaticString = #file, line: UInt = #line) {
         testStore.send(.start(.none), file: file, line: line)
         testStore.receive(.handleExistingWalletSignIn, file: file, line: line)
-        testStore.receive(.showPostSignInOnboardingFlow, file: file, line: line) {
-            $0.displayPostSignInOnboardingFlow = true
-        }
+        testStore.receive(
+            .showPostSignInOnboardingFlow,
+            { $0.displayPostSignInOnboardingFlow = true },
+            file: file,
+            line: line
+        )
     }
 
-    private func performSignOut(file: StaticString = #file, line: UInt = #line) {
-        testStore.send(.logout, file: file, line: line) {
-            $0 = LoggedIn.State()
-        }
+    private func performSignOut(
+        stageWillChangeToLoggedInState: Bool = true,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        testStore.send(
+            .logout,
+            stageWillChangeToLoggedInState ? { $0 = LoggedIn.State() } : nil,
+            file: file,
+            line: line
+        )
     }
 }
 

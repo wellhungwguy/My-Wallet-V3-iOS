@@ -10,7 +10,7 @@ final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Private Properties
 
-    private let wallet: BitcoinCashWalletBridgeAPI
+    private let notesService: BitcoinCashTxNotesStrategyAPI
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails>
@@ -18,12 +18,12 @@ final class BitcoinCashActivityDetailsInteractor {
     // MARK: - Init
 
     init(
-        wallet: BitcoinCashWalletBridgeAPI = resolve(),
+        notesService: BitcoinCashTxNotesStrategyAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()
     ) {
-        self.wallet = wallet
+        self.notesService = notesService
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
@@ -32,11 +32,13 @@ final class BitcoinCashActivityDetailsInteractor {
     // MARK: - Public Functions
 
     private func note(for identifier: String) -> Single<String?> {
-        wallet.note(for: identifier)
+        notesService.note(txHash: identifier)
+            .asSingle()
     }
 
     func updateNote(for identifier: String, to note: String?) -> Completable {
-        wallet.updateNote(for: identifier, note: note)
+        notesService.updateNote(txHash: identifier, note: note)
+            .asCompletable()
     }
 
     func details(identifier: String, createdAt: Date) -> Observable<BitcoinCashActivityDetailsViewModel> {

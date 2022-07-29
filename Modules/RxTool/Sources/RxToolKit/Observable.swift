@@ -16,6 +16,10 @@ extension ObservableConvertibleType {
     public func asPublisher() -> Observable<Element>.Publisher<Self> {
         publisher
     }
+
+    public func await() async throws -> Element? {
+        try await publisher.values.first
+    }
 }
 
 extension Observable {

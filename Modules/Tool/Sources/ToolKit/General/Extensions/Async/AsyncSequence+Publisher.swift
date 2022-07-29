@@ -26,6 +26,11 @@ extension Publisher {
     public var values: AsyncThrowingPublisher<Self> {
         AsyncThrowingPublisher(self)
     }
+
+    @discardableResult
+    public func await() async throws -> Output? {
+        try await values.first
+    }
 }
 
 extension AsyncPublisher {

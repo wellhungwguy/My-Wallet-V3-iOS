@@ -273,7 +273,7 @@ extension Collection where Element == BlockchainAccount {
                         account: account,
                         balance: balance?.fiatValue ?? .zero(currency: currency),
                         count: count ?? 0,
-                        isSelectedAsset: currentId == account.currencyType.code,
+                        isSelectedAsset: currentId?.lowercased() == account.currencyType.code.lowercased(),
                         volume24h: prices?["\(account.currencyType.code)-USD"].flatMap { quote in
                             quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
                         } ?? .zero

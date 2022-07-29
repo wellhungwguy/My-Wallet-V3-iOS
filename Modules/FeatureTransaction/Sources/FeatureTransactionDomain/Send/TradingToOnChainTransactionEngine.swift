@@ -28,7 +28,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
-    let requireSecondPassword: Bool = false
     let isNoteSupported: Bool
     var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
@@ -227,7 +226,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         validateAmount(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         transferRepository
             .transfer(
                 moneyValue: pendingTransaction.amount,
@@ -245,10 +244,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         level: FeeLevel,
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.availableFeeLevels.contains(level))
-        /// `TradingToOnChainTransactionEngine` only supports a
-        /// `FeeLevel` of `.none`
-        return .just(pendingTransaction)
+        .just(pendingTransaction)
     }
 
     // MARK: - Private Functions

@@ -4,9 +4,8 @@ import DIKit
 import FeatureTransactionDomain
 
 final class StellarOnChainTransactionEngineFactory: OnChainTransactionEngineFactory {
-    func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine {
+    func build() -> OnChainTransactionEngine {
         StellarOnChainTransactionEngine(
-            requireSecondPassword: requiresSecondPassword,
             walletCurrencyService: DIKit.resolve(),
             currencyConversionService: DIKit.resolve(),
             feeRepository: DIKit.resolve(),

@@ -38,8 +38,6 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             .asObservable()
     }
 
-    let requireSecondPassword: Bool = false
-
     private var didExecute = false
     private var cancellables: Set<AnyCancellable> = []
     private var walletConnectTarget: EthereumSignMessageTarget {
@@ -157,10 +155,10 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         didExecute = true
         return keyPairProvider
-            .keyPair(with: secondPassword)
+            .keyPair(with: nil)
             .flatMap { [ethereumSigner, walletConnectTarget] ethereumKeyPair -> Single<Data> in
                 switch walletConnectTarget.message {
                 case .data(let data):

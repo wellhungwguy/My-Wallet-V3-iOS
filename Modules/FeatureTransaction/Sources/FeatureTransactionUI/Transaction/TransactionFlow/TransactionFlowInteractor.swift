@@ -198,53 +198,46 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             }
             .disposeOnDeactivate(interactor: self)
 
-        let requireSecondPassword: Single<Bool> = sourceAccount?.requireSecondPassword ?? .just(false)
-
-        requireSecondPassword
+        Single<Void>
+            .just(())
             .observe(on: MainScheduler.asyncInstance)
-            .map { [sourceAccount, target, action] passwordRequired -> TransactionAction in
+            .map { [sourceAccount, target, action] _ -> TransactionAction in
                 switch action {
                 case .deposit:
                     return self.handleFiatDeposit(
                         sourceAccount: sourceAccount,
-                        target: target,
-                        passwordRequired: passwordRequired
+                        target: target
                     )
 
                 case .swap where sourceAccount != nil && target != nil:
                     return .initialiseWithSourceAndPreferredTarget(
                         action: action,
                         sourceAccount: sourceAccount!,
-                        target: target!,
-                        passwordRequired: passwordRequired
+                        target: target!
                     )
 
                 case _ where sourceAccount != nil && target != nil:
                     return .initialiseWithSourceAndTargetAccount(
                         action: action,
                         sourceAccount: sourceAccount!,
-                        target: target!,
-                        passwordRequired: passwordRequired
+                        target: target!
                     )
 
                 case _ where sourceAccount != nil:
                     return .initialiseWithSourceAccount(
                         action: action,
-                        sourceAccount: sourceAccount!,
-                        passwordRequired: passwordRequired
+                        sourceAccount: sourceAccount!
                     )
 
                 case _ where target != nil:
                     return .initialiseWithTargetAndNoSource(
                         action: action,
-                        target: target!,
-                        passwordRequired: passwordRequired
+                        target: target!
                     )
 
                 default:
                     return .initialiseWithNoSourceOrTargetAccount(
-                        action: action,
-                        passwordRequired: passwordRequired
+                        action: action
                     )
                 }
             }
@@ -466,9 +459,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .linkBankViaWire:
             router?.presentBankWiringInstructions(transactionModel: transactionModel)
 
-        case .enterPassword:
-            unimplemented()
-
         case .selectTarget:
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
@@ -618,34 +608,29 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     private func handleFiatDeposit(
         sourceAccount: BlockchainAccount?,
-        target: TransactionTarget?,
-        passwordRequired: Bool
+        target: TransactionTarget?
     ) -> TransactionAction {
         if let source = sourceAccount, let target = target {
             return .initialiseWithSourceAndTargetAccount(
                 action: .deposit,
                 sourceAccount: source,
-                target: target,
-                passwordRequired: passwordRequired
+                target: target
             )
         }
         if let source = sourceAccount {
             return .initialiseWithSourceAccount(
                 action: .deposit,
-                sourceAccount: source,
-                passwordRequired: passwordRequired
+                sourceAccount: source
             )
         }
         if let target = target {
             return .initialiseWithTargetAndNoSource(
                 action: .deposit,
-                target: target,
-                passwordRequired: passwordRequired
+                target: target
             )
         }
         return .initialiseWithNoSourceOrTargetAccount(
-            action: .deposit,
-            passwordRequired: passwordRequired
+            action: .deposit
         )
     }
 

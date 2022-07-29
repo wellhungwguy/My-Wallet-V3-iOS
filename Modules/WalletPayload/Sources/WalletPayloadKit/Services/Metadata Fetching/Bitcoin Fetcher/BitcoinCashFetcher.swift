@@ -16,6 +16,11 @@ public enum BitcoinCashFetchError: Error {
 public protocol BitcoinCashEntryFetcherAPI {
     /// Fetches a `BitcoinCashEntry` from Wallet metadata
     func fetchOrCreateBitcoinCash() -> AnyPublisher<BitcoinCashEntry, BitcoinCashFetchError>
+
+    /// Updates a `BitcoinCashEntry` to wallet metadata
+    /// - Parameter entry: A `BitcoinCashEntry`
+    /// - Returns: `AnyPublisher<EmptyValue, BitcoinCashFetchError>`
+    func update(entry: BitcoinCashEntry) -> AnyPublisher<EmptyValue, BitcoinCashFetchError>
 }
 
 final class BitcoinCashEntryFetcher: BitcoinCashEntryFetcherAPI {
@@ -56,6 +61,13 @@ final class BitcoinCashEntryFetcher: BitcoinCashEntryFetcherAPI {
                     payload: payload
                 )
             }
+            .eraseToAnyPublisher()
+    }
+
+    func update(entry: BitcoinCashEntry) -> AnyPublisher<EmptyValue, BitcoinCashFetchError> {
+        metadataEntryService.save(node: entry.toMetadataEntry())
+            .first()
+            .mapError(BitcoinCashFetchError.saveFailure)
             .eraseToAnyPublisher()
     }
 }
@@ -113,6 +125,7 @@ private func generateBitcoinCashEntryPayload(
                 accounts: accounts,
                 defaultAccountIndex: 0,
                 hasSeen: false,
+                txNotes: [:],
                 addresses: [:]
             )
         }

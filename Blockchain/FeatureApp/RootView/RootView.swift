@@ -5,6 +5,8 @@ import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
+import ErrorsUI
+import FeatureAppUI
 import FeatureInterestUI
 import Localization
 import MoneyKit
@@ -14,7 +16,7 @@ struct Tab: Hashable, Identifiable, Codable {
     var id: AnyHashable { tag }
     var tag: Tag.Reference
     var name: String
-    var title, message: String?
+    var ux: Nabu.Error.UX?
     var url: URL?
     var icon: Icon
 }
@@ -39,8 +41,6 @@ extension Tab {
 struct RootView: View {
 
     var app: AppProtocol = Blockchain.app
-
-    @Environment(\.openURL) var openURL
 
     let store: Store<RootViewState, RootViewAction>
     @ObservedObject private var viewStore: ViewStore<RootViewState, RootViewAction>
@@ -94,8 +94,12 @@ struct RootView: View {
                 }
             }
         }
-        .on(blockchain.ux.home.tab.select) { event in
-            try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
+        .onReceive(app.on(blockchain.ux.home.tab.select)) { event in
+            do {
+                try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
+            } catch {
+                app.post(error: error)
+            }
         }
         .onChange(of: viewStore.tab) { tab in
             app.post(event: tab.tag)
@@ -132,6 +136,8 @@ struct RootView: View {
                     ActivityView()
                 case blockchain.ux.maintenance:
                     maintenance(tab)
+                case blockchain.ux.nft.collection:
+                    AssetListViewController()
                 case blockchain.ux.web:
                     if let url = tab.url {
                         WebView(url: url)
@@ -149,30 +155,13 @@ struct RootView: View {
         }
     }
 
-    func maintenance(_ tab: Tab) -> some View {
-        VStack(spacing: Spacing.padding3) {
-            tab.icon
-                .frame(width: 30.vw)
-                .aspectRatio(contentMode: .fit)
-            if let title = tab.title {
-                Text(title.localized())
-                    .typography(.title3)
-                    .foregroundColor(.semantic.title)
-            }
-            if let message = tab.message {
-                Text(message.localized())
-                    .typography(.body1)
-                    .foregroundColor(.semantic.body)
-            }
-            Spacer()
-            if let url = tab.url {
-                Button(LocalizationConstants.openWebsite) {
-                    openURL(url)
-                }
-            }
+    @ViewBuilder func maintenance(_ tab: Tab) -> some View {
+        if let ux = tab.ux {
+            ErrorView(
+                ux: UX.Error(nabu: ux),
+                dismiss: {}
+            )
         }
-        .multilineTextAlignment(.center)
-        .padding()
     }
 
     @ViewBuilder func tabItem<Content>(

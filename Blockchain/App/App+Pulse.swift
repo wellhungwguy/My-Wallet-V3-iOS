@@ -9,6 +9,7 @@ import BlockchainNamespace
 import Combine
 import FeatureDebugUI
 import NetworkKit
+import SwiftUI
 
 #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
 final class PulseBlockchainNamespaceEventLogger: Session.Observer {
@@ -80,13 +81,11 @@ final class PulseNetworkDebugLogger: NetworkDebugLogger {
 }
 
 final class PulseNetworkDebugScreenProvider: NetworkDebugScreenProvider {
-
-    var viewController: UIViewController {
-        #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        UITabBar.appearance(whenContainedInInstancesOf: [MainViewController.self]).backgroundColor = .white
-        return MainViewController()
-        #else
-        return UIViewController()
-        #endif
+    @ViewBuilder func buildDebugView() -> AnyView {
+    #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+         AnyView(MainView())
+    #else
+        AnyView(EmptyView())
+    #endif
     }
 }

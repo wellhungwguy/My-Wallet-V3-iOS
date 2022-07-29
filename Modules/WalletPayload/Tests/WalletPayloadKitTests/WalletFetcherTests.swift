@@ -12,6 +12,7 @@ import TestKit
 import ToolKit
 import XCTest
 
+// swiftlint:disable line_length
 class WalletFetcherTests: XCTestCase {
 
     let jsonV4 = Fixtures.loadJSONData(filename: "wallet-wrapper-v4", in: .module)!
@@ -37,6 +38,15 @@ class WalletFetcherTests: XCTestCase {
         let walletPayloadRepository = WalletPayloadRepository(
             apiClient: MockWalletPayloadClient(result: .failure(.from(.unknown)))
         )
+        var checkAndSaveWalletCredentialsCalled = false
+        var checkAndSaveWalletCredentialsProperies: (guid: String?, sharedKey: String?, password: String?) = (nil, nil, nil)
+        let checkAndSaveWalletCredentialsMock: CheckAndSaveWalletCredentials = { guid, sharedKey, password
+            -> AnyPublisher<EmptyValue, Never> in
+            checkAndSaveWalletCredentialsProperies = (guid, sharedKey, password)
+            checkAndSaveWalletCredentialsCalled = true
+            return .just(.noValue)
+        }
+
         let walletLogic = WalletLogic(
             holder: walletHolder,
             decoder: decoder.createWallet,
@@ -45,7 +55,8 @@ class WalletFetcherTests: XCTestCase {
             walletSync: walletSyncMock,
             notificationCenter: notificationCenterSpy,
             logger: NoopNativeWalletLogging(),
-            payloadHealthChecker: { .just($0) }
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
@@ -102,6 +113,11 @@ class WalletFetcherTests: XCTestCase {
         XCTAssertEqual(receivedValue, expectedValue)
         XCTAssertNil(error)
 
+        XCTAssertTrue(checkAndSaveWalletCredentialsCalled)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.guid, expectedValue.guid)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.sharedKey, expectedValue.sharedKey)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.password, "misura12!")
+
         // Ensure we send both notification
         XCTAssertTrue(notificationCenterSpy.postNotificationCalled)
         XCTAssertEqual(
@@ -122,6 +138,15 @@ class WalletFetcherTests: XCTestCase {
         let notificationCenterSpy = NotificationCenterSpy()
         let upgrader = WalletUpgrader(workflows: [])
         let walletSyncMock = WalletSyncMock()
+
+        var checkAndSaveWalletCredentialsCalled = false
+        var checkAndSaveWalletCredentialsProperies: (guid: String?, sharedKey: String?, password: String?) = (nil, nil, nil)
+        let checkAndSaveWalletCredentialsMock: CheckAndSaveWalletCredentials = { guid, sharedKey, password
+            -> AnyPublisher<EmptyValue, Never> in
+            checkAndSaveWalletCredentialsProperies = (guid, sharedKey, password)
+            checkAndSaveWalletCredentialsCalled = true
+            return .just(.noValue)
+        }
 
         let response = WalletPayloadClient.Response(
             guid: "dfa6d0af-7b04-425d-b35c-ded8efaa0016",
@@ -144,7 +169,8 @@ class WalletFetcherTests: XCTestCase {
             walletSync: walletSyncMock,
             notificationCenter: notificationCenterSpy,
             logger: NoopNativeWalletLogging(),
-            payloadHealthChecker: { .just($0) }
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
@@ -204,6 +230,11 @@ class WalletFetcherTests: XCTestCase {
         XCTAssertTrue(walletHolder.walletState.value!.isInitialised)
         XCTAssertEqual(receivedValue, expectedValue)
         XCTAssertNil(error)
+
+        XCTAssertTrue(checkAndSaveWalletCredentialsCalled)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.guid, expectedValue.guid)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.sharedKey, expectedValue.sharedKey)
+        XCTAssertEqual(checkAndSaveWalletCredentialsProperies.password, "misura12!")
 
         // Ensure we send both notification
         XCTAssertTrue(notificationCenterSpy.postNotificationCalled)

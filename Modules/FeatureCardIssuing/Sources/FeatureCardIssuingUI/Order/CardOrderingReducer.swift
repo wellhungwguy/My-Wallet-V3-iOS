@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import ComposableArchitectureExtensions
 import Errors
 import FeatureCardIssuingDomain
 import Localization
@@ -28,6 +29,10 @@ enum CardOrderingAction: Equatable, BindableAction {
     case productsResponse(Result<[Product], NabuNetworkError>)
     case fetchAddress
     case addressResponse(Result<Card.Address, NabuNetworkError>)
+    case fetchLegalItems
+    case fetchLegalItemsResponse(Result<[LegalItem], NabuNetworkError>)
+    case setLegalAccepted
+    case acceptLegalAction(AcceptLegalAction)
     case close(CardOrderingResult)
     case displayEligibleCountryList
     case displayEligibleStateList
@@ -64,20 +69,19 @@ struct CardOrderingState: Equatable {
         case none
     }
 
-    @BindableState var isLegalViewVisible = false
     @BindableState var isOrderProcessingVisible = false
     @BindableState var isSSNInputVisible = false
     @BindableState var isAddressConfirmationVisible = false
     @BindableState var isAddressModificationVisible = false
     @BindableState var isProductSelectionVisible = false
     @BindableState var isProductDetailsVisible = false
-
-    @BindableState var termsAccepted = false
     @BindableState var selectedProductIndex: Int = 0
+    @BindableState var acceptLegalVisible = false
 
     @BindableState var ssn: String = ""
 
     var residentialAddressModificationState: ResidentialAddressModificationState?
+    var acceptLegalState: AcceptLegalState
 
     var updatingAddress = false
     var products: [Product] = []
@@ -89,6 +93,7 @@ struct CardOrderingState: Equatable {
 
     init(
         products: [Product] = [],
+        legalItems: [LegalItem] = [],
         selectedProduct: Product? = nil,
         address: Card.Address? = nil,
         ssn: String = "",
@@ -101,6 +106,7 @@ struct CardOrderingState: Equatable {
         self.ssn = ssn
         self.error = error
         self.orderProcessingState = orderProcessingState
+        acceptLegalState = AcceptLegalState(items: legalItems)
     }
 }
 
@@ -108,6 +114,7 @@ struct CardOrderingEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardService: CardServiceAPI
+    let legalService: LegalServiceAPI
     let productsService: ProductsServiceAPI
     let residentialAddressService: ResidentialAddressServiceAPI
     let onComplete: (CardOrderingResult) -> Void
@@ -115,12 +122,14 @@ struct CardOrderingEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         cardService: CardServiceAPI,
+        legalService: LegalServiceAPI,
         productsService: ProductsServiceAPI,
         residentialAddressService: ResidentialAddressServiceAPI,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) {
         self.mainQueue = mainQueue
         self.cardService = cardService
+        self.legalService = legalService
         self.productsService = productsService
         self.residentialAddressService = residentialAddressService
         self.onComplete = onComplete
@@ -133,6 +142,16 @@ let cardOrderingReducer: Reducer<
     CardOrderingAction,
     CardOrderingEnvironment
 > = Reducer.combine(
+    acceptLegalReducer.pullback(
+        state: \.acceptLegalState,
+        action: /CardOrderingAction.acceptLegalAction,
+        environment: {
+            AcceptLegalEnvironment(
+                mainQueue: $0.mainQueue,
+                legalService: $0.legalService
+            )
+        }
+    ),
     residentialAddressModificationReducer.optional().pullback(
         state: \.residentialAddressModificationState,
         action: /CardOrderingAction.residentialAddressModificationAction,
@@ -227,6 +246,39 @@ let cardOrderingReducer: Reducer<
             }
         case .binding:
             return .none
+        case .fetchLegalItems:
+            return env.legalService
+                .fetchLegalItems()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.fetchLegalItemsResponse)
+        case .fetchLegalItemsResponse(.success(let items)):
+            state.acceptLegalState.items = items
+            return .none
+        case .fetchLegalItemsResponse(.failure(let error)):
+            return .none
+        case .setLegalAccepted:
+            guard let accepted = state.acceptLegalState.accepted.value else {
+                return .none
+            }
+            if accepted {
+                state.acceptLegalState.accepted = .loaded(next: false)
+            } else {
+                if state.acceptLegalState.items.contains(where: { $0.acceptedVersion != $0.version }) {
+                    state.acceptLegalVisible = true
+                } else {
+                    state.acceptLegalState.accepted = .loaded(next: true)
+                }
+            }
+            return .none
+        case .acceptLegalAction(let legalAction):
+            switch legalAction {
+            case .close:
+                state.acceptLegalVisible = false
+                return .none
+            default:
+                ()
+            }
+            return .none
         }
     }
     .binding()
@@ -238,6 +290,7 @@ extension CardOrderingEnvironment {
         CardOrderingEnvironment(
             mainQueue: .main,
             cardService: MockServices(),
+            legalService: MockServices(),
             productsService: MockServices(),
             residentialAddressService: MockServices(),
             onComplete: { _ in }
@@ -385,6 +438,31 @@ extension MockServices: TransactionServiceAPI {
     }
 
     func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
+        .just([])
+    }
+}
+
+extension MockServices: LegalServiceAPI {
+
+    func fetchLegalItems() -> AnyPublisher<[LegalItem], NabuNetworkError> {
+        .just([
+            .init(
+                url: URL(string: "https://www.blockchain.com/legal/#short-form-disclosure")!,
+                version: 1,
+                name: "short-form-disclosure",
+                displayName: "Short Form Disclosure",
+                acceptedVersion: 0
+            ),
+            .init(
+                url: URL(string: "https://www.blockchain.com/legal/#terms-and-conditions")!,
+                version: 2,
+                name: "terms-and-conditions",
+                displayName: "Terms & Conditions"
+            )
+        ])
+    }
+
+    func setAccepted(legalItems: [LegalItem]) -> AnyPublisher<[LegalItem], NabuNetworkError> {
         .just([])
     }
 }

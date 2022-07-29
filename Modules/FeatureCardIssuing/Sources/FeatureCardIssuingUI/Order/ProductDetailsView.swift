@@ -52,16 +52,6 @@ struct ProductDetailsView: View {
                     trailing: EmptyView.init,
                     action: {}
                 )
-                PrimaryDivider()
-                PrimaryRow(
-                    title: L10n.Legal.title,
-                    leading: { icon(.listBullets) },
-                    action: {
-                        viewStore.send(
-                            .binding(.set(\.$isLegalViewVisible, true))
-                        )
-                    }
-                )
             }
         }
     }

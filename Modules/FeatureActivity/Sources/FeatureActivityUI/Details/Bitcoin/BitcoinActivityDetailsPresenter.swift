@@ -290,10 +290,16 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .flatMap(weak: self) { (self, note) in
                 self.interactor
                     .updateNote(for: self.event.identifier, to: note)
+                    .asCompletable()
                     .hide(loader: self.loadingViewPresenter)
                     .asObservable()
             }
-            .subscribe()
+            .subscribe(
+                onError: { [alertViewPresenter, loadingViewPresenter] _ in
+                    loadingViewPresenter.hide()
+                    alertViewPresenter.error(in: nil, action: nil)
+                }
+            )
             .disposed(by: disposeBag)
 
         itemRelay

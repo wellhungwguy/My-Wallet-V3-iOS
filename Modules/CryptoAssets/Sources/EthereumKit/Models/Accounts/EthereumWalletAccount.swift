@@ -1,6 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MetadataKit
 import PlatformKit
+
+public struct EthereumWallet: Equatable {
+    public let accounts: [EthereumWalletAccount]
+
+    public var defaultAccountIndex: Int {
+        entry?.ethereum?.defaultAccountIndex ?? 0
+    }
+
+    let entry: EthereumEntryPayload?
+
+    init(entry: EthereumEntryPayload?, accounts: [EthereumWalletAccount]) {
+        self.entry = entry
+        self.accounts = accounts
+    }
+}
 
 public struct EthereumWalletAccount: WalletAccount, Equatable {
     public let index: Int

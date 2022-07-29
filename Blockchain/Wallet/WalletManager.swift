@@ -104,8 +104,8 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, W
         legacyRepository.legacySessionToken = nil
         legacyRepository.legacyPassword = nil
 
-        BlockchainSettings.App.shared.guid = nil
-        BlockchainSettings.App.shared.sharedKey = nil
+        BlockchainSettings.App.shared.set(guid: nil)
+        BlockchainSettings.App.shared.set(sharedKey: nil)
 
         wallet.loadJS()
 
@@ -114,7 +114,7 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, W
         let clearOnLogoutHandler: ClearOnLogoutAPI = DIKit.resolve()
         clearOnLogoutHandler.clearOnLogout()
 
-        BlockchainSettings.App.shared.biometryEnabled = false
+        BlockchainSettings.App.shared.set(biometryEnabled: false)
     }
 
     private var backgroundUpdateTaskIdentifer: UIBackgroundTaskIdentifier?

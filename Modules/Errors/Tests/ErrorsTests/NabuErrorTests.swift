@@ -53,17 +53,17 @@ final class NabuErrorTests: XCTestCase {
 
     func test_optional_decode() throws {
 
-        struct A: Decodable {
+        struct Test: Decodable {
             @Optional.Codable var url: URL?
         }
 
         do {
-            let value = try AnyDecoder().decode(A.self, from: ["url": ""])
+            let value = try AnyDecoder().decode(Test.self, from: ["url": ""])
             XCTAssertNil(value.url)
         }
 
         do {
-            let value = try AnyDecoder().decode(A.self, from: ["url": "https://blockchain.com/support"])
+            let value = try AnyDecoder().decode(Test.self, from: ["url": "https://blockchain.com/support"])
             XCTAssertNotNil(value.url)
         }
     }

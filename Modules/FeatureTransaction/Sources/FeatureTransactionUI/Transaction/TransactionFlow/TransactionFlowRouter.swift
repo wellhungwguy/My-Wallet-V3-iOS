@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftlint:disable file_length
+
 import AnalyticsKit
+import BINDWithdrawUI
 import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
@@ -17,6 +20,8 @@ import RIBs
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+typealias CountryCode = String
 
 protocol TransactionFlowInteractable: Interactable,
     EnterAmountPageListener,
@@ -66,6 +71,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let cacheSuite: CacheSuite
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let bindRepository: BINDWithdrawRepositoryProtocol
 
     private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
@@ -88,7 +94,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        cacheSuite: CacheSuite = resolve()
+        cacheSuite: CacheSuite = resolve(),
+        bindRepository: BINDWithdrawRepositoryProtocol = resolve()
     ) {
         self.app = app
         self.paymentMethodLinker = paymentMethodLinker
@@ -101,6 +108,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.cacheSuite = cacheSuite
+        self.bindRepository = bindRepository
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -418,10 +426,71 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func presentLinkABank(transactionModel: TransactionModel) {
+
+        analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
+
+        Task(priority: .userInitiated) {
+            let country: String = try app.state.get(blockchain.user.address.country.code)
+            let isArgentinaLinkBankEnabled: Bool = try await isArgentinaLinkBankEnabled.await() ?? false
+            if isArgentinaLinkBankEnabled && country.isArgentina {
+                try await presentBINDLinkABank(transactionModel: transactionModel)
+            } else {
+                presentDefaultLinkABank(transactionModel: transactionModel)
+            }
+        }
+    }
+
+    private var isArgentinaLinkBankEnabled: AnyPublisher<Bool, Never> {
+        app.publisher(
+            for: blockchain.app.configuration.argentinalinkbank.is.enabled,
+            as: Bool.self
+        )
+        .map(\.value)
+        .replaceNil(with: false)
+        .eraseToAnyPublisher()
+    }
+
+    @MainActor
+    private func presentBINDLinkABank(
+        transactionModel: TransactionModel
+    ) async throws {
+        guard let state = try await transactionModel.state.await() else { return }
+        guard let fiat = (state.source?.currencyType ?? state.destination?.currencyType)?.fiatCurrency else {
+            return assertionFailure("Expected one fiat currency to create a BIND beneficiary")
+        }
+        let presentingViewController = viewController.uiviewController
+        let hostedViewController = UIHostingController(
+            rootView: PrimaryNavigationView {
+                BINDWithdrawView { _ in
+                    transactionModel.process(action: .bankAccountLinked(state.action))
+                }
+                .primaryNavigation(
+                    title: Localization.withdraw,
+                    trailing: {
+                        IconButton(
+                            icon: .closeCirclev2,
+                            action: {
+                                presentingViewController.presentedViewController?.dismiss(
+                                    animated: true,
+                                    completion: {
+                                        transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+            .environmentObject(BINDWithdrawService(repository: bindRepository.currency(fiat.code)))
+        )
+        hostedViewController.isModalInPresentation = true
+        presentingViewController.present(hostedViewController, animated: true, completion: nil)
+    }
+
+    private func presentDefaultLinkABank(transactionModel: TransactionModel) {
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
-        analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
             .asPublisher()
@@ -729,4 +798,8 @@ extension PaymentMethodAccount {
             paymentMethod: method
         )
     }
+}
+
+extension CountryCode {
+    var isArgentina: Bool { self == "AR" }
 }

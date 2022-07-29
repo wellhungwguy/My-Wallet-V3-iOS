@@ -6,8 +6,12 @@ import PlatformKit
 import RxSwift
 
 final class MockCoincore: CoincoreAPI {
-
     var allAccounts: AnyPublisher<AccountGroup, CoincoreError> = .empty()
+    func account(
+        where isIncluded: @escaping (BlockchainAccount) -> Bool
+    ) -> AnyPublisher<[BlockchainAccount], Error> {
+        .empty()
+    }
     var allAssets: [Asset] = []
     var fiatAsset: Asset = MockAsset()
     var cryptoAssets: [CryptoAsset] = [MockAsset()]
