@@ -21,6 +21,8 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+// swiftlint:disable file_length
+
 typealias CountryCode = String
 
 protocol TransactionFlowInteractable: Interactable,

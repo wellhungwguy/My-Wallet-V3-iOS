@@ -137,6 +137,16 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, pendingTransaction) in
                 self.doBuildConfirmations(pendingTransaction: pendingTransaction)
             }
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                // NOTE: Some WalletConnect transactions, specificallly listing
+                // an NFT for sale on OpenSea has a tx amount of `0.00` and a fee.
+                // `updateAmount`, which would trigger tx validation
+                // only gets called in the event of a positive balance.
+                // To circumvent this we validate the tx once on initialization.
+                // ⚠️ This means any wallet connect tx with an amount of `0.00` may appear
+                // as valid if all other requirements are met (which in this case is needed).
+                self.doValidateAll(pendingTransaction: pendingTransaction)
+            }
     }
 
     func start(
