@@ -326,7 +326,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
+        testStore.receive(.legacyWalletFetch(password: "password"))
         mockSettingsApp.set(guid: String(repeating: "a", count: 36))
         mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         XCTAssertTrue(mockWallet.fetchCalled)
@@ -391,7 +391,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
+        testStore.receive(.legacyWalletFetch(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -440,7 +440,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
+        testStore.receive(.legacyWalletFetch(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
