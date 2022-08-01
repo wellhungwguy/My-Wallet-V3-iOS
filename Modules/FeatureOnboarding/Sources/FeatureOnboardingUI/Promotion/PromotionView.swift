@@ -7,13 +7,14 @@ import SwiftUI
 public struct PromotionView: View {
 
     @BlockchainApp var app
+    @Environment(\.context) var context
     @Environment(\.presentationMode) var presentationMode
 
-    public let promotion: I_blockchain_ux_onboarding_type_promotion
+    public let promotion: L & I_blockchain_ux_onboarding_type_promotion
     public let ux: UX.Dialog
 
     public init(
-        _ promotion: I_blockchain_ux_onboarding_type_promotion,
+        _ promotion: L & I_blockchain_ux_onboarding_type_promotion,
         ux: UX.Dialog
     ) {
         self.promotion = promotion
@@ -22,11 +23,13 @@ public struct PromotionView: View {
 
     public var body: some View {
         VStack {
-            if let icon = ux.icon {
-                AsyncMedia(url: icon.url)
+            ZStack(alignment: .bottom) {
+                AsyncMedia(url: ux.style?.background?.media?.url)
                     .aspectRatio(contentMode: .fit)
+                AsyncMedia(url: ux.icon?.url)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50.vw)
             }
-            Spacer()
             Group {
                 Text(rich: ux.title)
                     .typography(.title2)
@@ -55,6 +58,27 @@ public struct PromotionView: View {
                 .padding([.leading, .trailing], 24.pt)
             }
         }
+        .onAppear {
+            app.state.transaction { state in
+                state.set(promotion, to: ux)
+                state.set(promotion.then.close, to: Session.State.Function {
+                    presentationMode.wrappedValue.dismiss()
+                })
+            }
+            app.post(event: promotion, context: context)
+        }
+        .apply { view in
+            #if os(iOS)
+            view.navigationBarBackButtonHidden(true)
+                .navigationBarItems(
+                    leading: EmptyView(),
+                    trailing: IconButton(
+                        icon: Icon.closeCirclev2,
+                        action: { app.post(event: promotion.then.close) }
+                    )
+                )
+            #endif
+        }
         .ignoresSafeArea(.container, edges: .top)
         .id(promotion(\.id))
     }
@@ -64,19 +88,10 @@ public struct PromotionView: View {
         case let url?:
             app.post(
                 event: promotion.then.launch.url,
-                context: [
-                    blockchain.ui.type.action.then.launch.url: url
-                ]
+                context: [blockchain.ui.type.action.then.launch.url: url]
             )
         case nil:
-            app.post(
-                event: promotion.then.close,
-                context: [
-                    blockchain.ui.type.action.then.close: Tag.Context.Computed { [presentationMode] in
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                ]
-            )
+            app.post(event: promotion.then.close)
         }
     }
 }
@@ -96,13 +111,22 @@ struct PromotionViewPreview: PreviewProvider {
 
                 The person with the **most referrals** by MM/DD/YYYY will will the Grand Prize!
                 """,
-                icon: UX.Icon(url: "https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1738&q=80"),
+                icon: UX.Icon(url: "https://firebasestorage.googleapis.com/v0/b/fir-staging-92d79.appspot.com/o/tickets%203.png?alt=media&token=79d00dab-0639-4631-b0ca-16aeb85f9d1b"),
                 actions: [
-                    UX.Action(title: "Verify my ID", url: "https://blockchain.page.link/app/kyc"),
+                    UX.Action(title: "Verify my ID", url: "https://blockchain.com/app/kyc"),
                     UX.Action(title: "Maybe later")
-                ]
+                ],
+                style: UX.Style(
+                    background: Texture(
+                        media: Texture.Media(
+                            url: "https://firebasestorage.googleapis.com/v0/b/fir-staging-92d79.appspot.com/o/header.svg?alt=media&token=bf49b2cd-36ee-488c-ada8-7959c2a2eca1"
+                        )
+                    )
+                )
             )
         )
         .app(App.preview)
     }
 }
+
+

@@ -122,13 +122,17 @@ public protocol TaggedEvent: CustomStringConvertible {
     subscript() -> Tag { get }
 }
 
-extension TaggedEvent {
+extension Tag {
+    public typealias Event = TaggedEvent
+}
+
+extension Tag.Event {
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         key(to: context)
     }
 }
 
-extension L: TaggedEvent, CustomStringConvertible {
+extension L: Tag.Event, CustomStringConvertible {
     public var description: String { self(\.id) }
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         self[].key(to: context)
@@ -136,14 +140,15 @@ extension L: TaggedEvent, CustomStringConvertible {
 }
 
 extension Tag: TaggedEvent {
-    public typealias Event = TaggedEvent
+
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         Tag.Reference(unchecked: self, context: context)
     }
     public subscript() -> Tag { self }
 }
 
-extension Tag.Reference: TaggedEvent {
+extension Tag.Reference: Tag.Event {
+
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         if context.isEmpty { return self }
         return ref(to: context)
@@ -151,9 +156,9 @@ extension Tag.Reference: TaggedEvent {
     public subscript() -> Tag { tag }
 }
 
-extension TaggedEvent {
+extension Tag.Event {
 
-    public static func + (event: TaggedEvent, context: Tag.Context) -> Tag.Reference {
+    public static func + (event: Tag.Event, context: Tag.Context) -> Tag.Reference {
         switch event {
         case let tag as L:
             return Tag.Reference(tag[], to: context, in: nil)
@@ -163,36 +168,6 @@ extension TaggedEvent {
             return reference.ref(to: context)
         default:
             return event.key(to: context)
-        }
-    }
-}
-
-extension Tag.Context {
-
-    public struct Computed: Hashable {
-
-        public let id: UUID = UUID()
-        public let yield: () throws -> Any
-
-        public init(_ yield: @escaping () -> Any) {
-            self.yield = yield
-        }
-
-        public init(_ yield: @escaping () throws -> Any) {
-            self.yield = yield
-        }
-
-        @discardableResult
-        public func callAsFunction() throws -> Any {
-            try yield()
-        }
-
-        public static func == (x: Computed, y: Computed) -> Bool {
-            x.id == y.id
-        }
-
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
         }
     }
 }

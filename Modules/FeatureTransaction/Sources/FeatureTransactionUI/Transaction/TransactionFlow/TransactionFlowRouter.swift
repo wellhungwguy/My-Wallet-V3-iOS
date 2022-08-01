@@ -431,7 +431,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
         Task(priority: .userInitiated) {
             let country: String = try app.state.get(blockchain.user.address.country.code)
-            let isArgentinaLinkBankEnabled: Bool = try await isArgentinaLinkBankEnabled.await() ?? false
+            let isArgentinaLinkBankEnabled: Bool = await isArgentinaLinkBankEnabled.await() ?? false
             if isArgentinaLinkBankEnabled && country.isArgentina {
                 try await presentBINDLinkABank(transactionModel: transactionModel)
             } else {

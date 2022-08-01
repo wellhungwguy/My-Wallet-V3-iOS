@@ -86,9 +86,20 @@ extension View {
 }
 
 public struct Texture: Codable, Hashable {
+
     public var color: Color?
     public var gradient: Gradient?
     public var media: Media?
+
+    public init(
+        color: Texture.Color? = nil,
+        gradient: Texture.Gradient? = nil,
+        media: Texture.Media? = nil
+    ) {
+        self.color = color
+        self.gradient = gradient
+        self.media = media
+    }
 }
 
 extension Texture {
@@ -101,21 +112,46 @@ extension Texture {
     public struct Gradient: Codable, Hashable {
 
         public struct Stop: Codable, Hashable {
+
             public var color: Color
             public var location: CGFloat
+
+            public init(color: Texture.Color, location: CGFloat) {
+                self.color = color
+                self.location = location
+            }
         }
 
         public struct Linear: Codable, Hashable {
+
             public var start: [CGFloat]
             public var end: [CGFloat]
+
+            public init(start: [CGFloat], end: [CGFloat]) {
+                self.start = start
+                self.end = end
+            }
         }
 
         public var stops: [Stop]
         public var linear: Linear?
+
+        public init(
+            stops: [Texture.Gradient.Stop],
+            linear: Texture.Gradient.Linear? = nil
+        ) {
+            self.stops = stops
+            self.linear = linear
+        }
     }
 
     public struct Media: Codable, Hashable {
+
         public let url: URL
+
+        public init(url: URL) {
+            self.url = url
+        }
     }
 }
 

@@ -34,6 +34,8 @@ let package = Package(
             name: "Errors",
             dependencies: [
                 .product(name: "AnyCoding", package: "BlockchainNamespace"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "Collections", package: "swift-collections"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Localization", package: "Localization")
@@ -42,9 +44,7 @@ let package = Package(
         .target(
             name: "ErrorsUI",
             dependencies: [
-                .target(name: "Errors"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
+                .target(name: "Errors")
             ]
         ),
         .testTarget(

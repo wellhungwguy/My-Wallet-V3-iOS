@@ -47,6 +47,36 @@ extension Session.State {
     }
 }
 
+extension Session.State {
+
+    public struct Function: Hashable {
+
+        public let id: UUID = UUID()
+        public let call: () throws -> Any
+
+        public init(_ call: @escaping () -> Any) {
+            self.call = call
+        }
+
+        public init(_ call: @escaping () throws -> Any) {
+            self.call = call
+        }
+
+        @discardableResult
+        public func callAsFunction() throws -> Any {
+            try call()
+        }
+
+        public static func == (x: Function, y: Function) -> Bool {
+            x.id == y.id
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
+}
+
 extension Session.State.Data {
 
     private struct Tombstone: Hashable {}

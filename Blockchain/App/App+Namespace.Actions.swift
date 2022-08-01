@@ -24,8 +24,8 @@ public class ActionObserver: Session.Observer {
         )
     }
 
-    lazy var close = app.on(blockchain.ui.type.action.then.close) { [application] event in
-        if let close = event.context[blockchain.ui.type.action.then.close] as? Tag.Context.Computed {
+    lazy var close = app.on(blockchain.ui.type.action.then.close) { [app, application] event in
+        if let close = try? app.state.get(event.reference) as Session.State.Function {
             try close()
         } else if let topMostViewController = application.topViewController {
             topMostViewController.dismiss(animated: true)
@@ -52,7 +52,7 @@ public class ActionObserver: Session.Observer {
 extension UIApplication {
     var topViewController: UIViewController? {
         guard let window = windows.first(where: \.isKeyWindow) else { return nil }
-        return window.rootViewController
+        return Blockchain.topViewController(of: window.rootViewController)
     }
 }
 

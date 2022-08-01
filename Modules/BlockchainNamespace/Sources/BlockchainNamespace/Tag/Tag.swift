@@ -54,7 +54,7 @@ extension Tag {
         language.sync { lazy[self][keyPath: keyPath] }
     }
 
-    @usableFromInline class Lazy {
+    @usableFromInline final class Lazy {
 
         var my: Tag!
 
@@ -122,11 +122,11 @@ extension Tag {
 
 extension Tag {
 
-    public func `is`(_ type: L) -> Bool {
+    public func `is`(_ type: Tag.Event) -> Bool {
         `is`(type[])
     }
 
-    public func `is`(_ types: L...) -> Bool {
+    public func `is`(_ types: Tag.Event...) -> Bool {
         for type in types where isNot(type) { return false }
         return true
     }
@@ -145,7 +145,7 @@ extension Tag {
         return true
     }
 
-    public func isNot(_ type: L) -> Bool {
+    public func isNot(_ type: Tag.Event) -> Bool {
         `is`(type) == false
     }
 
@@ -154,28 +154,8 @@ extension Tag {
     }
 }
 
-public func ~= (lhs: L, rhs: L) -> Bool {
+public func ~= (lhs: Tag.Event, rhs: Tag.Event) -> Bool {
     rhs[].is(lhs[])
-}
-
-public func ~= (lhs: L, rhs: Tag) -> Bool {
-    rhs.is(lhs[])
-}
-
-public func ~= (lhs: Tag, rhs: L) -> Bool {
-    rhs[].is(lhs)
-}
-
-public func ~= (lhs: Tag, rhs: Tag) -> Bool {
-    rhs.is(lhs)
-}
-
-public func ~= (lhs: L, rhs: Tag.Reference) -> Bool {
-    rhs.tag.is(lhs[])
-}
-
-public func ~= (lhs: Tag.Reference, rhs: L) -> Bool {
-    rhs[].is(lhs.tag)
 }
 
 extension Tag {
@@ -451,7 +431,8 @@ extension Tag {
     }
 }
 
-extension Tag.KeyTo: TaggedEvent, CustomStringConvertible {
+extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
+
     public var description: String { id(\.id) }
     public func key(to context: Tag.Context) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)

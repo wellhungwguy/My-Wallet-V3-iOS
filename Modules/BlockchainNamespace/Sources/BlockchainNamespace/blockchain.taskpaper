@@ -167,6 +167,10 @@ blockchain:
 			kyc:
 				tier:
 				+ blockchain.db.type.integer
+			onboarding:
+				post:
+					sign:
+						up:
 			qr:
 			referral:
 			send:
@@ -861,6 +865,15 @@ blockchain:
 				enter:
 					address:
 					amount:
+				execution:
+					status:
+					+ blockchain.db.type.enum
+						completed:
+						error:
+						in:
+							progress:
+						pending:
+						starting:
 				in:
 					progress:
 				link:

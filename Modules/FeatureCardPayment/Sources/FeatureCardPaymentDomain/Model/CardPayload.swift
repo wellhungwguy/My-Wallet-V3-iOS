@@ -36,7 +36,7 @@ public struct CardPayload {
     public let additionDate: String
 
     public let lastError: String?
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
 
     public init(
         identifier: String,
@@ -47,7 +47,7 @@ public struct CardPayload {
         card: CardDetails!,
         additionDate: String,
         lastError: String? = nil,
-        ux: Nabu.Error.UX? = nil
+        ux: UX.Dialog? = nil
     ) {
         self.identifier = identifier
         self.partner = Partner(rawValue: partner) ?? .unknown
@@ -93,7 +93,7 @@ extension CardPayload: Decodable {
 
         card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
         lastError = try? values.decodeIfPresent(String.self, forKey: .lastError)
-        ux = try? values.decodeIfPresent(Nabu.Error.UX.self, forKey: .ux)
+        ux = try? values.decodeIfPresent(UX.Dialog.self, forKey: .ux)
     }
 }
 

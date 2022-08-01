@@ -673,6 +673,7 @@ public extension I_blockchain_app_deep__link {
 	var `buy`: L_blockchain_app_deep__link_buy { .init("\(__).buy") }
 	var `dsl`: L_blockchain_app_deep__link_dsl { .init("\(__).dsl") }
 	var `kyc`: L_blockchain_app_deep__link_kyc { .init("\(__).kyc") }
+	var `onboarding`: L_blockchain_app_deep__link_onboarding { .init("\(__).onboarding") }
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
 	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
 	var `send`: L_blockchain_app_deep__link_send { .init("\(__).send") }
@@ -759,6 +760,31 @@ public final class L_blockchain_app_deep__link_kyc_tier: L, I_blockchain_app_dee
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc.tier", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_kyc_tier: I_blockchain_db_type_integer {}
+public final class L_blockchain_app_deep__link_onboarding: L, I_blockchain_app_deep__link_onboarding {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding: I {}
+public extension I_blockchain_app_deep__link_onboarding {
+	var `post`: L_blockchain_app_deep__link_onboarding_post { .init("\(__).post") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post: L, I_blockchain_app_deep__link_onboarding_post {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post: I {}
+public extension I_blockchain_app_deep__link_onboarding_post {
+	var `sign`: L_blockchain_app_deep__link_onboarding_post_sign { .init("\(__).sign") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post_sign: L, I_blockchain_app_deep__link_onboarding_post_sign {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post.sign", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post_sign: I {}
+public extension I_blockchain_app_deep__link_onboarding_post_sign {
+	var `up`: L_blockchain_app_deep__link_onboarding_post_sign_up { .init("\(__).up") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post_sign_up: L, I_blockchain_app_deep__link_onboarding_post_sign_up {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post.sign.up", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post_sign_up: I {}
 public final class L_blockchain_app_deep__link_qr: L, I_blockchain_app_deep__link_qr {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.qr", comment: "") }
 }
@@ -3375,6 +3401,7 @@ public extension I_blockchain_ux_transaction_event {
 	var `checkout`: L_blockchain_ux_transaction_event_checkout { .init("\(__).checkout") }
 	var `did`: L_blockchain_ux_transaction_event_did { .init("\(__).did") }
 	var `enter`: L_blockchain_ux_transaction_event_enter { .init("\(__).enter") }
+	var `execution`: L_blockchain_ux_transaction_event_execution { .init("\(__).execution") }
 	var `in`: L_blockchain_ux_transaction_event_in { .init("\(__).in") }
 	var `link`: L_blockchain_ux_transaction_event_link { .init("\(__).link") }
 	var `select`: L_blockchain_ux_transaction_event_select { .init("\(__).select") }
@@ -3422,6 +3449,51 @@ public final class L_blockchain_ux_transaction_event_enter_amount: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.enter.amount", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_event_enter_amount: I {}
+public final class L_blockchain_ux_transaction_event_execution: L, I_blockchain_ux_transaction_event_execution {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution: I {}
+public extension I_blockchain_ux_transaction_event_execution {
+	var `status`: L_blockchain_ux_transaction_event_execution_status { .init("\(__).status") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status: L, I_blockchain_ux_transaction_event_execution_status {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status: I_blockchain_db_type_enum {}
+public extension I_blockchain_ux_transaction_event_execution_status {
+	var `completed`: L_blockchain_ux_transaction_event_execution_status_completed { .init("\(__).completed") }
+	var `error`: L_blockchain_ux_transaction_event_execution_status_error { .init("\(__).error") }
+	var `in`: L_blockchain_ux_transaction_event_execution_status_in { .init("\(__).in") }
+	var `pending`: L_blockchain_ux_transaction_event_execution_status_pending { .init("\(__).pending") }
+	var `starting`: L_blockchain_ux_transaction_event_execution_status_starting { .init("\(__).starting") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status_completed: L, I_blockchain_ux_transaction_event_execution_status_completed {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.completed", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_completed: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_error: L, I_blockchain_ux_transaction_event_execution_status_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.error", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_error: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_in: L, I_blockchain_ux_transaction_event_execution_status_in {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.in", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_in: I {}
+public extension I_blockchain_ux_transaction_event_execution_status_in {
+	var `progress`: L_blockchain_ux_transaction_event_execution_status_in_progress { .init("\(__).progress") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status_in_progress: L, I_blockchain_ux_transaction_event_execution_status_in_progress {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.in.progress", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_in_progress: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_pending: L, I_blockchain_ux_transaction_event_execution_status_pending {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.pending", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_pending: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_starting: L, I_blockchain_ux_transaction_event_execution_status_starting {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.starting", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_starting: I {}
 public final class L_blockchain_ux_transaction_event_in: L, I_blockchain_ux_transaction_event_in {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.in", comment: "") }
 }

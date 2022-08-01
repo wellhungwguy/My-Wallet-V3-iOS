@@ -20,7 +20,7 @@ public struct CardData {
         topLimit: FiatValue,
         billingAddress: BillingAddress? = nil,
         lastError: String? = nil,
-        ux: Nabu.Error.UX? = nil
+        ux: UX.Dialog? = nil
     ) {
         self.identifier = identifier
         self.state = state
@@ -82,7 +82,7 @@ public struct CardData {
     public let lastError: String?
 
     // Error which should be displayed
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
 
     public func data(byAppending billingAddress: BillingAddress) -> CardData {
         var data = self

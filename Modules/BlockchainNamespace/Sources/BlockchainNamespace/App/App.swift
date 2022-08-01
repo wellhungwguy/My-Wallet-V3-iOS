@@ -76,10 +76,12 @@ public class App: AppProtocol {
         state.app = self
         deepLinks.start()
         remoteConfiguration.start(app: self)
-        #if DEBUG
-        _ = logger
-        #endif
-        _ = actions
+        do {
+            #if DEBUG
+            _ = logger
+            #endif
+            _ = actions
+        }
     }
 
     // Observers
@@ -323,7 +325,7 @@ extension AppProtocol {
     public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
         try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
             .stream()
-            .next().or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
+            .next()
             .get()
     }
 

@@ -12,7 +12,6 @@ import UIKit
 public protocol KYCRouterAPI {
     func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
     func presentKYCUpgradePrompt(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
-    func presentTier1KYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never>
 }
 
 public protocol TransactionsRouterAPI {
@@ -153,29 +152,54 @@ public final class OnboardingRouter: OnboardingRouterAPI {
             .eraseToAnyPublisher()
     }
 
-    @MainActor
-    private func presentTier1KYCIfNeeded(from presenter: UIViewController) async -> OnboardingResult {
-        await kycRouter.presentTier1KYCIfNeeded(from: presenter)
-            .await()
-            .or(.abandoned)
-    }
-
     private func presentCowboyPromotion(from presenter: UIViewController) async throws -> OnboardingResult {
-        let verifyEmail = await present(
-            promotion: blockchain.ux.onboarding.promotion.cowboys.verify.email,
-            from: presenter
-        )
-        guard case .completed = verifyEmail else { return .abandoned }
-        guard case .completed = await presentTier1KYCIfNeeded(from: presenter) else { return .abandoned }
+
+        if try app.state.get(blockchain.user.account.tier) == blockchain.user.account.tier.none[] {
+
+            guard case .completed = await present(
+                promotion: blockchain.ux.onboarding.promotion.cowboys.verify.email,
+                from: presenter
+            ) else { return .abandoned }
+
+            let kyc = try await app
+                .on(
+                    blockchain.ux.kyc.event.did.finish,
+                    blockchain.ux.kyc.event.did.cancel
+                )
+                .stream()
+                .next()
+
+            guard
+                kyc.event ~= blockchain.ux.kyc.event.did.finish
+            else { return .abandoned }
+
+            guard case .completed = await present(
+                promotion: blockchain.ux.onboarding.promotion.cowboys.raffle,
+                from: presenter
+            ) else { return .abandoned }
+
+            let transaction = try await app
+                .on(
+                    blockchain.ux.transaction.event.execution.status.completed,
+                    blockchain.ux.transaction.event.did.finish
+                )
+                .stream()
+                .next()
+
+            guard
+                transaction.event ~= blockchain.ux.transaction.event.execution.status.completed
+            else { return .abandoned }
+        }
+
         return await present(
-            promotion: blockchain.ux.onboarding.promotion.cowboys.raffle,
+            promotion: blockchain.ux.onboarding.promotion.cowboys.buy.crypto,
             from: presenter
         )
     }
 
     @discardableResult
     private func present(
-        promotion: I_blockchain_ux_onboarding_type_promotion,
+        promotion: L & I_blockchain_ux_onboarding_type_promotion,
         from presenter: UIViewController
     ) async -> OnboardingResult {
         do {
@@ -184,12 +208,7 @@ public final class OnboardingRouter: OnboardingRouterAPI {
             await MainActor.run {
                 presenter.present(UIHostingController(rootView: view), animated: true)
             }
-            guard let event = try await app.on(
-                promotion.then.launch.url,
-                promotion.then.close
-            ).stream().next() else {
-                return .abandoned
-            }
+            let event = try await app.on(promotion.then.launch.url, promotion.then.close).stream().next()
             switch event.tag {
             case blockchain.ui.type.action.then.launch.url:
                 return .completed
