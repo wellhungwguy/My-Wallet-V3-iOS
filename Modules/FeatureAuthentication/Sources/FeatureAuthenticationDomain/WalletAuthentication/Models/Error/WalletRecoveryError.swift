@@ -1,5 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public enum WalletRecoveryError: Error, Equatable {
-    case failedToRestoreWallet
+import Foundation
+import WalletPayloadKit
+
+public enum WalletRecoveryError: LocalizedError, Equatable {
+    case restoreFailure(WalletError)
+
+    public var errorDescription: String? {
+        switch self {
+        case .restoreFailure(let walletError):
+            return walletError.errorDescription
+        }
+    }
 }
