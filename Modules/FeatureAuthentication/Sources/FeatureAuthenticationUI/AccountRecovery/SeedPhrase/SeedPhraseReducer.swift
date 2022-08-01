@@ -449,7 +449,7 @@ let seedPhraseReducer = Reducer.combine(
                 environment.walletRecoveryService
                     .recoverFromMetadata(mnemonic)
                     .receive(on: environment.mainQueue)
-                    .mapError { _ in WalletRecoveryError.failedToRestoreWallet }
+                    .mapError(WalletRecoveryError.restoreFailure)
                     .catchToEffect()
                     .cancellable(id: WalletRecoveryIds.RecoveryId(), cancelInFlight: true)
                     .map(SeedPhraseAction.restored)
@@ -468,11 +468,20 @@ let seedPhraseReducer = Reducer.combine(
                 Effect(value: .informWalletFetched(context))
             )
 
-        case .restored(.failure):
+        case .restored(.failure(.restoreFailure(.recovery(.unableToRecoverFromMetadata)))):
             state.isLoading = false
             return .merge(
                 .cancel(id: WalletRecoveryIds.RecoveryId()),
                 Effect(value: .setImportWalletScreenVisible(true))
+            )
+
+        case .restored(.failure(.restoreFailure(let error))):
+            state.isLoading = false
+            let title = LocalizationConstants.Errors.error
+            let message = error.errorDescription ?? LocalizationConstants.Errors.genericError
+            return .merge(
+                .cancel(id: WalletRecoveryIds.RecoveryId()),
+                Effect(value: .alert(.show(title: title, message: message)))
             )
 
         case .imported(.success):

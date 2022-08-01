@@ -214,7 +214,13 @@ final class WalletLogic: WalletLogicAPI {
         metadata.initializeAndRecoverCredentials(from: mnemonic)
             .subscribe(on: queue)
             .receive(on: queue)
-            .mapError { error in WalletError.initialization(.metadataInitializationRecovery(error)) }
+            .mapError { error -> WalletError in
+                guard case .failedToFetchCredentials(.loadMetadataError(.notYetCreated)) = error else {
+                    return .initialization(.metadataInitializationRecovery(error))
+                }
+                // we need to explicitly send the following error when we get `.notYetCreated` (aka 404)
+                return .recovery(.unableToRecoverFromMetadata)
+            }
             .flatMap { [holder] context -> AnyPublisher<RecoveryContext, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justMetadata(context.metadataState)))
                     .setFailureType(to: WalletError.self)
