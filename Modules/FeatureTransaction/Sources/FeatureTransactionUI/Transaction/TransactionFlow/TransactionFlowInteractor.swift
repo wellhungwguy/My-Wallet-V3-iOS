@@ -843,6 +843,23 @@ extension TransactionFlowInteractor {
             }
             .store(in: &bag)
 
+        transactionModel.state.distinctUntilChanged(\.executionStatus).publisher
+            .sink { [app] state in
+                switch state.executionStatus {
+                case .error:
+                    app.post(event: blockchain.ux.transaction.event.execution.status.error)
+                case .notStarted:
+                    app.post(event: blockchain.ux.transaction.event.execution.status.starting)
+                case .inProgress:
+                    app.post(event: blockchain.ux.transaction.event.execution.status.in.progress)
+                case .completed:
+                    app.post(event: blockchain.ux.transaction.event.execution.status.completed)
+                case .pending:
+                    app.post(event: blockchain.ux.transaction.event.execution.status.pending)
+                }
+            }
+            .store(in: &bag)
+
         transactionModel.state.distinctUntilChanged(\.step).publisher
             .sink { [app] state in
                 switch state.step {

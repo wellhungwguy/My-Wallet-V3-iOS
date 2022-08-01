@@ -167,6 +167,10 @@ blockchain:
 			kyc:
 				tier:
 				+ blockchain.db.type.integer
+			onboarding:
+				post:
+					sign:
+						up:
 			qr:
 			referral:
 			send:
@@ -413,6 +417,14 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
+				leaf:
+				then:
+					close:
+					+ blockchain.ui.type.action.leaf
+					launch:
+						url:
+						+ blockchain.db.type.url
+						+ blockchain.ui.type.action.leaf
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -509,6 +521,10 @@ blockchain:
 				verified:
 				+ blockchain.db.type.boolean
 		is:
+			cowboy:
+				fan:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
 			tier:
 				gold:
 				+ blockchain.db.type.boolean
@@ -656,12 +672,8 @@ blockchain:
 					+ blockchain.session.state.value
 		error:
 		+ blockchain.ui.device.haptic.feedback.notification.error
+		+ blockchain.ux.type.action
 		+ blockchain.ux.type.story
-			then:
-				launch:
-					url:
-					+ blockchain.db.type.url
-					+ blockchain.ux.type.analytics.action
 		frequent:
 			action:
 			+ blockchain.ux.type.story
@@ -744,6 +756,23 @@ blockchain:
 			wallet:
 			+ blockchain.db.collection
 				select:
+		onboarding:
+			promotion:
+				cowboys:
+					buy:
+						crypto:
+						+ blockchain.ux.onboarding.type.promotion
+					raffle:
+					+ blockchain.ux.onboarding.type.promotion
+					verify:
+						email:
+						+ blockchain.ux.onboarding.type.promotion
+			type:
+				promotion:
+				+ blockchain.ux.type.action
+					story:
+					+ blockchain.session.configuration.value
+					+ blockchain.ux.type.story
 		payment:
 			method:
 				link:
@@ -836,6 +865,15 @@ blockchain:
 				enter:
 					address:
 					amount:
+				execution:
+					status:
+					+ blockchain.db.type.enum
+						completed:
+						error:
+						in:
+							progress:
+						pending:
+						starting:
 				in:
 					progress:
 				link:

@@ -54,7 +54,7 @@ extension Tag {
         language.sync { lazy[self][keyPath: keyPath] }
     }
 
-    @usableFromInline class Lazy {
+    @usableFromInline final class Lazy {
 
         var my: Tag!
 
@@ -122,11 +122,11 @@ extension Tag {
 
 extension Tag {
 
-    public func `is`(_ type: L) -> Bool {
+    public func `is`(_ type: Tag.Event) -> Bool {
         `is`(type[])
     }
 
-    public func `is`(_ types: L...) -> Bool {
+    public func `is`(_ types: Tag.Event...) -> Bool {
         for type in types where isNot(type) { return false }
         return true
     }
@@ -145,7 +145,7 @@ extension Tag {
         return true
     }
 
-    public func isNot(_ type: L) -> Bool {
+    public func isNot(_ type: Tag.Event) -> Bool {
         `is`(type) == false
     }
 
@@ -154,28 +154,8 @@ extension Tag {
     }
 }
 
-public func ~= (lhs: L, rhs: L) -> Bool {
+public func ~= (lhs: Tag.Event, rhs: Tag.Event) -> Bool {
     rhs[].is(lhs[])
-}
-
-public func ~= (lhs: L, rhs: Tag) -> Bool {
-    rhs.is(lhs[])
-}
-
-public func ~= (lhs: Tag, rhs: L) -> Bool {
-    rhs[].is(lhs)
-}
-
-public func ~= (lhs: Tag, rhs: Tag) -> Bool {
-    rhs.is(lhs)
-}
-
-public func ~= (lhs: L, rhs: Tag.Reference) -> Bool {
-    rhs.tag.is(lhs[])
-}
-
-public func ~= (lhs: Tag.Reference, rhs: L) -> Bool {
-    rhs[].is(lhs.tag)
 }
 
 extension Tag {
@@ -184,8 +164,16 @@ extension Tag {
         id.isDotPathAncestor(of: other.id)
     }
 
+    public func isNotAncestor(of other: Tag) -> Bool {
+        !isAncestor(of: other)
+    }
+
     public func isDescendant(of other: Tag) -> Bool {
         id.isDotPathDescendant(of: other.id)
+    }
+
+    public func isNotDescendant(of other: Tag) -> Bool {
+        !isDescendant(of: other)
     }
 
     public func idRemainder(after tag: Tag) throws -> Substring {
@@ -225,11 +213,15 @@ extension Tag {
     public subscript<Descendant>(
         descendant: Descendant
     ) -> Tag? where Descendant: Collection, Descendant.Element == Name {
+        try? self.descendant(descendant)
+    }
+
+    public func descendant<Descendant>(
+        _ descendant: Descendant
+    ) throws -> Tag where Descendant: Collection, Descendant.Element == Name {
         var result = self
         for name in descendant {
-            guard let tag = result.children[name] else {
-                return nil
-            }
+            let tag = try result.child(named: name)
             result = (try? tag.node.protonym.map { try Tag(id: $0, in: language) }) ?? tag
         }
         return result
@@ -323,11 +315,10 @@ extension Tag {
 
     static func ownType(_ tag: Tag) -> [ID: Tag] {
         var type: [ID: Tag] = [:]
-        if tag.isGraphNode {
-            for id in tag.node.type {
-                type[id] = tag.language.tag(id)
-            }
-        } else {
+        for id in tag.node.type {
+            type[id] = tag.language.tag(id)
+        }
+        if !tag.isGraphNode {
             for id in tag.parent?.node.type ?? [] {
                 guard let node = tag.language.tag(id)?[tag.node.name] else { continue }
                 type[node.id] = node
@@ -440,9 +431,13 @@ extension Tag {
     }
 }
 
-extension Tag.KeyTo: TaggedEvent, CustomStringConvertible {
+extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
+
     public var description: String { id(\.id) }
     public func key(to context: Tag.Context) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)
+    }
+    public subscript() -> Tag {
+        id[]
     }
 }

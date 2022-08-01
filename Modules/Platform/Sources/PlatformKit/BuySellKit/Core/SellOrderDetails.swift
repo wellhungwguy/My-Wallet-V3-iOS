@@ -23,7 +23,7 @@ public struct SellOrderDetails: Equatable {
 
     public let state: State
     public let error: String?
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
 
     // MARK: - Setup
 

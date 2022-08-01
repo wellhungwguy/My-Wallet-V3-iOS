@@ -20,7 +20,6 @@ only_rules:
 - control_statement
 - convenience_type
 - custom_rules
-- cyclomatic_complexity
 - deployment_target
 - discouraged_assert
 - discouraged_direct_init
@@ -40,7 +39,6 @@ only_rules:
 - file_name_no_space
 - first_where
 - for_where
-- force_try
 - function_body_length
 - function_parameter_count
 - generic_type_name
@@ -103,7 +101,6 @@ only_rules:
 - strong_iboutlet
 - superfluous_disable_command
 - switch_case_alignment
-- switch_case_on_newline
 - syntactic_sugar
 - todo
 - toggle_bool
@@ -143,12 +140,12 @@ excluded:
   - scripts/*/.build/
   - Modules/BlockchainNamespace/Sources/BlockchainNamespace/blockchain.swift
 file_length:
-  warning: 600
-  error: 800
+  warning: 1600
+  error: 1800
 line_length:
   ignores_comments: true
-  warning: 120
-  error: 150
+  warning: 160
+  error: 200
 type_body_length:
   warning: 200
   error: 350
@@ -156,7 +153,7 @@ closure_body_length:
   warning: 60
   error: 280
 deployment_target:
-  iOS_deployment_target: 13.0
+  iOS_deployment_target: 14.0
 function_body_length:
   warning: 80
   error: 160

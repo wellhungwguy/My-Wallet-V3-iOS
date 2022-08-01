@@ -78,6 +78,9 @@ final class NabuUserSessionObserver: Session.Observer {
 
     func fetched(user: NabuUser) {
         app.state.transaction { state in
+
+            state.set(blockchain.user.is.cowboy.fan, to: false)
+
             state.set(blockchain.user.email.address, to: user.email.address)
             state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
             state.set(blockchain.user.name.last, to: user.personalDetails.lastName)

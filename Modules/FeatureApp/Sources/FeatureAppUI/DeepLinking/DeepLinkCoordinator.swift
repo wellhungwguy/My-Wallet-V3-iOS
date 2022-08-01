@@ -10,6 +10,7 @@ import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsUI
 import FeatureTransactionDomain
+import protocol FeatureOnboardingUI.OnboardingRouterAPI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
 import MoneyKit
@@ -69,7 +70,8 @@ public final class DeepLinkCoordinator: Session.Observer {
             send,
             kyc,
             referrals,
-            walletConnect
+            walletConnect,
+            onboarding
         ]
     }
 
@@ -115,6 +117,17 @@ public final class DeepLinkCoordinator: Session.Observer {
         .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .background))
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleWalletConnect, on: self)
+
+    private lazy var onboarding = app.on(blockchain.app.deep_link.onboarding.post.sign.up)
+        .receive(on: DispatchQueue.main)
+        .sink { _ in
+            let router: OnboardingRouterAPI = resolve()
+            router.presentPostSignUpOnboarding(from: self.topMostViewControllerProvider.topMostViewController!)
+                .sink { result in
+                    "\(result)".peek("🐢")
+                }
+                .store(in: &self.bag)
+        }
 
     func kyc(_ event: Session.Event) {
         guard let tier = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: KYC.Tier.self),

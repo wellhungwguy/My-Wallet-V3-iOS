@@ -1,11 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+public enum AsyncSequenceNextError: Error { case terminated }
+
 extension AsyncSequence {
 
-    public func next() async throws -> Element? {
+    @discardableResult
+    public func next() async throws -> Element {
         for try await o in self {
             return o
         }
-        return nil
+        throw AsyncSequenceNextError.terminated
     }
 }

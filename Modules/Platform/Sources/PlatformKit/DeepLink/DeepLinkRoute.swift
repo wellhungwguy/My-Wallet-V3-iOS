@@ -57,7 +57,7 @@ extension DeepLinkRoute {
             }
             guard let optionalKey = route.optionalKeyParameter,
                   let value = routeParameters[optionalKey],
-                  let context = FlowContext(rawValue: value)
+                  FlowContext(rawValue: value) != nil
             else {
                 return routeParameters[key] == value
             }

@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import CombineSchedulers
 @testable import FeatureOnboardingUI
-@testable import PlatformUIKitMock
 import SwiftUI
 import TestKit
 import ToolKit
 @testable import ToolKitMock
+import UIKit
 import XCTest
 
 final class OnboardingRouterTests: XCTestCase {
@@ -25,6 +26,7 @@ final class OnboardingRouterTests: XCTestCase {
         mockFeatureFlagService = MockFeatureFlagsService()
         mockEmailVerificationRouter = MockOnboardingEmailVerificationRouter()
         router = OnboardingRouter(
+            app: App.test,
             kycRouter: mockEmailVerificationRouter,
             transactionsRouter: mockBuyCryptoRouter,
             featureFlagsService: mockFeatureFlagService,
@@ -224,5 +226,27 @@ final class OnboardingRouterTests: XCTestCase {
         wait(for: [completionExpectation], timeout: 10)
         XCTAssertEqual(result, .completed)
         cancellable.cancel()
+    }
+}
+
+final class MockViewController: UIViewController {
+
+    struct RecordedInvocations {
+        var dismiss: [(animated: Bool, completion: (() -> Void)?)] = []
+        var presentViewController: [UIViewController] = []
+    }
+
+    private(set) var recordedInvocations = RecordedInvocations()
+
+    override func present(
+        _ viewControllerToPresent: UIViewController,
+        animated flag: Bool,
+        completion: (() -> Void)? = nil
+    ) {
+        recordedInvocations.presentViewController.append(viewControllerToPresent)
+    }
+
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        recordedInvocations.dismiss.append((flag, completion))
     }
 }

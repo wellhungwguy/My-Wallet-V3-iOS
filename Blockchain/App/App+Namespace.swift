@@ -69,7 +69,7 @@ extension AppProtocol {
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
-        observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
+        observers.insert(ActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 

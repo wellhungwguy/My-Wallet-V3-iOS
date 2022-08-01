@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import SwiftUI
 
 /// A vertical list of buttons used for displaying pickers.
@@ -27,8 +28,7 @@ public struct PrimaryPicker<Selection: Hashable>: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            ForEach(rows.indices) { index in
-                let row = rows[index]
+            ForEach(rows.indexed(), id: \.element.id) { (index, row) in
                 row.builder($selection)
                     .frame(minHeight: 48)
                     .background(
@@ -63,6 +63,8 @@ extension PrimaryPicker {
 
     /// A row item within a `PrimaryPicker`
     public struct Row {
+
+        fileprivate let id: UUID = UUID()
 
         fileprivate let inputState: InputState
         fileprivate let builder: (Binding<Selection?>) -> AnyView

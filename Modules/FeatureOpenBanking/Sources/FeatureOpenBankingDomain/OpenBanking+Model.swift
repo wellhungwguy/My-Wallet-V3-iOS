@@ -72,7 +72,7 @@ extension OpenBanking {
         public var currency: String?
         public var details: Details?
         public var error: OpenBanking.Error?
-        @Optional.Codable public var ux: Nabu.Error.UX?
+        @Optional.Codable public var ux: UX.Dialog?
         public var attributes: Attributes
         public var addedAt: String?
 
@@ -83,7 +83,7 @@ extension OpenBanking {
             currency: String? = nil,
             details: OpenBanking.BankAccount.Details? = nil,
             error: OpenBanking.Error? = nil,
-            ux: Nabu.Error.UX? = nil,
+            ux: UX.Dialog? = nil,
             attributes: OpenBanking.BankAccount.Attributes,
             addedAt: String? = nil
         ) {
@@ -104,7 +104,7 @@ extension OpenBanking {
         public struct Attributes: Codable, Hashable {
             public var callbackPath: String
             public var error: OpenBanking.Error?
-            @Optional.Codable public var ux: Nabu.Error.UX?
+            @Optional.Codable public var ux: UX.Dialog?
         }
 
         public var id: Identity<Self> { paymentId }
@@ -147,7 +147,7 @@ extension OpenBanking {
             paymentMethodId: String,
             paymentType: String,
             paymentError: OpenBanking.Error? = nil,
-            ux: Nabu.Error.UX? = nil,
+            ux: UX.Dialog? = nil,
             attributes: OpenBanking.Order.Attributes = .init()
         ) {
             self.id = id
@@ -173,7 +173,7 @@ extension OpenBanking {
                 consentId: String? = nil,
                 expiresAt: String? = nil,
                 error: OpenBanking.Error? = nil,
-                ux: Nabu.Error.UX? = nil
+                ux: UX.Dialog? = nil
             ) {
                 self.callbackPath = callbackPath
                 self.qrCodeUrl = qrCodeUrl
@@ -190,7 +190,7 @@ extension OpenBanking {
             public var consentId: String?
             public var expiresAt: String?
             public var error: OpenBanking.Error?
-            public var ux: Nabu.Error.UX?
+            public var ux: UX.Dialog?
         }
 
         public var id: Identity<Self>
@@ -203,7 +203,7 @@ extension OpenBanking {
         public var paymentMethodId: String
         public var paymentType: String
         public var paymentError: OpenBanking.Error?
-        @Optional.Codable public var ux: Nabu.Error.UX?
+        @Optional.Codable public var ux: UX.Dialog?
         public var attributes: Attributes? = .init()
     }
 }
@@ -266,7 +266,7 @@ extension OpenBanking.Payment {
         public var txHash: String?
         public var beneficiaryId: String
         public var error: OpenBanking.Error?
-        @Optional.Codable public var ux: Nabu.Error.UX?
+        @Optional.Codable public var ux: UX.Dialog?
     }
 }
 

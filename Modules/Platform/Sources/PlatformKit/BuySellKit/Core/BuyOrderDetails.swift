@@ -21,7 +21,7 @@ public struct BuyOrderDetails: Equatable {
 
     public let creationDate: Date?
     public let error: String?
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
 
     public internal(set) var paymentMethodId: String?
 

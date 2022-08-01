@@ -22,8 +22,4 @@ extension AnalyticsEventRecorderAPI {
     func record(event: AnalyticsEvents.New.InterestAnalyticsEvent) {
         record(event: event)
     }
-
-    func record(events: [AnalyticsEvents.New.InterestAnalyticsEvent]) {
-        record(events: events)
-    }
 }

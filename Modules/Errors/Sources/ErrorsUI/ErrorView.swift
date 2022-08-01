@@ -8,6 +8,7 @@ public struct ErrorView<Fallback: View>: View {
     typealias L10n = LocalizationConstants.UX.Error
 
     @BlockchainApp var app
+    @Environment(\.context) var context
 
     public let ux: UX.Error
     public let fallback: () -> Fallback
@@ -39,7 +40,11 @@ public struct ErrorView<Fallback: View>: View {
         }
         .padding()
         .onAppear {
-            app.post(value: ux, of: blockchain.ux.error)
+            app.state.transaction { state in
+                state.set(blockchain.ux.error, to: ux)
+                state.set(blockchain.ux.error.then.close, to: Session.State.Function(dismiss))
+            }
+            app.post(event: blockchain.ux.error, context: context)
         }
         .apply { view in
             #if os(iOS)
@@ -202,9 +207,14 @@ public struct ErrorView<Fallback: View>: View {
     private func post(_ action: UX.Action) {
         switch action.url {
         case let url?:
-            app.post(value: url, of: blockchain.ux.error.then.launch.url)
+            app.post(
+                event: blockchain.ux.error.then.launch.url,
+                context: [
+                    blockchain.ui.type.action.then.launch.url: url
+                ]
+            )
         case nil:
-            dismiss()
+            app.post(event: blockchain.ux.error.then.close)
         }
     }
 }

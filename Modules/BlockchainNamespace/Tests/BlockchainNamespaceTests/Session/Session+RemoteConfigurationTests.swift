@@ -64,7 +64,6 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         let announcements = try await app.publisher(for: blockchain.app.configuration.announcements, as: Bool.self)
             .values
             .next()
-            .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
     }
@@ -74,7 +73,6 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         let announcements = try await app.publisher(for: blockchain.user.email.address, as: String.self)
             .values
             .next()
-            .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
     }
@@ -193,7 +191,6 @@ extension Publisher where Output == FetchResult {
     func wait() async throws -> Any {
         try await values
             .next()
-            .unwrap()
             .get()
     }
 }
@@ -204,7 +201,6 @@ extension Publisher where Output: FetchResult.Decoded {
     func wait() async throws -> Output.Value {
         try await values
             .next()
-            .unwrap()
             .get()
     }
 }

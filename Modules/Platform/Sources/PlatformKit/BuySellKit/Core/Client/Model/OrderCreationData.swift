@@ -223,7 +223,7 @@ public enum OrderPayload {
         public let paymentMethodId: String?
         let side: Side
         public let attributes: Attributes?
-        @Optional.Codable public var ux: Nabu.Error.UX?
+        @Optional.Codable public var ux: UX.Dialog?
 
         let processingErrorType: String?
     }

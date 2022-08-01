@@ -59,7 +59,6 @@ final class WalletLogic: WalletLogicAPI {
     private let payloadHealthChecker: PayloadHealthCheck
     private let checkAndSaveWalletCredentials: CheckAndSaveWalletCredentials
 
-    #warning("TODO: This should be removed, pass opaque context from initialize methods instead")
     private var tempPassword: String?
 
     init(

@@ -460,7 +460,6 @@ extension TransactionsRouter {
                     .account(where: { $0.currencyType == currency })
                     .values
                     .next()
-                    .or([])
                     .first as? TransactionTarget
                 await startRouterOnMainThread(target: account)
             } catch {

@@ -57,11 +57,23 @@ extension AsyncMedia {
         url: URL?,
         @ViewBuilder content: @escaping (Media) -> I,
         @ViewBuilder placeholder: @escaping () -> P
-    ) where Content == _ConditionalContent<I, P> {
+    ) where Content == _ConditionalContent<_ConditionalContent<I, EmptyView>, P> {
+        self.init(url: url, content: content, failure: { _ in EmptyView() }, placeholder: placeholder)
+    }
+
+    public init<I: View, F: View, P: View>(
+        url: URL?,
+        @ViewBuilder content: @escaping (Media) -> I,
+        @ViewBuilder failure: @escaping (Error) -> F,
+        @ViewBuilder placeholder: @escaping () -> P
+    ) where Content == _ConditionalContent<_ConditionalContent<I, F>, P> {
         self.init(url: url) { phase in
-            if case .success(let media) = phase {
+            switch phase {
+            case .success(let media):
                 content(media)
-            } else {
+            case .failure(let error):
+                failure(error)
+            case .empty:
                 placeholder()
             }
         }

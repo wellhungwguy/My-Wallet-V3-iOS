@@ -17,6 +17,11 @@ extension Publisher where Failure == Never {
     public var values: AsyncPublisher<Self> {
         AsyncPublisher(self)
     }
+
+    @discardableResult
+    public func await() async -> Output? {
+        await values.first
+    }
 }
 
 extension Publisher {

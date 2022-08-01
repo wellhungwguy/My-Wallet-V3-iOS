@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 extension Tag {
 
     @dynamicMemberLookup
@@ -81,7 +83,7 @@ extension Tag.Context {
 
 extension Tag.Context {
 
-    public func decode<K: TaggedEvent, T: Decodable>(
+    public func decode<K: Tag.Event, T: Decodable>(
         _ event: K,
         as type: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
@@ -117,15 +119,20 @@ extension Tag.Context {
 
 public protocol TaggedEvent: CustomStringConvertible {
     func key(to context: Tag.Context) -> Tag.Reference
+    subscript() -> Tag { get }
 }
 
-extension TaggedEvent {
+extension Tag {
+    public typealias Event = TaggedEvent
+}
+
+extension Tag.Event {
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         key(to: context)
     }
 }
 
-extension L: TaggedEvent, CustomStringConvertible {
+extension L: Tag.Event, CustomStringConvertible {
     public var description: String { self(\.id) }
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         self[].key(to: context)
@@ -133,22 +140,25 @@ extension L: TaggedEvent, CustomStringConvertible {
 }
 
 extension Tag: TaggedEvent {
-    public typealias Event = TaggedEvent
+
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         Tag.Reference(unchecked: self, context: context)
     }
+    public subscript() -> Tag { self }
 }
 
-extension Tag.Reference: TaggedEvent {
+extension Tag.Reference: Tag.Event {
+
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         if context.isEmpty { return self }
         return ref(to: context)
     }
+    public subscript() -> Tag { tag }
 }
 
-extension TaggedEvent {
+extension Tag.Event {
 
-    public static func + (event: TaggedEvent, context: Tag.Context) -> Tag.Reference {
+    public static func + (event: Tag.Event, context: Tag.Context) -> Tag.Reference {
         switch event {
         case let tag as L:
             return Tag.Reference(tag[], to: context, in: nil)

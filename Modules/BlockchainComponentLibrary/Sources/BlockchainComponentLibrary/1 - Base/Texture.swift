@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainComponentLibrary
 import CasePaths
 import SwiftUI
 
 extension View {
+
+    /// Apply a foreground media to the view
+    public func foregroundTexture(_ url: URL) -> some View {
+        modifier(TextureModifier(texture: url.texture, space: .foreground))
+    }
 
     /// Apply a foreground color to the view
     public func foregroundTexture(_ color: Color) -> some View {
@@ -39,6 +43,11 @@ extension View {
         } else {
             self
         }
+    }
+
+    /// Apply a background media to the view
+    public func backgroundTexture(_ url: URL) -> some View {
+        modifier(TextureModifier(texture: url.texture, space: .background))
     }
 
     /// Apply a background color to the view
@@ -77,8 +86,20 @@ extension View {
 }
 
 public struct Texture: Codable, Hashable {
+
     public var color: Color?
     public var gradient: Gradient?
+    public var media: Media?
+
+    public init(
+        color: Texture.Color? = nil,
+        gradient: Texture.Gradient? = nil,
+        media: Texture.Media? = nil
+    ) {
+        self.color = color
+        self.gradient = gradient
+        self.media = media
+    }
 }
 
 extension Texture {
@@ -91,17 +112,46 @@ extension Texture {
     public struct Gradient: Codable, Hashable {
 
         public struct Stop: Codable, Hashable {
+
             public var color: Color
             public var location: CGFloat
+
+            public init(color: Texture.Color, location: CGFloat) {
+                self.color = color
+                self.location = location
+            }
         }
 
         public struct Linear: Codable, Hashable {
+
             public var start: [CGFloat]
             public var end: [CGFloat]
+
+            public init(start: [CGFloat], end: [CGFloat]) {
+                self.start = start
+                self.end = end
+            }
         }
 
         public var stops: [Stop]
         public var linear: Linear?
+
+        public init(
+            stops: [Texture.Gradient.Stop],
+            linear: Texture.Gradient.Linear? = nil
+        ) {
+            self.stops = stops
+            self.linear = linear
+        }
+    }
+
+    public struct Media: Codable, Hashable {
+
+        public let url: URL
+
+        public init(url: URL) {
+            self.url = url
+        }
     }
 }
 
@@ -176,6 +226,14 @@ struct TextureModifier: ViewModifier {
                 content
                     .foregroundColor(.clear)
                     .overlay(linearGradient.mask(content))
+            } else if let media = texture.media {
+                content
+                    .foregroundColor(.clear)
+                    .overlay(
+                        AsyncMedia(url: media.url)
+                            .aspectRatio(contentMode: .fit)
+                            .mask(content)
+                    )
             } else {
                 content
             }
@@ -184,6 +242,12 @@ struct TextureModifier: ViewModifier {
                 content.background(SwiftUI.Color(color))
             } else if let gradient = texture.gradient, let linearGradient = LinearGradient(gradient) {
                 content.background(linearGradient)
+            } else if let media = texture.media {
+                content
+                    .background(
+                        AsyncMedia(url: media.url)
+                            .aspectRatio(contentMode: .fill)
+                    )
             } else {
                 content
             }
@@ -193,11 +257,11 @@ struct TextureModifier: ViewModifier {
 
 extension Color {
 
-    #if canImport(UIKit)
+#if canImport(UIKit)
     private typealias Native = UIColor
-    #elseif canImport(AppKit)
+#elseif canImport(AppKit)
     private typealias Native = NSColor
-    #endif
+#endif
 
     // swiftlint:disable:next large_tuple
     private var hsba: (hue: Double, saturation: Double, brightness: Double, alpha: Double) {
@@ -314,6 +378,13 @@ extension UnitPoint {
     }
 }
 
+extension URL {
+
+    public var texture: Texture {
+        Texture(media: Texture.Media(url: self))
+    }
+}
+
 #if DEBUG
 struct Texture_Previews: PreviewProvider {
 
@@ -336,66 +407,76 @@ struct Texture_Previews: PreviewProvider {
 
     static var previews: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Rectangle()
-                    .frame(height: 100)
-                    .foregroundTexture(
-                        linear: Gradient(
-                            colors: [
-                                Color(paletteColor: .red200),
-                                Color(paletteColor: .blue300)
-                            ]
-                        )
+            VStack {
+                Text("Globe")
+                    .typography(.display)
+                    .foregroundTexture(.semantic.light.opacity(0.5))
+                    .backgroundTexture(
+                        URL(string: "https://file-examples.com/storage/fe52cb0c4862dc676a1b341/2017/04/file_example_MP4_480_1_5MG.mp4")!
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .overlay(
-                        Text("Red 200 -> Blue 300")
-                            .padding()
-                            .typography(.display)
-                            .scaledToFit()
-                            .minimumScaleFactor(0.5)
-                            .foregroundColor(.white)
-                    )
-                Rectangle()
-                    .frame(height: 100)
-                    .foregroundColor(.clear)
-                    .backgroundTexture(Color(paletteColor: .orange200))
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .overlay(
-                        Text("Orange 200")
-                            .padding()
-                            .typography(.display)
-                            .foregroundTexture(
-                                linear: Gradient(
-                                    colors: [
-                                        Color(paletteColor: .orange600),
-                                        Color(paletteColor: .orange800)
-                                    ]
-                                )
-                            )
-                    )
-                ForEach(allTypography, id: \.self) { typography in
-                    Text("The quick brown fox jumps over the lazy dog")
-                        .typography(typography)
+                    .padding(20.pt)
+                    Rectangle()
+                        .frame(height: 100)
                         .foregroundTexture(
                             linear: Gradient(
                                 colors: [
-                                    Color(paletteColor: .blue400),
-                                    Color(paletteColor: .blue500),
-                                    Color(paletteColor: .blue600),
-                                    Color(paletteColor: .blue700),
-                                    Color(paletteColor: .blue800),
-                                    Color(paletteColor: .blue900)
+                                    .semantic.warning,
+                                    .semantic.primary
                                 ]
                             )
                         )
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
-                }
+                        .overlay(
+                            Text("warning -> primary")
+                                .padding()
+                                .typography(.display)
+                                .scaledToFit()
+                                .minimumScaleFactor(0.5)
+                                .foregroundColor(.white)
+                        )
+                    Rectangle()
+                        .frame(height: 100)
+                        .foregroundColor(.clear)
+                        .backgroundTexture(.semantic.greenBG)
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                        .overlay(
+                            Text("error -> gold")
+                                .padding()
+                                .typography(.display)
+                                .foregroundTexture(
+                                    linear: Gradient(
+                                        colors: [
+                                            .semantic.error,
+                                            .semantic.gold
+                                        ]
+                                    )
+                                )
+                        )
+                    ForEach(allTypography, id: \.self) { typography in
+                        Text("The quick brown fox jumps over the lazy dog")
+                            .frame(maxWidth: .infinity)
+                            .typography(typography)
+                            .foregroundTexture(
+                                linear: Gradient(
+                                    colors: [
+                                        .semantic.warning,
+                                        .semantic.primaryMuted,
+                                        .semantic.primary,
+                                        .semantic.success,
+                                        .semantic.error,
+                                        .semantic.gold,
+                                        .semantic.silver
+                                    ]
+                                )
+                            )
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                    }
             }
             .padding()
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 #endif

@@ -29,7 +29,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>202207.1.0</string>
+	<string>999999.9.9</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
