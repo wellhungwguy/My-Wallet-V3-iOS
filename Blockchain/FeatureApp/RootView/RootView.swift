@@ -11,7 +11,6 @@ import FeatureInterestUI
 import Localization
 import MoneyKit
 import SwiftUI
-import ErrorsUI
 
 struct Tab: Hashable, Identifiable, Codable {
     var id: AnyHashable { tag }

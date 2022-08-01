@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import SwiftUI
 import Algorithms
+import SwiftUI
 
 /// A vertical list of buttons used for displaying pickers.
 ///

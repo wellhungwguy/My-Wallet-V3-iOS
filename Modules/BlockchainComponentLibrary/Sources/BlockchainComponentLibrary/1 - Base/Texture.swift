@@ -385,6 +385,8 @@ extension URL {
     }
 }
 
+// swiftlint:disable line_length
+
 #if DEBUG
 struct Texture_Previews: PreviewProvider {
 

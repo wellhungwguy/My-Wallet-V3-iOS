@@ -128,5 +128,3 @@ struct PromotionViewPreview: PreviewProvider {
         .app(App.preview)
     }
 }
-
-
