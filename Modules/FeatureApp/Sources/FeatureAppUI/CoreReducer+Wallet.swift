@@ -33,32 +33,76 @@ enum WalletCancelations {
 }
 
 public enum WalletAction: Equatable {
+    case fetch(password: String)
     case walletFetched(Result<WalletFetchedContext, WalletError>)
+    case walletBootstrap(WalletFetchedContext)
+    case walletSetup
 }
 
-// swiftlint:disable closure_body_length
 extension Reducer where State == CoreAppState, Action == CoreAppAction, Environment == CoreAppEnvironment {
     /// Returns a combined reducer that handles all the wallet related actions
     func walletReducer() -> Self {
         combined(
-            with: Reducer { _, action, environment in
+            with: Reducer { state, action, environment in
                 switch action {
-                case .wallet(.walletFetched(.success(let value))):
-                    // convert to WalletDecryption model
-                    let decryption = WalletDecryption(
-                        guid: value.guid,
-                        sharedKey: value.sharedKey,
-                        passwordPartHash: value.passwordPartHash
-                    )
-                    // send the legacy actions
-                    // this is temporary once we completely move to native wallet login
-                    return .merge(
-                        Effect(value: .didDecryptWallet(decryption)),
-                        Effect(value: .authenticated(.success(true)))
+                case .wallet(.fetch(let password)):
+                    return environment.walletService.fetch(password)
+                        .receive(on: environment.mainQueue)
+                        .catchToEffect()
+                        .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
+                        .map { CoreAppAction.wallet(.walletFetched($0)) }
+
+                case .wallet(.walletFetched(.success(let context))):
+                    // the cancellations are here because we still call the legacy actions
+                    // and we need to cancel those operation - (remove after JS removal)
+                    return .concatenate(
+                        .cancel(id: WalletCancelations.FetchId()),
+                        .cancel(id: WalletCancelations.AuthenticationId()),
+                        .cancel(id: WalletCancelations.DecryptId()),
+                        Effect(value: .wallet(.walletBootstrap(context))),
+                        Effect(value: .wallet(.walletSetup))
                     )
 
+                case .wallet(.walletBootstrap(let context)):
+                    // set `guid/sharedKey` (need to refactor this after JS removal)
+                    environment.blockchainSettings.set(guid: context.guid)
+                    environment.blockchainSettings.set(sharedKey: context.sharedKey)
+                    // `passwordPartHash` is set after Pin creation
+                    clearPinIfNeeded(
+                        for: context.passwordPartHash,
+                        appSettings: environment.blockchainSettings
+                    )
+                    return .merge(
+                        // reset KYC verification if decrypted wallet under recovery context
+                        Effect(value: .resetVerificationStatusIfNeeded(
+                            guid: context.guid,
+                            sharedKey: context.sharedKey
+                        ))
+                    )
+
+                case .wallet(.walletSetup):
+                    // decide if we need to reset password or not (we need to reset password after metadata recovery)
+                    // if needed, go to reset password screen, if not, go to PIN screen
+                    if let context = state.onboarding?.walletRecoveryContext,
+                       context == .metadataRecovery
+                    {
+                        environment.loadingViewPresenter.hide()
+                        return Effect(value: .onboarding(.handleMetadataRecoveryAfterAuthentication))
+                    }
+                    // decide if we need to set a pin or not
+                    guard environment.blockchainSettings.isPinSet else {
+                        guard state.onboarding?.welcomeState != nil else {
+                            return Effect(value: .setupPin)
+                        }
+                        return .merge(
+                            Effect(value: .onboarding(.welcomeScreen(.dismiss()))),
+                            Effect(value: .setupPin)
+                        )
+                    }
+                    return Effect(value: .prepareForLoggedIn)
+
                 case .wallet(.walletFetched(.failure(.initialization(.needsSecondPassword)))):
-                    // we don't support double encryoted password wallets
+                    // we don't support double encrypted password wallets
                     environment.loadingViewPresenter.hide()
                     return Effect(
                         value: .onboarding(.informSecondPasswordDetected)

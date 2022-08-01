@@ -76,7 +76,7 @@ public enum CoreAppAction: Equatable {
     // Wallet Authentication
     case wallet(WalletAction)
     case fetchWallet(password: String)
-    case doFetchWallet(password: String)
+    case legacyWalletFetch(password: String)
     case authenticate
     case didDecryptWallet(WalletDecryption)
     case decryptionFailure(AuthenticationError)
@@ -335,35 +335,20 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     // This is to give a change for the circular loader to appear before
                     // we call `fetch(with: _password_)` which will call the evil that is JS.
                     return .merge(
-                        Effect(value: .doFetchWallet(password: password))
+                        Effect(value: .legacyWalletFetch(password: password))
                             .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
                             .eraseToEffect()
                             .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true),
                         Effect(value: .authenticate)
                     )
                 }
-                return Effect(value: .doFetchWallet(password: password))
+                return Effect(value: .wallet(.fetch(password: password)))
             }
             .eraseToEffect()
 
-    case .doFetchWallet(let password):
-        let walletManager = environment.walletManager
-        let walletService = environment.walletService
-        let mainQueue = environment.mainQueue
-        return environment.nativeWalletFlagEnabled()
-            .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
-                guard nativeWalletEnabled else {
-                    walletManager.fetch(with: password)
-                    return .cancel(id: WalletCancelations.FetchId())
-                }
-                // Runs the native wallet fetching
-                return walletService.fetch(password)
-                    .receive(on: mainQueue)
-                    .catchToEffect()
-                    .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
-                    .map { CoreAppAction.wallet(.walletFetched($0)) }
-            }
-            .eraseToEffect()
+    case .legacyWalletFetch(let password):
+        environment.walletManager.fetch(with: password)
+        return .cancel(id: WalletCancelations.FetchId())
 
     case .authenticate:
         return .merge(
