@@ -53,15 +53,16 @@ public final class OnboardingRouter: OnboardingRouterAPI {
         presentEmailVerification(from: presenter)
             .flatMap { [weak self] _ -> AnyPublisher<OnboardingResult, Never> in
                 guard let self = self else { return .just(.abandoned) }
-                return Task<OnboardingResult, Error>.Publisher {
-                    if try await self.app.get(blockchain.user.is.cowboy.fan) {
-                        return try await self.presentCowboyPromotion(from: presenter)
-                    } else {
-                        return await self.presentUITour(from: presenter).await().or(.abandoned)
+                do {
+                    if try self.app.state.get(blockchain.user.is.cowboy.fan) {
+                        return Task<OnboardingResult, Error>.Publisher(priority: .userInitiated) {
+                            try await self.presentCowboyPromotion(from: presenter)
+                        }
+                        .replaceError(with: .abandoned)
+                        .eraseToAnyPublisher()
                     }
-                }
-                .replaceError(with: .abandoned)
-                .eraseToAnyPublisher()
+                } catch { /* ignore */ }
+                return self.presentUITour(from: presenter)
             }
             .eraseToAnyPublisher()
     }

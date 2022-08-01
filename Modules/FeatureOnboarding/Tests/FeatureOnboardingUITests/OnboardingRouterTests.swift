@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import CombineSchedulers
 @testable import FeatureOnboardingUI
@@ -25,6 +26,7 @@ final class OnboardingRouterTests: XCTestCase {
         mockFeatureFlagService = MockFeatureFlagsService()
         mockEmailVerificationRouter = MockOnboardingEmailVerificationRouter()
         router = OnboardingRouter(
+            app: App.test,
             kycRouter: mockEmailVerificationRouter,
             transactionsRouter: mockBuyCryptoRouter,
             featureFlagsService: mockFeatureFlagService,
