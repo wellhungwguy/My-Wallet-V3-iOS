@@ -59,7 +59,7 @@ public struct PromotionView: View {
             }
         }
         .onAppear {
-            app.state.transaction { state in
+            app.state.transaction { state ind
                 state.set(promotion, to: ux)
                 state.set(promotion.then.close, to: Session.State.Function {
                     presentationMode.wrappedValue.dismiss()

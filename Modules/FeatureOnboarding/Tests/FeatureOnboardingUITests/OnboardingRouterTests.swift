@@ -230,8 +230,8 @@ final class OnboardingRouterTests: XCTestCase {
 final class MockViewController: UIViewController {
 
     struct RecordedInvocations {
-        public var dismiss: [(animated: Bool, completion: (() -> Void)?)] = []
-        public var presentViewController: [UIViewController] = []
+        var dismiss: [(animated: Bool, completion: (() -> Void)?)] = []
+        var presentViewController: [UIViewController] = []
     }
 
     private(set) var recordedInvocations = RecordedInvocations()
