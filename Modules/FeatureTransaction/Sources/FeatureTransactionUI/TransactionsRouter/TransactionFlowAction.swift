@@ -58,6 +58,36 @@ extension TransactionFlowAction: Equatable {
     }
 }
 
+extension TransactionFlowAction {
+    
+    public var isCustodial: Bool {
+        switch self {
+        case .order(let orderDetails):
+            return true
+        case .buy(let account):
+            return !(account is NonCustodialAccount)
+        case .sell(let account):
+            return !(account is NonCustodialAccount)
+        case .swap(let account):
+            return !(account is NonCustodialAccount)
+        case .send(let account, _):
+            return !(account is NonCustodialAccount)
+        case .receive(let account):
+            return !(account is NonCustodialAccount)
+        case .interestTransfer(let cryptoInterestAccount):
+            return true
+        case .interestWithdraw(let cryptoInterestAccount):
+            return true
+        case .withdraw(let fiatAccount):
+            return true
+        case .deposit(let fiatAccount):
+            return true
+        case .sign(let account, _):
+            return !(account is NonCustodialAccount)
+        }
+    }
+}
+
 // swiftlint:disable switch_case_on_newline
 extension TransactionFlowAction {
     public var asset: AssetAction {

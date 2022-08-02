@@ -180,7 +180,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private func isUserEligible(
         for action: TransactionFlowAction
     ) -> AnyPublisher<ProductIneligibility?, Never> {
-        guard let productId = action.toProductIdentifier else {
+        guard action.isCustodial, let productId = action.toProductIdentifier else {
             return .just(nil)
         }
         return productsService
