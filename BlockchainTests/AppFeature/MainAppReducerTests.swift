@@ -108,7 +108,6 @@ final class MainAppReducerTests: XCTestCase {
         mockDelegatedCustodySubscriptionsService = DelegatedCustodySubscriptionsServiceMock()
         mockWalletService = WalletService(
             fetch: { _ in .empty() },
-            fetchUsingSecPassword: { _, _ in .empty() },
             recoverFromMetadata: { _ in .empty() }
         )
         mockWalletStateProvider = WalletStateProvider(

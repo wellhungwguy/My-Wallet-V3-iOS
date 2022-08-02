@@ -254,7 +254,6 @@ class WalletLogicTests: XCTestCase {
 
         provideMetadataInput(
             password: "password",
-            secondPassword: nil,
             wallet: wallet
         )
         .sink { input in
@@ -329,7 +328,6 @@ class WalletLogicTests: XCTestCase {
 
         provideMetadataInput(
             password: "Misura12!",
-            secondPassword: nil,
             wallet: wallet
         )
         .eraseError()
