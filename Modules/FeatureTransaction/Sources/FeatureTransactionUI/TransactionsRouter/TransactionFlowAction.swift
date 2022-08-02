@@ -58,6 +58,29 @@ extension TransactionFlowAction: Equatable {
     }
 }
 
+extension TransactionFlowAction {
+
+    public var isCustodial: Bool {
+        switch self {
+        case
+            .buy(let account as BlockchainAccount?),
+            .sell(let account as BlockchainAccount?),
+            .swap(let account as BlockchainAccount?),
+            .send(let account, _),
+            .sign(let account as BlockchainAccount?, _),
+            .receive(let account as BlockchainAccount?):
+                return account?.accountType.isCustodial ?? true
+        case
+            .order,
+            .interestTransfer,
+            .interestWithdraw,
+            .withdraw,
+            .deposit:
+                return true
+        }
+    }
+}
+
 // swiftlint:disable switch_case_on_newline
 extension TransactionFlowAction {
     public var asset: AssetAction {
