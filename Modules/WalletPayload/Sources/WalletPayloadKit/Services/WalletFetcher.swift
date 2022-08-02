@@ -25,10 +25,6 @@ public protocol WalletFetcherAPI {
     /// Fetches and initializes a wallet using the given password
     /// - Parameter password: A `String` to be used as the password for fetching the wallet
     func fetch(using password: String) -> AnyPublisher<WalletFetchedContext, WalletError>
-
-    /// Fetches and initializes a wallet using the given password and a second password
-    /// - Parameter password: A `String` to be used as the password for fetching the wallet
-    func fetch(using password: String, secondPassword: String) -> AnyPublisher<WalletFetchedContext, WalletError>
 }
 
 typealias LoadAndInitializePayload = (
@@ -86,24 +82,6 @@ final class WalletFetcher: WalletFetcherAPI {
             .eraseToAnyPublisher()
     }
 
-    func fetch(using password: String, secondPassword: String) -> AnyPublisher<WalletFetchedContext, WalletError> {
-        walletLogic.initialize(
-            with: password,
-            secondPassword: secondPassword
-        )
-        .flatMap { [walletRepo] walletState -> AnyPublisher<NativeWallet, WalletError> in
-            storeSharedKey(from: walletState, on: walletRepo)
-        }
-        .map { value -> WalletFetchedContext in
-            WalletFetchedContext(
-                guid: value.guid,
-                sharedKey: value.sharedKey,
-                passwordPartHash: hashPassword(password)
-            )
-        }
-        .eraseToAnyPublisher()
-    }
-
     func fetch(
         guid: String,
         sharedKey: String,
@@ -127,6 +105,7 @@ final class WalletFetcher: WalletFetcherAPI {
 ///   - walletLogic: A `WalletLogic` for initialization of the payload
 ///   - walletRepo: A `WalletRepo` for related storage
 /// - Returns: A closure of type `(WalletPayload, String) -> AnyPublisher<WalletFetchedContext, WalletError>`
+// swiftlint:disable function_parameter_count
 private func loadPayload(
     payloadCrypto: PayloadCryptoAPI,
     walletLogic: WalletLogic,

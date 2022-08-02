@@ -53,6 +53,7 @@ final class BitcoinCashTxNotesStrategy: BitcoinCashTxNotesStrategyAPI {
                     return .failure(.unabledToSave) // JS didn't support this
                 }
                 return repository.bitcoinCashEntry
+                    .first()
                     .mapError { _ in TxNotesError.unableToRetrieveNote }
                     .compactMap { $0 }
                     .map { entry -> BitcoinCashEntry in

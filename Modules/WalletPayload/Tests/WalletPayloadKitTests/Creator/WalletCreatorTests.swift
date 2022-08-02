@@ -10,6 +10,7 @@ import TestKit
 import ToolKit
 import XCTest
 
+// swiftlint:disable function_body_length
 class WalletCreatorTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!
