@@ -62,28 +62,21 @@ extension TransactionFlowAction {
     
     public var isCustodial: Bool {
         switch self {
-        case .order:
-            return true
-        case .buy(let account):
-            return account is TradingAccount
-        case .sell(let account):
-            return account is TradingAccount
-        case .swap(let account):
-            return account is TradingAccount
-        case .send(let account, _):
-            return account is TradingAccount
-        case .receive(let account):
-            return account is TradingAccount
-        case .interestTransfer:
-            return true
-        case .interestWithdraw:
-            return true
-        case .withdraw:
-            return true
-        case .deposit:
-            return true
-        case .sign(let account, _):
-            return account is TradingAccount
+        case
+            .buy(let account as BlockchainAccount?),
+            .sell(let account as BlockchainAccount?),
+            .swap(let account as BlockchainAccount?),
+            .send(let account, _),
+            .sign(let account as BlockchainAccount?, _),
+            .receive(let account as BlockchainAccount?):
+                return account?.accountType.isCustodial ?? true
+        case
+            .order,
+            .interestTransfer,
+            .interestWithdraw,
+            .withdraw,
+            .deposit:
+                return true
         }
     }
 }
