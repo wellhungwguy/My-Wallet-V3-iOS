@@ -9,11 +9,6 @@ public struct WalletService {
         _ password: String
     ) -> AnyPublisher<WalletFetchedContext, WalletError>
 
-    public var fetchUsingSecPassword: (
-        _ password: String,
-        _ secondPassword: String
-    ) -> AnyPublisher<WalletFetchedContext, WalletError>
-
     public var recoverFromMetadata: (
         _ mnemonic: String
     ) -> AnyPublisher<WalletFetchedContext, WalletError>
@@ -27,9 +22,6 @@ extension WalletService {
         WalletService(
             fetch: { password -> AnyPublisher<WalletFetchedContext, WalletError> in
                 fetcher.fetch(using: password)
-            },
-            fetchUsingSecPassword: { password, secondPassword -> AnyPublisher<WalletFetchedContext, WalletError> in
-                fetcher.fetch(using: password, secondPassword: secondPassword)
             },
             recoverFromMetadata: { mnemonic -> AnyPublisher<WalletFetchedContext, WalletError> in
                 recovery.recover(from: mnemonic)

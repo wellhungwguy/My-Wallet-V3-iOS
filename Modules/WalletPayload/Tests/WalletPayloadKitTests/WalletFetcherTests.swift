@@ -12,7 +12,7 @@ import TestKit
 import ToolKit
 import XCTest
 
-// swiftlint:disable line_length
+// swiftlint:disable function_body_length
 class WalletFetcherTests: XCTestCase {
 
     let jsonV4 = Fixtures.loadJSONData(filename: "wallet-wrapper-v4", in: .module)!
