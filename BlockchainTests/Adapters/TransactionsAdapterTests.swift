@@ -4,6 +4,7 @@
 import Combine
 import FeatureOnboardingUI
 import FeatureTransactionUI
+import PlatformKit
 import ToolKit
 import XCTest
 
@@ -12,12 +13,19 @@ final class TransactionsAdapterTests: XCTestCase {
     private var adapter: TransactionsAdapter!
     private var mockTransactionsRouter: MockTransactionsRouter!
     private var mockCoincore: MockCoincore!
+    private var app: AppProtocol!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockTransactionsRouter = MockTransactionsRouter()
         mockCoincore = MockCoincore()
-        adapter = TransactionsAdapter(router: mockTransactionsRouter, coincore: mockCoincore)
+        app = App.test
+
+        adapter = TransactionsAdapter(
+            router: mockTransactionsRouter,
+            coincore: mockCoincore,
+            app: app
+        )
     }
 
     override func tearDownWithError() throws {

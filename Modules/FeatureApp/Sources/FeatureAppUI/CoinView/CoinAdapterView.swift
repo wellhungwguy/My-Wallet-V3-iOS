@@ -65,13 +65,16 @@ public struct CoinAdapterView: View {
                     fiatCurrencyService.displayCurrencyPublisher
                         .setFailureType(to: Error.self)
                         .flatMap { [coincore] fiatCurrency in
-                            coincore.cryptoAccounts(for: cryptoCurrency)
-                                .map { accounts in
-                                    accounts
-                                        .filter { !($0 is ExchangeAccount) }
-                                        .map { Account($0, fiatCurrency) }
-                                }
-                                .eraseToAnyPublisher()
+                            coincore.cryptoAccounts(
+                                for: cryptoCurrency,
+                                filter: app.currentMode.filter
+                            )
+                            .map { accounts in
+                                accounts
+                                    .filter { !($0 is ExchangeAccount) }
+                                    .map { Account($0, fiatCurrency) }
+                            }
+                            .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()
                 },
@@ -347,7 +350,6 @@ public final class CoinViewObserver: Session.Observer {
 }
 
 extension FeatureCoinDomain.Account {
-
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
         self.init(
             id: account.identifier,
@@ -355,6 +357,12 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
+            receiveAddressPublisher: {
+                account
+                    .receiveAddress
+                    .map(\.address)
+                    .eraseToAnyPublisher()
+            },
             actionsPublisher: {
                 account.actions
                     .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
@@ -441,7 +449,6 @@ extension TransactionsRouterAPI {
 }
 
 extension CoincoreAPI {
-
     func cryptoAccounts(
         for cryptoCurrency: CryptoCurrency,
         supporting action: AssetAction? = nil,

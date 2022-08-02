@@ -53,9 +53,12 @@ final class FiatBalanceCollectionViewInteractor {
                 guard isTier2Approved else {
                     return .just([])
                 }
-                return self.coincore.fiatAsset
+                return self.coincore
+                    .fiatAsset
                     .accountGroup(filter: .all)
+                    .compactMap { $0 }
                     .map(\.accounts)
+                    .asObservable()
                     .asSingle()
             }
     }
@@ -119,6 +122,14 @@ extension FiatBalanceCollectionViewInteractor {
         interactorsState
             .compactMap(\.value)
             .map(\.isNotEmpty)
+            .catchAndReturn(false)
+    }
+
+    public var isInTradingMode: Observable<Bool> {
+        app
+            .fetchAppMode()
+            .asObservable()
+            .map { $0 != .defi }
             .catchAndReturn(false)
     }
 

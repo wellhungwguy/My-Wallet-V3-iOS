@@ -11,6 +11,7 @@ enum PortfolioCellType: Hashable {
     case fiatCustodialBalances(FiatBalanceCollectionViewPresenter)
     case totalBalance(TotalBalanceViewPresenter)
     case crypto(HistoricalBalanceCellPresenter)
+    case defiCrypto(HistoricalBalanceCellPresenter)
     case cryptoSkeleton(Int)
     case emptyState
 
@@ -34,6 +35,8 @@ extension PortfolioCellType: IdentifiableType {
             return "withdrawalLock"
         case .cryptoSkeleton(let id):
             return "cryptoSkeleton-\(id)"
+        case .defiCrypto(let presenter):
+            return "defiCrypto-\(presenter.cryptoCurrency.code)"
         case .crypto(let presenter):
             return "crypto-\(presenter.cryptoCurrency.code)"
         case .fiatCustodialBalances:

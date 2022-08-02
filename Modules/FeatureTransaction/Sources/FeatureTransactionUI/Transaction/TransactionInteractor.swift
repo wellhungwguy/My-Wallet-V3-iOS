@@ -130,8 +130,12 @@ final class TransactionInteractor {
         action: AssetAction,
         transactionTarget: TransactionTarget?
     ) -> Single<[SingleAccount]> {
-        let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore
-            .allAccounts
+        let allEligibleCryptoAccounts: Single<[CryptoAccount]> =
+            app
+            .fetchAppMode()
+            .flatMap { [coincore] appMode in
+                coincore.allAccounts(filter: appMode.filter)
+            }
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(
@@ -152,6 +156,7 @@ final class TransactionInteractor {
                 }
             }
             .asSingle()
+
         switch action {
         case .interestTransfer:
             guard let account = transactionTarget as? BlockchainAccount else {
@@ -211,12 +216,14 @@ final class TransactionInteractor {
         case .withdraw:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .buy:
+            let filter = app.currentMode.filter
             return coincore
-                .cryptoAccounts(supporting: .buy, filter: .custodial)
+                .cryptoAccounts(supporting: .buy, filter: filter)
                 .asSingle()
                 .map { $0 }
         case .sell:
-            return coincore.allAccounts
+            return coincore
+                .allAccounts(filter: app.currentMode.filter)
                 .map(\.accounts)
                 .map {
                     $0.compactMap { account in

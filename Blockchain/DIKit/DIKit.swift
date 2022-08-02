@@ -50,6 +50,7 @@ import FirebaseRemoteConfig
 import MoneyKit
 import NetworkKit
 import ObservabilityKit
+import PlatformDataKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -498,7 +499,8 @@ extension DependencyContainer {
         factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
-                coincore: DIKit.resolve()
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 
@@ -515,7 +517,8 @@ extension DependencyContainer {
         factory { () -> TransactionsAdapterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
-                coincore: DIKit.resolve()
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 

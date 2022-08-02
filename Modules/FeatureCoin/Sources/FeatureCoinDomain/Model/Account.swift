@@ -11,6 +11,18 @@ import MoneyKit
 
 public struct Account: Identifiable {
 
+    public struct ReceiveAddress {
+        var address: String
+        var memo: String?
+        var predefinedAmount: MoneyValue?
+
+        public init(address: String, memo: String? = nil, predefinedAmount: MoneyValue? = nil) {
+            self.address = address
+            self.memo = memo
+            self.predefinedAmount = predefinedAmount
+        }
+    }
+
     public enum AccountType: String, Codable {
         case privateKey
         case trading
@@ -24,7 +36,7 @@ public struct Account: Identifiable {
     public let accountType: AccountType
     public let cryptoCurrency: CryptoCurrency
     public let fiatCurrency: FiatCurrency
-
+    public let receiveAddressPublisher: () -> AnyPublisher<String, Error>
     public let actionsPublisher: () -> AnyPublisher<OrderedSet<Account.Action>, Error>
     public let cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>
     public let fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
@@ -35,6 +47,7 @@ public struct Account: Identifiable {
         accountType: Account.AccountType,
         cryptoCurrency: CryptoCurrency,
         fiatCurrency: FiatCurrency,
+        receiveAddressPublisher: @escaping () -> AnyPublisher<String, Error>,
         actionsPublisher: @escaping () -> AnyPublisher<OrderedSet<Account.Action>, Error>,
         cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>,
         fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
@@ -44,6 +57,7 @@ public struct Account: Identifiable {
         self.accountType = accountType
         self.cryptoCurrency = cryptoCurrency
         self.fiatCurrency = fiatCurrency
+        self.receiveAddressPublisher = receiveAddressPublisher
         self.actionsPublisher = actionsPublisher
         self.cryptoBalancePublisher = cryptoBalancePublisher
         self.fiatBalancePublisher = fiatBalancePublisher
@@ -60,6 +74,7 @@ extension Account {
         public let accountType: AccountType
         public let cryptoCurrency: CryptoCurrency
         public let fiatCurrency: FiatCurrency
+        public let receiveAddress: String
 
         public let actions: OrderedSet<Account.Action>
         public let crypto: MoneyValue
@@ -71,6 +86,7 @@ extension Account {
             accountType: Account.AccountType,
             cryptoCurrency: CryptoCurrency,
             fiatCurrency: FiatCurrency,
+            receiveAddress: String,
             actions: OrderedSet<Account.Action>,
             crypto: MoneyValue,
             fiat: MoneyValue
@@ -79,6 +95,7 @@ extension Account {
             self.name = name
             self.accountType = accountType
             self.cryptoCurrency = cryptoCurrency
+            self.receiveAddress = receiveAddress
             self.fiatCurrency = fiatCurrency
             self.actions = actions
             self.crypto = crypto
@@ -187,15 +204,17 @@ extension Collection where Element == Account {
             account.cryptoBalancePublisher
                 .combineLatest(
                     account.fiatBalancePublisher,
-                    account.actionsPublisher().replaceError(with: [])
+                    account.actionsPublisher().replaceError(with: []),
+                    account.receiveAddressPublisher().replaceError(with: "")
                 )
-                .map { crypto, fiat, actions in
+                .map { crypto, fiat, actions, receiveAddress in
                     Account.Snapshot(
                         id: account.id,
                         name: account.name,
                         accountType: account.accountType,
                         cryptoCurrency: account.cryptoCurrency,
                         fiatCurrency: account.fiatCurrency,
+                        receiveAddress: receiveAddress,
                         actions: actions,
                         crypto: crypto,
                         fiat: fiat
@@ -264,6 +283,7 @@ extension Account.Snapshot {
         accountType: Account.AccountType = .privateKey,
         cryptoCurrency: CryptoCurrency = .bitcoin,
         fiatCurrency: FiatCurrency = .USD,
+        receiveAddress: String = "0xadada0ada0d0a0d0ad13",
         actions: OrderedSet<Account.Action> = [.send, .receive],
         crypto: MoneyValue = .init(amount: BigInt(123000000), currency: .crypto(.bitcoin)),
         fiat: MoneyValue = .init(amount: BigInt(4417223), currency: .fiat(.USD))
@@ -274,6 +294,7 @@ extension Account.Snapshot {
             accountType: accountType,
             cryptoCurrency: cryptoCurrency,
             fiatCurrency: fiatCurrency,
+            receiveAddress: receiveAddress,
             actions: actions,
             crypto: crypto,
             fiat: fiat

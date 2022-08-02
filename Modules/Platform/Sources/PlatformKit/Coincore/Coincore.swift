@@ -15,7 +15,7 @@ public enum CoincoreError: Error, Equatable {
 public protocol CoincoreAPI {
 
     /// Provides access to fiat and crypto custodial and non custodial assets.
-    var allAccounts: AnyPublisher<AccountGroup, CoincoreError> { get }
+    func allAccounts(filter: AssetFilter) -> AnyPublisher<AccountGroup, CoincoreError>
     func account(
         where isIncluded: @escaping (BlockchainAccount) -> Bool
     ) -> AnyPublisher<[BlockchainAccount], Error>
@@ -42,17 +42,20 @@ final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 
-    var allAccounts: AnyPublisher<AccountGroup, CoincoreError> {
-        reactiveWallet.waitUntilInitializedFirst
-            .flatMap { [allAssets] _ -> AnyPublisher<[AccountGroup], Never> in
+    func allAccounts(filter: AssetFilter) -> AnyPublisher<AccountGroup, CoincoreError> {
+        reactiveWallet
+            .waitUntilInitializedFirst
+            .flatMap { [allAssets] _ -> AnyPublisher<[AccountGroup?], Never> in
                 allAssets
-                    .map { asset in
-                        asset.accountGroup(filter: .all)
+                    .map { asset -> AnyPublisher<AccountGroup?, Never> in
+                        asset
+                            .accountGroup(filter: filter)
                     }
                     .zip()
             }
             .map { accountGroups -> [SingleAccount] in
                 accountGroups
+                    .compactMap { $0 }
                     .map(\.accounts)
                     .reduce(into: [SingleAccount]()) { result, accounts in
                         result.append(contentsOf: accounts)
@@ -96,7 +99,7 @@ final class Coincore: CoincoreAPI {
     }
 
     func account(where isIncluded: @escaping (BlockchainAccount) -> Bool) -> AnyPublisher<[BlockchainAccount], Error> {
-        allAccounts
+        allAccounts(filter: .all)
             .map(\.accounts)
             .map { accounts in
                 accounts.filter(isIncluded)
@@ -148,7 +151,7 @@ final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            return allAccounts
+            return allAccounts(filter: .all)
                 .map(\.accounts)
                 .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in

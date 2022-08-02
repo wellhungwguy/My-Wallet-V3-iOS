@@ -20,16 +20,11 @@ final class FiatAsset: Asset {
 
     // MARK: - Asset
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
-        switch filter {
-        case .all,
-             .custodial:
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
+        if filter.contains(.custodial) {
             return custodialGroup
-        case .interest,
-             .nonCustodial,
-             .exchange:
-            return .just(FiatAccountGroup(accounts: []))
         }
+        return .just(nil)
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
@@ -38,12 +33,13 @@ final class FiatAsset: Asset {
 
     // MARK: - Helpers
 
-    private var allAccountsGroup: AnyPublisher<AccountGroup, Never> {
+    private var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
         custodialGroup
     }
 
-    private var custodialGroup: AnyPublisher<AccountGroup, Never> {
-        let accounts = enabledCurrenciesService.allEnabledFiatCurrencies
+    private var custodialGroup: AnyPublisher<AccountGroup?, Never> {
+        let accounts = enabledCurrenciesService
+            .allEnabledFiatCurrencies
             .map { FiatCustodialAccount(fiatCurrency: $0) }
         return .just(FiatAccountGroup(accounts: accounts))
     }

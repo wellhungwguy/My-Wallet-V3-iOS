@@ -31,7 +31,8 @@ final class RootViewController: UIHostingController<RootView> {
         send = ViewStore(global).send
 
         let environment = RootViewEnvironment(
-            app: app
+            app: app,
+            coincore: resolve()
         )
         let store = Store(
             initialState: RootViewState(

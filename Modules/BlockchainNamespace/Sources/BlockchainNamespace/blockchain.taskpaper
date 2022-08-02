@@ -13,6 +13,11 @@ blockchain:
 				maintenance:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
+				superapp:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			apple:
 				pay:
 					is:
@@ -51,6 +56,10 @@ blockchain:
 				+ blockchain.session.configuration.value
 			deep_link:
 				rules:
+				+ blockchain.session.configuration.value
+			defi:
+				tabs:
+				+ blockchain.db.type.array.of.tags
 				+ blockchain.session.configuration.value
 			frequent:
 				action:
@@ -222,6 +231,15 @@ blockchain:
 					deep_link:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.value
+		mode:
+		+ blockchain.session.state.preference.value
+		performance:
+			trace:
+				transaction:
+					start:
+						to:
+							enter:
+								amount:
 		process:
 			deep_link:
 				error:
@@ -825,6 +843,9 @@ blockchain:
 		scan:
 			QR:
 			+ blockchain.ux.type.story
+		switcher:
+			entry:
+			+ blockchain.ux.type.story.entry
 		transaction:
 		+ blockchain.db.collection
 			action:

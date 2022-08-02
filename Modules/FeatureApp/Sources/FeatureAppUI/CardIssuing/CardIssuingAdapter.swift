@@ -86,7 +86,7 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
         }
 
         coincore
-            .allAccounts
+            .allAccounts(filter: .all)
             .receive(on: DispatchQueue.main)
             .map { accountGroup -> FiatAccount? in
                 accountGroup.accounts
@@ -188,7 +188,7 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
         let publisher = PassthroughSubject<AccountBalance, NabuNetworkError>()
         let accounts = cardService.eligibleAccounts(for: card)
         let accountBalances = Publishers
-            .CombineLatest(accounts.eraseError(), coinCore.allAccounts.eraseError())
+            .CombineLatest(accounts.eraseError(), coinCore.allAccounts(filter: .all).eraseError())
             .map { accountBalances, group -> [Account] in
                 accountBalances
                     .compactMap { accountBalance in
@@ -255,7 +255,7 @@ class CardIssuingAccountPickerAdapter: AccountProviderAPI, AccountPickerAccountP
         Publishers
             .CombineLatest3(
                 cardService.fetchLinkedAccount(for: card).eraseError(),
-                coinCore.allAccounts.eraseError(),
+                coinCore.allAccounts(filter: .all).eraseError(),
                 fiatCurrencyService.displayCurrency.eraseError()
             )
             .flatMap { accountCurrency, group, fiatCurrency

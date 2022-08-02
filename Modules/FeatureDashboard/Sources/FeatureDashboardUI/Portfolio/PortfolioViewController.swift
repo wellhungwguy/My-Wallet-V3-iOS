@@ -121,6 +121,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         tableView.register(FiatCustodialBalancesTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
+        tableView.registerNibCell(SimpleBalanceTableViewCell.self, in: .module)
         tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
         tableView.separatorColor = .clear
 
@@ -153,6 +154,8 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                     cell = self.balanceCell(for: indexPath, presenter: presenter)
                 case .crypto(let presenter):
                     cell = self.assetCell(for: indexPath, presenter: presenter)
+                case .defiCrypto(let presenter):
+                    cell = self.defiAssetCell(for: indexPath, presenter: presenter)
                 case .cryptoSkeleton:
                     cell = self.assetCell(for: indexPath, presenter: nil)
                 case .emptyState:
@@ -173,7 +176,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                      .fiatCustodialBalances,
                      .emptyState:
                     break
-                case .crypto(let cryptoPresenter):
+                case .crypto(let cryptoPresenter), .defiCrypto(let cryptoPresenter):
                     let currency = cryptoPresenter.cryptoCurrency
                     app.post(
                         event: blockchain.ux.asset[currency.code].select,
@@ -282,6 +285,12 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private func assetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
+
+    private func defiAssetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
+        let cell = tableView.dequeue(SimpleBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

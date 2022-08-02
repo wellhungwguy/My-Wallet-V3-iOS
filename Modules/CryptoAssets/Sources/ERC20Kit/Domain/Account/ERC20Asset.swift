@@ -74,7 +74,7 @@ final class ERC20Asset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.accountGroup(filter: filter)
     }
 

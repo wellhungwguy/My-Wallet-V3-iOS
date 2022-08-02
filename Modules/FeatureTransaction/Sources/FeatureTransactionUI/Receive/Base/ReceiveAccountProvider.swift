@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import Foundation
@@ -33,12 +34,13 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
     private let coincore: CoincoreAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let errorRecorder: ErrorRecording
+    private let app: AppProtocol
 
     // MARK: - Properties
 
     var accounts: Observable<[BlockchainAccount]> {
         let allERC20 = Set(enabledCurrenciesService.allEnabledCryptoCurrencies.filter(\.isERC20))
-        return coincore.allAccounts
+        return coincore.allAccounts(filter: app.currentMode.filter)
             .map(\.accounts)
             .eraseError()
             .flatMapFilter(
@@ -69,10 +71,12 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
     init(
         coincore: CoincoreAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve()
+        errorRecorder: ErrorRecording = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.coincore = coincore
         self.enabledCurrenciesService = enabledCurrenciesService
         self.errorRecorder = errorRecorder
+        self.app = app
     }
 }

@@ -119,15 +119,18 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
 
     private let router: FeatureTransactionUI.TransactionsRouterAPI
     private let coincore: CoincoreAPI
+    private let app: AppProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
     init(
         router: FeatureTransactionUI.TransactionsRouterAPI,
-        coincore: CoincoreAPI
+        coincore: CoincoreAPI,
+        app: AppProtocol
     ) {
         self.router = router
         self.coincore = coincore
+        self.app = app
     }
 
     func presentTransactionFlow(
@@ -144,24 +147,32 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
         to transactionToPerform: TransactionType,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        router.presentTransactionFlow(to: transactionToPerform.transactionFlowActionValue, from: presenter)
-            .map(TransactionResult.init)
-            .eraseToAnyPublisher()
+        router.presentTransactionFlow(
+            to: transactionToPerform.transactionFlowActionValue,
+            from: presenter
+        )
+        .map(TransactionResult.init)
+        .eraseToAnyPublisher()
     }
 
     func presentTransactionFlow(
         toBuy cryptoCurrency: CryptoCurrency,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        coincore.cryptoAccounts(for: .bitcoin, supporting: .buy, filter: .custodial)
-            .replaceError(with: [])
-            .receive(on: DispatchQueue.main)
-            .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
-                guard let self = self else {
-                    return .empty()
-                }
-                return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)
+        let filter = app.currentMode.filter
+        return coincore.cryptoAccounts(
+            for: .bitcoin,
+            supporting: .buy,
+            filter: filter
+        )
+        .replaceError(with: [])
+        .receive(on: DispatchQueue.main)
+        .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
+            guard let self = self else {
+                return .empty()
             }
-            .eraseToAnyPublisher()
+            return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)
+        }
+        .eraseToAnyPublisher()
     }
 }

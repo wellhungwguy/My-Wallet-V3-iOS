@@ -194,7 +194,6 @@ extension Publisher where Output == AccountGroup, Failure == Error {
 }
 
 extension CoincoreAPI {
-
     public func cryptoAccounts(
         supporting action: AssetAction? = nil,
         filter: AssetFilter = .all
@@ -202,6 +201,7 @@ extension CoincoreAPI {
         allAssets
             .map { asset in
                 asset.accountGroup(filter: filter)
+                    .compactMap { $0 }
                     .eraseError()
                     .mapToCryptoAccounts(supporting: action)
             }
@@ -220,6 +220,7 @@ extension CoincoreAPI {
     ) -> AnyPublisher<[CryptoAccount], Error> {
         let asset = self[cryptoCurrency]
         return asset.accountGroup(filter: filter)
+            .compactMap { $0 }
             .eraseError()
             .mapToCryptoAccounts(supporting: action)
     }
@@ -252,13 +253,14 @@ extension CoincoreAPI {
         let accountsPublisher: AnyPublisher<[SingleAccount], Error>
         switch assetType {
         case .all:
-            accountsPublisher = allAccounts
+            accountsPublisher = allAccounts(filter: .all)
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()
         case .fiat:
             accountsPublisher = fiatAsset
                 .accountGroup(filter: .all)
+                .compactMap { $0 }
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()
@@ -276,13 +278,14 @@ extension CoincoreAPI {
         let accountsPublisher: AnyPublisher<[SingleAccount], Error>
         switch assetType {
         case .all:
-            accountsPublisher = allAccounts
+            accountsPublisher = allAccounts(filter: .all)
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()
         case .fiat:
             accountsPublisher = fiatAsset
                 .accountGroup(filter: .all)
+                .compactMap { $0 }
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()

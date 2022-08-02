@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import MoneyKit
@@ -7,9 +8,11 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import ToolKit
 import WalletPayloadKit
 
-final class PortfolioScreenInteractor {
+public final class PortfolioScreenInteractor {
+    typealias CurrencyBalance = (currency: CryptoCurrency, hasBalance: Bool)
 
     // MARK: - Properties
 
@@ -29,6 +32,8 @@ final class PortfolioScreenInteractor {
     private let reactiveWallet: ReactiveWalletAPI
     private let userPropertyInteractor: AnalyticsUserPropertyInteracting
     private var historicalBalanceCellInteractors: [CryptoCurrency: HistoricalBalanceCellInteractor] = [:]
+    private var app: AppProtocol
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
@@ -38,7 +43,8 @@ final class PortfolioScreenInteractor {
         reactiveWallet: ReactiveWalletAPI = resolve(),
         userPropertyInteractor: AnalyticsUserPropertyInteracting = resolve(),
         coincore: CoincoreAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        app: AppProtocol = resolve()
     ) {
         self.coincore = coincore
         self.enabledCurrenciesService = enabledCurrenciesService
@@ -47,13 +53,52 @@ final class PortfolioScreenInteractor {
         self.reactiveWallet = reactiveWallet
         self.userPropertyInteractor = userPropertyInteractor
         fiatBalancesInteractor = FiatBalanceCollectionViewInteractor()
+        self.app = app
 
-        NotificationCenter.when(.walletInitialized) { [weak self] _ in
-            self?.refresh()
-        }
+        NotificationCenter
+            .when(.walletInitialized) { [weak self] _ in
+                self?.refresh()
+            }
     }
 
     // MARK: - Methods
+
+    var appMode: Observable<AppMode> {
+        app
+            .fetchAppMode()
+            .asObservable()
+    }
+
+    var cryptoCurrencies: Observable<CurrencyBalance> {
+        let cryptoStreams: [Observable<CurrencyBalance>] =
+            coincore
+                .cryptoAssets
+                .map { cryptoAsset -> Observable<CurrencyBalance> in
+                    let currency = cryptoAsset.asset
+
+                    return cryptoAsset
+                        .accountGroup(filter: app.currentMode.filter)
+                        .eraseError()
+                        .flatMap { group -> AnyPublisher<Bool, Error> in
+                            guard let group = group else {
+                                return .just(false)
+                                    .eraseToAnyPublisher()
+                            }
+                            return group
+                                .balance
+                                .map(\.hasPositiveDisplayableBalance)
+                                .eraseError()
+                        }
+                        .map { hasPositiveDisplayableBalance -> CurrencyBalance in
+                            (currency, hasPositiveDisplayableBalance)
+                        }
+                        .asObservable()
+                        .catchAndReturn((currency, false))
+                }
+        return Observable
+            .merge(cryptoStreams)
+            .compactMap { $0 }
+    }
 
     func historicalBalanceCellInteractor(
         for cryptoCurrency: CryptoCurrency

@@ -16,6 +16,19 @@ struct AccountRow: View {
     let account: Account.Snapshot
     let assetColor: Color
     let interestRate: Double?
+    let actionEnabled: Bool
+
+    init(
+        account: Account.Snapshot,
+        assetColor: Color,
+        interestRate: Double? = nil,
+        actionEnabled: Bool = true
+    ) {
+        self.account = account
+        self.assetColor = assetColor
+        self.interestRate = interestRate
+        self.actionEnabled = actionEnabled
+    }
 
     var body: some View {
         BalanceRow(
@@ -25,13 +38,15 @@ struct AccountRow: View {
             trailingDescription: account.crypto.displayString,
             trailingDescriptionColor: .semantic.muted,
             action: {
-                withAnimation(.spring()) {
-                    app.post(
-                        event: blockchain.ux.asset.account.sheet[].ref(to: context),
-                        context: context + [
-                            blockchain.ux.asset.account: account
-                        ]
-                    )
+                if actionEnabled {
+                    withAnimation(.spring()) {
+                        app.post(
+                            event: blockchain.ux.asset.account.sheet[].ref(to: context),
+                            context: context + [
+                                blockchain.ux.asset.account: account
+                            ]
+                        )
+                    }
                 }
             },
             leading: {
@@ -88,6 +103,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .privateKey,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
+                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -105,6 +121,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .trading,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
+                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -122,6 +139,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .interest,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
+                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -139,6 +157,7 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .exchange,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
+                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)

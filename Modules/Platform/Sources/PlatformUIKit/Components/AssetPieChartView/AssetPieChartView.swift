@@ -18,7 +18,8 @@ public final class AssetPieChartView: UIView {
         willSet { disposeBag = DisposeBag() }
         didSet {
             guard let presenter = presenter else { return }
-            presenter.state
+            presenter
+                .state
                 .compactMap(\.value)
                 .bindAndCatch(to: rx.chartData)
                 .disposed(by: disposeBag)

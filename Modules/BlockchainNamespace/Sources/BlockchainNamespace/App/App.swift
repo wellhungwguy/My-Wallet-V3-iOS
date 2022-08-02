@@ -19,8 +19,13 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     #endif
 }
 
-public class App: AppProtocol {
+public enum AppMode: String, Decodable, Equatable {
+    case defi
+    case trading
+    case both
+}
 
+public class App: AppProtocol {
     public let language: Language
 
     public let events: Session.Events

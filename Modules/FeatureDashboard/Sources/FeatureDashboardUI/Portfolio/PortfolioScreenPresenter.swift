@@ -19,13 +19,13 @@ final class PortfolioScreenPresenter {
     // MARK: - Types
 
     var notificationCenter: NotificationCenter = .default
-    private typealias CurrencyBalance = (currency: CryptoCurrency, hasBalance: Bool)
 
     struct Model {
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
         var fiatBalanceCollectionViewPresenter: FiatBalanceCollectionViewPresenter?
         var cryptoCurrencies: [CryptoCurrency: LoadingState<Bool>]
+        let app: AppProtocol
 
         func cellArrangement(
             interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
@@ -73,9 +73,13 @@ final class PortfolioScreenPresenter {
                     guard let interactor = interactor(cryptoCurrency) else {
                         return nil
                     }
-                    return HistoricalBalanceCellPresenter(interactor: interactor)
+
+                    return HistoricalBalanceCellPresenter(
+                        interactor: interactor,
+                        appMode: app.currentMode
+                    )
                 }
-                .map(PortfolioCellType.crypto)
+                .map(app.currentMode == .defi ? PortfolioCellType.defiCrypto : PortfolioCellType.crypto)
                 .forEach { items.append($0) }
             return addingAnnouncement(items: items)
         }
@@ -156,28 +160,6 @@ final class PortfolioScreenPresenter {
     private let sectionsRelay: BehaviorRelay<[PortfolioViewModel]> = .init(value: [])
     private let coincore: CoincoreAPI
 
-    private var cryptoCurrencies: Observable<CurrencyBalance> {
-        let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
-            .map { asset -> Observable<CurrencyBalance> in
-                let currency = asset.asset
-                return asset.accountGroup(filter: .all)
-                    .eraseError()
-                    .flatMap { group in
-                        group.balance
-                            .map(\.hasPositiveDisplayableBalance)
-                            .eraseError()
-                    }
-                    .map { hasPositiveDisplayableBalance -> CurrencyBalance in
-                        (currency, hasPositiveDisplayableBalance)
-                    }
-                    .asObservable()
-                    .catchAndReturn((currency, false))
-            }
-        return Observable
-            .merge(cryptoStreams)
-            .compactMap { $0 }
-    }
-
     // MARK: - Init
 
     init(
@@ -195,12 +177,14 @@ final class PortfolioScreenPresenter {
         self.coincore = coincore
         self.drawerRouter = drawerRouter
         self.interactor = interactor
+
         fiatBalancePresenter = DashboardFiatBalancesPresenter(
             interactor: interactor.fiatBalancesInteractor
         )
         let totalBalancePresenter = TotalBalanceViewPresenter(
             coincore: coincore,
-            fiatCurrencyService: fiatCurrencyService
+            fiatCurrencyService: fiatCurrencyService,
+            app: app
         )
         let enabledCryptoCurrencies = interactor.enabledCryptoCurrencies
             .reduce(into: [CryptoCurrency: LoadingState<Bool>]()) { result, cryptoCurrency in
@@ -208,7 +192,8 @@ final class PortfolioScreenPresenter {
             }
         model = Model(
             totalBalancePresenter: totalBalancePresenter,
-            cryptoCurrencies: enabledCryptoCurrencies
+            cryptoCurrencies: enabledCryptoCurrencies,
+            app: app
         )
     }
 
@@ -223,6 +208,7 @@ final class PortfolioScreenPresenter {
 
     /// Should be called once the view is loaded
     func setup() {
+
         // Bind announcements.
         announcementPresenter.announcement
             .do(onNext: { [weak self] action in
@@ -283,6 +269,12 @@ final class PortfolioScreenPresenter {
             .bind(to: sectionsRelay)
             .disposed(by: disposeBag)
 
+        interactor
+            .appMode
+            .mapToVoid()
+            .bindAndCatch(to: refreshRelay)
+            .disposed(by: disposeBag)
+
         refreshRelay
             .throttle(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
             .bind { [weak self] _ in
@@ -293,7 +285,7 @@ final class PortfolioScreenPresenter {
         refreshRelay
             .throttle(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, _) in
-                self.cryptoCurrencies
+                self.interactor.cryptoCurrencies
             }
             .do(
                 onNext: { [weak self] data in

@@ -1,11 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class HistoricalBalanceCellPresenter {
 
@@ -22,6 +24,17 @@ final class HistoricalBalanceCellPresenter {
                 text: interactor.cryptoCurrency.name,
                 font: .main(.semibold, 20),
                 color: .dashboardAssetTitle,
+                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(interactor.cryptoCurrency.name)")
+            )
+        )
+    }
+
+    var displayCode: Driver<LabelContent> {
+        .just(
+            .init(
+                text: interactor.cryptoCurrency.displayCode,
+                font: .main(.medium, 14),
+                color: .descriptionText,
                 accessibility: .id("\(AccessibilityId.titleLabelFormat)\(interactor.cryptoCurrency.displayCode)")
             )
         )
@@ -37,7 +50,10 @@ final class HistoricalBalanceCellPresenter {
 
     private let interactor: HistoricalBalanceCellInteractor
 
-    init(interactor: HistoricalBalanceCellInteractor) {
+    init(
+        interactor: HistoricalBalanceCellInteractor,
+        appMode: AppMode
+    ) {
         self.interactor = interactor
         sparklinePresenter = AssetSparklinePresenter(
             with: interactor.sparklineInteractor
@@ -47,6 +63,7 @@ final class HistoricalBalanceCellPresenter {
             descriptors: .assetPrice(accessibilityIdSuffix: interactor.cryptoCurrency.displayCode)
         )
         balancePresenter = AssetBalanceViewPresenter(
+            alignment: appMode == .defi ? .trailing : .leading,
             interactor: interactor.balanceInteractor,
             descriptors: .default(
                 cryptoAccessiblitySuffix: AccessibilityId.cryptoBalanceLabelFormat,

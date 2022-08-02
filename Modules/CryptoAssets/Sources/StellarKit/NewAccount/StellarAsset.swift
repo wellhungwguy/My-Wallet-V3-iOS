@@ -76,7 +76,9 @@ final class StellarAsset: CryptoAsset {
     // MARK: - Public methods
 
     func initialize() -> AnyPublisher<Void, AssetError> {
-        cryptoAssetRepository.nonCustodialGroup
+        cryptoAssetRepository
+            .nonCustodialGroup
+            .compactMap { $0 }
             .map(\.accounts)
             .flatMap { [upgradeLegacyLabels] accounts in
                 upgradeLegacyLabels(accounts)
@@ -85,7 +87,7 @@ final class StellarAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.accountGroup(filter: filter)
     }
 

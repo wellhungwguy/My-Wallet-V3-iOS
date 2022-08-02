@@ -62,9 +62,10 @@ extension CryptoAsset {
         case is CryptoTradingAccount,
              is CryptoNonCustodialAccount:
             return canTransactToCustodial
-                .flatMap { [accountGroup] canTransactToCustodial -> AnyPublisher<AccountGroup, Never> in
+                .flatMap { [accountGroup] canTransactToCustodial -> AnyPublisher<AccountGroup?, Never> in
                     accountGroup(canTransactToCustodial ? .all : .nonCustodial)
                 }
+                .compactMap { $0 }
                 .map(\.accounts)
                 .mapFilter(excluding: crypto.identifier)
                 .eraseToAnyPublisher()

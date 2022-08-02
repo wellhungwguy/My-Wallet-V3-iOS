@@ -39,7 +39,6 @@ extension Tab {
 }
 
 struct RootView: View {
-
     var app: AppProtocol = Blockchain.app
 
     let store: Store<RootViewState, RootViewAction>
@@ -80,6 +79,20 @@ struct RootView: View {
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
+        .bottomSheet(
+            isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
+            content: {
+            IfLetStore(store.scope(state: \.accountTotals)) { store in
+                WithViewStore(store) { totals in
+                    buildAppModeSwitcher(
+                        totalAccountBalance: totals.totalBalance,
+                        defiAccountBalance: totals.defiWalletBalance,
+                        brokerageAccountBalance: totals.brokerageBalance
+                    )
+                }
+            }
+            }
+        )
         .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
             IfLetStore(store.scope(state: \.fab.data)) { store in
                 WithViewStore(store) { viewStore in
@@ -171,8 +184,8 @@ struct RootView: View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
-                    leading: account,
-                    title: tab.name.localized(),
+                    leading: appModeSwitcher,
+                    title: viewStore.appSwitcherEnabled ? "" : tab.name.localized(),
                     trailing: trailingViews
                 )
         }
@@ -195,7 +208,33 @@ struct RootView: View {
             referrals()
                 .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
             QR()
+            account()
         }
+    }
+
+    func buildAppModeSwitcher(
+        totalAccountBalance: String?,
+        defiAccountBalance: String?,
+        brokerageAccountBalance: String?
+    ) -> some View {
+        AppModeSwitcherView(
+            store: .init(
+                initialState: .init(
+                    totalAccountBalance: totalAccountBalance,
+                    defiAccountBalance: defiAccountBalance,
+                    brokerageAccountBalance: brokerageAccountBalance,
+                    currentAppMode: viewStore.appMode
+                ),
+                reducer: AppModeSwitcherModule.reducer,
+                environment: .init(
+                    mainQueue: .main,
+                    app: resolve()
+                )
+            ),
+            onClose: {
+                viewStore.send(.onAppModeSwitcherTapped)
+            }
+        )
     }
 
     @ViewBuilder func referrals() -> some View {
@@ -209,6 +248,16 @@ struct RootView: View {
                 then: { view in view.update(icon: Icon.giftbox) }
             )
             .identity(blockchain.ux.referral.entry)
+    }
+
+    @ViewBuilder func appModeSwitcher() -> some View {
+        AppModeSwitcherButton(
+            isDefiMode: viewStore.appMode != .trading,
+            action: {
+                viewStore.send(.onAppModeSwitcherTapped)
+            }
+        )
+        .identity(blockchain.ux.switcher.entry)
     }
 
     @ViewBuilder func QR() -> some View {
