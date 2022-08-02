@@ -82,10 +82,13 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     appStoreOpener: env.appStoreOpener,
                     appUpgradeState: {
                         let service = AppUpgradeStateService(
-                            deviceInfo: env.deviceInfo,
-                            featureFetcher: env.featureFlagsService
+                            app: env.app,
+                            deviceInfo: env.deviceInfo
                         )
-                        return service.state
+                        return service
+                            .state
+                            .receive(on: env.mainQueue)
+                            .eraseToAnyPublisher()
                     },
                     blockchainSettings: env.blockchainSettings,
                     buildVersionProvider: env.buildVersionProvider,

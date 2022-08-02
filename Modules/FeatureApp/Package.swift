@@ -42,6 +42,7 @@ let package = Package(
         .package(path: "../FeatureDashboard"),
         .package(path: "../FeatureDebug"),
         .package(path: "../FeatureInterest"),
+        .package(path: "../FeatureNFT"),
         .package(path: "../FeatureOnboarding"),
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../FeatureProducts"),
@@ -85,6 +86,8 @@ let package = Package(
                 .product(name: "FeatureDashboardUI", package: "FeatureDashboard"),
                 .product(name: "FeatureDebugUI", package: "FeatureDebug"),
                 .product(name: "FeatureInterestUI", package: "FeatureInterest"),
+                .product(name: "FeatureNFTDomain", package: "FeatureNFT"),
+                .product(name: "FeatureNFTUI", package: "FeatureNFT"),
                 .product(name: "FeatureOnboardingUI", package: "FeatureOnboarding"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
@@ -113,6 +116,7 @@ let package = Package(
         .target(
             name: "FeatureAppDomain",
             dependencies: [
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureProductsDomain", package: "FeatureProducts"),
                 .product(name: "FeatureSettingsDomain", package: "FeatureSettings"),
