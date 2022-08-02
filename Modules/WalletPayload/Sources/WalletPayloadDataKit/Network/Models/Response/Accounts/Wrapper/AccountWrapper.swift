@@ -28,7 +28,7 @@ enum AccountWrapper {
             archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
             xpriv = try container.decode(String.self, forKey: .xpriv)
             xpub = try container.decode(String.self, forKey: .xpub)
-            addressLabels = try container.decode([AddressLabelResponse].self, forKey: .addressLabels)
+            addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
             cache = try container.decode(AddressCacheResponse.self, forKey: .cache)
         }
 
