@@ -59,7 +59,7 @@ extension TransactionFlowAction: Equatable {
 }
 
 extension TransactionFlowAction {
-    
+
     public var isCustodial: Bool {
         switch self {
         case
