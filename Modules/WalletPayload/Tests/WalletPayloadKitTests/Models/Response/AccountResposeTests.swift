@@ -61,7 +61,7 @@ class AccountTests: XCTestCase {
 
         XCTAssertEqual(
             accountVersion3.addressLabels,
-            [AddressLabelResponse(index: 0, label: "labeled_address")]
+            []
         )
 
         let expectedCache = AddressCacheResponse(

@@ -33,6 +33,32 @@ struct DerivationResponse: Equatable, Codable {
         case addressLabels = "address_labels"
         case cache
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(Format.self, forKey: .type)
+        purpose = try container.decode(Int.self, forKey: .purpose)
+        xpriv = try container.decode(String.self, forKey: .xpriv)
+        xpub = try container.decode(String.self, forKey: .xpub)
+        addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
+        cache = try container.decode(AddressCacheResponse.self, forKey: .cache)
+    }
+
+    init(
+        type: DerivationResponse.Format,
+        purpose: Int,
+        xpriv: String,
+        xpub: String,
+        addressLabels: [AddressLabelResponse],
+        cache: AddressCacheResponse
+    ) {
+        self.type = type
+        self.purpose = purpose
+        self.xpriv = xpriv
+        self.xpub = xpub
+        self.addressLabels = addressLabels
+        self.cache = cache
+    }
 }
 
 extension DerivationResponse.Format {
