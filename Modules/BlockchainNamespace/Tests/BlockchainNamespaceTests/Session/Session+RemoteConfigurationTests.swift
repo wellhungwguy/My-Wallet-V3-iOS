@@ -23,6 +23,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                 remote: Mock.RemoteConfiguration(
                     [
                         .remote: [
+                            "ios_app_maintenance": true,
                             "ios_ff_apple_pay": true,
                             "blockchain_app_configuration_announcements": ["1", "2", "3"],
                             "blockchain_app_configuration_deep_link_rules": []
@@ -54,6 +55,14 @@ final class SessionRemoteConfigurationTests: XCTestCase {
     func test_fetch_fallback() async throws {
 
         let isEnabled = try await app.publisher(for: blockchain.app.configuration.apple.pay.is.enabled, as: Bool.self)
+            .wait()
+
+        XCTAssertTrue(isEnabled)
+    }
+
+    func test_fetch_fallback_alternative() async throws {
+
+        let isEnabled = try await app.publisher(for: blockchain.app.configuration.app.maintenance, as: Bool.self)
             .wait()
 
         XCTAssertTrue(isEnabled)
@@ -100,6 +109,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         XCTAssertEqual(
             app.remoteConfiguration.allKeys.set,
             [
+                "ios_app_maintenance",
                 "ios_ff_apple_pay",
                 "!blockchain.app.configuration.manual.login.is.enabled",
                 "blockchain_app_configuration_announcements",

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import FeatureAppUpgradeDomain
 import FeatureAppUpgradeUI
@@ -13,20 +14,24 @@ protocol AppUpgradeStateServiceAPI {
 final class AppUpgradeStateService: AppUpgradeStateServiceAPI {
 
     private let deviceInfo: DeviceInfo
-    private let featureFetcher: FeatureFetching
+    private let app: AppProtocol
 
     init(
-        deviceInfo: DeviceInfo,
-        featureFetcher: FeatureFetching
+        app: AppProtocol,
+        deviceInfo: DeviceInfo
     ) {
+        self.app = app
         self.deviceInfo = deviceInfo
-        self.featureFetcher = featureFetcher
     }
 
     var state: AnyPublisher<AppUpgradeState?, Never> {
-        featureFetcher
-            .fetch(for: .announcements, as: AppUpgradeData?.self)
-            .replaceError(with: nil)
+        app
+            .publisher(
+                for: blockchain.app.configuration.app.maintenance,
+                as: AppUpgradeData.self
+            )
+            .prefix(1)
+            .map(\.value)
             .map { [deviceInfo] data in
                 data
                     .flatMap { data in

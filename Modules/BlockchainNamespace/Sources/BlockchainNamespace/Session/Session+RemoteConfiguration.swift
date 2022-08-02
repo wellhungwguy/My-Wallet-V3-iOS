@@ -253,7 +253,7 @@ extension Tag.Reference {
 
     /// blockchain_app_configuration_path_to_leaf_is_enabled -> ios_ff_path_to_leaf
     fileprivate func idToFirebaseConfigurationKeyIsEnabledFallback() -> String {
-        idToFirebaseConfigurationKeyFallback()
+        idToFirebaseConfigurationKey()
             .replacingOccurrences(
                 of: "blockchain_app_configuration",
                 with: "ios_ff"
@@ -266,7 +266,7 @@ extension Tag.Reference {
 
     /// blockchain_app_configuration_path_to_leaf_is_enabled -> ios_path_to_leaf
     fileprivate func idToFirebaseConfigurationKeyIsEnabledFallbackAlternative() -> String {
-        idToFirebaseConfigurationKeyFallback()
+        idToFirebaseConfigurationKey()
             .replacingOccurrences(
                 of: "blockchain_app_configuration",
                 with: "ios"
