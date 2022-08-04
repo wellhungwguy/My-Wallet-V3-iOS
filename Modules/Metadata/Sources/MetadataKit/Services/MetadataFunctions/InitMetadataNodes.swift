@@ -58,7 +58,7 @@ private func initMetadataNodes(
     loadMetadata: @escaping LoadRemoteMetadata,
     generateNodes: @escaping GenerateNodes
 ) -> AnyPublisher<MetadataState, MetadataInitialisationError> {
-    loadNodes(input.credentials)
+    loadNodes(input.credentials, input.masterKey)
         .catch { error -> AnyPublisher<(NodeStatus, SecondPasswordNode), MetadataInitialisationError> in
             guard case .failedToLoadRemoteMetadataNode(let loadError) = error else {
                 return .failure(error)
@@ -91,7 +91,7 @@ private func initMetadataNodes(
 }
 
 typealias LoadNodes =
-    (Credentials) -> AnyPublisher<(NodeStatus, SecondPasswordNode), MetadataInitialisationError>
+    (Credentials, MasterKey) -> AnyPublisher<(NodeStatus, SecondPasswordNode), MetadataInitialisationError>
 
 func provideLoadNodes(
     fetch: @escaping FetchMetadataEntry
@@ -106,9 +106,10 @@ func provideLoadNodes(
 func provideLoadNodes(
     loadMetadata: @escaping LoadRemoteMetadata
 ) -> LoadNodes {
-    { credentials in
+    { credentials, masterKey in
         loadNodes(
             credentials: credentials,
+            masterKey: masterKey,
             loadMetadata: loadMetadata
         )
     }
@@ -116,6 +117,7 @@ func provideLoadNodes(
 
 private func loadNodes(
     credentials: Credentials,
+    masterKey: MasterKey,
     loadMetadata: @escaping LoadRemoteMetadata
 ) -> AnyPublisher<(NodeStatus, SecondPasswordNode), MetadataInitialisationError> {
 
@@ -132,6 +134,26 @@ private func loadNodes(
                     )
                     .mapError(MetadataInitialisationError.failedToDecodeRemoteMetadataNode)
                     .publisher
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { response -> AnyPublisher<RemoteMetadataNodesResponse, MetadataInitialisationError> in
+                // validate that the current loaded root note contains the correct entry.
+                // if an erroneous xpriv exists then update by recreating one.
+                deriveRemoteMetadataHdNodes(from: masterKey)
+                    .publisher
+                    .eraseToAnyPublisher()
+                    .mapError { _ in MetadataInitialisationError.failedToLoadRemoteMetadataNode(.notYetCreated) }
+                    .map(\.metadataNode)
+                    .flatMap { privateKey -> AnyPublisher<RemoteMetadataNodesResponse, MetadataInitialisationError> in
+                        let rootNeedsUpdating = rootNodeRequiresUpdating(
+                            masterKey: privateKey,
+                            fetchedRootMetadataValue: response.metadata
+                        )
+                        guard rootNeedsUpdating else {
+                            return .just(response)
+                        }
+                        return .failure(.failedToLoadRemoteMetadataNode(.notYetCreated))
+                    }
                     .eraseToAnyPublisher()
             }
             .flatMap { remoteMetadataNodesResponse
@@ -158,4 +180,16 @@ private func loadNodes(
             load(secondPasswordNode: secondPasswordNode)
         }
         .eraseToAnyPublisher()
+}
+
+// MARK: - Patch Method
+
+func rootNodeRequiresUpdating(
+    masterKey: PrivateKey,
+    fetchedRootMetadataValue: String?
+) -> Bool {
+    guard masterKey.xpriv == fetchedRootMetadataValue else {
+        return true
+    }
+    return false
 }

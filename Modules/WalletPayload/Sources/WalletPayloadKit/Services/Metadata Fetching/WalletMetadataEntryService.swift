@@ -64,8 +64,11 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
                 return .just(metadata)
             }
             .receive(on: queue)
-            .flatMap { [metadataService] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
+            .flatMap { [metadataService, logger] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
                 metadataService.fetchEntry(with: metadataState)
+                    .logMessageOnOutput(logger: logger, message: { entry in
+                        "Fetched metadata entry: \(entry)"
+                    })
                     .mapError(WalletAssetFetchError.fetchFailed)
                     .eraseToAnyPublisher()
             }

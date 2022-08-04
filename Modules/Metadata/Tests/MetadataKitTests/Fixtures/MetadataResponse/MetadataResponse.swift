@@ -32,4 +32,8 @@ extension MetadataResponse {
     static var rootMetadataResponse: MetadataResponse {
         Fixtures.load(name: "root_metadata_response", in: .module)!
     }
+
+    static var erroneousRootMetadataResponse: MetadataResponse {
+        Fixtures.load(name: "erroneous_root_metadata_response", in: .module)!
+    }
 }

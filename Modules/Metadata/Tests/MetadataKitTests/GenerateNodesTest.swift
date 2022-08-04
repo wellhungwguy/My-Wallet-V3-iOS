@@ -6,6 +6,7 @@ import Errors
 @testable import MetadataKit
 import XCTest
 
+// swiftlint:disable line_length
 final class GenerateNodesTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!

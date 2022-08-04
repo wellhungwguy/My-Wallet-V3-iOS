@@ -20,4 +20,10 @@ extension MetadataPayload {
             from: MetadataResponse.rootMetadataResponse
         )
     }
+
+    static var erroreousRootMetadataPayload: MetadataPayload {
+        MetadataPayload(
+            from: MetadataResponse.erroneousRootMetadataResponse
+        )
+    }
 }

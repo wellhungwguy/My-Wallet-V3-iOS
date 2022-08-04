@@ -77,7 +77,8 @@ let package = Package(
                 // swiftlint:disable line_length
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU.json"),
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81.json"),
-                .copy("Fixtures/MetadataResponse/root_metadata_response.json")
+                .copy("Fixtures/MetadataResponse/root_metadata_response.json"),
+                .copy("Fixtures/MetadataResponse/erroneous_root_metadata_response.json")
             ]
         ),
         .target(
