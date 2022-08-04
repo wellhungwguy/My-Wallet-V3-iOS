@@ -2,36 +2,15 @@
 
 import Combine
 import Foundation
+import MetadataKit
 import WalletConnectSwift
+import WalletPayloadKit
 
-public struct WalletConnectSession: Codable, Equatable, Hashable {
-
-    public let url: String
-    public let dAppInfo: DAppInfo
-    public let walletInfo: WalletInfo
-
-    public struct WalletInfo: Codable, Equatable, Hashable {
-        public let clientId: String
-        public let sourcePlatform: String
-    }
-
-    public struct DAppInfo: Codable, Equatable, Hashable {
-        public let peerId: String
-        public let peerMeta: ClientMeta
-        public let chainId: Int?
-    }
-
-    public struct ClientMeta: Codable, Equatable, Hashable {
-        public let description: String
-        public let url: String
-        public let icons: [String]
-        public let name: String
-    }
-
+extension WalletConnectSession {
     init(session: Session) {
         let absoluteString = session.url.absoluteString
-        url = absoluteString.removingPercentEncoding ?? absoluteString
-        dAppInfo = DAppInfo(
+        let url = absoluteString.removingPercentEncoding ?? absoluteString
+        let dAppInfo = DAppInfo(
             peerId: session.dAppInfo.peerId,
             peerMeta: ClientMeta(
                 description: session.dAppInfo.peerMeta.description ?? "",
@@ -41,9 +20,14 @@ public struct WalletConnectSession: Codable, Equatable, Hashable {
             ),
             chainId: session.walletInfo?.chainId ?? session.dAppInfo.chainId
         )
-        walletInfo = WalletInfo(
+        let walletInfo = WalletInfo(
             clientId: session.walletInfo?.peerId ?? UUID().uuidString,
             sourcePlatform: "ios"
+        )
+        self.init(
+            url: url,
+            dAppInfo: dAppInfo,
+            walletInfo: walletInfo
         )
     }
 }

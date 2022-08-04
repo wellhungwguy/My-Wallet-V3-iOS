@@ -12,6 +12,8 @@ import SwiftUI
 import UIKit
 import WalletConnectSwift
 
+import struct MetadataKit.WalletConnectSession
+
 class WalletConnectRouter: WalletConnectRouterAPI {
 
     private var cancellables = [AnyCancellable]()
@@ -217,3 +219,20 @@ class WalletConnectRouter: WalletConnectRouterAPI {
 
     private lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: true)
 }
+
+#if DEBUG
+
+final class MockWalletConnectRouter: WalletConnectRouterAPI {
+    func showConnectedDApps(_ completion: (() -> Void)?) {}
+    func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
+        .just(())
+    }
+
+    func openWebsite(for client: Session.ClientMeta) {}
+}
+
+final class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
+    func record(event: AnalyticsEvent) {}
+}
+
+#endif

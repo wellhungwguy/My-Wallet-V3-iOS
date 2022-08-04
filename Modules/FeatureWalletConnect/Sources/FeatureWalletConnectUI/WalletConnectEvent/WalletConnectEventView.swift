@@ -175,19 +175,6 @@ extension ConnectView_Previews {
             approved: Bool
         ) {}
     }
-
-    final class MockWalletConnectRouter: WalletConnectRouterAPI {
-        func showConnectedDApps(_ completion: (() -> Void)?) {}
-        func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
-            .just(())
-        }
-
-        func openWebsite(for client: Session.ClientMeta) {}
-    }
-
-    final class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
-        func record(event: AnalyticsEvent) {}
-    }
 }
 
 #endif
