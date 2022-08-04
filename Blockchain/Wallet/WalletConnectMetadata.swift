@@ -9,6 +9,8 @@ import PlatformKit
 import ToolKit
 import WalletPayloadKit
 
+import struct MetadataKit.WalletConnectSession
+
 final class WalletConnectMetadata: NSObject, WalletConnectMetadataAPI {
 
     // MARK: Types

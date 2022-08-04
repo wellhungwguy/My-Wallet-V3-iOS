@@ -84,7 +84,7 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
             .receive(on: queue)
             .logMessageOnOutput(logger: logger, message: { _ in
                 let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
+                encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
                 let encoded = (try? node.data(using: encoder)) ?? Data()
                 let formatted = String(decoding: encoded.bytes, as: UTF8.self)
                 return "About to save metadata entry: \(formatted)"

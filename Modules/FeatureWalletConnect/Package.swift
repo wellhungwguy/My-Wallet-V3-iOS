@@ -49,7 +49,8 @@ let package = Package(
         .package(path: "../UIComponents"),
         .package(path: "../CryptoAssets"),
         .package(path: "../Platform"),
-        .package(path: "../WalletPayload")
+        .package(path: "../WalletPayload"),
+        .package(path: "../Metadata")
     ],
     targets: [
         .target(
@@ -73,7 +74,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "WalletConnectSwift", package: "WalletConnectSwift"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "MetadataKit", package: "Metadata")
             ]
         ),
         .target(
