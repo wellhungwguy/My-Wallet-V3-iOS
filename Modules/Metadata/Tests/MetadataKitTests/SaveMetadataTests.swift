@@ -92,6 +92,13 @@ final class SaveMetadataTests: XCTestCase {
         let payloadJson = try EthereumEntryPayload.entry
             .encodeToJSONString()
             .get()
+
+        let invalidXprivJson = try RemoteMetadataNodesResponse(
+                metadata: "xprv9ukW2UsuzBb5WY6LimMwFSSaTNBQAZVhsdeWNshKUH1FXxoiAVE9HHKbk5Ppu8C3Ns8eDT8mF5xhjmBrYLF6NHgguXTrxXTXe66FeYPKBCy"
+            )
+            .encodeToJSONString()
+            .get()
+
         let nodes = metadataState.metadataNodes
 
         save(
