@@ -9,6 +9,8 @@ import UIComponentsKit
 import UIKit
 import WalletConnectSwift
 
+import struct MetadataKit.WalletConnectSession
+
 struct DAppListEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let onComplete: (_ validate: Bool) -> Void
@@ -92,6 +94,7 @@ let dAppListReducer = Reducer.combine(
         case .loadSessions:
             return env.sessionRepository
                 .retrieve()
+                .receive(on: env.mainQueue)
                 .catchToEffect()
                 .map(DAppListAction.didReceiveSessions)
         case .didReceiveSessions(let result):

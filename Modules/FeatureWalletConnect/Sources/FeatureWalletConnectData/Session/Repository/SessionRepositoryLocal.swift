@@ -3,6 +3,7 @@
 import Combine
 import FeatureWalletConnectDomain
 import Foundation
+import MetadataKit
 
 final class SessionRepositoryLocal: SessionRepositoryAPI {
 

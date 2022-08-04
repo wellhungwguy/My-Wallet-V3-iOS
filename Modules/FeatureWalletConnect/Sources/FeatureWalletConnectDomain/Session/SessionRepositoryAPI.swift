@@ -2,7 +2,9 @@
 
 import Combine
 import Foundation
+import MetadataKit
 import WalletConnectSwift
+import WalletPayloadKit
 
 public protocol SessionRepositoryAPI {
     func contains(session: WalletConnectSession) -> AnyPublisher<Bool, Never>
@@ -10,6 +12,14 @@ public protocol SessionRepositoryAPI {
     func remove(session: WalletConnectSession) -> AnyPublisher<Void, Never>
     func removeAll() -> AnyPublisher<Void, Never>
     func retrieve() -> AnyPublisher<[WalletConnectSession], Never>
+}
+
+extension SessionRepositoryAPI {
+    public func retrieveConnectedApps() -> AnyPublisher<Int, Never> {
+        retrieve()
+            .map(\.count)
+            .eraseToAnyPublisher()
+    }
 }
 
 extension SessionRepositoryAPI {
