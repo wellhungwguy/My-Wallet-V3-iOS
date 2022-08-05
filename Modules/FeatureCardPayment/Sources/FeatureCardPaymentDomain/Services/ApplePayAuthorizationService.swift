@@ -22,12 +22,7 @@ final class ApplePayAuthorizationService: NSObject, ApplePayAuthorizationService
                 guard let self = self else { return }
                 var requiredBillingContactFields: Set<PKContactField> {
                     guard let requiredBillingContactFields = info.requiredBillingContactFields else {
-                        return Set([
-                            .name,
-                            .phoneNumber,
-                            .emailAddress,
-                            .postalAddress
-                        ])
+                        return Set([])
                     }
                     return Set(requiredBillingContactFields.map(PKContactField.init(rawValue:)))
                 }

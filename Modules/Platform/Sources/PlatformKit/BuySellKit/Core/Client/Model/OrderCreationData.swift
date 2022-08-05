@@ -44,6 +44,7 @@ public enum OrderPayload {
             let state: String?
             let country: String?
             let postCode: String?
+            let name: String?
             let firstname: String?
             let middleName: String?
             let lastname: String?
@@ -60,8 +61,6 @@ public enum OrderPayload {
             let everypay: EveryPay?
             let applePayPaymentToken: String?
             let paymentContact: PaymentContact?
-            /// This will be removed after debugging it, today
-            let paymentContactMore: PaymentContact?
             let callback: String?
 
             init(
@@ -80,8 +79,7 @@ public enum OrderPayload {
                 }
 
                 self.redirectURL = redirectURL
-                self.paymentContact = PaymentContact(contact: applePay?.billingPaymentContact)
-                self.paymentContactMore = PaymentContact(contact: applePay?.billingPaymentContactMore)
+                self.paymentContact = .init(contact: applePay?.billingPaymentContact)
                 self.callback = callback
             }
         }
@@ -353,6 +351,7 @@ extension OrderPayload.ConfirmOrder.PaymentContact {
             state: contact.state,
             country: contact.country,
             postCode: contact.postCode,
+            name: contact.name,
             firstname: contact.firstname,
             middleName: contact.middleName,
             lastname: contact.lastname,

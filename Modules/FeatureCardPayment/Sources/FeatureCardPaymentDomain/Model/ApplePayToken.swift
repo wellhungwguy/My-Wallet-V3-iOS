@@ -11,6 +11,7 @@ public struct ApplePayToken: Codable, Equatable {
         public let state: String?
         public let country: String?
         public let postCode: String?
+        public let name: String?
         public let firstname: String?
         public let middleName: String?
         public let lastname: String?
@@ -22,8 +23,6 @@ public struct ApplePayToken: Codable, Equatable {
     public let paymentMethod: ApplePayPaymentMethod
     public let transactionIdentifier: String
     public var billingPaymentContact: BillingPaymentContact?
-    /// This will be removed after debugging it, today
-    public var billingPaymentContactMore: BillingPaymentContact?
 }
 
 extension ApplePayToken {
@@ -44,6 +43,7 @@ extension ApplePayToken {
                 state: address?.state,
                 country: address?.country,
                 postCode: address?.postalCode,
+                name: billingAddress.name?.fullName,
                 firstname: billingAddress.name?.givenName,
                 middleName: billingAddress.name?.middleName,
                 lastname: billingAddress.name?.familyName,
@@ -51,30 +51,24 @@ extension ApplePayToken {
                 email: billingContact?.emailAddress
             )
         }
-        var billingPaymentContactMore: BillingPaymentContact? {
-            guard let billingAddress = token.paymentMethod.billingAddress else { return nil }
-            let address = billingAddress.postalAddresses.first?.value
-            let email = billingAddress.emailAddresses.first?.value
-            return BillingPaymentContact(
-                line1: address?.street,
-                line2: address?.subLocality,
-                city: address?.city,
-                state: address?.state,
-                country: address?.country,
-                postCode: address?.postalCode,
-                firstname: billingAddress.givenName,
-                middleName: billingAddress.middleName,
-                lastname: billingAddress.familyName,
-                phone: billingAddress.phoneNumbers.first?.value.stringValue,
-                email: email.map { String($0) }
-            )
-        }
         self.init(
             paymentData: paymentData,
             paymentMethod: paymentMethod,
             transactionIdentifier: token.transactionIdentifier,
-            billingPaymentContact: billingPaymentContact,
-            billingPaymentContactMore: billingPaymentContactMore
+            billingPaymentContact: billingPaymentContact
         )
+    }
+}
+
+extension PersonNameComponents {
+    fileprivate var fullName: String {
+        let formatter = PersonNameComponentsFormatter()
+
+        if #available(iOS 15.0, *) {
+            formatter.locale = .Posix
+        } else { }
+
+        formatter.style = .long
+        return formatter.string(from: self)
     }
 }
