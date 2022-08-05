@@ -417,8 +417,34 @@ public final class L_blockchain_app_configuration_polygon: L, I_blockchain_app_c
 }
 public protocol I_blockchain_app_configuration_polygon: I {}
 public extension I_blockchain_app_configuration_polygon {
+	var `all`: L_blockchain_app_configuration_polygon_all { .init("\(__).all") }
 	var `is`: L_blockchain_app_configuration_polygon_is { .init("\(__).is") }
 }
+public final class L_blockchain_app_configuration_polygon_all: L, I_blockchain_app_configuration_polygon_all {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all: I {}
+public extension I_blockchain_app_configuration_polygon_all {
+	var `tokens`: L_blockchain_app_configuration_polygon_all_tokens { .init("\(__).tokens") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens: L, I_blockchain_app_configuration_polygon_all_tokens {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens: I {}
+public extension I_blockchain_app_configuration_polygon_all_tokens {
+	var `is`: L_blockchain_app_configuration_polygon_all_tokens_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens_is: L, I_blockchain_app_configuration_polygon_all_tokens_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens_is: I {}
+public extension I_blockchain_app_configuration_polygon_all_tokens_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_all_tokens_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens_is_enabled: L, I_blockchain_app_configuration_polygon_all_tokens_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_polygon_is: L, I_blockchain_app_configuration_polygon_is {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is", comment: "") }
 }
