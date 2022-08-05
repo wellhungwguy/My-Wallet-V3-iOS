@@ -59,7 +59,7 @@ extension UIApplication {
 private func topViewController(of viewController: UIViewController?) -> UIViewController? {
 
     if
-        let navigationController  = viewController as? UINavigationController,
+        let navigationController = viewController as? UINavigationController,
         let visibleViewController = navigationController.visibleViewController,
         !visibleViewController.isBeingDismissed
     {

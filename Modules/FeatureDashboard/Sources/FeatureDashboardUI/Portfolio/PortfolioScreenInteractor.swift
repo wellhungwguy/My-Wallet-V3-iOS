@@ -64,9 +64,7 @@ public final class PortfolioScreenInteractor {
     // MARK: - Methods
 
     var appMode: Observable<AppMode> {
-        app
-            .fetchAppMode()
-            .asObservable()
+        app.fetchAppMode().asObservable()
     }
 
     var cryptoCurrencies: Observable<CurrencyBalance> {
@@ -76,8 +74,11 @@ public final class PortfolioScreenInteractor {
                 .map { cryptoAsset -> Observable<CurrencyBalance> in
                     let currency = cryptoAsset.asset
 
-                    return cryptoAsset
-                        .accountGroup(filter: app.currentMode.filter)
+                    return app.fetchAppMode()
+                        .flatMap { appMode in
+                            cryptoAsset
+                                .accountGroup(filter: appMode.filter)
+                        }
                         .eraseError()
                         .flatMap { group -> AnyPublisher<Bool, Error> in
                             guard let group = group else {

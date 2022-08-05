@@ -144,6 +144,7 @@ extension Tag: TaggedEvent {
     public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         Tag.Reference(unchecked: self, context: context)
     }
+
     public subscript() -> Tag { self }
 }
 
@@ -153,6 +154,7 @@ extension Tag.Reference: Tag.Event {
         if context.isEmpty { return self }
         return ref(to: context)
     }
+
     public subscript() -> Tag { tag }
 }
 

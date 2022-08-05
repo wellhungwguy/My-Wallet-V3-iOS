@@ -65,15 +65,18 @@ public struct CoinAdapterView: View {
                     fiatCurrencyService.displayCurrencyPublisher
                         .setFailureType(to: Error.self)
                         .flatMap { [coincore] fiatCurrency in
-                            coincore.cryptoAccounts(
-                                for: cryptoCurrency,
-                                filter: app.currentMode.filter
-                            )
-                            .map { accounts in
+                            app.fetchAppMode()
+                                .flatMap { _ in
+                                    coincore.cryptoAccounts(
+                                        for: cryptoCurrency,
+                                        filter: app.currentMode.filter
+                                    )
+                                }
+                           .map { accounts in
                                 accounts
                                     .filter { !($0 is ExchangeAccount) }
                                     .map { Account($0, fiatCurrency) }
-                            }
+                           }
                             .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()

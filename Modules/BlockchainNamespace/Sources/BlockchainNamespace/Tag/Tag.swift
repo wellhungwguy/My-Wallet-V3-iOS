@@ -437,6 +437,7 @@ extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
     public func key(to context: Tag.Context) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)
     }
+
     public subscript() -> Tag {
         id[]
     }

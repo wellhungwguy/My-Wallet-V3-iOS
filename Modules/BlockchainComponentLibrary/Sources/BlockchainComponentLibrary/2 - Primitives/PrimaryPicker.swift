@@ -28,7 +28,7 @@ public struct PrimaryPicker<Selection: Hashable>: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            ForEach(rows.indexed(), id: \.element.id) { (index, row) in
+            ForEach(rows.indexed(), id: \.element.id) { index, row in
                 row.builder($selection)
                     .frame(minHeight: 48)
                     .background(

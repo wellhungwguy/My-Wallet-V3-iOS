@@ -6,11 +6,11 @@ import Combine
 import DIKit
 import FeatureActivityUI
 import FeatureDashboardUI
+import protocol FeatureOnboardingUI.OnboardingRouterAPI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsUI
 import FeatureTransactionDomain
-import protocol FeatureOnboardingUI.OnboardingRouterAPI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
 import MoneyKit

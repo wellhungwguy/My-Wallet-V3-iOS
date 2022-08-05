@@ -40,7 +40,10 @@ final class ReceiveAccountProvider: AccountPickerAccountProviding {
 
     var accounts: Observable<[BlockchainAccount]> {
         let allERC20 = Set(enabledCurrenciesService.allEnabledCryptoCurrencies.filter(\.isERC20))
-        return coincore.allAccounts(filter: app.currentMode.filter)
+        return app.fetchAppMode()
+            .flatMap { [coincore] appMode in
+                coincore.allAccounts(filter: appMode.filter)
+            }
             .map(\.accounts)
             .eraseError()
             .flatMapFilter(

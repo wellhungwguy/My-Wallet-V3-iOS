@@ -184,7 +184,7 @@ struct RootView: View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
-                    leading: appModeSwitcher,
+                    leading: leadingViews,
                     title: viewStore.appSwitcherEnabled ? "" : tab.name.localized(),
                     trailing: trailingViews
                 )
@@ -207,8 +207,22 @@ struct RootView: View {
         Group {
             referrals()
                 .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
+
             QR()
-            account()
+
+            if viewStore.appSwitcherEnabled {
+                account()
+            }
+        }
+    }
+
+    @ViewBuilder func leadingViews() -> some View {
+        Group {
+            if viewStore.appSwitcherEnabled {
+                appModeSwitcher()
+            } else {
+                account()
+            }
         }
     }
 

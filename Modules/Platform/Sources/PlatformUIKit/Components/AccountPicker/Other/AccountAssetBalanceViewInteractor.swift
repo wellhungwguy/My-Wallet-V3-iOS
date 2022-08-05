@@ -58,8 +58,11 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         case .account(let account):
             return account.balancePair(fiatCurrency: fiatCurrency)
         case .asset(let cryptoAsset):
-            return cryptoAsset
-                .accountGroup(filter: app.currentMode.filter)
+            return app.fetchAppMode()
+                .flatMap { appMode in
+                    cryptoAsset
+                        .accountGroup(filter: appMode.filter)
+                }
                 .compactMap { $0 }
                 .flatMap { accountGroup in
                     accountGroup.balancePair(fiatCurrency: fiatCurrency)

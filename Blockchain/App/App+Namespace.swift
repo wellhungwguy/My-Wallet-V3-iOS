@@ -28,7 +28,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
             blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.redesign.checkout.is.enabled: false,
-            blockchain.app.configuration.app.superapp.is.enabled: BuildFlag.isAlpha || BuildFlag.isInternal,
+            blockchain.app.configuration.app.superapp.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,

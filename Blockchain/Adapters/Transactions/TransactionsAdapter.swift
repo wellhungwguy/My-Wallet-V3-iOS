@@ -40,7 +40,7 @@ enum TransactionType: Equatable {
             return lhsAccount.identifier == rhsAccount.identifier
         case (.sign(let lhsSourceAccount, let lhsDestination), .sign(let rhsSourceAccount, let rhsDestination)):
             return lhsSourceAccount.identifier == rhsSourceAccount.identifier
-                && lhsDestination.label == rhsDestination.label
+            && lhsDestination.label == rhsDestination.label
         default:
             return false
         }
@@ -159,20 +159,22 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
         toBuy cryptoCurrency: CryptoCurrency,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        let filter = app.currentMode.filter
-        return coincore.cryptoAccounts(
-            for: .bitcoin,
-            supporting: .buy,
-            filter: filter
-        )
-        .replaceError(with: [])
-        .receive(on: DispatchQueue.main)
-        .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
-            guard let self = self else {
-                return .empty()
+        app.fetchAppMode()
+            .flatMap { [coincore] appMode in
+                coincore.cryptoAccounts(
+                    for: .bitcoin,
+                    supporting: .buy,
+                    filter: appMode.filter
+                )
             }
-            return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)
-        }
-        .eraseToAnyPublisher()
+            .replaceError(with: [])
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
+                guard let self = self else {
+                    return .empty()
+                }
+                return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)
+            }
+            .eraseToAnyPublisher()
     }
 }

@@ -23,7 +23,10 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var tab: Tag.Reference = blockchain.ux.user.portfolio[].reference
     @BindableState var fab: FrequentActionState
     @BindableState var referralState: ReferralState
-    @BindableState var appSwitcherEnabled = true
+    var appSwitcherEnabled: Bool {
+        appMode != .both
+    }
+
     @BindableState var buyAndSell: BuyAndSell = .init()
     @BindableState var unreadSupportMessageCount: Int = 0
     @BindableState var appMode: AppMode?
@@ -170,23 +173,7 @@ let rootViewReducer = Reducer<
         return .none
 
     case .onAppear:
-        let superAppEnabledFlagPublisher =
-        app.publisher(for: blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
-            .replaceError(with: false)
-
-        let appModePublisher = environment
-            .app
-            .publisher(for: blockchain.app.mode, as: AppMode.self)
-            .map(\.value)
-            .combineLatest(superAppEnabledFlagPublisher)
-            .flatMap { appMode, isEnabled -> AnyPublisher<AppMode?, Never> in
-                guard isEnabled else {
-                    return .just(nil)
-                }
-                return .just(appMode)
-            }
-
-        let tabsPublisher = appModePublisher
+        let tabsPublisher = app.fetchAppMode()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 if appMode == .defi {
                     return environment
@@ -255,7 +242,7 @@ let rootViewReducer = Reducer<
                 .eraseToEffect()
                 .map { .binding(.set(\.$unreadSupportMessageCount, $0)) },
 
-            appModePublisher
+            app.fetchAppMode()
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$appMode, $0)) },

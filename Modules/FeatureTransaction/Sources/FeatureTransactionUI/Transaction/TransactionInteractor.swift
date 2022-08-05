@@ -85,10 +85,10 @@ final class TransactionInteractor {
                 guard let self = self else { return }
                 self.transactionProcessor = transactionProcessor
             })
-            .asObservable()
-            .flatMap(\.initializeTransaction)
-            .take(until: invalidate)
-    }
+                .asObservable()
+                .flatMap(\.initializeTransaction)
+                .take(until: invalidate)
+                }
 
     deinit {
         reset()
@@ -131,7 +131,7 @@ final class TransactionInteractor {
         transactionTarget: TransactionTarget?
     ) -> Single<[SingleAccount]> {
         let allEligibleCryptoAccounts: Single<[CryptoAccount]> =
-            app
+        app
             .fetchAppMode()
             .flatMap { [coincore] appMode in
                 coincore.allAccounts(filter: appMode.filter)
@@ -216,14 +216,18 @@ final class TransactionInteractor {
         case .withdraw:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .buy:
-            let filter = app.currentMode.filter
-            return coincore
-                .cryptoAccounts(supporting: .buy, filter: filter)
+            return app.fetchAppMode()
+                .flatMap { [coincore] appMode in
+                    coincore
+                     .cryptoAccounts(supporting: .buy, filter: appMode.filter)
+                }
                 .asSingle()
                 .map { $0 }
         case .sell:
-            return coincore
-                .allAccounts(filter: app.currentMode.filter)
+            return app.fetchAppMode()
+                .flatMap { [coincore] appMode in
+                    coincore.allAccounts(filter: appMode.filter)
+                }
                 .map(\.accounts)
                 .map {
                     $0.compactMap { account in
@@ -233,9 +237,9 @@ final class TransactionInteractor {
                 .asObservable()
                 .asSingle()
         case .sign,
-             .receive,
-             .linkToDebitCard,
-             .viewActivity:
+                .receive,
+                .linkToDebitCard,
+                .viewActivity:
             unimplemented()
         }
     }

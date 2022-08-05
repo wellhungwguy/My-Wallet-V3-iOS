@@ -23,23 +23,11 @@ struct DebugView: View {
     @LazyInject var app: AppProtocol
     @State var pulse: Bool = false
     @State var layoutDirection: LayoutDirection = .leftToRight
-    @State var appMode = AppMode.both
 
     var body: some View {
         PrimaryNavigationView {
             ScrollView {
                 VStack {
-                    PrimarySegmentedControl(
-                        items: [
-                            PrimarySegmentedControl.Item(title: "Trading", identifier: .trading),
-                            PrimarySegmentedControl.Item(title: "DeFi", identifier: .defi),
-                            PrimarySegmentedControl.Item(title: "Both", identifier: .both)
-                        ],
-                        selection: $appMode
-                    )
-                    .onChange(of: appMode) { newValue in
-                        app.state.set(blockchain.app.mode, to: newValue.rawValue)
-                    }
                     PrimaryDivider()
                     PrimaryNavigationLink(
                         destination: FeatureFlags()
@@ -73,9 +61,6 @@ struct DebugView: View {
                         pulse = false
                     }
             }
-            .onAppear(perform: {
-                appMode = (try? app.state.get(blockchain.app.mode, as: AppMode.self)) ?? .both
-            })
             .primaryNavigation(title: "Debug") {
                 Button(window?.overrideUserInterfaceStyle == .dark ? "☀️" : "🌑") {
                     if let window = window {
