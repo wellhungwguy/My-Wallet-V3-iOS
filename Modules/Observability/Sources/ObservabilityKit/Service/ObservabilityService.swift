@@ -15,4 +15,8 @@ public final class ObservabilityService: ObservabilityServiceAPI {
     public func start(with appKey: String) {
         client.start(withKey: appKey)
     }
+
+    public func addSessionProperty(_ value: String, withKey key: String, permanent: Bool) -> Bool {
+        client.addSessionProperty(value, withKey: key, permanent: permanent)
+    }
 }

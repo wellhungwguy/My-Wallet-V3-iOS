@@ -131,6 +131,7 @@ struct CoreAppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var nabuUserService: NabuUserServiceAPI
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
+    var observabilityService: ObservabilityServiceAPI
     var performanceTracing: PerformanceTracingServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
@@ -329,12 +330,17 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.loadingViewPresenter.showCircular()
         return environment.nativeWalletFlagEnabled()
             .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
+                let updateObservabilitySession = updateNativeWalletObservability(
+                    using: environment.observabilityService,
+                    isNativeWallet: nativeWalletEnabled
+                )
                 guard nativeWalletEnabled else {
                     // As much as I (Dimitris) hate delay-ing work this is one of those method
                     // that I'm going to make an exception, mainly because it's going to be replaced soon.
                     // This is to give a change for the circular loader to appear before
                     // we call `fetch(with: _password_)` which will call the evil that is JS.
                     return .merge(
+                        updateObservabilitySession,
                         Effect(value: .legacyWalletFetch(password: password))
                             .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
                             .eraseToEffect()
@@ -342,7 +348,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                         Effect(value: .authenticate)
                     )
                 }
-                return Effect(value: .wallet(.fetch(password: password)))
+                return .merge(
+                    updateObservabilitySession,
+                    Effect(value: .wallet(.fetch(password: password)))
+                )
             }
             .eraseToEffect()
 
@@ -1015,4 +1024,18 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: AppSettingsAut
     }
 
     appSettings.clearPin()
+}
+
+private func updateNativeWalletObservability(
+    using service: ObservabilityServiceAPI,
+    isNativeWallet: Bool
+) -> Effect<CoreAppAction, Never> {
+    Effect.fireAndForget {
+        _ = service
+            .addSessionProperty(
+                isNativeWallet ? "true" : "false",
+                withKey: "native-wallet",
+                permanent: false
+            )
+    }
 }

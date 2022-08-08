@@ -109,6 +109,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     mobileAuthSyncService: env.mobileAuthSyncService,
                     nabuUserService: env.nabuUserService,
                     nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
+                    observabilityService: env.observabilityService,
                     performanceTracing: env.performanceTracing,
                     pushNotificationsRepository: env.pushNotificationsRepository,
                     remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
