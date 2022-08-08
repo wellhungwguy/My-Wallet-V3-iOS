@@ -12,6 +12,7 @@ final class MockCoincore: CoincoreAPI {
     ) -> AnyPublisher<[BlockchainAccount], Error> {
         .empty()
     }
+
     var allAssets: [Asset] = []
     var fiatAsset: Asset = MockAsset()
     var cryptoAssets: [CryptoAsset] = [MockAsset()]

@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Embrace
+import FeatureAuthenticationDomain
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
@@ -10,6 +12,7 @@ import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
 import FeatureTransactionUI
 import ObservabilityKit
+import PlatformKit
 import PlatformUIKit
 import ToolKit
 import UIKit
@@ -115,5 +118,7 @@ extension DependencyContainer {
                 nabuUserService: DIKit.resolve()
             ) as AccountProviderAPI
         }
+
+        factory { UpdateSettingsClient(DIKit.resolve()) as UpdateSettingsClientAPI }
     }
 }

@@ -35,7 +35,7 @@ public struct LayoutAttributes: Equatable {
     public static let vertical = LayoutAttributes(
         minimumInterItemSpacing: 0.0,
         minimumLineSpacing: 0.0,
-        sectionInsets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+        sectionInsets: UIEdgeInsets.zero
     )
 
     public static let outer = LayoutAttributes(

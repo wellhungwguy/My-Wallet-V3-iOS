@@ -67,7 +67,7 @@ extension TransactionFlowAction {
             .sell,
             .swap:
                 return true
-        case 
+        case
             .send(let account, _),
             .sign(let account as BlockchainAccount?, _),
             .receive(let account as BlockchainAccount?):
