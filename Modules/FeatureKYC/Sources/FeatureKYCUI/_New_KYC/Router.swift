@@ -261,6 +261,9 @@ public final class Router: Routing {
                     return publisher.eraseToAnyPublisher()
                 }
             }
+            .handleEvents(
+                receiveCompletion: { [app] _ in app.post(event: blockchain.ux.kyc.event.status.did.change) }
+            )
             .eraseToAnyPublisher()
     }
 

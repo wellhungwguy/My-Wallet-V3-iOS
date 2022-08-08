@@ -212,9 +212,11 @@ public enum OnboardingChecklist {
                                 throw blockchain.ux.onboarding.promotion.cowboys.error()
                             }
                         }()
-                        return .updatedPromotion(
+                        let isFan: Bool = try await app.get(blockchain.user.is.cowboy.fan)
+                        let isEnabled: Bool = try await app.get(blockchain.ux.onboarding.promotion.cowboys.is.enabled)
+                        return try await .updatedPromotion(
                             try await State.Promotion(
-                                visible: app.state.get(blockchain.user.is.cowboy.fan),
+                                visible: isFan && isEnabled,
                                 id: promotion,
                                 ux: app.get(promotion.announcement)
                             )
