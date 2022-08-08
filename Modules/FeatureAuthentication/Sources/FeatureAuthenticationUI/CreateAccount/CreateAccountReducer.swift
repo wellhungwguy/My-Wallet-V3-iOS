@@ -364,6 +364,11 @@ let createAccountReducer = Reducer<
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .fireAndForget(),
+                environment.walletCreationService
+                    .updateCurrencyForNewWallets(selectedCountry.id, context.guid, context.sharedKey)
+                    .receive(on: environment.mainQueue)
+                    .eraseToEffect()
+                    .fireAndForget(),
                 environment.walletFetcherService
                     .fetchWallet(context.guid, context.sharedKey, context.password)
                     .receive(on: environment.mainQueue)

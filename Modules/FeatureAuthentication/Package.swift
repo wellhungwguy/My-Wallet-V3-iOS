@@ -55,7 +55,8 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../WalletPayload")
+        .package(path: "../WalletPayload"),
+        .package(path: "../Money")
     ],
     targets: [
         .target(
@@ -63,6 +64,7 @@ let package = Package(
             dependencies: [
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkKit", package: "Network"),
+                .product(name: "MoneyKit", package: "Money"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Zxcvbn", package: "zxcvbn-ios"),

@@ -20,6 +20,7 @@ extension DependencyContainer {
         // MARK: - Clients
 
         factory { SettingsClient() as SettingsClientAPI }
+        factory { SettingsClient() as UpdateCurrencySettingsClientAPI }
 
         factory { SwapClient() as SwapClientAPI }
 

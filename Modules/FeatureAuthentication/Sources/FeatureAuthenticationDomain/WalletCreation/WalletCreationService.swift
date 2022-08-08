@@ -28,6 +28,12 @@ public typealias SetResidentialInfoMethod = (
     _ state: String?
 ) -> AnyPublisher<Void, Never>
 
+public typealias UpdateCurrencyForNewWallets = (
+    _ country: String,
+    _ guid: String,
+    _ sharedKey: String
+) -> AnyPublisher<Void, Never>
+
 public struct WalletCreationService {
     /// Creates a new wallet using the given details
     public var createWallet: CreateWalletMethod
@@ -35,6 +41,8 @@ public struct WalletCreationService {
     public var importWallet: ImportWalletMethod
     /// Sets the residential info as part of account creation
     public var setResidentialInfo: SetResidentialInfoMethod
+    /// Sets the default currency for a new wallet account
+    public var updateCurrencyForNewWallets: UpdateCurrencyForNewWallets
 }
 
 extension WalletCreationService {
@@ -44,6 +52,7 @@ extension WalletCreationService {
         walletManager: WalletManagerAPI,
         walletCreator: WalletCreatorAPI,
         nabuRepository: NabuRepositoryAPI,
+        updateCurrencyService: @escaping UpdateCurrencyForNewWallets,
         nativeWalletCreationEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) -> Self {
         let walletManager = walletManager
@@ -115,6 +124,12 @@ extension WalletCreationService {
                     state: state
                 )
                 .ignoreFailure()
+            },
+            updateCurrencyForNewWallets: { country, guid, sharedKey -> AnyPublisher<Void, Never> in
+                // we ignore the failure since this is kind of a side effect for new wallets :(
+                updateCurrencyService(country, guid, sharedKey)
+                    .ignoreFailure(setFailureType: Never.self)
+                    .eraseToAnyPublisher()
             }
         )
     }
@@ -128,6 +143,9 @@ extension WalletCreationService {
                 .empty()
             },
             setResidentialInfo: { _, _ -> AnyPublisher<Void, Never> in
+                .empty()
+            },
+            updateCurrencyForNewWallets: { _, _, _ -> AnyPublisher<Void, Never> in
                 .empty()
             }
         )

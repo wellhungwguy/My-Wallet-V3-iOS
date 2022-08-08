@@ -110,6 +110,7 @@ public extension I_blockchain_app_configuration {
 	var `test`: L_blockchain_app_configuration_test { .init("\(__).test") }
 	var `transaction`: L_blockchain_app_configuration_transaction { .init("\(__).transaction") }
 	var `unified`: L_blockchain_app_configuration_unified { .init("\(__).unified") }
+	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
 public final class L_blockchain_app_configuration_announcements: L, I_blockchain_app_configuration_announcements {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.announcements", comment: "") }
@@ -722,6 +723,31 @@ public final class L_blockchain_app_configuration_unified_sign__in_is_enabled: L
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unified.sign_in.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_unified_sign__in_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_wallet: L, I_blockchain_app_configuration_wallet {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet", comment: "") }
+}
+public protocol I_blockchain_app_configuration_wallet: I {}
+public extension I_blockchain_app_configuration_wallet {
+	var `country`: L_blockchain_app_configuration_wallet_country { .init("\(__).country") }
+}
+public final class L_blockchain_app_configuration_wallet_country: L, I_blockchain_app_configuration_wallet_country {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet.country", comment: "") }
+}
+public protocol I_blockchain_app_configuration_wallet_country: I {}
+public extension I_blockchain_app_configuration_wallet_country {
+	var `to`: L_blockchain_app_configuration_wallet_country_to { .init("\(__).to") }
+}
+public final class L_blockchain_app_configuration_wallet_country_to: L, I_blockchain_app_configuration_wallet_country_to {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet.country.to", comment: "") }
+}
+public protocol I_blockchain_app_configuration_wallet_country_to: I {}
+public extension I_blockchain_app_configuration_wallet_country_to {
+	var `currency`: L_blockchain_app_configuration_wallet_country_to_currency { .init("\(__).currency") }
+}
+public final class L_blockchain_app_configuration_wallet_country_to_currency: L, I_blockchain_app_configuration_wallet_country_to_currency {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet.country.to.currency", comment: "") }
+}
+public protocol I_blockchain_app_configuration_wallet_country_to_currency: I_blockchain_db_type_map, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_deep__link: L, I_blockchain_app_deep__link {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link", comment: "") }
 }

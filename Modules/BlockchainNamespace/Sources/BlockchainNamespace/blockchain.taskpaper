@@ -161,6 +161,12 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			wallet:
+				country:
+					to:
+						currency:
+						+ blockchain.db.type.map
+						+ blockchain.session.configuration.value
 		deep_link:
 			activity:
 				transaction:
