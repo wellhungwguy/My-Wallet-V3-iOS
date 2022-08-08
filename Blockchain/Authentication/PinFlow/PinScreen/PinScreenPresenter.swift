@@ -88,7 +88,7 @@ final class PinScreenPresenter {
         case .authenticate(from: .background, logoutRouting: _):
             return .lightContent(ignoresStatusBar: true, background: .clear)
         case .change(logoutRouting: _):
-            return .lightContent(background: .primary)
+            return .darkContent(background: .primary)
         default:
             return .lightContent(background: .clear)
         }
