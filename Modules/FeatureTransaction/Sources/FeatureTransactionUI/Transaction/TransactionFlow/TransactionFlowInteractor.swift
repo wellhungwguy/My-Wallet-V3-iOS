@@ -732,14 +732,18 @@ extension TransactionFlowInteractor {
             .take(1)
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
-            .subscribe { [closeFlow, presentKYCUpgradePrompt] state in
-                if state.canPresentKYCUpgradeFlowAfterClosingTxFlow {
-                    presentKYCUpgradePrompt(closeFlow)
+            .subscribe { [app, weak self] state in
+                guard let self = self else { return }
+                if
+                    app.state.no(if: blockchain.user.is.cowboy.fan),
+                    state.canPresentKYCUpgradeFlowAfterClosingTxFlow
+                {
+                    self.presentKYCUpgradePrompt(completion: self.closeFlow)
                 } else {
-                    closeFlow()
+                    self.closeFlow()
                 }
-            } onFailure: { [closeFlow] _ in
-                closeFlow()
+            } onFailure: { [weak self] _ in
+                self?.closeFlow()
             }
             .disposeOnDeactivate(interactor: self)
     }

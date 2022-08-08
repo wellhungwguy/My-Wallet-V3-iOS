@@ -48,7 +48,12 @@ public struct AccountListView: View {
                         assetColor: currency.color,
                         interestRate: interestRate
                     )
-                    .context([blockchain.ux.asset.account.id: account.id])
+                    .context(
+                        [
+                            blockchain.ux.asset.account.id: account.id,
+                            blockchain.ux.asset.account: account
+                        ]
+                    )
                     PrimaryDivider()
                 }
                 switch kycStatus {

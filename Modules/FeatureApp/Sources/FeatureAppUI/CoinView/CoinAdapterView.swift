@@ -65,7 +65,7 @@ public struct CoinAdapterView: View {
                     fiatCurrencyService.displayCurrencyPublisher
                         .setFailureType(to: Error.self)
                         .flatMap { [coincore] fiatCurrency in
-                            app.fetchAppMode()
+                            app.modePublisher()
                                 .flatMap { _ in
                                     coincore.cryptoAccounts(
                                         for: cryptoCurrency,

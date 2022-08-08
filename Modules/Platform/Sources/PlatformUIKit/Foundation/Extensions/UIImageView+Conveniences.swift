@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Nuke
+import NukeExtensions
 import RxCocoa
 import RxSwift
 
@@ -49,7 +49,7 @@ public struct ImageViewContent: Equatable {
 
 extension UIImageView {
     public func set(_ content: ImageViewContent?) {
-        Nuke.cancelRequest(for: self)
+        NukeExtensions.cancelRequest(for: self)
         tintColor = content?.templateColor
         accessibility = content?.accessibility ?? .none
 
@@ -68,7 +68,7 @@ extension UIImageView {
             }
         case .url(let url):
             image = nil
-            Nuke.loadImage(with: url, into: self)
+            NukeExtensions.loadImage(with: url, into: self)
         case nil:
             image = nil
         }

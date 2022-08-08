@@ -45,7 +45,7 @@ final class PortfolioBalanceChangeProvider {
             .combineLatest(
                 didRefresh,
                 fiatCurrency,
-                app.fetchAppMode().asObservable()
+                app.modePublisher().asObservable()
             )
             .flatMapLatest { [coincore] _, fiatCurrency, appMode in
                 Self.fetch(coincore: coincore,

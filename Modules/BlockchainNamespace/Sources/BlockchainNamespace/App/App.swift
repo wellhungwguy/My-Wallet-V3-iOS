@@ -19,12 +19,6 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     #endif
 }
 
-public enum AppMode: String, Decodable, Equatable {
-    case defi
-    case trading
-    case both
-}
-
 public class App: AppProtocol {
     public let language: Language
 
@@ -85,7 +79,6 @@ public class App: AppProtocol {
             #if DEBUG
             _ = logger
             #endif
-            _ = actions
         }
     }
 
@@ -102,30 +95,6 @@ public class App: AppProtocol {
             print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
     }
-
-    private lazy var actions = on(blockchain.ui.type.action.leaf)
-        .compactMap { event -> (Session.Event, Tag)? in
-            guard event.tag.isNotDescendant(of: blockchain.ui.type.action[]) else { return nil }
-            return event.tag.lineage
-                .first(where: { tag in tag.is(blockchain.ui.type.action) })
-                .map { tag in (event, tag) }
-        }
-        .sink { [weak self] event, tag in
-            guard let self = self else { return }
-            guard event.tag != tag else { return }
-            do {
-                try self.post(
-                    event: blockchain.ui.type.action[]
-                        .descendant(
-                            event.tag.idRemainder(after: tag).splitIfNotEmpty().map(String.init)
-                        )
-                        .key(to: event.reference.context),
-                    context: event.context
-                )
-            } catch {
-                self.post(error: error)
-            }
-        }
 }
 
 extension AppProtocol {
@@ -190,7 +159,7 @@ extension AppProtocol {
     ) {
         events.send(
             Session.Event(
-                event: event,
+                origin: event,
                 reference: reference,
                 context: [
                     s.file: file,
@@ -254,6 +223,12 @@ extension AppProtocol {
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
         events.filter(tags.map { $0.key().in(self) })
             .eraseToAnyPublisher()
+    }
+
+    public func on(
+        where filter: @escaping (Tag) -> Bool
+    ) -> AnyPublisher<Session.Event, Never> {
+        events.filter { filter($0.tag) }.eraseToAnyPublisher()
     }
 
     public func on<Tags>(

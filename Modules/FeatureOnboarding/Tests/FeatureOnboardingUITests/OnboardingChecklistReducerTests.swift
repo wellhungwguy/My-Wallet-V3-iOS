@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKitMock
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 @testable import FeatureOnboardingUI
@@ -26,6 +27,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
             initialState: OnboardingChecklist.State(),
             reducer: OnboardingChecklist.reducer,
             environment: OnboardingChecklist.Environment(
+                app: App.test,
                 userState: userStateSubject.eraseToAnyPublisher(),
                 presentBuyFlow: { [userStateSubject, testMainScheduler] completion in
                     userStateSubject?.send(.complete)
@@ -69,6 +71,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -83,10 +86,12 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
+        testStore.receive(.updatePromotion)
         // then they go through linking a payment method
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -100,10 +105,12 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        testStore.receive(.updatePromotion)
         // then go through buy
         testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -117,14 +124,20 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
+        testStore.receive(.updatePromotion)
+
         // then they go through linking a payment method
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        testStore.receive(.updatePromotion)
+
         // then they go through buy
         testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
+        testStore.receive(.updatePromotion)
+
         testStore.send(.stopObservingUserState)
     }
 
@@ -138,10 +151,12 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        testStore.receive(.updatePromotion)
         // then they go through buy
         testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -155,6 +170,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -182,12 +198,13 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         // that new value is received
         testMainScheduler.advance()
         testStore.receive(.userStateDidChange(.kycComplete)) {
+            $0.isSynchronised = true
             $0.completedItems = [.verifyIdentity]
         }
+        testStore.receive(.updatePromotion)
         // the view is dimissed and the values stream subscription is cancelled
         testStore.send(.stopObservingUserState)
         // the next do block serves to ensure no further changes are listened to
-        resetUserStateToKYCAndPaymentsCompleted()
         testMainScheduler.advance()
     }
 }
@@ -200,7 +217,10 @@ extension OnboardingChecklistReducerTests {
         testStore.send(.startObservingUserState)
         resetUserState(to: .initialState)
         testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.initialState))
+        testStore.receive(.userStateDidChange(.initialState)) { state in
+            state.isSynchronised = true
+        }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -208,9 +228,11 @@ extension OnboardingChecklistReducerTests {
         testStore.send(.startObservingUserState)
         resetUserState(to: .kycComplete)
         testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.kycComplete)) {
-            $0.completedItems = [.verifyIdentity]
+        testStore.receive(.userStateDidChange(.kycComplete)) { state in
+            state.isSynchronised = true
+            state.completedItems = [.verifyIdentity]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 
@@ -218,9 +240,11 @@ extension OnboardingChecklistReducerTests {
         testStore.send(.startObservingUserState)
         resetUserState(to: .paymentMethodsLinked)
         testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
-            $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
+        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) { state in
+            state.isSynchronised = true
+            state.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
+        testStore.receive(.updatePromotion)
         testStore.send(.stopObservingUserState)
     }
 

@@ -44,7 +44,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/kean/Nuke.git",
-            from: "10.11.2"
+            from: "11.0.0"
         ),
         .package(
             url: "https://github.com/marmelroy/PhoneNumberKit.git",
@@ -131,6 +131,7 @@ let package = Package(
                 .product(name: "Charts", package: "Charts"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
+                .product(name: "NukeExtensions", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
                 .product(name: "Zxcvbn", package: "zxcvbn-ios"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),

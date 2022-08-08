@@ -40,7 +40,7 @@ final class NabuUserSessionObserver: Session.Observer {
             .sink { [app] nabu in app.state.set(blockchain.user.token.nabu, to: nabu.token) }
             .store(in: &bag)
 
-        app.on(blockchain.session.event.did.sign.in)
+        app.on(blockchain.session.event.did.sign.in, blockchain.ux.kyc.event.status.did.change)
             .flatMap { [userService] _ in userService.fetchUser() }
             .sink(to: NabuUserSessionObserver.fetched(user:), on: self)
             .store(in: &bag)
@@ -82,6 +82,7 @@ final class NabuUserSessionObserver: Session.Observer {
             state.set(blockchain.user.is.cowboy.fan, to: false)
 
             state.set(blockchain.user.email.address, to: user.email.address)
+            state.set(blockchain.user.email.is.verified, to: user.email.verified)
             state.set(blockchain.user.name.first, to: user.personalDetails.firstName)
             state.set(blockchain.user.name.last, to: user.personalDetails.lastName)
             state.set(blockchain.user.currency.currencies, to: user.currencies.userFiatCurrencies.map(\.code))
@@ -109,5 +110,6 @@ final class NabuUserSessionObserver: Session.Observer {
             }
             state.set(blockchain.user.account.tier, to: tag)
         }
+        app.post(event: blockchain.user.event.did.update)
     }
 }

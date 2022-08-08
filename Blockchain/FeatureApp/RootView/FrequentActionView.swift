@@ -18,20 +18,17 @@ struct FrequentAction: Hashable, Identifiable, Codable {
 struct FrequentActionView: View {
 
     @BlockchainApp var app
+    @Environment(\.context) var context
 
     var list: [FrequentAction]
     var buttons: [FrequentAction]
 
-    var action: (FrequentAction) -> Void
-
     init(
         list: [FrequentAction],
-        buttons: [FrequentAction],
-        action: @escaping (FrequentAction) -> Void
+        buttons: [FrequentAction]
     ) {
         self.list = list
         self.buttons = buttons
-        self.action = action
     }
 
     var body: some View {
@@ -50,8 +47,7 @@ struct FrequentActionView: View {
                             .frame(width: 32.pt)
                     },
                     action: {
-                        app.post(event: item.tag)
-                        action(item)
+                        app.post(event: item.tag, context: context)
                     }
                 )
                 .identity(item.tag)
@@ -65,8 +61,7 @@ struct FrequentActionView: View {
                         title: button.name.localized(),
                         leadingView: { button.icon },
                         action: {
-                            app.post(event: button.tag)
-                            action(button)
+                            app.post(event: button.tag, context: context)
                         }
                     )
                     .identity(button.tag)
@@ -75,8 +70,7 @@ struct FrequentActionView: View {
                         title: button.name.localized(),
                         leadingView: { button.icon },
                         action: {
-                            app.post(event: button.tag)
-                            action(button)
+                            app.post(event: button.tag, context: context)
                         }
                     )
                     .identity(button.tag)
@@ -86,7 +80,7 @@ struct FrequentActionView: View {
         .padding([.top, .bottom])
         .padding([.leading, .trailing], 24.pt)
         .onAppear {
-            app.post(event: blockchain.ux.frequent.action)
+            app.post(event: blockchain.ux.frequent.action, context: context)
         }
     }
 }

@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
+@MainActor
 public struct RootView: View {
 
     @State var colorScheme: ColorScheme

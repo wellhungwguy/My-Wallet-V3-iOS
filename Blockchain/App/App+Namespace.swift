@@ -17,6 +17,8 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
+// swiftlint:disable line_length
+
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
@@ -35,7 +37,13 @@ let app: AppProtocol = App(
             blockchain.app.configuration.stx.all.users.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.argentinalinkbank.is.enabled: false
+            blockchain.app.configuration.argentinalinkbank.is.enabled: false,
+            blockchain.ux.onboarding.promotion.cowboys.welcome.announcement: blockchain.ux.onboarding.promotion.cowboys.welcome.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.welcome.story: blockchain.ux.onboarding.promotion.cowboys.welcome.story.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.raffle.announcement: blockchain.ux.onboarding.promotion.cowboys.raffle.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.raffle.story: blockchain.ux.onboarding.promotion.cowboys.raffle.story.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement: blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.verify.identity.story: blockchain.ux.onboarding.promotion.cowboys.verify.identity.story.json(in: .main)
         ]
     )
 )

@@ -99,11 +99,7 @@ struct RootView: View {
                     FrequentActionView(
                         list: viewStore.list,
                         buttons: viewStore.buttons
-                    ) { action in
-                        withAnimation {
-                            viewStore.send(.frequentAction(action))
-                        }
-                    }
+                    )
                 }
             }
         }

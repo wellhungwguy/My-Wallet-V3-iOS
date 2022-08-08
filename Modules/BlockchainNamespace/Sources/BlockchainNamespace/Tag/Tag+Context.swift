@@ -173,3 +173,7 @@ extension Tag.Event {
         }
     }
 }
+
+extension Tag.Context {
+    public static let genericIndex = "ø"
+}

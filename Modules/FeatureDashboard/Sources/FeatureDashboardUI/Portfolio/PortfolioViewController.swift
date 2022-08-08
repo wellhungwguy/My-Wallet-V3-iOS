@@ -91,6 +91,12 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         NotificationCenter.when(.transaction) { [weak self] _ in
             self?.presenter.refreshRelay.accept(())
         }
+//
+//        app.on(blockchain.user.event.did.update) { @MainActor [weak self] _ in
+//            self?.presentOnboardingChecklistView()
+//        }
+//        .subscribe()
+//        .store(withLifetimeOf: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -214,7 +220,6 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private func setUpFloatingView() {
         view.addSubview(floatingViewContainer)
-        floatingViewContainer.layout(dimension: .height, to: BuyButtonView.height)
         floatingViewContainer.layoutToSuperview(.trailing, offset: -Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.leading, offset: Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding3)

@@ -61,7 +61,12 @@ public struct CoinView: View {
                         }
                     }
                 )
-                .context([blockchain.ux.asset.account.id: account.id])
+                .context(
+                    [
+                        blockchain.ux.asset.account.id: account.id,
+                        blockchain.ux.asset.account: account
+                    ]
+                )
             }
         )
         .bottomSheet(
@@ -75,7 +80,12 @@ public struct CoinView: View {
                         }
                     }
                 )
-                .context([blockchain.ux.asset.account.id: account.id])
+                .context(
+                    [
+                        blockchain.ux.asset.account.id: account.id,
+                        blockchain.ux.asset.account: account
+                    ]
+                )
             }
         )
     }

@@ -40,8 +40,7 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
     // MARK: - Properties
 
     public var accounts: Observable<[BlockchainAccount]> {
-        app
-            .fetchAppMode()
+        app.modePublisher()
             .flatMap { [coincore] appMode in
                 coincore.allAccounts(filter: appMode.filter)
             }

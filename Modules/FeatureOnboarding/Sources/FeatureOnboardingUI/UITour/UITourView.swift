@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Localization
 import SwiftUI
 
@@ -255,6 +256,7 @@ struct UITourView: View {
                 initialState: OnboardingChecklist.State(),
                 reducer: OnboardingChecklist.reducer,
                 environment: OnboardingChecklist.Environment(
+                    app: App.preview,
                     userState: .empty(),
                     presentBuyFlow: { _ in },
                     presentKYCFlow: { _ in },

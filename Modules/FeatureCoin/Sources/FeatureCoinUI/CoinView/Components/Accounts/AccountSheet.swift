@@ -64,7 +64,7 @@ struct AccountSheet: View {
                                 .frame(maxHeight: 24.pt)
                         },
                         action: {
-                            app.post(event: action.id[].ref(to: context))
+                            app.post(event: action.id[].ref(to: context), context: context)
                         }
                     )
                     .accessibility(identifier: action.id(\.id))

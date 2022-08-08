@@ -7,6 +7,7 @@ import DIKit
 import FeatureActivityUI
 import FeatureDashboardUI
 import protocol FeatureOnboardingUI.OnboardingRouterAPI
+import struct FeatureOnboardingUI.PromotionView
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsUI
@@ -17,6 +18,7 @@ import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 import UIKit
 
@@ -27,9 +29,10 @@ public final class DeepLinkCoordinator: Session.Observer {
     private let exchangeProvider: ExchangeProviding
     private let kycRouter: KYCRouting
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
-    private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let window: TopMostViewControllerProviding
     private let transactionsRouter: TransactionsRouterAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
+    private let onboardingRouter: OnboardingRouterAPI
     private let walletConnectService: () -> WalletConnectServiceAPI
 
     private var bag: Set<AnyCancellable> = []
@@ -47,6 +50,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         transactionsRouter: TransactionsRouterAPI,
         analyticsRecording: AnalyticsEventRecorderAPI,
         walletConnectService: @escaping () -> WalletConnectServiceAPI,
+        onboardingRouter: OnboardingRouterAPI,
         accountsRouter: @escaping () -> AccountsRouting
     ) {
         self.accountsRouter = accountsRouter
@@ -55,10 +59,11 @@ public final class DeepLinkCoordinator: Session.Observer {
         self.exchangeProvider = exchangeProvider
         self.kycRouter = kycRouter
         self.payloadFactory = payloadFactory
-        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.window = topMostViewControllerProvider
         self.transactionsRouter = transactionsRouter
         self.analyticsRecording = analyticsRecording
         self.walletConnectService = walletConnectService
+        self.onboardingRouter = onboardingRouter
     }
 
     var observers: [AnyCancellable] {
@@ -71,7 +76,8 @@ public final class DeepLinkCoordinator: Session.Observer {
             kyc,
             referrals,
             walletConnect,
-            onboarding
+            onboarding,
+            promotion
         ]
     }
 
@@ -108,6 +114,10 @@ public final class DeepLinkCoordinator: Session.Observer {
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.kyc(_:), on: self)
 
+    private lazy var verifyEmail = app.on(blockchain.app.deep_link.kyc.verify.email)
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.verifyEmail(_:), on: self)
+
     private lazy var referrals = app.on(blockchain.app.deep_link.referral)
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleReferral, on: self)
@@ -120,18 +130,25 @@ public final class DeepLinkCoordinator: Session.Observer {
 
     private lazy var onboarding = app.on(blockchain.app.deep_link.onboarding.post.sign.up)
         .receive(on: DispatchQueue.main)
-        .sink { _ in
-            let router: OnboardingRouterAPI = resolve()
-            router.presentPostSignUpOnboarding(from: self.topMostViewControllerProvider.topMostViewController!)
-                .sink { result in
-                    "\(result)".peek("🐢")
-                }
-                .store(in: &self.bag)
+        .flatMap { [weak self] _ -> AnyPublisher<Void, Never> in
+            guard let self = self, let viewController = self.window.topMostViewController else {
+                return .empty()
+            }
+            return self.onboardingRouter.presentPostSignUpOnboarding(from: viewController).mapToVoid()
         }
+        .subscribe()
+
+    private lazy var promotion = app.on(blockchain.ux.onboarding.promotion.launch.story) { @MainActor [app, window] event in
+        guard let vc = window.topMostViewController else { return }
+        let ref: Tag.Reference = try event.context.decode(event.tag)
+        let id = try ref.tag.as(blockchain.ux.onboarding.type.promotion)
+        try await vc.present(PromotionView(id, ux: app.get(id.story.key(to: ref.context))).app(app))
+    }
+    .subscribe()
 
     func kyc(_ event: Session.Event) {
         guard let tier = try? event.context.decode(blockchain.app.deep_link.kyc.tier, as: KYC.Tier.self),
-              let topViewController = topMostViewControllerProvider.topMostViewController
+              let topViewController = window.topMostViewController
         else {
             return
         }
@@ -142,9 +159,16 @@ public final class DeepLinkCoordinator: Session.Observer {
             .store(in: &bag)
     }
 
+    func verifyEmail(_ event: Session.Event) {
+        guard let topViewController = window.topMostViewController else { return }
+        kycRouter.presentEmailVerificationIfNeeded(from: topViewController)
+            .subscribe()
+            .store(in: &bag)
+    }
+
     func qr(_ event: Session.Event) {
         let qrCodeScannerView = QRCodeScannerView()
-        topMostViewControllerProvider
+        window
             .topMostViewController?
             .present(qrCodeScannerView)
     }
@@ -188,7 +212,7 @@ public final class DeepLinkCoordinator: Session.Observer {
             )
         ))
 
-        topMostViewControllerProvider
+        window
             .topMostViewController?
             .present(referralView)
     }

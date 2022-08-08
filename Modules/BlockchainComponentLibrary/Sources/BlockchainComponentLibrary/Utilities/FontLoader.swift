@@ -11,7 +11,9 @@ func loadCustomFonts() {
         Typography.FontResource.allCases
             .map(\.rawValue)
             .forEach { registerFont(fileName: $0) }
-        registerImageFormats()
+        Task(priority: .userInitiated) { @MainActor in
+            registerImageFormats()
+        }
     }
 }
 
@@ -33,6 +35,7 @@ extension AssetType {
     public static let lottie: AssetType = "public.lottie"
 }
 
+@MainActor
 func registerImageFormats() {
 
     ImageDecoderRegistry.shared.register { context in

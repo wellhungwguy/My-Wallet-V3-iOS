@@ -20,6 +20,7 @@ extension RootViewController: LoggedInBridge {
 
     func presentPostSignUpOnboarding() {
         onboardingRouter.presentPostSignUpOnboarding(from: self)
+            .receive(on: DispatchQueue.main)
             .handleEvents(receiveOutput: { output in
                 "\(output)".peek("🏄")
             })

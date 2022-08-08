@@ -72,7 +72,6 @@ extension RootViewState {
 enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<RootViewRoute>?)
     case tab(Tag.Reference)
-    case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
     case onReferralTap
     case onAppear
@@ -157,9 +156,6 @@ let rootViewReducer = Reducer<
     case .tab(let tab):
         state.tab = tab
         return .none
-    case .frequentAction(let action):
-        state.fab.isOn = false
-        return .none
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false
         return .none
@@ -173,7 +169,7 @@ let rootViewReducer = Reducer<
         return .none
 
     case .onAppear:
-        let tabsPublisher = app.fetchAppMode()
+        let tabsPublisher = app.modePublisher()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 if appMode == .defi {
                     return environment
@@ -242,7 +238,7 @@ let rootViewReducer = Reducer<
                 .eraseToEffect()
                 .map { .binding(.set(\.$unreadSupportMessageCount, $0)) },
 
-            app.fetchAppMode()
+            app.modePublisher()
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$appMode, $0)) },

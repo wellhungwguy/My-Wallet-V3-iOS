@@ -32,7 +32,7 @@ extension Session.State {
 
         var preferences: Preferences
 
-        private let shared = "ø"
+        private let shared = Tag.Context.genericIndex
         private var user: String? {
             store[blockchain.user.id.key()] as? String
         }
@@ -173,6 +173,42 @@ extension Session.State {
         return Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
+    }
+}
+
+extension FetchResult {
+    @usableFromInline var isYes: Bool { (value as? Bool) == true }
+    @usableFromInline var isNo: Bool { (value as? Bool) == false }
+}
+
+extension Session.State {
+
+    @inlinable public func yes(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        yes(if: ifs, unless: buts)
+    }
+
+    @inlinable public func yes(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        ifs.allSatisfy { result(for: $0).isYes } && buts.none { result(for: $0).isYes }
+    }
+
+    @inlinable public func no(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        no(if: ifs, unless: buts)
+    }
+
+    @inlinable public func no(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        yes(if: ifs, unless: buts) ? false : true
     }
 }
 

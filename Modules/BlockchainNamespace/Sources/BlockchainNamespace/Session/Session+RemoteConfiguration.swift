@@ -199,6 +199,37 @@ extension Session {
     }
 }
 
+extension Session.RemoteConfiguration {
+
+    @inlinable public func yes(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        yes(if: ifs, unless: buts)
+    }
+
+    @inlinable public func yes(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        ifs.allSatisfy { result(for: $0).isYes } && buts.none { result(for: $0).isYes }
+    }
+
+    @inlinable public func no(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        no(if: ifs, unless: buts)
+    }
+
+    @inlinable public func no(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        yes(if: ifs, unless: buts) ? false : true
+    }
+}
+
 private let important: String = "!"
 
 extension Session.RemoteConfiguration {

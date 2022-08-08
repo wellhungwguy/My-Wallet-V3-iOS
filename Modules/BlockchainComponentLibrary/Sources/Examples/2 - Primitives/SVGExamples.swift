@@ -5,6 +5,7 @@ import SwiftUI
 
 // swiftlint:disable all
 
+@MainActor
 struct SVGExamples: View {
 
     @State var url: String = "https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/json.svg"

@@ -232,7 +232,7 @@ extension Tag.Reference {
                 if let value = ids[id], value.isNotEmpty {
                     return value
                 } else if tagId == id {
-                    return "ø"
+                    return Tag.Context.genericIndex
                 } else if let tag = app?.language[id], let value = try? app?.state.get(tag, as: String.self) {
                     return value
                 } else {

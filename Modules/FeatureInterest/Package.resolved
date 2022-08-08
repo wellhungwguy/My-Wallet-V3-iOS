@@ -111,7 +111,7 @@
       },
       {
         "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI.git",
+        "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
           "revision": "db55022a8e483774ebbf3568727071477546d9ea",

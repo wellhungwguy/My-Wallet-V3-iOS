@@ -37,7 +37,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
             .combineLatest(
                 didRefresh,
                 fiatCurrency,
-                app.fetchAppMode().asObservable()
+                app.modePublisher().asObservable()
             )
             .flatMapLatest { [coincore] _, fiatCurrency, appMode -> Observable<AssetPieChart.State.Interaction> in
                 guard appMode != .defi else {

@@ -315,12 +315,14 @@ extension Tag {
 
     static func ownType(_ tag: Tag) -> [ID: Tag] {
         var type: [ID: Tag] = [:]
-        for id in tag.node.type {
-            type[id] = tag.language.tag(id)
-        }
-        if !tag.isGraphNode {
-            for id in tag.parent?.node.type ?? [] {
-                guard let node = tag.language.tag(id)?[tag.node.name] else { continue }
+        if tag.isGraphNode {
+            for id in tag.node.type {
+                type[id] = tag.language.tag(id)
+            }
+        } else if let parent = tag.lineage.first(where: \.isGraphNode) {
+            let descendant = tag.id.dotPath(after: parent.id).splitIfNotEmpty().string
+            for id in parent.node.type {
+                guard let node = tag.language.tag(id)?[descendant] else { continue }
                 type[node.id] = node
             }
         }

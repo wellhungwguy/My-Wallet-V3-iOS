@@ -83,12 +83,12 @@
         }
       },
       {
-        "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI.git",
-        "state": {
-          "branch": null,
-          "revision": "08e953d8d80b409bebcd95ba0635fdd748934ce0",
-          "version": "0.7.0"
+        "identity" : "nuke",
+        "kind" : "remoteSourceControl",
+        "location" : "https://github.com/kean/Nuke.git",
+        "state" : {
+          "revision" : "c1c36dff9fa838c9d5d01a4096a9a9bab84d5a5e",
+          "version" : "11.0.1"
         }
       },
       {

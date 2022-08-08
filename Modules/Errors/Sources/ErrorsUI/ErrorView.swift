@@ -12,12 +12,12 @@ public struct ErrorView<Fallback: View>: View {
 
     public let ux: UX.Error
     public let fallback: () -> Fallback
-    public let dismiss: () -> Void
+    public let dismiss: (() -> Void)?
 
     public init(
         ux: UX.Error,
         @ViewBuilder fallback: @escaping () -> Fallback,
-        dismiss: @escaping () -> Void
+        dismiss: (() -> Void)? = nil
     ) {
         self.ux = ux
         self.fallback = fallback
@@ -42,21 +42,27 @@ public struct ErrorView<Fallback: View>: View {
         .onAppear {
             app.state.transaction { state in
                 state.set(blockchain.ux.error, to: ux)
-                state.set(blockchain.ux.error.then.close, to: Session.State.Function(dismiss))
+                state.set(blockchain.ux.error.then.close, to: Session.State.Function { dismiss?() })
             }
             app.post(event: blockchain.ux.error, context: context)
         }
         .apply { view in
             #if os(iOS)
             view.navigationBarBackButtonHidden(true)
-                .navigationBarItems(
+            #endif
+        }
+        .apply { view in
+            if let dismiss = dismiss {
+                #if os(iOS)
+                view.navigationBarItems(
                     leading: EmptyView(),
                     trailing: IconButton(
                         icon: Icon.closeCirclev2,
                         action: dismiss
                     )
                 )
-            #endif
+                #endif
+            }
         }
         .background(Color.semantic.background)
     }
@@ -223,7 +229,7 @@ extension ErrorView where Fallback == AnyView {
 
     public init(
         ux: UX.Error,
-        dismiss: @escaping () -> Void
+        dismiss: (() -> Void)? = nil
     ) {
         self.ux = ux
         fallback = {
@@ -261,8 +267,7 @@ struct ErrorView_Preview: PreviewProvider {
                         .init(title: "Secondary"),
                         .init(title: "Small Primary")
                     ]
-                ),
-                dismiss: {}
+                )
             )
             .app(App.preview)
         }

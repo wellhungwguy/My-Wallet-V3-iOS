@@ -397,6 +397,7 @@ public final class Router: Routing {
                     .store(in: &self.cancellables)
             }
         }
+        let app = app
         let view = TradingLimitsView(
             store: .init(
                 initialState: TradingLimitsState(),
@@ -410,6 +411,9 @@ public final class Router: Routing {
                 )
             )
         )
+        .onAppear {
+            app.post(event: blockchain.ux.kyc.trading.limits.overview)
+        }
         presenter.present(view)
     }
 }
@@ -475,6 +479,9 @@ extension Router {
             )
         )
         .embeddedInNavigationView()
+        .onAppear { [app] in
+            app.post(event: blockchain.ux.kyc.trading.upgrade)
+        }
         presenter.present(view)
         return publisher.eraseToAnyPublisher()
     }
@@ -518,6 +525,7 @@ extension Router {
         alertVC.modalTransitionStyle = .crossDissolve
         alertVC.view.backgroundColor = .clear
         presenter.present(alertVC, animated: true, completion: nil)
+        app.post(event: blockchain.ux.kyc.trading.unlock.more)
 
         let upgradeClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
         return subject.flatMap { result -> AnyPublisher<FlowResult, Never> in

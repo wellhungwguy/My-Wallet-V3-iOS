@@ -75,7 +75,7 @@ public enum CardPartnerPayload {
             }
 
             public let status: Status
-            public let error: String?
+            @Optional.Codable public var error: String?
         }
     }
 }

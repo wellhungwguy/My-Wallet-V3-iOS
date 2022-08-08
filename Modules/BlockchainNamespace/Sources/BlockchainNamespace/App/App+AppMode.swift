@@ -3,34 +3,33 @@
 import Combine
 import Foundation
 
-extension AppProtocol {
-    public func fetchAppMode() -> AnyPublisher<AppMode, Never> {
-        let superAppEnabledFlagPublisher = publisher(for: blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
-            .replaceError(with: false)
+public enum AppMode: String, Decodable, Equatable {
+    case defi
+    case trading
+    case both
+}
 
-        let appModePublisher =
-        publisher(for: blockchain.app.mode, as: AppMode.self)
-            .map(\.value)
-            .replaceNil(with: .trading)
-            .replaceEmpty(with: .trading)
-            .combineLatest(superAppEnabledFlagPublisher)
-            .map { appMode, isEnabled -> AppMode in
-                guard isEnabled else {
-                    return .both
+extension AppProtocol {
+
+    public func modePublisher() -> AnyPublisher<AppMode, Never> {
+        publisher(for: blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
+            .replaceError(with: false)
+            .flatMap { [self] isEnabled -> AnyPublisher<AppMode, Never> in
+                if isEnabled {
+                    return publisher(for: blockchain.app.mode, as: AppMode.self)
+                        .replaceError(with: .trading)
+                } else {
+                    return Just(.both).eraseToAnyPublisher()
                 }
-                return appMode
             }
             .eraseToAnyPublisher()
-
-        return appModePublisher
     }
 
     public var currentMode: AppMode {
-        let featureFlagIsOn = (try? remoteConfiguration.get(blockchain.app.configuration.app.superapp.is.enabled)) ?? false
-
-        if featureFlagIsOn {
+        if remoteConfiguration.yes(if: blockchain.app.configuration.app.superapp.is.enabled) {
             return (try? state.get(blockchain.app.mode, as: AppMode.self)) ?? .trading
+        } else {
+            return .both
         }
-        return .both
     }
 }

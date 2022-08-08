@@ -46,8 +46,8 @@ let package = Package(
             from: "3.3.0"
         ),
         .package(
-            url: "https://github.com/kean/NukeUI.git",
-            from: "0.8.3"
+            url: "https://github.com/kean/Nuke.git",
+            from: "11.0.0"
         )
     ],
     targets: [
@@ -58,7 +58,7 @@ let package = Package(
                 .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown"),
                 .product(name: "Lottie", package: "lottie-ios"),
-                .product(name: "NukeUI", package: "NukeUI")
+                .product(name: "NukeUI", package: "Nuke")
             ],
             resources: [
                 .process("Resources/Fonts"),

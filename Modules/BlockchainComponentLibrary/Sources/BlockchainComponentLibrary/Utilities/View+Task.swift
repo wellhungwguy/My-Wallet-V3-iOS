@@ -1,0 +1,64 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import SwiftUI
+
+@available(iOS, deprecated: 15.0, message: "Backport is only useful when targeting iOS versions earlier than 15")
+extension View {
+
+    /// Attach an async task to this view, which will be performed
+    /// when the view first appears, and cancelled if the view
+    /// disappears (or is removed from the view hierarchy).
+    /// - parameter priority: Any explicit priority that the async
+    ///   task should have.
+    /// - parameter action: The async action that the task should run.
+    public func task(
+        priority: TaskPriority = .userInitiated,
+        _ action: @escaping () async -> Void
+    ) -> some View {
+        task(id: 0, priority: priority, action)
+    }
+
+    /// Adds a task to perform when this view appears or when a specified value changes.
+    ///
+    /// - parameter id: The value to observe for changes. The value must conform to the Equatable protocol.
+    /// - parameter priority: Any explicit priority that the async
+    ///   task should have.
+    /// - parameter action: The async action that the task should run.
+    public func task<T>(
+        id: T,
+        priority: TaskPriority = .userInitiated,
+        _ action: @escaping () async -> Void
+    ) -> some View where T: Equatable {
+        modifier(
+            TaskModifier(
+                id: id,
+                priority: priority,
+                action: action
+            )
+        )
+    }
+}
+
+private struct TaskModifier<Value: Equatable>: ViewModifier {
+
+    var id: Value
+    var priority: TaskPriority
+    var action: () async -> Void
+
+    @State private var task: Task<Void, Never>? {
+        didSet { oldValue?.cancel() }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: id) { _ in run() }
+            .onAppear { run() }
+            .onDisappear { task = nil }
+    }
+
+    private func run() {
+        task = Task(priority: priority) {
+            await action()
+        }
+    }
+}

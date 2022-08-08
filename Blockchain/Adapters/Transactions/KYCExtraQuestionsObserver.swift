@@ -82,8 +82,8 @@ final class KYCExtraQuestionsObserver: Session.Observer {
                         state.set(tag[context].data, to: form)
                         state.set(tag[context].is.empty, to: form.successData?.isEmpty)
                         if context == defaultContext {
-                            state.set(tag.data[].ref(), to: form)
-                            state.set(tag.is.empty[].ref(), to: form.successData?.isEmpty)
+                            state.set(tag[Tag.Context.genericIndex].data, to: form)
+                            state.set(tag[Tag.Context.genericIndex].is.empty, to: form.successData?.isEmpty)
                         }
                     }
                 }

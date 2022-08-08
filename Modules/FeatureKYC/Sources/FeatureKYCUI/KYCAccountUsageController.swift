@@ -14,6 +14,8 @@ import UIKit
 
 final class KYCAccountUsageController: KYCBaseViewController {
 
+    private static var defaultContext = "TIER_TWO_VERIFICATION"
+
     private var isBlocking: Bool = true
     private var bag: Set<AnyCancellable> = []
 
@@ -38,6 +40,12 @@ final class KYCAccountUsageController: KYCBaseViewController {
         let publisher = app.publisher(for: blockchain.ux.kyc.extra.questions.form.data)
             .compactMap { data in data.value as? Result<FeatureFormDomain.Form, Nabu.Error> }
             .get()
+            .catch { [app] _ -> AnyPublisher<FeatureFormDomain.Form, Nabu.Error> in
+                app.publisher(for: blockchain.ux.kyc.extra.questions.form[My.defaultContext].data)
+                    .compactMap { data in data.value as? Result<FeatureFormDomain.Form, Nabu.Error> }
+                    .get()
+                    .eraseToAnyPublisher()
+            }
             .prefix(1)
             .eraseToAnyPublisher()
         let view = AccountUsageView(

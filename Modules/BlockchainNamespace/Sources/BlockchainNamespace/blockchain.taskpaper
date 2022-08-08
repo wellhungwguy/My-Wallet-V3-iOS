@@ -178,10 +178,13 @@ blockchain:
 			dsl:
 				is:
 					enabled:
+					+ blockchain.db.type.boolean
 					+ blockchain.session.state.shared.value
 			kyc:
 				tier:
 				+ blockchain.db.type.integer
+				verify:
+					email:
 			onboarding:
 				post:
 					sign:
@@ -441,14 +444,14 @@ blockchain:
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
-				leaf:
 				then:
 					close:
-					+ blockchain.ui.type.action.leaf
+					+ blockchain.db.type.boolean
+					emit:
+					+ blockchain.db.type.tag
 					launch:
 						url:
 						+ blockchain.db.type.url
-						+ blockchain.ui.type.action.leaf
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -544,6 +547,10 @@ blockchain:
 			is:
 				verified:
 				+ blockchain.db.type.boolean
+		event:
+			did:
+				update:
+				+ blockchain.ux.type.analytics.event
 		is:
 			cowboy:
 				fan:
@@ -553,6 +560,7 @@ blockchain:
 				gold:
 				+ blockchain.db.type.boolean
 				none:
+				+ blockchain.db.type.boolean
 				silver:
 				+ blockchain.db.type.boolean
 		name:
@@ -740,6 +748,8 @@ blockchain:
 					+ blockchain.ux.type.analytics.event
 					start:
 					+ blockchain.ux.type.analytics.event
+					stop:
+					+ blockchain.ux.type.analytics.event
 				status:
 					did:
 						change:
@@ -767,6 +777,15 @@ blockchain:
 				none:
 				platinum:
 				silver:
+			trading:
+				limits:
+					overview:
+					+ blockchain.ux.type.story
+				unlock:
+					more:
+					+ blockchain.ux.type.story
+				upgrade:
+				+ blockchain.ux.type.story
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
@@ -783,20 +802,37 @@ blockchain:
 		onboarding:
 			promotion:
 				cowboys:
-					buy:
-						crypto:
-						+ blockchain.ux.onboarding.type.promotion
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 					raffle:
 					+ blockchain.ux.onboarding.type.promotion
 					verify:
-						email:
+						identity:
 						+ blockchain.ux.onboarding.type.promotion
+					welcome:
+					+ blockchain.ux.onboarding.type.promotion
+				launch:
+				+ blockchain.ux.type.analytics.event
+					story:
+					+ blockchain.db.type.tag
+					+ blockchain.session.state.value
+				product:
+				+ blockchain.db.collection
+				+ blockchain.ux.onboarding.type.promotion
 			type:
 				promotion:
-				+ blockchain.ux.type.action
+					announcement:
+					+ blockchain.session.configuration.value
+					+ blockchain.ux.type.story
+						action:
+						+ blockchain.ux.type.action
 					story:
 					+ blockchain.session.configuration.value
 					+ blockchain.ux.type.story
+						action:
+						+ blockchain.ux.type.action
 		payment:
 			method:
 				link:

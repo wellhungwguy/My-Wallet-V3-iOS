@@ -167,7 +167,12 @@ extension Optional where Wrapped: Swift.Codable {
         }
 
         public func encode(to encoder: Encoder) throws {
-            try? wrappedValue.encode(to: encoder)
+            do {
+                var container = encoder.singleValueContainer()
+                try container.encode(wrappedValue)
+            } catch {
+                try? wrappedValue.encode(to: encoder)
+            }
         }
     }
 }

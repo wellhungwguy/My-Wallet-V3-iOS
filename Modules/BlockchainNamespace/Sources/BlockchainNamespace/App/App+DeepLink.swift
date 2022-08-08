@@ -56,13 +56,12 @@ extension App {
         }
 
         public func canProcess(url: URL) -> Bool {
-            let isReady = (try? app.state.get(blockchain.app.is.ready.for.deep_link) as? Bool) == true
-            return isReady && rules.value.match(for: url) != nil
+            (app.state.yes(if: blockchain.app.deep_link.dsl.is.enabled) && DSL.isDSL(url))
+                || (app.state.yes(if: blockchain.app.is.ready.for.deep_link) && rules.value.match(for: url) != nil)
         }
 
         func process(url: URL, with rules: [Rule]) {
-            let isDSLEnabled = (try? app.state.get(blockchain.app.deep_link.dsl.is.enabled)) ?? false
-            if isDSLEnabled, DSL.isDSL(url) {
+            if app.state.yes(if: blockchain.app.deep_link.dsl.is.enabled), DSL.isDSL(url) {
                 do {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
@@ -117,7 +116,7 @@ extension App.DeepLink.DSL {
         event = try components.fragment.map { try Tag.Reference(id: $0, in: app.language) }
         var context: [Tag: String] = [:]
         for item in components.queryItems ?? [] {
-            try context[Tag(id: item.name, in: app.language)] = item.value
+            try context[Tag(id: item.name.removingPercentEncoding ?? item.name, in: app.language)] = item.value?.removingPercentEncoding ?? item.value
         }
         self.context = context
     }

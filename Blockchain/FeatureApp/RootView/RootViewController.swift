@@ -54,6 +54,7 @@ final class RootViewController: UIHostingController<RootView> {
 
         subscribe(to: viewStore)
         subscribe(to: ViewStore(global))
+        subscribe(to: app)
 
         if !defaults.hasInteractedWithFrequentActionButton {
             environment.publisher
@@ -62,10 +63,6 @@ final class RootViewController: UIHostingController<RootView> {
                 .sink(to: My.handleFirstFrequentActionButtonInteraction, on: self)
                 .store(in: &bag)
         }
-
-        environment.publisher
-            .sink(to: My.handle(state:action:), on: self)
-            .store(in: &bag)
     }
 
     @objc dynamic required init?(coder aDecoder: NSCoder) {
@@ -116,6 +113,52 @@ extension RootViewController {
 }
 
 extension RootViewController {
+
+    func subscribe(to app: AppProtocol) {
+
+        let observers = [
+            app.on(blockchain.ux.frequent.action.swap) { [unowned self] _ in
+                self.handleSwapCrypto(account: nil)
+            },
+            app.on(blockchain.ux.frequent.action.send) { [unowned self] _ in
+                self.handleSendCrypto()
+            },
+            app.on(blockchain.ux.frequent.action.receive) { [unowned self] _ in
+                self.handleReceiveCrypto()
+            },
+            app.on(blockchain.ux.frequent.action.rewards) { [unowned self] _ in
+                self.handleRewards()
+            },
+            app.on(blockchain.ux.frequent.action.deposit) { [unowned self] _ in
+                self.handleDeposit()
+            },
+            app.on(blockchain.ux.frequent.action.withdraw) { [unowned self] _ in
+                self.handleWithdraw()
+            },
+            app.on(blockchain.ux.frequent.action.buy) { [unowned self] _ in
+                self.handleBuyCrypto(currency: .bitcoin)
+            },
+            app.on(blockchain.ux.frequent.action.sell) { [unowned self] _ in
+                self.handleSellCrypto(account: nil)
+            },
+            app.on(blockchain.ux.frequent.action.nft) { [unowned self] _ in
+                self.handleNFTAssetView()
+            }
+        ]
+
+        for observer in observers {
+            observer.subscribe().store(in: &bag)
+        }
+
+        app.on(where: isDescendant(of: blockchain.ux.frequent.action))
+            .sink { [weak self] _ in
+                guard let viewStore = self?.viewStore else { return }
+                withAnimation {
+                    viewStore.send(.binding(.set(\.$fab.isOn, false)))
+                }
+            }
+            .store(in: &bag)
+    }
 
     func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
         viewStore.publisher.tab.sink { [weak self] _ in
@@ -177,37 +220,6 @@ extension RootViewController {
 
     func handleFirstFrequentActionButtonInteraction() {
         defaults.hasInteractedWithFrequentActionButton = true
-    }
-
-    // swiftlint:disable cyclomatic_complexity
-    func handle(state: RootViewState, action: RootViewAction) {
-        switch action {
-        case .frequentAction(let frequentAction):
-            switch frequentAction.tag {
-            case blockchain.ux.frequent.action.swap:
-                handleSwapCrypto(account: nil)
-            case blockchain.ux.frequent.action.send:
-                handleSendCrypto()
-            case blockchain.ux.frequent.action.receive:
-                handleReceiveCrypto()
-            case blockchain.ux.frequent.action.rewards:
-                handleRewards()
-            case blockchain.ux.frequent.action.deposit:
-                handleDeposit()
-            case blockchain.ux.frequent.action.withdraw:
-                handleWithdraw()
-            case blockchain.ux.frequent.action.buy:
-                handleBuyCrypto(currency: .bitcoin)
-            case blockchain.ux.frequent.action.sell:
-                handleSellCrypto(account: nil)
-            case blockchain.ux.frequent.action.nft:
-                handleNFTAssetView()
-            default:
-                assertionFailure("Unhandled action \(action)")
-            }
-        default:
-            break
-        }
     }
 }
 

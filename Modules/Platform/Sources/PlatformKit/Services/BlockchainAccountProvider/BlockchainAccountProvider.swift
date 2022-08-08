@@ -152,8 +152,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                 return .just([])
             }
 
-            return
-            app.fetchAppMode()
+            return app.modePublisher()
                 .flatMap { appMode in
                     cryptoAsset
                         .accountGroup(filter: appMode.filter)
@@ -235,7 +234,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         case .crypto(let cryptoCurrency):
             let cryptoAsset = coincore[cryptoCurrency]
 
-            return app.fetchAppMode()
+            return app.modePublisher()
                 .flatMap { appMode in
                     cryptoAsset
                         .accountGroup(filter: appMode.filter)

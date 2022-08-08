@@ -42,9 +42,7 @@ struct AccountRow: View {
                     withAnimation(.spring()) {
                         app.post(
                             event: blockchain.ux.asset.account.sheet[].ref(to: context),
-                            context: context + [
-                                blockchain.ux.asset.account: account
-                            ]
+                            context: context
                         )
                     }
                 }

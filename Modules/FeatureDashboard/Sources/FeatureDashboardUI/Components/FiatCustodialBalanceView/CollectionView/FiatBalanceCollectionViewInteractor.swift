@@ -127,7 +127,7 @@ extension FiatBalanceCollectionViewInteractor {
 
     public var isInTradingMode: Observable<Bool> {
         app
-            .fetchAppMode()
+            .modePublisher()
             .asObservable()
             .map { $0 != .defi }
             .catchAndReturn(false)

@@ -181,6 +181,64 @@ final class SessionStateTests: XCTestCase {
 
         XCTAssertEqual(string, "signed_in")
     }
+
+    func test_boolean_logic() {
+
+        app.state.set(blockchain.user.is.cowboy.fan, to: true)
+        app.state.set(blockchain.user.is.tier.gold, to: true)
+        app.state.set(blockchain.user.is.tier.silver, to: false)
+        app.state.set(blockchain.user.is.tier.none, to: false)
+
+        // Yes
+
+        XCTAssertTrue(
+            app.state.yes(if: blockchain.user.is.cowboy.fan)
+        )
+
+        XCTAssertTrue(
+            app.state.yes(if: blockchain.user.is.cowboy.fan, blockchain.user.is.tier.gold)
+        )
+
+        XCTAssertTrue(
+            app.state.yes(unless: blockchain.user.is.tier.silver, blockchain.user.is.tier.none)
+        )
+
+        XCTAssertFalse(
+            app.state.yes(unless: blockchain.user.is.tier.silver, blockchain.user.is.cowboy.fan)
+        )
+
+        XCTAssertTrue(
+            app.state.yes(
+                if: blockchain.user.is.cowboy.fan, blockchain.user.is.tier.gold,
+                unless: blockchain.user.is.tier.silver, blockchain.user.is.tier.none
+            )
+        )
+
+        // No
+
+        XCTAssertFalse(
+            app.state.no(if: blockchain.user.is.cowboy.fan)
+        )
+
+        XCTAssertFalse(
+            app.state.no(if: blockchain.user.is.cowboy.fan, blockchain.user.is.tier.gold)
+        )
+
+        XCTAssertFalse(
+            app.state.no(unless: blockchain.user.is.tier.silver, blockchain.user.is.tier.none)
+        )
+
+        XCTAssertTrue(
+            app.state.no(unless: blockchain.user.is.tier.silver, blockchain.user.is.cowboy.fan)
+        )
+
+        XCTAssertFalse(
+            app.state.no(
+                if: blockchain.user.is.cowboy.fan, blockchain.user.is.tier.gold,
+                unless: blockchain.user.is.tier.silver, blockchain.user.is.tier.none
+            )
+        )
+    }
 }
 
 extension Mock {

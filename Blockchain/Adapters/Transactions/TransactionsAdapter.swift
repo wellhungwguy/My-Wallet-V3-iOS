@@ -159,7 +159,7 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
         toBuy cryptoCurrency: CryptoCurrency,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        app.fetchAppMode()
+        app.modePublisher()
             .flatMap { [coincore] appMode in
                 coincore.cryptoAccounts(
                     for: .bitcoin,

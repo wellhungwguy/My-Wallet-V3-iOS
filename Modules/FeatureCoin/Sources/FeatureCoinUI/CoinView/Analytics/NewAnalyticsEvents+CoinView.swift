@@ -99,7 +99,7 @@ extension AnalyticsEvents.New {
 
         enum AccountType: String, StringRawRepresentable {
             case rewards = "REWARDS_ACCOUNT"
-            case trading = "TRADING_ACCOUNT"
+            case trading = "CUSTODIAL"
             case userKey = "USERKEY"
             case exchange = "EXCHANGE_ACCOUNT"
 

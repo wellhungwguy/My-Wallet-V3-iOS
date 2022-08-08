@@ -55,7 +55,7 @@ final class EligibilityService: EligibilityServiceAPI {
                 .take(1)
                 .asSingle()
                 .flatMap(weak: self) { (self, _) -> Single<Eligibility> in
-                    self.fiatCurrencyService.displayCurrency
+                    self.fiatCurrencyService.tradingCurrency
                         .asSingle()
                         .flatMap { currency -> Single<Eligibility> in
                             self.client.isEligible(

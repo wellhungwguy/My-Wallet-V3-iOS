@@ -7,12 +7,12 @@ extension View {
 
     /// Apply a foreground media to the view
     public func foregroundTexture(_ url: URL) -> some View {
-        modifier(TextureModifier(texture: url.texture, space: .foreground))
+        modifier(TextureModifier.foreground(url.texture))
     }
 
     /// Apply a foreground color to the view
     public func foregroundTexture(_ color: Color) -> some View {
-        modifier(TextureModifier(texture: color.texture, space: .foreground))
+        modifier(TextureModifier.foreground(color.texture))
     }
 
     /// Apply a foreground gradient to the view
@@ -23,23 +23,20 @@ extension View {
         endPoint: UnitPoint = .trailing
     ) -> some View {
         modifier(
-            TextureModifier(
-                texture: gradient.linearTexture(start: startPoint, end: endPoint),
-                space: .foreground
-            )
+            TextureModifier.foreground(gradient.linearTexture(start: startPoint, end: endPoint))
         )
     }
 
     /// Apply a foreground texture to the view
     public func foregroundTexture(_ texture: Texture) -> some View {
-        modifier(TextureModifier(texture: texture, space: .foreground))
+        modifier(TextureModifier.foreground(texture))
     }
 
     /// Apply an optional foreground texture to the view
     /// if no texture is available the original view will be left untouched
     @ViewBuilder public func foregroundTexture(_ texture: Texture?) -> some View {
         if let texture = texture {
-            modifier(TextureModifier(texture: texture, space: .foreground))
+            modifier(TextureModifier.foreground(texture))
         } else {
             self
         }
@@ -47,12 +44,12 @@ extension View {
 
     /// Apply a background media to the view
     public func backgroundTexture(_ url: URL) -> some View {
-        modifier(TextureModifier(texture: url.texture, space: .background))
+        modifier(TextureModifier.background(url.texture))
     }
 
     /// Apply a background color to the view
     public func backgroundTexture(_ color: Color) -> some View {
-        modifier(TextureModifier(texture: color.texture, space: .background))
+        modifier(TextureModifier.background(color.texture))
     }
 
     /// Apply a background gradient to the view
@@ -62,23 +59,20 @@ extension View {
         endPoint: UnitPoint = .trailing
     ) -> some View {
         modifier(
-            TextureModifier(
-                texture: gradient.linearTexture(start: startPoint, end: endPoint),
-                space: .background
-            )
+            TextureModifier.background(gradient.linearTexture(start: startPoint, end: endPoint))
         )
     }
 
     /// Apply a background texture to the view
     public func backgroundTexture(_ texture: Texture) -> some View {
-        modifier(TextureModifier(texture: texture, space: .background))
+        modifier(TextureModifier.background(texture))
     }
 
     /// Apply a background color to the view
     /// if no texture is available the original view will be left untouched
     @ViewBuilder public func backgroundTexture(_ texture: Texture?) -> some View {
         if let texture = texture {
-            modifier(TextureModifier(texture: texture, space: .background))
+            modifier(TextureModifier.background(texture))
         } else {
             self
         }
@@ -157,6 +151,8 @@ extension Texture {
 
 extension Texture.Color {
 
+    public var swiftUI: SwiftUI.Color { .init(self) }
+
     public enum Key: String, CodingKey {
         case rgb
         case hsb
@@ -172,16 +168,20 @@ extension Texture.Color {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         for (key, casePath) in Self.__allCases {
-            var nested = try container.nestedUnkeyedContainer(forKey: key)
-            self = try casePath.embed(
-                (
-                    nested.decode(Double.self),
-                    nested.decode(Double.self),
-                    nested.decode(Double.self),
-                    nested.decode(Double.self)
+            do {
+                var nested = try container.nestedUnkeyedContainer(forKey: key)
+                self = try casePath.embed(
+                    (
+                        nested.decode(Double.self),
+                        nested.decode(Double.self),
+                        nested.decode(Double.self),
+                        nested.decode(Double.self)
+                    )
                 )
-            )
-            return
+                return
+            } catch {
+                continue
+            }
         }
         throw DecodingError.valueNotFound(
             Self.self,
@@ -195,59 +195,80 @@ extension Texture.Color {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
         for (key, casePath) in Self.__allCases {
-            if let o = casePath.extract(from: self) {
-                var nested = container.nestedUnkeyedContainer(forKey: key)
-                try nested.encode(o.0)
-                try nested.encode(o.1)
-                try nested.encode(o.2)
-                try nested.encode(o.3)
-                return
-            }
+            do {
+                if let o = casePath.extract(from: self) {
+                    var nested = container.nestedUnkeyedContainer(forKey: key)
+                    try nested.encode(o.0)
+                    try nested.encode(o.1)
+                    try nested.encode(o.2)
+                    try nested.encode(o.3)
+                    return
+                }
+             } catch {
+                 continue
+             }
         }
     }
 }
 
-struct TextureModifier: ViewModifier {
+extension Texture: View {
 
-    enum Space {
-        case foreground
-        case background
+    public var body: some View {
+        if let color = color {
+            SwiftUI.Color(color)
+        } else if let gradient = gradient, let linearGradient = LinearGradient(gradient) {
+            linearGradient
+        } else if let media = media {
+            AsyncMedia(url: media.url, placeholder: EmptyView.init)
+        }
     }
+}
 
-    let texture: Texture
-    let space: Space
+enum TextureModifier: ViewModifier {
+
+    case foreground(Texture)
+    case background(Texture)
 
     func body(content: Content) -> some View {
-        switch space {
-        case .foreground:
-            if let color = texture.color {
-                content.foregroundColor(.init(color))
+        switch self {
+        case .foreground(let texture):
+            if let media = texture.media {
+                content
+                    .foregroundColor(.clear)
+                    .overlay(
+                        AsyncMedia(url: media.url, placeholder: EmptyView.init)
+                            .aspectRatio(contentMode: .fit)
+                            .mask(content)
+                    )
             } else if let gradient = texture.gradient, let linearGradient = LinearGradient(gradient) {
                 content
                     .foregroundColor(.clear)
                     .overlay(linearGradient.mask(content))
-            } else if let media = texture.media {
-                content
-                    .foregroundColor(.clear)
-                    .overlay(
-                        AsyncMedia(url: media.url)
-                            .aspectRatio(contentMode: .fit)
-                            .mask(content)
-                    )
+            } else if let color = texture.color {
+                content.foregroundColor(.init(color))
             } else {
                 content
             }
-        case .background:
-            if let color = texture.color {
-                content.background(SwiftUI.Color(color))
+        case .background(let texture):
+            if let media = texture.media {
+                content.background(
+                    ZStack(alignment: .top) {
+                        if let gradient = texture.gradient.flatMap(LinearGradient.init) {
+                            gradient
+                        } else if let color = texture.color {
+                            color.swiftUI
+                        }
+                        AsyncMedia(url: media.url, placeholder: EmptyView.init)
+                            .aspectRatio(contentMode: .fill)
+                            .frame(minWidth: 0.pt, maxWidth: 100.vw, minHeight: 0.pt, maxHeight: 100.vh)
+                            .transition(.opacity.combined(with: .scale))
+                    }
+                    .ignoresSafeArea(.all, edges: .all)
+                )
             } else if let gradient = texture.gradient, let linearGradient = LinearGradient(gradient) {
                 content.background(linearGradient)
-            } else if let media = texture.media {
-                content
-                    .background(
-                        AsyncMedia(url: media.url)
-                            .aspectRatio(contentMode: .fill)
-                    )
+            } else if let color = texture.color {
+                content.background(SwiftUI.Color(color))
             } else {
                 content
             }
@@ -266,18 +287,26 @@ extension Color {
     // swiftlint:disable:next large_tuple
     private var hsba: (hue: Double, saturation: Double, brightness: Double, alpha: Double) {
         var (h, s, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
+#if canImport(UIKit)
         guard Native(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a) else {
             return (0, 0, 0, 0)
         }
+#elseif canImport(AppKit)
+        Native(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+#endif
         return (h.d, s.d, b.d, a.d)
     }
 
     // swiftlint:disable:next large_tuple
     private var rgba: (red: Double, green: Double, blue: Double, alpha: Double) {
         var (r, g, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
+        #if canImport(UIKit)
         guard Native(self).getRed(&r, green: &g, blue: &b, alpha: &a) else {
             return (0, 0, 0, 0)
         }
+        #elseif canImport(AppKit)
+        Native(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+        #endif
         return (r.d, g.d, b.d, a.d)
     }
 

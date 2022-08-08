@@ -59,7 +59,6 @@ only_rules:
 - literal_expression_end_indentation
 - lower_acl_than_parent
 - mark
-- multiline_arguments
 - multiline_function_chains
 - multiline_literal_brackets
 - multiline_parameters
@@ -150,7 +149,7 @@ type_body_length:
   warning: 200
   error: 350
 closure_body_length:
-  warning: 60
+  warning: 160
   error: 280
 deployment_target:
   iOS_deployment_target: 14.0

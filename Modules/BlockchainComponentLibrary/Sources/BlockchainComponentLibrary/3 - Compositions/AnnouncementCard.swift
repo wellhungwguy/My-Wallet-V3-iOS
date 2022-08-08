@@ -6,27 +6,31 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Cards](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A7478)
-public struct AnnouncementCard<Leading: View>: View {
+public struct AnnouncementCard<Leading: View, Background: View>: View {
 
     private let title: String
     private let message: String
-    private let onCloseTapped: () -> Void
+    private let background: Background
+    private let onCloseTapped: (() -> Void)?
     private let leading: Leading
 
     /// Initialize a Announcement Card
     /// - Parameters:
     ///   - title: Title of the card
     ///   - message: Message of the card
+    ///   - background: Background to apply to announcement
     ///   - onCloseTapped: Closure executed when the user types the close icon
     ///   - leading: View on the leading of the card.
     public init(
         title: String,
         message: String,
-        onCloseTapped: @escaping () -> Void,
+        @ViewBuilder background: () -> Background,
+        onCloseTapped: (() -> Void)? = nil,
         @ViewBuilder leading: () -> Leading
     ) {
         self.title = title
         self.message = message
+        self.background = background()
         self.onCloseTapped = onCloseTapped
         self.leading = leading()
     }
@@ -41,31 +45,26 @@ public struct AnnouncementCard<Leading: View>: View {
                         .typography(.caption1)
                         .foregroundColor(.palette.grey100)
                     Text(message)
+                        .lineLimit(3)
                         .typography(.body2)
                         .foregroundColor(.palette.white)
                 }
             }
-            Button(
-                action: onCloseTapped,
-                label: {
-                    Icon.closev2
-                        .circle(backgroundColor: .palette.grey800)
-                        .accentColor(.palette.grey400)
-                        .frame(width: 24)
-                }
-            )
+            Spacer()
+            if let onCloseTapped = onCloseTapped {
+                Button(
+                    action: onCloseTapped,
+                    label: {
+                        Icon.closev2
+                            .circle(backgroundColor: .palette.grey800)
+                            .accentColor(.palette.grey400)
+                            .frame(width: 24)
+                    }
+                )
+            }
         }
         .padding(Spacing.padding2)
-        .background(
-            GeometryReader { proxy in
-                Image("PCB Faded", bundle: .componentLibrary)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .offset(y: -proxy.size.height / 3)
-                    .opacity(0.05)
-            }
-        )
+        .background(background)
         .clipShape(
             RoundedRectangle(cornerRadius: Spacing.containerBorderRadius)
         )
@@ -89,6 +88,41 @@ public struct AnnouncementCard<Leading: View>: View {
                     x: 0,
                     y: 3
                 )
+        )
+    }
+}
+
+extension AnnouncementCard where Background == AnyView {
+
+    /// Initialize a Announcement Card
+    /// - Parameters:
+    ///   - title: Title of the card
+    ///   - message: Message of the card
+    ///   - onCloseTapped: Closure executed when the user types the close icon
+    ///   - leading: View on the leading of the card.
+    public init(
+        title: String,
+        message: String,
+        onCloseTapped: (() -> Void)? = nil,
+        @ViewBuilder leading: () -> Leading
+    ) {
+        self.init(
+            title: title,
+            message: message,
+            background: {
+                AnyView(
+                    GeometryReader { proxy in
+                        Image("PCB Faded", bundle: .componentLibrary)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: proxy.size.width, height: proxy.size.height)
+                            .offset(y: -proxy.size.height / 3)
+                            .opacity(0.05)
+                    }
+                )
+            },
+            onCloseTapped: onCloseTapped,
+            leading: leading
         )
     }
 }
