@@ -57,6 +57,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletService: FeatureAppDomain.WalletService!
     var mockWalletStateProvider: WalletStateProvider!
     var mockWalletUpgradeService: MockWalletUpgradeService!
+    var mockObservabilityService: ObservabilityServiceMock!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -118,6 +119,7 @@ final class MainAppReducerTests: XCTestCase {
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         mockPerformanceTracing = PerformanceTracing.mock
+        mockObservabilityService = ObservabilityServiceMock()
 
         mockNabuUser = NabuUser(
             identifier: "1234567890",
@@ -173,6 +175,7 @@ final class MainAppReducerTests: XCTestCase {
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 nabuUserService: mockNabuUserService,
                 nativeWalletFlagEnabled: { .just(false) },
+                observabilityService: mockObservabilityService,
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
@@ -770,5 +773,13 @@ final class ERC20CryptoAssetServiceMock: ERC20CryptoAssetServiceAPI {
 final class DelegatedCustodySubscriptionsServiceMock: DelegatedCustodySubscriptionsServiceAPI {
     func subscribe() -> AnyPublisher<Void, Error> {
         .just(())
+    }
+}
+
+final class ObservabilityServiceMock: ObservabilityServiceAPI {
+    func start(with appKey: String) {}
+
+    func addSessionProperty(_ value: String, withKey key: String, permanent: Bool) -> Bool {
+        true
     }
 }
