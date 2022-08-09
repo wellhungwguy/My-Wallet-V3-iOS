@@ -91,6 +91,11 @@ public enum AppFeature: Int, CaseIterable {
 
     case cardIssuing
 
+    // MARK: - Card Success Rate
+
+    /// Enables the success rate check of a 6 digit bin when adding a new CC
+    case cardSuccessRate
+
     /// Enables Referral button in Settings
     case referral
 
@@ -153,6 +158,8 @@ extension AppFeature {
             return "ios_ff_native_wallet_creation"
         case .cardIssuing:
             return "ios_ff_card_issuing"
+        case .cardSuccessRate:
+            return "ios_ff_card_success_rate"
         case .sendToDomainsAnnouncement:
             return "ios_ff_send_to_domains_announcement"
         case .blockchainDomains:
@@ -204,6 +211,8 @@ extension AppFeature {
         case .customerSupportChat:
             return false
         case .newCardAcquirers:
+            return true
+        case .cardSuccessRate:
             return true
         case .openBanking:
             return true

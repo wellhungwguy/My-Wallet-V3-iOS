@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import Localization
 import PlatformKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 public final class CardNumberValidator: TextValidating, CardTypeSource {
 
@@ -16,12 +20,19 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
 
     /// An observable that streams the card type
     public var validationState: Observable<TextValidationState> {
-        validationStateRelay.asObservable()
+        validationStateRelay
+            .asObservable()
     }
 
     /// An observable that streams the card type
     public var cardType: Observable<CardType> {
-        cardTypeRelay.asObservable()
+        cardTypeRelay
+            .asObservable()
+    }
+
+    public var ux: Observable<UX.Error?> {
+        uxRelay
+            .asObservable()
     }
 
     public let valueRelay = BehaviorRelay<String>(value: "")
@@ -31,12 +42,39 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
 
     private let cardTypeRelay = BehaviorRelay<CardType>(value: .unknown)
     private let luhnValidator = LuhnNumberValidator()
+    private let cardSuccessRateService: CardSuccessRateServiceAPI
+    private let uxRelay = BehaviorRelay<UX.Error?>(value: nil)
     private let validationStateRelay = BehaviorRelay<TextValidationState>(value: .invalid(reason: nil))
     private let disposeBag = DisposeBag()
 
+    private enum CardSuccessRateStatus {
+        // The card prefix has the best chance of success
+        case best
+        // The card prefix is permissable but has a chance of failure
+        case unblocked(UX.Error?)
+        // The card prefix belongs to a card that will not work
+        case blocked(UX.Error?)
+        // UX model, if there is one.
+        var ux: UX.Error? {
+            switch self {
+            case .unblocked(let ux),
+                    .blocked(let ux):
+                return ux
+            case .best:
+                return nil
+            }
+        }
+    }
+
     // MARK: - Setup
 
-    public init(supportedCardTypes: Set<CardType> = [.visa]) {
+    // swiftlint:disable cyclomatic_complexity
+    public init(
+        supportedCardTypes: Set<CardType> = [.visa],
+        cardSuccessRateService: CardSuccessRateServiceAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
+    ) {
+        self.cardSuccessRateService = cardSuccessRateService
         supportedCardTypesRelay.accept(supportedCardTypes)
 
         valueRelay
@@ -44,33 +82,71 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
             .bindAndCatch(to: cardTypeRelay)
             .disposed(by: disposeBag)
 
+        let cardSuccessRateStatus = valueRelay
+            .map { $0.replacingOccurrences(of: " ", with: "") }
+            .flatMap { value -> Observable<(Bool, String)> in
+                featureFlagService
+                    .isEnabled(.cardSuccessRate)
+                    .map { ($0, value) }
+                    .asObservable()
+            }
+            .flatMap(weak: self) { (self, value) -> Observable<CardSuccessRateStatus> in
+                let (isEnabled, input) = value
+                guard isEnabled else { return .just(.best) }
+                guard input.count >= 8 else { return .just(.best) }
+                let prefix = String(input.prefix(8))
+                return self.fetchCardSuccessRateStatusForEntry(prefix)
+            }
+
+        cardSuccessRateStatus
+            .compactMap(\.ux)
+            .bindAndCatch(to: uxRelay)
+            .disposed(by: disposeBag)
+
         let inputData = Observable
-            .zip(valueRelay, cardType)
+            .zip(cardSuccessRateStatus, valueRelay, cardType)
 
         Observable
             .combineLatest(
                 inputData,
                 supportedCardTypesRelay
             )
-            .map(weak: self) { (self, payload) in
-                let ((value, cardType), supportedCardTypes) = payload
+            .map(weak: self) { (self, payload) -> TextValidationState in
+                let ((successRate, value, cardType), supportedCardTypes) = payload
+                let cardTypeSupported = supportedCardTypes.contains(cardType) && cardType.isKnown
+                let isCardNumberValid = self.isValid(value)
 
-                let isSupported: Bool
-                if cardType.isKnown {
-                    isSupported = supportedCardTypes.contains(cardType)
-                } else {
-                    isSupported = true
+                switch successRate {
+                case .best:
+                    switch (cardTypeSupported, isCardNumberValid) {
+                    case (true, true):
+                        return .valid
+                    case (false, _):
+                        return .invalid(reason: LocalizedString.unsupportedCardType)
+                    case (true, false):
+                        return .invalid(reason: LocalizedString.invalidCardNumber)
+                    }
+                case .unblocked(let ux):
+                    let title = ux?.title
+                    switch (cardTypeSupported, isCardNumberValid) {
+                    case (true, true):
+                        return .conceivable(reason: title ?? LocalizedString.thisCardOftenDeclines)
+                    case (false, _):
+                        return .invalid(reason: LocalizedString.unsupportedCardType)
+                    case (true, false):
+                        return .invalid(reason: LocalizedString.invalidCardNumber)
+                    }
+                case .blocked(let ux):
+                    let title = ux?.title
+                    switch (cardTypeSupported, isCardNumberValid) {
+                    case (true, true):
+                        return .blocked(reason: title ?? LocalizedString.buyingCryptoNotSupported)
+                    case (false, _):
+                        return .invalid(reason: LocalizedString.unsupportedCardType)
+                    case (true, false):
+                        return .invalid(reason: LocalizedString.invalidCardNumber)
+                    }
                 }
-
-                guard isSupported else {
-                    return .invalid(reason: LocalizedString.unsupportedCardType)
-                }
-
-                guard self.isValid(value) else {
-                    return .invalid(reason: LocalizedString.invalidCardNumber)
-                }
-
-                return .valid
             }
             .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
@@ -78,6 +154,28 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
 
     func supports(cardType: CardType) -> Bool {
         supportedCardTypesRelay.value.contains(cardType)
+    }
+
+    private func fetchCardSuccessRateStatusForEntry(
+        _ binNumber: String
+    ) -> Observable<CardSuccessRateStatus> {
+        cardSuccessRateService
+            .getCardSuccessRate(binNumber: binNumber)
+            .map { successRateData -> CardSuccessRateStatus in
+                let blockCard = successRateData.block
+                let ux = successRateData.ux
+                switch (blockCard, ux) {
+                case (true, .some(let ux)):
+                    return .blocked(UX.Error(nabu: ux))
+                case (false, .some(let ux)):
+                    return .unblocked(UX.Error(nabu: ux))
+                case (false, .none):
+                    return .best
+                default:
+                    return .best
+                }
+            }
+            .asObservable()
     }
 
     private func isValid(_ number: String) -> Bool {

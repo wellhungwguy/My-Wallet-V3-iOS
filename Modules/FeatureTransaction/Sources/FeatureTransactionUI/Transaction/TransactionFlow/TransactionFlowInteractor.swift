@@ -883,61 +883,66 @@ extension TransactionFlowInteractor {
             }
             .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.change.payment.method) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.change.payment.method) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
+            guard let state = try await transactionModel.state.await(), state.step != .selectSource else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showSourceSelection)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.add.card) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.add.card) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
+            guard let state = try await transactionModel.state.await(), state.step != .linkACard else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showCardLinkingFlow)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.add.bank) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.add.bank) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
+            guard let state = try await transactionModel.state.await(), state.step != .linkABank else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankLinkingFlow)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.add.account) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.add.account) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
+            guard let state = try await transactionModel.state.await(), state.step != .linkPaymentMethod else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showAddAccountFlow)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .showEnterAmount)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .returnToPreviousStep)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
+            guard let state = try await transactionModel.state.await(), state.step != .linkBankViaWire else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankWiringInstructions)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.reset) { [weak self] _ in
+        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .resetFlow)
         }

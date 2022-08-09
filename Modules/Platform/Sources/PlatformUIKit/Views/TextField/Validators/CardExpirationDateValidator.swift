@@ -23,6 +23,8 @@ public final class CardExpirationDateValidator: TextValidating {
                     return self.dateValidationState.asObservable()
                 case .invalid:
                     return .just(state)
+                case .conceivable, .blocked:
+                    unimplemented("Conceivable is not accounted for with card expiration")
                 }
             }
     }

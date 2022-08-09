@@ -30,9 +30,16 @@ extension DependencyContainer {
             return client as CardDetailClientAPI
         }
 
+        factory { () -> CardSuccessRateClientAPI in
+            let client: CardClientAPI = DIKit.resolve()
+            return client as CardSuccessRateClientAPI
+        }
+
         // MARK: - Repositories - Cards
 
         single { CardListRepository() as CardListRepositoryAPI }
+
+        single { CardSuccessRateRepository() as CardSuccessRateRepositoryAPI }
 
         factory {
             ApplePayRepository(

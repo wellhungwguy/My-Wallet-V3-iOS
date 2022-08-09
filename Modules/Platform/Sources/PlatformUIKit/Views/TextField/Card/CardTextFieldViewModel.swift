@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureCardPaymentDomain
 import PlatformKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 public protocol CardTypeSource: AnyObject {
     var cardType: Observable<CardType> { get }
@@ -15,9 +17,35 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
 
     /// Streams the card thumbnail image view content. determined by the card type
     var cardThumbnailBadgeImageViewModel: Observable<BadgeImageViewModel?> {
-        cardNumberValidator.cardType
-            .distinctUntilChanged()
-            .map { type in
+        Observable
+            .combineLatest(
+                cardNumberValidator.cardType,
+                cardNumberValidator.validationState
+            )
+            .map { (type, validationState) in
+                /// The card is a valid entry thus far but
+                /// there is a non-zero possibility the card
+                /// will not work.
+                let isConceivable = validationState.isConceivable
+                /// The card is a valid entry thus far but
+                /// it will not work.
+                let isBlocked = validationState.isBlocked
+                /// Show the disclaimer icon should either of the above be true.
+                if isBlocked || isConceivable {
+                    let content = ImageViewContent(
+                        imageResource: ImageResource.local(name: "disclaimer-icon", bundle: .platformUIKit),
+                        renderingMode: .template(isBlocked ? .destructive : .warning)
+                    )
+                    let theme = BadgeImageViewModel.Theme(
+                        backgroundColor: .background,
+                        cornerRadius: .round,
+                        imageViewContent: content,
+                        marginOffset: 0,
+                        sizingType: .constant(CGSize(width: 16, height: 16))
+                    )
+                    return BadgeImageViewModel(theme: theme)
+                }
+
                 guard type.isKnown else { return nil }
                 let content = ImageViewContent(
                     imageResource: type.thumbnail,
