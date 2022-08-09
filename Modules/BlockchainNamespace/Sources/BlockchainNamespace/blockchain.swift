@@ -420,6 +420,7 @@ public protocol I_blockchain_app_configuration_polygon: I {}
 public extension I_blockchain_app_configuration_polygon {
 	var `all`: L_blockchain_app_configuration_polygon_all { .init("\(__).all") }
 	var `is`: L_blockchain_app_configuration_polygon_is { .init("\(__).is") }
+	var `name`: L_blockchain_app_configuration_polygon_name { .init("\(__).name") }
 }
 public final class L_blockchain_app_configuration_polygon_all: L, I_blockchain_app_configuration_polygon_all {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all", comment: "") }
@@ -457,6 +458,31 @@ public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_polygon_name: L, I_blockchain_app_configuration_polygon_name {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name: I {}
+public extension I_blockchain_app_configuration_polygon_name {
+	var `sanitize`: L_blockchain_app_configuration_polygon_name_sanitize { .init("\(__).sanitize") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize: L, I_blockchain_app_configuration_polygon_name_sanitize {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize: I {}
+public extension I_blockchain_app_configuration_polygon_name_sanitize {
+	var `is`: L_blockchain_app_configuration_polygon_name_sanitize_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize_is: L, I_blockchain_app_configuration_polygon_name_sanitize_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize_is: I {}
+public extension I_blockchain_app_configuration_polygon_name_sanitize_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_name_sanitize_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize_is_enabled: L, I_blockchain_app_configuration_polygon_name_sanitize_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_prefill: L, I_blockchain_app_configuration_prefill {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill", comment: "") }
 }

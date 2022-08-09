@@ -18,16 +18,21 @@ final class PolygonSupport: MoneyKit.PolygonSupport {
         return isAllTokensEnabledLazy
     }
 
-    private lazy var isAllTokensEnabledLazy: Bool = {
-        fetchBool(tag: blockchain.app.configuration.polygon.all.tokens.is.enabled)
-    }()
+    var sanitizeTokenNamesEnabled: Bool {
+        defer { sanitizeTokenNamesEnabledLock.unlock() }
+        sanitizeTokenNamesEnabledLock.lock()
+        return sanitizeTokenNamesEnabledLazy
+    }
 
-    private lazy var isEnabledLazy: Bool = {
-        fetchBool(tag: blockchain.app.configuration.polygon.is.enabled)
-    }()
+    private lazy var isAllTokensEnabledLazy: Bool = fetchBool(tag: blockchain.app.configuration.polygon.all.tokens.is.enabled)
+
+    private lazy var isEnabledLazy: Bool = fetchBool(tag: blockchain.app.configuration.polygon.is.enabled)
+
+    private lazy var sanitizeTokenNamesEnabledLazy: Bool = fetchBool(tag: blockchain.app.configuration.polygon.name.sanitize.is.enabled)
 
     private let isEnabledLock = NSLock()
     private let isAllTokensEnabledLock = NSLock()
+    private let sanitizeTokenNamesEnabledLock = NSLock()
     private let app: AppProtocol
 
     init(app: AppProtocol) {
@@ -43,5 +48,4 @@ final class PolygonSupport: MoneyKit.PolygonSupport {
         }
         return isEnabled
     }
-
 }

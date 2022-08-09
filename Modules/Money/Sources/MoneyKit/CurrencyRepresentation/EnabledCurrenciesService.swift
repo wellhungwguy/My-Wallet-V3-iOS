@@ -110,4 +110,5 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 public protocol PolygonSupport: AnyObject {
     var isEnabled: Bool { get }
     var isAllTokensEnabled: Bool { get }
+    var sanitizeTokenNamesEnabled: Bool { get }
 }

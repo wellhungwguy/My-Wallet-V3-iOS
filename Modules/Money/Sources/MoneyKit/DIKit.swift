@@ -8,17 +8,22 @@ extension DependencyContainer {
 
     public static var moneyKit = module {
 
-        single {
+        single { () -> EnabledCurrenciesServiceAPI in
             EnabledCurrenciesService(
                 polygonSupport: DIKit.resolve(),
                 repository: DIKit.resolve()
-            ) as EnabledCurrenciesServiceAPI
+            )
         }
 
         factory { SupportedAssetsFilePathProvider() as SupportedAssetsFilePathProviderAPI }
 
         factory { SupportedAssetsService() as SupportedAssetsServiceAPI }
 
-        single { SupportedAssetsRepository() as SupportedAssetsRepositoryAPI }
+        factory { () -> SupportedAssetsRepositoryAPI in
+            SupportedAssetsRepository(
+                localService: DIKit.resolve(),
+                polygonSupport: DIKit.resolve()
+            )
+        }
     }
 }

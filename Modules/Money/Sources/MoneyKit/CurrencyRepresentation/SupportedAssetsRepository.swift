@@ -11,45 +11,53 @@ protocol SupportedAssetsRepositoryAPI {
 
 final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
 
-    let localService: SupportedAssetsServiceAPI
-
-    private(set) lazy var ethereumERC20Assets: SupportedAssets = {
+    var ethereumERC20Assets: SupportedAssets {
         switch localService.ethereumERC20Assets {
         case .success(let response):
-            return SupportedAssets(response: response)
+            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
             }
             return SupportedAssets.empty
         }
-    }()
+    }
 
-    private(set) lazy var polygonERC20Assets: SupportedAssets = {
+    var polygonERC20Assets: SupportedAssets {
         switch localService.polygonERC20Assets {
         case .success(let response):
-            return SupportedAssets(response: response)
+            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local Polygon ERC20 assets. \(error.localizedDescription)")
             }
             return SupportedAssets.empty
         }
-    }()
+    }
 
-    private(set) lazy var custodialAssets: SupportedAssets = {
+    var custodialAssets: SupportedAssets {
         switch localService.custodialAssets {
         case .success(let response):
-            return SupportedAssets(response: response)
+            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local custodial assets. \(error.localizedDescription)")
             }
             return SupportedAssets.empty
         }
-    }()
+    }
 
-    init(localService: SupportedAssetsServiceAPI = resolve()) {
+    private let localService: SupportedAssetsServiceAPI
+    private let polygonSupport: PolygonSupport
+    private var sanitizePolygonAssets: Bool {
+        polygonSupport.sanitizeTokenNamesEnabled
+    }
+
+    init(
+        localService: SupportedAssetsServiceAPI,
+        polygonSupport: PolygonSupport
+    ) {
         self.localService = localService
+        self.polygonSupport = polygonSupport
     }
 }
