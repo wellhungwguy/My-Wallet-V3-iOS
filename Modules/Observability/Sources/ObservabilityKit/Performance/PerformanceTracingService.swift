@@ -7,7 +7,7 @@ import ToolKit
 
 final class PerformanceTracingService: PerformanceTracingServiceAPI {
 
-    typealias CreateTrace = (TraceID) -> Trace?
+    typealias CreateTrace = (TraceID, [String: String]) -> Trace?
 
     private let traces: Atomic<[TraceID: Trace]>
     private let createTrace: CreateTrace
@@ -27,9 +27,9 @@ final class PerformanceTracingService: PerformanceTracingServiceAPI {
         }
     }
 
-    func begin(trace traceId: TraceID) {
+    func begin(trace traceId: TraceID, properties: [String: String]?) {
         removeTrace(with: traceId)
-        if let trace = createTrace(traceId) {
+        if let trace = createTrace(traceId, properties ?? [:]) {
             traces.mutate { traces in
                 traces[traceId] = trace
             }
@@ -53,6 +53,7 @@ struct NamepaceTrace: Codable {
     let start: Tag.Reference
     let stop: Tag.Reference
     let id: String
+    let context: [String: Tag.Reference]
 }
 
 public final class PerformanceTracingObserver: Session.Observer {
@@ -73,7 +74,22 @@ public final class PerformanceTracingObserver: Session.Observer {
             .flatMap { [app, service] traces -> AnyPublisher<Session.Event, Never> in
                 let starts = traces.map { trace in
                     app.on(trace.start)
-                        .handleEvents(receiveOutput: { _ in service.begin(trace: TraceID(trace.id)) })
+                        .handleEvents(
+                            receiveOutput: { event in
+                                let properties = trace.context.reduce(into: [String: String]()) { properties, next in
+                                    properties[next.key] = (
+                                        try? event.reference.context[next.value].decode()
+                                    ) ?? (
+                                        try? event.context[next.value].decode()
+                                    ) ?? (
+                                        try? app.state.get(next.value)
+                                    ) ?? (
+                                        try? app.remoteConfiguration.get(next.value)
+                                    )
+                                }
+                                service.begin(trace: TraceID(trace.id), properties: properties)
+                            }
+                        )
                         .eraseToAnyPublisher()
                 }
                 let ends = traces.map { trace in

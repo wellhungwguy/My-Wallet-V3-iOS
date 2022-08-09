@@ -710,9 +710,13 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .onboarding(.pin(.handleAuthentication(let password))):
-        environment.performanceTracing.begin(trace: .pinToDashboard)
-        return Effect(
-            value: .fetchWallet(password: password)
+        return .merge(
+            .fireAndForget{
+                environment.app.post(event: blockchain.ux.user.event.authenticated.pin)
+            },
+            Effect(
+                value: .fetchWallet(password: password)
+            )
         )
 
     case .onboarding(.pin(.pinCreated)):
