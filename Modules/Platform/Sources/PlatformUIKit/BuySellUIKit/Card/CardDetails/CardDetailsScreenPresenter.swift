@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import Localization
 import PlatformKit
@@ -73,11 +74,18 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     // MARK: - Exposed Properties
 
     var isValid: Driver<Bool> {
-        isValidRelay.asDriver()
+        isValidRelay
+            .asDriver()
     }
 
     var error: Signal<PresentationError> {
-        errorRelay.asSignal()
+        errorRelay
+            .asSignal()
+    }
+
+    var ux: Signal<UX.Error> {
+        uxRelay
+            .asSignal()
     }
 
     let title = LocalizedString.title
@@ -89,6 +97,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     let buttonViewModel: ButtonViewModel
 
     private let errorRelay = PublishRelay<PresentationError>()
+    private let uxRelay = PublishRelay<UX.Error>()
     private let dataRelay = BehaviorRelay<CardData?>(value: nil)
     private let isValidRelay = BehaviorRelay(value: false)
     private let stateReducer = FormPresentationStateReducer()
@@ -183,7 +192,22 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .bindAndCatch(to: cardholderNameTextFieldViewModel.textRelay)
             .disposed(by: disposeBag)
 
+        cardNumberTextFieldViewModel
+            .tapRelay
+            .withLatestFrom(cardNumberValidator.ux)
+            .compactMap { $0 }
+            .bindAndCatch(to: uxRelay)
+            .disposed(by: disposeBag)
+
         super.init(interactable: interactor)
+    }
+
+    func clear() {
+        let types: [TextFieldType] = [.cardNumber, .expirationDate, .cardCVV]
+        for type in types {
+            textFieldViewModelByType[type]?.textRelay.accept("")
+            textFieldViewModelByType[type]?.originalTextRelay.accept("")
+        }
     }
 
     override func viewDidLoad() {

@@ -5,4 +5,5 @@ public typealias CardClientAPI = CardListClientAPI &
     CardDeletionClientAPI &
     CardActivationClientAPI &
     CardDetailClientAPI &
-    CardAdditionClientAPI
+    CardAdditionClientAPI &
+    CardSuccessRateClientAPI

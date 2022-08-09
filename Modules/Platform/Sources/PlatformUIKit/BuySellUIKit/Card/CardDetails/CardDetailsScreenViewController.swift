@@ -2,7 +2,10 @@
 
 import BlockchainComponentLibrary
 import BlockchainNamespace
+import Combine
 import DIKit
+import Errors
+import ErrorsUI
 import Localization
 import RxSwift
 import SwiftUI
@@ -19,6 +22,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
     private let app: AppProtocol
 
     private var keyboardInteractionController: KeyboardInteractionController!
+    private var clearSubscription: AnyCancellable?
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -65,6 +69,12 @@ final class CardDetailsScreenViewController: BaseTableViewController {
                 case .generic:
                     self.alertPresenter.error(in: self, action: nil)
                 }
+            }
+            .disposed(by: disposeBag)
+
+        presenter.ux
+            .emit(weak: self) { (self, ux) in
+                self.presentUXErrorViewModel(ux)
             }
             .disposed(by: disposeBag)
     }
@@ -121,6 +131,34 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
+    }
+
+    private func presentUXErrorViewModel(_ ux: UX.Error) {
+        let errorViewController = UINavigationController(
+            rootViewController:
+                UIHostingController(
+                    rootView: ErrorView(
+                        ux: ux,
+                        dismiss: { [weak self] in self?.dismiss(animated: true) }
+                    )
+                    .app(app)
+                )
+        )
+        if #available(iOS 15.0, *) {
+            if let sheet = errorViewController.sheetPresentationController {
+                sheet.prefersGrabberVisible = true
+                sheet.detents = [ .medium() ]
+            }
+        }
+
+        clearSubscription = app.on(blockchain.ux.transaction.action.add.card) { [weak self] _ in
+            self?.presenter.clear()
+            self?.tableView.reloadData()
+            self?.dismiss(animated: true)
+        }
+        .subscribe()
+
+        present(errorViewController, animated: true)
     }
 
     // MARK: - Navigation

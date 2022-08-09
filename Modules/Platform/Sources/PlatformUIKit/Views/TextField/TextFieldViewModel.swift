@@ -62,13 +62,20 @@ public class TextFieldViewModel {
         /// The cursor color
         let cursorColor: Color
 
-        init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String, subtitle: String) {
+        init(
+            isFocused: Bool,
+            shouldShowHint: Bool,
+            caution: Bool,
+            hint: String,
+            title: String,
+            subtitle: String
+        ) {
             self.subtitle = subtitle
             if shouldShowHint, !hint.isEmpty {
                 self.title = hint
-                borderColor = .destructive
-                titleColor = .destructive
-                cursorColor = .destructive
+                borderColor = caution ? .warning : .destructive
+                titleColor = caution ? .warning : .destructive
+                cursorColor = caution ? .warning : .destructive
             } else {
                 self.title = title
                 titleColor = .descriptionText
@@ -133,13 +140,15 @@ public class TextFieldViewModel {
                 focus,
                 showHintIfNeededRelay.asDriver(),
                 hintRelay.asDriver(),
+                cautionRelay.asDriver(),
                 titleRelay.asDriver(),
                 subtitleRelay.asDriver()
             )
-            .map { focus, shouldShowHint, hint, title, subtitle in
+            .map { focus, shouldShowHint, hint, caution, title, subtitle in
                 Mode(
                     isFocused: focus.isOn,
                     shouldShowHint: shouldShowHint,
+                    caution: caution,
                     hint: hint,
                     title: title,
                     subtitle: subtitle
@@ -211,6 +220,7 @@ public class TextFieldViewModel {
     private let isSecureRelay = BehaviorRelay(value: false)
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
+    private let cautionRelay = BehaviorRelay<Bool>(value: false)
     private let stateRelay = BehaviorRelay<State>(value: .empty)
     private let disposeBag = DisposeBag()
 
@@ -309,6 +319,11 @@ public class TextFieldViewModel {
             .map { $0.hint ?? "" }
             .bindAndCatch(to: hintRelay)
             .disposed(by: disposeBag)
+
+        state
+            .map(\.isCautioning)
+            .bindAndCatch(to: cautionRelay)
+            .disposed(by: disposeBag)
     }
 
     public func set(next: TextFieldViewModel) {
@@ -370,6 +385,10 @@ extension TextFieldViewModel {
         /// Valid state - validation is passing
         case valid(value: String)
 
+        /// Valid state - validation is passing, user may
+        /// need to be informed of more information
+        case caution(reason: String?)
+
         /// Empty field
         case empty
 
@@ -381,10 +400,21 @@ extension TextFieldViewModel {
 
         var hint: String? {
             switch self {
-            case .invalid(reason: let reason), .mismatch(reason: let reason):
+            case .invalid(reason: let reason),
+                 .mismatch(reason: let reason),
+                 .caution(reason: let reason):
                 return reason
             default:
                 return nil
+            }
+        }
+
+        public var isCautioning: Bool {
+            switch self {
+            case .caution:
+                return true
+            default:
+                return false
             }
         }
 
@@ -446,8 +476,11 @@ extension TextFieldViewModel {
                 self = .valid(value: text)
             case (.invalid(reason: let reason), _, text):
                 self = .mismatch(reason: reason)
-            case (_, .invalid(reason: let reason), _):
+            case (_, .invalid(reason: let reason), _),
+                (_, .blocked(reason: let reason), _):
                 self = .invalid(reason: reason)
+            case (_, .conceivable(reason: let reason), _):
+                self = .caution(reason: reason)
             default:
                 self = .invalid(reason: nil)
             }

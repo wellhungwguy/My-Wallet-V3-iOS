@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import PlatformKitMock
 import RxBlocking
 import RxSwift
 import XCTest
@@ -11,9 +13,19 @@ final class CardTextFieldViewModelTests: XCTestCase {
 
     private var validator: CardNumberValidator!
     private var viewModel: CardTextFieldViewModel!
+    private var mockFeatureFlagsService: MockFeatureFlagsService!
+    private var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
-        validator = TextValidationFactory.Card.number
+        mockFeatureFlagsService = MockFeatureFlagsService()
+        mockFeatureFlagsService.enable(.cardSuccessRate)
+            .subscribe()
+            .store(in: &cancellables)
+        validator = CardNumberValidator(
+            supportedCardTypes: [.mastercard, .visa, .diners, .jcb, .amex],
+            cardSuccessRateService: CardSuccessRateServiceAPIMock(),
+            featureFlagService: mockFeatureFlagsService
+        )
         viewModel = CardTextFieldViewModel(
             validator: validator,
             messageRecorder: MockMessageRecorder()

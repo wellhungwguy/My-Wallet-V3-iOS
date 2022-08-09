@@ -17,6 +17,7 @@ final class CardClient: CardClientAPI {
 
     private enum Path {
         static let card = ["payments", "cards"]
+        static let cardSuccessRate = ["payments", "cards", "success-rate"]
 
         static func activateCard(with id: String) -> [String] { Path.card + [id, "activate"] }
     }
@@ -159,6 +160,27 @@ final class CardClient: CardClientAPI {
         return networkAdapter.perform(request: request)
             .map { (response: ActivateCardResponse) in
                 response.partner
+            }
+            .eraseToAnyPublisher()
+    }
+
+    // MARK: - CardSuccessRateClientAPI
+
+    func getCardSuccessRate(
+        binNumber: String
+    ) -> AnyPublisher<CardSuccessRate.Response, NabuNetworkError> {
+        let path = Path.cardSuccessRate
+        let parameters = [
+            URLQueryItem(name: "bin", value: binNumber)
+        ]
+        let request = requestBuilder.get(
+            path: path,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+            .map { (response: CardSuccessRate) in
+                CardSuccessRate.Response.init(response, bin: binNumber)
             }
             .eraseToAnyPublisher()
     }
