@@ -1,15 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import SwiftUI
 
 public protocol BackupFundsRouterAPI {
     var completionRelay: PublishRelay<Void> { get }
-
+    var completionSubject: PassthroughSubject<Void, Never> { get }
+    var skipSubject: PassthroughSubject<Void, Never> { get }
     func start()
 }
 
@@ -18,7 +21,8 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
     // MARK: - BackupRouterAPI
 
     public let completionRelay = PublishRelay<Void>()
-
+    public let completionSubject = PassthroughSubject<Void, Never>()
+    public let skipSubject = PassthroughSubject<Void, Never>()
     private var stateService: BackupRouterStateService!
     private let navigationRouter: NavigationRouterAPI
     private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
@@ -37,13 +41,16 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
 
     public func start() {
         stateService = BackupRouterStateService(entry: entry)
-        stateService.action
+        stateService
+            .action
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous:
                     self.previous()
                 case .next(let state):
                     self.next(to: state)
+                case .skip:
+                    self.skip()
                 case .dismiss:
                     self.dismiss()
                 case .complete:
@@ -59,10 +66,19 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
         case .settings:
             navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
             completionRelay.accept(())
+            completionSubject.send(())
+
+        case .defiIntroScreen:
+            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
+                guard let self = self else { return }
+                self.completionRelay.accept(())
+                self.completionSubject.send(())
+            })
         case .custody:
             navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
                 guard let self = self else { return }
                 self.completionRelay.accept(())
+                self.completionSubject.send(())
             })
         }
     }
@@ -73,7 +89,16 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
             navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
         case .custody:
             navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+        case .defiIntroScreen:
+            navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
         }
+    }
+
+    private func skip() {
+        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
+            guard let self = self else { return }
+            self.skipSubject.send(())
+        })
     }
 
     func next(to state: BackupRouterStateService.State) {
@@ -96,6 +121,8 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
             )
             let controller = VerifyBackupViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
+        case .skipped:
+            skip()
         }
     }
 

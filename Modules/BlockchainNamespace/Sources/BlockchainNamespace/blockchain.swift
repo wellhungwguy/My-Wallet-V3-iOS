@@ -2103,6 +2103,7 @@ public extension I_blockchain_user {
 	var `is`: L_blockchain_user_is { .init("\(__).is") }
 	var `name`: L_blockchain_user_name { .init("\(__).name") }
 	var `referral`: L_blockchain_user_referral { .init("\(__).referral") }
+	var `skipped`: L_blockchain_user_skipped { .init("\(__).skipped") }
 	var `token`: L_blockchain_user_token { .init("\(__).token") }
 	var `wallet`: L_blockchain_user_wallet { .init("\(__).wallet") }
 }
@@ -2381,6 +2382,24 @@ public final class L_blockchain_user_referral_campaign: L, I_blockchain_user_ref
 	public override class var localized: String { NSLocalizedString("blockchain.user.referral.campaign", comment: "") }
 }
 public protocol I_blockchain_user_referral_campaign: I_blockchain_session_state_value {}
+public final class L_blockchain_user_skipped: L, I_blockchain_user_skipped {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped", comment: "") }
+}
+public protocol I_blockchain_user_skipped: I {}
+public extension I_blockchain_user_skipped {
+	var `seed_phrase`: L_blockchain_user_skipped_seed__phrase { .init("\(__).seed_phrase") }
+}
+public final class L_blockchain_user_skipped_seed__phrase: L, I_blockchain_user_skipped_seed__phrase {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped.seed_phrase", comment: "") }
+}
+public protocol I_blockchain_user_skipped_seed__phrase: I {}
+public extension I_blockchain_user_skipped_seed__phrase {
+	var `backup`: L_blockchain_user_skipped_seed__phrase_backup { .init("\(__).backup") }
+}
+public final class L_blockchain_user_skipped_seed__phrase_backup: L, I_blockchain_user_skipped_seed__phrase_backup {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped.seed_phrase.backup", comment: "") }
+}
+public protocol I_blockchain_user_skipped_seed__phrase_backup: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_user_token: L, I_blockchain_user_token {
 	public override class var localized: String { NSLocalizedString("blockchain.user.token", comment: "") }
 }

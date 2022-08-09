@@ -82,15 +82,15 @@ struct RootView: View {
         .bottomSheet(
             isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
             content: {
-            IfLetStore(store.scope(state: \.accountTotals)) { store in
-                WithViewStore(store) { totals in
-                    buildAppModeSwitcher(
-                        totalAccountBalance: totals.totalBalance,
-                        defiAccountBalance: totals.defiWalletBalance,
-                        brokerageAccountBalance: totals.brokerageBalance
-                    )
-                }
-            }
+                IfLetStore(
+                    store.scope(
+                        state: \.appModeSwitcherState,
+                        action: RootViewAction.appModeSwitcherAction
+                    ),
+                    then: { store in
+                        AppModeSwitcherView(store: store)
+                    }
+                )
             }
         )
         .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
@@ -154,11 +154,11 @@ struct RootView: View {
                         maintenance(tab)
                     }
                 default:
-                    #if DEBUG
+#if DEBUG
                     fatalError("Unhandled \(tab)")
-                    #else
+#else
                     maintenance(tab)
-                    #endif
+#endif
                 }
             }
         }
@@ -222,31 +222,6 @@ struct RootView: View {
         }
     }
 
-    func buildAppModeSwitcher(
-        totalAccountBalance: String?,
-        defiAccountBalance: String?,
-        brokerageAccountBalance: String?
-    ) -> some View {
-        AppModeSwitcherView(
-            store: .init(
-                initialState: .init(
-                    totalAccountBalance: totalAccountBalance,
-                    defiAccountBalance: defiAccountBalance,
-                    brokerageAccountBalance: brokerageAccountBalance,
-                    currentAppMode: viewStore.appMode
-                ),
-                reducer: AppModeSwitcherModule.reducer,
-                environment: .init(
-                    mainQueue: .main,
-                    app: resolve()
-                )
-            ),
-            onClose: {
-                viewStore.send(.onAppModeSwitcherTapped)
-            }
-        )
-    }
-
     @ViewBuilder func referrals() -> some View {
         let onReferralTapAction = {
             viewStore.send(.onReferralTap)
@@ -257,12 +232,12 @@ struct RootView: View {
                 !viewStore.referralState.isHighlighted,
                 then: { view in view.update(icon: Icon.giftbox) }
             )
-            .identity(blockchain.ux.referral.entry)
+                .identity(blockchain.ux.referral.entry)
     }
 
     @ViewBuilder func appModeSwitcher() -> some View {
         AppModeSwitcherButton(
-            isDefiMode: viewStore.appMode != .trading,
+            isDefiMode: viewStore.appMode == .defi,
             action: {
                 viewStore.send(.onAppModeSwitcherTapped)
             }

@@ -1,21 +1,18 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import DIKit
 import SwiftUI
 
 public struct AppModeSwitcherView: View {
-
-    private var onClose: () -> Void
-
     let store: Store<AppModeSwitcherState, AppModeSwitcherAction>
     @ObservedObject var viewStore: ViewStore<AppModeSwitcherState, AppModeSwitcherAction>
 
     public init(
-        store: Store<AppModeSwitcherState, AppModeSwitcherAction>,
-        onClose: @escaping () -> Void
+        store: Store<AppModeSwitcherState, AppModeSwitcherAction>
     ) {
         self.store = store
         viewStore = ViewStore(store)
-        self.onClose = onClose
+        viewStore.send(.onInit)
     }
 
     public var body: some View {
@@ -23,6 +20,18 @@ public struct AppModeSwitcherView: View {
             headerView
             selectionView
         }
+        .sheet(
+            isPresented: viewStore.binding(\.$defiWalletState.isDefiIntroPresented),
+            content: {
+                let store = store.scope(
+                    state: \.defiWalletState,
+                    action: AppModeSwitcherAction.defiWalletIntro
+                )
+                PrimaryNavigationView {
+                    DefiWalletIntroView(store: store)
+                }
+            }
+        )
         .background(Color.clear)
     }
 
@@ -33,9 +42,11 @@ public struct AppModeSwitcherView: View {
                     .typography(.caption2)
                     .foregroundColor(.semantic.title)
 
-                Text(viewStore.totalAccountBalance ?? "")
-                    .typography(.title2)
-                    .foregroundColor(.semantic.title)
+                Text(viewStore
+                    .totalAccountBalance?
+                    .toDisplayString(includeSymbol: true) ?? "")
+                .typography(.title2)
+                .foregroundColor(.semantic.title)
             })
             .padding(.top, Spacing.padding2)
             .padding(.leading, Spacing.padding3)
@@ -48,7 +59,9 @@ public struct AppModeSwitcherView: View {
             PrimaryRow(
                 title: "Brokerage",
                 caption: nil,
-                subtitle: viewStore.brokerageAccountBalance ?? ""
+                subtitle: viewStore
+                    .brokerageAccountBalance?
+                    .toDisplayString(includeSymbol: true) ?? ""
             ) {
                 Icon
                     .portfolio
@@ -61,13 +74,13 @@ public struct AppModeSwitcherView: View {
                 }
             } action: {
                 viewStore.send(.onBrokerageTapped)
-                onClose()
             }
 
             PrimaryRow(
                 title: "Defi Wallet",
                 caption: nil,
-                subtitle: viewStore.defiAccountBalance ?? ""
+                subtitle: defiSubtitleString,
+                description: defiDescriptionString
             ) {
                 Icon
                     .wallet
@@ -81,10 +94,25 @@ public struct AppModeSwitcherView: View {
                 }
             } action: {
                 viewStore.send(.onDefiTapped)
-                onClose()
             }
         }
         .padding(.bottom, Spacing.padding6)
+    }
+
+    private var defiSubtitleString: String {
+        guard viewStore.shouldShowDefiModeIntro else {
+            return viewStore
+                .defiAccountBalance?
+                .toDisplayString(includeSymbol: true) ?? ""
+        }
+        return "Enable to get Started"
+    }
+
+    private var defiDescriptionString: String? {
+        guard viewStore.shouldShowDefiModeIntro else {
+            return nil
+        }
+        return "Connect to web3 apps, collect NFTs, and swap on DEXs."
     }
 
     private var chevronIcon: some View {

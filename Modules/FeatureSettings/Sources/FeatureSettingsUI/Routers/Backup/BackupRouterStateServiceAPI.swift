@@ -32,4 +32,7 @@ public enum BackupRouterEntry {
 
     // Entering from `Settings` which has a `NavigationController`
     case settings
+
+    // Entering from "Defi Wallet Intro" for new MVP App 2.0 experience
+    case defiIntroScreen
 }

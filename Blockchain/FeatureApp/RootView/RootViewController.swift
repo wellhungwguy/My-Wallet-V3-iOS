@@ -32,7 +32,8 @@ final class RootViewController: UIHostingController<RootView> {
 
         let environment = RootViewEnvironment(
             app: app,
-            coincore: resolve()
+            coincore: resolve(),
+            recoveryPhraseStatusProviding: resolve()
         )
         let store = Store(
             initialState: RootViewState(
@@ -44,7 +45,7 @@ final class RootViewController: UIHostingController<RootView> {
                     referral: nil
                 )
             ),
-            reducer: rootViewReducer,
+            reducer: rootMainReducer,
             environment: environment
         )
 

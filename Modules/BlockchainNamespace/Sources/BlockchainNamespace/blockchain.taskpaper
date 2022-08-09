@@ -577,6 +577,11 @@ blockchain:
 		referral:
 			campaign:
 			+ blockchain.session.state.value
+		skipped:
+			seed_phrase:
+				backup:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.preference.value
 		token:
 			firebase:
 				installation:

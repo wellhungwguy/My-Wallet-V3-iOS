@@ -49,7 +49,6 @@ let app: AppProtocol = App(
 )
 
 extension AppProtocol {
-
     func bootstrap(
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
         deepLink: DeepLinkCoordinator = resolve(),

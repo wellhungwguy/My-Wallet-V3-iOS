@@ -11,6 +11,7 @@ import DIKit
 import FeatureAppUI
 import FeatureReferralDomain
 import FeatureReferralUI
+import FeatureSettingsDomain
 import Localization
 import MoneyKit
 import PlatformKit
@@ -23,16 +24,16 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var tab: Tag.Reference = blockchain.ux.user.portfolio[].reference
     @BindableState var fab: FrequentActionState
     @BindableState var referralState: ReferralState
-    var appSwitcherEnabled: Bool {
-        appMode != .both
-    }
-
     @BindableState var buyAndSell: BuyAndSell = .init()
     @BindableState var unreadSupportMessageCount: Int = 0
     @BindableState var appMode: AppMode?
-
     @BindableState var isAppModeSwitcherPresented: Bool = false
-    public var accountTotals: AccountTotals?
+
+    var appSwitcherEnabled: Bool {
+        appMode != .both
+    }
+    var appModeSwitcherState: AppModeSwitcherState?
+    var accountTotals: AccountTotals?
 }
 
 extension RootViewState {
@@ -41,9 +42,9 @@ extension RootViewState {
     }
 
     struct AccountTotals: Equatable {
-        var totalBalance: String?
-        var defiWalletBalance: String?
-        var brokerageBalance: String?
+        var totalBalance: MoneyValue?
+        var defiWalletBalance: MoneyValue?
+        var brokerageBalance: MoneyValue?
     }
 
     struct FrequentActionState: Equatable {
@@ -77,7 +78,8 @@ enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case onAppear
     case onAppModeSwitcherTapped
     case onDisappear
-    case onAccountTotalsCalculated(RootViewState.AccountTotals)
+    case onAccountTotalsFetched(RootViewState.AccountTotals)
+    case appModeSwitcherAction(AppModeSwitcherAction)
 }
 
 enum RootViewRoute: NavigationRoute {
@@ -118,14 +120,17 @@ enum RootViewRoute: NavigationRoute {
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
     var app: AppProtocol
+    var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
-        coincore: CoincoreAPI
+        coincore: CoincoreAPI,
+        recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     ) {
         self.app = app
         self.coincore = coincore
+        self.recoveryPhraseStatusProviding = recoveryPhraseStatusProviding
     }
 
     func fetchTotalBalance(filter: AssetFilter) -> AnyPublisher<MoneyValue?, Never> {
@@ -146,6 +151,23 @@ struct RootViewEnvironment: PublishedEnvironment {
     }
 }
 
+let rootMainReducer = Reducer.combine(
+    rootViewReducer,
+    AppModeSwitcherModule
+        .reducer
+        .optional()
+        .pullback(
+            state: \.appModeSwitcherState,
+            action: /RootViewAction.appModeSwitcherAction,
+            environment: { environment in
+                      AppModeSwitcherEnvironment(
+                          app: environment.app,
+                          recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding
+                      )
+                  }
+        )
+)
+
 let rootViewReducer = Reducer<
     RootViewState,
     RootViewAction,
@@ -161,11 +183,24 @@ let rootViewReducer = Reducer<
         return .none
 
     case .onAppModeSwitcherTapped:
+        guard let appMode = state.appMode else {
+            return .none
+        }
+        state.appModeSwitcherState = AppModeSwitcherState(
+            totalAccountBalance: state.accountTotals?.totalBalance,
+            defiAccountBalance: state.accountTotals?.defiWalletBalance,
+            brokerageAccountBalance: state.accountTotals?.brokerageBalance,
+            currentAppMode: appMode
+        )
         state.isAppModeSwitcherPresented.toggle()
         return .none
 
-    case .onAccountTotalsCalculated(let accountTotals):
-        state.accountTotals = accountTotals
+    case .onAccountTotalsFetched(let accountTotals):
+        state.accountTotals = RootViewState.AccountTotals(
+            totalBalance: accountTotals.totalBalance,
+            defiWalletBalance: accountTotals.defiWalletBalance,
+            brokerageBalance: accountTotals.brokerageBalance
+        )
         return .none
 
     case .onAppear:
@@ -191,13 +226,12 @@ let rootViewReducer = Reducer<
             environment
                 .fetchTotalBalance(filter: [.custodial, .interest])
         )
-            .compactMap { ($0, $1, $2) }
             .map { RootViewState.AccountTotals(
-                totalBalance: $0?.toDisplayString(includeSymbol: true),
-                defiWalletBalance: $1?.toDisplayString(includeSymbol: true),
-                brokerageBalance: $2?.toDisplayString(includeSymbol: true)
+                totalBalance: $0,
+                defiWalletBalance: $1,
+                brokerageBalance: $2
             )
-            }
+        }
 
         return .merge(
             .fireAndForget {
@@ -246,7 +280,7 @@ let rootViewReducer = Reducer<
             totalsPublishers
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map(RootViewAction.onAccountTotalsCalculated),
+                .map(RootViewAction.onAccountTotalsFetched),
 
             tabsPublisher
                 .receive(on: DispatchQueue.main)
@@ -267,6 +301,11 @@ let rootViewReducer = Reducer<
             },
             .enter(into: .referrals, context: .none)
         )
+    case .appModeSwitcherAction(let action):
+        if action == .dismiss {
+            state.isAppModeSwitcherPresented.toggle()
+        }
+        return .none
     case .route, .binding:
         return .none
     }

@@ -10,7 +10,6 @@ import Localization
 import MoneyKit
 
 public struct Account: Identifiable {
-
     public struct ReceiveAddress {
         var address: String
         var memo: String?

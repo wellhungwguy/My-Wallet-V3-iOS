@@ -48,6 +48,7 @@ extension Accessibility.Identifier {
         static let qrCodeButton = "\(prefix)qrCodeButton"
         static let dismissButton = "\(prefix)dismissButton"
         static let supportButton = "\(prefix)supportButton"
+        static let skipButton = "\(prefix)skipButton"
     }
 }
 

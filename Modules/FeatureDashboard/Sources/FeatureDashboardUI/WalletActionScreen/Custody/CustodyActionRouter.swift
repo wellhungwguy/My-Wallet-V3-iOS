@@ -13,7 +13,6 @@ import ToolKit
 
 public protocol BackupRouterAPI {
     var completionRelay: PublishRelay<Void> { get }
-
     func start()
 }
 

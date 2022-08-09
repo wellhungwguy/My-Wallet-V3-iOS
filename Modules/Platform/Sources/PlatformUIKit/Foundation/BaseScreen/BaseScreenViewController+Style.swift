@@ -92,6 +92,9 @@ extension Screen.Style {
 
         /// Question Mark Icon
         case questionMark
+
+        /// Skip icon
+        case skip
     }
 
     // MARK: - The leading button style
@@ -194,6 +197,14 @@ extension Screen.Style.TrailingButton {
                 image: UIImage(named: "Question Circle", in: .componentLibrary, with: nil),
                 accessibility: .id(Accessibility.Identifier.NavigationBar.supportButton)
             )
+
+        case .skip:
+            return Screen.NavigationBarContent(
+                title: "Skip",
+                image: nil,
+                accessibility: .id(Accessibility.Identifier.NavigationBar.skipButton)
+            )
+
         default:
             return nil
         }

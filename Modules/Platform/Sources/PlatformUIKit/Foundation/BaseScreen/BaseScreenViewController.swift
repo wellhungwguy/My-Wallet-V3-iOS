@@ -78,7 +78,6 @@ open class BaseScreenViewController: UIViewController {
             var color = barStyle.tintColor
             switch trailingButtonStyle {
             case .content(let content):
-
                 itemType = .content(content: content) { [weak self] in
                     self?.navigationBarTrailingButtonPressed()
                 }
@@ -95,6 +94,11 @@ open class BaseScreenViewController: UIViewController {
                 color = UIColor.NavigationBar.closeButton
             case .none:
                 itemType = .none
+            case .skip:
+                itemType = .content(content: trailingButtonStyle.content!) { [weak self] in
+                    self?.navigationBarTrailingButtonPressed()
+                }
+                color = UIColor.NavigationBar.closeButton
             }
             trailingBarButtonItem = NavigationBarButtonItem(type: itemType, color: color)
         }
@@ -265,7 +269,7 @@ open class BaseScreenViewController: UIViewController {
 
     open func navigationBarTrailingButtonPressed() {
         switch trailingButtonStyle {
-        case .close:
+        case .close, .skip:
             dismiss(animated: true, completion: nil)
         case .qrCode:
             qrCodeScannerRouter.showQRCodeScanner()
