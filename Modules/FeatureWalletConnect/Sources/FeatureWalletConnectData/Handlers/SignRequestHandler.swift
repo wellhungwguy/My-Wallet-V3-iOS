@@ -174,18 +174,15 @@ extension SignRequestHandler {
         }
 
         func message(request: Request) -> EthereumSignMessageTarget.Message? {
+            guard let messageData = try? request.parameter(of: String.self, at: dataIndex) else {
+                return nil
+            }
             switch self {
             case .ethSign,
                  .personalSign:
-                guard let messageBytes = try? request.parameter(of: String.self, at: dataIndex) else {
-                    return nil
-                }
-                return .data(Data(hex: messageBytes))
+                return .data(Data(hex: messageData))
             case .ethSignTypedData:
-                guard let typedData = try? request.parameterJson(at: dataIndex) else {
-                    return nil
-                }
-                return .typedData(typedData)
+                return .typedData(messageData)
             }
         }
 

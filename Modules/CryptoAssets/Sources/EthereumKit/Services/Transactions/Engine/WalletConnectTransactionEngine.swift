@@ -484,8 +484,8 @@ extension EthereumSendTransactionTarget {
             feeAmount: zeroMoneyValue,
             feeForFullAvailable: zeroMoneyValue,
             feeSelection: .init(
-                selectedLevel: .regular,
-                availableLevels: [.regular],
+                selectedLevel: .priority,
+                availableLevels: [.priority],
                 asset: .crypto(network.cryptoCurrency)
             ),
             selectedFiatCurrency: fiatCurrency
