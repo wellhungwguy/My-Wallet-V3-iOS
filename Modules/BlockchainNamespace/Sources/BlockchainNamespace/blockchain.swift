@@ -4139,6 +4139,7 @@ public protocol I_blockchain_ux_user: I {}
 public extension I_blockchain_ux_user {
 	var `account`: L_blockchain_ux_user_account { .init("\(__).account") }
 	var `activity`: L_blockchain_ux_user_activity { .init("\(__).activity") }
+	var `event`: L_blockchain_ux_user_event { .init("\(__).event") }
 	var `KYC`: L_blockchain_ux_user_KYC { .init("\(__).KYC") }
 	var `portfolio`: L_blockchain_ux_user_portfolio { .init("\(__).portfolio") }
 	var `rewards`: L_blockchain_ux_user_rewards { .init("\(__).rewards") }
@@ -4522,6 +4523,36 @@ public final class L_blockchain_ux_user_activity: L, I_blockchain_ux_user_activi
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.activity", comment: "") }
 }
 public protocol I_blockchain_ux_user_activity: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_user_event: L, I_blockchain_ux_user_event {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event", comment: "") }
+}
+public protocol I_blockchain_ux_user_event: I {}
+public extension I_blockchain_ux_user_event {
+	var `authenticated`: L_blockchain_ux_user_event_authenticated { .init("\(__).authenticated") }
+	var `signed`: L_blockchain_ux_user_event_signed { .init("\(__).signed") }
+}
+public final class L_blockchain_ux_user_event_authenticated: L, I_blockchain_ux_user_event_authenticated {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.authenticated", comment: "") }
+}
+public protocol I_blockchain_ux_user_event_authenticated: I {}
+public extension I_blockchain_ux_user_event_authenticated {
+	var `pin`: L_blockchain_ux_user_event_authenticated_pin { .init("\(__).pin") }
+}
+public final class L_blockchain_ux_user_event_authenticated_pin: L, I_blockchain_ux_user_event_authenticated_pin {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.authenticated.pin", comment: "") }
+}
+public protocol I_blockchain_ux_user_event_authenticated_pin: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_user_event_signed: L, I_blockchain_ux_user_event_signed {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.signed", comment: "") }
+}
+public protocol I_blockchain_ux_user_event_signed: I {}
+public extension I_blockchain_ux_user_event_signed {
+	var `in`: L_blockchain_ux_user_event_signed_in { .init("\(__).in") }
+}
+public final class L_blockchain_ux_user_event_signed_in: L, I_blockchain_ux_user_event_signed_in {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.signed.in", comment: "") }
+}
+public protocol I_blockchain_ux_user_event_signed_in: I_blockchain_ux_type_analytics_event {}
 public final class L_blockchain_ux_user_KYC: L, I_blockchain_ux_user_KYC {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.KYC", comment: "") }
 }

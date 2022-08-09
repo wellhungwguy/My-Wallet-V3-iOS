@@ -88,8 +88,10 @@ let loggedInReducer = Reducer<
 > { state, action, environment in
     switch action {
     case .start(let context):
-        environment.performanceTracing.end(trace: .pinToDashboard)
         return .merge(
+            .fireAndForget{
+                environment.app.post(event: blockchain.ux.user.event.signed.in)
+            },
             .run { subscriber in
                 environment.appSettings.onSymbolLocalChanged = { _ in
                     subscriber.send(.symbolChanged)

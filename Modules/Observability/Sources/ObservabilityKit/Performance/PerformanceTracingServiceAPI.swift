@@ -26,7 +26,8 @@ public protocol PerformanceTracingServiceAPI {
 
     /// Start the trace
     /// - Parameter traceId: the unique ID to record this trace
-    func begin(trace traceId: TraceID)
+    /// - Parameter properties: an optional dictionary containing metadata about the trace to be recorded.
+    func begin(trace traceId: TraceID, properties: [String: String]?)
 
     /// End the trace
     /// - Parameter traceId: the unique ID to record this trace

@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Lexicon",
+        "repositoryURL": "https://github.com/screensailor/Lexicon",
+        "state": {
+          "branch": null,
+          "revision": "160c4c417f8490658a8396d0283fb0d6fb98c327",
+          "version": null
+        }
+      },
+      {
         "package": "swift-algorithms",
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {
@@ -33,13 +42,13 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "ce9c0d897db8a840c39de64caaa9b60119cf4be8",
-          "version": "0.8.1"
+          "revision": "a09839348486db8866f85a727b8550be1d671c50",
+          "version": "0.9.1"
         }
       },
       {
         "package": "swift-collections",
-        "repositoryURL": "https://github.com/apple/swift-collections.git",
+        "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
           "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",

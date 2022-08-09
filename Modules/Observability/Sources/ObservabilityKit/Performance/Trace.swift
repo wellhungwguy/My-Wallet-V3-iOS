@@ -84,9 +84,10 @@ struct Trace {
 
         static func remoteTrace(
             with traceId: TraceID,
+            properties: [String: String],
             create: PerformanceTracing.CreateRemoteTrace
         ) -> Self {
-            let remoteTrace = create(traceId)
+            let remoteTrace = create(traceId, properties)
             return .remoteTrace(remoteTrace)
         }
     }
@@ -103,12 +104,19 @@ struct Trace {
 
     static func createTrace(
         with traceId: TraceID,
+        properties: [String: String],
         create: PerformanceTracing.CreateRemoteTrace
-    ) -> Self? {
-        #if DEBUG || INTERNAL_BUILD
-        Self(trace: .debugTrace(with: traceId))
-        #else
-        Self(trace: .remoteTrace(with: traceId, create: create))
-        #endif
+    ) -> Self {
+        let traceType: TraceType = isDebug() ? .debugTrace(with: traceId)
+        : .remoteTrace(with: traceId, properties: properties, create: create)
+        return Self(trace: traceType)
+    }
+
+    private static func isDebug() -> Bool {
+        var isDebug = false
+#if DEBUG
+        isDebug = true
+#endif
+        return isDebug
     }
 }
