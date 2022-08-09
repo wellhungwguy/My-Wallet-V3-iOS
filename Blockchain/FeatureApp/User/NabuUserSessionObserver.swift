@@ -79,7 +79,7 @@ final class NabuUserSessionObserver: Session.Observer {
     func fetched(user: NabuUser) {
         app.state.transaction { state in
 
-            state.set(blockchain.user.is.cowboy.fan, to: false)
+            state.set(blockchain.user.is.cowboy.fan, to: user.isCowboys)
 
             state.set(blockchain.user.email.address, to: user.email.address)
             state.set(blockchain.user.email.is.verified, to: user.email.verified)

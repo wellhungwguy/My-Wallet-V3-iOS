@@ -85,6 +85,8 @@ let package = Package(
             name: "PlatformKit",
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "AnyCoding", package: "BlockchainNamespace"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),

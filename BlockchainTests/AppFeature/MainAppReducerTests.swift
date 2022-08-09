@@ -135,7 +135,7 @@ final class MainAppReducerTests: XCTestCase {
                 defaultWalletCurrency: .USD,
                 userFiatCurrencies: [.USD]
             ),
-            tags: Tags(blockstack: nil),
+            tags: Tags(blockstack: nil, cowboys: nil),
             tiers: nil,
             needsDocumentResubmission: nil,
             productsUsed: NabuUser.ProductsUsed(exchange: false),

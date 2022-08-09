@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnyCoding
 import DIKit
 import MoneyKit
 
@@ -163,9 +164,14 @@ extension NabuUser {
 }
 
 extension NabuUser {
+
     public var isGoldTierVerified: Bool {
         guard let tiers = tiers else { return false }
         return tiers.current == .tier2
+    }
+
+    public var isCowboys: Bool {
+        tags?.cowboys != nil
     }
 }
 
@@ -200,17 +206,21 @@ struct Tags: Decodable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case blockstack = "BLOCKSTACK"
+        case cowboys = "COWBOYS_2022"
     }
 
     let blockstack: Blockstack?
+    let cowboys: CodableVoid?
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
+        cowboys = try values.decodeIfPresent(CodableVoid.self, forKey: .cowboys)
     }
 
-    init(blockstack: Blockstack?) {
+    init(blockstack: Blockstack?, cowboys: CodableVoid?) {
         self.blockstack = blockstack
+        self.cowboys = cowboys
     }
 
     struct Blockstack: Decodable, Equatable {
