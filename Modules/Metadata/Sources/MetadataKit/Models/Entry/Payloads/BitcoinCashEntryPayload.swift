@@ -29,6 +29,12 @@ public struct BitcoinCashEntryPayload: MetadataNodeEntry, Hashable {
             self.archived = archived
             self.label = label
         }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+            label = try container.decode(String.self, forKey: .label)
+        }
     }
 
     public static let type: EntryType = .bitcoinCash
@@ -37,7 +43,7 @@ public struct BitcoinCashEntryPayload: MetadataNodeEntry, Hashable {
     public let defaultAccountIndex: Int
     public let hasSeen: Bool?
     public let txNotes: [String: String]?
-    public let addresses: [String: String]? // TODO:
+    public let addresses: [String: String]?
 
     public init(
         accounts: [Account],
@@ -51,5 +57,14 @@ public struct BitcoinCashEntryPayload: MetadataNodeEntry, Hashable {
         self.hasSeen = hasSeen
         self.txNotes = txNotes
         self.addresses = addresses
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        accounts = try container.decode([Account].self, forKey: .accounts)
+        defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
+        hasSeen = try container.decodeIfPresent(Bool.self, forKey: .hasSeen)
+        txNotes = try container.decodeIfPresent([String: String].self, forKey: .txNotes)
+        addresses = try container.decodeIfPresent([String: String].self, forKey: .addresses)
     }
 }
