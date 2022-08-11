@@ -655,7 +655,7 @@ extension TransactionFlowAction {
         case .send:
             return .withdrawCrypto
         case .interestTransfer:
-            return .withdrawCrypto
+            return .depositInterest
         case .interestWithdraw:
             return .withdrawCrypto
         default:
