@@ -215,7 +215,6 @@ extension TextFieldType {
              .cardCVV,
              .expirationDate,
              .cardholderName,
-             .cardNumber,
              .description,
              .memo:
             return false
@@ -224,6 +223,7 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .oneTimeCode,
+             .cardNumber,
              .cryptoAddress:
             return true
         }
