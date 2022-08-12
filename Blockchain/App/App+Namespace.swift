@@ -58,10 +58,7 @@ extension AppProtocol {
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
 
-        state.transaction { state in
-            state.set(blockchain.app.deep_link.dsl.is.enabled, to: BuildFlag.isInternal)
-        }
-
+        observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
         observers.insert(KYCExtraQuestionsObserver(app: self))
         observers.insert(NabuUserSessionObserver(app: self))

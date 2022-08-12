@@ -61,6 +61,11 @@ blockchain:
 				tabs:
 				+ blockchain.db.type.array.of.tags
 				+ blockchain.session.configuration.value
+			firebase:
+				project:
+					id:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.shared.value
 			frequent:
 				action:
 				+ blockchain.db.type.any
@@ -221,6 +226,11 @@ blockchain:
 		enter:
 			into:
 			+ blockchain.ux.type.story
+		environment:
+		+ blockchain.db.type.enum
+		+ blockchain.session.state.shared.value
+			debug:
+			production:
 		fraud:
 			sardine:
 				client:
@@ -247,13 +257,32 @@ blockchain:
 					+ blockchain.db.type.string
 					+ blockchain.session.state.value
 		is:
+			first:
+				install:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.shared.value
+			in:
+				background:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.shared.value
 			ready:
 				for:
 					deep_link:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.value
+		launched:
+			at:
+				time:
+				+ blockchain.db.type.date
+				+ blockchain.session.state.shared.value
 		mode:
 		+ blockchain.session.state.preference.value
+		number:
+			of:
+				launches:
+				+ blockchain.db.type.integer
+				+ blockchain.session.state.preference.value
+				+ blockchain.session.state.shared.value
 		performance:
 			trace:
 				transaction:
@@ -441,6 +470,17 @@ blockchain:
 			+ blockchain.db.type.integer
 	ui:
 		device:
+			connection:
+			+ blockchain.db.type.enum
+			+ blockchain.session.state.shared.value
+				WiFi:
+				cellular:
+				unavailable:
+			current:
+				local:
+					time:
+					+ blockchain.db.type.date
+					+ blockchain.session.state.shared.value
 			haptic:
 				feedback:
 					impact:
@@ -453,6 +493,28 @@ blockchain:
 						error:
 						success:
 						warning:
+			id:
+			+ blockchain.db.type.string
+			+ blockchain.session.state.shared.value
+			locale:
+				language:
+					code:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.shared.value
+			os:
+				name:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.shared.value
+				version:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.shared.value
+			settings:
+				accessibility:
+					large_text:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.shared.value
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
