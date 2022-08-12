@@ -83,37 +83,45 @@ extension DebugView {
     struct NamespaceState: View {
 
         @BlockchainApp var app
+        @Binding var filter: String
+
+        init(_ filter: Binding<String>) {
+            _filter = filter
+        }
 
         let pasteboard = UIPasteboard.general
 
         @StateObject var observer: StateObserver = .init()
 
         func description(for key: Tag.Reference) -> String {
-            var string = ""
-            if key.indices.isNotEmpty {
-                string += key.indices
-                    .filter { tag, _ in key.tag != tag }
-                    .map { key, value in "\(key.id): \(value)" }
-                    .joined(separator: "\n")
+            observer.data[key]?.pretty ?? JSON.null.pretty
+        }
+
+        var keys: [Tag.Reference] {
+            if filter.isEmpty { return Array(observer.data.keys) }
+            return observer.data.keys.filter { key in
+                key.string.replacingOccurrences(of: ".", with: " ")
+                    .distance(
+                        between: filter,
+                        using: FuzzyAlgorithm(caseInsensitive: true)
+                    ) < 0.3
             }
-            string += observer.data[key]?.pretty ?? JSON.null.pretty
-            return string
         }
 
         var body: some View {
             if observer.data.isEmpty {
                 ProgressView().onAppear { observer.observe(on: app) }
             }
-            ForEach(observer.data.keys, id: \.self) { key in
-                PrimaryRow(
-                    title: try! key.tag.idRemainder(after: blockchain[])
-                        .replacingOccurrences(of: "app.configuration.", with: "")
-                        .replacingOccurrences(of: ".", with: " ")
-                        .replacingOccurrences(of: "_", with: " "),
-                    description: description(for: key),
-                    trailing: {
+            ForEach(keys, id: \.self) { key in
+                VStack(alignment: .leading) {
+                    Text(key.string)
+                        .typography(.micro.bold())
+                    HStack(alignment: .top) {
+                        Text(description(for: key))
+                            .typography(.micro)
                         switch key.tag {
                         case blockchain.db.type.boolean:
+                            Spacer()
                             PrimarySwitch(
                                 accessibilityLabel: key.string,
                                 isOn: app.binding(key).isYes
@@ -122,7 +130,21 @@ extension DebugView {
                             EmptyView()
                         }
                     }
+                }
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .topLeading
                 )
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.semantic.background)
+                        .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                )
+                .foregroundColor(.semantic.title)
+                .multilineTextAlignment(.leading)
+                .padding([.leading, .trailing])
                 .contextMenu {
                     Button(
                         action: { pasteboard.string = key.string },
@@ -179,6 +201,7 @@ extension DebugView {
 
         @BlockchainApp var app
         @State var data: [AppFeature: JSON] = [:]
+        @State var filter: String = ""
 
         var body: some View {
             ScrollView {
@@ -202,16 +225,32 @@ extension DebugView {
                 )
             )
             .background(Color.semantic.background)
+            .apply { view in
+                if #available(iOS 15.0, *) {
+                    view.searchable(text: $filter)
+                }
+            }
         }
 
         let pasteboard = UIPasteboard.general
 
         @ViewBuilder var namespace: some View {
-            NamespaceState()
+            NamespaceState($filter)
+        }
+
+        var keys: [AppFeature] {
+            if filter.isEmpty { return AppFeature.allCases }
+            return AppFeature.allCases.filter { key in
+                key.remoteEnabledKey
+                    .distance(
+                        between: filter,
+                        using: FuzzyAlgorithm(caseInsensitive: true)
+                    ) < 0.3
+            }
         }
 
         @ViewBuilder var remote: some View {
-            ForEach(AppFeature.allCases, id: \.self) { feature in
+            ForEach(keys, id: \.self) { feature in
                 let name = feature.remoteEnabledKey
                 Group {
                     if let value = data[feature] {

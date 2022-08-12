@@ -51,10 +51,11 @@ public final class OnboardingRouter: OnboardingRouterAPI {
     public func presentPostSignUpOnboarding(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         // Step 1: present email verification
         presentEmailVerification(from: presenter)
-            .flatMap { [weak self] _ -> AnyPublisher<OnboardingResult, Never> in
+            .flatMap { [weak self] result -> AnyPublisher<OnboardingResult, Never> in
                 guard let self = self else { return .just(.abandoned) }
                 let app = self.app
                 if
+                    result == .completed,
                     app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled),
                     app.state.yes(if: blockchain.user.is.cowboy.fan)
                 {

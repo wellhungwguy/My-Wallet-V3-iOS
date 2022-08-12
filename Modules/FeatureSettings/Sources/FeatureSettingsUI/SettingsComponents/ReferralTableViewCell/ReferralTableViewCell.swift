@@ -2,6 +2,7 @@
 
 import FeatureReferralDomain
 import Localization
+import NukeExtensions
 import PlatformUIKit
 import UIKit
 
@@ -29,6 +30,11 @@ final class ReferralTableViewCell: UITableViewCell {
         didSet {
             titleLabel.text = LocalizationConstants.Referrals.SettingsScreen.buttonTitle
             subtitleLabel.text = viewModel.referral.rewardTitle
+            if let url = viewModel.referral.icon?.url {
+                loadImage(with: url, into: backgroundImageView)
+            } else {
+                backgroundImageView.image = UIImage(named: "referral-image", in: .module, with: nil)
+            }
             accessibility = .id(viewModel.accessibilityID)
         }
     }
@@ -37,4 +43,5 @@ final class ReferralTableViewCell: UITableViewCell {
 
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
+    @IBOutlet private var backgroundImageView: UIImageView!
 }

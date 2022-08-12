@@ -14,7 +14,6 @@ public struct ReferralRepository: ReferralRepositoryAPI {
     public func fetchReferralCampaign(for currency: String) -> AnyPublisher<Referral, NetworkError> {
         client
             .fetchReferralCampaign(for: currency)
-            .map { $0.toReferral() }
             .eraseToAnyPublisher()
     }
 
@@ -22,19 +21,5 @@ public struct ReferralRepository: ReferralRepositoryAPI {
         client
             .createReferral(with: code)
             .eraseToAnyPublisher()
-    }
-}
-
-extension ReferralResponse {
-    func toReferral() -> Referral {
-        let steps = criteria
-            .map { Step(text: $0) }
-
-        return Referral(
-            code: code,
-            rewardTitle: rewardTitle,
-            rewardSubtitle: rewardSubtitle,
-            steps: steps
-        )
     }
 }

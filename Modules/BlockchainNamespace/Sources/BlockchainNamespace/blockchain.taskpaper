@@ -87,12 +87,6 @@ blockchain:
 				tracing:
 				+ blockchain.session.configuration.value
 			polygon:
-				name:
-					sanitize:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
 				all:
 					tokens:
 						is:
@@ -103,6 +97,12 @@ blockchain:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+				name:
+					sanitize:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			prefill:
 				is:
 					enabled:
@@ -825,6 +825,9 @@ blockchain:
 						+ blockchain.session.configuration.value
 					raffle:
 					+ blockchain.ux.onboarding.type.promotion
+					refer:
+						friends:
+						+ blockchain.ux.onboarding.type.promotion
 					verify:
 						identity:
 						+ blockchain.ux.onboarding.type.promotion

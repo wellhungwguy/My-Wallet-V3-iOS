@@ -79,7 +79,6 @@ only_rules:
 - private_outlet
 - private_over_fileprivate
 - private_unit_test
-- prohibited_interface_builder
 - prohibited_super_call
 - protocol_property_accessors_order
 - reduce_boolean

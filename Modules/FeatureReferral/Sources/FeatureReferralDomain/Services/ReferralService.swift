@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import Errors
 import Foundation
-import PlatformKit
+import MoneyKit
 
 public protocol ReferralServiceAPI {
     func fetchReferralCampaign() -> AnyPublisher<Referral?, Never>
@@ -12,14 +13,14 @@ public protocol ReferralServiceAPI {
 
 public class ReferralService: ReferralServiceAPI {
     private let repository: ReferralRepositoryAPI
-    private let currencyService: FiatCurrencyServiceAPI
+    private let app: AppProtocol
 
     public init(
-        repository: ReferralRepositoryAPI,
-        currencyService: FiatCurrencyServiceAPI
+        app: AppProtocol,
+        repository: ReferralRepositoryAPI
     ) {
+        self.app = app
         self.repository = repository
-        self.currencyService = currencyService
     }
 
     public func createReferral(with code: String) -> AnyPublisher<Void, NetworkError> {
@@ -29,11 +30,10 @@ public class ReferralService: ReferralServiceAPI {
     }
 
     public func fetchReferralCampaign() -> AnyPublisher<Referral?, Never> {
-        currencyService
-            .currency
+        app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency, as: FiatCurrency.self)
+            .compactMap(\.value)
             .flatMap { [repository] currency in
-                repository
-                    .fetchReferralCampaign(for: currency.code)
+                repository.fetchReferralCampaign(for: currency.code)
             }
             .optional()
             .replaceError(with: nil)

@@ -44,6 +44,7 @@ let package = Package(
         ),
         .package(path: "../CommonCrypto"),
         .package(path: "../FeatureAuthentication"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
@@ -92,7 +93,8 @@ let package = Package(
                 .product(name: "FeatureReferralUI", package: "FeatureReferral"),
                 .product(name: "FeatureUserDeletionData", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
-                .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion")
+                .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ]
         ),
         .target(

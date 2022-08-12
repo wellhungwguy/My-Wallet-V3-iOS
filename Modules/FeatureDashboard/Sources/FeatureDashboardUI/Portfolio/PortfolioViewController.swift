@@ -91,12 +91,6 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         NotificationCenter.when(.transaction) { [weak self] _ in
             self?.presenter.refreshRelay.accept(())
         }
-//
-//        app.on(blockchain.user.event.did.update) { @MainActor [weak self] _ in
-//            self?.presentOnboardingChecklistView()
-//        }
-//        .subscribe()
-//        .store(withLifetimeOf: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -199,9 +193,11 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
         userHasCompletedOnboarding
             .asObservable()
-            .map { userHasCompletedOnboarding -> Bool in
+            .map { [app] userHasCompletedOnboarding -> Bool in
                 // if the user has completed onboarding, nothing to show
                 !userHasCompletedOnboarding
+                    || app.state.yes(if: blockchain.user.is.cowboy.fan)
+                    && app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled)
             }
             .distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)

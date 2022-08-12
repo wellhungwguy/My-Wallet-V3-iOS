@@ -41,10 +41,10 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
+        .package(path: "../Money"),
         .package(path: "../Errors"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents"),
-        .package(path: "../Platform")
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -61,8 +61,7 @@ let package = Package(
                 .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
-                ),
-                .product(name: "PlatformKit", package: "Platform")
+                )
             ],
             path: "Sources/FeatureReferralDomain"
         ),

@@ -2,11 +2,12 @@
 
 import Combine
 import Errors
+import FeatureReferralDomain
 import Foundation
 import NetworkKit
 
 public protocol ReferralClientAPI {
-    func fetchReferralCampaign(for currency: String) -> AnyPublisher<ReferralResponse, NetworkError>
+    func fetchReferralCampaign(for currency: String) -> AnyPublisher<Referral, NetworkError>
     func createReferral(with code: String) -> AnyPublisher<Void, NetworkError>
 }
 
@@ -31,7 +32,7 @@ public struct ReferralClientClient: ReferralClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    public func fetchReferralCampaign(for currency: String) -> AnyPublisher<ReferralResponse, NetworkError> {
+    public func fetchReferralCampaign(for currency: String) -> AnyPublisher<Referral, NetworkError> {
         let request = requestBuilder.get(
             path: Path.referralInfo,
             parameters: [

@@ -81,10 +81,6 @@ final class KYCExtraQuestionsObserver: Session.Observer {
                         let tag = blockchain.ux.kyc.extra.questions.form
                         state.set(tag[context].data, to: form)
                         state.set(tag[context].is.empty, to: form.successData?.isEmpty)
-                        if context == defaultContext {
-                            state.set(tag[Tag.Context.genericIndex].data, to: form)
-                            state.set(tag[Tag.Context.genericIndex].is.empty, to: form.successData?.isEmpty)
-                        }
                     }
                 }
             }

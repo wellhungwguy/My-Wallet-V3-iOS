@@ -36,7 +36,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="fmC-97-aMa">
-                                <rect key="frame" x="16" y="40" width="178" height="20"/>
+                                <rect key="frame" x="16" y="40" width="178" height="19"/>
                                 <string key="text">Invite friends, Get $30!
 </string>
                                 <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="16"/>
@@ -44,15 +44,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="referral-image" translatesAutoresizingMaskIntoConstraints="NO" id="nwu-wN-sMd">
-                                <rect key="frame" x="204" y="0.0" width="139" height="88"/>
+                                <rect key="frame" x="0.0" y="0.0" width="343" height="88"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" name="Blue600"/>
                         <constraints>
                             <constraint firstItem="nwu-wN-sMd" firstAttribute="top" secondItem="Vb4-Bl-hrl" secondAttribute="top" id="4aR-sg-heV"/>
                             <constraint firstAttribute="height" constant="88" id="Fnn-4t-416"/>
-                            <constraint firstItem="nwu-wN-sMd" firstAttribute="leading" secondItem="fmC-97-aMa" secondAttribute="trailing" constant="10" id="LMy-nn-G38"/>
                             <constraint firstAttribute="bottom" secondItem="nwu-wN-sMd" secondAttribute="bottom" id="Pe5-34-I8v"/>
+                            <constraint firstItem="nwu-wN-sMd" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" id="Xot-7V-vqJ"/>
                             <constraint firstItem="fmC-97-aMa" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" constant="16" id="cx9-dB-9JW"/>
                             <constraint firstAttribute="trailing" secondItem="nwu-wN-sMd" secondAttribute="trailing" id="epK-6i-frM"/>
                             <constraint firstItem="QPr-9e-Cqe" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" constant="16" id="loS-A7-pMz"/>
@@ -71,6 +71,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="backgroundImageView" destination="nwu-wN-sMd" id="hSJ-mZ-2cI"/>
                 <outlet property="subtitleLabel" destination="fmC-97-aMa" id="ZPp-zz-ZnL"/>
                 <outlet property="titleLabel" destination="QPr-9e-Cqe" id="gmm-JV-VgR"/>
             </connections>

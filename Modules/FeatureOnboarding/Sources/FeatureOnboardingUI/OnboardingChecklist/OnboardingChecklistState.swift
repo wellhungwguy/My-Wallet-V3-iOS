@@ -167,6 +167,7 @@ public enum OnboardingChecklist {
                 .concatenate(
                     .cancel(id: UserDidUpdateIdentifier()),
                     environment.app.on(blockchain.user.event.did.update)
+                        .receive(on: environment.mainQueue)
                         .eraseToEffect { _ in OnboardingChecklist.Action.updatePromotion }
                         .cancellable(id: UserDidUpdateIdentifier())
                 ),
@@ -204,19 +205,18 @@ public enum OnboardingChecklist {
                             switch try app.state.get(blockchain.user.account.tier) as Tag {
                             case blockchain.user.account.tier.none:
                                 return try app.state.get(blockchain.user.email.is.verified)
-                                ? blockchain.ux.onboarding.promotion.cowboys.raffle
-                                : blockchain.ux.onboarding.promotion.cowboys.welcome
+                                    ? blockchain.ux.onboarding.promotion.cowboys.raffle
+                                    : blockchain.ux.onboarding.promotion.cowboys.welcome
                             case blockchain.user.account.tier.silver:
                                 return blockchain.ux.onboarding.promotion.cowboys.verify.identity
                             case _:
-                                throw blockchain.ux.onboarding.promotion.cowboys.error()
+                                return blockchain.ux.onboarding.promotion.cowboys.refer.friends
                             }
                         }()
-                        let isFan: Bool = try await app.get(blockchain.user.is.cowboy.fan)
                         let isEnabled: Bool = try await app.get(blockchain.ux.onboarding.promotion.cowboys.is.enabled)
                         return try await .updatedPromotion(
-                            try await State.Promotion(
-                                visible: isFan && isEnabled,
+                            State.Promotion(
+                                visible: app.get(blockchain.user.is.cowboy.fan) && isEnabled,
                                 id: promotion,
                                 ux: app.get(promotion.announcement)
                             )

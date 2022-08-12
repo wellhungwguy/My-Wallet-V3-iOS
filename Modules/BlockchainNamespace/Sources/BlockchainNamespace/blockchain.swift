@@ -3243,6 +3243,7 @@ public protocol I_blockchain_ux_onboarding_promotion_cowboys: I {}
 public extension I_blockchain_ux_onboarding_promotion_cowboys {
 	var `is`: L_blockchain_ux_onboarding_promotion_cowboys_is { .init("\(__).is") }
 	var `raffle`: L_blockchain_ux_onboarding_promotion_cowboys_raffle { .init("\(__).raffle") }
+	var `refer`: L_blockchain_ux_onboarding_promotion_cowboys_refer { .init("\(__).refer") }
 	var `verify`: L_blockchain_ux_onboarding_promotion_cowboys_verify { .init("\(__).verify") }
 	var `welcome`: L_blockchain_ux_onboarding_promotion_cowboys_welcome { .init("\(__).welcome") }
 }
@@ -3261,6 +3262,17 @@ public final class L_blockchain_ux_onboarding_promotion_cowboys_raffle: L, I_blo
 	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.raffle", comment: "") }
 }
 public protocol I_blockchain_ux_onboarding_promotion_cowboys_raffle: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_refer: L, I_blockchain_ux_onboarding_promotion_cowboys_refer {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.refer", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_refer: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_refer {
+	var `friends`: L_blockchain_ux_onboarding_promotion_cowboys_refer_friends { .init("\(__).friends") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_refer_friends: L, I_blockchain_ux_onboarding_promotion_cowboys_refer_friends {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.refer.friends", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_refer_friends: I_blockchain_ux_onboarding_type_promotion {}
 public final class L_blockchain_ux_onboarding_promotion_cowboys_verify: L, I_blockchain_ux_onboarding_promotion_cowboys_verify {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.verify", comment: "") }
 }

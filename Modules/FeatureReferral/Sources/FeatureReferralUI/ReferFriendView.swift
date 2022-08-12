@@ -2,6 +2,7 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import FeatureReferralDomain
 import FeatureReferralMocks
 import Localization
 import SwiftUI
@@ -25,6 +26,8 @@ public struct ReferFriendView: View {
         }
     }
 
+    var referral: Referral { viewStore.referralInfo }
+
     private var contentView: some View {
         VStack {
             ScrollView {
@@ -36,6 +39,8 @@ public struct ReferFriendView: View {
             }
             shareButton
         }
+        .backgroundTexture(referral.style?.background)
+        .foregroundTexture(referral.style?.foreground)
         .ignoresSafeArea(.all, edges: .bottom)
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationBarStyle()
@@ -51,7 +56,7 @@ public struct ReferFriendView: View {
             content: {
                 let itemtoShare = ActivityItemSource(
                     title: LocalizedStrings.shareTitle,
-                    text: LocalizedStrings.shareMessage(viewStore.referralInfo.code)
+                    text: LocalizedStrings.shareMessage(referral.code)
                 )
                 ActivityViewController(itemsToShare: [itemtoShare])
             }
@@ -60,25 +65,25 @@ public struct ReferFriendView: View {
 }
 
 extension ReferFriendView {
+
     private var imageSection: some View {
-        Image(
-            "image_refer_blockchain",
-            bundle: .module
-        )
-        .resizable()
+        Group {
+            if let icon = referral.icon {
+                AsyncMedia(url: icon.url)
+            } else {
+                Image("image_refer_blockchain", bundle: .module)
+                    .resizable()
+            }
+        }
         .frame(width: 80, height: 80)
     }
 
     private var inviteFriendsSection: some View {
         VStack(alignment: .center, spacing: 12, content: {
-            Text(viewStore
-                .referralInfo
-                .rewardTitle)
+            Text(referral.rewardTitle)
                 .typography(.title2)
                 .foregroundColor(Color.textTitle)
-            Text(viewStore
-                .referralInfo
-                .rewardSubtitle)
+            Text(referral.rewardSubtitle)
                 .typography(.paragraph1)
                 .foregroundColor(Color.textTitle)
                 .frame(width: 220)
@@ -96,7 +101,7 @@ extension ReferFriendView {
                 .foregroundColor(Color.textMuted)
 
             VStack(alignment: .center, spacing: Spacing.padding2, content: {
-                Text(viewStore.referralInfo.code)
+                Text(referral.code)
                     .typography(.title2)
                     .fontWeight(.medium)
                     .kerning(15)
@@ -124,11 +129,11 @@ extension ReferFriendView {
                 .typography(.paragraph1)
                 .foregroundColor(Color.textMuted)
             VStack(alignment: .leading, spacing: Spacing.padding2, content: {
-                if let steps = viewStore.state.referralInfo.steps {
-                    ForEach(steps.indices, id: \.self) { index in
+                if let steps = referral.criteria {
+                    ForEach(steps.indexed(), id: \.element.id) { index, step in
                         HStack {
                             numberView(with: index + 1)
-                            Text(steps[index].text)
+                            Text(step.text)
                                 .typography(.paragraph1)
                                 .foregroundColor(Color.textTitle)
                         }
