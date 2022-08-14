@@ -21,6 +21,7 @@ import UIKit
 public enum FlowResult {
     case abandoned
     case completed
+    case skipped
 }
 
 public enum RouterError: Error {
@@ -254,6 +255,8 @@ public final class Router: Routing {
                                 publisher.send(.abandoned)
                             case .completed:
                                 publisher.send(.completed)
+                            case .skipped:
+                                publisher.send(.skipped)
                             }
                             publisher.send(completion: .finished)
                         }
@@ -272,7 +275,7 @@ public final class Router: Routing {
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         guard requiredTier > .tier0 else {
-            return .just(.completed)
+            return .just(.skipped)
         }
 
         // step 1: check KYC status.
@@ -320,7 +323,7 @@ public final class Router: Routing {
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         guard requiredTier > .tier0 else {
-            return .just(.completed)
+            return .just(.skipped)
         }
         let presentClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
         return kycService
@@ -330,7 +333,7 @@ public final class Router: Routing {
             .flatMap { userTiers -> AnyPublisher<FlowResult, RouterError> in
                 let currentTier = userTiers.latestApprovedTier
                 guard currentTier < requiredTier else {
-                    return .just(.completed)
+                    return .just(.skipped)
                 }
                 return presentClosure(presenter, currentTier)
                     .mapError()
@@ -370,7 +373,7 @@ public final class Router: Routing {
                 )
                 let canPresentNotice = userTiers.isTier1Approved && userTiers.canCompleteTier2
                 guard !didPresentNotice, canPresentNotice else {
-                    return .just(.completed)
+                    return .just(.skipped)
                 }
 
                 userDefaults.set(true, forKey: UserDefaultsKey.didPresentNoticeToUnlockTradingFeatures.rawValue)

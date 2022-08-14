@@ -85,7 +85,7 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
             switch result {
             case .abandoned:
                 completion(.abandoned)
-            case .completed:
+            case .completed, .skipped:
                 router.routeToPaymentMethodLinkingFlow(from: viewController, filter: filter, completion: completion)
             }
         }
@@ -100,7 +100,7 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
             switch result {
             case .abandoned:
                 completion(.abandoned)
-            case .completed:
+            case .completed, .skipped:
                 router.routeToCardLinkingFlow(from: viewController, completion: completion)
             }
         }
@@ -116,7 +116,7 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
             switch result {
             case .abandoned:
                 completion(.abandoned)
-            case .completed:
+            case .completed, .skipped:
                 router.routeToBankLinkingFlow(for: currency, from: viewController, completion: completion)
             }
         }
@@ -134,7 +134,7 @@ final class PaymentMethodsLinkingAdapter: PaymentMethodsLinkingAdapterAPI {
             switch result {
             case .abandoned:
                 completion(.abandoned)
-            case .completed:
+            case .completed, .skipped:
                 router.routeToBankWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
             }
         }

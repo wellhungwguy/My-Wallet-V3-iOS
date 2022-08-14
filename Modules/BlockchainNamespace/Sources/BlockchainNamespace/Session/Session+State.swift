@@ -332,21 +332,37 @@ extension Session.State.Data {
                     object: &object,
                     from: data,
                     scope: shared,
-                    filter: { tag in
-                        tag.is(blockchain.session.state.preference.value)
-                            && tag.is(blockchain.session.state.shared.value)
-                    }
+                    filter: { $0.is(blockchain.session.state.shared.value) }
                 )
                 if let user = user {
                     update(
                         object: &object,
                         from: data,
                         scope: user,
-                        filter: { tag in
-                            tag.is(blockchain.session.state.preference.value)
-                                && tag.isNot(blockchain.session.state.shared.value)
-                        }
+                        filter: { $0.isNot(blockchain.session.state.shared.value) }
                     )
+                } else {
+                    #if DEBUG
+                    let preferences = data.keys.filter { key in
+                        key.tag.is(blockchain.session.state.preference.value)
+                            && key.tag.isNot(blockchain.session.state.shared.value)
+                    }
+                    if preferences.isNotEmpty {
+                        print(
+                            """
+                            ⚠️ Attempted to write user preference without being signed in.
+
+                            If you meant this to be written against the user, please ensure you are signed in
+                            before attempting to write - you can observe `blockchain.session.event.did.sign.in`.
+
+                            Most commonly, you will see this if you have mistakenly not marked a shared state value
+                            as `blockchain.session.state.shared.value`.
+
+                            \(preferences.map(\.string).joined(by: ", "))
+                            """
+                        )
+                    }
+                    #endif
                 }
             }
             for (key, value) in data {
@@ -362,7 +378,9 @@ extension Session.State.Data {
 
     private func update(object: inout Any?, from data: [Tag.Reference: Any], scope: String, filter: (Tag) -> Bool) {
         var dictionary = object[scope] as? [String: Any] ?? [:]
-        for (key, value) in data.filter({ key, _ in filter(key.tag) }) {
+        for (key, value) in data.filter({ key, _ in
+            key.tag.is(blockchain.session.state.preference.value) && filter(key.tag)
+        }) {
             if value is Tombstone.Type {
                 dictionary.removeValue(forKey: key.id())
             } else {

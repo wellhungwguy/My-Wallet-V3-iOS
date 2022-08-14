@@ -6,6 +6,7 @@ import UIKit
 public enum OnboardingResult {
     case abandoned
     case completed
+    case skipped
 }
 
 public protocol OnboardingRouterAPI {

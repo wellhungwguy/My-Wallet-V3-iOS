@@ -205,7 +205,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 switch result {
                 case .abandoned:
                     return .abandoned
-                case .completed:
+                case .completed, .skipped:
                     return .completed
                 }
             }
@@ -266,7 +266,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 switch result {
                 case .abandoned:
                     subject.send(.abandoned)
-                case .completed:
+                case .completed, .skipped:
                     self.continuePresentingTransactionFlow(
                         to: action,
                         from: presenter,

@@ -57,7 +57,7 @@ extension TransactionFlowResult {
         switch result {
         case .abandoned:
             self = .abandoned
-        case .completed:
+        case .completed, .skipped:
             self = .completed
         }
     }

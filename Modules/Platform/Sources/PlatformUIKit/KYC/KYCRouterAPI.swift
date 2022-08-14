@@ -41,6 +41,7 @@ public enum KYCRouterError: Error {
 public enum KYCRoutingResult: Equatable {
     case abandoned
     case completed
+    case skipped
 }
 
 public protocol KYCRouting {

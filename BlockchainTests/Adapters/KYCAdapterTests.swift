@@ -150,7 +150,7 @@ final class KYCAdapterTests: XCTestCase {
         }
         wait(for: [e], timeout: 5)
         cancellable.cancel()
-        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(result, .skipped)
     }
 
     func test_maps_emailVerification_completion_to_complete_for_onboarding() {

@@ -35,8 +35,8 @@ extension RootViewController: LoggedInBridge {
             .handleEvents(receiveOutput: { output in
                 "\(output)".peek("🏄")
             })
-            .sink { [weak self] _ in
-                guard let self = self, self.presentedViewController != nil else {
+            .sink { [weak self] result in
+                guard let self = self, self.presentedViewController != nil, result != .skipped else {
                     return
                 }
                 self.dismiss(animated: true)
