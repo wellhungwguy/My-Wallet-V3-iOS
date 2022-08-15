@@ -9,24 +9,23 @@ public struct Referral: Equatable, Hashable, Decodable {
     public var rewardTitle: String
     public var rewardSubtitle: String
     public var criteria: [Step]
-
-    public var style: UX.Style?
-    public var icon: UX.Icon?
+    public var promotion: UX.Dialog?
+    public var announcement: UX.Dialog?
 
     public init(
         code: String,
         rewardTitle: String,
         rewardSubtitle: String,
         criteria: [Step],
-        style: UX.Style?,
-        icon: UX.Icon?
+        promotion: UX.Dialog?,
+        announcement: UX.Dialog?
     ) {
         self.code = code
         self.rewardTitle = rewardTitle
         self.rewardSubtitle = rewardSubtitle
         self.criteria = criteria
-        self.style = style
-        self.icon = icon
+        self.promotion = promotion
+        self.announcement = announcement
     }
 }
 

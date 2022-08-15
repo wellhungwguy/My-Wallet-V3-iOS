@@ -14,8 +14,8 @@ public enum MockGenerator {
                 Step(text: "Verify their identity"),
                 Step(text: "Trade (min $50)")
             ],
-            style: nil,
-            icon: nil
+            promotion: nil,
+            announcement: nil
         )
     }
 }

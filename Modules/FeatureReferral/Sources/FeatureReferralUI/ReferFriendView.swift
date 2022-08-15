@@ -39,8 +39,8 @@ public struct ReferFriendView: View {
             }
             shareButton
         }
-        .backgroundTexture(referral.style?.background)
-        .foregroundTexture(referral.style?.foreground)
+        .backgroundTexture(referral.promotion?.style?.background)
+        .foregroundTexture(referral.promotion?.style?.foreground ?? Color.semantic.title.texture)
         .ignoresSafeArea(.all, edges: .bottom)
         .navigationBarTitleDisplayMode(.inline)
         .whiteNavigationBarStyle()
@@ -68,7 +68,7 @@ extension ReferFriendView {
 
     private var imageSection: some View {
         Group {
-            if let icon = referral.icon {
+            if let icon = referral.promotion?.icon {
                 AsyncMedia(url: icon.url)
             } else {
                 Image("image_refer_blockchain", bundle: .module)
@@ -80,12 +80,10 @@ extension ReferFriendView {
 
     private var inviteFriendsSection: some View {
         VStack(alignment: .center, spacing: 12, content: {
-            Text(referral.rewardTitle)
+            Text(referral.promotion?.title ?? referral.rewardTitle)
                 .typography(.title2)
-                .foregroundColor(Color.textTitle)
-            Text(referral.rewardSubtitle)
+            Text(referral.promotion?.message ?? referral.rewardSubtitle)
                 .typography(.paragraph1)
-                .foregroundColor(Color.textTitle)
                 .frame(width: 220)
                 .lineLimit(3)
                 .multilineTextAlignment(.center)
@@ -156,9 +154,9 @@ extension ReferFriendView {
     @ViewBuilder func numberView(with number: Int) -> some View {
         Text("\(number)")
             .typography(.body2)
-            .foregroundColor(Color.WalletSemantic.primary)
+            .foregroundColor(.semantic.primary)
             .padding(12)
-            .background(Color.WalletSemantic.blueBG)
+            .background(Color.semantic.blueBG)
             .clipShape(Circle())
     }
 }
