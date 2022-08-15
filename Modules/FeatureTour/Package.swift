@@ -18,7 +18,10 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture", 
+            .exact("0.38.3")
+        ),
         .package(
             name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",

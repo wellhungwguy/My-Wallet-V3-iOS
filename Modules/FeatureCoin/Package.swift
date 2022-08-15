@@ -1,11 +1,16 @@
-// swift-tools-version:5.5
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureCoin",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "FeatureCoin", targets: [
             "FeatureCoinDomain",
@@ -18,12 +23,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            exact: "0.38.3"
         ),
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
@@ -146,7 +149,7 @@ let package = Package(
             name: "FeatureCoinUITests",
             dependencies: [
                 .target(name: "FeatureCoinUI"),
-                .product(name: "SnapshotTesting", package: "SnapshotTesting")
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
             exclude: [
                 "CoinView/__Snapshots__"
