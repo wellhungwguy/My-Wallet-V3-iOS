@@ -874,6 +874,7 @@ blockchain:
 				select:
 			collection:
 			+ blockchain.db.collection
+			+ blockchain.ux.type.story
 				select:
 			wallet:
 			+ blockchain.db.collection

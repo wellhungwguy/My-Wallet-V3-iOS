@@ -3413,7 +3413,7 @@ public protocol I_blockchain_ux_nft_asset_select: I {}
 public final class L_blockchain_ux_nft_collection: L, I_blockchain_ux_nft_collection {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.nft.collection", comment: "") }
 }
-public protocol I_blockchain_ux_nft_collection: I_blockchain_db_collection {}
+public protocol I_blockchain_ux_nft_collection: I_blockchain_ux_type_story, I_blockchain_db_collection {}
 public extension I_blockchain_ux_nft_collection {
 	var `select`: L_blockchain_ux_nft_collection_select { .init("\(__).select") }
 }

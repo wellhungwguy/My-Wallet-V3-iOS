@@ -21,7 +21,7 @@ public struct DefiWalletIntroView: View {
                 .padding(.top, 140)
 
             VStack(spacing: 8) {
-                Text("Introducing the Defi Wallet!")
+                Text("Introducing the Private Key Wallet!")
                     .typography(.title2)
                 Text("Explore all of Web3 and DeFi in one place")
                     .typography(.paragraph1)
@@ -48,7 +48,7 @@ public struct DefiWalletIntroView: View {
             .padding(.horizontal, Spacing.padding3)
             Spacer()
 
-            PrimaryButton(title: "Enable Defi Wallet") {
+            PrimaryButton(title: "Enable Primary Key Wallet") {
                 viewStore.send(.onEnableDefiTap)
             }
             .padding(.horizontal, Spacing.padding3)

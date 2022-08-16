@@ -1,4 +1,5 @@
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import DIKit
 import SwiftUI
@@ -57,7 +58,7 @@ public struct AppModeSwitcherView: View {
     private var selectionView: some View {
         VStack {
             PrimaryRow(
-                title: "Brokerage",
+                title: AppMode.trading.displayName,
                 caption: nil,
                 subtitle: viewStore
                     .brokerageAccountBalance?
@@ -77,7 +78,7 @@ public struct AppModeSwitcherView: View {
             }
 
             PrimaryRow(
-                title: "Defi Wallet",
+                title: AppMode.defi.displayName,
                 caption: nil,
                 subtitle: defiSubtitleString,
                 description: defiDescriptionString

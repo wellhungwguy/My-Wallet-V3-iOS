@@ -214,8 +214,8 @@ struct RootView: View {
 
     @ViewBuilder func leadingViews() -> some View {
         Group {
-            if viewStore.appSwitcherEnabled {
-                appModeSwitcher()
+            if viewStore.appSwitcherEnabled, let appMode = viewStore.appMode {
+                appModeSwitcher(with: appMode)
             } else {
                 account()
             }
@@ -235,9 +235,9 @@ struct RootView: View {
                 .identity(blockchain.ux.referral.entry)
     }
 
-    @ViewBuilder func appModeSwitcher() -> some View {
+    @ViewBuilder func appModeSwitcher(with appMode: AppMode) -> some View {
         AppModeSwitcherButton(
-            isDefiMode: viewStore.appMode == .defi,
+            appMode: appMode,
             action: {
                 viewStore.send(.onAppModeSwitcherTapped)
             }

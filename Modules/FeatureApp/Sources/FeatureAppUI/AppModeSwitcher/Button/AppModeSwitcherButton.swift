@@ -1,24 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Foundation
 import SwiftUI
 
 public struct AppModeSwitcherButton: View {
-    var isDefiMode: Bool = false
     private let action: () -> Void
-
+    private let appMode: AppMode
     public init(
-        isDefiMode: Bool = false,
+        appMode: AppMode,
         action: @escaping () -> Void
     ) {
-        self.isDefiMode = isDefiMode
+        self.appMode = appMode
         self.action = action
     }
 
     public var body: some View {
         HStack {
-            if isDefiMode {
+            if appMode == .defi {
                 Icon
                     .wallet
                     .accentColor(.semantic.defi)
@@ -30,7 +30,7 @@ public struct AppModeSwitcherButton: View {
                     .frame(width: 20, height: 20)
             }
 
-            Text(isDefiMode ? "DeFi Wallet" : "Brokerage")
+            Text(appMode.displayName)
                 .typography(.body1)
                 .foregroundColor(Color.WalletSemantic.title)
 
@@ -39,7 +39,8 @@ public struct AppModeSwitcherButton: View {
                 .accentColor(.semantic.muted)
                 .frame(width: 16, height: 16)
         }
-        .frame(width: 158, height: 32)
+        .padding(.horizontal, Spacing.padding1)
+        .frame(height: 32)
         .background(Color.WalletSemantic.light)
         .cornerRadius(100)
         .onTapGesture {
@@ -50,6 +51,6 @@ public struct AppModeSwitcherButton: View {
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        AppModeSwitcherButton(action: {})
+        AppModeSwitcherButton(appMode: .trading, action: {})
     }
 }
