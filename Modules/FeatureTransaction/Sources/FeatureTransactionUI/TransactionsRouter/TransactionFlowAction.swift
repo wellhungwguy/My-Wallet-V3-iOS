@@ -71,7 +71,7 @@ extension TransactionFlowAction {
             .send(let account, _),
             .sign(let account as BlockchainAccount?, _),
             .receive(let account as BlockchainAccount?):
-                return account?.accountType.isCustodial ?? true
+                return account?.accountType.isCustodial ?? false
         case
             .order,
             .interestTransfer,

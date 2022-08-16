@@ -7,7 +7,7 @@ public struct CardSuccessRateData: Equatable {
     public init(
         block: Bool,
         bin: String,
-        ux: UX.Dialog? = nil
+        ux: Nabu.Error.UX? = nil
     ) {
         self.block = block
         self.bin = bin
@@ -18,8 +18,8 @@ public struct CardSuccessRateData: Equatable {
     /// Per docs, red if true & orange if false
     public let block: Bool
 
-    // Dialog which should be displayed. Optional.
-    public let ux: UX.Dialog?
+    // Error which should be displayed. Optional.
+    public let ux: Nabu.Error.UX?
 
     /// The bin number associated with the card
     public let bin: String
