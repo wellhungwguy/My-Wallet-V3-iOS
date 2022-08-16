@@ -819,10 +819,23 @@ blockchain:
 				+ blockchain.ui.device.haptic.feedback.impact.soft
 				+ blockchain.ux.type.action
 		kyc:
+			current:
+				state:
+				+ blockchain.ux.kyc.type.state
 			event:
 				did:
 					cancel:
 					+ blockchain.ux.type.analytics.event
+					confirm:
+						state:
+						+ blockchain.ux.kyc.type.state
+					enter:
+						state:
+						+ blockchain.ux.kyc.type.state
+					fail:
+						on:
+							state:
+							+ blockchain.ux.kyc.type.state
 					finish:
 					+ blockchain.ux.type.analytics.event
 					start:
@@ -865,6 +878,33 @@ blockchain:
 					+ blockchain.ux.type.story
 				upgrade:
 				+ blockchain.ux.type.story
+			type:
+				state:
+				+ blockchain.db.type.enum
+				+ blockchain.session.state.value
+					account:
+						form:
+						status:
+					address:
+					application:
+						complete:
+					confirm:
+						email:
+						phone:
+					country:
+					enter:
+						email:
+						phone:
+					force_gold:
+					profile:
+					resubmit:
+						identity:
+					sdd:
+						verification:
+					states:
+					verify:
+						identity:
+					welcome:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
@@ -1078,6 +1118,13 @@ blockchain:
 			analytics:
 				action:
 				+ blockchain.ux.type.analytics.event
+				configuration:
+					firebase:
+						map:
+						+ blockchain.session.configuration.value
+					segment:
+						map:
+						+ blockchain.session.configuration.value
 				current:
 					state:
 					+ blockchain.db.type.tag

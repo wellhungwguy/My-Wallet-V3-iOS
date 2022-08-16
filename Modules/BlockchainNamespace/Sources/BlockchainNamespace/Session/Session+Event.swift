@@ -242,6 +242,10 @@ public final class BlockchainEventSubscription: Hashable {
         return self
     }
 
+    public func cancel() {
+        stop()
+    }
+
     @discardableResult
     public func stop() -> Self {
         subscription?.cancel()
@@ -252,7 +256,7 @@ public final class BlockchainEventSubscription: Hashable {
 
 extension BlockchainEventSubscription {
 
-    public func subscribe() -> AnyCancellable {
+    @inlinable public func subscribe() -> AnyCancellable {
         start()
         return AnyCancellable { [self] in stop() }
     }

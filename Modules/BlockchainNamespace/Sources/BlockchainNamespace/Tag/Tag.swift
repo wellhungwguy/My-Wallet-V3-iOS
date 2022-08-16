@@ -206,6 +206,10 @@ public func isDescendant(of a: Tag) -> (Tag) -> Bool {
 
 extension Tag {
 
+    public subscript(dotPath descendant: String) -> Tag? {
+        self[descendant.splitIfNotEmpty().map(String.init)]
+    }
+
     public subscript(descendant: Name...) -> Tag? {
         self[descendant]
     }

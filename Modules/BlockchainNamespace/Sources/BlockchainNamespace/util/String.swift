@@ -25,7 +25,7 @@ extension StringProtocol {
         return suffix(from: index(after: i))
     }
 
-    func splitIfNotEmpty(separator: Character = ".") -> [SubSequence] {
+    public func splitIfNotEmpty(separator: Character = ".") -> [SubSequence] {
         isEmpty ? [] : split(separator: ".", omittingEmptySubsequences: true)
     }
 

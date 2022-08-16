@@ -8,6 +8,7 @@ public struct Anything: Codable, Hashable, Equatable, CustomStringConvertible {
     }
 
     public private(set) var wrapped: Any
+    public var thing: Any { wrapped }
 
     internal var __unwrapped: Any {
         (wrapped as? Anything)?.__unwrapped ?? wrapped

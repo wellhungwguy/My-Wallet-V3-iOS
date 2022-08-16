@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Foundation
 
 public enum KYCPageType: Int {
@@ -22,4 +23,51 @@ public enum KYCPageType: Int {
     case accountStatus
     case accountUsageForm
     case sddVerificationCheck
+}
+
+extension KYCPageType {
+
+    // swiftlint:disable force_try
+    public var descendant: [String] {
+        try! tag[].idRemainder(after: blockchain.ux.kyc.type.state[])
+            .splitIfNotEmpty()
+            .map(String.init)
+    }
+
+    public var tag: Tag.Event {
+        switch self {
+        case .welcome:
+            return blockchain.ux.kyc.type.state.welcome
+        case .enterEmail:
+            return blockchain.ux.kyc.type.state.enter.email
+        case .confirmEmail:
+            return blockchain.ux.kyc.type.state.confirm.email
+        case .country:
+            return blockchain.ux.kyc.type.state.country
+        case .states:
+            return blockchain.ux.kyc.type.state.states
+        case .profile:
+            return blockchain.ux.kyc.type.state.profile
+        case .address:
+            return blockchain.ux.kyc.type.state.address
+        case .tier1ForcedTier2:
+            return blockchain.ux.kyc.type.state.force_gold
+        case .enterPhone:
+            return blockchain.ux.kyc.type.state.enter.phone
+        case .confirmPhone:
+            return blockchain.ux.kyc.type.state.confirm.phone
+        case .verifyIdentity:
+            return blockchain.ux.kyc.type.state.verify.identity
+        case .resubmitIdentity:
+            return blockchain.ux.kyc.type.state.resubmit.identity
+        case .applicationComplete:
+            return blockchain.ux.kyc.type.state.application.complete
+        case .accountStatus:
+            return blockchain.ux.kyc.type.state.account.status
+        case .accountUsageForm:
+            return blockchain.ux.kyc.type.state.account.form
+        case .sddVerificationCheck:
+            return blockchain.ux.kyc.type.state.sdd.verification
+        }
+    }
 }

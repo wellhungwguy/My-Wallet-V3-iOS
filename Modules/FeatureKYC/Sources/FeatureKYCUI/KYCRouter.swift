@@ -324,10 +324,23 @@ final class KYCRouter: KYCRouterAPI {
         switch event {
         case .pageWillAppear(let type):
             handlePageWillAppear(for: type)
-        case .failurePageForPageType(_, let error):
+            app.state.set(blockchain.ux.kyc.current.state, to: type.tag[])
+            app.post(
+                event: blockchain.ux.kyc.event.did.enter.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
+        case .failurePageForPageType(let type, let error):
             handleFailurePage(for: error)
+            app.post(
+                event: blockchain.ux.kyc.event.did.fail.on.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
         case .nextPageFromPageType(let type, let payload):
             handlePayloadFromPageType(type, payload)
+            app.post(
+                event: blockchain.ux.kyc.event.did.confirm.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
             let disposable = pager.nextPage(from: type, payload: payload)
                 .subscribe(on: MainScheduler.asyncInstance)
                 .observe(on: MainScheduler.instance)

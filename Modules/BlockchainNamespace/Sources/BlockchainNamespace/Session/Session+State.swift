@@ -177,8 +177,8 @@ extension Session.State {
 }
 
 extension FetchResult {
-    @usableFromInline var isYes: Bool { (value as? Bool) == true }
-    @usableFromInline var isNo: Bool { (value as? Bool) == false }
+    @inlinable public var isYes: Bool { (value as? Bool) == true }
+    @inlinable public var isNo: Bool { (value as? Bool) == false }
 }
 
 extension Session.State {

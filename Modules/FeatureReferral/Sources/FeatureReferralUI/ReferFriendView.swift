@@ -80,9 +80,9 @@ extension ReferFriendView {
 
     private var inviteFriendsSection: some View {
         VStack(alignment: .center, spacing: 12, content: {
-            Text(referral.promotion?.title ?? referral.rewardTitle)
+            Text(rich: referral.promotion?.title ?? referral.rewardTitle)
                 .typography(.title2)
-            Text(referral.promotion?.message ?? referral.rewardSubtitle)
+            Text(rich: referral.promotion?.message ?? referral.rewardSubtitle)
                 .typography(.paragraph1)
                 .frame(width: 220)
                 .lineLimit(3)
