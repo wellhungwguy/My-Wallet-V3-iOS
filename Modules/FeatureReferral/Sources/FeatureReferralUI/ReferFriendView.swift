@@ -52,8 +52,8 @@ public struct ReferFriendView: View {
         )
         .foregroundTexture(
             referral.promotion?.style?.foreground ?? referral.promotion?.style?.background != nil
-                ? Color.semantic.light.texture
-                : Color.semantic.title.texture
+            ? Color.semantic.light.texture
+            : Color.semantic.title.texture
         )
         .ignoresSafeArea(.all)
         .onAppear {
@@ -73,7 +73,6 @@ public struct ReferFriendView: View {
 }
 
 extension ReferFriendView {
-
     @ViewBuilder private var icon: some View {
         if let icon = referral.promotion?.icon {
             AsyncMedia(url: icon.url)
@@ -116,8 +115,8 @@ extension ReferFriendView {
                     .kerning(15)
                     .padding(.top, Spacing.padding3)
                 let label = viewStore.state.codeIsCopied
-                    ? LocalizedStrings.copiedLabel
-                    : LocalizedStrings.copyLabel
+                ? LocalizedStrings.copiedLabel
+                : LocalizedStrings.copyLabel
                 Button(label) {
                     viewStore.send(.onCopyTapped)
                 }
@@ -151,27 +150,28 @@ extension ReferFriendView {
                     }
                 }
             if let steps = referral.criteria {
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.semantic.blueBG)
-                        .frame(width: 2, height: 120)
-                        .padding(15.pt)
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(steps.indexed(), id: \.element.id) { index, step in
-                            HStack {
-                                numberView(with: index + 1)
-                                Text(step.text)
-                                    .typography(.paragraph1)
-                                    .apply { text in
-                                        if (referral.promotion?.style).isNil {
-                                            text.foregroundColor(Color.textTitle)
-                                        } else if let texture = referral.promotion?.style?.foreground {
-                                            text.foregroundTexture(texture)
-                                        } else {
-                                            text.foregroundColor(Color.semantic.light)
-                                        }
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(steps.indexed(), id: \.element.id) { index, step in
+                        HStack {
+                            numberView(with: index + 1)
+                            Text(step.text)
+                                .typography(.paragraph1)
+                                .apply { text in
+                                    if (referral.promotion?.style).isNil {
+                                        text.foregroundColor(Color.textTitle)
+                                    } else if let texture = referral.promotion?.style?.foreground {
+                                        text.foregroundTexture(texture)
+                                    } else {
+                                        text.foregroundColor(Color.semantic.light)
                                     }
-                            }
+                                }
+                        }
+                        if index != steps.count - 1 {
+                            Rectangle()
+                                .fill(Color.semantic.blueBG)
+                                .frame(width: 2, height: 6)
+                                .padding(.leading, 11.5)
+                                .padding(.vertical, 2)
                         }
                     }
                 }
@@ -192,8 +192,8 @@ extension ReferFriendView {
     @ViewBuilder func numberView(with number: Int) -> some View {
         Text("\(number)")
             .typography(.body2)
+            .frame(width: 24, height: 24)
             .foregroundColor(.semantic.primary)
-            .padding(12)
             .background(Color.semantic.blueBG)
             .clipShape(Circle())
     }
