@@ -94,12 +94,10 @@ extension Color {
 
         public static let fadedBackground: Color = .palette.grey600.opacity(0.6)
 
+        public static let darkBG: Color = .palette.dark900
         public static let blueBG: Color = .palette.blue000
-
         public static let greenBG: Color = .palette.green100
-
         public static let orangeBG: Color = .palette.orange100
-
         public static let redBG: Color = .palette.red100
 
         public static let gold: Color = .palette.gold

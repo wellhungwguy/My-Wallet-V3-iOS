@@ -11,6 +11,7 @@ import UIComponentsKit
 typealias LocalizedStrings = LocalizationConstants.Referrals.ReferralScreen
 
 public struct ReferFriendView: View {
+
     let store: Store<ReferFriendState, ReferFriendAction>
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewStore: ViewStore<ReferFriendState, ReferFriendAction>
@@ -20,85 +21,95 @@ public struct ReferFriendView: View {
         viewStore = ViewStore(store)
     }
 
-    public var body: some View {
-        PrimaryNavigationView {
-            contentView
-        }
-    }
-
     var referral: Referral { viewStore.referralInfo }
 
-    private var contentView: some View {
-        VStack {
-            ScrollView {
-                imageSection
-                inviteFriendsSection
-                referalCodeSection
+    public var body: some View {
+        ZStack(alignment: .top) {
+            HStack {
                 Spacer()
-                stepsSection
+                IconButton.init(icon: .close.circle()) {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .frame(width: 24.pt, height: 24.pt)
+                .padding()
             }
-            shareButton
-        }
-        .backgroundTexture(referral.promotion?.style?.background)
-        .foregroundTexture(referral.promotion?.style?.foreground ?? Color.semantic.title.texture)
-        .ignoresSafeArea(.all, edges: .bottom)
-        .navigationBarTitleDisplayMode(.inline)
-        .whiteNavigationBarStyle()
-        .trailingNavigationButton(.close) {
-            presentationMode.wrappedValue.dismiss()
-        }
-        .onAppear(perform: {
-            viewStore.send(.onAppear)
-        })
-        .sheet(
-            isPresented: viewStore
-                .binding(\.$isShareModalPresented),
-            content: {
-                let itemtoShare = ActivityItemSource(
-                    title: LocalizedStrings.shareTitle,
-                    text: LocalizedStrings.shareMessage(referral.code)
-                )
-                ActivityViewController(itemsToShare: [itemtoShare])
+            .zIndex(1)
+            VStack {
+                ScrollView {
+                    icon
+                    inviteFriends
+                    referralCode
+                    Spacer()
+                    steps
+                }
+                shareButton
             }
+            .padding(.top)
+            .zIndex(0)
+        }
+        .backgroundTexture(
+            referral.promotion?.style?.background
         )
+        .foregroundTexture(
+            referral.promotion?.style?.foreground ?? referral.promotion?.style?.background != nil
+                ? Color.semantic.light.texture
+                : Color.semantic.title.texture
+        )
+        .ignoresSafeArea(.all)
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
+        .sheet(isPresented: viewStore.binding(\.$isShareModalPresented)) {
+            ActivityViewController(
+                itemsToShare: [
+                    ActivityItemSource(
+                        title: LocalizedStrings.shareTitle,
+                        text: LocalizedStrings.shareMessage(referral.code)
+                    )
+                ]
+            )
+        }
     }
 }
 
 extension ReferFriendView {
 
-    private var imageSection: some View {
-        Group {
-            if let icon = referral.promotion?.icon {
-                AsyncMedia(url: icon.url)
-            } else {
-                Image("image_refer_blockchain", bundle: .module)
-                    .resizable()
-            }
+    @ViewBuilder private var icon: some View {
+        if let icon = referral.promotion?.icon {
+            AsyncMedia(url: icon.url)
+                .frame(width: 80, height: 80)
         }
-        .frame(width: 80, height: 80)
     }
 
-    private var inviteFriendsSection: some View {
-        VStack(alignment: .center, spacing: 12, content: {
+    private var inviteFriends: some View {
+        VStack(alignment: .center) {
             Text(rich: referral.promotion?.title ?? referral.rewardTitle)
                 .typography(.title2)
+            Color.clear
+                .frame(height: 18.pt)
             Text(rich: referral.promotion?.message ?? referral.rewardSubtitle)
                 .typography(.paragraph1)
-                .frame(width: 220)
-                .lineLimit(3)
-                .multilineTextAlignment(.center)
-        })
-        .padding(.horizontal, Spacing.padding4)
-        .padding(.top, Spacing.padding3)
+        }
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, Spacing.padding3)
+        .padding(.top, 12)
     }
 
-    private var referalCodeSection: some View {
-        VStack(spacing: 6, content: {
-            Text(LocalizedStrings.referalCodeLabel)
+    private var referralCode: some View {
+        VStack {
+            Text(LocalizedStrings.referralCodeLabel)
                 .typography(.paragraph1)
-                .foregroundColor(Color.textMuted)
+                .apply { text in
+                    if (referral.promotion?.style).isNil {
+                        text.foregroundColor(Color.textMuted)
+                    } else if let texture = referral.promotion?.style?.foreground {
+                        text.foregroundTexture(texture)
+                    } else {
+                        text.foregroundColor(Color.semantic.light)
+                    }
+                }
 
-            VStack(alignment: .center, spacing: Spacing.padding2, content: {
+            VStack(alignment: .center, spacing: Spacing.padding2) {
                 Text(referral.code)
                     .typography(.title2)
                     .fontWeight(.medium)
@@ -112,32 +123,59 @@ extension ReferFriendView {
                 }
                 .typography(.paragraph2)
                 .padding(.bottom, Spacing.padding3)
-                .foregroundColor(Color.WalletSemantic.primary)
-            })
+                .foregroundColor(Color.semantic.primary)
+            }
             .frame(maxWidth: .infinity)
-            .background(Color("color_code_background", bundle: .module))
-        })
-        .padding(.horizontal, Spacing.padding3)
-        .padding(.top, Spacing.padding5)
+            .apply { view in
+                if (referral.promotion?.style).isNil {
+                    view.background(Color("color_code_background", bundle: .module))
+                } else {
+                    view.background(Color.semantic.darkBG)
+                }
+            }
+        }
+        .padding([.top, .horizontal], Spacing.padding3)
     }
 
-    private var stepsSection: some View {
-        VStack(spacing: Spacing.padding4) {
+    private var steps: some View {
+        VStack(alignment: .leading) {
             Text(LocalizedStrings.stepsTitleLabel)
                 .typography(.paragraph1)
-                .foregroundColor(Color.textMuted)
-            VStack(alignment: .leading, spacing: Spacing.padding2, content: {
-                if let steps = referral.criteria {
-                    ForEach(steps.indexed(), id: \.element.id) { index, step in
-                        HStack {
-                            numberView(with: index + 1)
-                            Text(step.text)
-                                .typography(.paragraph1)
-                                .foregroundColor(Color.textTitle)
+                .apply { text in
+                    if (referral.promotion?.style).isNil {
+                        text.foregroundColor(Color.textMuted)
+                    } else if let texture = referral.promotion?.style?.foreground {
+                        text.foregroundTexture(texture)
+                    } else {
+                        text.foregroundColor(Color.semantic.light)
+                    }
+                }
+            if let steps = referral.criteria {
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.semantic.blueBG)
+                        .frame(width: 2, height: 120)
+                        .padding(15.pt)
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(steps.indexed(), id: \.element.id) { index, step in
+                            HStack {
+                                numberView(with: index + 1)
+                                Text(step.text)
+                                    .typography(.paragraph1)
+                                    .apply { text in
+                                        if (referral.promotion?.style).isNil {
+                                            text.foregroundColor(Color.textTitle)
+                                        } else if let texture = referral.promotion?.style?.foreground {
+                                            text.foregroundTexture(texture)
+                                        } else {
+                                            text.foregroundColor(Color.semantic.light)
+                                        }
+                                    }
+                            }
                         }
                     }
                 }
-            })
+            }
         }
         .padding(.top, Spacing.padding5)
     }

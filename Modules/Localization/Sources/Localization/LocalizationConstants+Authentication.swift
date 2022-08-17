@@ -497,7 +497,7 @@ extension LocalizationConstants.FeatureAuthentication {
                 comment: "Create Account screen: State placeholder"
             )
             public static let referralCode = NSLocalizedString(
-                "4787GTEGDBND",
+                "Enter referral code",
                 comment: "Create Account screen: referral code text field placeholder"
             )
         }

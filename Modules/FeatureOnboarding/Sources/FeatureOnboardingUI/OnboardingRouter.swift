@@ -54,16 +54,18 @@ public final class OnboardingRouter: OnboardingRouterAPI {
             .flatMap { [weak self] result -> AnyPublisher<OnboardingResult, Never> in
                 guard let self = self else { return .just(.abandoned) }
                 let app = self.app
-                if
-                    result == .completed,
-                    app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled),
+                if app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled),
                     app.state.yes(if: blockchain.user.is.cowboy.fan)
                 {
-                    return Task<OnboardingResult, Error>.Publisher(priority: .userInitiated) {
-                        try await self.presentCowboyPromotion(from: presenter)
+                    if result == .completed {
+                        return Task<OnboardingResult, Error>.Publisher(priority: .userInitiated) {
+                            try await self.presentCowboyPromotion(from: presenter)
+                        }
+                        .replaceError(with: .abandoned)
+                        .eraseToAnyPublisher()
+                    } else {
+                        return .just(.abandoned)
                     }
-                    .replaceError(with: .abandoned)
-                    .eraseToAnyPublisher()
                 }
                 return self.presentUITour(from: presenter)
             }
