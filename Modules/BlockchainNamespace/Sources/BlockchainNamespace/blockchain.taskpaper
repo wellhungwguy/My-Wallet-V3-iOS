@@ -70,6 +70,13 @@ blockchain:
 				action:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
+			kyc:
+				sdd:
+					cache:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			localized:
 				error:
 					override:
@@ -902,6 +909,7 @@ blockchain:
 					enter:
 						email:
 						phone:
+					finish:
 					force_gold:
 					profile:
 					resubmit:

@@ -23,6 +23,7 @@ public enum KYCPageType: Int {
     case accountStatus
     case accountUsageForm
     case sddVerificationCheck
+    case finish
 }
 
 extension KYCPageType {
@@ -68,6 +69,8 @@ extension KYCPageType {
             return blockchain.ux.kyc.type.state.account.form
         case .sddVerificationCheck:
             return blockchain.ux.kyc.type.state.sdd.verification
+        case .finish:
+            return blockchain.ux.kyc.type.state.finish
         }
     }
 }

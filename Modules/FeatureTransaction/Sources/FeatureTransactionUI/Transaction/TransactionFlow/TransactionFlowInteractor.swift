@@ -518,6 +518,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     guard let self = self else { return }
                     if isComplete {
                         self.linkPaymentMethodOrMoveToNextStep(for: newState)
+                    } else {
+                        self.transactionModel.process(action: .returnToPreviousStep)
                     }
                 }
             default:

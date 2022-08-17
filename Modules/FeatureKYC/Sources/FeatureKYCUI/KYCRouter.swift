@@ -196,8 +196,6 @@ final class KYCRouter: KYCRouterAPI {
             )
         }
 
-        loadingViewPresenter.show(with: LocalizationConstants.loading)
-
         let postTierObservable = post(tier: tier).asObservable()
             .flatMap { [tiersService] tiersResponse in
                 Observable.zip(
@@ -246,6 +244,10 @@ final class KYCRouter: KYCRouterAPI {
                     isSDDVerified: shouldCheckForSDDVerification,
                     hasQuestions: strongSelf.hasQuestions
                 )
+
+                if startingPage == .finish {
+                    return strongSelf.finish()
+                }
 
                 if startingPage != .accountStatus {
                     /// If the starting page is accountStatus, they do not have any additional
@@ -448,6 +450,10 @@ final class KYCRouter: KYCRouterAPI {
             hasQuestions: hasQuestions
         )
 
+        if startingPage == .finish {
+            return
+        }
+
         if startingPage == .accountStatus {
             /// The `tier` on KYCPager cannot be `tier1` if the user's `startingPage` is `.accountStatus`.
             /// If their `startingPage` is `.accountStatus`, they're done.
@@ -510,7 +516,8 @@ final class KYCRouter: KYCRouterAPI {
              .enterPhone,
              .verifyIdentity,
              .resubmitIdentity,
-             .applicationComplete:
+             .applicationComplete,
+             .finish:
             return nil
         }
     }
@@ -531,6 +538,9 @@ final class KYCRouter: KYCRouterAPI {
             isSDDVerified: isSDDVerified,
             hasQuestions: hasQuestions
         )
+        if startingPage == .finish {
+            return
+        }
         var controller: KYCBaseViewController
         if startingPage == .accountStatus {
             controller = pageFactory.createFrom(
@@ -626,7 +636,8 @@ final class KYCRouter: KYCRouterAPI {
              .accountStatus,
              .accountUsageForm,
              .applicationComplete,
-             .resubmitIdentity:
+             .resubmitIdentity,
+             .finish:
             break
         case .enterEmail:
             guard let current = user else { return }

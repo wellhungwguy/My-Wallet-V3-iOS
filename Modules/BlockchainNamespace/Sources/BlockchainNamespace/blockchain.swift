@@ -99,6 +99,7 @@ public extension I_blockchain_app_configuration {
 	var `defi`: L_blockchain_app_configuration_defi { .init("\(__).defi") }
 	var `firebase`: L_blockchain_app_configuration_firebase { .init("\(__).firebase") }
 	var `frequent`: L_blockchain_app_configuration_frequent { .init("\(__).frequent") }
+	var `kyc`: L_blockchain_app_configuration_kyc { .init("\(__).kyc") }
 	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
@@ -350,6 +351,38 @@ public final class L_blockchain_app_configuration_frequent_action: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action", comment: "") }
 }
 public protocol I_blockchain_app_configuration_frequent_action: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc: L, I_blockchain_app_configuration_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc: I {}
+public extension I_blockchain_app_configuration_kyc {
+	var `sdd`: L_blockchain_app_configuration_kyc_sdd { .init("\(__).sdd") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd: L, I_blockchain_app_configuration_kyc_sdd {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd: I {}
+public extension I_blockchain_app_configuration_kyc_sdd {
+	var `cache`: L_blockchain_app_configuration_kyc_sdd_cache { .init("\(__).cache") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache: L, I_blockchain_app_configuration_kyc_sdd_cache {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache: I {}
+public extension I_blockchain_app_configuration_kyc_sdd_cache {
+	var `is`: L_blockchain_app_configuration_kyc_sdd_cache_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache_is: L, I_blockchain_app_configuration_kyc_sdd_cache_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache_is: I {}
+public extension I_blockchain_app_configuration_kyc_sdd_cache_is {
+	var `enabled`: L_blockchain_app_configuration_kyc_sdd_cache_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache_is_enabled: L, I_blockchain_app_configuration_kyc_sdd_cache_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_localized: L, I_blockchain_app_configuration_localized {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized", comment: "") }
 }
@@ -3470,6 +3503,7 @@ public extension I_blockchain_ux_kyc_type_state {
 	var `confirm`: L_blockchain_ux_kyc_type_state_confirm { .init("\(__).confirm") }
 	var `country`: L_blockchain_ux_kyc_type_state_country { .init("\(__).country") }
 	var `enter`: L_blockchain_ux_kyc_type_state_enter { .init("\(__).enter") }
+	var `finish`: L_blockchain_ux_kyc_type_state_finish { .init("\(__).finish") }
 	var `force_gold`: L_blockchain_ux_kyc_type_state_force__gold { .init("\(__).force_gold") }
 	var `profile`: L_blockchain_ux_kyc_type_state_profile { .init("\(__).profile") }
 	var `resubmit`: L_blockchain_ux_kyc_type_state_resubmit { .init("\(__).resubmit") }
@@ -3545,6 +3579,10 @@ public final class L_blockchain_ux_kyc_type_state_enter_phone: L, I_blockchain_u
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.enter.phone", comment: "") }
 }
 public protocol I_blockchain_ux_kyc_type_state_enter_phone: I {}
+public final class L_blockchain_ux_kyc_type_state_finish: L, I_blockchain_ux_kyc_type_state_finish {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.finish", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_finish: I {}
 public final class L_blockchain_ux_kyc_type_state_force__gold: L, I_blockchain_ux_kyc_type_state_force__gold {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.force_gold", comment: "") }
 }
