@@ -16,8 +16,8 @@ public struct CardSuccessRate: Decodable {
             bin: String
         ) {
             self.bin = bin
-            self.block = successRate.block
-            self.ux = successRate.ux
+            block = successRate.block
+            ux = successRate.ux
         }
     }
 }

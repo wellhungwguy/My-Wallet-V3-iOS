@@ -223,6 +223,10 @@ blockchain:
 			finish:
 				launching:
 				+ blockchain.db.type.boolean
+			update:
+			+ blockchain.db.type.boolean
+			+ blockchain.session.state.preference.value
+			+ blockchain.session.state.shared.value
 		enter:
 			into:
 			+ blockchain.ux.type.story
@@ -297,6 +301,9 @@ blockchain:
 				url:
 				+ blockchain.db.type.url
 				+ blockchain.session.state.value
+		version:
+		+ blockchain.session.state.preference.value
+		+ blockchain.session.state.shared.value
 	db:
 		array:
 		collection:

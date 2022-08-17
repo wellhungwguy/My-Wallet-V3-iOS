@@ -25,6 +25,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                         .remote: [
                             "ios_app_maintenance": true,
                             "ios_ff_apple_pay": true,
+                            "ios_ff_app_superapp": true,
                             "blockchain_app_configuration_announcements": ["1", "2", "3"],
                             "blockchain_app_configuration_deep_link_rules": []
                         ]
@@ -111,6 +112,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             [
                 "ios_app_maintenance",
                 "ios_ff_apple_pay",
+                "ios_ff_app_superapp",
                 "!blockchain.app.configuration.manual.login.is.enabled",
                 "blockchain_app_configuration_announcements",
                 "blockchain_app_configuration_deep_link_rules"
@@ -192,6 +194,24 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
             XCTAssertTrue(preference as? Bool == true)
         }
+    }
+
+    func test_fetch_superapp_feature_flag() async throws {
+        let app = App(
+            remoteConfiguration: .init(
+                remote: Mock.RemoteConfiguration(
+                    [
+                        .remote: [
+                            "ios_ff_app_superapp": true
+                        ]
+                    ]
+                ),
+                preferences: Mock.Preferences(),
+                default: [:]
+            )
+        )
+        let superAppEnabled = try await app.get(blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
+        XCTAssertEqual(superAppEnabled, true)
     }
 }
 

@@ -32,6 +32,7 @@ struct RootViewState: Equatable, NavigationState {
     var appSwitcherEnabled: Bool {
         appMode != .both
     }
+
     var appModeSwitcherState: AppModeSwitcherState?
     var accountTotals: AccountTotals?
 }
@@ -164,7 +165,7 @@ let rootMainReducer = Reducer.combine(
                           app: environment.app,
                           recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding
                       )
-                  }
+            }
         )
 )
 
@@ -231,7 +232,7 @@ let rootViewReducer = Reducer<
                 defiWalletBalance: $1,
                 brokerageBalance: $2
             )
-        }
+            }
 
         return .merge(
             .fireAndForget {

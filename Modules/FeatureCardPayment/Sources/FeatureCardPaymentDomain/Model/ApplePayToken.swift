@@ -66,7 +66,7 @@ extension PersonNameComponents {
 
         if #available(iOS 15.0, *) {
             formatter.locale = .Posix
-        } else { }
+        } else {}
 
         formatter.style = .long
         return formatter.string(from: self)

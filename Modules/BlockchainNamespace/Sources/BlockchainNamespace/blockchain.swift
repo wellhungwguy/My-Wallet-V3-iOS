@@ -80,6 +80,7 @@ public extension I_blockchain_app {
 	var `number`: L_blockchain_app_number { .init("\(__).number") }
 	var `performance`: L_blockchain_app_performance { .init("\(__).performance") }
 	var `process`: L_blockchain_app_process { .init("\(__).process") }
+	var `version`: L_blockchain_app_version { .init("\(__).version") }
 }
 public final class L_blockchain_app_configuration: L, I_blockchain_app_configuration {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration", comment: "") }
@@ -983,6 +984,7 @@ public final class L_blockchain_app_did: L, I_blockchain_app_did {
 public protocol I_blockchain_app_did: I {}
 public extension I_blockchain_app_did {
 	var `finish`: L_blockchain_app_did_finish { .init("\(__).finish") }
+	var `update`: L_blockchain_app_did_update { .init("\(__).update") }
 }
 public final class L_blockchain_app_did_finish: L, I_blockchain_app_did_finish {
 	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish", comment: "") }
@@ -995,6 +997,10 @@ public final class L_blockchain_app_did_finish_launching: L, I_blockchain_app_di
 	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish.launching", comment: "") }
 }
 public protocol I_blockchain_app_did_finish_launching: I_blockchain_db_type_boolean {}
+public final class L_blockchain_app_did_update: L, I_blockchain_app_did_update {
+	public override class var localized: String { NSLocalizedString("blockchain.app.did.update", comment: "") }
+}
+public protocol I_blockchain_app_did_update: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_enter: L, I_blockchain_app_enter {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter", comment: "") }
 }
@@ -1249,6 +1255,10 @@ public final class L_blockchain_app_process_deep__link_url: L, I_blockchain_app_
 	public override class var localized: String { NSLocalizedString("blockchain.app.process.deep_link.url", comment: "") }
 }
 public protocol I_blockchain_app_process_deep__link_url: I_blockchain_db_type_url, I_blockchain_session_state_value {}
+public final class L_blockchain_app_version: L, I_blockchain_app_version {
+	public override class var localized: String { NSLocalizedString("blockchain.app.version", comment: "") }
+}
+public protocol I_blockchain_app_version: I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_db: L, I_blockchain_db {
 	public override class var localized: String { NSLocalizedString("blockchain.db", comment: "") }
 }

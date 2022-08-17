@@ -32,6 +32,11 @@ final class ApplicationStateObserver: Session.Observer {
             state.set(blockchain.ui.device.os.version, to: UIDevice.current.systemVersion)
             state.set(blockchain.ui.device.locale.language.code, to: { try Locale.current.languageCode.or(throw: "No languageCode") })
             state.set(blockchain.ui.device.current.local.time, to: { Date() })
+
+            if let versionIsGreater = try? (Bundle.main.plist.version.string > state.get(blockchain.app.version)) {
+                state.set(blockchain.app.did.update, to: versionIsGreater)
+            }
+            state.set(blockchain.app.version, to: Bundle.main.plist.version.string)
         }
 
         didEnterBackgroundNotification = notificationCenter.publisher(for: UIApplication.didEnterBackgroundNotification)

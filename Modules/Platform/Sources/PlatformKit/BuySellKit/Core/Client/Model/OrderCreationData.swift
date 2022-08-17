@@ -79,7 +79,7 @@ public enum OrderPayload {
                 }
 
                 self.redirectURL = redirectURL
-                self.paymentContact = .init(contact: applePay?.billingPaymentContact)
+                paymentContact = .init(contact: applePay?.billingPaymentContact)
                 self.callback = callback
             }
         }

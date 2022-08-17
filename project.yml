@@ -294,6 +294,8 @@ packages:
     path: Modules/FeatureReferral
   FeatureUserDeletion:
     path: Modules/FeatureUserDeletion
+  FeatureSuperAppIntro:
+    path: Modules/FeatureSuperAppIntro
 
 targets:
   Blockchain:
@@ -473,6 +475,9 @@ targets:
         product: FeatureReferral
       - package: FraudIntelligence
         product: FraudIntelligence
+      - package: FeatureSuperAppIntro
+        product: FeatureSuperAppIntro
+
 
     platform: iOS
     postBuildScripts:

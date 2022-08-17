@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>WEBSOCKET_CONVERSION_URL</key>
-	<string>$(WEBSOCKET_CONVERSION_URL)</string>
-	<key>embraceAppId</key>
-	<string>$(EMBRACE_APP_ID)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
 	<key>BLOCKCHAIN_URL</key>
@@ -125,6 +121,10 @@
 	<string>$(WALLET_HELPER)</string>
 	<key>WALLET_SERVER</key>
 	<string>$(WALLET_SERVER)</string>
+	<key>WEBSOCKET_CONVERSION_URL</key>
+	<string>$(WEBSOCKET_CONVERSION_URL)</string>
+	<key>embraceAppId</key>
+	<string>$(EMBRACE_APP_ID)</string>
 	<key>intercomAPIKey</key>
 	<string>$(INTERCOM_API_KEY)</string>
 	<key>intercomAppId</key>

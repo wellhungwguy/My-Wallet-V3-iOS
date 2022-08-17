@@ -7,26 +7,22 @@ import FeatureReferralDomain
 import Foundation
 import SwiftUI
 import ToolKit
-import UIComponentsKit
 
 public final class ReferralAppObserver: Session.Observer {
     unowned let app: AppProtocol
     let referralService: ReferralServiceAPI
     let featureFlagService: FeatureFlagsServiceAPI
-    let topViewController: TopMostViewControllerProviding
 
     private var cancellables: Set<AnyCancellable> = []
 
     public init(
         app: AppProtocol,
         referralService: ReferralServiceAPI,
-        featureFlagService: FeatureFlagsServiceAPI,
-        topViewController: TopMostViewControllerProviding = DIKit.resolve()
+        featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.app = app
         self.referralService = referralService
         self.featureFlagService = featureFlagService
-        self.topViewController = topViewController
     }
 
     var observers: [BlockchainEventSubscription] {

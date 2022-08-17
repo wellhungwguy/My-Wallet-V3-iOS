@@ -16,6 +16,10 @@ public struct Version {
         self.minor = minor
         self.patch = patch
     }
+
+    public var string: String {
+        "\(major).\(minor).\(patch)"
+    }
 }
 
 extension Version {

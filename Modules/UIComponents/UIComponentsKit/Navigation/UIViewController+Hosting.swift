@@ -29,9 +29,14 @@ extension UIViewController {
     /// - Parameters:
     ///   - view: The `SwiftUI.View` to be presented.
     ///   - inNavigationController: If `true` the `UIViewController` hosting the `view` is wrapped within a `UINavigationController`.
-    public func present<Content: View>(_ view: Content, inNavigationController: Bool = false) {
+    public func present<Content: View>(
+        _ view: Content,
+        inNavigationController: Bool = false,
+        modalPresentationStyle: UIModalPresentationStyle = .automatic
+    ) {
         let hostViewController = UIHostingController(rootView: view)
         hostViewController.isModalInPresentation = true
+        hostViewController.modalPresentationStyle = modalPresentationStyle
         let destination: UIViewController
         if inNavigationController {
             let navigationController = UINavigationController(rootViewController: hostViewController)

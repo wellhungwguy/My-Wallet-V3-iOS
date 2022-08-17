@@ -180,7 +180,7 @@ final class CardClient: CardClientAPI {
         )!
         return networkAdapter.perform(request: request)
             .map { (response: CardSuccessRate) in
-                CardSuccessRate.Response.init(response, bin: binNumber)
+                CardSuccessRate.Response(response, bin: binNumber)
             }
             .eraseToAnyPublisher()
     }

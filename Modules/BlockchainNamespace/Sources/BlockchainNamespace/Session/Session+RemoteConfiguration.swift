@@ -32,7 +32,7 @@ extension Session {
             self.preferences = preferences
             let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
-                Task(priority: .userInitiated) {
+                Task(priority: .high) {
                     let cached = preferences.object(
                         forKey: blockchain.session.configuration(\.id)
                     ) as? [String: Any] ?? [:]

@@ -19,7 +19,6 @@ extension AppModeSwitcherModule {
                         .receive(on: DispatchQueue.main)
                         .eraseToEffect()
                         .map(AppModeSwitcherAction.onRecoveryPhraseStatusFetched)
-
                 )
 
             case .onRecoveryPhraseStatusFetched(let isBackedUp, let isSkipped):
