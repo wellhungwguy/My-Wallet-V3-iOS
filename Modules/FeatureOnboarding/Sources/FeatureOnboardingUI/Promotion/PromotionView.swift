@@ -70,6 +70,8 @@ public struct PromotionView: View {
         self.ux = ux
     }
 
+    @State private var isSwipeToDismiss: Bool = true
+
     public var body: some View {
         VStack {
             if let header = ux.header {
@@ -133,11 +135,17 @@ public struct PromotionView: View {
         .backgroundTexture(ux.style?.background)
         .foregroundTexture(ux.style?.foreground)
         .onAppear {
+            isSwipeToDismiss = true
             app.state.transaction { state in
                 state.set(promotion, to: ux)
                 state.set(promotion.action.then.close, to: Session.State.Function(dismiss))
             }
             app.post(event: promotion, context: context)
+        }
+        .onDisappear {
+            if isSwipeToDismiss {
+                app.post(event: promotion.action.then.close, context: context)
+            }
         }
         .apply { view in
             #if os(iOS)
@@ -146,7 +154,10 @@ public struct PromotionView: View {
                     leading: EmptyView(),
                     trailing: IconButton(
                         icon: Icon.closeCirclev2,
-                        action: { app.post(event: promotion.action.then.close, context: context) }
+                        action: {
+                            isSwipeToDismiss = false
+                            app.post(event: promotion.action.then.close, context: context)
+                        }
                     )
                 )
             #endif
@@ -156,6 +167,7 @@ public struct PromotionView: View {
     }
 
     private func post(action ux: UX.Action) {
+        isSwipeToDismiss = false
         Task(priority: .userInitiated) { @MainActor in
             switch ux.url {
             case let url?:
@@ -175,7 +187,9 @@ public struct PromotionView: View {
     }
 
     private func dismiss() {
-        presentationMode.wrappedValue.dismiss()
+        if presentationMode.wrappedValue.isPresented {
+            presentationMode.wrappedValue.dismiss()
+        }
     }
 }
 
