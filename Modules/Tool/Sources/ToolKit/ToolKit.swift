@@ -1,3 +1,4 @@
-@_exported import Algorithms
 @_exported import BigInt
-@_exported import Collections
+@_exported import SwiftExtensions
+@_exported import CombineExtensions
+@_exported import AsyncExtensions

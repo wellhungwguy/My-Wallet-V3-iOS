@@ -9,7 +9,7 @@ public enum ForgetWalletError: Error {
 }
 
 public protocol ForgetWalletAPI {
-    func forget() -> AnyPublisher<EmptyValue, ForgetWalletError>
+    func forget() -> AnyPublisher<Void, ForgetWalletError>
 }
 
 final class ForgetWallet: ForgetWalletAPI {
@@ -28,7 +28,7 @@ final class ForgetWallet: ForgetWalletAPI {
         self.walletPersistence = walletPersistence
     }
 
-    func forget() -> AnyPublisher<EmptyValue, ForgetWalletError> {
+    func forget() -> AnyPublisher<Void, ForgetWalletError> {
         walletRepo.set(value: .empty)
         walletState.release()
         return walletPersistence.delete()

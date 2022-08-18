@@ -44,3 +44,4 @@ final class StellarWallet: StellarWalletBridgeAPI {
         return xlmAccountsRaw.castJsonObjects(type: StellarWalletAccount.self)
     }
 }
+

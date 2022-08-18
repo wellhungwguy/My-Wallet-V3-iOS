@@ -164,7 +164,7 @@ private func searchAccounts(
         }
         return address.nTx
     }
-    return foundTxs.anySatisfy(isAccountUsed)
+    return foundTxs.any(isAccountUsed)
 }
 
 /// A simple method extracted for readability

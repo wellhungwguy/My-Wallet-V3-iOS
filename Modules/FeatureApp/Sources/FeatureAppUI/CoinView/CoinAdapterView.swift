@@ -447,7 +447,7 @@ extension TransactionsRouterAPI {
 
     @discardableResult
     func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
-        await presentTransactionFlow(to: action).values.first
+        try? await presentTransactionFlow(to: action).stream().next()
     }
 }
 
@@ -457,6 +457,6 @@ extension CoincoreAPI {
         supporting action: AssetAction? = nil,
         filter: AssetFilter = .all
     ) async throws -> [CryptoAccount] {
-        try await cryptoAccounts(for: cryptoCurrency, supporting: action, filter: filter).values.first ?? []
+        try await cryptoAccounts(for: cryptoCurrency, supporting: action, filter: filter).stream().next()
     }
 }

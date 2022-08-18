@@ -248,9 +248,9 @@ class WalletLogicTests: XCTestCase {
             addressBook: nil
         )
 
-        let masterNode = getMasterNode(from: wallet).successData!
+        let masterNode = getMasterNode(from: wallet).success!
 
-        let expectedMasterKey = MasterKey.from(masterNode: masterNode).successData!
+        let expectedMasterKey = MasterKey.from(masterNode: masterNode).success!
 
         provideMetadataInput(
             password: "password",

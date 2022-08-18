@@ -908,7 +908,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.change.payment.method) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .selectSource else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .selectSource else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showSourceSelection)
         }
@@ -917,7 +918,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.add.card) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkACard else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkACard else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showCardLinkingFlow)
         }
@@ -926,7 +928,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.add.bank) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkABank else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkABank else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankLinkingFlow)
         }
@@ -935,7 +938,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.add.account) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkPaymentMethod else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkPaymentMethod else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showAddAccountFlow)
         }
@@ -958,7 +962,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkBankViaWire else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkBankViaWire else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankWiringInstructions)
         }

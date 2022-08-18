@@ -1,7 +1,7 @@
 import AnyCoding
 import struct BlockchainComponentLibrary.Texture
 import Foundation
-import ToolKit
+import Extensions
 
 extension UX {
 

@@ -28,15 +28,6 @@
       }
     },
     {
-      "identity" : "swift-argument-parser",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-argument-parser",
-      "state" : {
-        "revision" : "83b23d940471b313427da226196661856f6ba3e0",
-        "version" : "0.4.4"
-      }
-    },
-    {
       "identity" : "swift-case-paths",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
@@ -59,7 +50,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-markdown.git",
       "state" : {
-        "revision" : "1023300b1d6847360ac9ceebbcff2bccacbcf2a5"
+        "revision" : "52563fc74a540b29854fde20e836b27394be2749"
       }
     },
     {

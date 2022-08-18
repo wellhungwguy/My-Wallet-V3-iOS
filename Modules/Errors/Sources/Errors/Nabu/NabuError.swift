@@ -2,7 +2,7 @@
 
 import AnyCoding
 import Foundation
-import ToolKit
+import Extensions
 
 public typealias NabuNetworkError = Nabu.Error
 public typealias NabuError = Nabu.Error

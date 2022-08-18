@@ -27,17 +27,18 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../Localization"),
-        .package(path: "../Tool")
+        .package(path: "../Extensions"),
+        .package(path: "../AnyCoding")
     ],
     targets: [
         .target(
             name: "Errors",
             dependencies: [
-                .product(name: "AnyCoding", package: "BlockchainNamespace"),
+                .product(name: "AnyCoding", package: "AnyCoding"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "Collections", package: "swift-collections"),
-                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "Extensions", package: "Extensions"),
                 .product(name: "Localization", package: "Localization")
             ]
         ),

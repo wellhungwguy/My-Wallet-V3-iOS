@@ -234,7 +234,7 @@ let rootViewReducer = Reducer<
             )
             }
 
-        return .merge(
+        return Effect<RootViewAction, Never>.merge(
             .fireAndForget {
                 environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
             },

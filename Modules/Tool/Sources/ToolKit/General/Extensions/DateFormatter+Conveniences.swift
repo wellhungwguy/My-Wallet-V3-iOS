@@ -28,20 +28,6 @@ extension DateFormatter {
         return formatter
     }()
 
-    public static var nominalReadable: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM. dd, yyyy"
-        formatter.isLenient = true
-        return formatter
-    }
-
-    public static func ddMMyyyy(separatedBy separator: String) -> DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd\(separator)MM\(separator)yyyy"
-        formatter.isLenient = true
-        return formatter
-    }
-
     public static var elegantDateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -83,13 +69,6 @@ extension DateFormatter {
     public static let cardExpirationDate: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/yyyy"
-        formatter.isLenient = true
-        return formatter
-    }()
-
-    static let HTTPRequestDateFormat: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:SS'Z'"
         formatter.isLenient = true
         return formatter
     }()

@@ -13,7 +13,7 @@ public enum WalletRepoPersistenceError: Error, Equatable {
 public protocol WalletRepoPersistenceAPI {
     /// Begins the internal persist operation by monitor changes in the `WalletRepo`
     /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
-    func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError>
+    func beginPersisting() -> AnyPublisher<Void, WalletRepoPersistenceError>
 
     /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
     /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
@@ -21,5 +21,5 @@ public protocol WalletRepoPersistenceAPI {
 
     /// Deletes `WalletRepo` value from Keychain
     /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
-    func delete() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError>
+    func delete() -> AnyPublisher<Void, WalletRepoPersistenceError>
 }

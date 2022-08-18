@@ -43,8 +43,8 @@ final class LocalLogMessaging: LogMessageServiceAPI {
     }
 
     func logWarning(message: String, properties: [String: String]?) {
-        message.peek(as: .warning)
-        properties?.peek(as: .warning)
+        message.peek(as: .debug)
+        properties?.peek(as: .debug)
     }
 
     func logInfo(message: String, properties: [String: String]?) {

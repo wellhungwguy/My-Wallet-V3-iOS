@@ -153,7 +153,7 @@ class WalletTests: XCTestCase {
         let seedHexFromDoubleEncryptedWallet = getSeedHex(
             from: encryptedWallet,
             secondPassword: secondPassword
-        ).successData
+        ).success
 
         // then
         XCTAssertNotNil(seedHexFromDoubleEncryptedWallet)
@@ -162,7 +162,7 @@ class WalletTests: XCTestCase {
         // given
         let wallet = NativeWallet.from(blockchainWallet: blockchainWalletV4)
         // when
-        let seedHex = getSeedHex(from: wallet).successData
+        let seedHex = getSeedHex(from: wallet).success
 
         // then
         XCTAssertNotNil(seedHex)

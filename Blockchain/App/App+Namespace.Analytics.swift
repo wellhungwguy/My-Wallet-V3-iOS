@@ -16,7 +16,7 @@ final class AppAnalyticsObserver: Session.Observer {
         }
 
         let name: String
-        let context: [String: Either<Tag.Reference, Anything>]?
+        let context: [String: Either<Tag.Reference, AnyJSON>]?
         let condition: Condition?
     }
 

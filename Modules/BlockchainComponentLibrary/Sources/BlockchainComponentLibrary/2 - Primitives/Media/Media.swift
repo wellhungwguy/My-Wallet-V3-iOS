@@ -2,6 +2,8 @@
 
 import AVKit
 import CasePaths
+import Extensions
+import Nuke
 import NukeUI
 import SwiftUI
 import UniformTypeIdentifiers
@@ -38,8 +40,12 @@ public struct AsyncMedia<Content: View>: View {
 
     @ViewBuilder
     private func which(_ state: LazyImageState) -> some View {
-        if let image = state.image {
+        if let image: NukeUI.Image = state.image {
+            #if os(macOS)
+            content(.success(image))
+            #else
             content(.success(image.resizingMode(.aspectFit)))
+            #endif
         } else if let error = state.error {
             content(.failure(error))
         } else {

@@ -155,21 +155,22 @@ extension TransactionState {
 extension TransactionState: Equatable {
 
     static func == (lhs: TransactionState, rhs: TransactionState) -> Bool {
-        lhs.action == rhs.action
-            && lhs.allowFiatInput == rhs.allowFiatInput
-            && lhs.destination?.label == rhs.destination?.label
-            && lhs.exchangeRates == rhs.exchangeRates
-            && lhs.errorState == rhs.errorState
-            && lhs.executionStatus == rhs.executionStatus
-            && lhs.isGoingBack == rhs.isGoingBack
-            && lhs.nextEnabled == rhs.nextEnabled
-            && lhs.pendingTransaction == rhs.pendingTransaction
-            && lhs.source?.identifier == rhs.source?.identifier
-            && lhs.step == rhs.step
-            && lhs.stepsBackStack == rhs.stepsBackStack
-            && lhs.availableSources?.map(\.identifier) == rhs.availableSources?.map(\.identifier)
-            && lhs.availableTargets?.map(\.label) == rhs.availableTargets?.map(\.label)
-            && lhs.userKYCStatus == rhs.userKYCStatus
+        guard lhs.action == rhs.action else { return false }
+        guard lhs.allowFiatInput == rhs.allowFiatInput else { return false }
+        guard lhs.destination?.label == rhs.destination?.label else { return false }
+        guard lhs.exchangeRates == rhs.exchangeRates else { return false }
+        guard lhs.errorState == rhs.errorState else { return false }
+        guard lhs.executionStatus == rhs.executionStatus else { return false }
+        guard lhs.isGoingBack == rhs.isGoingBack else { return false }
+        guard lhs.nextEnabled == rhs.nextEnabled else { return false }
+        guard lhs.pendingTransaction == rhs.pendingTransaction else { return false }
+        guard lhs.source?.identifier == rhs.source?.identifier else { return false }
+        guard lhs.step == rhs.step else { return false }
+        guard lhs.stepsBackStack == rhs.stepsBackStack else { return false }
+        guard lhs.availableSources?.map(\.identifier) == rhs.availableSources?.map(\.identifier) else { return false }
+        guard lhs.availableTargets?.map(\.label) == rhs.availableTargets?.map(\.label) else { return false }
+        guard lhs.userKYCStatus == rhs.userKYCStatus else { return false }
+        return true
     }
 }
 

@@ -25,9 +25,7 @@ class KeychainWriterTests: XCTestCase {
         )
 
         switch writer.write(value: Data(), for: "some-key") {
-        case .success(let value):
-            // - naive check here —
-            XCTAssertEqual(value, .noValue)
+        case .success: break
         case .failure(let error):
             XCTFail(error.localizedDescription)
         }
@@ -110,9 +108,7 @@ class KeychainWriterTests: XCTestCase {
         )
 
         switch writer.remove(for: "some-key") {
-        case .success(let value):
-            // - naive check here —
-            XCTAssertEqual(value, .noValue)
+        case .success: break
         case .failure(let error):
             XCTFail(error.localizedDescription)
         }

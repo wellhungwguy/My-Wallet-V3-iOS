@@ -52,3 +52,10 @@ extension NumberFormatter {
         return formattedString
     }
 }
+
+extension Character {
+    public func inSet(characterSet: CharacterSet) -> Bool {
+        CharacterSet(charactersIn: "\(self)").isSubset(of: characterSet)
+    }
+}
+

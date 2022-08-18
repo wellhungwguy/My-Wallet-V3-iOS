@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import ToolKit
 
 /// Types adopting the `KeychainWriterAPI` should provide write access to the keychain
 protocol KeychainWriterAPI {
@@ -16,13 +15,13 @@ protocol KeychainWriterAPI {
     func write(
         value: Data,
         for key: String
-    ) -> Result<EmptyValue, KeychainWriterError>
+    ) -> Result<Void, KeychainWriterError>
 
     /// Removes a value from the Keychain
     /// - Parameter key: A `String` value for the key
     func remove(
         for key: String
-    ) -> Result<EmptyValue, KeychainWriterError>
+    ) -> Result<Void, KeychainWriterError>
 }
 
 /// Provides write access to Keychain
@@ -49,7 +48,7 @@ final class KeychainWriter: KeychainWriterAPI {
     func write(
         value: Data,
         for key: String
-    ) -> Result<EmptyValue, KeychainWriterError> {
+    ) -> Result<Void, KeychainWriterError> {
 
         var keychainQuery = queryProvider.query()
         keychainQuery[kSecAttrAccount as String] = key
@@ -76,12 +75,12 @@ final class KeychainWriter: KeychainWriterAPI {
                 )
             )
         }
-        return .success(.noValue)
+        return .success(())
     }
 
     func remove(
         for key: String
-    ) -> Result<EmptyValue, KeychainWriterError> {
+    ) -> Result<Void, KeychainWriterError> {
         let keychainQuery = queryProvider.query()
 
         let status = coreRemover(keychainQuery as CFDictionary)
@@ -93,6 +92,6 @@ final class KeychainWriter: KeychainWriterAPI {
                 )
             )
         }
-        return .success(.noValue)
+        return .success(())
     }
 }

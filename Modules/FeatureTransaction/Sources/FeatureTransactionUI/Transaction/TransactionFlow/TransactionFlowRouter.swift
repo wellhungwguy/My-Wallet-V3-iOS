@@ -433,7 +433,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
         Task(priority: .userInitiated) {
             let country: String = try app.state.get(blockchain.user.address.country.code)
-            let isArgentinaLinkBankEnabled: Bool = try await isArgentinaLinkBankEnabled.await() ?? false
+            let isArgentinaLinkBankEnabled: Bool = (try? await isArgentinaLinkBankEnabled.await()) ?? false
             if isArgentinaLinkBankEnabled, country.isArgentina {
                 try await presentBINDLinkABank(transactionModel: transactionModel)
             } else {
@@ -456,7 +456,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private func presentBINDLinkABank(
         transactionModel: TransactionModel
     ) async throws {
-        guard let state = try await transactionModel.state.await() else { return }
+        let state = try await transactionModel.state.await()
         guard let fiat = (state.source?.currencyType ?? state.destination?.currencyType)?.fiatCurrency else {
             return assertionFailure("Expected one fiat currency to create a BIND beneficiary")
         }

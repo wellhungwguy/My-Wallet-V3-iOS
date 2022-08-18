@@ -9,9 +9,9 @@ import WalletPayloadKit
 extension ForgetWalletService {
     public static func mock(called: @escaping () -> Void) -> Self {
         ForgetWalletService(
-            forget: { () -> AnyPublisher<EmptyValue, ForgetWalletError> in
+            forget: { () -> AnyPublisher<Void, ForgetWalletError> in
                 called()
-                return .just(.noValue)
+                return .just(())
             }
         )
     }
