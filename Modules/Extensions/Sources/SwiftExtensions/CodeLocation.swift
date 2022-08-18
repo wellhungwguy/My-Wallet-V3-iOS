@@ -19,7 +19,7 @@ public struct CodeLocation: Codable, Hashable, CustomDebugStringConvertible, Cus
     }
 
     public var debugDescription: String {
-        "← \(function)\t\(file)\t\(line)"
+        "← \(file):\(line) @ \(function)"
     }
 
     public var description: String {
@@ -27,6 +27,6 @@ public struct CodeLocation: Codable, Hashable, CustomDebugStringConvertible, Cus
         if let i = __.lastIndex(of: "/") {
             __ = __.suffix(from: __.index(after: i)).description
         }
-        return "← \(function)\t\(__):\(line)"
+        return "← \(__):\(line)"
     }
 }
