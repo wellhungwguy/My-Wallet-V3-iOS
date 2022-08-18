@@ -78,7 +78,7 @@ final class OnboardingViewsFactory {
                         requiredTier: .tier2
                     ) { result in
                         // view is dismissed automatically, so, no need to do that
-                        completion(result == .completed)
+                        completion(result == .completed || result == .skipped)
                     }
                 }
             },

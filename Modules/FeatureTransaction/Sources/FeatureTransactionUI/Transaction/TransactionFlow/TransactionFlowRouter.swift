@@ -623,7 +623,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
         kycRouter
             .presentKYCUpgradeFlow(from: presenter)
-            .map { result -> Bool in result == .completed }
+            .map { result -> Bool in result == .completed || result == .skipped }
             .sink(receiveValue: completion)
             .store(in: &cancellables)
     }
