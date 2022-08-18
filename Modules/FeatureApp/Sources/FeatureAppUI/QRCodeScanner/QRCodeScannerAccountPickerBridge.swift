@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import FeatureQRCodeScannerDomain
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 /// Implements an AccountPickerAccountProviding & AccountPickerListener bridge for QRCodeScannerAdapter.
 final class QRCodeScannerAccountPickerBridge {
@@ -65,6 +67,10 @@ extension QRCodeScannerAccountPickerBridge: AccountPickerListener {
 
     func didSelectActionButton() {
         eventsSubject.send(.finished)
+    }
+
+    func didSelect(ux: UX.Dialog) {
+        unimplemented()
     }
 
     func didTapBack() {

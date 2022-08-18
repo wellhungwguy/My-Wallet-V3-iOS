@@ -2,6 +2,8 @@
 
 import BlockchainComponentLibrary
 import ComposableArchitecture
+import Errors
+import ErrorsUI
 import FeatureAccountPickerDomain
 import Localization
 import SwiftUI
@@ -56,7 +58,10 @@ struct AccountPickerRowView<
                 .addPrimaryDivider()
             case .paymentMethodAccount(let model):
                 PaymentMethodRow(
-                    model: model
+                    model: model,
+                    badgeTapped: { ux in
+                        send(.ux(ux))
+                    }
                 )
                 .backport
                 .addPrimaryDivider()
@@ -181,9 +186,10 @@ private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View
 private struct PaymentMethodRow: View {
 
     let model: AccountPickerRow.PaymentMethod
+    let badgeTapped: (UX.Dialog) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 0) {
                 ZStack {
                     model.badgeView
@@ -208,6 +214,14 @@ private struct PaymentMethodRow: View {
                 }
                 .offset(x: 0, y: -2) // visually align due to font padding
                 Spacer()
+            }
+            if let ux = model.ux {
+                BadgeView(title: ux.title, style: model.block ? .error : .warning)
+                    .onTapGesture {
+                        badgeTapped(ux)
+                    }
+                    .padding(.leading, 64.pt)
+                    .frame(height: 24.pt)
             }
         }
         .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))

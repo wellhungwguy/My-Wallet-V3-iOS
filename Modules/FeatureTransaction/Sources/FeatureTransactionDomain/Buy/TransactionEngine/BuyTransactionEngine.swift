@@ -110,9 +110,22 @@ final class BuyTransactionEngine: TransactionEngine {
         makeTransaction(amount: amount)
     }
 
+    func validateAmount(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        defaultValidateAmount(pendingTransaction: pendingTransaction)
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                self.validateIfSourceAccountIsBlocked(pendingTransaction)
+            }
+            .observe(on: MainScheduler.asyncInstance)
+    }
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmount(pendingTransaction: pendingTransaction)
-            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+        validateIfSourceAccountIsBlocked(pendingTransaction)
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                self.validateAmount(pendingTransaction: pendingTransaction)
+                    .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+            }
             .observe(on: MainScheduler.asyncInstance)
     }
 
@@ -262,6 +275,25 @@ extension BuyTransactionEngine {
         case limitsError(TransactionLimitsServiceError)
     }
 
+    private func validateIfSourceAccountIsBlocked(
+        _ pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
+            return .error(TransactionValidationFailure(state: .optionInvalid))
+        }
+        if let ux = sourceAccount.paymentMethodType.ux {
+            guard !sourceAccount.paymentMethodType.block else {
+                return .just(
+                    pendingTransaction
+                        .update(
+                            validationState: .sourceAccountUsageIsBlocked(ux)
+                        )
+                )
+            }
+        }
+        return .just(pendingTransaction)
+    }
+
     private func makeTransaction(amount: MoneyValue? = nil) -> Single<PendingTransaction> {
         guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
@@ -289,6 +321,9 @@ extension BuyTransactionEngine {
             )
         }
         .asSingle()
+        .flatMap { pendingTransaction in
+            self.validateIfSourceAccountIsBlocked(pendingTransaction)
+        }
         .observe(on: MainScheduler.asyncInstance)
     }
 

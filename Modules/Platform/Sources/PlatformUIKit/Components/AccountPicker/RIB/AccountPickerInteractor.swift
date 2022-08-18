@@ -3,6 +3,7 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import Errors
 import MoneyKit
 import PlatformKit
 import RIBs
@@ -129,6 +130,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             searchRelay.accept(string)
         case .button:
             listener?.didSelectActionButton()
+        case .ux(let ux):
+            listener?.didSelect(ux: ux)
         case .none:
             break
         }
@@ -146,6 +149,7 @@ extension AccountPickerInteractor {
         case select(BlockchainAccount)
         case back
         case closed
+        case ux(UX.Dialog)
         case filter(String?)
         case button
         case none

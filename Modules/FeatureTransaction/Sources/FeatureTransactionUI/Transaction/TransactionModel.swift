@@ -274,6 +274,8 @@ final class TransactionModel {
             return nil
         case .showEnterAmount:
             return nil
+        case .showUxDialogSuggestion:
+            return nil
         }
     }
 

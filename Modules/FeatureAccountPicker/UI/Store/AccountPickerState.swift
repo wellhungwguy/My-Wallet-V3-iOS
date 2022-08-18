@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import ComposableArchitectureExtensions
+import Errors
 import SwiftUI
 
 enum AccountPickerError: Error {
@@ -18,6 +19,7 @@ struct AccountPickerState: Equatable {
 
     var prefetching = PrefetchingState(debounce: 0.25)
     var selected: AccountPickerRow.ID?
+    var ux: UX.Dialog?
 }
 
 struct Rows: Equatable {

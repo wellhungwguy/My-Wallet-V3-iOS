@@ -38,6 +38,8 @@ public enum TransactionValidationState: Equatable {
     /// Takes the ineligibility reason as a parameter
     case accountIneligible(ProductIneligibility)
 
+    case sourceAccountUsageIsBlocked(UX.Dialog)
+
     // MARK: - Not checked
 
     case noSourcesAvailable

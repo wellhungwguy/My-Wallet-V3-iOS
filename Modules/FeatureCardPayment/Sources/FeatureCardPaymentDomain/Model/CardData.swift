@@ -18,6 +18,7 @@ public struct CardData {
         year: String,
         cvv: String,
         topLimit: FiatValue,
+        block: Bool = false,
         billingAddress: BillingAddress? = nil,
         lastError: String? = nil,
         ux: UX.Dialog? = nil
@@ -36,6 +37,7 @@ public struct CardData {
         self.topLimit = topLimit
         self.billingAddress = billingAddress
         self.lastError = lastError
+        self.block = block
         self.ux = ux
     }
 
@@ -83,6 +85,10 @@ public struct CardData {
 
     // Error which should be displayed
     public let ux: UX.Dialog?
+
+    // Whether or not the card should be blocked from
+    // being used as a payment method
+    public let block: Bool
 
     public func data(byAppending billingAddress: BillingAddress) -> CardData {
         var data = self
@@ -139,6 +145,7 @@ extension CardData {
         self.currency = currency
         partner = response.partner
         self.billingAddress = BillingAddress(response: billingAddress)
+        block = response.block
         ux = response.ux
         lastError = response.lastError
     }
@@ -199,6 +206,7 @@ extension CardData {
         identifier = ""
         topLimit = .zero(currency: .USD)
         ux = nil
+        block = false
         lastError = nil
     }
 }

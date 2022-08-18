@@ -21,9 +21,34 @@ final class AccountAuxiliaryView: UIView {
                 .drive(titleLabel.rx.content)
                 .disposed(by: disposeBag)
 
+            // If there is a badge to be displayed, we hide the subtitle.
+            // We do this as this views height is hard coded in the
+            // `EnterAmountViewController`.
+            Driver.combineLatest(
+                presenter
+                    .subtitleLabel,
+                presenter
+                    .badgeViewVisiblity
+            )
+            .map { $0.1.isHidden ? $0.0 : .empty }
+            .drive(subtitleLabel.rx.content)
+            .disposed(by: disposeBag)
+
             presenter
-                .subtitleLabel
-                .drive(subtitleLabel.rx.content)
+                .badgeViewVisiblity
+                .map { $0.isHidden ? 0.0 : 24.0 }
+                .drive(badgeView.rx.rx_heightAnchor)
+                .disposed(by: disposeBag)
+
+            presenter
+                .badgeViewModel
+                .drive(badgeView.rx.badgeViewModel)
+                .disposed(by: disposeBag)
+
+            presenter
+                .badgeViewVisiblity
+                .map(\.inverted)
+                .drive(subtitleLabel.rx.visibility)
                 .disposed(by: disposeBag)
 
             presenter
@@ -52,6 +77,7 @@ final class AccountAuxiliaryView: UIView {
 
     private let button = UIButton()
     private let titleLabel = UILabel()
+    private let badgeView = BadgeView()
     private let subtitleLabel = UILabel()
     private let stackView = UIStackView()
     private let separatorView = UIView()
@@ -71,6 +97,8 @@ final class AccountAuxiliaryView: UIView {
         addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(subtitleLabel)
+        stackView.addArrangedSubview(badgeView)
+
         addSubview(badgeImageView)
         addSubview(separatorView)
         addSubview(disclosureImageView)
@@ -78,6 +106,7 @@ final class AccountAuxiliaryView: UIView {
 
         button.fillSuperview()
         badgeImageView.layoutToSuperview(.centerY)
+        badgeImageView.layout(size: .init(edge: Sizing.badge))
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.inner)
 
         disclosureImageView.layoutToSuperview(.trailing, offset: -Spacing.inner)
@@ -87,7 +116,18 @@ final class AccountAuxiliaryView: UIView {
         disclosureImageView.image = Icon.chevronRight.uiImage
 
         stackView.layoutToSuperview(.centerY)
-        stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)
+        stackView.layout(
+            edge: .leading,
+            to: .trailing,
+            of: badgeImageView,
+            offset: Spacing.inner
+        )
+        stackView.layout(
+            edge: .trailing,
+            to: .leading,
+            of: disclosureImageView,
+            offset: -Spacing.inner
+        )
 
         stackView.axis = .vertical
         stackView.spacing = 4.0

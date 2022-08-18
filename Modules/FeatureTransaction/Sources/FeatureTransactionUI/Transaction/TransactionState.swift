@@ -55,6 +55,8 @@ struct TransactionState: StateType {
     var errorState: TransactionErrorState = .none
     var order: TransactionOrder?
 
+    var dialog: UX.Dialog?
+
     /// `userKYCStatus` is `nil` until a transaction initializes.
     var userKYCStatus: KYCStatus?
 
@@ -402,6 +404,14 @@ enum TransactionFlowStep: Equatable {
     case confirmDetail
     case inProgress
     case error
+    /// A `UX` view that is shown when a user has interacted
+    /// with something that returns a `UX.Dialog`. An example of this
+    /// is when the user taps on a badge that indicates a high
+    /// failure rate card on the source selection screen
+    case uxFromUserInteraction
+    /// A `UX` view that is shown when the `TransactionErrorState`
+    /// returns a `UX.Dialog`. This happens on the `Enter Amount` screen.
+    case uxFromErrorState
     case securityConfirmation
     case errorRecoveryInfo
     case closed
@@ -428,6 +438,8 @@ extension TransactionFlowStep {
              .linkPaymentMethod,
              .linkACard,
              .linkABank,
+             .uxFromUserInteraction,
+             .uxFromErrorState,
              .securityConfirmation,
              .authorizeOpenBanking:
             return false
@@ -455,6 +467,8 @@ extension TransactionFlowStep {
              .initial,
              .selectSource,
              .selectTarget,
+             .uxFromErrorState,
+             .uxFromUserInteraction,
              .validateSource:
             return false
         }

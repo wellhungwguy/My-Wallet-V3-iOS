@@ -475,7 +475,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     }
 
     private func canShowErrorAction(for state: TransactionState) -> Bool {
-        state.errorState != .none && state.pendingTransaction?.amount.isZero == false
+        guard !state.errorState.isUX else { return true }
+        let isZero = state.pendingTransaction?.amount.isZero ?? true
+        return !state.errorState.isNone && !isZero
     }
 
     private func topAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
@@ -609,7 +611,8 @@ extension TransactionState {
 
         case .overMaximumSourceLimit,
              .overMaximumPersonalLimit,
-             .insufficientFunds:
+             .insufficientFunds,
+             .ux:
             return .invalidInput(message)
 
         case .belowMinimumLimit:
