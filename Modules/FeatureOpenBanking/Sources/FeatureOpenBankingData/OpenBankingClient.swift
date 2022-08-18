@@ -209,10 +209,7 @@ extension OpenBanking.BankAccount {
                 guard let url = account.attributes.authorisationUrl else { return }
                 guard let path = account.attributes.callbackPath else { return }
                 banking.app.state.transaction { state in
-                    state.set(
-                        blockchain.ux.payment.method.open.banking.authorisation.url,
-                        to: url
-                    )
+                    banking.app.post(value: url, of: blockchain.ux.payment.method.open.banking.authorisation.url)
                     state.set(
                         blockchain.ux.payment.method.open.banking.callback.path,
                         to: path.dropPrefix("nabu-gateway").string
@@ -338,10 +335,7 @@ extension OpenBanking.Order {
             .handleEvents(receiveOutput: { [banking] order in
                 banking.app.state.transaction { state in
                     if let url = order.attributes?.authorisationUrl, let callback = order.attributes?.callbackPath {
-                        state.set(
-                            blockchain.ux.payment.method.open.banking.authorisation.url,
-                            to: url
-                        )
+                        banking.app.post(value: url, of: blockchain.ux.payment.method.open.banking.authorisation.url)
                         state.set(
                             blockchain.ux.payment.method.open.banking.callback.path,
                             to: callback.dropPrefix("nabu-gateway").string
