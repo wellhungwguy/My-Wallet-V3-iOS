@@ -34,22 +34,34 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private let floatingViewContainer = UIView()
     private var onboardingChecklistViewController: UIViewController? {
-        willSet {
-            onboardingChecklistViewController?.view.removeFromSuperview()
-            onboardingChecklistViewController?.removeFromParent()
-        }
         didSet {
             guard onboardingChecklistViewController != oldValue else {
                 return
             }
             if let onboardingChecklistViewController = onboardingChecklistViewController {
-                add(child: onboardingChecklistViewController)
+
+                addChild(onboardingChecklistViewController)
                 onboardingChecklistViewController.view.backgroundColor = .clear
+                onboardingChecklistViewController.view.alpha = 0
                 floatingViewContainer.addSubview(onboardingChecklistViewController.view)
                 onboardingChecklistViewController.view.constraint(edgesTo: floatingViewContainer)
-                showFloatingViewContent()
-            } else {
-                hideFloatingViewContent()
+                self.floatingViewContainer.isHidden = false
+                UIView.animate(withDuration: 0.3, delay: 0, options: .transitionFlipFromBottom) {
+                    onboardingChecklistViewController.view.alpha = 1
+                    self.showFloatingViewContent()
+                } completion: { _ in
+                    onboardingChecklistViewController.didMove(toParent: self)
+                }
+            } else if let onboardingChecklistViewController = oldValue {
+                onboardingChecklistViewController.willMove(toParent: nil)
+                UIView.animate(withDuration: 0.3, delay: 0, options: .transitionFlipFromBottom) {
+                    onboardingChecklistViewController.view.alpha = 0
+                    self.hideFloatingViewContent()
+                } completion: { _ in
+                    self.floatingViewContainer.isHidden = true
+                    onboardingChecklistViewController.view.removeFromSuperview()
+                    onboardingChecklistViewController.removeFromParent()
+                }
             }
         }
     }
@@ -91,6 +103,14 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         NotificationCenter.when(.transaction) { [weak self] _ in
             self?.presenter.refreshRelay.accept(())
         }
+
+        app.on(blockchain.ux.kyc.event.did.finish) { @MainActor [weak self] _ in
+            self?.onboardingChecklistViewController = nil
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+            self?.presentOnboardingChecklistView()
+        }
+        .subscribe()
+        .store(withLifetimeOf: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -222,13 +242,11 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
     }
 
     private func showFloatingViewContent() {
-        floatingViewContainer.isHidden = false
         // pad the table view in order to let the last cell scroll past the floating view with some padding
         tableView.contentInset.bottom = Spacing.padding3 + BuyButtonView.height + Spacing.padding1
     }
 
     private func hideFloatingViewContent() {
-        floatingViewContainer.isHidden = true
         // reset the table view inset
         tableView.contentInset.bottom = 0
     }
