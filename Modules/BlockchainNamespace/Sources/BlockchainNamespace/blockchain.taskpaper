@@ -131,6 +131,11 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			referral:
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			remote:
 				is:
 					stale:
@@ -580,6 +585,25 @@ blockchain:
 	user:
 	+ blockchain.db.collection
 		account:
+			kyc:
+			+ blockchain.db.collection
+				limits:
+					annual:
+					+ blockchain.db.type.bigint
+					currency:
+					+ blockchain.db.type.string
+					daily:
+					+ blockchain.db.type.bigint
+				name:
+				+ blockchain.db.type.string
+				state:
+				+ blockchain.db.type.enum
+					expired:
+					none:
+					pending:
+					rejected:
+					under_review:
+					verified:
 			tier:
 			+ blockchain.db.type.enum
 				gold:
@@ -946,6 +970,12 @@ blockchain:
 					refer:
 						friends:
 						+ blockchain.ux.onboarding.type.promotion
+					user:
+						kyc:
+							is:
+								under:
+									review:
+									+ blockchain.ux.onboarding.type.promotion
 					verify:
 						identity:
 						+ blockchain.ux.onboarding.type.promotion

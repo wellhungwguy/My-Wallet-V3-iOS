@@ -66,11 +66,11 @@ extension App {
                     let dsl = try DSL(url, app: app)
                     app.state.transaction { state in
                         for (tag, value) in dsl.context {
-                            state.set(tag, to: value)
+                            state.set(tag.in(app), to: value)
                         }
                     }
-                    for (tag, value) in dsl.context where tag.is(blockchain.session.configuration.value) {
-                        app.remoteConfiguration.override(tag.key(), with: value)
+                    for (ref, value) in dsl.context where ref.tag.is(blockchain.session.configuration.value) {
+                        app.remoteConfiguration.override(ref.in(app), with: value)
                     }
                     if let event = dsl.event {
                         app.post(event: event, context: Tag.Context(dsl.context))
@@ -92,7 +92,7 @@ extension App.DeepLink {
 
     struct DSL: Equatable, Codable {
         var event: Tag.Reference?
-        var context: [Tag: String] = [:]
+        var context: [Tag.Reference: String] = [:]
     }
 }
 
@@ -114,9 +114,9 @@ extension App.DeepLink.DSL {
             throw Error(message: "Failed to initialise a \(Self.self) from url \(url)")
         }
         event = try components.fragment.map { try Tag.Reference(id: $0, in: app.language) }
-        var context: [Tag: String] = [:]
+        var context: [Tag.Reference: String] = [:]
         for item in components.queryItems ?? [] {
-            try context[Tag(id: item.name.removingPercentEncoding ?? item.name, in: app.language)] = item.value?.removingPercentEncoding ?? item.value
+            try context[Tag.Reference(id: item.name.removingPercentEncoding ?? item.name, in: app.language)] = item.value?.removingPercentEncoding ?? item.value
         }
         self.context = context
     }

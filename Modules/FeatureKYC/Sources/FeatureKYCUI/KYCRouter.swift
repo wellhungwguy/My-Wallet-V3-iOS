@@ -295,6 +295,7 @@ final class KYCRouter: KYCRouterAPI {
                 object: nil
             )
             NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
+            NotificationCenter.default.post(name: .kycFinished, object: nil)
             app.post(event: blockchain.ux.kyc.event.did.finish)
             app.post(event: blockchain.ux.kyc.event.status.did.change)
         }

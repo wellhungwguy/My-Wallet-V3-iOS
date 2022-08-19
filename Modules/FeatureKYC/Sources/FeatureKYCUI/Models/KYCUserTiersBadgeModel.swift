@@ -31,7 +31,7 @@ struct KYCUserTiersBadgeModel {
             return .unverified
         case .rejected:
             return .unverified
-        case .pending:
+        case .pending, .under_review:
             return .pending
         case .verified:
             return .verified
@@ -44,7 +44,7 @@ struct KYCUserTiersBadgeModel {
             return badgeString(tier: tier, description: LocalizationConstants.KYC.accountUnverifiedBadge)
         case .rejected:
             return LocalizationConstants.KYC.verificationFailedBadge
-        case .pending:
+        case .pending, .under_review:
             return badgeString(tier: tier, description: LocalizationConstants.KYC.accountInReviewBadge)
         case .verified:
             return badgeString(tier: tier, description: LocalizationConstants.KYC.accountApprovedBadge)

@@ -12,11 +12,11 @@ import ToolKit
 public struct OnboardingChecklistOverview: View {
 
     private let store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>
-    @ObservedObject var viewStore: ViewStore<Void, OnboardingChecklist.Action>
+    @ObservedObject var viewStore: ViewStore<OnboardingChecklist.State, OnboardingChecklist.Action>
 
     public init(store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>) {
         self.store = store
-        _viewStore = .init(initialValue: ViewStore(store.stateless))
+        viewStore = ViewStore(store)
     }
 
     public var body: some View {
@@ -30,16 +30,14 @@ public struct OnboardingChecklistOverview: View {
     }
 
     @ViewBuilder var content: some View {
-        WithViewStore(store) { viewStore in
-            if viewStore.isSynchronised {
-                if let promotion = viewStore.promotion, promotion.visible {
-                    PromotionAnnouncementView(promotion.id, ux: promotion.ux)
-                } else {
-                    OnboardingChecklistNUXOverview(store)
-                }
+        if viewStore.isSynchronised {
+            if let promotion = viewStore.promotion, promotion.visible {
+                PromotionAnnouncementView(promotion.id, ux: promotion.ux)
             } else {
-                ProgressView()
+                OnboardingChecklistNUXOverview(store)
             }
+        } else {
+            ProgressView()
         }
     }
 }

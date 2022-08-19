@@ -36,11 +36,7 @@ extension View {
     /// Apply an optional foreground texture to the view
     /// if no texture is available the original view will be left untouched
     @ViewBuilder public func foregroundTexture(_ texture: Texture?) -> some View {
-        if let texture = texture {
-            modifier(TextureModifier.foreground(texture))
-        } else {
-            self
-        }
+        modifier(texture.map(TextureModifier.foreground) ?? .none)
     }
 
     /// Apply a background media to the view
@@ -72,11 +68,7 @@ extension View {
     /// Apply a background color to the view
     /// if no texture is available the original view will be left untouched
     @ViewBuilder public func backgroundTexture(_ texture: Texture?) -> some View {
-        if let texture = texture {
-            modifier(TextureModifier.background(texture))
-        } else {
-            self
-        }
+        modifier(texture.map(TextureModifier.background) ?? .none)
     }
 }
 
@@ -229,9 +221,12 @@ enum TextureModifier: ViewModifier {
 
     case foreground(Texture)
     case background(Texture)
+    case none
 
     func body(content: Content) -> some View {
         switch self {
+        case .none:
+            content
         case .foreground(let texture):
             if let media = texture.media {
                 content

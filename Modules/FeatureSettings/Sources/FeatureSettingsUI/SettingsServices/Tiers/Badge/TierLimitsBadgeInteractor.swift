@@ -43,7 +43,7 @@ extension KYC.UserTiers {
             )
         case .rejected:
             return .loaded(next: .init(type: .destructive, description: LocalizationConstants.KYC.verificationFailedBadge))
-        case .pending:
+        case .pending, .under_review:
             return .loaded(
                 next: .init(
                     type: .default(accessibilitySuffix: "In Review"),

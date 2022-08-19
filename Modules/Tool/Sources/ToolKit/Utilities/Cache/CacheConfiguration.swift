@@ -51,7 +51,7 @@ extension CacheConfiguration {
     }
 
     public static func onLoginLogoutKYCChanged() -> CacheConfiguration {
-        CacheConfiguration(flushNotificationNames: [.login, .logout, .kycStatusChanged])
+        CacheConfiguration(flushNotificationNames: [.login, .logout, .kycFinished])
     }
 
     public static func onUserStateChanged() -> CacheConfiguration {

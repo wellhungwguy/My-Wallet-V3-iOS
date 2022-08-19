@@ -108,6 +108,7 @@ public extension I_blockchain_app_configuration {
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
+	var `referral`: L_blockchain_app_configuration_referral { .init("\(__).referral") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
 	var `SSL`: L_blockchain_app_configuration_SSL { .init("\(__).SSL") }
@@ -600,6 +601,24 @@ public final class L_blockchain_app_configuration_redesign_checkout_is_enabled: 
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.checkout.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_redesign_checkout_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_referral: L, I_blockchain_app_configuration_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral: I {}
+public extension I_blockchain_app_configuration_referral {
+	var `is`: L_blockchain_app_configuration_referral_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_referral_is: L, I_blockchain_app_configuration_referral_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral_is: I {}
+public extension I_blockchain_app_configuration_referral_is {
+	var `enabled`: L_blockchain_app_configuration_referral_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_referral_is_enabled: L, I_blockchain_app_configuration_referral_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_remote: L, I_blockchain_app_configuration_remote {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote", comment: "") }
 }
@@ -2394,8 +2413,79 @@ public final class L_blockchain_user_account: L, I_blockchain_user_account {
 }
 public protocol I_blockchain_user_account: I {}
 public extension I_blockchain_user_account {
+	var `kyc`: L_blockchain_user_account_kyc { .init("\(__).kyc") }
 	var `tier`: L_blockchain_user_account_tier { .init("\(__).tier") }
 }
+public final class L_blockchain_user_account_kyc: L, I_blockchain_user_account_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc: I_blockchain_db_collection {}
+public extension I_blockchain_user_account_kyc {
+	var `limits`: L_blockchain_user_account_kyc_limits { .init("\(__).limits") }
+	var `name`: L_blockchain_user_account_kyc_name { .init("\(__).name") }
+	var `state`: L_blockchain_user_account_kyc_state { .init("\(__).state") }
+}
+public final class L_blockchain_user_account_kyc_limits: L, I_blockchain_user_account_kyc_limits {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits: I {}
+public extension I_blockchain_user_account_kyc_limits {
+	var `annual`: L_blockchain_user_account_kyc_limits_annual { .init("\(__).annual") }
+	var `currency`: L_blockchain_user_account_kyc_limits_currency { .init("\(__).currency") }
+	var `daily`: L_blockchain_user_account_kyc_limits_daily { .init("\(__).daily") }
+}
+public final class L_blockchain_user_account_kyc_limits_annual: L, I_blockchain_user_account_kyc_limits_annual {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.annual", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_annual: I_blockchain_db_type_bigint {}
+public final class L_blockchain_user_account_kyc_limits_currency: L, I_blockchain_user_account_kyc_limits_currency {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.currency", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_currency: I_blockchain_db_type_string {}
+public final class L_blockchain_user_account_kyc_limits_daily: L, I_blockchain_user_account_kyc_limits_daily {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.daily", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_daily: I_blockchain_db_type_bigint {}
+public final class L_blockchain_user_account_kyc_name: L, I_blockchain_user_account_kyc_name {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.name", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_name: I_blockchain_db_type_string {}
+public final class L_blockchain_user_account_kyc_state: L, I_blockchain_user_account_kyc_state {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state: I_blockchain_db_type_enum {}
+public extension I_blockchain_user_account_kyc_state {
+	var `expired`: L_blockchain_user_account_kyc_state_expired { .init("\(__).expired") }
+	var `none`: L_blockchain_user_account_kyc_state_none { .init("\(__).none") }
+	var `pending`: L_blockchain_user_account_kyc_state_pending { .init("\(__).pending") }
+	var `rejected`: L_blockchain_user_account_kyc_state_rejected { .init("\(__).rejected") }
+	var `under_review`: L_blockchain_user_account_kyc_state_under__review { .init("\(__).under_review") }
+	var `verified`: L_blockchain_user_account_kyc_state_verified { .init("\(__).verified") }
+}
+public final class L_blockchain_user_account_kyc_state_expired: L, I_blockchain_user_account_kyc_state_expired {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.expired", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_expired: I {}
+public final class L_blockchain_user_account_kyc_state_none: L, I_blockchain_user_account_kyc_state_none {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.none", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_none: I {}
+public final class L_blockchain_user_account_kyc_state_pending: L, I_blockchain_user_account_kyc_state_pending {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.pending", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_pending: I {}
+public final class L_blockchain_user_account_kyc_state_rejected: L, I_blockchain_user_account_kyc_state_rejected {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.rejected", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_rejected: I {}
+public final class L_blockchain_user_account_kyc_state_under__review: L, I_blockchain_user_account_kyc_state_under__review {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.under_review", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_under__review: I {}
+public final class L_blockchain_user_account_kyc_state_verified: L, I_blockchain_user_account_kyc_state_verified {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.verified", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_verified: I {}
 public final class L_blockchain_user_account_tier: L, I_blockchain_user_account_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.user.account.tier", comment: "") }
 }
@@ -3703,6 +3793,7 @@ public extension I_blockchain_ux_onboarding_promotion_cowboys {
 	var `is`: L_blockchain_ux_onboarding_promotion_cowboys_is { .init("\(__).is") }
 	var `raffle`: L_blockchain_ux_onboarding_promotion_cowboys_raffle { .init("\(__).raffle") }
 	var `refer`: L_blockchain_ux_onboarding_promotion_cowboys_refer { .init("\(__).refer") }
+	var `user`: L_blockchain_ux_onboarding_promotion_cowboys_user { .init("\(__).user") }
 	var `verify`: L_blockchain_ux_onboarding_promotion_cowboys_verify { .init("\(__).verify") }
 	var `welcome`: L_blockchain_ux_onboarding_promotion_cowboys_welcome { .init("\(__).welcome") }
 }
@@ -3732,6 +3823,38 @@ public final class L_blockchain_ux_onboarding_promotion_cowboys_refer_friends: L
 	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.refer.friends", comment: "") }
 }
 public protocol I_blockchain_ux_onboarding_promotion_cowboys_refer_friends: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user: L, I_blockchain_ux_onboarding_promotion_cowboys_user {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user {
+	var `kyc`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc { .init("\(__).kyc") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc {
+	var `is`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is { .init("\(__).is") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is {
+	var `under`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under { .init("\(__).under") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under {
+	var `review`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review { .init("\(__).review") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under.review", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review: I_blockchain_ux_onboarding_type_promotion {}
 public final class L_blockchain_ux_onboarding_promotion_cowboys_verify: L, I_blockchain_ux_onboarding_promotion_cowboys_verify {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.verify", comment: "") }
 }

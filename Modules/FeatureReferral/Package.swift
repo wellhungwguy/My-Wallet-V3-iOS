@@ -41,9 +41,8 @@ let package = Package(
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Money"),
         .package(path: "../Errors"),
-        .package(path: "../Tool"),
+        .package(path: "../Money"),
         .package(path: "../UIComponents")
     ],
     targets: [
@@ -61,6 +60,10 @@ let package = Package(
                 .product(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
+                ),
+                .product(
+                    name: "MoneyKit",
+                    package: "Money"
                 )
             ],
             path: "Sources/FeatureReferralDomain"
@@ -102,10 +105,6 @@ let package = Package(
                 .product(
                     name: "Localization",
                     package: "Localization"
-                ),
-                .product(
-                    name: "ToolKit",
-                    package: "Tool"
                 ),
                 .product(
                     name: "Errors",
