@@ -46,15 +46,16 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
             viewModel.items.append(.init(cellType: .common(.loginToWebWallet)))
         }
 
-        let cardIssuingCellModelDisplay = SettingsCellViewModel(cellType: .common(.cardIssuing))
-        let cardIssuingCellModelOrder = SettingsCellViewModel(cellType: .badge(.cardIssuing, cardIssuingPresenter))
+        let cardIssuingCellModelDisplay = SettingsCellViewModel(
+            cellType: .common(.cardIssuing)
+        )
+        let cardIssuingCellModelOrder = SettingsCellViewModel(
+            cellType: .badge(.cardIssuing, cardIssuingPresenter)
+        )
 
-        state = Publishers
-            .CombineLatest(
-                cardIssuingAdapter.isEnabled(),
-                cardIssuingAdapter.hasCard()
-            )
-            .map { cardIssuingEnabled, hasCard -> SettingsSectionLoadingState in
+        state = cardIssuingAdapter
+            .isEnabled()
+            .flatMap { isEnabled -> AnyPublisher<SettingsSectionLoadingState, Never> in
                 if let index = viewModel.items.firstIndex(of: cardIssuingCellModelDisplay) {
                     viewModel.items.remove(at: index)
                 }
@@ -63,16 +64,21 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
                     viewModel.items.remove(at: index)
                 }
 
-                switch (cardIssuingEnabled, hasCard) {
-                case (_, true):
-                    viewModel.items.append(cardIssuingCellModelDisplay)
-                case (true, false):
-                    viewModel.items.append(cardIssuingCellModelOrder)
-                case (false, false):
-                    break
-                }
+                guard isEnabled else { return .just(.loaded(next: .some(viewModel))) }
 
-                return .loaded(next: .some(viewModel))
+                return cardIssuingAdapter
+                    .hasCard()
+                    .map { hasCard -> SettingsSectionLoadingState in
+                        switch hasCard {
+                        case true:
+                            viewModel.items.append(cardIssuingCellModelDisplay)
+                        case false:
+                            viewModel.items.append(cardIssuingCellModelOrder)
+                        }
+
+                        return .loaded(next: .some(viewModel))
+                    }
+                    .eraseToAnyPublisher()
             }
             .asObservable()
     }
