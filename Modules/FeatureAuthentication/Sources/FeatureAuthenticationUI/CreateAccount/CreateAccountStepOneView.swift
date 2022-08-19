@@ -11,12 +11,12 @@ import UIComponentsKit
 private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.CreateAccount
 private typealias AccessibilityIdentifier = AccessibilityIdentifiers.CreateAccountScreen
 
-struct CreateAccountView: View {
+struct CreateAccountStepOneView: View {
 
-    private let store: Store<CreateAccountState, CreateAccountAction>
-    @ObservedObject private var viewStore: ViewStore<CreateAccountState, CreateAccountAction>
+    private let store: Store<CreateAccountStepOneState, CreateAccountStepOneAction>
+    @ObservedObject private var viewStore: ViewStore<CreateAccountStepOneState, CreateAccountStepOneAction>
 
-    init(store: Store<CreateAccountState, CreateAccountAction>) {
+    init(store: Store<CreateAccountStepOneState, CreateAccountStepOneAction>) {
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -29,13 +29,13 @@ struct CreateAccountView: View {
                     CreateAccountForm(viewStore: viewStore)
                     Spacer()
                     BlockchainComponentLibrary.PrimaryButton(
-                        title: LocalizedString.createAccountButton,
+                        title: LocalizedString.nextButton,
                         isLoading: viewStore.validatingInput || viewStore.isCreatingWallet
                     ) {
-                        viewStore.send(.createButtonTapped)
+                        viewStore.send(.nextStepButtonTapped)
                     }
-                    .disabled(viewStore.isCreateButtonDisabled)
-                    .accessibility(identifier: AccessibilityIdentifier.createAccountButton)
+                    .disabled(viewStore.isNextStepButtonDisabled)
+                    .accessibility(identifier: AccessibilityIdentifier.nextButton)
                 }
                 .padding(Spacing.padding3)
             }
@@ -44,14 +44,14 @@ struct CreateAccountView: View {
         }
         .primaryNavigation(title: "") {
             Button {
-                viewStore.send(.createButtonTapped)
+                viewStore.send(.nextStepButtonTapped)
             } label: {
                 Text(LocalizedString.nextButton)
                     .typography(.paragraph2)
             }
-            .disabled(viewStore.isCreateButtonDisabled)
+            .disabled(viewStore.isNextStepButtonDisabled)
             // disabling the button doesn't gray it out
-            .foregroundColor(viewStore.isCreateButtonDisabled ? .semantic.muted : .semantic.primary)
+            .foregroundColor(viewStore.isNextStepButtonDisabled ? .semantic.muted : .semantic.primary)
             .accessibility(identifier: AccessibilityIdentifier.nextButton)
         }
         .onAppear(perform: {
@@ -84,72 +84,15 @@ private struct CreateAccountHeader: View {
 
 private struct CreateAccountForm: View {
 
-    @ObservedObject var viewStore: ViewStore<CreateAccountState, CreateAccountAction>
+    @ObservedObject var viewStore: ViewStore<CreateAccountStepOneState, CreateAccountStepOneAction>
 
     var body: some View {
         VStack(spacing: Spacing.padding2) {
-            emailField
-            passwordField
             countryAndStatePickers
             if viewStore.state.referralFieldEnabled {
                 referralCodeField
             }
-            termsAgreementView
         }
-    }
-
-    private var emailField: some View {
-        let shouldShowError = viewStore.inputValidationState == .invalid(.invalidEmail)
-        return Input(
-            text: viewStore.binding(\.$emailAddress),
-            isFirstResponder: viewStore
-                .binding(\.$selectedInputField)
-                .equals(.email),
-            label: LocalizedString.TextFieldTitle.email,
-            subText: shouldShowError ? LocalizedString.TextFieldError.invalidEmail : nil,
-            subTextStyle: .error,
-            placeholder: LocalizedString.TextFieldPlaceholder.email,
-            state: shouldShowError ? .error : .default,
-            configuration: {
-                $0.autocorrectionType = .no
-                $0.autocapitalizationType = .none
-                $0.keyboardType = .emailAddress
-                $0.textContentType = .emailAddress
-            },
-            onReturnTapped: {
-                viewStore.send(.set(\.$selectedInputField, .password))
-            }
-        )
-        .accessibility(identifier: AccessibilityIdentifier.emailGroup)
-    }
-
-    private var passwordField: some View {
-        let shouldShowError = viewStore.inputValidationState == .invalid(.weakPassword)
-        return Input(
-            text: viewStore.binding(\.$password),
-            isFirstResponder: viewStore
-                .binding(\.$selectedInputField)
-                .equals(.password),
-            label: LocalizedString.TextFieldTitle.password,
-            subText: viewStore.passwordStrength.displayString,
-            subTextStyle: viewStore.passwordStrength.inputSubTextStyle,
-            state: shouldShowError ? .error : .default,
-            configuration: {
-                $0.autocorrectionType = .no
-                $0.autocapitalizationType = .none
-                $0.isSecureTextEntry = !viewStore.passwordFieldTextVisible
-                $0.textContentType = .newPassword
-            },
-            trailing: {
-                PasswordEyeSymbolButton(
-                    isPasswordVisible: viewStore.binding(\.$passwordFieldTextVisible)
-                )
-            },
-            onReturnTapped: {
-                viewStore.send(.set(\.$selectedInputField, nil))
-            }
-        )
-        .accessibility(identifier: AccessibilityIdentifier.passwordGroup)
     }
 
     private var countryAndStatePickers: some View {
@@ -235,107 +178,21 @@ private struct CreateAccountForm: View {
         )
         .accessibility(identifier: AccessibilityIdentifier.referralGroup)
     }
-
-    private var termsAgreementView: some View {
-        HStack(alignment: .top, spacing: Spacing.baseline) {
-            let showCheckboxError = viewStore.inputValidationState == .invalid(.termsNotAccepted)
-            Checkbox(
-                isOn: viewStore.binding(\.$termsAccepted),
-                variant: showCheckboxError ? .error : .default
-            )
-            .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
-
-            agreementText
-                .typography(.caption1)
-                .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
-        }
-        // fixing the size prevents the view from collapsing when the keyboard is on screen
-        .fixedSize(horizontal: false, vertical: true)
-    }
-
-    private var agreementText: some View {
-        VStack(alignment: .leading, spacing: .zero) {
-            let promptText = Text(
-                rich: String(
-                    format: LocalizedString.agreementPrompt,
-                    LocalizedString.recoveryPhrase
-                )
-            )
-            promptText
-                .foregroundColor(.semantic.body)
-                .onTapGesture {
-                    viewStore.send(.openExternalLink(Constants.SupportURL.ResetAccount.walletBackupURL))
-                }
-                .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
-
-            HStack(alignment: .firstTextBaseline, spacing: .zero) {
-                Text(LocalizedString.termsOfServiceLink)
-                    .foregroundColor(.semantic.primary)
-                    .onTapGesture {
-                        guard let url = URL(string: Constants.HostURL.terms) else { return }
-                        viewStore.send(.openExternalLink(url))
-                    }
-                    .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
-
-                Text(" " + LocalizedString.and + " ")
-                    .foregroundColor(.semantic.body)
-
-                let privacyPolicyComponent = Text(LocalizedString.privacyPolicyLink)
-                    .foregroundColor(.semantic.primary)
-                let fullStopComponent = Text(".")
-                    .foregroundColor(.semantic.body)
-                let privacyPolicyText = privacyPolicyComponent + fullStopComponent
-
-                privacyPolicyText
-                    .onTapGesture {
-                        guard let url = URL(string: Constants.HostURL.privacyPolicy) else { return }
-                        viewStore.send(.openExternalLink(url))
-                    }
-                    .accessibility(identifier: AccessibilityIdentifier.privacyPolicyButton)
-            }
-        }
-    }
-}
-
-extension PasswordValidationScore {
-    fileprivate var displayString: String? {
-        switch self {
-        case .none:
-            return nil
-        case .normal:
-            return LocalizedString.PasswordStrengthIndicator.regularPassword
-        case .strong:
-            return LocalizedString.PasswordStrengthIndicator.strongPassword
-        case .weak:
-            return LocalizedString.PasswordStrengthIndicator.weakPassword
-        }
-    }
-
-    fileprivate var inputSubTextStyle: InputSubTextStyle {
-        switch self {
-        case .none, .normal:
-            return .primary
-        case .strong:
-            return .success
-        case .weak:
-            return .error
-        }
-    }
 }
 
 #if DEBUG
 import AnalyticsKit
 import ToolKit
 
-struct CreateAccountView_Previews: PreviewProvider {
+struct CreateAccountStepOneView_Previews: PreviewProvider {
 
     static var previews: some View {
-        CreateAccountView(
+        CreateAccountStepOneView(
             store: .init(
                 initialState: .init(
                     context: .createWallet
                 ),
-                reducer: createAccountReducer,
+                reducer: createAccountStepOneReducer,
                 environment: .init(
                     mainQueue: .main,
                     passwordValidator: PasswordValidator(),

@@ -12,12 +12,19 @@ import ToolKit
 import UIComponentsKit
 import WalletPayloadKit
 
-public enum CreateAccountIds {
+public enum CreateAccountStepTwoRoute: NavigationRoute {
+
+    public func destination(in store: Store<CreateAccountStepTwoState, CreateAccountStepTwoAction>) -> some View {
+        Text(String(describing: self))
+    }
+}
+
+public enum CreateAccountStepTwoIds {
     public struct CreationId: Hashable {}
     public struct ImportId: Hashable {}
 }
 
-public enum CreateAccountContext: Equatable {
+public enum CreateAccountContextStepTwo: Equatable {
     case importWallet(mnemonic: String)
     case createWallet
 
@@ -31,41 +38,7 @@ public enum CreateAccountContext: Equatable {
     }
 }
 
-public enum CreateAccountRoute: NavigationRoute {
-    private typealias LocalizedStrings = LocalizationConstants.Authentication.CountryAndStatePickers
-
-    case countryPicker
-    case statePicker
-
-    @ViewBuilder
-    public func destination(in store: Store<CreateAccountState, CreateAccountAction>) -> some View {
-        switch self {
-        case .countryPicker:
-            WithViewStore(store) { viewStore in
-                ModalContainer(
-                    title: LocalizedStrings.countriesPickerTitle,
-                    subtitle: LocalizedStrings.countriesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
-                ) {
-                    CountryPickerView(selectedItem: viewStore.binding(\.$country))
-                }
-            }
-
-        case .statePicker:
-            WithViewStore(store) { viewStore in
-                ModalContainer(
-                    title: LocalizedStrings.statesPickerTitle,
-                    subtitle: LocalizedStrings.statesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
-                ) {
-                    StatePickerView(selectedItem: viewStore.binding(\.$countryState))
-                }
-            }
-        }
-    }
-}
-
-public struct CreateAccountState: Equatable, NavigationState {
+public struct CreateAccountStepTwoState: Equatable, NavigationState {
 
     public enum InputValidationError: Equatable {
         case invalidEmail
@@ -73,7 +46,6 @@ public struct CreateAccountState: Equatable, NavigationState {
         case noCountrySelected
         case noCountryStateSelected
         case termsNotAccepted
-        case invalidReferralCode
     }
 
     public enum InputValidationState: Equatable {
@@ -94,7 +66,6 @@ public struct CreateAccountState: Equatable, NavigationState {
     public enum Field: Equatable {
         case email
         case password
-        case referralCode
     }
 
     enum AddressSegmentPicker: Hashable {
@@ -102,56 +73,53 @@ public struct CreateAccountState: Equatable, NavigationState {
         case countryState
     }
 
-    public var route: RouteIntent<CreateAccountRoute>?
-    public var context: CreateAccountContext
+    public var route: RouteIntent<CreateAccountStepTwoRoute>?
+
+    public var context: CreateAccountContextStepTwo
+
+    public var country: SearchableItem<String>
+    public var countryState: SearchableItem<String>?
+    public var referralCode: String
 
     // User Input
     @BindableState public var emailAddress: String
     @BindableState public var password: String
-    @BindableState public var referralCode: String
-    @BindableState public var country: SearchableItem<String>?
-    @BindableState public var countryState: SearchableItem<String>?
     @BindableState public var termsAccepted: Bool = false
 
     // Form interaction
     @BindableState public var passwordFieldTextVisible: Bool = false
     @BindableState public var selectedInputField: Field?
-    @BindableState var selectedAddressSegmentPicker: AddressSegmentPicker?
 
     // Validation
     public var validatingInput: Bool = false
     public var passwordStrength: PasswordValidationScore
     public var inputValidationState: InputValidationState
-    public var referralCodeValidationState: InputValidationState
-    public var failureAlert: AlertState<CreateAccountAction>?
+    public var failureAlert: AlertState<CreateAccountStepTwoAction>?
 
     public var isCreatingWallet = false
-    public var referralFieldEnabled = false
 
     var isCreateButtonDisabled: Bool {
-        validatingInput || inputValidationState.isInvalid || isCreatingWallet || referralCodeValidationState.isInvalid
-    }
-
-    var shouldDisplayCountryStateField: Bool {
-        country?.id.lowercased() == "us"
+        validatingInput || inputValidationState.isInvalid || isCreatingWallet
     }
 
     public init(
-        context: CreateAccountContext,
-        countries: [SearchableItem<String>] = CountryPickerView.countries,
-        states: [SearchableItem<String>] = StatePickerView.usaStates
+        context: CreateAccountContextStepTwo,
+        country: SearchableItem<String>,
+        countryState: SearchableItem<String>?,
+        referralCode: String
     ) {
         self.context = context
+        self.country = country
+        self.countryState = countryState
+        self.referralCode = referralCode
         emailAddress = ""
         password = ""
-        referralCode = ""
         passwordStrength = .none
         inputValidationState = .unknown
-        referralCodeValidationState = .unknown
     }
 }
 
-public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
+public enum CreateAccountStepTwoAction: Equatable, NavigationAction, BindableAction {
 
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
@@ -160,21 +128,18 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
 
     case onAppear
     case alert(AlertAction)
-    case binding(BindingAction<CreateAccountState>)
+    case binding(BindingAction<CreateAccountStepTwoState>)
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
-    case createOrImportWallet(CreateAccountContext)
+    case createOrImportWallet(CreateAccountContextStepTwo)
     case createAccount
     case importAccount(_ mnemonic: String)
     case createButtonTapped
-    case referralFieldIsEnabled(Bool)
     case didValidateAfterFormSubmission
     case didUpdatePasswordStrenght(PasswordValidationScore)
-    case didUpdateInputValidation(CreateAccountState.InputValidationState)
-    case didUpdateReferralValidation(CreateAccountState.InputValidationState)
-    case validateReferralCode
+    case didUpdateInputValidation(CreateAccountStepTwoState.InputValidationState)
     case openExternalLink(URL)
     case onWillDisappear
-    case route(RouteIntent<CreateAccountRoute>?)
+    case route(RouteIntent<CreateAccountStepTwoRoute>?)
     case validatePasswordStrength
     case accountRecoveryFailed(WalletRecoveryError)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
@@ -186,7 +151,7 @@ public enum CreateAccountAction: Equatable, NavigationAction, BindableAction {
     case none
 }
 
-struct CreateAccountEnvironment {
+struct CreateAccountStepTwoEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let passwordValidator: PasswordValidatorAPI
     let externalAppOpener: ExternalAppOpener
@@ -194,8 +159,6 @@ struct CreateAccountEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
-    let checkReferralClient: CheckReferralClientAPI?
-    let featureFlagsService: FeatureFlagsServiceAPI
     let app: AppProtocol?
 
     init(
@@ -206,8 +169,6 @@ struct CreateAccountEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
-        featureFlagsService: FeatureFlagsServiceAPI,
-        checkReferralClient: CheckReferralClientAPI? = nil,
         app: AppProtocol? = nil
     ) {
         self.mainQueue = mainQueue
@@ -217,18 +178,16 @@ struct CreateAccountEnvironment {
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
-        self.checkReferralClient = checkReferralClient
-        self.featureFlagsService = featureFlagsService
         self.app = app
     }
 }
 
-typealias CreateAccountLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
+typealias CreateAccountStepTwoLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
 
-let createAccountReducer = Reducer<
-    CreateAccountState,
-    CreateAccountAction,
-    CreateAccountEnvironment
+let createAccountStepTwoReducer = Reducer<
+    CreateAccountStepTwoState,
+    CreateAccountStepTwoAction,
+    CreateAccountStepTwoEnvironment
         // swiftlint:disable:next closure_body_length
 > { state, action, environment in
     switch action {
@@ -244,37 +203,10 @@ let createAccountReducer = Reducer<
     case .binding(\.$termsAccepted):
         return Effect(value: .didUpdateInputValidation(.unknown))
 
-    case .binding(\.$referralCode):
-        return Effect(value: .validateReferralCode)
-
-    case .binding(\.$country):
-        return .merge(
-            Effect(value: .didUpdateInputValidation(.unknown)),
-            Effect(value: .set(\.$selectedAddressSegmentPicker, nil))
-        )
-
-    case .binding(\.$countryState):
-        return .merge(
-            Effect(value: .didUpdateInputValidation(.unknown)),
-            Effect(value: .set(\.$selectedAddressSegmentPicker, nil))
-        )
-
-    case .binding(\.$selectedAddressSegmentPicker):
-        guard let selection = state.selectedAddressSegmentPicker else {
-            return Effect(value: .dismiss())
-        }
-        state.selectedInputField = nil
-        switch selection {
-        case .country:
-            return .enter(into: .countryPicker, context: .none)
-        case .countryState:
-            return .enter(into: .statePicker, context: .none)
-        }
-
     case .createAccount:
         // by this point we have validated all the fields neccessary
         state.isCreatingWallet = true
-        let accountName = CreateAccountLocalization.defaultAccountName
+        let accountName = CreateAccountStepTwoLocalization.defaultAccountName
         return .merge(
             Effect(value: .triggerAuthenticate),
             environment.walletCreationService
@@ -285,8 +217,8 @@ let createAccountReducer = Reducer<
                 )
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .cancellable(id: CreateAccountIds.CreationId(), cancelInFlight: true)
-                .map(CreateAccountAction.accountCreation)
+                .cancellable(id: CreateAccountStepTwoIds.CreationId(), cancelInFlight: true)
+                .map(CreateAccountStepTwoAction.accountCreation)
         )
 
     case .createOrImportWallet(.createWallet):
@@ -301,16 +233,9 @@ let createAccountReducer = Reducer<
         }
         return Effect(value: .importAccount(mnemonic))
 
-    case .validateReferralCode:
-        return environment
-            .validateReferralInput(code: state.referralCode)
-            .map(CreateAccountAction.didUpdateReferralValidation)
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
-
     case .importAccount(let mnemonic):
         state.isCreatingWallet = true
-        let accountName = CreateAccountLocalization.defaultAccountName
+        let accountName = CreateAccountStepTwoLocalization.defaultAccountName
         return .merge(
             Effect(value: .triggerAuthenticate),
             environment.walletCreationService
@@ -322,8 +247,8 @@ let createAccountReducer = Reducer<
                 )
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .cancellable(id: CreateAccountIds.ImportId(), cancelInFlight: true)
-                .map(CreateAccountAction.accountImported)
+                .cancellable(id: CreateAccountStepTwoIds.ImportId(), cancelInFlight: true)
+                .map(CreateAccountStepTwoAction.accountImported)
         )
 
     case .accountCreation(.failure(let error)),
@@ -337,18 +262,12 @@ let createAccountReducer = Reducer<
                     .show(title: title, message: message)
                 )
             ),
-            .cancel(id: CreateAccountIds.CreationId()),
-            .cancel(id: CreateAccountIds.ImportId())
+            .cancel(id: CreateAccountStepTwoIds.CreationId()),
+            .cancel(id: CreateAccountStepTwoIds.ImportId())
         )
 
     case .accountCreation(.success(let context)),
          .accountImported(.success(.left(let context))):
-        guard let selectedCountry = state.country else {
-            return Effect(value: .didUpdateInputValidation(.invalid(.noCountrySelected)))
-        }
-        guard state.countryState != nil || !state.shouldDisplayCountryStateField else {
-            return Effect(value: .didUpdateInputValidation(.invalid(.noCountryStateSelected)))
-        }
 
         return .concatenate(
             Effect(value: .triggerAuthenticate),
@@ -356,16 +275,16 @@ let createAccountReducer = Reducer<
                 .saveReferral(with: state.referralCode)
                 .fireAndForget(),
             .merge(
-                .cancel(id: CreateAccountIds.CreationId()),
-                .cancel(id: CreateAccountIds.ImportId()),
+                .cancel(id: CreateAccountStepTwoIds.CreationId()),
+                .cancel(id: CreateAccountStepTwoIds.ImportId()),
                 environment
                     .walletCreationService
-                    .setResidentialInfo(selectedCountry.id, state.countryState?.id)
+                    .setResidentialInfo(state.country.id, state.countryState?.id)
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .fireAndForget(),
                 environment.walletCreationService
-                    .updateCurrencyForNewWallets(selectedCountry.id, context.guid, context.sharedKey)
+                    .updateCurrencyForNewWallets(state.country.id, context.guid, context.sharedKey)
                     .receive(on: environment.mainQueue)
                     .eraseToEffect()
                     .fireAndForget(),
@@ -373,7 +292,7 @@ let createAccountReducer = Reducer<
                     .fetchWallet(context.guid, context.sharedKey, context.password)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
-                    .map(CreateAccountAction.walletFetched)
+                    .map(CreateAccountStepTwoAction.walletFetched)
             )
         )
 
@@ -398,7 +317,7 @@ let createAccountReducer = Reducer<
 
     case .accountImported(.success(.right(.noValue))):
         // this will only be true in case of legacy wallet
-        return .cancel(id: CreateAccountIds.ImportId())
+        return .cancel(id: CreateAccountStepTwoIds.ImportId())
 
     case .createButtonTapped:
         state.validatingInput = true
@@ -407,30 +326,15 @@ let createAccountReducer = Reducer<
         return Effect.concatenate(
             environment
                 .validateInputs(state: state)
-                .map(CreateAccountAction.didUpdateInputValidation)
+                .map(CreateAccountStepTwoAction.didUpdateInputValidation)
                 .receive(on: environment.mainQueue)
-                .eraseToEffect(),
-
-            environment
-                .featureFlagsService.isEnabled(.referral)
-                .flatMap { [state] isEnabled -> Effect<CreateAccountAction, Never> in
-                    guard isEnabled == true else {
-                        return .none
-                    }
-                    return environment
-                        .checkReferralCode(state.referralCode)
-                        .map(CreateAccountAction.didUpdateReferralValidation)
-                        .receive(on: environment.mainQueue)
-                        .eraseToEffect()
-                }
                 .eraseToEffect(),
 
             Effect(value: .didValidateAfterFormSubmission)
         )
 
     case .didValidateAfterFormSubmission:
-        guard !state.inputValidationState.isInvalid,
-              !state.referralCodeValidationState.isInvalid
+        guard !state.inputValidationState.isInvalid
         else {
             return .none
         }
@@ -444,10 +348,6 @@ let createAccountReducer = Reducer<
     case .didUpdateInputValidation(let validationState):
         state.validatingInput = false
         state.inputValidationState = validationState
-        return .none
-
-    case .didUpdateReferralValidation(let validationState):
-        state.referralCodeValidationState = validationState
         return .none
 
     case .openExternalLink(let url):
@@ -465,7 +365,7 @@ let createAccountReducer = Reducer<
         return environment
             .passwordValidator
             .validate(password: state.password)
-            .map(CreateAccountAction.didUpdatePasswordStrenght)
+            .map(CreateAccountStepTwoAction.didUpdatePasswordStrenght)
             .receive(on: environment.mainQueue)
             .eraseToEffect()
 
@@ -498,75 +398,32 @@ let createAccountReducer = Reducer<
     case .binding:
         return .none
 
-    case .referralFieldIsEnabled(let enabled):
-        state.referralFieldEnabled = enabled
-        return .none
-
     case .onAppear:
-        return environment
-            .featureFlagsService
-            .isEnabled(.referral)
-            .map(CreateAccountAction.referralFieldIsEnabled)
-            .receive(on: environment.mainQueue)
-            .eraseToEffect()
+        return .none
     }
 }
 .binding()
 .analytics()
 
-extension CreateAccountEnvironment {
+extension CreateAccountStepTwoEnvironment {
 
     fileprivate func validateInputs(
-        state: CreateAccountState
-    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
+        state: CreateAccountStepTwoState
+    ) -> AnyPublisher<CreateAccountStepTwoState.InputValidationState, Never> {
         guard state.emailAddress.isEmail else {
             return .just(.invalid(.invalidEmail))
         }
         let didAcceptTerm = state.termsAccepted
-        let hasValidCountry = state.country != nil
-        let hasValidCountryState = state.countryState != nil || !state.shouldDisplayCountryStateField
         return passwordValidator
             .validate(password: state.password)
-            .map { passwordStrength -> CreateAccountState.InputValidationState in
+            .map { passwordStrength -> CreateAccountStepTwoState.InputValidationState in
                 guard passwordStrength.isValid else {
                     return .invalid(.weakPassword)
-                }
-                guard hasValidCountry else {
-                    return .invalid(.noCountrySelected)
-                }
-                guard hasValidCountryState else {
-                    return .invalid(.noCountryStateSelected)
                 }
                 guard didAcceptTerm else {
                     return .invalid(.termsNotAccepted)
                 }
                 return .valid
-            }
-            .eraseToAnyPublisher()
-    }
-
-    fileprivate func validateReferralInput(
-        code: String
-    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
-        guard code.range(
-            of: TextRegex.noSpecialCharacters.rawValue,
-            options: .regularExpression
-        ) != nil else { return .just(.invalid(.invalidReferralCode)) }
-
-        return .just(.unknown)
-    }
-
-    fileprivate func checkReferralCode(_
-        code: String
-    ) -> AnyPublisher<CreateAccountState.InputValidationState, Never> {
-        guard code.isNotEmpty, let client = checkReferralClient else { return .just(.unknown) }
-        return client
-            .checkReferral(with: code)
-            .map { _ in
-                CreateAccountState.InputValidationState.valid
-            }
-            .catch { _ -> AnyPublisher<CreateAccountState.InputValidationState, Never> in
-                .just(.invalid(.invalidReferralCode))
             }
             .eraseToAnyPublisher()
     }
@@ -582,17 +439,17 @@ extension CreateAccountEnvironment {
 // MARK: - Private
 
 extension Reducer where
-    Action == CreateAccountAction,
-    State == CreateAccountState,
-    Environment == CreateAccountEnvironment
+    Action == CreateAccountStepTwoAction,
+    State == CreateAccountStepTwoState,
+    Environment == CreateAccountStepTwoEnvironment
 {
     /// Helper function for analytics tracking
     fileprivate func analytics() -> Self {
         combined(
             with: Reducer<
-                CreateAccountState,
-                CreateAccountAction,
-                CreateAccountEnvironment
+                CreateAccountStepTwoState,
+                CreateAccountStepTwoAction,
+                CreateAccountStepTwoEnvironment
             > { state, action, environment in
                 switch action {
                 case .onWillDisappear:

@@ -9,32 +9,35 @@ import ToolKitMock
 import UIComponentsKit
 import XCTest
 
-final class CreateAccountReducerTests: XCTestCase {
+final class CreateAccountStepTwoReducerTests: XCTestCase {
 
     private var testStore: TestStore<
-        CreateAccountState,
-        CreateAccountState,
-        CreateAccountAction,
-        CreateAccountAction,
-        CreateAccountEnvironment
+        CreateAccountStepTwoState,
+        CreateAccountStepTwoState,
+        CreateAccountStepTwoAction,
+        CreateAccountStepTwoAction,
+        CreateAccountStepTwoEnvironment
     >!
     private let mainScheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        let mockFeatureFlagService = MockFeatureFlagsService()
         testStore = TestStore(
-            initialState: CreateAccountState(context: .createWallet),
-            reducer: createAccountReducer,
-            environment: CreateAccountEnvironment(
+            initialState: CreateAccountStepTwoState(
+                context: .createWallet,
+                country: SearchableItem(id: "US", title: "United States"),
+                countryState: SearchableItem(id: "FL", title: "Florida"),
+                referralCode: ""
+            ),
+            reducer: createAccountStepTwoReducer,
+            environment: CreateAccountStepTwoEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
-                walletFetcherService: WalletFetcherServiceMock().mock(),
-                featureFlagsService: mockFeatureFlagService
+                walletFetcherService: WalletFetcherServiceMock().mock()
             )
         )
     }
@@ -78,49 +81,10 @@ final class CreateAccountReducerTests: XCTestCase {
         testStore.receive(.didValidateAfterFormSubmission)
     }
 
-    func test_tapping_next_validates_input_invalidCountry() throws {
-        // GIVEN: The form is invalid
-        fillFormEmailField()
-        fillFormPasswordField()
-        // WHEN: The user taps on the Next button in either part of the UI
-        testStore.send(.createButtonTapped) {
-            $0.validatingInput = true
-        }
-        // THEN: The form is validated
-        mainScheduler.advance() // let the validation complete
-        // AND: The state is updated
-        testStore.receive(.didUpdateInputValidation(.invalid(.noCountrySelected))) {
-            $0.validatingInput = false
-            $0.inputValidationState = .invalid(.noCountrySelected)
-        }
-        testStore.receive(.didValidateAfterFormSubmission)
-    }
-
-    func test_tapping_next_validates_input_invalidState() throws {
-        // GIVEN: The form is invalid
-        fillFormEmailField()
-        fillFormPasswordField()
-        fillFormCountryField()
-        // WHEN: The user taps on the Next button in either part of the UI
-        testStore.send(.createButtonTapped) {
-            $0.validatingInput = true
-        }
-        // THEN: The form is validated
-        mainScheduler.advance() // let the validation complete
-        // AND: The state is updated
-        testStore.receive(.didUpdateInputValidation(.invalid(.noCountryStateSelected))) {
-            $0.validatingInput = false
-            $0.inputValidationState = .invalid(.noCountryStateSelected)
-        }
-        testStore.receive(.didValidateAfterFormSubmission)
-    }
-
     func test_tapping_next_validates_input_termsNotAccepted() throws {
         // GIVEN: The form is invalid
         fillFormEmailField()
         fillFormPasswordField()
-        fillFormCountryField()
-        fillFormCountryStateField()
         // WHEN: The user taps on the Next button in either part of the UI
         testStore.send(.createButtonTapped) {
             $0.validatingInput = true
@@ -137,17 +101,21 @@ final class CreateAccountReducerTests: XCTestCase {
 
     func test_tapping_next_creates_an_account_when_valid_form() throws {
         testStore = TestStore(
-            initialState: CreateAccountState(context: .createWallet),
-            reducer: createAccountReducer,
-            environment: CreateAccountEnvironment(
+            initialState: CreateAccountStepTwoState(
+                context: .createWallet,
+                country: SearchableItem(id: "US", title: "United States"),
+                countryState: SearchableItem(id: "FL", title: "Florida"),
+                referralCode: ""
+            ),
+            reducer: createAccountStepTwoReducer,
+            environment: CreateAccountStepTwoEnvironment(
                 mainQueue: mainScheduler.eraseToAnyScheduler(),
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .failing(),
-                walletFetcherService: WalletFetcherServiceMock().mock(),
-                featureFlagsService: MockFeatureFlagsService()
+                walletFetcherService: WalletFetcherServiceMock().mock()
             )
         )
         // GIVEN: The form is valid
@@ -187,7 +155,7 @@ final class CreateAccountReducerTests: XCTestCase {
                 dismissButton: AlertState.Button.default(
                     TextState("OK"),
                     action: AlertState.ButtonAction.send(
-                        CreateAccountAction.alert(CreateAccountAction.AlertAction.dismiss)
+                        CreateAccountStepTwoAction.alert(CreateAccountStepTwoAction.AlertAction.dismiss)
                     )
                 )
             )
@@ -199,8 +167,6 @@ final class CreateAccountReducerTests: XCTestCase {
     private func fillFormWithValidData() {
         fillFormEmailField()
         fillFormPasswordField()
-        fillFormCountryField()
-        fillFormCountryStateField()
         fillFormAcceptanceOfTermsAndConditions()
     }
 
@@ -224,24 +190,6 @@ final class CreateAccountReducerTests: XCTestCase {
         testStore.receive(.didUpdatePasswordStrenght(expectedScore)) {
             $0.passwordStrength = expectedScore
         }
-    }
-
-    private func fillFormCountryField(country: SearchableItem<String> = .init(id: "US", title: "United States")) {
-        testStore.send(.binding(.set(\.$country, country))) {
-            $0.country = country
-        }
-        testStore.receive(.didUpdateInputValidation(.unknown))
-        testStore.receive(.binding(.set(\.$selectedAddressSegmentPicker, nil)))
-        testStore.receive(.route(nil))
-    }
-
-    private func fillFormCountryStateField(state: SearchableItem<String> = SearchableItem(id: "FL", title: "Florida")) {
-        testStore.send(.binding(.set(\.$countryState, state))) {
-            $0.countryState = state
-        }
-        testStore.receive(.didUpdateInputValidation(.unknown))
-        testStore.receive(.binding(.set(\.$selectedAddressSegmentPicker, nil)))
-        testStore.receive(.route(nil))
     }
 
     private func fillFormAcceptanceOfTermsAndConditions(termsAccepted: Bool = true) {
