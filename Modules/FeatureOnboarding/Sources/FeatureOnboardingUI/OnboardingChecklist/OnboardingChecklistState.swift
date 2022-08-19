@@ -208,7 +208,16 @@ public enum OnboardingChecklist {
                                     ? blockchain.ux.onboarding.promotion.cowboys.raffle
                                     : blockchain.ux.onboarding.promotion.cowboys.welcome
                             case blockchain.user.account.tier.silver:
-                                return blockchain.ux.onboarding.promotion.cowboys.verify.identity
+                                do {
+                                    return try [
+                                        blockchain.user.account.kyc.state.under_review[],
+                                        blockchain.user.account.kyc.state.pending[]
+                                    ].contains(app.state.get(blockchain.user.account.kyc[blockchain.user.account.tier.gold].state))
+                                        ? blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under.review
+                                        : blockchain.ux.onboarding.promotion.cowboys.verify.identity
+                                } catch {
+                                    return blockchain.ux.onboarding.promotion.cowboys.verify.identity
+                                }
                             case _:
                                 return blockchain.ux.onboarding.promotion.cowboys.refer.friends
                             }

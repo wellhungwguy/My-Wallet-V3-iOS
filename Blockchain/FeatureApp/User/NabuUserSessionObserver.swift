@@ -17,17 +17,20 @@ final class NabuUserSessionObserver: Session.Observer {
     private let userService: NabuUserServiceAPI
     private let tokenRepository: NabuTokenRepositoryAPI
     private let offlineTokenRepository: NabuOfflineTokenRepositoryAPI
+    private let kycTierService: KYCTiersServiceAPI
 
     init(
         app: AppProtocol,
         tokenRepository: NabuTokenRepositoryAPI = resolve(),
         offlineTokenRepository: NabuOfflineTokenRepositoryAPI = resolve(),
-        userService: NabuUserServiceAPI = resolve()
+        userService: NabuUserServiceAPI = resolve(),
+        kycTierService: KYCTiersServiceAPI = resolve()
     ) {
         self.app = app
         self.tokenRepository = tokenRepository
         self.offlineTokenRepository = offlineTokenRepository
         self.userService = userService
+        self.kycTierService = kycTierService
     }
 
     var token: AnyCancellable?
@@ -60,6 +63,11 @@ final class NabuUserSessionObserver: Session.Observer {
                     .eraseToAnyPublisher()
             }
             .sink(to: NabuUserSessionObserver.fetched(user:), on: self)
+            .store(in: &bag)
+
+        kycTierService.tiersStream
+            .removeDuplicates()
+            .sink(to: My.fetched(tiers:), on: self)
             .store(in: &bag)
     }
 
@@ -95,21 +103,47 @@ final class NabuUserSessionObserver: Session.Observer {
             state.set(blockchain.user.address.city, to: user.address?.city)
             state.set(blockchain.user.address.postal.code, to: user.address?.postalCode)
             state.set(blockchain.user.address.country.code, to: user.address?.countryCode)
-            let tag: Tag
-            if let tier = user.tiers?.current {
-                switch tier {
-                case .tier0:
-                    tag = blockchain.user.account.tier.none[]
-                case .tier1:
-                    tag = blockchain.user.account.tier.silver[]
-                case .tier2:
-                    tag = blockchain.user.account.tier.gold[]
-                }
-            } else {
-                tag = blockchain.user.account.tier.none[]
-            }
-            state.set(blockchain.user.account.tier, to: tag)
+            state.set(blockchain.user.account.tier, to: (user.tiers?.current).tag)
+            state.set(blockchain.user.account.kyc.id, to: (user.tiers?.current).tag.id)
         }
         app.post(event: blockchain.user.event.did.update)
+    }
+
+    func fetched(tiers: KYC.UserTiers) {
+        app.state.transaction { state in
+            for kyc in tiers.tiers {
+                state.set(blockchain.user.account.kyc[kyc.tier.tag.id].name, to: kyc.name)
+                state.set(blockchain.user.account.kyc[kyc.tier.tag.id].limits.annual, to: kyc.limits?.annual)
+                state.set(blockchain.user.account.kyc[kyc.tier.tag.id].limits.daily, to: kyc.limits?.daily)
+                state.set(blockchain.user.account.kyc[kyc.tier.tag.id].limits.currency, to: kyc.limits?.currency)
+                state.set(blockchain.user.account.kyc[kyc.tier.tag.id].state, to: blockchain.user.account.kyc.state[][kyc.state.rawValue.lowercased()])
+            }
+        }
+    }
+}
+
+extension KYC.Tier {
+
+    var tag: Tag {
+        switch self {
+        case .tier0:
+            return blockchain.user.account.tier.none[]
+        case .tier1:
+            return blockchain.user.account.tier.silver[]
+        case .tier2:
+            return blockchain.user.account.tier.gold[]
+        }
+    }
+}
+
+extension Optional where Wrapped == KYC.Tier {
+
+    var tag: Tag {
+        switch self {
+        case .some(let tier):
+            return tier.tag
+        case .none:
+            return blockchain.user.account.tier.none[]
+        }
     }
 }

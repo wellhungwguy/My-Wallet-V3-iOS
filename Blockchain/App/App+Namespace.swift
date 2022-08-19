@@ -65,11 +65,7 @@ extension AppProtocol {
         observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
-        observers.insert(ReferralAppObserver(
-            app: self,
-            referralService: referralService,
-            featureFlagService: featureFlagService
-        ))
+        observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(SuperAppIntroObserver(app: self))
         observers.insert(deepLink)
