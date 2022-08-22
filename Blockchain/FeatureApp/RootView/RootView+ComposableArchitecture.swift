@@ -205,7 +205,8 @@ let rootViewReducer = Reducer<
         return .none
 
     case .onAppear:
-        let tabsPublisher = app.modePublisher()
+        let tabsPublisher = app
+            .modePublisher()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 if appMode == .defi {
                     return environment
@@ -215,6 +216,24 @@ let rootViewReducer = Reducer<
                     return environment
                         .app
                         .publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
+                }
+            }
+            .compactMap(\.value)
+
+        let frequentActionsPublisher = app
+            .modePublisher()
+            .flatMap { appMode -> AnyPublisher<FetchResult.Value<FrequentActionData>, Never> in
+                switch appMode {
+                case .defi:
+                    return environment
+                        .app
+                        .publisher(for: blockchain.app.configuration.frequent.action.pkw, as: FrequentActionData.self)
+
+                case .trading:
+                    return environment.app.publisher(for: blockchain.app.configuration.frequent.action.trading, as: FrequentActionData.self)
+
+                case .both:
+                    return environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 }
             }
             .compactMap(\.value)
@@ -253,18 +272,6 @@ let rootViewReducer = Reducer<
                 .eraseToEffect()
                 .map { .binding(.set(\.$referralState.isHighlighted, $0 == false)) },
 
-            environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
-                .compactMap(\.value)
-                .receive(on: DispatchQueue.main)
-                .eraseToEffect()
-                .map { .binding(.set(\.$fab.data, $0)) },
-
-            environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
-                .compactMap(\.value)
-                .receive(on: DispatchQueue.main)
-                .eraseToEffect()
-                .map { .binding(.set(\.$fab.data, $0)) },
-
             environment
                 .app
                 .publisher(for: blockchain.ux.customer.support.unread.count, as: Int.self)
@@ -286,7 +293,12 @@ let rootViewReducer = Reducer<
             tabsPublisher
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$tabs, $0)) }
+                .map { .binding(.set(\.$tabs, $0)) },
+
+            frequentActionsPublisher
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$fab.data, $0)) }
         )
 
     case .onDisappear:

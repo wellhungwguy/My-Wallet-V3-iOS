@@ -252,6 +252,11 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleBuyCrypto(currency: CryptoCurrency) {
+        guard app.currentMode != .defi else {
+            showBuyCryptoOpenTradingAccount()
+            return
+        }
+
         coincore
             .cryptoAccounts(for: currency, supporting: .buy, filter: .custodial)
             .receive(on: DispatchQueue.main)
@@ -366,6 +371,16 @@ extension RootViewController: LoggedInBridge {
                 ]
             )
         )
+    }
+
+    private func showBuyCryptoOpenTradingAccount() {
+        let view = DefiBuyCryptoMessageView {
+            app.state.set(blockchain.app.mode, to: AppMode.trading.rawValue)
+        }
+        let viewController = UIHostingController(rootView: view)
+        viewController.transitioningDelegate = bottomSheetPresenter
+        viewController.modalPresentationStyle = .custom
+        present(viewController, animated: true, completion: nil)
     }
 
     func startBackupFlow() {

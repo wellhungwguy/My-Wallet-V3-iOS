@@ -61,4 +61,18 @@ extension PillButtonSize {
             trailing: 0
         )
     )
+
+    public static let large = PillButtonSize(
+        typograhy: .body2,
+        maxWidth: .infinity,
+        minHeight: 80,
+        borderRadius: Spacing.buttonBorderRadius,
+        padding: EdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: 0,
+            trailing: 0
+        )
+    )
+
 }
