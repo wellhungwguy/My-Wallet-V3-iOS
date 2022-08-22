@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "Extensions",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "Extensions", targets: ["Extensions"]),
         .library(name: "CombineExtensions", targets: ["CombineExtensions"]),

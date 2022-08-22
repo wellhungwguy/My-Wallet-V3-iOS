@@ -162,10 +162,9 @@ final class CustodialCryptoAsset: CryptoAsset {
                     activityRepository: resolve(),
                     addressesRepository: resolve(),
                     addressFactory: addressFactory,
-                    asset: delegatedCustodyAccount.coin,
                     balanceRepository: resolve(),
                     priceService: resolve(),
-                    publicKey: delegatedCustodyAccount.publicKey.hex
+                    delegatedCustodyAccount: delegatedCustodyAccount
                 )
                 return CryptoAccountNonCustodialGroup(
                     asset: asset,

@@ -24,7 +24,7 @@ struct BalanceResponse: Decodable {
     struct SubscriptionEntry: Decodable {
         let ticker: String
         let accounts: Int
-        let pubkeyCount: Int
+        let pubKeyCount: Int
     }
 
     let currencies: [BalanceEntry]

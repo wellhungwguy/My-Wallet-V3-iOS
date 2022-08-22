@@ -47,6 +47,12 @@ extension CoincoreAPI {
                 with: account,
                 target: target
             )
+        case let account as CryptoDelegatedCustodyAccount:
+            return createDelegatedCustodyProcessor(
+                with: account,
+                target: target,
+                action: action
+            )
         default:
             impossible()
         }
@@ -133,6 +139,29 @@ extension CoincoreAPI {
                 )
             )
         default:
+            unimplemented()
+        }
+    }
+
+    private func createDelegatedCustodyProcessor(
+        with account: CryptoDelegatedCustodyAccount,
+        target: TransactionTarget,
+        action: AssetAction
+    ) -> Single<TransactionProcessor> {
+        switch action {
+        case .send:
+            return createDelegatedCustodyProcessorSend(with: account, target: target)
+        case .buy,
+                .deposit,
+                .interestTransfer,
+                .interestWithdraw,
+                .linkToDebitCard,
+                .receive,
+                .sell,
+                .sign,
+                .swap,
+                .viewActivity,
+                .withdraw:
             unimplemented()
         }
     }
@@ -276,30 +305,38 @@ extension CoincoreAPI {
         }
     }
 
+    private func createDelegatedCustodyProcessorSend(
+        with account: CryptoDelegatedCustodyAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        receiveAddress(from: target)
+            .map { receiveAddress in
+                TransactionProcessor(
+                    sourceAccount: account,
+                    transactionTarget: receiveAddress,
+                    engine: DelegatedSelfCustodyTransactionEngine(
+                        currencyConversionService: resolve(),
+                        transactionService: resolve(),
+                        walletCurrencyService: resolve()
+                    )
+                )
+            }
+            .asSingle()
+    }
+
     private func createTradingProcessorSend(
         with account: CryptoTradingAccount,
         target: TransactionTarget
     ) -> Single<TransactionProcessor> {
-        func engine(receiveAddress: ReceiveAddress) -> TransactionProcessor {
-            TransactionProcessor(
-                sourceAccount: account,
-                transactionTarget: receiveAddress,
-                engine: TradingToOnChainTransactionEngine()
-            )
-        }
-        switch target {
-        case let target as ReceiveAddress:
-            return .just(engine(receiveAddress: target))
-        case let target as CryptoAccount:
-            return target
-                .receiveAddress
-                .map { receiveAddress in
-                    engine(receiveAddress: receiveAddress)
-                }
-                .asSingle()
-        default:
-            impossible()
-        }
+        receiveAddress(from: target)
+            .map { receiveAddress in
+                TransactionProcessor(
+                    sourceAccount: account,
+                    transactionTarget: receiveAddress,
+                    engine: TradingToOnChainTransactionEngine()
+                )
+            }
+            .asSingle()
     }
 
     private func createTradingProcessorSell(
@@ -313,5 +350,18 @@ extension CoincoreAPI {
                 engine: TradingSellTransactionEngine()
             )
         )
+    }
+
+    private func receiveAddress(
+        from target: TransactionTarget
+    ) -> AnyPublisher<ReceiveAddress, Error> {
+        switch target {
+        case let target as ReceiveAddress:
+            return .just(target)
+        case let target as BlockchainAccount:
+            return target.receiveAddress
+        default:
+            impossible()
+        }
     }
 }

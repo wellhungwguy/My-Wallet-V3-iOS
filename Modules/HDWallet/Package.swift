@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "HDWallet",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "HDWalletKit", targets: ["HDWalletKit"])
     ],

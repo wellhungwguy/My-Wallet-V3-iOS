@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "FeatureSuperAppIntro",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(

@@ -47,7 +47,7 @@ extension Dictionary: AnyEquatable {
 extension Array: AnyEquatable {
     public static func isAnyEqual(_ lhs: Any, _ rhs: Any) -> Bool {
         guard let l = lhs as? [Element], let r = rhs as? [Element] else { return false }
-        return zip(l, r).allSatisfy(isEqual)
+        return Swift.zip(l, r).allSatisfy(isEqual)
     }
 }
 

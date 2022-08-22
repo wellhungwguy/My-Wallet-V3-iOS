@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureApp",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "FeatureApp", targets: ["FeatureAppUI", "FeatureAppDomain"]),
         .library(name: "FeatureAppUI", targets: ["FeatureAppUI"]),

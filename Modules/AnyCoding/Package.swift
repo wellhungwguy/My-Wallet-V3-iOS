@@ -4,9 +4,14 @@ import PackageDescription
 
 let package = Package(
     name: "AnyCoding",
-    platforms: [.macOS(.v11), .iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
-        .library(name: "AnyCoding", targets: ["AnyCoding"]),
+        .library(name: "AnyCoding", targets: ["AnyCoding"])
     ],
     dependencies: [
         .package(path: "../Extensions")

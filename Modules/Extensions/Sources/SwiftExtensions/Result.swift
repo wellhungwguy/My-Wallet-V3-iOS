@@ -77,7 +77,39 @@ extension ResultProtocol {
     }
 }
 
-// swiftlint:disable large_tuple
+extension RandomAccessCollection where Element: ResultProtocol {
+
+    public func zip() -> Result<[Element.Success], Element.Failure> {
+        switch count {
+        case 0:
+            return .success([])
+        case 1:
+            return self[_0]
+                .map { [$0] }
+        case 2:
+            return self[_0].result
+                .zip(self[_1].result)
+                .map { [$0, $1] }
+        case 3:
+            return self[_0].result
+                .zip(self[_1].result, self[_2].result)
+                .map { [$0, $1, $2] }
+        case 4:
+            return self[_0].result
+                .zip(self[_1].result, self[_2].result, self[_3].result)
+                .map { [$0, $1, $2, $3] }
+        default:
+            return prefix(4).zip()
+                .zip(dropFirst(4).zip())
+                .map { $0 + $1 }
+        }
+    }
+
+    private var _0: Index { startIndex }
+    private var _1: Index { index(after: startIndex) }
+    private var _2: Index { index(after: _1) }
+    private var _3: Index { index(after: _2) }
+}
 
 extension Result {
 
@@ -107,6 +139,7 @@ extension Result {
         _ a: Result<A, Failure>,
         _ b: Result<B, Failure>,
         _ c: Result<C, Failure>
+        // swiftlint:disable:next large_tuple
     ) -> Result<(Success, A, B, C), Failure> {
         zip(a, b)
             .zip(c)
@@ -118,6 +151,7 @@ extension Result {
         _ b: Result<B, Failure>,
         _ c: Result<C, Failure>,
         _ d: Result<D, Failure>
+        // swiftlint:disable:next large_tuple
     ) -> Result<(Success, A, B, C, D), Failure> {
         zip(a, b, c)
             .zip(d)
@@ -180,7 +214,7 @@ extension Result {
 }
 
 extension Result {
-    
+
     public func reduce<NewValue>(_ transform: (Result<Success, Failure>) -> NewValue) -> NewValue {
         transform(self)
     }

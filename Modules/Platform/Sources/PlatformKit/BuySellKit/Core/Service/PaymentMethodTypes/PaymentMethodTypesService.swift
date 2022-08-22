@@ -503,7 +503,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// - Parameters:
     ///   - paymentMethods: An array of `PaymentMethod` that defines the suggested methods
     ///   - cards: An array of `CardData` the defines the available cards
-    ///   - balances: An instance of `MoneyBalancePairsCalculationStates` that provides access to balance pairs
+    ///   - balances: An instance of `CustodialAccountBalanceStates` that provides access to balance pairs
     ///   - linkedBanks: A array of `LinkedBankData` that defines any link bank (specifically ACH or OpenBanking)
     /// - Returns: An sorted array of `PaymentMethodType`
     /// ~~~
