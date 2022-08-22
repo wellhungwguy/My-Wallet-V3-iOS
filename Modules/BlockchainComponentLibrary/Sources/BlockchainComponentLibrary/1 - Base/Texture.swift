@@ -133,10 +133,16 @@ extension Texture {
 
     public struct Media: Codable, Hashable {
 
-        public let url: URL
+        public struct Resizing: Codable, Hashable {
+            let mode: MediaResizingMode
+        }
 
-        public init(url: URL) {
+        public let url: URL
+        public let resizing: Resizing?
+
+        public init(url: URL, resizing: Resizing? = nil) {
             self.url = url
+            self.resizing = resizing
         }
     }
 }
@@ -228,13 +234,18 @@ enum TextureModifier: ViewModifier {
             content
         case .foreground(let texture):
             if let media = texture.media {
-                content
+                let view = content
                     .foregroundColor(.clear)
                     .overlay(
                         AsyncMedia(url: media.url, placeholder: EmptyView.init)
                             .aspectRatio(contentMode: .fit)
                             .mask(content)
                     )
+                if let resizingMode = media.resizing?.mode {
+                    view.resizingMode(resizingMode)
+                } else {
+                    view
+                }
             } else if let gradient = texture.gradient, let linearGradient = LinearGradient(gradient) {
                 content
                     .foregroundColor(.clear)
@@ -253,10 +264,15 @@ enum TextureModifier: ViewModifier {
                         } else if let color = texture.color {
                             color.swiftUI
                         }
-                        AsyncMedia(url: media.url, placeholder: EmptyView.init)
+                        let view = AsyncMedia(url: media.url, placeholder: EmptyView.init)
                             .aspectRatio(contentMode: .fill)
                             .frame(minWidth: 0.pt, maxWidth: 100.vw, minHeight: 0.pt, maxHeight: 100.vh)
                             .transition(.opacity.combined(with: .scale))
+                        if let resizingMode = media.resizing?.mode {
+                            view.resizingMode(resizingMode)
+                        } else {
+                            view
+                        }
                     }
                     .ignoresSafeArea(.all, edges: .all)
                 )
@@ -273,22 +289,22 @@ enum TextureModifier: ViewModifier {
 
 extension Color {
 
-#if canImport(UIKit)
+    #if canImport(UIKit)
     private typealias Native = UIColor
-#elseif canImport(AppKit)
+    #elseif canImport(AppKit)
     private typealias Native = NSColor
-#endif
+    #endif
 
     // swiftlint:disable:next large_tuple
     private var hsba: (hue: Double, saturation: Double, brightness: Double, alpha: Double) {
         var (h, s, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
-#if canImport(UIKit)
+        #if canImport(UIKit)
         guard Native(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a) else {
             return (0, 0, 0, 0)
         }
-#elseif canImport(AppKit)
+        #elseif canImport(AppKit)
         Native(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-#endif
+        #endif
         return (h.d, s.d, b.d, a.d)
     }
 
