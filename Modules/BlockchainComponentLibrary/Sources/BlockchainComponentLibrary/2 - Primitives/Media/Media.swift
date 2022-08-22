@@ -17,6 +17,8 @@ public struct AsyncMedia<Content: View>: View {
     private let transaction: Transaction
     private let content: (AsyncPhase<Media>) -> Content
 
+    @Environment(\.resizingMode) var resizingMode
+
     public init(
         url: URL?,
         transaction: Transaction = Transaction(),
@@ -44,7 +46,7 @@ public struct AsyncMedia<Content: View>: View {
             #if os(macOS)
             content(.success(image))
             #else
-            content(.success(image.resizingMode(.aspectFit)))
+            content(.success(image.resizingMode(resizingMode.imageResizingMode)))
             #endif
         } else if let error = state.error {
             content(.failure(error))
@@ -113,4 +115,59 @@ extension AsyncMedia {
 extension URL {
 
     var uniformTypeIdentifier: UTType? { UTType(filenameExtension: pathExtension) }
+}
+
+extension EnvironmentValues {
+
+    public var resizingMode: MediaResizingMode {
+        get { self[ImageResizingModeEnvironmentKey.self] }
+        set { self[ImageResizingModeEnvironmentKey.self] = newValue }
+    }
+}
+
+private struct ImageResizingModeEnvironmentKey: EnvironmentKey {
+    static var defaultValue = MediaResizingMode.aspectFit
+}
+
+extension View {
+
+    @warn_unqualified_access @inlinable
+    public func resizingMode(_ resizingMode: MediaResizingMode) -> some View {
+        environment(\.resizingMode, resizingMode)
+    }
+}
+
+public enum MediaResizingMode: String, Codable {
+    case fill
+    case aspectFit = "aspect_fit"
+    case aspectFill = "aspect_fill"
+    case center
+    case top
+    case bottom
+    case left
+    case right
+    case topLeft = "top_left"
+    case topRight = "top_right"
+    case bottomLeft = "bottom_left"
+    case bottomRight = "bottom_right"
+}
+
+extension MediaResizingMode {
+
+    @usableFromInline var imageResizingMode: ImageResizingMode {
+        switch self {
+        case .fill: return .fill
+        case .aspectFit: return .aspectFit
+        case .aspectFill: return .aspectFill
+        case .center: return .center
+        case .top: return .top
+        case .bottom: return .bottom
+        case .left: return .left
+        case .right: return .right
+        case .topLeft: return .topLeft
+        case .topRight: return .topRight
+        case .bottomLeft: return .bottomLeft
+        case .bottomRight: return .bottomRight
+        }
+    }
 }

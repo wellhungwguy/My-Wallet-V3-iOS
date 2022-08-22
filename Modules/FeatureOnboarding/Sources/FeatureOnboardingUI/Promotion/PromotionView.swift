@@ -25,7 +25,7 @@ public struct PromotionAnnouncementView: View {
             message: ux.message,
             background: {
                 if let background = ux.style?.background {
-                    background.aspectRatio(contentMode: .fill)
+                    background.resizingMode(.aspectFill)
                 }
             },
             leading: {
@@ -50,7 +50,6 @@ public struct PromotionAnnouncementView: View {
                 ]
             )
         }
-
     }
 }
 
