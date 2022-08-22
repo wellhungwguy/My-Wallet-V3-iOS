@@ -147,16 +147,28 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                 }
                 .mapError(BlockchainAccountRepositoryError.coinCoreError)
                 .eraseToAnyPublisher()
+
         case .crypto(let cryptoCurrency):
             guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
                 return .just([])
             }
 
-            return app.modePublisher()
-                .flatMap { appMode in
-                    cryptoAsset
-                        .accountGroup(filter: appMode.filter)
+            let filter: AssetFilter
+
+            switch accountType {
+            case .nonCustodial:
+                filter = .nonCustodial
+            case .custodial(let type):
+                switch type {
+                case .savings:
+                    filter = .interest
+                case .trading:
+                    filter = .custodial
                 }
+            }
+
+            return cryptoAsset
+                .accountGroup(filter: filter)
                 .compactMap { $0 }
                 .map(\.accounts)
                 .map { accounts in
