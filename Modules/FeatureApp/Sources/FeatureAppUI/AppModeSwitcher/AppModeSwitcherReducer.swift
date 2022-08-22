@@ -68,11 +68,11 @@ extension AppModeSwitcherModule {
                     return .merge(
                         .fireAndForget {
                             environment
-                                .backupRouterAPI
+                                .backupFundsRouter
                                 .start()
                         },
                         environment
-                            .backupRouterAPI
+                            .backupFundsRouter
                             .skipSubject
                             .eraseToEffect()
                             .map { _ in
@@ -80,7 +80,7 @@ extension AppModeSwitcherModule {
                             },
 
                         environment
-                            .backupRouterAPI
+                            .backupFundsRouter
                             .completionSubject
                             .eraseToEffect()
                             .map { _ in

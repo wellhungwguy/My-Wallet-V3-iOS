@@ -8,6 +8,7 @@ import FeatureAppUI
 import FeatureAuthenticationDomain
 import FeatureDashboardUI
 import FeatureOnboardingUI
+import FeatureSettingsUI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
 import PlatformKit
@@ -30,11 +31,14 @@ final class RootViewController: UIHostingController<RootView> {
 
         send = ViewStore(global).send
 
+        let backupFundsRouter = BackupFundsRouter(entry: .defiIntroScreen, navigationRouter: resolve())
         let environment = RootViewEnvironment(
             app: app,
+            backupFundsRouter:  backupFundsRouter,
             coincore: resolve(),
             recoveryPhraseStatusProviding: resolve()
         )
+
         let store = Store(
             initialState: RootViewState(
                 fab: .init(

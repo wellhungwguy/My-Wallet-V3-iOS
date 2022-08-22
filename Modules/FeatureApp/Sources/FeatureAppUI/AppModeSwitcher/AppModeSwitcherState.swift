@@ -1,6 +1,8 @@
 import BlockchainNamespace
 import Combine
 import ComposableArchitecture
+import DIKit
+import FeatureSettingsUI
 import MoneyKit
 import ToolKit
 

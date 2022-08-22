@@ -12,6 +12,7 @@ import FeatureAppUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
+import FeatureSettingsUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -121,17 +122,20 @@ enum RootViewRoute: NavigationRoute {
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
     var app: AppProtocol
+    var backupFundsRouter: BackupFundsRouterAPI
     var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
+        backupFundsRouter: BackupFundsRouterAPI,
         coincore: CoincoreAPI,
         recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     ) {
         self.app = app
         self.coincore = coincore
         self.recoveryPhraseStatusProviding = recoveryPhraseStatusProviding
+        self.backupFundsRouter = backupFundsRouter
     }
 
     func fetchTotalBalance(filter: AssetFilter) -> AnyPublisher<MoneyValue?, Never> {
@@ -163,7 +167,8 @@ let rootMainReducer = Reducer.combine(
             environment: { environment in
                       AppModeSwitcherEnvironment(
                           app: environment.app,
-                          recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding
+                          recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding,
+                          backupFundsRouter: environment.backupFundsRouter
                       )
             }
         )
