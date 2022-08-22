@@ -39,8 +39,6 @@ public struct AccountListView: View {
         VStack(spacing: 0) {
             if accounts.isEmpty {
                 loading()
-            } else if isDefiMode, let account = accounts.first {
-                singleAccountRowWithActions(account: account)
             } else {
                 ForEach(__accounts) { account in
                     AccountRow(
@@ -69,48 +67,6 @@ public struct AccountListView: View {
                     .stroke(isDefiMode ? Color.semantic.medium : .clear, lineWidth: 1)
         )
         .padding(.horizontal, Spacing.padding1)
-    }
-
-    @ViewBuilder func singleAccountRowWithActions(account: Account.Snapshot) -> some View {
-        AccountRow(
-            account: account,
-            assetColor: currency.color,
-            interestRate: interestRate,
-            actionEnabled: false
-        )
-        .context([blockchain.ux.asset.account.id: account.id])
-
-        HStack(alignment: .center) {
-            MinimalButton(title: "Copy address") {
-                Icon
-                    .copy
-                    .frame(width: 14, height: 14)
-            } action: {
-#if os(macOS)
-                NSPasteboard.general.string = account.receiveAddress
-#else
-                UIPasteboard.general.string = account.receiveAddress
-#endif
-            }
-            .typography(.paragraph2)
-            .padding(.vertical, Spacing.padding2)
-            .padding(.leading, Spacing.padding2)
-            .padding(.trailing, Spacing.padding1)
-            .pillButtonSize(.small)
-
-            MinimalButton(title: "Receive") {
-                Icon
-                    .qrCode
-                    .frame(width: 14, height: 14)
-            } action: {
-                app.post(event: blockchain.ux.asset.account.receive[].ref(to: context))
-            }
-            .typography(.paragraph2)
-            .padding(.vertical, Spacing.padding2)
-            .padding(.trailing, Spacing.padding2)
-            .pillButtonSize(.small)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder func loading() -> some View {
