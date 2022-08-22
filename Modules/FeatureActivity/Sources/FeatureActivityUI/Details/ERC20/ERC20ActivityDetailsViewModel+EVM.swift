@@ -44,7 +44,7 @@ extension ERC20ActivityDetailsViewModel {
 
         return Amounts(
             fee: value(cryptoValue: details.fee, price: feePrice),
-            gasFor: nil
+            gasFor: value(cryptoValue: details.amount, price: price)
         )
     }
 }
