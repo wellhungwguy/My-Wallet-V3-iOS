@@ -389,8 +389,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     func presentLinkPaymentMethod(transactionModel: TransactionModel) {
         let viewController = viewController.uiviewController
-        let presenter = viewController.topMostViewController ?? viewController
-        paymentMethodLinker.presentAccountLinkingFlow(from: presenter) { [weak self] result in
+        paymentMethodLinker.presentAccountLinkingFlow(
+            from: viewController.uiviewController
+        ) { [weak self] result in
             guard let self = self else { return }
             viewController.dismiss(animated: true) {
                 switch result {

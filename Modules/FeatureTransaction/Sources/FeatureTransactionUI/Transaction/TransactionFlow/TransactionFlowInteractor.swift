@@ -287,6 +287,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectActionButton() {
+        transactionModel.process(action: .returnToPreviousStep)
         transactionModel.process(action: .showAddAccountFlow)
     }
 

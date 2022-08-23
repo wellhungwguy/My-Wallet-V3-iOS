@@ -40,41 +40,20 @@ public struct AssetDetailView: View {
                                 .padding([.top], Spacing.padding1)
                             VStack(spacing: 8.0) {
                                 VStack(spacing: 32) {
-                                    AssetMotionView(url: asset.media.imageURL ?? asset.media.imagePreviewURL)
+                                    AssetMotionView(
+                                        url: asset.media.imageURL ?? asset.media.imagePreviewURL,
+                                        button: {
+                                            webViewPresented.toggle()
+                                        }
+                                    )
                                     AssetDescriptionView(asset: asset)
                                 }
-
                                 TraitGridView(asset: asset)
                                     .padding()
                             }
-                            .padding(.bottom, 96.pt)
                         }
                         .frame(minHeight: proxy.size.height)
                     }
-                    VStack {
-                        Spacer()
-                        DefaultButton(title: LocalizationId.viewOnWeb) {
-                            webViewPresented.toggle()
-                        }
-                        .padding(.top, 24.pt)
-                        .padding(.bottom, 40.pt)
-                        .padding([.leading, .trailing], 16.pt)
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(
-                                    colors: [
-                                        .white,
-                                        .white,
-                                        .white.opacity(0.2),
-                                        .white.opacity(0.01)
-                                    ]
-                                ),
-                                startPoint: .bottom,
-                                endPoint: .top
-                            )
-                        )
-                    }
-                    .edgesIgnoringSafeArea(.bottom)
                 }
             }
             .navigationBarHidden(true)
@@ -110,24 +89,36 @@ public struct AssetDetailView: View {
 
     private struct AssetMotionView: View {
         let url: String
+        let button: () -> Void
 
         var body: some View {
-            ZStack {
-                AsyncMedia(
-                    url: URL(string: url)
-                )
-                .cornerRadius(64)
-                .blur(radius: 30)
-                .opacity(0.9)
-                AssetViewRepresentable(
-                    imageURL: URL(
-                        string: url
-                    ),
-                    size: 300
-                )
+            VStack(spacing: 24.pt) {
+                ZStack {
+                    AsyncMedia(
+                        url: URL(string: url)
+                    )
+                    .cornerRadius(64)
+                    .blur(radius: 30)
+                    .opacity(0.9)
+                    AssetViewRepresentable(
+                        imageURL: URL(
+                            string: url
+                        ),
+                        size: 300
+                    )
+                }
+                .frame(width: 300, height: 300)
+                .padding(.top, 40.pt)
+                .padding(.bottom, 24.pt)
+                PrimaryButton(
+                    title: LocalizationId.viewOnOpenSea,
+                    leadingView: {
+                        Icon.newWindow
+                            .frame(width: 24, height: 24)
+                    }
+                ) { button() }
+                .padding([.leading, .trailing], 24.pt)
             }
-            .frame(width: 300, height: 300)
-            .padding(.top, 40.pt)
         }
     }
 
