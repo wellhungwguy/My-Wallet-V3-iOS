@@ -131,11 +131,7 @@ final class TransactionInteractor {
         transactionTarget: TransactionTarget?
     ) -> Single<[SingleAccount]> {
         let allEligibleCryptoAccounts: Single<[CryptoAccount]> =
-        app
-            .modePublisher()
-            .flatMap { [coincore] appMode in
-                coincore.allAccounts(filter: appMode.filter)
-            }
+            coincore.allAccounts(filter: .all)
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(
@@ -216,18 +212,14 @@ final class TransactionInteractor {
         case .withdraw:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .buy:
-            return app.modePublisher()
-                .flatMap { [coincore] appMode in
-                    coincore
-                     .cryptoAccounts(supporting: .buy, filter: appMode.filter)
-                }
+            return
+                coincore
+                .cryptoAccounts(supporting: .buy, filter: .custodial)
                 .asSingle()
                 .map { $0 }
         case .sell:
-            return app.modePublisher()
-                .flatMap { [coincore] appMode in
-                    coincore.allAccounts(filter: appMode.filter)
-                }
+            return
+                coincore.allAccounts(filter: .all)
                 .map(\.accounts)
                 .map {
                     $0.compactMap { account in
