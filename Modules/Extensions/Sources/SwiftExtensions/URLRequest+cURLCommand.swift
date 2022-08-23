@@ -12,8 +12,8 @@ extension URLRequest {
         }
 
         if let httpBody = httpBody, httpBody.count > 0 {
-            let bodyString = [ ("\\", "\\\\"), ("`", "\\`"), ("\"", "\\\""), ("$", "\\$") ].reduce(String(data: httpBody, encoding: .utf8)) {
-                return $0?.replacingOccurrences(of: $1.0, with: $1.1)
+            let bodyString = [("\\", "\\\\"), ("`", "\\`"), ("\"", "\\\""), ("$", "\\$")].reduce(String(data: httpBody, encoding: .utf8)) {
+                $0?.replacingOccurrences(of: $1.0, with: $1.1)
             }!
             command.append(commandLineArgument: "-d \"\(bodyString)\"")
         }

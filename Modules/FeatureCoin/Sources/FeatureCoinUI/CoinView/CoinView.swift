@@ -247,7 +247,7 @@ public struct CoinView: View {
             if actions.isNotEmpty {
                 VStack(spacing: 0) {
                     PrimaryDivider()
-                    HStack(spacing: 8, content:{
+                    HStack(spacing: 8, content: {
                         ForEach(actions, id: \.event) { action in
                             SecondaryButton(
                                 title: action.title,

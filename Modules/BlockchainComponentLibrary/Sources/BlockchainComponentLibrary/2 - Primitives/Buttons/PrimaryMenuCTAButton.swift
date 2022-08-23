@@ -44,8 +44,10 @@ public struct PrimaryMenuCTAButton<LeadingView: View>: View {
                 leadingView()
                     .frame(width: 24, height: 24)
                     .padding(.leading, Spacing.padding2)
-                VStack(alignment: .leading,
-                       spacing: 3) {
+                VStack(
+                    alignment: .leading,
+                    spacing: 3
+                ) {
                     Text(title)
                     Text(subtitle)
                         .typography(.paragraph1)
@@ -125,9 +127,11 @@ struct PrimaryMenuCTAButton_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            PrimaryMenuCTAButton(title: "Enabled",
-                                 subtitle: "Enabled",
-                                 action: {})
+            PrimaryMenuCTAButton(
+                title: "Enabled",
+                subtitle: "Enabled",
+                action: {}
+            )
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Enabled")
 
@@ -142,16 +146,21 @@ struct PrimaryMenuCTAButton_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
             .previewDisplayName("With Icon")
 
-            PrimaryMenuCTAButton(title: "Disabled",
-                                 subtitle: "Disabled",
-                                 action: {})
+            PrimaryMenuCTAButton(
+                title: "Disabled",
+                subtitle: "Disabled",
+                action: {}
+            )
                 .disabled(true)
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Disabled")
 
-            PrimaryMenuCTAButton(title: "Loading",
-                                 subtitle: "Loading",
-                                 isLoading: true, action: {})
+            PrimaryMenuCTAButton(
+                title: "Loading",
+                subtitle: "Loading",
+                isLoading: true,
+                action: {}
+            )
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Loading")
         }

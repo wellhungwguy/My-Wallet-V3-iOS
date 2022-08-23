@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Extensions
 import BlockchainComponentLibrary
+import Extensions
 import SwiftUI
 
 /// A view which represents a loading state

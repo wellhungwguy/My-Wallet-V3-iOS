@@ -225,9 +225,9 @@ let createAccountStepOneReducer = Reducer.combine(
             }
         ),
     Reducer<
-    CreateAccountStepOneState,
-    CreateAccountStepOneAction,
-    CreateAccountStepOneEnvironment
+        CreateAccountStepOneState,
+        CreateAccountStepOneAction,
+        CreateAccountStepOneEnvironment
     > { state, action, environment in
         switch action {
 
@@ -364,16 +364,16 @@ let createAccountStepOneReducer = Reducer.combine(
         case .createWalletStepTwo(.triggerAuthenticate):
             return Effect(value: .triggerAuthenticate)
 
-        case let .createWalletStepTwo(.importAccount(mnemonic)):
+        case .createWalletStepTwo(.importAccount(let mnemonic)):
             return Effect(value: .importAccount(mnemonic))
 
-        case let .createWalletStepTwo(.walletFetched(result)):
+        case .createWalletStepTwo(.walletFetched(let result)):
             return Effect(value: .walletFetched(result))
 
         case .createWalletStepTwo(.informWalletFetched(let context)):
             return Effect(value: .informWalletFetched(context))
 
-        case let .createWalletStepTwo(.accountCreation(.failure(error))):
+        case .createWalletStepTwo(.accountCreation(.failure(let error))):
             return Effect(value: .createWalletStepTwo(.accountCreation(.failure(error))))
 
         case .alert(.dismiss):

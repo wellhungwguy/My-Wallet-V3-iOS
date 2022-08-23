@@ -4,7 +4,7 @@ public func combineLatest<C>(
 ) -> AsyncStream<[C.Element.Element]> where C: Collection, C.Element: AsyncSequence {
     AsyncStream(bufferingPolicy: limit) { continuation in
         let stream = CombineLatestActor<C.Element.Element>(collection.count)
-        continuation.onTermination = { @Sendable termination in
+        continuation.onTermination = { @Sendable _ in
             Task { await stream.cancel() }
         }
         for (i, sequence) in collection.enumerated() {
@@ -27,7 +27,7 @@ public func combineLatest<C>(
 
 private actor CombineLatestActor<Element> {
 
-    var values: Array<Element?>
+    var values: [Element?]
     var seen, completed: Set<Int>
     var isCancelled: Bool = false
 
@@ -42,7 +42,7 @@ private actor CombineLatestActor<Element> {
         seen.insert(index)
         values[index] = value
         return seen.count == values.count
-        ? values.map { $0.unsafelyUnwrapped }
+        ? values.map(\.unsafelyUnwrapped)
         : nil
     }
 

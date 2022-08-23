@@ -58,4 +58,3 @@ extension Character {
         CharacterSet(charactersIn: "\(self)").isSubset(of: characterSet)
     }
 }
-

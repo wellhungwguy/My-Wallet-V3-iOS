@@ -156,7 +156,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         _ errorState: TransactionErrorState,
         transactionModel: TransactionModel
     ) {
-        guard case let .ux(ux) = errorState else {
+        guard case .ux(let ux) = errorState else {
             impossible("state.errorState is not ux")
         }
         presentErrorViewForDialog(ux, transactionModel: transactionModel)
@@ -525,7 +525,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         )
 
         attachChild(Router<Interactor>(interactor: Interactor()))
-        
+
         viewController.transitioningDelegate = bottomSheetPresenter
         viewController.modalPresentationStyle = .custom
         let presenter = topMostViewControllerProvider.topMostViewController

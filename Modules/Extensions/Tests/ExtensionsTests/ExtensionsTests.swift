@@ -1,5 +1,4 @@
-import XCTest
 @testable import Extensions
+import XCTest
 
-final class ExtensionsTests: XCTestCase {
-}
+final class ExtensionsTests: XCTestCase {}

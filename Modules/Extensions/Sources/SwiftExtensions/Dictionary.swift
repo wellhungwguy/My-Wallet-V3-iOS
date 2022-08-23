@@ -2,7 +2,6 @@
 
 import Foundation
 
-
 extension Dictionary {
 
     @inlinable public func mapKeys<A>(_ keyPath: KeyPath<Key, A>) -> [A: Value] {
@@ -14,7 +13,7 @@ extension Dictionary {
     }
 
     @inlinable public func mapKeysAndValues<A, B>(key: KeyPath<Key, A>, value: KeyPath<Value, B>) -> [A: B] {
-        mapKeysAndValues(key: {$0[keyPath: key] }, value: { $0[keyPath: value] })
+        mapKeysAndValues(key: { $0[keyPath: key] }, value: { $0[keyPath: value] })
     }
 
     @inlinable public func mapKeysAndValues<A, B>(key: (Key) throws -> A, value: (Value) throws -> B) rethrows -> [A: B] {

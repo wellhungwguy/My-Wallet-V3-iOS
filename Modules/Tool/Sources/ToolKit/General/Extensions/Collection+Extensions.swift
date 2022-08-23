@@ -11,4 +11,5 @@ extension Collection {
             return nil
         }
         return self[index]
-    }}
+    }
+}

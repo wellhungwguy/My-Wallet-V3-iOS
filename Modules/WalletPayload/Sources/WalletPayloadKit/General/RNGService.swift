@@ -180,4 +180,3 @@ extension Array where Element == UInt8 {
         }
     }
 }
-

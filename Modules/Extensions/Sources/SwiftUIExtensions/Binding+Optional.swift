@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import SwiftUI
 import SwiftExtensions
+import SwiftUI
 
 extension Binding where Value: Equatable {
 

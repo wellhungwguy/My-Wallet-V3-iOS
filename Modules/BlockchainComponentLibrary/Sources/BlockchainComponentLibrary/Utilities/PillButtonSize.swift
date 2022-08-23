@@ -74,5 +74,4 @@ extension PillButtonSize {
             trailing: 0
         )
     )
-
 }

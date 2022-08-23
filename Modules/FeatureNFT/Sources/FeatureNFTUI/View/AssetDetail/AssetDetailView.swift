@@ -110,13 +110,17 @@ public struct AssetDetailView: View {
                 .frame(width: 300, height: 300)
                 .padding(.top, 40.pt)
                 .padding(.bottom, 24.pt)
+
                 PrimaryButton(
                     title: LocalizationId.viewOnOpenSea,
                     leadingView: {
                         Icon.newWindow
                             .frame(width: 24, height: 24)
+                    },
+                    action: {
+                        button()
                     }
-                ) { button() }
+                )
                 .padding([.leading, .trailing], 24.pt)
             }
         }

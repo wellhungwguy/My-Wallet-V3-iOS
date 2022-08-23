@@ -1,7 +1,7 @@
+import Extensions
 import Foundation
 import Localization
 import OrderedCollections
-import Extensions
 
 // swiftlint:disable type_name
 public enum UX {

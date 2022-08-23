@@ -1,4 +1,4 @@
-//Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
 import BlockchainNamespace
@@ -10,7 +10,7 @@ public struct DefiBuyCryptoMessageView: View {
     public init(onOpenTradingModeTap: @escaping () -> Void) {
         self.onOpenTradingModeTap = onOpenTradingModeTap
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding2) {
 
@@ -18,8 +18,10 @@ public struct DefiBuyCryptoMessageView: View {
                 .typography(.body1)
                 .padding(.horizontal, Spacing.padding3)
 
-            PrimaryButton(title: "Open Trading Account",
-                          isLoading: false) {
+            PrimaryButton(
+                title: "Open Trading Account",
+                isLoading: false
+            ) {
                 presentationMode.wrappedValue.dismiss()
                 onOpenTradingModeTap()
             }

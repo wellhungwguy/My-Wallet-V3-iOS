@@ -40,7 +40,7 @@ extension Decodable {
 
 public struct EmptyDecoder: Decoder {
 
-    public let codingPath: [CodingKey] = [ ]
+    public let codingPath: [CodingKey] = []
     public let userInfo: [CodingUserInfoKey: Any] = [:]
 
     public func decode<T>(_: T.Type = T.self) throws -> T where T: Decodable {
@@ -65,12 +65,11 @@ public struct EmptyDecoder: Decoder {
         public func nestedUnkeyedContainer(forKey key: Key) throws -> UnkeyedDecodingContainer { Unkeyed() }
         public func superDecoder() throws -> Decoder { EmptyDecoder() }
         public func superDecoder(forKey key: Key) throws -> Decoder { EmptyDecoder() }
-
     }
 
     public struct Unkeyed: UnkeyedDecodingContainer {
 
-        public let codingPath: [CodingKey] = [ ]
+        public let codingPath: [CodingKey] = []
         public var isAtEnd: Bool { true }
         public var count: Int? = 0
         public var currentIndex: Int = 0
@@ -85,7 +84,7 @@ public struct EmptyDecoder: Decoder {
 
     public struct SingleValue: SingleValueDecodingContainer {
 
-        public let codingPath: [CodingKey] = [ ]
+        public let codingPath: [CodingKey] = []
 
         public func decodeNil() -> Bool { true }
         public func decode<T: Decodable>(_ type: T.Type) throws -> T { try T.empty() }

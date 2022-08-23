@@ -134,8 +134,7 @@ extension Publisher where Output: ResultProtocol {
 P: Publisher,
     P.Output: ResultProtocol,
     P.Output.Failure: ExpressibleByError,
-    P.Failure == Never
-    {
+    P.Failure == Never {
         flatMap(maxPublishers: maxPublishers) { output in
             do {
                 switch output.result {

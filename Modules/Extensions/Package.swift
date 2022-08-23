@@ -52,7 +52,7 @@ let package = Package(
             name: "CombineExtensions",
             dependencies: [
                 .target(name: "SwiftExtensions"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers")
             ]
         ),
         .target(
@@ -82,6 +82,6 @@ let package = Package(
         .testTarget(
             name: "SwiftExtensionsTests",
             dependencies: ["SwiftExtensions"]
-        ),
+        )
     ]
 )

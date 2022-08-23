@@ -12,7 +12,7 @@ final class AppAnalyticsObserver: Session.Observer {
 
         struct Condition: Decodable {
             let `if`: [Tag.Reference]?
-            let `unless`: [Tag.Reference]?
+            let unless: [Tag.Reference]?
         }
 
         let name: String
@@ -87,7 +87,7 @@ final class AppAnalyticsObserver: Session.Observer {
     func record(_ event: Session.Event, _ value: Value, _ type: AnalyticsEventType) {
         if let condition = value.condition {
             guard
-                (condition.if ?? []).allSatisfy(isYes) &&
+                (condition.if ?? []).allSatisfy(isYes),
                 (condition.unless ?? []).none(isYes)
             else { return }
         }
