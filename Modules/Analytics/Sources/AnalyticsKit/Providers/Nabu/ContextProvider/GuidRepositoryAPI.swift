@@ -6,3 +6,7 @@ import Foundation
 public protocol GuidRepositoryAPI {
     var guid: String? { get }
 }
+
+public protocol TraitRepositoryAPI {
+    var traits: [String: String] { get }
+}

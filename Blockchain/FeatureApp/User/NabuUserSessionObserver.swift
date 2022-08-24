@@ -1,5 +1,3 @@
-// swiftlint:disable line_length
-
 import BlockchainNamespace
 import Combine
 import DIKit
@@ -40,7 +38,9 @@ final class NabuUserSessionObserver: Session.Observer {
         resetTokenObserver()
         tokenRepository.sessionTokenPublisher
             .compactMap(\.wrapped)
-            .sink { [app] nabu in app.state.set(blockchain.user.token.nabu, to: nabu.token) }
+            .sink { [app] nabu in
+                app.post(value: nabu.token, of: blockchain.user.token.nabu)
+            }
             .store(in: &bag)
 
         app.on(blockchain.session.event.did.sign.in, blockchain.ux.kyc.event.status.did.change)

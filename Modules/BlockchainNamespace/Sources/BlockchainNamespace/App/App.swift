@@ -340,6 +340,7 @@ extension App {
             state: Session.State([:], preferences: preferences),
             remoteConfiguration: Session.RemoteConfiguration(
                 remote: Mock.RemoteConfiguration(),
+                session: URLSession.test,
                 preferences: preferences
             )
         )

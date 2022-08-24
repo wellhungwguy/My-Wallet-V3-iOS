@@ -7,3 +7,4 @@
 
 infix operator &&=: AssignmentPrecedence
 infix operator ?=: AssignmentPrecedence
+infix operator ??^: AssignmentPrecedence

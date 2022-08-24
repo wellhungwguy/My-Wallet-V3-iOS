@@ -1297,6 +1297,15 @@ blockchain:
 				signed:
 					in:
 					+ blockchain.ux.type.analytics.event
+			nabu:
+				experiment:
+				+ blockchain.db.collection
+					group:
+					+ blockchain.db.type.integer
+					+ blockchain.session.state.value
+				experiments:
+				+ blockchain.db.type.array.of.strings
+				+ blockchain.session.state.value
 			portfolio:
 			+ blockchain.ux.type.story
 			rewards:

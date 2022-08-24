@@ -4,6 +4,29 @@ import Combine
 import ToolKit
 import UIKit
 
+final class AppAnalyticsTraitRepository: Session.Observer, TraitRepositoryAPI {
+
+    unowned let app: AppProtocol
+    var traits: [String: String] = [:]
+
+    init(app: AppProtocol) {
+        self.app = app
+    }
+
+    private var experiments: AnyCancellable? {
+        didSet { oldValue?.cancel() }
+    }
+
+    func start() {
+        experiments = Session.RemoteConfiguration.experiments(in: app)
+            .sink { [unowned self] experiments in traits = experiments.mapValues(String.init) }
+    }
+
+    func stop() {
+        experiments = nil
+    }
+}
+
 final class AppAnalyticsObserver: Session.Observer {
 
     typealias Analytics = [Tag.Reference: Value]
@@ -61,7 +84,8 @@ final class AppAnalyticsObserver: Session.Observer {
     }
 
     func stop() {
-        (segment, firebase) = (nil, nil)
+        firebase = nil
+        segment = nil
         bag.segment.removeAll()
         bag.firebase.removeAll()
     }

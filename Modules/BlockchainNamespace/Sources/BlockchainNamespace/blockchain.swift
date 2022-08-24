@@ -4788,6 +4788,7 @@ public extension I_blockchain_ux_user {
 	var `activity`: L_blockchain_ux_user_activity { .init("\(__).activity") }
 	var `event`: L_blockchain_ux_user_event { .init("\(__).event") }
 	var `KYC`: L_blockchain_ux_user_KYC { .init("\(__).KYC") }
+	var `nabu`: L_blockchain_ux_user_nabu { .init("\(__).nabu") }
 	var `portfolio`: L_blockchain_ux_user_portfolio { .init("\(__).portfolio") }
 	var `rewards`: L_blockchain_ux_user_rewards { .init("\(__).rewards") }
 }
@@ -5204,6 +5205,29 @@ public final class L_blockchain_ux_user_KYC: L, I_blockchain_ux_user_KYC {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.KYC", comment: "") }
 }
 public protocol I_blockchain_ux_user_KYC: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_user_nabu: L, I_blockchain_ux_user_nabu {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.nabu", comment: "") }
+}
+public protocol I_blockchain_ux_user_nabu: I {}
+public extension I_blockchain_ux_user_nabu {
+	var `experiment`: L_blockchain_ux_user_nabu_experiment { .init("\(__).experiment") }
+	var `experiments`: L_blockchain_ux_user_nabu_experiments { .init("\(__).experiments") }
+}
+public final class L_blockchain_ux_user_nabu_experiment: L, I_blockchain_ux_user_nabu_experiment {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.nabu.experiment", comment: "") }
+}
+public protocol I_blockchain_ux_user_nabu_experiment: I_blockchain_db_collection {}
+public extension I_blockchain_ux_user_nabu_experiment {
+	var `group`: L_blockchain_ux_user_nabu_experiment_group { .init("\(__).group") }
+}
+public final class L_blockchain_ux_user_nabu_experiment_group: L, I_blockchain_ux_user_nabu_experiment_group {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.nabu.experiment.group", comment: "") }
+}
+public protocol I_blockchain_ux_user_nabu_experiment_group: I_blockchain_db_type_integer, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_user_nabu_experiments: L, I_blockchain_ux_user_nabu_experiments {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.nabu.experiments", comment: "") }
+}
+public protocol I_blockchain_ux_user_nabu_experiments: I_blockchain_db_type_array_of_strings, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_user_portfolio: L, I_blockchain_ux_user_portfolio {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.portfolio", comment: "") }
 }

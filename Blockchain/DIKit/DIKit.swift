@@ -635,12 +635,22 @@ extension DependencyContainer {
                 basePath: BlockchainAPI.shared.apiUrl,
                 userAgent: userAgent,
                 tokenProvider: DIKit.resolve(),
-                guidProvider: DIKit.resolve()
+                guidProvider: DIKit.resolve(),
+                traitRepository: DIKit.resolve()
             )
             return AnalyticsEventRecorder(analyticsServiceProviders: [
                 firebaseAnalyticsServiceProvider,
                 nabuAnalyticsServiceProvider
             ])
+        }
+
+        single {
+            AppAnalyticsTraitRepository(app: DIKit.resolve())
+        }
+
+        single { () -> TraitRepositoryAPI in
+            let analytics: AppAnalyticsTraitRepository = DIKit.resolve()
+            return analytics as TraitRepositoryAPI
         }
 
         // MARK: Account Picker

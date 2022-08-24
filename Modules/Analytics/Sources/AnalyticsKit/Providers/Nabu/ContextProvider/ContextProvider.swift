@@ -5,18 +5,25 @@ import Foundation
 final class ContextProvider: ContextProviderAPI {
 
     private let guidProvider: GuidRepositoryAPI
+    private let traitRepository: TraitRepositoryAPI
     private let timeZone: TimeZone
     private let locale: Locale
 
     init(
         guidProvider: GuidRepositoryAPI,
+        traitRepository: TraitRepositoryAPI,
         timeZone: TimeZone = .current,
         locale: Locale = .current
     ) {
         self.guidProvider = guidProvider
+        self.traitRepository = traitRepository
         self.timeZone = timeZone
         self.locale = locale
     }
+
+    let defaultTraits: [String: String] = [
+        "device": "App-iOS"
+    ]
 
     var context: Context {
         let localeString = [locale.languageCode, locale.regionCode]
@@ -29,6 +36,7 @@ final class ContextProvider: ContextProviderAPI {
             os: OperatingSystem(),
             locale: localeString,
             screen: Screen(),
+            traits: defaultTraits.merging(traitRepository.traits, uniquingKeysWith: { $1 }),
             timezone: timeZoneString
         )
     }

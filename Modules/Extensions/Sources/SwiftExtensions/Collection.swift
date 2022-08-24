@@ -79,3 +79,10 @@ extension Collection {
         !allSatisfy { !predicate($0) }
     }
 }
+
+extension Collection {
+
+    @inlinable public var firstAndOnly: Element? {
+        count == 1 ? first : nil
+    }
+}

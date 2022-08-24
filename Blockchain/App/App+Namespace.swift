@@ -61,6 +61,7 @@ extension AppProtocol {
         observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
         observers.insert(AppAnalyticsObserver(app: self))
+        observers.insert(resolve() as AppAnalyticsTraitRepository)
         observers.insert(KYCExtraQuestionsObserver(app: self))
         observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))

@@ -6,6 +6,11 @@ import Foundation
 import UIKit
 #endif
 
+public struct EmptyTraitRepository: TraitRepositoryAPI {
+    public var traits: [String: String] = [:]
+    public init() {}
+}
+
 public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
 
     public var supportedEventTypes: [AnalyticsEventType] = [.nabu]
@@ -36,11 +41,12 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
         basePath: String,
         userAgent: String,
         tokenProvider: @escaping TokenProvider,
-        guidProvider: GuidRepositoryAPI
+        guidProvider: GuidRepositoryAPI,
+        traitRepository: TraitRepositoryAPI = EmptyTraitRepository()
     ) {
         let client = APIClient(basePath: basePath, userAgent: userAgent)
         let eventsRepository = NabuAnalyticsEventsRepository(client: client, tokenProvider: tokenProvider)
-        let contextProvider = ContextProvider(guidProvider: guidProvider)
+        let contextProvider = ContextProvider(guidProvider: guidProvider, traitRepository: traitRepository)
         self.init(
             platform: platform,
             eventsRepository: eventsRepository,
