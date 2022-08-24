@@ -22,6 +22,7 @@ public enum CreateAccountStepTwoRoute: NavigationRoute {
 public enum CreateAccountStepTwoIds {
     public struct CreationId: Hashable {}
     public struct ImportId: Hashable {}
+    public struct RecaptchaId: Hashable {}
 }
 
 public enum CreateAccountContextStepTwo: Equatable {
@@ -131,7 +132,7 @@ public enum CreateAccountStepTwoAction: Equatable, NavigationAction, BindableAct
     case binding(BindingAction<CreateAccountStepTwoState>)
     // use `createAccount` to perform the account creation. this action is fired after the user confirms the details and the input is validated.
     case createOrImportWallet(CreateAccountContextStepTwo)
-    case createAccount
+    case createAccount(Result<String, GoogleRecaptchaError>)
     case importAccount(_ mnemonic: String)
     case createButtonTapped
     case didValidateAfterFormSubmission
@@ -159,6 +160,9 @@ struct CreateAccountStepTwoEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
+    let checkReferralClient: CheckReferralClientAPI?
+    let featureFlagsService: FeatureFlagsServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
     let app: AppProtocol?
 
     init(
@@ -169,6 +173,9 @@ struct CreateAccountStepTwoEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
+        featureFlagsService: FeatureFlagsServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
+        checkReferralClient: CheckReferralClientAPI? = nil,
         app: AppProtocol? = nil
     ) {
         self.mainQueue = mainQueue
@@ -178,6 +185,9 @@ struct CreateAccountStepTwoEnvironment {
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
+        self.checkReferralClient = checkReferralClient
+        self.featureFlagsService = featureFlagsService
+        self.recaptchaService = recaptchaService
         self.app = app
     }
 }
@@ -203,17 +213,19 @@ let createAccountStepTwoReducer = Reducer<
     case .binding(\.$termsAccepted):
         return Effect(value: .didUpdateInputValidation(.unknown))
 
-    case .createAccount:
+    case .createAccount(.success(let recaptchaToken)):
         // by this point we have validated all the fields neccessary
         state.isCreatingWallet = true
         let accountName = CreateAccountStepTwoLocalization.defaultAccountName
         return .merge(
             Effect(value: .triggerAuthenticate),
+            .cancel(id: CreateAccountStepTwoIds.RecaptchaId()),
             environment.walletCreationService
                 .createWallet(
                     state.emailAddress,
                     state.password,
-                    accountName
+                    accountName,
+                    recaptchaToken
                 )
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
@@ -221,11 +233,28 @@ let createAccountStepTwoReducer = Reducer<
                 .map(CreateAccountStepTwoAction.accountCreation)
         )
 
+    case .createAccount(.failure(let error)):
+        state.isCreatingWallet = false
+        let title = LocalizationConstants.Errors.error
+        let message = String(describing: error)
+        return .merge(
+            Effect(
+                value: .alert(
+                    .show(title: title, message: message)
+                )
+            ),
+            .cancel(id: CreateAccountStepTwoIds.RecaptchaId())
+        )
+
     case .createOrImportWallet(.createWallet):
         guard state.inputValidationState == .valid else {
             return .none
         }
-        return Effect(value: .createAccount)
+        return environment.recaptchaService.verifyForSignup()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .cancellable(id: CreateAccountStepTwoIds.RecaptchaId(), cancelInFlight: true)
+            .map(CreateAccountStepTwoAction.createAccount)
 
     case .createOrImportWallet(.importWallet(let mnemonic)):
         guard state.inputValidationState == .valid else {

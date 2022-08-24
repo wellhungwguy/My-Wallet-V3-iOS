@@ -13,7 +13,8 @@ final class MockCreateWalletRepository: CreateWalletRepositoryAPI {
 
     func createWallet(
         email: String,
-        payload: WalletCreationPayload
+        payload: WalletCreationPayload,
+        recaptchaToken: String?
     ) -> AnyPublisher<Void, NetworkError> {
         createWalletCalled = true
         return createWallerResult

@@ -176,6 +176,7 @@ struct CreateAccountStepOneEnvironment {
     let walletFetcherService: WalletFetcherService
     let checkReferralClient: CheckReferralClientAPI?
     let featureFlagsService: FeatureFlagsServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
     let app: AppProtocol?
 
     init(
@@ -187,6 +188,7 @@ struct CreateAccountStepOneEnvironment {
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
         featureFlagsService: FeatureFlagsServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         checkReferralClient: CheckReferralClientAPI? = nil,
         app: AppProtocol? = nil
     ) {
@@ -199,6 +201,7 @@ struct CreateAccountStepOneEnvironment {
         self.walletFetcherService = walletFetcherService
         self.checkReferralClient = checkReferralClient
         self.featureFlagsService = featureFlagsService
+        self.recaptchaService = recaptchaService
         self.app = app
     }
 }
@@ -220,6 +223,8 @@ let createAccountStepOneReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
+                    featureFlagsService: $0.featureFlagsService,
+                    recaptchaService: $0.recaptchaService,
                     app: $0.app
                 )
             }

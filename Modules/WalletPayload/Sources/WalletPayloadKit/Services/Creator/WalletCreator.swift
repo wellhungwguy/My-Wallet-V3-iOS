@@ -33,6 +33,14 @@ typealias UUIDProvider = () -> AnyPublisher<(guid: String, sharedKey: String), W
 typealias GenerateWalletProvider = (WalletCreationContext) -> Result<NativeWallet, WalletCreateError>
 typealias GenerateWrapperProvider = (NativeWallet, String, WalletVersion) -> Wrapper
 
+typealias ProcessWalletCreation = (
+    _ context: WalletCreationContext,
+    _ email: String,
+    _ password: String,
+    _ language: String,
+    _ recaptchaToken: String?
+) -> AnyPublisher<WalletCreation, WalletCreateError>
+
 public protocol WalletCreatorAPI {
 
     /// Creates a new wallet using the given email and password.
@@ -41,6 +49,7 @@ public protocol WalletCreatorAPI {
         email: String,
         password: String,
         accountName: String,
+        recaptchaToken: String?,
         language: String
     ) -> AnyPublisher<WalletCreation, WalletCreateError>
 
@@ -70,6 +79,8 @@ final class WalletCreator: WalletCreatorAPI {
     private let logger: NativeWalletLoggerAPI
     private let checksumProvider: (Data) -> String
 
+    private let processWalletCreation: ProcessWalletCreation
+
     init(
         entropyService: RNGServiceAPI,
         walletEncoder: WalletEncodingAPI,
@@ -96,12 +107,23 @@ final class WalletCreator: WalletCreatorAPI {
         self.generateWallet = generateWallet
         self.generateWrapper = generateWrapper
         self.checksumProvider = checksumProvider
+
+        processWalletCreation = provideProcessCreationOfWallet(
+            walletEncoder: walletEncoder,
+            encryptor: encryptor,
+            createWalletRepository: createWalletRepository,
+            logger: logger,
+            generateWallet: generateWallet,
+            generateWrapper: generateWrapper,
+            checksumProvider: checksumProvider
+        )
     }
 
     func createWallet(
         email: String,
         password: String,
         accountName: String,
+        recaptchaToken: String?,
         language: String = "en"
     ) -> AnyPublisher<WalletCreation, WalletCreateError> {
         provideMnemonic(
@@ -124,8 +146,14 @@ final class WalletCreator: WalletCreatorAPI {
                 }
                 .eraseToAnyPublisher()
         }
-        .flatMap { [processCreationOfWallet] context -> AnyPublisher<WalletCreation, WalletCreateError> in
-            processCreationOfWallet(context, email, password, language)
+        .flatMap { [processWalletCreation] context -> AnyPublisher<WalletCreation, WalletCreateError> in
+            processWalletCreation(
+                context,
+                email,
+                password,
+                language,
+                recaptchaToken
+            )
         }
         .logErrorOrCrash(tracer: tracer)
         .eraseToAnyPublisher()
@@ -173,8 +201,14 @@ final class WalletCreator: WalletCreatorAPI {
                     }
                     .eraseToAnyPublisher()
             }
-            .flatMap { [processCreationOfWallet] context -> AnyPublisher<WalletCreation, WalletCreateError> in
-                processCreationOfWallet(context, email, password, language)
+            .flatMap { [processWalletCreation] context -> AnyPublisher<WalletCreation, WalletCreateError> in
+                processWalletCreation(
+                    context,
+                    email,
+                    password,
+                    language,
+                    nil
+                )
             }
             .logErrorOrCrash(tracer: tracer)
             .eraseToAnyPublisher()
@@ -195,19 +229,25 @@ final class WalletCreator: WalletCreatorAPI {
         }
         .eraseToAnyPublisher()
     }
+}
 
-    /// Final process for creating a wallet
-    ///  1. Create the wallet and wrapper
-    ///  2. Encrypt and verify the wrapper
-    ///  3. Encode the wrapper payload
-    ///  4. Create the wallet on the backend
-    ///  5. Return a `WalletCreation` or failure if any
-    func processCreationOfWallet(
-        context: WalletCreationContext,
-        email: String,
-        password: String,
-        language: String
-    ) -> AnyPublisher<WalletCreation, WalletCreateError> {
+/// Final process for creating a wallet
+///  1. Create the wallet and wrapper
+///  2. Encrypt and verify the wrapper
+///  3. Encode the wrapper payload
+///  4. Create the wallet on the backend
+///  5. Return a `WalletCreation` or failure if any
+// swiftlint:disable function_parameter_count
+private func provideProcessCreationOfWallet(
+    walletEncoder: WalletEncodingAPI,
+    encryptor: PayloadCryptoAPI,
+    createWalletRepository: CreateWalletRepositoryAPI,
+    logger: NativeWalletLoggerAPI,
+    generateWallet: @escaping GenerateWalletProvider,
+    generateWrapper: @escaping GenerateWrapperProvider,
+    checksumProvider: @escaping (Data) -> String
+) -> ProcessWalletCreation {
+    { context, email, password, language, recaptchaToken -> AnyPublisher<WalletCreation, WalletCreateError> in
         generateWallet(context)
             .map { wallet -> Wrapper in
                 generateWrapper(wallet, language, WalletVersion.v4)
@@ -233,7 +273,7 @@ final class WalletCreator: WalletCreatorAPI {
                     .eraseToAnyPublisher()
             }
             .flatMap { [createWalletRepository] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
-                createWalletRepository.createWallet(email: email, payload: payload)
+                createWalletRepository.createWallet(email: email, payload: payload, recaptchaToken: recaptchaToken)
                     .map { _ in payload }
                     .mapError(WalletCreateError.networkError)
                     .eraseToAnyPublisher()

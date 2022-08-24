@@ -65,6 +65,7 @@ struct UpgradeAccountEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -75,7 +76,8 @@ struct UpgradeAccountEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
-        accountRecoveryService: AccountRecoveryServiceAPI
+        accountRecoveryService: AccountRecoveryServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
@@ -86,6 +88,7 @@ struct UpgradeAccountEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.recaptchaService = recaptchaService
     }
 }
 
@@ -105,7 +108,8 @@ let upgradeAccountReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),

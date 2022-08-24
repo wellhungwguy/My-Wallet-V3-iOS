@@ -9,6 +9,7 @@ public protocol CreateWalletRepositoryAPI {
     /// - Returns: `AnyPublisher<Void, WalletCreateError>`
     func createWallet(
         email: String,
-        payload: WalletCreationPayload
+        payload: WalletCreationPayload,
+        recaptchaToken: String?
     ) -> AnyPublisher<Void, NetworkError>
 }

@@ -46,6 +46,7 @@ final class WelcomeReducerTests: XCTestCase {
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlagsService: mockFeatureFlagsService,
+                recaptchaService: MockRecaptchaService(),
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),

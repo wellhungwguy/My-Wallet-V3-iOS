@@ -46,7 +46,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
-                accountRecoveryService: MockAccountRecoveryService()
+                accountRecoveryService: MockAccountRecoveryService(),
+                recaptchaService: MockRecaptchaService()
             )
         )
     }

@@ -58,6 +58,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletStateProvider: WalletStateProvider!
     var mockWalletUpgradeService: MockWalletUpgradeService!
     var mockObservabilityService: ObservabilityServiceMock!
+    var mockRecaptchaService: MockRecaptchaService!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -120,6 +121,8 @@ final class MainAppReducerTests: XCTestCase {
 
         mockPerformanceTracing = PerformanceTracing.mock
         mockObservabilityService = ObservabilityServiceMock()
+
+        mockRecaptchaService = MockRecaptchaService()
 
         mockNabuUser = NabuUser(
             identifier: "1234567890",
@@ -187,7 +190,8 @@ final class MainAppReducerTests: XCTestCase {
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
                 walletStateProvider: mockWalletStateProvider,
-                walletUpgradeService: mockWalletUpgradeService
+                walletUpgradeService: mockWalletUpgradeService,
+                recaptchaService: mockRecaptchaService
             )
         )
     }

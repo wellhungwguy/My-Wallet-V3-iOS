@@ -13,7 +13,8 @@ public struct WalletCreatedContext: Equatable {
 public typealias CreateWalletMethod = (
     _ email: String,
     _ password: String,
-    _ accountName: String
+    _ accountName: String,
+    _ recaptchaToken: String?
 ) -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError>
 
 public typealias ImportWalletMethod = (
@@ -59,7 +60,7 @@ extension WalletCreationService {
         let walletCreator = walletCreator
         let nativeWalletCreationEnabled = nativeWalletCreationEnabled
         return Self(
-            createWallet: { email, password, accountName -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+            createWallet: { email, password, accountName, token -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
                 nativeWalletCreationEnabled()
                     .flatMap { isEnabled -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
                         guard isEnabled else {
@@ -74,6 +75,7 @@ extension WalletCreationService {
                             email: email,
                             password: password,
                             accountName: accountName,
+                            recaptchaToken: token,
                             language: "en"
                         )
                         .mapError(WalletCreationServiceError.creationFailure)
@@ -136,7 +138,7 @@ extension WalletCreationService {
 
     public static var noop: Self {
         Self(
-            createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+            createWallet: { _, _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
                 .empty()
             },
             importWallet: { _, _, _, _ -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in

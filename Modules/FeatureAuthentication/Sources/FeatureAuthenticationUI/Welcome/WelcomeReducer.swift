@@ -89,6 +89,7 @@ public struct WelcomeEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
     let checkReferralClient: CheckReferralClientAPI
     let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
@@ -99,6 +100,7 @@ public struct WelcomeEnvironment {
         sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         buildVersionProvider: @escaping () -> String,
         errorRecorder: ErrorRecording = resolve(),
         externalAppOpener: ExternalAppOpener = resolve(),
@@ -126,6 +128,7 @@ public struct WelcomeEnvironment {
         self.accountRecoveryService = accountRecoveryService
         self.checkReferralClient = checkReferralClient
         self.nativeWalletEnabled = nativeWalletEnabled
+        self.recaptchaService = recaptchaService
     }
 }
 
@@ -145,6 +148,7 @@ public let welcomeReducer = Reducer.combine(
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
                     featureFlagsService: $0.featureFlagsService,
+                    recaptchaService: $0.recaptchaService,
                     checkReferralClient: $0.checkReferralClient,
                     app: $0.app
                 )
@@ -168,7 +172,8 @@ public let welcomeReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),
@@ -187,6 +192,7 @@ public let welcomeReducer = Reducer.combine(
                     walletFetcherService: $0.walletFetcherService,
                     accountRecoveryService: $0.accountRecoveryService,
                     errorRecorder: $0.errorRecorder,
+                    recaptchaService: $0.recaptchaService,
                     featureFlagsService: $0.featureFlagsService
                 )
             }
@@ -206,7 +212,8 @@ public let welcomeReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),

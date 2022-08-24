@@ -29,6 +29,7 @@ final class OnboardingReducerTests: XCTestCase {
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockExternalAppOpener: MockExternalAppOpener!
     var mockForgetWalletService: ForgetWalletService!
+    var mockRecaptchaService: MockRecaptchaService!
     var mockQueue: TestSchedulerOf<DispatchQueue>!
     var cancellables = Set<AnyCancellable>()
 
@@ -52,8 +53,8 @@ final class OnboardingReducerTests: XCTestCase {
         mockAlertPresenter = MockAlertViewPresenter()
         mockExternalAppOpener = MockExternalAppOpener()
         mockQueue = DispatchQueue.test
-
         mockForgetWalletService = ForgetWalletService.mock(called: {})
+        mockRecaptchaService = MockRecaptchaService()
 
         // disable the manual login
         app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: false)
@@ -74,6 +75,7 @@ final class OnboardingReducerTests: XCTestCase {
             featureFlagsService: mockFeatureFlagsService,
             externalAppOpener: mockExternalAppOpener,
             forgetWalletService: mockForgetWalletService,
+            recaptchaService: mockRecaptchaService,
             buildVersionProvider: { "v1.0.0" },
             appUpgradeState: { .just(nil) }
         )
@@ -91,6 +93,7 @@ final class OnboardingReducerTests: XCTestCase {
         mockPushNotificationsRepository = nil
         mockFeatureFlagsService = nil
         mockExternalAppOpener = nil
+        mockRecaptchaService = nil
         mockQueue = nil
 
         try super.tearDownWithError()

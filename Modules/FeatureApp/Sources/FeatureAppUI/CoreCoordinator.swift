@@ -144,6 +144,7 @@ struct CoreAppEnvironment {
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
     var walletUpgradeService: WalletUpgradeServicing
+    var recaptchaService: GoogleRecaptchaServiceAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -167,6 +168,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     featureFlagsService: environment.featureFlagsService,
                     externalAppOpener: environment.externalAppOpener,
                     forgetWalletService: environment.forgetWalletService,
+                    recaptchaService: environment.recaptchaService,
                     buildVersionProvider: environment.buildVersionProvider,
                     appUpgradeState: environment.appUpgradeState
                 )

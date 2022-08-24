@@ -13,10 +13,18 @@ final class GoogleRecaptchaService: GoogleRecaptchaServiceAPI {
     }
 
     func verifyForLogin() -> AnyPublisher<String, GoogleRecaptchaError> {
+        verify(action: .login)
+    }
+
+    func verifyForSignup() -> AnyPublisher<String, GoogleRecaptchaError> {
+        verify(action: .signup)
+    }
+
+    private func verify(action: RecaptchaActionType) -> AnyPublisher<String, GoogleRecaptchaError> {
         Deferred { [recaptchaClient] in
             Future { promise in
                 recaptchaClient
-                    .execute(RecaptchaAction(action: .login)) { token, error in
+                    .execute(RecaptchaAction(action: action)) { token, error in
                         if token == nil, error == nil {
                             promise(.failure(GoogleRecaptchaError.unknownError))
                         }

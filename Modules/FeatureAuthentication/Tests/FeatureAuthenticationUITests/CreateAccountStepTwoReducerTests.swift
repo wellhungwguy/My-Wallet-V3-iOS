@@ -3,7 +3,7 @@
 import AnalyticsKitMock
 import ComposableArchitecture
 @testable import FeatureAuthenticationDomain
-import FeatureAuthenticationMock
+@testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
 import ToolKitMock
 import UIComponentsKit
@@ -37,7 +37,9 @@ final class CreateAccountStepTwoReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
-                walletFetcherService: WalletFetcherServiceMock().mock()
+                walletFetcherService: WalletFetcherServiceMock().mock(),
+                featureFlagsService: MockFeatureFlagsService(),
+                recaptchaService: MockRecaptchaService()
             )
         )
     }
@@ -115,7 +117,9 @@ final class CreateAccountStepTwoReducerTests: XCTestCase {
                 analyticsRecorder: MockAnalyticsRecorder(),
                 walletRecoveryService: .mock(),
                 walletCreationService: .failing(),
-                walletFetcherService: WalletFetcherServiceMock().mock()
+                walletFetcherService: WalletFetcherServiceMock().mock(),
+                featureFlagsService: MockFeatureFlagsService(),
+                recaptchaService: MockRecaptchaService()
             )
         )
         // GIVEN: The form is valid
@@ -134,7 +138,8 @@ final class CreateAccountStepTwoReducerTests: XCTestCase {
         testStore.receive(.didValidateAfterFormSubmission)
         // AND: The form submission creates an account
         testStore.receive(.createOrImportWallet(.createWallet))
-        testStore.receive(.createAccount) {
+        let token = ""
+        testStore.receive(.createAccount(.success(token))) {
             $0.isCreatingWallet = true
         }
         testStore.receive(.triggerAuthenticate)

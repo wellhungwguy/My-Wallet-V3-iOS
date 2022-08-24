@@ -120,6 +120,7 @@ struct CredentialsEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -140,7 +141,8 @@ struct CredentialsEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
-        accountRecoveryService: AccountRecoveryServiceAPI
+        accountRecoveryService: AccountRecoveryServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI
     ) {
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
@@ -158,6 +160,7 @@ struct CredentialsEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.recaptchaService = recaptchaService
     }
 }
 
@@ -206,7 +209,8 @@ let credentialsReducer = Reducer.combine(
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
                     accountRecoveryService: $0.accountRecoveryService,
-                    errorRecorder: $0.errorRecorder
+                    errorRecorder: $0.errorRecorder,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),

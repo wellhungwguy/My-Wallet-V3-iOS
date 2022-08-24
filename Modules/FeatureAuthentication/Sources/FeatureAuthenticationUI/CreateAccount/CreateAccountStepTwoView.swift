@@ -258,7 +258,9 @@ struct CreateAccountViewStepTwo_Previews: PreviewProvider {
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
-                    walletFetcherService: .noop
+                    walletFetcherService: .noop,
+                    featureFlagsService: NoOpFeatureFlagsService(),
+                    recaptchaService: NoOpGoogleRecatpchaService()
                 )
             )
         )

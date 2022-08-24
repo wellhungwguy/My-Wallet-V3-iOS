@@ -9,7 +9,7 @@ extension WalletCreationService {
     // swiftlint:disable line_length
     public static func mock() -> Self {
         WalletCreationService(
-            createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+            createWallet: { _, _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
                 .just(
                     WalletCreatedContext(
                         guid: "guid",
@@ -32,7 +32,7 @@ extension WalletCreationService {
 
     public static func failing() -> Self {
         WalletCreationService(
-            createWallet: { _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
+            createWallet: { _, _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
                 .failure(.creationFailure(.genericFailure))
             },
             importWallet: { _, _, _, _ -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in

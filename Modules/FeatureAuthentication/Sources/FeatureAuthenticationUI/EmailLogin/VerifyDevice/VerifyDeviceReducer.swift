@@ -107,6 +107,7 @@ struct VerifyDeviceEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
 
     init(
         app: AppProtocol,
@@ -120,6 +121,7 @@ struct VerifyDeviceEnvironment {
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         walletInfoBase64Encoder: @escaping (WalletInfo) throws -> String = {
             try JSONEncoder().encode($0).base64EncodedString()
         }
@@ -135,6 +137,7 @@ struct VerifyDeviceEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.recaptchaService = recaptchaService
         self.walletInfoBase64Encoder = walletInfoBase64Encoder
     }
 }
@@ -156,7 +159,8 @@ let verifyDeviceReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),
@@ -175,7 +179,8 @@ let verifyDeviceReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),
