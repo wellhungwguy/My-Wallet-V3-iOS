@@ -11,6 +11,7 @@ import JavaScriptCore
 import PlatformKit
 import RxRelay
 import RxSwift
+import ToolKit
 import WalletPayloadKit
 
 final class EthereumWallet: NSObject {
@@ -204,5 +205,29 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
         }
         .eraseError()
         .eraseToAnyPublisher()
+    }
+}
+
+extension Dictionary where Key == String, Value == [String: Any] {
+    /// Cast the `[String: [String: Any]]` objects in this Dictionary to instances of `Type`
+    ///
+    /// - Parameter type: the type
+    /// - Returns: the casted array
+    public func decodeJSONObjects<T: Codable>(type: T.Type) -> [String: T] {
+        let jsonDecoder = JSONDecoder()
+        return compactMapValues { value -> T? in
+            guard let data = try? JSONSerialization.data(withJSONObject: value, options: []) else {
+                Logger.shared.warning("Failed to serialize dictionary.")
+                return nil
+            }
+
+            do {
+                return try jsonDecoder.decode(type.self, from: data)
+            } catch {
+                Logger.shared.error("Failed to decode \(error)")
+            }
+
+            return nil
+        }
     }
 }

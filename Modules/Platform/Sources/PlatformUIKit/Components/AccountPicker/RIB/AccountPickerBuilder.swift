@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Errors
 import Localization
 import PlatformKit
 import RIBs
@@ -33,6 +34,7 @@ public protocol AccountPickerBuildable: RIBs.Buildable {
 
 public protocol AccountPickerListener: AnyObject {
     func didSelectActionButton()
+    func didSelect(ux: UX.Dialog)
     func didSelect(blockchainAccount: BlockchainAccount)
     func didTapBack()
     func didTapClose()

@@ -135,6 +135,15 @@ public struct CoinView: View {
                         interestRate: viewStore.interestRate,
                         kycStatus: status
                     )
+
+                    if let swapAction = viewStore.swapButton {
+                        PrimaryButton(title: swapAction.title) {
+                            app.post(event: swapAction.event[].ref(to: context), context: context)
+                        }
+                        .disabled(swapAction.disabled)
+                        .padding(.top, Spacing.padding2)
+                        .padding(.horizontal, Spacing.padding2)
+                    }
                 }
             } else {
                 totalBalance()
@@ -238,29 +247,19 @@ public struct CoinView: View {
             if actions.isNotEmpty {
                 VStack(spacing: 0) {
                     PrimaryDivider()
-
-                    HStack {
-                        ForEach(actions.indexed(), id: \.element.event) { index, action in
-                            if index == actions.index(before: actions.endIndex) {
-                                PrimaryButton(
-                                    title: action.title,
-                                    leadingView: { action.icon },
-                                    action: {
-                                        app.post(event: action.event[].ref(to: context))
-                                    }
-                                )
-                            } else {
-                                SecondaryButton(
-                                    title: action.title,
-                                    leadingView: { action.icon },
-                                    action: {
-                                        app.post(event: action.event[].ref(to: context))
-                                    }
-                                )
-                            }
+                    HStack(spacing: 8, content: {
+                        ForEach(actions, id: \.event) { action in
+                            SecondaryButton(
+                                title: action.title,
+                                leadingView: { action.icon },
+                                action: {
+                                    app.post(event: action.event[].ref(to: context), context: context)
+                                }
+                            )
+                            .disabled(action.disabled)
                         }
-                    }
-                    .padding()
+                    })
+                    .padding(.horizontal, Spacing.padding2)
                 }
             }
         }

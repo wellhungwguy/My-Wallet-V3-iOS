@@ -57,7 +57,7 @@ enum TargetSelectionAction: MviAction {
                 .update(keyPath: \.inputValidated, value: .text(.invalid(address)))
         case .addressValidated(let inputValidation):
             switch inputValidation {
-            case .valid(let input, let receiveAddress):
+            case .valid(_, let receiveAddress):
                 return oldState
                     .update(keyPath: \.inputValidated, value: .text(inputValidation))
                     .update(keyPath: \.destination, value: receiveAddress)

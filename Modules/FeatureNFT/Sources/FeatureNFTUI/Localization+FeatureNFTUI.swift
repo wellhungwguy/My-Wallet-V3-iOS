@@ -23,6 +23,10 @@ extension LocalizationConstants.NFT.Screen.List {
         "Fetching Your NFTs",
         comment: ""
     )
+    public static let shopOnOpenSea = NSLocalizedString(
+        "Shop on OpenSea",
+        comment: ""
+    )
 }
 
 extension LocalizationConstants.NFT.Screen.Empty {
@@ -48,8 +52,8 @@ extension LocalizationConstants.NFT.Screen.Empty {
 
 extension LocalizationConstants.NFT.Screen.Detail {
 
-    public static let viewOnWeb = NSLocalizedString(
-        "View on Web",
+    public static let viewOnOpenSea = NSLocalizedString(
+        "View on OpenSea",
         comment: ""
     )
 

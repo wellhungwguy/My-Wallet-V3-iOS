@@ -58,7 +58,8 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         case .account(let account):
             return account.balancePair(fiatCurrency: fiatCurrency)
         case .asset(let cryptoAsset):
-            return app.modePublisher()
+            return app
+                .modePublisher()
                 .flatMap { appMode in
                     cryptoAsset
                         .accountGroup(filter: appMode.filter)

@@ -6,4 +6,5 @@ import MoneyKit
 public protocol DelegatedCustodyAccount {
     var coin: CryptoCurrency { get }
     var publicKey: Data { get }
+    var privateKey: Data { get }
 }

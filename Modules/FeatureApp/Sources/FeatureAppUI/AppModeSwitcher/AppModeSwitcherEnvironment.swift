@@ -9,16 +9,15 @@ import PlatformKit
 public struct AppModeSwitcherEnvironment {
     public let app: AppProtocol
     public let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
+    public let backupFundsRouter: BackupFundsRouterAPI
 
-    public var backupRouterAPI = BackupFundsRouter(
-        entry: .defiIntroScreen,
-        navigationRouter: resolve()
-    )
     public init(
         app: AppProtocol,
-        recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
+        recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding,
+        backupFundsRouter: BackupFundsRouterAPI
     ) {
         self.app = app
         self.recoveryPhraseStatusProviding = recoveryPhraseStatusProviding
+        self.backupFundsRouter = backupFundsRouter
     }
 }

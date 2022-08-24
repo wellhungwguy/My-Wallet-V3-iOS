@@ -1,5 +1,4 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-// swiftlint:disable file_length
 
 import Combine
 import DelegatedSelfCustodyData
@@ -15,7 +14,6 @@ import WalletPayloadKit
 
 extension DependencyContainer {
 
-    // swiftlint:disable closure_body_length
     static var blockchainDelegatedSelfCustody = module {
         factory { () -> DelegatedCustodyDerivationServiceAPI in
             DelegatedCustodyDerivationService(mnemonicAccess: DIKit.resolve())
@@ -34,6 +32,9 @@ extension DependencyContainer {
                 app: DIKit.resolve(),
                 nabuUserService: DIKit.resolve()
             )
+        }
+        factory { () -> DelegatedCustodySigningServiceAPI in
+            DelegatedCustodySigningService()
         }
     }
 }
@@ -159,5 +160,32 @@ final class DelegatedCustodyDerivationService: DelegatedCustodyDerivationService
             .onNil(DelegatedCustodyDerivationServiceError.failed)
             .eraseError()
             .eraseToAnyPublisher()
+    }
+}
+
+final class DelegatedCustodySigningService: DelegatedCustodySigningServiceAPI {
+
+    func sign(
+        data: Data,
+        privateKey: Data,
+        algorithm: DelegatedCustodySignatureAlgorithm
+    ) -> Result<Data, DelegatedCustodySigningError> {
+        switch algorithm {
+        case .secp256k1:
+            return signSecp256k1(data: data, privateKey: privateKey)
+        }
+    }
+
+    private func signSecp256k1(
+        data: Data,
+        privateKey: Data
+    ) -> Result<Data, DelegatedCustodySigningError> {
+        guard let pk = WalletCore.PrivateKey(data: privateKey) else {
+            return .failure(.failed)
+        }
+        guard let signed = pk.sign(digest: data, curve: .secp256k1) else {
+            return .failure(.failed)
+        }
+        return .success(signed)
     }
 }

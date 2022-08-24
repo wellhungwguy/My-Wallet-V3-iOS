@@ -42,6 +42,8 @@ extension TransactionErrorState {
             )
         case .overMaximumPersonalLimit:
             text = Localization.overMaximumPersonalLimitRecoveryHint
+        case .ux(let ux):
+            text = ux.title
 
         // MARK: Unchecked
 
@@ -116,6 +118,8 @@ extension TransactionErrorState {
                 fees.shortDisplayString,
                 balance.shortDisplayString
             )
+        case .ux(let dialog):
+            return dialog.title
         case .belowMinimumLimit(let minimum):
             text = String.localizedStringWithFormat(
                 Localization.belowMinimumLimitRecoveryTitle,

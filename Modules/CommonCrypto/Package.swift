@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "CommonCrypto",
     platforms: [
-        .iOS(.v14), .macOS(.v11)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(name: "CommonCryptoKit", targets: ["CommonCryptoKit"])

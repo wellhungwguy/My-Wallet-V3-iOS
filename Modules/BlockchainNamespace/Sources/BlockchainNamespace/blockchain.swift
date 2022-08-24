@@ -352,6 +352,18 @@ public final class L_blockchain_app_configuration_frequent_action: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action", comment: "") }
 }
 public protocol I_blockchain_app_configuration_frequent_action: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public extension I_blockchain_app_configuration_frequent_action {
+	var `pkw`: L_blockchain_app_configuration_frequent_action_pkw { .init("\(__).pkw") }
+	var `trading`: L_blockchain_app_configuration_frequent_action_trading { .init("\(__).trading") }
+}
+public final class L_blockchain_app_configuration_frequent_action_pkw: L, I_blockchain_app_configuration_frequent_action_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action.pkw", comment: "") }
+}
+public protocol I_blockchain_app_configuration_frequent_action_pkw: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_frequent_action_trading: L, I_blockchain_app_configuration_frequent_action_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action.trading", comment: "") }
+}
+public protocol I_blockchain_app_configuration_frequent_action_trading: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_kyc: L, I_blockchain_app_configuration_kyc {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc", comment: "") }
 }
@@ -365,6 +377,8 @@ public final class L_blockchain_app_configuration_kyc_sdd: L, I_blockchain_app_c
 public protocol I_blockchain_app_configuration_kyc_sdd: I {}
 public extension I_blockchain_app_configuration_kyc_sdd {
 	var `cache`: L_blockchain_app_configuration_kyc_sdd_cache { .init("\(__).cache") }
+	var `pkw`: L_blockchain_app_configuration_kyc_sdd_pkw { .init("\(__).pkw") }
+	var `trading`: L_blockchain_app_configuration_kyc_sdd_trading { .init("\(__).trading") }
 }
 public final class L_blockchain_app_configuration_kyc_sdd_cache: L, I_blockchain_app_configuration_kyc_sdd_cache {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache", comment: "") }
@@ -384,6 +398,14 @@ public final class L_blockchain_app_configuration_kyc_sdd_cache_is_enabled: L, I
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_kyc_sdd_cache_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc_sdd_pkw: L, I_blockchain_app_configuration_kyc_sdd_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.pkw", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_pkw: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc_sdd_trading: L, I_blockchain_app_configuration_kyc_sdd_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.trading", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_trading: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_localized: L, I_blockchain_app_configuration_localized {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized", comment: "") }
 }

@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import ToolKit
 
 /// Provides read and write access to Keychain
 public final class KeychainAccess: KeychainAccessAPI {
@@ -44,7 +43,7 @@ public final class KeychainAccess: KeychainAccessAPI {
     public func write(
         value: Data,
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError> {
+    ) -> Result<Void, KeychainAccessError> {
         writer.write(
             value: value,
             for: key
@@ -68,7 +67,7 @@ public final class KeychainAccess: KeychainAccessAPI {
     @discardableResult
     public func remove(
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError> {
+    ) -> Result<Void, KeychainAccessError> {
         writer.remove(
             for: key
         )

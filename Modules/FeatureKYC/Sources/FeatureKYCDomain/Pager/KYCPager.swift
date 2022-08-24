@@ -152,7 +152,7 @@ extension KYCPageType {
             return .accountUsageForm
         }
 
-        if isSDDEligible && isSDDVerified {
+        if isSDDEligible, isSDDVerified {
             return .finish
         }
 

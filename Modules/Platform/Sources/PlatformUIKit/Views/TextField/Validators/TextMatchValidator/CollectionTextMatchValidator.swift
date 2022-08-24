@@ -61,3 +61,9 @@ extension CollectionTextMatchValidator {
         public static let validateEmpty = Options(rawValue: 1 << 0)
     }
 }
+
+extension Array where Element == String {
+    public var containsEmpty: Bool {
+        contains("")
+    }
+}

@@ -42,8 +42,8 @@ struct FrequentActionView: View {
                     title: item.name.localized(),
                     subtitle: item.description.localized(),
                     leading: {
-                        item.icon.circle()
-                            .accentColor(.semantic.primary)
+                        item.icon.circle(backgroundColor: .semantic.light)
+                            .accentColor(.semantic.title)
                             .frame(width: 32.pt)
                     },
                     action: {
@@ -55,26 +55,20 @@ struct FrequentActionView: View {
         }
         HStack(spacing: 8.pt) {
             ForEach(buttons) { button in
-                switch button.tag {
-                case blockchain.ux.frequent.action.buy:
-                    PrimaryButton(
-                        title: button.name.localized(),
-                        leadingView: { button.icon },
-                        action: {
-                            app.post(event: button.tag, context: context)
-                        }
-                    )
-                    .identity(button.tag)
-                default:
-                    SecondaryButton(
-                        title: button.name.localized(),
-                        leadingView: { button.icon },
-                        action: {
-                            app.post(event: button.tag, context: context)
-                        }
-                    )
-                    .identity(button.tag)
-                }
+                PrimaryMenuCTAButton(
+                    title: button.name.localized(),
+                    subtitle: button.description.localized(),
+                    leadingView: {
+                        button
+                            .icon
+                            .circle(backgroundColor: .semantic.medium)
+                            .accentColor(.semantic.title)
+                    },
+                    action: {
+                        app.post(event: button.tag, context: context)
+                    }
+                )
+                .identity(button.tag)
             }
         }
         .padding([.top, .bottom])

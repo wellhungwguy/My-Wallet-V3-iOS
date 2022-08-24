@@ -92,6 +92,14 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> DelegatedCustodyTransactionServiceAPI in
+            TransactionService(
+                client: DIKit.resolve(),
+                authenticationDataRepository: DIKit.resolve(),
+                signingService: DIKit.resolve()
+            )
+        }
+
         single { () -> DelegatedCustodyAddressesRepositoryAPI in
             AddressesRepository(
                 client: DIKit.resolve(),

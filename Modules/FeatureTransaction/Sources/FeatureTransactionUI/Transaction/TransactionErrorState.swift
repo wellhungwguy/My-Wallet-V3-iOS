@@ -34,6 +34,8 @@ enum TransactionErrorState: Equatable, Error {
     /// Takes the applicable Periodic Limit that has been exceeded, the available limit, and an optional suggested upgrade.
     case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, TransactionValidationState.LimitsUpgrade?)
 
+    case ux(UX.Dialog)
+
     // MARK: - Not checked
 
     case addressIsContract
@@ -46,6 +48,19 @@ enum TransactionErrorState: Equatable, Error {
 }
 
 extension TransactionErrorState {
+
+    var isUX: Bool {
+        switch self {
+        case .ux:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isNone: Bool {
+        self == .none
+    }
 
     var label: String {
         Mirror(reflecting: self).children.first?.label ?? String(describing: self)

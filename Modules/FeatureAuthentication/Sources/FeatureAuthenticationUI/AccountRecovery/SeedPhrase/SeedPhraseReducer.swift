@@ -312,7 +312,7 @@ let seedPhraseReducer = Reducer.combine(
             guard let nabuInfo = state.nabuInfo else {
                 return .none
             }
-            let accountName = CreateAccountLocalization.defaultAccountName
+            let accountName = CreateAccountStepOneLocalization.defaultAccountName
             return .concatenate(
                 Effect(value: .triggerAuthenticate),
                 environment.walletCreationService
@@ -323,7 +323,7 @@ let seedPhraseReducer = Reducer.combine(
                     )
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
-                    .cancellable(id: CreateAccountIds.CreationId(), cancelInFlight: true)
+                    .cancellable(id: CreateAccountStepTwoIds.CreationId(), cancelInFlight: true)
                     .map(SeedPhraseAction.accountCreation)
             )
 
@@ -340,7 +340,7 @@ let seedPhraseReducer = Reducer.combine(
                         )
                     )
                 ),
-                .cancel(id: CreateAccountIds.CreationId())
+                .cancel(id: CreateAccountStepTwoIds.CreationId())
             )
 
         case .accountCreation(.success(let context)):
@@ -348,7 +348,7 @@ let seedPhraseReducer = Reducer.combine(
                 return .none
             }
             return .merge(
-                .cancel(id: CreateAccountIds.CreationId()),
+                .cancel(id: CreateAccountStepTwoIds.CreationId()),
                 environment.accountRecoveryService
                     .recoverUser(
                         guid: context.guid,

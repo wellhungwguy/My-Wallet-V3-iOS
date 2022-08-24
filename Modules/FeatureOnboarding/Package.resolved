@@ -30,9 +30,10 @@
     {
       "identity" : "lexicon",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/screensailor/Lexicon",
+      "location" : "https://github.com/thousandyears/Lexicon.git",
       "state" : {
-        "revision" : "160c4c417f8490658a8396d0283fb0d6fb98c327"
+        "revision" : "ad872021299ba5673b705c05852d45d3efe2a804",
+        "version" : "0.6.2"
       }
     },
     {
@@ -67,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
-        "revision" : "83b23d940471b313427da226196661856f6ba3e0",
-        "version" : "0.4.4"
+        "revision" : "df9ee6676cd5b3bf5b330ec7568a5644f547201b",
+        "version" : "1.1.3"
       }
     },
     {
@@ -130,7 +131,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-markdown.git",
       "state" : {
-        "revision" : "1023300b1d6847360ac9ceebbcff2bccacbcf2a5"
+        "revision" : "52563fc74a540b29854fde20e836b27394be2749"
       }
     },
     {

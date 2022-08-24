@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Errors
 import FeatureCardPaymentDomain
 import Localization
 import MoneyKit
@@ -27,6 +28,29 @@ public enum PaymentMethodType: Equatable, Identifiable {
 
     /// Suggested payment methods (e.g bank-wire / card)
     case suggested(PaymentMethod)
+
+    /// UX associated with the payment method type.
+    /// EX: A card that is not permitted or has a high failure rate
+    public var ux: UX.Dialog? {
+        switch self {
+        case .card(let data),
+             .applePay(let data):
+            return data.ux
+        default:
+             return nil
+        }
+    }
+
+    /// Some payment methods are blocked due to high failure rate
+    public var block: Bool {
+        switch self {
+        case .card(let data),
+             .applePay(let data):
+            return data.block
+        default:
+             return false
+        }
+    }
 
     public var method: PaymentMethod.MethodType {
         switch self {
@@ -479,7 +503,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// - Parameters:
     ///   - paymentMethods: An array of `PaymentMethod` that defines the suggested methods
     ///   - cards: An array of `CardData` the defines the available cards
-    ///   - balances: An instance of `MoneyBalancePairsCalculationStates` that provides access to balance pairs
+    ///   - balances: An instance of `CustodialAccountBalanceStates` that provides access to balance pairs
     ///   - linkedBanks: A array of `LinkedBankData` that defines any link bank (specifically ACH or OpenBanking)
     /// - Returns: An sorted array of `PaymentMethodType`
     /// ~~~

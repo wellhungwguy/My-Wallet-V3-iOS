@@ -15,7 +15,7 @@ final class DerivationTests: XCTestCase {
     func test_can_create_correct_derivation_for_legacy_type() {
         let masterSeedHex = getHDWallet(
             from: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-        ).successData!.seed.hexValue
+        ).success!.seed.hexValue
 
         let key = deriveAccountKey(
             at: 0,
@@ -37,7 +37,7 @@ final class DerivationTests: XCTestCase {
     func test_can_create_correct_derivation_for_segwit_type() {
         let masterSeedHex = getHDWallet(
             from: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-        ).successData!.seed.hexValue
+        ).success!.seed.hexValue
 
         let key = deriveAccountKey(
             at: 0,
@@ -60,7 +60,7 @@ final class DerivationTests: XCTestCase {
         let mnemonic = "guide air pet hat friend anchor harvest dog depart matter deny awkward sign almost speak short dragon rare private fame depart elevator snake chef"
         let derivationPath = "m/44'/5757'/0'/0/0"
         let masterSeedHex = getHDWallet(from: mnemonic)
-            .successData!
+            .success!
             .seed
             .hexValue
         let key = derivePublicKeyData(masterNode: masterSeedHex, derivationPath: derivationPath)
@@ -74,7 +74,7 @@ final class DerivationTests: XCTestCase {
         let mnemonic = "guide air pet hat friend anchor harvest dog depart matter deny awkward sign almost speak short dragon rare private fame depart elevator snake chef"
         let derivationPath = "m/44'/5757'/0'/0/0"
         let masterSeedHex = getHDWallet(from: mnemonic)
-            .successData!
+            .success!
             .seed
             .hexValue
         let key = derivePrivateKeyData(masterNode: masterSeedHex, derivationPath: derivationPath)

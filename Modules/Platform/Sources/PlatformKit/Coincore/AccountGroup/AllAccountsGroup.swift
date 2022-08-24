@@ -73,7 +73,11 @@ public final class AllAccountsGroup: AccountGroup {
         .failure(ReceiveAddressError.notSupported)
     }
 
-    public init(accounts: [SingleAccount]) {
-        self.accounts = accounts
+    public init?(accounts: [SingleAccount]) {
+        if accounts.isEmpty {
+            return nil
+        } else {
+            self.accounts = accounts
+        }
     }
 }

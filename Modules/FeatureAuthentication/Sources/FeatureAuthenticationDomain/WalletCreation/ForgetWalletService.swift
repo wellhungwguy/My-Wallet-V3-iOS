@@ -6,7 +6,7 @@ import WalletPayloadKit
 
 public struct ForgetWalletService {
     /// Clears the in-memory wallet state and removes values from `WalletRepo`
-    public var forget: () -> AnyPublisher<EmptyValue, ForgetWalletError>
+    public var forget: () -> AnyPublisher<Void, ForgetWalletError>
 }
 
 extension ForgetWalletService {
@@ -14,11 +14,11 @@ extension ForgetWalletService {
         forgetWallet: ForgetWalletAPI
     ) -> ForgetWalletService {
         ForgetWalletService(
-            forget: { () -> AnyPublisher<EmptyValue, ForgetWalletError> in
+            forget: { () -> AnyPublisher<Void, ForgetWalletError> in
                 nativeWalletFlagEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<EmptyValue, ForgetWalletError> in
+                    .flatMap { isEnabled -> AnyPublisher<Void, ForgetWalletError> in
                         guard isEnabled else {
-                            return .just(.noValue)
+                            return .just(())
                         }
                         return forgetWallet.forget()
                     }

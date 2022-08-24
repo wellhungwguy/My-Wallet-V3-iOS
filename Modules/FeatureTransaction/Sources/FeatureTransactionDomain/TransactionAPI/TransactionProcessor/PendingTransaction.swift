@@ -14,6 +14,9 @@ public struct PendingTransaction: Equatable {
         case gasPrice
         case gasLimit
         case btc
+        case delegatedeCustodyFee
+        case delegatedeCustodySendMax
+        case delegatedeCustodyData
     }
 
     public var amount: MoneyValue

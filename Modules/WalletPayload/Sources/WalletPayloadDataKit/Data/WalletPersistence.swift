@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 import Foundation
 import KeychainKit
 import ToolKit
@@ -33,7 +32,7 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
         persistenceQueue = queue
     }
 
-    func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
+    func beginPersisting() -> AnyPublisher<Void, WalletRepoPersistenceError> {
         repo
             .stream()
             .removeDuplicates()
@@ -68,13 +67,13 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
             .eraseToAnyPublisher()
     }
 
-    func delete() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
+    func delete() -> AnyPublisher<Void, WalletRepoPersistenceError> {
         Deferred { [keychainAccess] in
             Future { promise in
                 let removalResult = keychainAccess.remove(for: KeychainAccessKey.walletState)
                 switch removalResult {
                 case .success:
-                    promise(.success(.noValue))
+                    promise(.success(()))
                 case .failure(let error):
                     promise(.failure(WalletRepoPersistenceError.keychainFailure(error)))
                 }

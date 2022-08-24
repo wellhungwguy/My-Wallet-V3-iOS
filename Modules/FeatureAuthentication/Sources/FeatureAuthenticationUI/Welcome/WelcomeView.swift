@@ -27,7 +27,7 @@ public enum WelcomeRoute: NavigationRoute {
                     state: \.createWalletState,
                     action: WelcomeAction.createWallet
                 ),
-                then: CreateAccountView.init(store:)
+                then: CreateAccountStepOneView.init(store:)
             )
         case .emailLogin:
             IfLetStore(

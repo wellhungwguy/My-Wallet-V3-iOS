@@ -152,6 +152,26 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.push(viewController: viewControllable)
     }
 
+    func presentUXDialogFromErrorState(
+        _ errorState: TransactionErrorState,
+        transactionModel: TransactionModel
+    ) {
+        guard case .ux(let ux) = errorState else {
+            impossible("state.errorState is not ux")
+        }
+        presentErrorViewForDialog(ux, transactionModel: transactionModel)
+    }
+
+    func presentUXDialogFromUserInteraction(
+        state: TransactionState,
+        transactionModel: TransactionModel
+    ) {
+        guard let ux = state.dialog else {
+            impossible("state.dialog is nil")
+        }
+        presentErrorViewForDialog(ux, transactionModel: transactionModel)
+    }
+
     func routeToError(state: TransactionState, model: TransactionModel) {
         let error = state.errorState.ux(action: state.action)
         let errorViewController = UIHostingController(
@@ -369,8 +389,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     func presentLinkPaymentMethod(transactionModel: TransactionModel) {
         let viewController = viewController.uiviewController
-        let presenter = viewController.topMostViewController ?? viewController
-        paymentMethodLinker.presentAccountLinkingFlow(from: presenter) { [weak self] result in
+        paymentMethodLinker.presentAccountLinkingFlow(
+            from: viewController.uiviewController
+        ) { [weak self] result in
             guard let self = self else { return }
             viewController.dismiss(animated: true) {
                 switch result {
@@ -433,7 +454,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
         Task(priority: .userInitiated) {
             let country: String = try app.state.get(blockchain.user.address.country.code)
-            let isArgentinaLinkBankEnabled: Bool = try await isArgentinaLinkBankEnabled.await() ?? false
+            let isArgentinaLinkBankEnabled: Bool = (try? await isArgentinaLinkBankEnabled.await()) ?? false
             if isArgentinaLinkBankEnabled, country.isArgentina {
                 try await presentBINDLinkABank(transactionModel: transactionModel)
             } else {
@@ -456,7 +477,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private func presentBINDLinkABank(
         transactionModel: TransactionModel
     ) async throws {
-        guard let state = try await transactionModel.state.await() else { return }
+        let state = try await transactionModel.state.await()
         guard let fiat = (state.source?.currencyType ?? state.destination?.currencyType)?.fiatCurrency else {
             return assertionFailure("Expected one fiat currency to create a BIND beneficiary")
         }
@@ -487,6 +508,28 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         )
         hostedViewController.isModalInPresentation = true
         presentingViewController.present(hostedViewController, animated: true, completion: nil)
+    }
+
+    private func presentErrorViewForDialog(
+        _ ux: UX.Dialog,
+        transactionModel: TransactionModel
+    ) {
+        let viewController = UIHostingController(
+            rootView: ErrorView(
+                ux: .init(nabu: ux),
+                dismiss: {
+                    transactionModel.process(action: .returnToPreviousStep)
+                }
+            )
+            .app(app)
+        )
+
+        attachChild(Router<Interactor>(interactor: Interactor()))
+
+        viewController.transitioningDelegate = bottomSheetPresenter
+        viewController.modalPresentationStyle = .custom
+        let presenter = topMostViewControllerProvider.topMostViewController
+        presenter?.present(viewController, animated: true, completion: nil)
     }
 
     private func presentDefaultLinkABank(transactionModel: TransactionModel) {

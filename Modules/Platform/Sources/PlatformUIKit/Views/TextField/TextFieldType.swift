@@ -216,6 +216,7 @@ extension TextFieldType {
              .expirationDate,
              .cardholderName,
              .description,
+             .cardNumber,
              .memo:
             return false
         case .password,
@@ -223,7 +224,6 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .oneTimeCode,
-             .cardNumber,
              .cryptoAddress:
             return true
         }

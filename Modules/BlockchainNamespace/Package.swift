@@ -14,48 +14,33 @@ let package = Package(
         .library(
             name: "BlockchainNamespace",
             targets: ["BlockchainNamespace"]
-        ),
-        .library(
-            name: "AnyCoding",
-            targets: ["AnyCoding"]
-        ),
-        .executable(
-            name: "gen",
-            targets: ["gen"]
         )
     ],
     dependencies: [
         .package(
-            url: "https://github.com/screensailor/Lexicon",
-            revision: "160c4c417f8490658a8396d0283fb0d6fb98c327"
+            url: "https://github.com/thousandyears/Lexicon.git",
+            from: "0.6.1"
         ),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
-        )
+        ),
+        .package(path: "../Extensions"),
+        .package(path: "../AnyCoding")
     ],
     targets: [
-        .executableTarget(
-            name: "gen",
-            dependencies: [
-                .product(name: "Lexicon", package: "Lexicon"),
-                .product(name: "SwiftStandAlone", package: "Lexicon")
-            ]
-        ),
         .target(
             name: "BlockchainNamespace",
             dependencies: [
-                .target(name: "AnyCoding"),
                 .target(name: "FirebaseProtocol"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
-                .product(name: "Lexicon", package: "Lexicon")
+                .product(name: "Lexicon", package: "Lexicon"),
+                .product(name: "AnyCoding", package: "AnyCoding"),
+                .product(name: "Extensions", package: "Extensions")
             ],
             resources: [
                 .copy("blockchain.taskpaper")
             ]
-        ),
-        .target(
-            name: "AnyCoding"
         ),
         .target(
             name: "FirebaseProtocol"
@@ -66,10 +51,6 @@ let package = Package(
             resources: [
                 .copy("test.taskpaper")
             ]
-        ),
-        .testTarget(
-            name: "AnyCodingTests",
-            dependencies: ["AnyCoding"]
         )
     ]
 )

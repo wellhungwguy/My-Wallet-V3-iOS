@@ -61,9 +61,10 @@ final class Coincore: CoincoreAPI {
                         result.append(contentsOf: accounts)
                     }
             }
-            .map { accounts -> AccountGroup in
+            .map { accounts -> AccountGroup? in
                 AllAccountsGroup(accounts: accounts)
             }
+            .compactMap { $0 }
             .eraseToAnyPublisher()
             .mapError()
     }

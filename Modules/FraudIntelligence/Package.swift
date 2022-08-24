@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FraudIntelligence",
-    platforms: [.iOS(.v14), .macOS(.v12)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FraudIntelligence",

@@ -25,6 +25,8 @@ public let coinViewReducer = Reducer<
         switch action {
 
         case .onAppear:
+            state.appMode = environment.app.currentMode
+
             return .merge(
                 Effect(value: .observation(.start)),
 

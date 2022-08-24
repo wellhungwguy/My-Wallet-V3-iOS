@@ -28,9 +28,7 @@ public class BINDWithdrawService: ObservableObject {
         Task(priority: .userInitiated) {
             isLoading = true
             do {
-                if let beneficiary = try await repository.search(address: text).await() {
-                    result = .success(beneficiary)
-                }
+                result = try await .success(repository.search(address: text).await())
             } catch {
                 result = .failure(UX.Error(error: error))
             }

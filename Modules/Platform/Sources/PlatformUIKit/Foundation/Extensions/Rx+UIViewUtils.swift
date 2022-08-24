@@ -2,6 +2,7 @@
 
 import RxCocoa
 import RxSwift
+import UIKit
 
 /// Extension for rx that makes `UIProgressView` properties reactive
 extension Reactive where Base: UIProgressView {
@@ -20,6 +21,14 @@ extension Reactive where Base: UIProgressView {
     public var fillColor: Binder<UIColor> {
         Binder(base) { view, color in
             view.progressTintColor = color
+        }
+    }
+}
+
+extension Reactive where Base: UIView {
+    public var rx_heightAnchor: Binder<CGFloat> {
+        Binder(base) { view, height in
+            view.heightAnchor.constraint(equalToConstant: height).isActive = true
         }
     }
 }

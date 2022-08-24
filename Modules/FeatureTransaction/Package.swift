@@ -68,6 +68,7 @@ let package = Package(
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
+        .package(path: "../DelegatedSelfCustody"),
         .package(path: "../FeatureKYC"),
         .package(path: "../FeatureProducts"),
         .package(path: "../Localization"),
@@ -85,6 +86,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DelegatedSelfCustodyKit", package: "DelegatedSelfCustody"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "FeatureProductsDomain", package: "FeatureProducts"),
@@ -126,7 +128,6 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "ErrorsUI", package: "Errors"),
                 .product(name: "BINDWithdrawUI", package: "BIND"),
                 .product(name: "BINDWithdrawDomain", package: "BIND")
             ]
