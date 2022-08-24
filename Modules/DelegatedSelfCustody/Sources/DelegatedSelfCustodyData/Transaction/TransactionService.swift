@@ -5,12 +5,19 @@ import DelegatedSelfCustodyDomain
 import Errors
 import Foundation
 import MoneyKit
+import ToolKit
 
 final class TransactionService: DelegatedCustodyTransactionServiceAPI {
 
     private let authenticationDataRepository: AuthenticationDataRepositoryAPI
     private let client: TransactionsClientAPI
     private let signingService: DelegatedCustodySigningServiceAPI
+
+    private let cachedBuildTransaction: CachedValueNew<
+        DelegatedCustodyTransactionInput,
+        DelegatedCustodyTransactionOutput,
+        DelegatedCustodyTransactionServiceError
+    >
 
     init(
         client: TransactionsClientAPI,
@@ -20,23 +27,37 @@ final class TransactionService: DelegatedCustodyTransactionServiceAPI {
         self.authenticationDataRepository = authenticationDataRepository
         self.client = client
         self.signingService = signingService
+
+        let cacheBuildTransaction: AnyCache<
+            DelegatedCustodyTransactionInput,
+            DelegatedCustodyTransactionOutput
+        > = InMemoryCache(
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 15)
+        ).eraseToAnyCache()
+        cachedBuildTransaction = CachedValueNew(
+            cache: cacheBuildTransaction,
+            fetch: { [authenticationDataRepository, client] transaction in
+                authenticationDataRepository.authenticationData
+                    .mapError(DelegatedCustodyTransactionServiceError.authenticationError)
+                    .flatMap { [client] authenticationData in
+                        client.buildTx(
+                            guidHash: authenticationData.guidHash,
+                            sharedKeyHash: authenticationData.sharedKeyHash,
+                            transaction: BuildTxRequestData(input: transaction)
+                        )
+                        .mapError(DelegatedCustodyTransactionServiceError.networkError)
+                    }
+                    .map(DelegatedCustodyTransactionOutput.init(response:))
+                    .eraseToAnyPublisher()
+            }
+        )
     }
 
     func buildTransaction(
         _ transaction: DelegatedCustodyTransactionInput
     ) -> AnyPublisher<DelegatedCustodyTransactionOutput, DelegatedCustodyTransactionServiceError> {
-        authenticationDataRepository.authenticationData
-            .mapError(DelegatedCustodyTransactionServiceError.authenticationError)
-            .flatMap { [client] authenticationData in
-                client.buildTx(
-                    guidHash: authenticationData.guidHash,
-                    sharedKeyHash: authenticationData.sharedKeyHash,
-                    transaction: BuildTxRequestData(input: transaction)
-                )
-                .mapError(DelegatedCustodyTransactionServiceError.networkError)
-            }
-            .map(DelegatedCustodyTransactionOutput.init(response:))
-            .eraseToAnyPublisher()
+        cachedBuildTransaction.get(key: transaction)
     }
 
     func sign(
@@ -62,7 +83,6 @@ final class TransactionService: DelegatedCustodyTransactionServiceAPI {
             .zip()
             .mapError(DelegatedCustodyTransactionServiceError.signing)
             .map { signatures in
-                // TODO: @paulo Add rawTx
                 DelegatedCustodySignedTransactionOutput(rawTx: transaction.rawTx, signatures: signatures)
             }
     }

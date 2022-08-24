@@ -419,10 +419,6 @@ extension LocalizationConstants.Transaction.Send {
         "Send",
         comment: "Send"
     )
-    public static let sendMax = NSLocalizedString(
-        "Send Max",
-        comment: "Send Max"
-    )
     public static let from = NSLocalizedString(
         "From",
         comment: "From"

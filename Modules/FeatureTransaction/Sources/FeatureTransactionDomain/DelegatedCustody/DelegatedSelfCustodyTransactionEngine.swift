@@ -53,31 +53,27 @@ final class DelegatedSelfCustodyTransactionEngine: TransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        receiveAddress
-            .map { receiveAddress in
-                pendingTransaction.delegatedCustodyTransactionInput(
-                    destination: receiveAddress.address,
-                    memo: receiveAddress.memo
-                )
-            }
-            .flatMap { [transactionService] input -> AnyPublisher<DelegatedCustodyTransactionOutput, Error> in
-                transactionService
-                    .buildTransaction(input)
-                    .eraseError()
-                    .eraseToAnyPublisher()
-            }
-            .map { [sourceAccount, transactionTarget] (output: DelegatedCustodyTransactionOutput) -> (DelegatedCustodyTransactionOutput, [TransactionConfirmation]) in
-                let amount: MoneyValue = .create(minor: output.amount, currency: sourceAccount!.currencyType)!
-                let absoluteFeeEstimate: MoneyValue = .create(minor: output.absoluteFeeEstimate, currency: sourceAccount!.currencyType)!
+        delegatedCustodyTransactionOutput(pendingTransaction: pendingTransaction)
+            .zip(sourceExchangeRatePair)
+            .tryMap { [sourceAccount, transactionTarget] output, sourceExchangeRate
+                -> (DelegatedCustodyTransactionOutput, [TransactionConfirmation]) in
+                let amount = MoneyValue.create(
+                    minor: output.amount,
+                    currency: sourceAccount!.currencyType
+                )!
+                let absoluteFeeEstimate = MoneyValue.create(
+                    minor: output.absoluteFeeEstimate,
+                    currency: sourceAccount!.currencyType
+                )!
                 let confirmations: [TransactionConfirmation] = [
                     TransactionConfirmations.SendDestinationValue(value: amount),
                     TransactionConfirmations.Source(value: sourceAccount!.label),
                     TransactionConfirmations.Destination(value: transactionTarget!.label),
                     TransactionConfirmations.FeedTotal(
                         amount: amount,
-                        amountInFiat: amount, // TODO: @paulo
+                        amountInFiat: try amount.convert(using: sourceExchangeRate),
                         fee: absoluteFeeEstimate,
-                        feeInFiat: absoluteFeeEstimate // TODO: @paulo
+                        feeInFiat: try absoluteFeeEstimate.convert(using: sourceExchangeRate)
                     )
                 ]
                 return (output, confirmations)
@@ -91,6 +87,37 @@ final class DelegatedSelfCustodyTransactionEngine: TransactionEngine {
     }
 
     // MARK: - Private Functions
+
+    private func delegatedCustodyTransactionOutput(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<DelegatedCustodyTransactionOutput, Error> {
+        receiveAddress
+            .map { receiveAddress in
+                pendingTransaction.delegatedCustodyTransactionInput(
+                    destination: receiveAddress.address,
+                    memo: receiveAddress.memo
+                )
+            }
+            .flatMap { [transactionService] input in
+                transactionService
+                    .buildTransaction(input)
+                    .eraseError()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private var sourceExchangeRatePair: AnyPublisher<MoneyValuePair, Error> {
+        walletCurrencyService
+            .displayCurrency
+            .eraseError()
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
+                    .eraseError()
+            }
+            .eraseToAnyPublisher()
+    }
 
     private var validatedPredefinedAmount: MoneyValue {
         guard let predefinedAmount = predefinedAmount else {
@@ -136,7 +163,7 @@ final class DelegatedSelfCustodyTransactionEngine: TransactionEngine {
         sourceAccountBalance
             .map { balance in
                 var pendingTransaction = pendingTransaction.update(amount: amount, available: balance.moneyValue)
-                pendingTransaction.setDelegatedeCustodySendMax(false)
+                pendingTransaction.setDelegatedeCustodySendMax(balance.moneyValue == amount)
                 return pendingTransaction
             }
             .asSingle()
