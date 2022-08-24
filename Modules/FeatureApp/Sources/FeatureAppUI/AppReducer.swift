@@ -174,7 +174,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
-                guard let data = result.successData else {
+                guard let data = result.success else {
                     return AppAction.core(.none)
                 }
                 return AppAction.core(.deeplink(data))
@@ -187,7 +187,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             .catchToEffect()
             .cancellable(id: AppCancellations.DeeplinkId())
             .map { result in
-                guard let data = result.successData else {
+                guard let data = result.success else {
                     return AppAction.core(.none)
                 }
                 return AppAction.core(.deeplink(data))
@@ -220,7 +220,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
                 id: AppCancellations.WalletPersistenceId(),
                 cancelInFlight: true
             )
-            .map { AppAction.walletPersistence(.persisted($0)) }
+            .map { AppAction.walletPersistence(.persisted($0.map { _ in EmptyValue.noValue })) }
     case .walletPersistence(.persisted(.failure(let error))):
         // record the error if we encounter one and restart the persistence
         environment.crashlyticsRecorder.error(error)

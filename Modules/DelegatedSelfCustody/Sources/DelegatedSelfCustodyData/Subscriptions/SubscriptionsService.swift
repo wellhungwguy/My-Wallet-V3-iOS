@@ -50,6 +50,7 @@ final class SubscriptionsService: DelegatedCustodySubscriptionsServiceAPI {
 
     private var authenticate: AnyPublisher<Void, Error> {
         authenticationDataRepository.initialAuthenticationData
+            .eraseError()
             .flatMap { [authClient] authenticationData -> AnyPublisher<Void, Error> in
                 authClient.auth(
                     guid: authenticationData.guid,
@@ -62,7 +63,7 @@ final class SubscriptionsService: DelegatedCustodySubscriptionsServiceAPI {
 
     private var subscribeAccounts: AnyPublisher<Void, Error> {
         accounts
-            .zip(authenticationDataRepository.authenticationData)
+            .zip(authenticationDataRepository.authenticationData.eraseError())
             .flatMap { [subscriptionsClient, subscriptionsStateService] accounts, authenticationData -> AnyPublisher<Void, Error> in
                 subscriptionsClient.subscribe(
                     guidHash: authenticationData.guidHash,
@@ -88,8 +89,8 @@ final class SubscriptionsService: DelegatedCustodySubscriptionsServiceAPI {
                     SubscriptionEntry(
                         currency: account.coin.code,
                         account: .init(index: 0, name: LocalizationConstants.Account.myWallet),
-                        pubkeys: [
-                            .init(pubkey: account.publicKey.toHexString(), style: account.style, descriptor: 0)
+                        pubKeys: [
+                            .init(pubKey: account.publicKey.toHexString(), style: account.style, descriptor: 0)
                         ]
                     )
                 }

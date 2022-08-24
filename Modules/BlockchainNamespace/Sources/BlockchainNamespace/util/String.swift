@@ -4,9 +4,6 @@ import Foundation
 
 extension StringProtocol {
 
-    var substring: SubSequence { self[...] }
-    var string: String { String(self) }
-
     func dot(_ suffix: String) -> String {
         "\(self).\(suffix)"
     }
@@ -37,17 +34,5 @@ extension StringProtocol {
 
     func isDotPathDescendant(of other: String) -> Bool {
         other.isDotPathAncestor(of: String(self))
-    }
-}
-
-extension Sequence where Element == Substring {
-    var string: [String] { map(\.string) }
-}
-
-extension String {
-
-    subscript(ns: NSRange) -> SubSequence {
-        guard let range = Range<String.Index>(ns, in: self) else { fatalError("Out of bounds") }
-        return self[range]
     }
 }

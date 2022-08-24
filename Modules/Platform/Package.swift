@@ -78,7 +78,8 @@ let package = Package(
         .package(path: "../BlockchainNamespace"),
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureForm"),
-        .package(path: "../FeatureCardPayment")
+        .package(path: "../FeatureCardPayment"),
+        .package(path: "../AnyCoding")
     ],
     targets: [
         .target(
@@ -86,7 +87,7 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
-                .product(name: "AnyCoding", package: "BlockchainNamespace"),
+                .product(name: "AnyCoding", package: "AnyCoding"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),

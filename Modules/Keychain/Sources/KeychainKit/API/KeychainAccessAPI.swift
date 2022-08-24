@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import ToolKit
 
 /// Types adopting `KeychainAccessAPI` should provide a read and write access to the Keychain
 public protocol KeychainAccessAPI {
@@ -23,13 +22,13 @@ public protocol KeychainAccessAPI {
     func write(
         value: Data,
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError>
+    ) -> Result<Void, KeychainAccessError>
 
     /// Removes a value from the Keychain
     /// - Parameter key: A `String` value for the key
     func remove(
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError>
+    ) -> Result<Void, KeychainAccessError>
 
     /// Creates the KeychainAccess
     /// - Parameters:

@@ -69,7 +69,7 @@ extension Reducer where Action: BlockchainNamespaceObservationAction, Environmen
     }
 }
 
-extension Anything: CustomDumpReflectable {
+extension AnyJSON: CustomDumpReflectable {
 
     public var customDumpMirror: Mirror {
         Mirror(reflecting: wrapped)

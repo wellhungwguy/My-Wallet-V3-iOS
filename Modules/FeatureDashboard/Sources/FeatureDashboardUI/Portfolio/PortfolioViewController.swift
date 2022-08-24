@@ -45,7 +45,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                 onboardingChecklistViewController.view.alpha = 0
                 floatingViewContainer.addSubview(onboardingChecklistViewController.view)
                 onboardingChecklistViewController.view.constraint(edgesTo: floatingViewContainer)
-                self.floatingViewContainer.isHidden = false
+                floatingViewContainer.isHidden = false
                 UIView.animate(withDuration: 0.3, delay: 0, options: .transitionFlipFromBottom) {
                     onboardingChecklistViewController.view.alpha = 1
                     self.showFloatingViewContent()

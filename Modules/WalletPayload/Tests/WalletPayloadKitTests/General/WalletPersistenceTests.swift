@@ -181,7 +181,7 @@ class WalletPersistenceTests: XCTestCase {
     func test_wallet_persistence_can_persist_changes() throws {
 
         // given a success result
-        mockKeychainAccess.writeResult = .success(.noValue)
+        mockKeychainAccess.writeResult = .success(())
 
         let walletRepo = WalletRepo(initialState: .empty)
 
@@ -225,7 +225,7 @@ class WalletPersistenceTests: XCTestCase {
     func test_wallet_persistence_can_persist_changes_skipping_duplicates() throws {
 
         // given a success result
-        mockKeychainAccess.writeResult = .success(.noValue)
+        mockKeychainAccess.writeResult = .success(())
 
         let walletRepo = WalletRepo(initialState: .empty)
 

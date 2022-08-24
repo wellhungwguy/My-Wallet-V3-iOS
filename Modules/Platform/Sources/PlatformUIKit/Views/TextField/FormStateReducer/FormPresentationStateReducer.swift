@@ -36,3 +36,15 @@ public final class FormPresentationStateReducer {
         return .valid
     }
 }
+
+extension Array where Element: Equatable {
+    public var areAllElementsEqual: Bool {
+        guard let first = first else { return true }
+        return !dropFirst().contains { $0 != first }
+    }
+
+    /// Returns `true` if if all elements are equal to a given value
+    public func areAllElements(equal element: Element) -> Bool {
+        !contains { $0 != element }
+    }
+}

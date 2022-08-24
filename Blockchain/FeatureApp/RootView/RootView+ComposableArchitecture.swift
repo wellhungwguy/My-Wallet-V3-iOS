@@ -12,6 +12,7 @@ import FeatureAppUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
+import FeatureSettingsUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -121,17 +122,20 @@ enum RootViewRoute: NavigationRoute {
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
     var app: AppProtocol
+    var backupFundsRouter: BackupFundsRouterAPI
     var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
+        backupFundsRouter: BackupFundsRouterAPI,
         coincore: CoincoreAPI,
         recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     ) {
         self.app = app
         self.coincore = coincore
         self.recoveryPhraseStatusProviding = recoveryPhraseStatusProviding
+        self.backupFundsRouter = backupFundsRouter
     }
 
     func fetchTotalBalance(filter: AssetFilter) -> AnyPublisher<MoneyValue?, Never> {
@@ -163,7 +167,8 @@ let rootMainReducer = Reducer.combine(
             environment: { environment in
                       AppModeSwitcherEnvironment(
                           app: environment.app,
-                          recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding
+                          recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding,
+                          backupFundsRouter: environment.backupFundsRouter
                       )
             }
         )
@@ -205,7 +210,8 @@ let rootViewReducer = Reducer<
         return .none
 
     case .onAppear:
-        let tabsPublisher = app.modePublisher()
+        let tabsPublisher = app
+            .modePublisher()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 if appMode == .defi {
                     return environment
@@ -215,6 +221,24 @@ let rootViewReducer = Reducer<
                     return environment
                         .app
                         .publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
+                }
+            }
+            .compactMap(\.value)
+
+        let frequentActionsPublisher = app
+            .modePublisher()
+            .flatMap { appMode -> AnyPublisher<FetchResult.Value<FrequentActionData>, Never> in
+                switch appMode {
+                case .defi:
+                    return environment
+                        .app
+                        .publisher(for: blockchain.app.configuration.frequent.action.pkw, as: FrequentActionData.self)
+
+                case .trading:
+                    return environment.app.publisher(for: blockchain.app.configuration.frequent.action.trading, as: FrequentActionData.self)
+
+                case .both:
+                    return environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 }
             }
             .compactMap(\.value)
@@ -234,7 +258,7 @@ let rootViewReducer = Reducer<
             )
             }
 
-        return .merge(
+        return Effect<RootViewAction, Never>.merge(
             .fireAndForget {
                 environment.app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
             },
@@ -252,18 +276,6 @@ let rootViewReducer = Reducer<
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
                 .map { .binding(.set(\.$referralState.isHighlighted, $0 == false)) },
-
-            environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
-                .compactMap(\.value)
-                .receive(on: DispatchQueue.main)
-                .eraseToEffect()
-                .map { .binding(.set(\.$fab.data, $0)) },
-
-            environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
-                .compactMap(\.value)
-                .receive(on: DispatchQueue.main)
-                .eraseToEffect()
-                .map { .binding(.set(\.$fab.data, $0)) },
 
             environment
                 .app
@@ -286,7 +298,12 @@ let rootViewReducer = Reducer<
             tabsPublisher
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$tabs, $0)) }
+                .map { .binding(.set(\.$tabs, $0)) },
+
+            frequentActionsPublisher
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$fab.data, $0)) }
         )
 
     case .onDisappear:

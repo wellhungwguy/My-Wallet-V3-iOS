@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import FeatureCoinDomain
 import MoneyKit
@@ -11,7 +12,6 @@ public enum CoinViewError: Error, Equatable {
 }
 
 public struct CoinViewState: Equatable {
-
     public let currency: CryptoCurrency
     public var accounts: [Account.Snapshot]
     public var error: CoinViewError?
@@ -21,28 +21,34 @@ public struct CoinViewState: Equatable {
     public var isFavorite: Bool?
     public var graph: GraphViewState
 
+    var appMode: AppMode?
+
+    var swapButton: ButtonAction? {
+        let swapDisabled = !accounts.hasPositiveBalanceForSelling
+        let swapAction = ButtonAction.swap(disabled: swapDisabled)
+        let action = action(swapAction, whenAccountCan: .swap)
+        return action
+    }
+
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
 
     var actions: [ButtonAction] {
+        let sellingDisabled = kycStatus?.canSellCrypto == false || !accounts.hasPositiveBalanceForSelling
+        let sell = ButtonAction.sell(disabled: sellingDisabled)
+        let buy = ButtonAction.buy(disabled: false)
+        let receive = ButtonAction.receive(disabled: false)
+        let send = ButtonAction.send(disabled: sellingDisabled)
+
         if !currency.isTradable || accounts.isEmpty {
-            return accounts.hasPositiveBalanceForSelling ? [.send] : []
+            return [send]
         }
-        let (buy, sell, send, receive) = (
-            action(.buy, whenAccountCan: .buy),
-            action(.sell, whenAccountCan: .sell),
-            action(.send, whenAccountCan: .send),
-            action(.receive, whenAccountCan: .receive)
-        )
-        if kycStatus?.canSellCrypto == false || !accounts.hasPositiveBalanceForSelling {
-            return [receive, buy].compactMap { $0 }
+
+        guard appMode != .defi else {
+            return [receive, send]
         }
-        let actions = [sell, buy].compactMap { $0 }
-        if actions.isEmpty {
-            return [send, receive].compactMap { $0 }
-        } else {
-            return actions
-        }
+
+        return [sell, buy]
     }
 
     private func action(_ action: ButtonAction, whenAccountCan accountAction: Account.Action) -> ButtonAction? {

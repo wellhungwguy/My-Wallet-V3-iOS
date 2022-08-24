@@ -60,7 +60,7 @@ extension CryptoAsset {
         }
         switch crypto {
         case is CryptoTradingAccount,
-             is CryptoNonCustodialAccount:
+             is NonCustodialAccount:
             return canTransactToCustodial
                 .flatMap { [accountGroup] canTransactToCustodial -> AnyPublisher<AccountGroup?, Never> in
                     accountGroup(canTransactToCustodial ? .all : .nonCustodial)

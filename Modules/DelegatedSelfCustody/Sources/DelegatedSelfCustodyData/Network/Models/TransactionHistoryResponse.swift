@@ -10,7 +10,7 @@ struct TransactionHistoryResponse: Decodable {
 
     struct Movement: Decodable {
         let type: Direction?
-        let address: String
+        let address: String?
         let amount: String
         let identifier: String
     }

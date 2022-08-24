@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable type_name
 
+import Extensions
 import Foundation
 import Lexicon
 

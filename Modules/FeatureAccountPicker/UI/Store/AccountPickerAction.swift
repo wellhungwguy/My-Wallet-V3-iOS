@@ -2,6 +2,8 @@
 
 import ComposableArchitecture
 import ComposableArchitectureExtensions
+import Errors
+import ErrorsUI
 import SwiftUI
 
 enum AccountPickerAction {
@@ -35,6 +37,7 @@ enum LoadingRowsAction {}
 
 enum SuccessRowsAction {
     case accountPickerRowDidTap(AccountPickerRow.ID)
+    case ux(UX.Dialog)
 }
 
 enum FailureRowsAction {}

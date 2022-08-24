@@ -68,7 +68,7 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
     }
 
     public var actionableBalance: AnyPublisher<MoneyValue, Error> {
-        .just(.zero(currency: asset))
+        balance
     }
 
     public var label: String {
@@ -76,30 +76,33 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
     }
 
     public let accountType: AccountType = .nonCustodial
+    public let delegatedCustodyAccount: DelegatedCustodyAccount
 
     private let activityRepository: DelegatedCustodyActivityRepositoryAPI
     private let addressesRepository: DelegatedCustodyAddressesRepositoryAPI
     private let addressFactory: ExternalAssetAddressFactory
     private let balanceRepository: DelegatedCustodyBalanceRepositoryAPI
     private let priceService: PriceServiceAPI
-    private let publicKey: String
+
+    private var publicKey: String {
+        delegatedCustodyAccount.publicKey.hex
+    }
 
     init(
         activityRepository: DelegatedCustodyActivityRepositoryAPI,
         addressesRepository: DelegatedCustodyAddressesRepositoryAPI,
         addressFactory: ExternalAssetAddressFactory,
-        asset: CryptoCurrency,
         balanceRepository: DelegatedCustodyBalanceRepositoryAPI,
         priceService: PriceServiceAPI,
-        publicKey: String
+        delegatedCustodyAccount: DelegatedCustodyAccount
     ) {
         self.activityRepository = activityRepository
         self.addressesRepository = addressesRepository
         self.addressFactory = addressFactory
-        self.asset = asset
         self.balanceRepository = balanceRepository
         self.priceService = priceService
-        self.publicKey = publicKey
+        self.delegatedCustodyAccount = delegatedCustodyAccount
+        asset = delegatedCustodyAccount.coin
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
@@ -109,12 +112,15 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
              .interestTransfer,
              .interestWithdraw,
              .sell,
-             .send,
              .sign,
              .swap,
              .withdraw,
              .linkToDebitCard:
             return .just(false)
+        case .send:
+            return balance
+                .map(\.isPositive)
+                .eraseToAnyPublisher()
         case .receive, .viewActivity:
             return .just(true)
         }

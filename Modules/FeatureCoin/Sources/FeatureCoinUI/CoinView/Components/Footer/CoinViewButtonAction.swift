@@ -9,36 +9,54 @@ struct ButtonAction: Equatable {
     let title: String
     let icon: Icon
     let event: L
+    var disabled: Bool
 
-    static var buy: Self {
+    mutating func set(disabled: Bool) {
+        self.disabled = disabled
+    }
+
+    static func buy(disabled: Bool) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.buy,
-            icon: Icon.cart,
-            event: blockchain.ux.asset.buy
+            icon: Icon.plus,
+            event: blockchain.ux.asset.buy,
+            disabled: false
         )
     }
 
-    static var sell: Self {
-        ButtonAction(
-            title: LocalizationConstants.Coin.Button.Title.sell,
-            icon: Icon.sell,
-            event: blockchain.ux.asset.sell
-        )
-    }
-
-    static var send: Self {
+    static func send(disabled: Bool) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.send,
-            icon: Icon.send,
-            event: blockchain.ux.asset.send
+            icon: Icon.upload,
+            event: blockchain.ux.asset.send,
+            disabled: disabled
         )
     }
 
-    static var receive: Self {
+    static func receive(disabled: Bool) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.receive,
-            icon: Icon.qrCode,
-            event: blockchain.ux.asset.receive
+            icon: Icon.download,
+            event: blockchain.ux.asset.receive,
+            disabled: false
+        )
+    }
+
+    static func sell(disabled: Bool) -> ButtonAction {
+        ButtonAction(
+            title: LocalizationConstants.Coin.Button.Title.sell,
+            icon: Icon.minus,
+            event: blockchain.ux.asset.sell,
+            disabled: disabled
+        )
+    }
+
+    static func swap(disabled: Bool) -> ButtonAction {
+        ButtonAction(
+            title: LocalizationConstants.Coin.Button.Title.swap,
+            icon: Icon.swap,
+            event: blockchain.ux.asset.account.swap,
+            disabled: disabled
         )
     }
 }

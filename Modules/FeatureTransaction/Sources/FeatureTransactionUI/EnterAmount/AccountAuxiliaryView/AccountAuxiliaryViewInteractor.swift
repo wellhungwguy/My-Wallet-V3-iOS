@@ -36,19 +36,22 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let imageResource: ImageResource
         let imageBackgroundColor: UIColor
         let isEnabled: Bool
+        let badgeViewModel: BadgeViewModel?
 
         init(
             title: String,
             subtitle: String,
             imageResource: ImageResource,
             imageBackgroundColor: UIColor,
-            isEnabled: Bool = true
+            isEnabled: Bool = true,
+            badgeViewModel: BadgeViewModel? = nil
         ) {
             self.title = title
             self.subtitle = subtitle
             self.imageResource = imageResource
             self.imageBackgroundColor = imageBackgroundColor
             self.isEnabled = isEnabled
+            self.badgeViewModel = badgeViewModel
         }
 
         static let empty: State = .init(
@@ -98,12 +101,18 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                 )
 
             case let paymentMethodAccount as PaymentMethodAccount:
+                var badgeViewModel: BadgeViewModel?
+                let block = paymentMethodAccount.paymentMethodType.block
+                if let title = paymentMethodAccount.paymentMethodType.ux?.title {
+                    badgeViewModel = block ? nil : .warning(with: title)
+                }
                 return .init(
                     title: paymentMethodAccount.label,
                     subtitle: paymentMethodAccount.paymentMethodType.topLimit.displayString,
                     imageResource: paymentMethodAccount.logoResource,
                     imageBackgroundColor: paymentMethodAccount.logoBackgroundColor,
-                    isEnabled: tapEnabled
+                    isEnabled: tapEnabled,
+                    badgeViewModel: badgeViewModel
                 )
 
             case let fiatAccount as FiatAccount:

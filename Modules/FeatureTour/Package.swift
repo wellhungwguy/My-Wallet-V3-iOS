@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "FeatureTour",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(
@@ -19,7 +22,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture", 
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
             .exact("0.38.3")
         ),
         .package(

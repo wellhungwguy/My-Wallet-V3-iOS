@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "BIND",
-    platforms: [.macOS(.v11), .iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "BINDWithdrawData", targets: ["BINDWithdrawData"]),
         .library(name: "BINDWithdrawDomain", targets: ["BINDWithdrawDomain"]),

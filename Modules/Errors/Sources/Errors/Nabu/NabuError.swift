@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnyCoding
+import Extensions
 import Foundation
-import ToolKit
 
 public typealias NabuNetworkError = Nabu.Error
 public typealias NabuError = Nabu.Error

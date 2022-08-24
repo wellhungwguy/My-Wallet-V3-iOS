@@ -53,7 +53,7 @@ let supportViewReducer = Reducer<
             .receive(on: environment.mainQueue)
             .catchToEffect()
             .map { result -> SupportViewAction in
-                guard let applicationInfo = result.successData else {
+                guard let applicationInfo = result.success else {
                     return .failedToRetrieveAppStoreInfo
                 }
                 return .appStoreVersionInformationReceived(applicationInfo)

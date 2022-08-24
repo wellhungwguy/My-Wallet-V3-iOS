@@ -1,5 +1,6 @@
 import Accelerate
 import CoreGraphics
+import Extensions
 import SwiftUI
 
 /// A view displaying a line graph, with a vertical selection bar when touched.

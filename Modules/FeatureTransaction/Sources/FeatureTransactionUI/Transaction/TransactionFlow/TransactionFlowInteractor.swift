@@ -3,6 +3,7 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import Errors
 import FeatureTransactionDomain
 import PlatformKit
 import PlatformUIKit
@@ -87,6 +88,23 @@ protocol TransactionFlowRouting: Routing {
         action: OpenBankingAction,
         transactionModel: TransactionModel,
         account: LinkedBankData
+    )
+
+    /// Present an `ErrorView`. This `ErrorView` is initialized with the `UX.Dialog`
+    /// on the `TransactionState`. This property is set *not* as a result of an error but
+    /// rather from user interaction (e.g. the user tapping a `BadgeView` on
+    /// the payment selection screen to learn more about why a card has a high failure rate)
+    func presentUXDialogFromUserInteraction(
+        state: TransactionState,
+        transactionModel: TransactionModel
+    )
+
+    /// Present an `ErrorView`. This `ErrorView` is initialized with the `UX.Dialog`
+    /// on the `TransactionErrorState`. This occurs when the user selects a source account
+    /// that is blocked (e.g. a high failure rate payment account in buy).
+    func presentUXDialogFromErrorState(
+        _ errorState: TransactionErrorState,
+        transactionModel: TransactionModel
     )
 
     /// Route to the in progress screen. This pushes onto the navigation stack.
@@ -264,7 +282,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         super.willResignActive()
     }
 
+    func didSelect(ux: UX.Dialog) {
+        transactionModel.process(action: .showUxDialogSuggestion(ux))
+    }
+
     func didSelectActionButton() {
+        transactionModel.process(action: .returnToPreviousStep)
         transactionModel.process(action: .showAddAccountFlow)
     }
 
@@ -534,6 +557,18 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             router?.routeToInProgress(
                 transactionModel: transactionModel,
                 action: action
+            )
+
+        case .uxFromErrorState:
+            router?.presentUXDialogFromErrorState(
+                newState.errorState,
+                transactionModel: transactionModel
+            )
+
+        case .uxFromUserInteraction:
+            router?.presentUXDialogFromUserInteraction(
+                state: newState,
+                transactionModel: transactionModel
             )
 
         case .error:
@@ -908,16 +943,27 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.change.payment.method) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .selectSource else { return }
-            transactionModel.process(action: .showEnterAmount)
-            transactionModel.process(action: .showSourceSelection)
+            let state = try await transactionModel.state.await()
+            guard state.step != .selectSource else { return }
+            if state.step == .uxFromUserInteraction {
+                transactionModel.process(action: .returnToPreviousStep)
+            } else if state.step == .uxFromErrorState {
+                // Dismisses the `UX.Dialog` and shows the source selection screen.
+                transactionModel.process(action: .returnToPreviousStep)
+                transactionModel.process(action: .showSourceSelection)
+            } else {
+                // Shows the enter amount screen and then presents the source selection screen.
+                transactionModel.process(action: .showEnterAmount)
+                transactionModel.process(action: .showSourceSelection)
+            }
         }
         .subscribe()
         .store(in: &bag)
 
         app.on(blockchain.ux.transaction.action.add.card) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkACard else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkACard else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showCardLinkingFlow)
         }
@@ -926,7 +972,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.add.bank) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkABank else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkABank else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankLinkingFlow)
         }
@@ -935,7 +982,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.add.account) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkPaymentMethod else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkPaymentMethod else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showAddAccountFlow)
         }
@@ -958,7 +1006,8 @@ extension TransactionFlowInteractor {
 
         app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
-            guard let state = try await transactionModel.state.await(), state.step != .linkBankViaWire else { return }
+            let state = try await transactionModel.state.await()
+            guard state.step != .linkBankViaWire else { return }
             transactionModel.process(action: .showEnterAmount)
             transactionModel.process(action: .showBankWiringInstructions)
         }

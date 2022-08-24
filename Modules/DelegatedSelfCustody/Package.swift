@@ -1,5 +1,4 @@
 // swift-tools-version: 5.6
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
@@ -27,6 +26,7 @@ let package = Package(
             from: "1.4.2"
         ),
         .package(path: "../BlockchainNamespace"),
+        .package(path: "../Errors"),
         .package(path: "../Money"),
         .package(path: "../Network"),
         .package(path: "../Test"),
@@ -37,6 +37,7 @@ let package = Package(
             name: "DelegatedSelfCustodyDomain",
             dependencies: [
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool")
             ]
@@ -48,6 +49,7 @@ let package = Package(
                 .product(name: "CryptoSwift", package: "CryptoSwift"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool")

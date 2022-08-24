@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Extensions
 import SwiftUI
 
 // MARK: - Spacing Constants & Calculations

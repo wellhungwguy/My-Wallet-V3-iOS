@@ -16,3 +16,22 @@ public enum MainBundleProvider {
         return bundle
     }()
 }
+
+extension Bundle {
+
+    /// Provides the builder number and version using this format:
+    /// - Production builds: v1.0.0 (1)
+    /// - Internal builds: v1.0.0 (commit hash)
+    /// - Returns: A `String` representing the build number
+    public static func versionAndBuildNumber() -> String {
+        let plist: InfoPlist = MainBundleProvider.mainBundle.plist
+        let hash = plist.COMMIT_HASH as? String ?? ""
+        var title = "v\(plist.version)"
+        if BuildFlag.isInternal {
+            title = "\(title) (\(hash))"
+        } else {
+            title = "\(title) (\(plist.build))"
+        }
+        return title
+    }
+}

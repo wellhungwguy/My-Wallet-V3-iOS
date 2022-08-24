@@ -27,6 +27,11 @@ let accountPickerReducer = Reducer<
         return .fireAndForget {
             environment.rowSelected(id)
         }
+    case .rowsLoaded(.success(.ux(let ux))):
+        state.ux = ux
+        return .fireAndForget {
+            environment.uxSelected(ux)
+        }
 
     case .prefetching(.fetch(indices: let indices)):
         guard case .loaded(.success(let rows)) = state.rows else {

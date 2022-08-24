@@ -41,7 +41,7 @@ class WalletCreatorTests: XCTestCase {
                 accountName: "Private Key Wallet",
                 totalAccounts: 1
             )
-        ).successData!
+        ).success!
         var generateWalletCalled = false
         let generateWalletMock: GenerateWalletProvider = { _ in
             generateWalletCalled = true
@@ -147,7 +147,7 @@ class WalletCreatorTests: XCTestCase {
                 accountName: "Private Key Wallet",
                 totalAccounts: 2
             )
-        ).successData!
+        ).success!
         var generateWalletCalled = false
         let generateWalletMock: GenerateWalletProvider = { _ in
             generateWalletCalled = true

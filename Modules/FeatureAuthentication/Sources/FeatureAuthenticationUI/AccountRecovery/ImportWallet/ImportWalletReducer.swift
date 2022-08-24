@@ -9,13 +9,13 @@ public enum ImportWalletAction: Equatable {
     case importWalletButtonTapped
     case goBackButtonTapped
     case setCreateAccountScreenVisible(Bool)
-    case createAccount(CreateAccountAction)
+    case createAccount(CreateAccountStepOneAction)
     case importWalletFailed(WalletRecoveryError)
 }
 
 struct ImportWalletState: Equatable {
     var mnemonic: String
-    var createAccountState: CreateAccountState?
+    var createAccountState: CreateAccountStepOneState?
     var isCreateAccountScreenVisible: Bool
 
     init(mnemonic: String) {
@@ -36,13 +36,13 @@ struct ImportWalletEnvironment {
 }
 
 let importWalletReducer = Reducer.combine(
-    createAccountReducer
+    createAccountStepOneReducer
         .optional()
         .pullback(
             state: \.createAccountState,
             action: /ImportWalletAction.createAccount,
             environment: {
-                CreateAccountEnvironment(
+                CreateAccountStepOneEnvironment(
                     mainQueue: $0.mainQueue,
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,

@@ -6,7 +6,10 @@ let package = Package(
     name: "FeatureForm",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(name: "FeatureForm", targets: ["FeatureFormDomain", "FeatureFormUI"]),
