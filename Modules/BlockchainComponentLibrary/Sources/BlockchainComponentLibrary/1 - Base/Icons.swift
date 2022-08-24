@@ -198,7 +198,6 @@ extension Icon {
     public static let `marketUp` = Icon(name: "Market Up")
     public static let `menu` = Icon(name: "Menu")
     public static let `microphone` = Icon(name: "Microphone")
-    public static let `minus` = Icon(name: "Minus")
     public static let `minusCircle` = Icon(name: "Minus Circle")
     public static let `moneyUSD` = Icon(name: "Money USD")
     public static let `moreHorizontal` = Icon(name: "More Horizontal")
@@ -245,7 +244,6 @@ extension Icon {
     public static let `trade` = Icon(name: "Trade")
     public static let `unfoldLess` = Icon(name: "Unfold Less")
     public static let `unfoldMore` = Icon(name: "Unfold More")
-    public static let `upload` = Icon(name: "Upload")
     public static let `userAdd` = Icon(name: "User Add")
     public static let `user` = Icon(name: "User")
     public static let `verified` = Icon(name: "Verified")
@@ -353,7 +351,6 @@ extension Icon {
         .marketUp,
         .menu,
         .microphone,
-//        .minus,
         .minusCircle,
         .moneyUSD,
         .moreHorizontal,
@@ -397,7 +394,6 @@ extension Icon {
         .trade,
         .unfoldLess,
         .unfoldMore,
-//        .upload,
         .user,
         .userAdd,
         .verified,
