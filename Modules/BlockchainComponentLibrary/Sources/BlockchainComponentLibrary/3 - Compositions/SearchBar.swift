@@ -85,7 +85,7 @@ public struct SearchBar: View {
                 onReturnTapped: onReturnTapped
             )
 
-            if !text.isEmpty || isFirstResponder {
+            if (!cancelButtonText.isEmpty) && (!text.isEmpty || isFirstResponder) {
                 Button(
                     action: {
                         text = ""

@@ -32,14 +32,13 @@ struct CardIssuingIntroView: View {
                     .multilineTextAlignment(.center)
                 PrimaryButton(
                     title: L10n.Intro.Button.Title.order,
-                    isLoading: viewStore.state.products.isEmpty,
+                    isLoading: false,
                     action: {
                         viewStore.send(
                             .binding(.set(\.$isAddressConfirmationVisible, true))
                         )
                     }
                 )
-                .disabled(viewStore.state.products.isEmpty)
                 PrimaryNavigationLink(
                     destination: ResidentialAddressConfirmationView(store: store),
                     isActive: viewStore.binding(\.$isAddressConfirmationVisible),

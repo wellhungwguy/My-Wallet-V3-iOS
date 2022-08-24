@@ -15,10 +15,11 @@ extension DependencyContainer {
                 cardService: DIKit.resolve(),
                 legalService: DIKit.resolve(),
                 productService: DIKit.resolve(),
-                residentialAddressService: DIKit.resolve(),
+                addressService: DIKit.resolve(),
                 transactionService: DIKit.resolve(),
                 supportRouter: DIKit.resolve(),
-                topUpRouter: DIKit.resolve()
+                topUpRouter: DIKit.resolve(),
+                addressSearchRouter: DIKit.resolve()
             ) as CardIssuingBuilderAPI
         }
     }

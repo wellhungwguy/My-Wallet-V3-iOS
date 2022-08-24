@@ -40,7 +40,8 @@ enum CardManagementAction: Equatable, BindableAction {
     case fetchTransactionsResponse(Result<[Card.Transaction], NabuNetworkError>)
     case fetchRecentTransactionsResponse(Result<[Card.Transaction], NabuNetworkError>)
     case setTransactionDetailsVisible(Bool)
-    case residentialAddressModificationAction(ResidentialAddressModificationAction)
+    case editAddress
+    case editAddressComplete(Result<Card.Address?, Never>)
     case binding(BindingAction<CardManagementState>)
 }
 
@@ -50,7 +51,6 @@ public struct CardManagementState: Equatable {
     @BindableState var isDetailScreenVisible = false
     @BindableState var isTopUpPresented = false
     @BindableState var isTransactionListPresented = false
-    @BindableState var isPersonalDetailsVisible = false
     @BindableState var isDeleteCardPresented = false
     @BindableState var isDeleting = false
 
@@ -62,10 +62,6 @@ public struct CardManagementState: Equatable {
     var displayedTransaction: Card.Transaction?
     var linkedAccount: AccountSnapshot?
     var canFetchMoreTransactions = true
-    var residentialAddressModificationState = ResidentialAddressModificationState(
-        address: nil,
-        error: nil
-    )
 
     public init(
         card: Card? = nil,
@@ -103,10 +99,10 @@ public struct CardManagementEnvironment {
     let cardService: CardServiceAPI
     let productsService: ProductsServiceAPI
     let transactionService: TransactionServiceAPI
-    let residentialAddressService: ResidentialAddressServiceAPI
     let accountModelProvider: AccountProviderAPI
     let topUpRouter: TopUpRouterAPI
     let supportRouter: SupportRouterAPI
+    let addressSearchRouter: AddressSearchRouterAPI
     let notificationCenter: NotificationCenter
     let close: () -> Void
 
@@ -116,9 +112,9 @@ public struct CardManagementEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         productsService: ProductsServiceAPI,
         transactionService: TransactionServiceAPI,
-        residentialAddressService: ResidentialAddressServiceAPI,
         supportRouter: SupportRouterAPI,
         topUpRouter: TopUpRouterAPI,
+        addressSearchRouter: AddressSearchRouterAPI,
         notificationCenter: NotificationCenter,
         close: @escaping () -> Void
     ) {
@@ -126,11 +122,11 @@ public struct CardManagementEnvironment {
         self.cardService = cardService
         self.productsService = productsService
         self.transactionService = transactionService
-        self.residentialAddressService = residentialAddressService
         self.accountModelProvider = accountModelProvider
         self.supportRouter = supportRouter
         self.topUpRouter = topUpRouter
         self.notificationCenter = notificationCenter
+        self.addressSearchRouter = addressSearchRouter
         self.close = close
     }
 }
@@ -140,18 +136,7 @@ let cardManagementReducer: Reducer<
     CardManagementState,
     CardManagementAction,
     CardManagementEnvironment
-> = Reducer.combine(
-    residentialAddressModificationReducer.pullback(
-        state: \.residentialAddressModificationState,
-        action: /CardManagementAction.residentialAddressModificationAction,
-        environment: {
-            ResidentialAddressModificationEnvironment(
-                mainQueue: $0.mainQueue,
-                residentialAddressService: $0.residentialAddressService
-            )
-        }
-    ),
-    Reducer<
+> = Reducer<
         CardManagementState,
         CardManagementAction,
         CardManagementEnvironment
@@ -335,13 +320,12 @@ let cardManagementReducer: Reducer<
         case .fetchRecentTransactionsResponse(.failure):
             state.recentTransactions = .loaded(next: [])
             return .none
-        case .residentialAddressModificationAction(let action):
-            switch action {
-            case .updateAddressResponse(.success):
-                state.isPersonalDetailsVisible = false
-            default:
-                return .none
-            }
+        case .editAddress:
+            return env.addressSearchRouter
+                .openEditAddressFlow(isPresentedWithoutSearchView: true)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.editAddressComplete)
+        case .editAddressComplete(.success(let address)):
             return .none
         case .binding(\.$isLocked):
             guard let card = state.card else { return .none }
@@ -357,9 +341,6 @@ let cardManagementReducer: Reducer<
                     .receive(on: env.mainQueue)
                     .catchToEffect(CardManagementAction.unlockCardResponse)
             }
-        case .binding(\.$isPersonalDetailsVisible):
-            state.residentialAddressModificationState = .init(address: nil, error: nil)
-            return .none
         case .setTransactionDetailsVisible(let visible):
             if !visible {
                 state.displayedTransaction = nil
@@ -368,9 +349,7 @@ let cardManagementReducer: Reducer<
         case .binding:
             return .none
         }
-    }
-    .binding()
-)
+}.binding()
 
 #if DEBUG
 extension CardManagementEnvironment {
@@ -381,9 +360,9 @@ extension CardManagementEnvironment {
             mainQueue: .main,
             productsService: MockServices(),
             transactionService: MockServices(),
-            residentialAddressService: MockServices(),
             supportRouter: MockServices(),
             topUpRouter: MockServices(),
+            addressSearchRouter: MockServices(),
             notificationCenter: NotificationCenter.default,
             close: {}
         )

@@ -71,7 +71,7 @@ extension Card {
         let date: Date
     }
 
-    public struct Address: Codable, Equatable {
+    public struct Address: Codable, Hashable {
 
         public enum Constants {
             static let usIsoCode = "US"

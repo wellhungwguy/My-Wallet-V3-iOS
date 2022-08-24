@@ -3,6 +3,8 @@
 import Combine
 import DIKit
 import Embrace
+import FeatureAddressSearchDomain
+import FeatureAddressSearchUI
 import FeatureAuthenticationDomain
 import FeatureCardIssuingUI
 import FeatureCoinData
@@ -94,6 +96,18 @@ extension DependencyContainer {
                 coincore: DIKit.resolve(),
                 transactionsRouter: DIKit.resolve()
             ) as TopUpRouterAPI
+        }
+
+        factory {
+            CardIssuingAddressSearchRouter(
+                addressSearchRouterRouter: DIKit.resolve()
+            ) as FeatureCardIssuingUI.AddressSearchRouterAPI
+        }
+
+        factory {
+            AddressService(
+                repository: DIKit.resolve()
+            ) as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
         single { () -> AssetInformationRepositoryAPI in

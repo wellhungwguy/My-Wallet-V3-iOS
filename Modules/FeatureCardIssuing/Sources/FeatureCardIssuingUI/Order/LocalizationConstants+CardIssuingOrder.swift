@@ -134,6 +134,11 @@ extension LocalizationConstants.CardIssuing.Order {
                 "Cancel",
                 comment: "Card Issuing: Cancel Button"
             )
+
+            static let edit = NSLocalizedString(
+                "Edit",
+                comment: "Card Issuing: Edit Button"
+            )
         }
 
         enum Address {
@@ -141,34 +146,38 @@ extension LocalizationConstants.CardIssuing.Order {
             enum Navigation {
 
                 static let title = NSLocalizedString(
-                    "Residential Address",
-                    comment: "Card Issuing: Residential Address Navigation Title"
+                    "Address Verification",
+                    comment: "Card Issuing: Address Verification Navigation Title"
                 )
             }
 
             static let title = NSLocalizedString(
-                "Verify Your Address",
-                comment: "Card Issuing: Verify Your Address Title"
+                "Home Address",
+                comment: "Card Issuing: Home Address Title"
             )
 
             static let description = NSLocalizedString(
                 """
-                Confirm your residential address below to avoid delays. \
-                Your will be able to specify a different shipping address later.
+                Confirm your address below. You will be able to specify a different shipping address later.
                 """,
                 comment: "Card Issuing: Verify Your Address Description"
+            )
+
+            static let commericalAddressNotAccepted = NSLocalizedString(
+                "PO Box or commerical address will not be accepted",
+                comment: "Card Issuing: Commerical address not accepted Title"
             )
 
             enum Form {
 
                 static let addressLine1 = NSLocalizedString(
-                    "Address Line 1",
+                    "Home Address",
                     comment: "Card Issuing: Form Address Line 1"
                 )
 
                 static let addressLine2 = NSLocalizedString(
-                    "Address Line 2",
-                    comment: "Card Issuing: Form Address Line 1"
+                    "Apt, Suite, Etc",
+                    comment: "Card Issuing: Form Address Line 2"
                 )
 
                 static let city = NSLocalizedString(
@@ -193,14 +202,49 @@ extension LocalizationConstants.CardIssuing.Order {
 
                 enum Placeholder {
 
-                    static let line = NSLocalizedString(
+                    static let line1 = NSLocalizedString(
                         "1234 Road Street",
                         comment: "Card Issuing: Form Placeholder"
                     )
 
-                    static let state = NSLocalizedString(
-                        "FL",
+                    static let line2 = NSLocalizedString(
+                        "Additional Information",
                         comment: "Card Issuing: Form Placeholder"
+                    )
+                }
+            }
+        }
+
+        enum SearchAddress {
+
+            enum SearchBar {
+
+                enum Placeholder {
+
+                    static let text = NSLocalizedString(
+                        "Home Address",
+                        comment: "Card Issuing: Search Address Placeholder"
+                    )
+                }
+
+                static let invalidCharactersError = NSLocalizedString(
+                    "Please make sure the search key has no special characters.",
+                    comment: "Search address search bar no special characters error"
+                )
+            }
+
+            enum AddressNotFound {
+
+                static let title = NSLocalizedString(
+                    "Address not found",
+                    comment: "Card Issuing: Search Address Address not found"
+                )
+
+                enum Buttons {
+
+                    static let inputAddressManually = NSLocalizedString(
+                        "My address is not here",
+                        comment: "Card Issuing: Input Address Manually"
                     )
                 }
             }

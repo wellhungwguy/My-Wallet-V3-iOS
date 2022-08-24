@@ -37,7 +37,8 @@ enum CardOrderingAction: Equatable, BindableAction {
     case displayEligibleCountryList
     case displayEligibleStateList
     case selectProduct(Int)
-    case residentialAddressModificationAction(ResidentialAddressModificationAction)
+    case editAddress
+    case editAddressComplete(Result<Card.Address?, Never>)
     case binding(BindingAction<CardOrderingState>)
 }
 
@@ -72,7 +73,6 @@ struct CardOrderingState: Equatable {
     @BindableState var isOrderProcessingVisible = false
     @BindableState var isSSNInputVisible = false
     @BindableState var isAddressConfirmationVisible = false
-    @BindableState var isAddressModificationVisible = false
     @BindableState var isProductSelectionVisible = false
     @BindableState var isProductDetailsVisible = false
     @BindableState var selectedProductIndex: Int = 0
@@ -80,7 +80,6 @@ struct CardOrderingState: Equatable {
 
     @BindableState var ssn: String = ""
 
-    var residentialAddressModificationState: ResidentialAddressModificationState?
     var acceptLegalState: AcceptLegalState
 
     var updatingAddress = false
@@ -110,13 +109,24 @@ struct CardOrderingState: Equatable {
     }
 }
 
+public protocol AddressSearchRouterAPI {
+    func openSearchAddressFlow(
+        prefill: Card.Address?
+    ) -> AnyPublisher<Card.Address?, Never>
+
+    func openEditAddressFlow(
+        isPresentedWithoutSearchView: Bool
+    ) -> AnyPublisher<Card.Address?, Never>
+}
+
 struct CardOrderingEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardService: CardServiceAPI
     let legalService: LegalServiceAPI
     let productsService: ProductsServiceAPI
-    let residentialAddressService: ResidentialAddressServiceAPI
+    let addressService: ResidentialAddressServiceAPI
+    let addressSearchRouter: AddressSearchRouterAPI
     let onComplete: (CardOrderingResult) -> Void
 
     init(
@@ -124,14 +134,16 @@ struct CardOrderingEnvironment {
         cardService: CardServiceAPI,
         legalService: LegalServiceAPI,
         productsService: ProductsServiceAPI,
-        residentialAddressService: ResidentialAddressServiceAPI,
+        addressService: ResidentialAddressServiceAPI,
+        addressSearchRouter: AddressSearchRouterAPI,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) {
         self.mainQueue = mainQueue
         self.cardService = cardService
         self.legalService = legalService
         self.productsService = productsService
-        self.residentialAddressService = residentialAddressService
+        self.addressService = addressService
+        self.addressSearchRouter = addressSearchRouter
         self.onComplete = onComplete
     }
 }
@@ -149,16 +161,6 @@ let cardOrderingReducer: Reducer<
             AcceptLegalEnvironment(
                 mainQueue: $0.mainQueue,
                 legalService: $0.legalService
-            )
-        }
-    ),
-    residentialAddressModificationReducer.optional().pullback(
-        state: \.residentialAddressModificationState,
-        action: /CardOrderingAction.residentialAddressModificationAction,
-        environment: {
-            ResidentialAddressModificationEnvironment(
-                mainQueue: $0.mainQueue,
-                residentialAddressService: $0.residentialAddressService
             )
         }
     ),
@@ -193,22 +195,6 @@ let cardOrderingReducer: Reducer<
         case .cardCreationResponse(.failure(let error)):
             state.orderProcessingState = .error(error)
             return .none
-        case .fetchAddress:
-            return env
-                .residentialAddressService
-                .fetchResidentialAddress()
-                .receive(on: env.mainQueue)
-                .catchToEffect(CardOrderingAction.addressResponse)
-        case .addressResponse(.success(let address)):
-            state.residentialAddressModificationState = .init(address: address, error: nil)
-            state.isAddressModificationVisible = false
-            state.updatingAddress = false
-            state.address = address
-            return .none
-        case .addressResponse(.failure(let error)):
-            state.residentialAddressModificationState = .init(address: nil, error: error)
-            state.error = error
-            return .none
         case .fetchProducts:
             return env
                 .productsService
@@ -235,15 +221,27 @@ let cardOrderingReducer: Reducer<
             state.selectedProductIndex = index
             state.selectedProduct = state.products[safe: index]
             return .none
-        case .residentialAddressModificationAction(let modificationAction):
-            switch modificationAction {
-            case .updateAddressResponse(.success(let address)):
-                state.address = address
-                state.isAddressModificationVisible = false
-                return .none
-            default:
-                return .none
-            }
+        case .fetchAddress:
+            return env
+                .addressService
+                .fetchResidentialAddress()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.addressResponse)
+        case .addressResponse(.success(let address)):
+            state.updatingAddress = false
+            state.address = address
+            return .none
+        case .addressResponse(.failure(let error)):
+            state.error = error
+            return .none
+        case .editAddress:
+            return env.addressSearchRouter
+                .openSearchAddressFlow(prefill: state.address)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.editAddressComplete)
+        case .editAddressComplete(.success(let address)):
+            state.address = address
+            return .none
         case .binding:
             return .none
         case .fetchLegalItems:
@@ -292,7 +290,8 @@ extension CardOrderingEnvironment {
             cardService: MockServices(),
             legalService: MockServices(),
             productsService: MockServices(),
-            residentialAddressService: MockServices(),
+            addressService: MockServices(),
+            addressSearchRouter: MockServices(),
             onComplete: { _ in }
         )
     }
@@ -305,6 +304,8 @@ struct MockServices: CardServiceAPI,
     SupportRouterAPI,
     ResidentialAddressServiceAPI
 {
+
+    static let addressId = "GB|RM|B|27354762"
 
     static let address = Card.Address(
         line1: "614 Lorimer Street",
@@ -464,6 +465,20 @@ extension MockServices: LegalServiceAPI {
 
     func setAccepted(legalItems: [LegalItem]) -> AnyPublisher<[LegalItem], NabuNetworkError> {
         .just([])
+    }
+}
+
+extension MockServices: AddressSearchRouterAPI {
+    func openSearchAddressFlow(
+        prefill: Card.Address?
+    ) -> AnyPublisher<Card.Address?, Never> {
+        .just(prefill)
+    }
+
+    func openEditAddressFlow(
+        isPresentedWithoutSearchView: Bool
+    ) -> AnyPublisher<Card.Address?, Never> {
+        .just(MockServices.address)
     }
 }
 #endif

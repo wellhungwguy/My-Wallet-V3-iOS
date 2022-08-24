@@ -33,29 +33,32 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     private let cardService: CardServiceAPI
     private let legalService: LegalServiceAPI
     private let productService: ProductsServiceAPI
-    private let residentialAddressService: ResidentialAddressServiceAPI
+    private let addressService: ResidentialAddressServiceAPI
     private let transactionService: TransactionServiceAPI
     private let supportRouter: SupportRouterAPI
     private let topUpRouter: TopUpRouterAPI
+    private let addressSearchRouter: AddressSearchRouterAPI
 
     init(
         accountModelProvider: AccountProviderAPI,
         cardService: CardServiceAPI,
         legalService: LegalServiceAPI,
         productService: ProductsServiceAPI,
-        residentialAddressService: ResidentialAddressServiceAPI,
+        addressService: ResidentialAddressServiceAPI,
         transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
-        topUpRouter: TopUpRouterAPI
+        topUpRouter: TopUpRouterAPI,
+        addressSearchRouter: AddressSearchRouterAPI
     ) {
         self.accountModelProvider = accountModelProvider
         self.cardService = cardService
         self.legalService = legalService
         self.productService = productService
-        self.residentialAddressService = residentialAddressService
+        self.addressService = addressService
         self.transactionService = transactionService
         self.supportRouter = supportRouter
         self.topUpRouter = topUpRouter
+        self.addressSearchRouter = addressSearchRouter
     }
 
     func makeIntroViewController(
@@ -81,7 +84,8 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             cardService: cardService,
             legalService: legalService,
             productsService: productService,
-            residentialAddressService: residentialAddressService,
+            addressService: addressService,
+            addressSearchRouter: addressSearchRouter,
             onComplete: onComplete
         )
 
@@ -115,9 +119,9 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             mainQueue: .main,
             productsService: productService,
             transactionService: transactionService,
-            residentialAddressService: residentialAddressService,
             supportRouter: supportRouter,
             topUpRouter: topUpRouter,
+            addressSearchRouter: addressSearchRouter,
             notificationCenter: NotificationCenter.default,
             close: onComplete
         )

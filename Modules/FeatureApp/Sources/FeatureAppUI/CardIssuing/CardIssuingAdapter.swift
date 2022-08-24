@@ -5,6 +5,8 @@ import ComposableArchitecture
 import DIKit
 import Errors
 import FeatureAccountPickerUI
+import FeatureAddressSearchDomain
+import FeatureAddressSearchUI
 import FeatureCardIssuingDomain
 import FeatureCardIssuingUI
 import FeatureSettingsUI
@@ -144,6 +146,73 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
             .presentTransactionFlow(to: .swap(nil))
             .subscribe()
             .store(in: &cancellables)
+    }
+}
+
+final class CardIssuingAddressSearchRouter: FeatureCardIssuingUI.AddressSearchRouterAPI {
+
+    private let addressSearchRouterRouter: FeatureAddressSearchDomain.AddressSearchRouterAPI
+
+    init(
+        addressSearchRouterRouter: FeatureAddressSearchDomain.AddressSearchRouterAPI
+    ) {
+        self.addressSearchRouterRouter = addressSearchRouterRouter
+    }
+
+    func openSearchAddressFlow(
+        prefill: Card.Address?
+    ) -> AnyPublisher<Card.Address?, Never> {
+        typealias Localization = LocalizationConstants.CardIssuing.AddressSearch
+        return addressSearchRouterRouter.presentSearchAddressFlow(
+            prefill: prefill.map(Address.init(cardAddress:)),
+            config: .init(
+                addressSearchScreen: .init(title: Localization.AddressSearchScreen.title),
+                addressEditScreen: .init(
+                    title: Localization.AddressEditSearchScreen.title,
+                    subtitle: Localization.AddressEditSearchScreen.subtitle
+                )
+            )
+        )
+        .map { $0.map { Card.Address(address: $0) } }
+        .eraseToAnyPublisher()
+    }
+
+    func openEditAddressFlow(
+        isPresentedWithoutSearchView: Bool
+    ) -> AnyPublisher<Card.Address?, Never> {
+        typealias Localization = LocalizationConstants.CardIssuing.AddressSearch.AddressEditSearchScreen
+        return addressSearchRouterRouter.presentEditAddressFlow(
+            isPresentedWithoutSearchView: isPresentedWithoutSearchView,
+            config: .init(
+                title: Localization.title,
+                subtitle: nil
+            )
+        )
+        .map { $0.map { Card.Address(address: $0) } }
+        .eraseToAnyPublisher()
+    }
+}
+
+final class AddressService: AddressServiceAPI {
+
+    private let repository: ResidentialAddressRepositoryAPI
+
+    init(repository: ResidentialAddressRepositoryAPI) {
+        self.repository = repository
+    }
+
+    func fetchAddress() -> AnyPublisher<Address, AddressServiceError> {
+        repository.fetchResidentialAddress()
+            .map(Address.init(cardAddress:))
+            .mapError(AddressServiceError.network)
+            .eraseToAnyPublisher()
+    }
+
+    func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
+        repository.update(residentialAddress: Card.Address(address: address))
+            .map(Address.init(cardAddress:))
+            .mapError(AddressServiceError.network)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -288,6 +357,32 @@ extension FeatureCardIssuingDomain.Card.Address {
             postCode: address.postalCode,
             state: address.state,
             country: address.country.code
+        )
+    }
+}
+
+extension Card.Address {
+    public init(address: Address) {
+        self.init(
+            line1: address.line1,
+            line2: address.line2,
+            city: address.city,
+            postCode: address.postCode,
+            state: address.state,
+            country: address.country
+        )
+    }
+}
+
+extension Address {
+    public init(cardAddress: Card.Address) {
+        self.init(
+            line1: cardAddress.line1,
+            line2: cardAddress.line2,
+            city: cardAddress.city,
+            postCode: cardAddress.postCode,
+            state: cardAddress.state,
+            country: cardAddress.country
         )
     }
 }

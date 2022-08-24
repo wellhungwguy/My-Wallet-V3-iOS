@@ -210,6 +210,8 @@ packages:
     path: Modules/FeatureAccountPicker
   FeatureActivity:
     path: Modules/FeatureActivity
+  FeatureAddressSearch:
+    path: Modules/FeatureAddressSearch
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
   FeatureCardPayment:
@@ -360,6 +362,7 @@ targets:
         product: FeatureAttribution
       - package: FeatureAccountPicker
       - package: FeatureActivity
+      - package: FeatureAddressSearch
       - package: FeatureApp
       - package: FeatureAuthentication
       - package: FeatureCardPayment

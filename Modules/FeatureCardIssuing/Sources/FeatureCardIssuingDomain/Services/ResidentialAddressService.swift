@@ -11,7 +11,10 @@ final class ResidentialAddressService: ResidentialAddressServiceAPI {
     init(repository: ResidentialAddressRepositoryAPI) {
         self.repository = repository
     }
+}
 
+// MARK: - ResidentialAddressServiceAPI
+extension ResidentialAddressService {
     func fetchResidentialAddress() -> AnyPublisher<Card.Address, NabuNetworkError> {
         repository.fetchResidentialAddress()
     }

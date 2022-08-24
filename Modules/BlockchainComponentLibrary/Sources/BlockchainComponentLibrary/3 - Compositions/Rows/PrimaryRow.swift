@@ -33,9 +33,22 @@ import SwiftUI
 ///  [Table Rows](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A11163)
 public struct PrimaryRow<Leading: View, Trailing: View>: View {
 
-    private let title: String
+    public struct TextValue {
+        public let text: String
+        public let highlightRanges: [Range<String.Index>]
+
+        public init(
+            text: String,
+            highlightRanges: [Range<String.Index>] = []
+        ) {
+            self.text = text
+            self.highlightRanges = highlightRanges
+        }
+    }
+
+    private let title: TextValue
     private let caption: String?
-    private let subtitle: String?
+    private let subtitle: TextValue?
     private let description: String?
     private let tags: [TagView]
     private let leading: Leading
@@ -61,6 +74,29 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         title: String,
         caption: String? = nil,
         subtitle: String? = nil,
+        description: String? = nil,
+        tags: [TagView] = [],
+        highlight: Bool = true,
+        @ViewBuilder leading: () -> Leading,
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
+    ) {
+        self.title = .init(text: title)
+        self.caption = caption
+        self.subtitle = subtitle.map { .init(text: $0) }
+        self.description = description
+        self.tags = tags
+        self.highlight = highlight
+        isSelectable = action != nil
+        self.leading = leading()
+        self.trailing = trailing()
+        self.action = action
+    }
+
+    public init(
+        title: TextValue,
+        caption: String? = nil,
+        subtitle: TextValue? = nil,
         description: String? = nil,
         tags: [TagView] = [],
         highlight: Bool = true,
@@ -120,19 +156,31 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
                         .foregroundColor(.semantic.body)
                 }
 
-                Text(title)
-                    .typography(.body2)
-                    .foregroundColor(.semantic.title)
+                textView(
+                    text: title,
+                    textTypography: .body2,
+                    textColor: .semantic.title,
+                    textColorWhenHighlightighed: .semantic.title,
+                    textColorWhenNotHighlightighed: Color(
+                        light: .palette.grey600,
+                        dark: .palette.dark200
+                    )
+                )
 
                 if let subtitle = subtitle {
-                    Text(subtitle)
-                        .typography(.paragraph1)
-                        .foregroundColor(
-                            Color(
-                                light: .palette.grey600,
-                                dark: .palette.dark200
-                            )
+                    textView(
+                        text: subtitle,
+                        textTypography: .paragraph1,
+                        textColor: Color(
+                            light: .palette.grey600,
+                            dark: .palette.dark200
+                        ),
+                        textColorWhenHighlightighed: .semantic.title,
+                        textColorWhenNotHighlightighed: Color(
+                            light: .palette.grey600,
+                            dark: .palette.dark200
                         )
+                    )
                 }
             }
             .alignmentGuide(.customRowVerticalAlignment) {
@@ -157,6 +205,41 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
                 }
                 .padding(.top, 10)
             }
+        }
+    }
+
+    private func textView(
+        text: TextValue,
+        textTypography: Typography,
+        textColor: Color,
+        textColorWhenHighlightighed: Color,
+        textColorWhenNotHighlightighed: Color
+    ) -> some View {
+        if #available(iOS 15.0, *) {
+            return Text(text.text) { string in
+                string.font = textTypography.font
+                guard !text.highlightRanges.isEmpty else {
+                    return string.foregroundColor = textColor
+                }
+
+                string.foregroundColor = textColorWhenNotHighlightighed
+                var atLeastOneRangeIsHighlighted = false
+                text.highlightRanges.forEach { range in
+                    if let lowerBound = AttributedString.Index.init(range.lowerBound, within: string),
+                       let upperBound = AttributedString.Index.init(range.upperBound, within: string) {
+                        let rangeString = Range<AttributedString.Index>.init(uncheckedBounds: (lower: lowerBound, upper: upperBound))
+                        string[rangeString].foregroundColor = textColorWhenHighlightighed
+                        atLeastOneRangeIsHighlighted = true
+                    }
+                }
+                if !atLeastOneRangeIsHighlighted {
+                    string.foregroundColor = textColor
+                }
+            }
+        } else {
+            return Text(text.text)
+                .typography(textTypography)
+                .foregroundColor(textColor)
         }
     }
 }
@@ -185,6 +268,34 @@ extension PrimaryRow where Leading == EmptyView {
         title: String,
         caption: String? = nil,
         subtitle: String? = nil,
+        description: String? = nil,
+        tags: [TagView] = [],
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
+    ) {
+        self.init(
+            title: title,
+            caption: caption,
+            subtitle: subtitle,
+            description: description,
+            tags: tags,
+            leading: { EmptyView() },
+            trailing: trailing,
+            action: action
+        )
+    }
+
+    /// Initialize a PrimaryRow with no leading view, and default trailing chevron
+    /// - Parameters:
+    ///   - title: Leading title text
+    ///   - subtitle: Optional leading subtitle text
+    ///   - description: Optional leading description
+    ///   - tags: Optional TagViews displayed at the bottom of the row.
+    ///   - isSelected: Binding for the selection state
+    public init(
+        title: TextValue,
+        caption: String? = nil,
+        subtitle: TextValue? = nil,
         description: String? = nil,
         tags: [TagView] = [],
         @ViewBuilder trailing: () -> Trailing,
@@ -441,5 +552,15 @@ struct PrimaryRow_Previews: PreviewProvider {
                 isOn: $isOn
             )
         }
+    }
+}
+
+/// extension to make applying AttributedString even easier
+extension Text {
+    @available(iOS 15, *)
+    fileprivate init(_ string: String, configure: ((inout AttributedString) -> Void)) {
+        var attributedString = AttributedString(string)
+        configure(&attributedString)
+        self.init(attributedString)
     }
 }
