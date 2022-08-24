@@ -49,7 +49,7 @@ public protocol UserActionServiceAPI {
     ) -> AnyPublisher<UserActionServiceResult, Never>
 }
 
-internal final class TransactionsRouter: TransactionsRouterAPI {
+final class TransactionsRouter: TransactionsRouterAPI {
 
     private let app: AppProtocol
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -154,16 +154,20 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
             )
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] ineligibility -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else { return .empty() }
+                guard let self = self else {
+                    return .empty()
+                }
                 guard let ineligibility = ineligibility else {
+                    // There is no 'ineligibility' reason, continue.
                     return self.continuePresentingTransactionFlow(
                         to: action,
                         from: presenter,
-                        showKycQuestions: true
+                        showKycQuestions: action.isCustodial
                     )
                 }
 
-                // show kyc or bloqued
+                // There is a 'ineligibility' reason.
+                // Show KYC flow or 'blocked' flow.
                 switch ineligibility.type {
                 case .insufficientTier:
                     let tier: KYC.Tier = ineligibility.reason == .tier2Required ? .tier2 : .tier1
