@@ -114,15 +114,16 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             } else {
                 amount = .zero(currency: cryptoCurrency)
             }
+            let feeCryptoCurrency = cryptoCurrency.feeCryptoCurrency
             return PendingTransaction(
                 amount: amount,
                 available: availableBalance,
-                feeAmount: .zero(currency: .ethereum),
-                feeForFullAvailable: .zero(currency: .ethereum),
+                feeAmount: .zero(currency: feeCryptoCurrency),
+                feeForFullAvailable: .zero(currency: feeCryptoCurrency),
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(.ethereum)
+                    asset: .crypto(feeCryptoCurrency)
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -409,13 +410,26 @@ extension ERC20OnChainTransactionEngine {
 
     /// Streams `MoneyValuePair` for the exchange rate of Ethereum in the current fiat currency.
     private var ethereumExchangeRatePair: Single<MoneyValuePair> {
-        walletCurrencyService
+        let feeCryptoCurrency = cryptoCurrency.feeCryptoCurrency.currencyType
+        return walletCurrencyService
             .displayCurrency
             .flatMap { [currencyConversionService] fiatCurrency in
                 currencyConversionService
-                    .conversionRate(from: .crypto(.ethereum), to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: .crypto(.ethereum)), quote: $0) }
+                    .conversionRate(from: feeCryptoCurrency, to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: feeCryptoCurrency), quote: $0) }
+                    .eraseToAnyPublisher()
             }
             .asSingle()
+    }
+}
+
+extension CryptoCurrency {
+    var feeCryptoCurrency: CryptoCurrency {
+        switch assetModel.kind {
+        case .erc20(contractAddress: _, parentChain: let chain):
+            return chain.evmNetwork.cryptoCurrency
+        default:
+            return self
+        }
     }
 }
