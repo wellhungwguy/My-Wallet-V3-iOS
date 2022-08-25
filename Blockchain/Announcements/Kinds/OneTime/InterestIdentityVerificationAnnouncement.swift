@@ -59,6 +59,10 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement, Actio
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed
     }

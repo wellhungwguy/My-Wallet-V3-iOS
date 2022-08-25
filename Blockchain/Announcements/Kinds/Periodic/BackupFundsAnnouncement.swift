@@ -57,6 +57,10 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
         return !isDismissed
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     let type = AnnouncementType.backupFunds
     let analyticsRecorder: AnalyticsEventRecorderAPI
 

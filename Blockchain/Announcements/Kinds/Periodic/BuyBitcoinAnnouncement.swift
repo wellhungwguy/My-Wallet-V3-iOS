@@ -53,6 +53,10 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement, ActionableAnnouncement
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         guard isEnabled else {
             return false

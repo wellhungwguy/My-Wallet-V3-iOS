@@ -53,6 +53,10 @@ final class SimpleBuyFinishSignupAnnouncement: PeriodicAnnouncement, ActionableA
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         hasIncompleteBuyFlow && canCompleteTier2
     }

@@ -53,6 +53,10 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement, ActionableAnnouncement 
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         guard shouldEnable2FA else {
             return false

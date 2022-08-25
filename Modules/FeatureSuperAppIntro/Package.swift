@@ -26,7 +26,6 @@ let package = Package(
         .package(path: "../Tool"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../BlockchainComponentLibrary"),
-        .package(path: "../BlockchainNamespace")
     ],
     targets: [
         .target(

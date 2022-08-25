@@ -34,7 +34,7 @@ final class RootViewController: UIHostingController<RootView> {
         let backupFundsRouter = BackupFundsRouter(entry: .defiIntroScreen, navigationRouter: resolve())
         let environment = RootViewEnvironment(
             app: app,
-            backupFundsRouter:  backupFundsRouter,
+            backupFundsRouter: backupFundsRouter,
             coincore: resolve(),
             recoveryPhraseStatusProviding: resolve()
         )

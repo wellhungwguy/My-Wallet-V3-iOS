@@ -119,6 +119,13 @@ final class AnnouncementPresenter {
         self.coincore = coincore
         self.nabuUserService = nabuUserService
 
+        app.modePublisher()
+            .asObservable()
+            .bind { [weak self] _ in
+                self?.calculate()
+            }
+            .disposed(by: disposeBag)
+
         announcement
             .asObservable()
             .filter(\.isHide)
@@ -143,8 +150,9 @@ final class AnnouncementPresenter {
     private func calculate() {
         let announcementsMetadata = featureFetcher
             .fetch(for: .announcements, as: AnnouncementsMetadata.self)
+        let delaySeconds = app.currentMode == .defi ? 0 : 10
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
-            .delaySubscription(.seconds(10), scheduler: MainScheduler.asyncInstance)
+            .delaySubscription(.seconds(delaySeconds), scheduler: MainScheduler.asyncInstance)
         Single
             .zip(announcementsMetadata, data)
             .flatMap(weak: self) { (self, payload) -> Single<AnnouncementDisplayAction> in
@@ -163,8 +171,10 @@ final class AnnouncementPresenter {
         metadata: AnnouncementsMetadata,
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
+
         // For other users, keep the current logic in place
         for type in metadata.order {
+
             // Wallets with no balance should show no announcements
             guard preliminaryData.hasAnyWalletBalance || type.showsWhenWalletHasNoBalance else {
                 return .none
@@ -250,6 +260,11 @@ final class AnnouncementPresenter {
                 )
             }
 
+            // For users that are not in the mode needed for the announcement we don't show it
+            if announcement.associatedAppModes.doesNotContain(app.currentMode) {
+                return .hide
+            }
+
             // Return the first different announcement that should show
             if announcement.shouldShow {
                 if currentAnnouncement?.type != announcement.type {
@@ -290,7 +305,7 @@ extension AnnouncementType {
     var showsWhenWalletHasNoBalance: Bool {
         switch self {
         case .claimFreeCryptoDomain,
-             .ukEntitySwitch:
+                .ukEntitySwitch:
             return true
         default:
             return false
@@ -420,7 +435,7 @@ extension AnnouncementPresenter {
 
     private func walletConnect() -> Announcement {
         let absolutURL = "https://medium.com/blockchain/" +
-            "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
+        "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
         return WalletConnectAnnouncement(
             dismiss: announcementDismissAction,
             action: actionForOpening(absolutURL)
@@ -685,7 +700,7 @@ extension AnnouncementPresenter {
     private func resubmitDocuments(user: NabuUser) -> Announcement {
         ResubmitDocumentsAnnouncement(
             needsDocumentResubmission: user.needsDocumentResubmission != nil
-                && user.needsDocumentResubmission?.reason != 1,
+            && user.needsDocumentResubmission?.reason != 1,
             dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let self = self else { return }

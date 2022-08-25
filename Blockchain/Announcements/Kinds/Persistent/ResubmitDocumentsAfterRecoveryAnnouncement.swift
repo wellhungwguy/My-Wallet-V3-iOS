@@ -50,6 +50,10 @@ final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, 
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         needsDocumentResubmission
     }

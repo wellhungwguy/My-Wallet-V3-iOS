@@ -95,6 +95,10 @@ final class NewSwapAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed
     }
