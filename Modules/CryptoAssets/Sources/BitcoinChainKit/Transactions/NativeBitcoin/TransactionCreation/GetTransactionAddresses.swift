@@ -39,7 +39,7 @@ func getTransactionAddresses(
         guard let address = defaultAddress else {
             return 0
         }
-        return UInt32(address.accountIndex)
+        return UInt32(address.changeIndex)
     }()
 
     let changeAddress = deriveChangeAddress(
