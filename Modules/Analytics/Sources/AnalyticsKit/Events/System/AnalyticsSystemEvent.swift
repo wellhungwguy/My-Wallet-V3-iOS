@@ -1,22 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable line_length
 
-#if canImport(UIKit)
-
 import Combine
 import Foundation
-import UIKit
-
-enum SystemEvent: AnalyticsEvent {
-
-    case applicationBackgrounded
-    case applicationCrashed
-    case applicationInstalled(ApplicationSystemEventParamaters)
-    case applicationOpened(ApplicationOpenedSystemEventParamaters)
-    case applicationUpdated(ApplicationUpdatedSystemEventParamaters)
-    case pushNotificationReceived(ApplicationPushNotificationParamaters)
-    case pushNotificationTapped(ApplicationPushNotificationParamaters)
-}
 
 public enum ClientEvent: AnalyticsEvent {
 
@@ -35,6 +21,21 @@ public enum ClientEvent: AnalyticsEvent {
         action: String? = nil,
         category: [String] = []
     )
+}
+
+#if canImport(UIKit)
+
+import UIKit
+
+enum SystemEvent: AnalyticsEvent {
+
+    case applicationBackgrounded
+    case applicationCrashed
+    case applicationInstalled(ApplicationSystemEventParamaters)
+    case applicationOpened(ApplicationOpenedSystemEventParamaters)
+    case applicationUpdated(ApplicationUpdatedSystemEventParamaters)
+    case pushNotificationReceived(ApplicationPushNotificationParamaters)
+    case pushNotificationTapped(ApplicationPushNotificationParamaters)
 }
 
 extension SystemEvent {

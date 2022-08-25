@@ -26,6 +26,7 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
+        .package(name: "AnyCoding", path: "../AnyCoding"),
         .package(name: "Analytics", path: "../Analytics"),
         .package(name: "Test", path: "../Test"),
         .package(name: "Tool", path: "../Tool"),
@@ -35,6 +36,7 @@ let package = Package(
         .target(
             name: "NetworkKit",
             dependencies: [
+                .product(name: "AnyCoding", package: "AnyCoding"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit"),

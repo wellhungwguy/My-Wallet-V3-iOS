@@ -9,6 +9,7 @@ public protocol AnyDecoderProtocol: AnyObject, Decoder {
 
     var value: Any { get set }
     var codingPath: [CodingKey] { get set }
+    var userInfo: [CodingUserInfoKey: Any] { get set }
 
     init(codingPath: [CodingKey], userInfo: [CodingUserInfoKey: Any])
 
