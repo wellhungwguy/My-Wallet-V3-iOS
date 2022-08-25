@@ -225,8 +225,9 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
                 string.foregroundColor = textColorWhenNotHighlightighed
                 var atLeastOneRangeIsHighlighted = false
                 text.highlightRanges.forEach { range in
-                    if let lowerBound = AttributedString.Index.init(range.lowerBound, within: string),
-                       let upperBound = AttributedString.Index.init(range.upperBound, within: string) {
+                    if let lowerBound = AttributedString.Index(range.lowerBound, within: string),
+                       let upperBound = AttributedString.Index(range.upperBound, within: string)
+                    {
                         let rangeString = Range<AttributedString.Index>.init(uncheckedBounds: (lower: lowerBound, upper: upperBound))
                         string[rangeString].foregroundColor = textColorWhenHighlightighed
                         atLeastOneRangeIsHighlighted = true
@@ -558,7 +559,7 @@ struct PrimaryRow_Previews: PreviewProvider {
 /// extension to make applying AttributedString even easier
 extension Text {
     @available(iOS 15, *)
-    fileprivate init(_ string: String, configure: ((inout AttributedString) -> Void)) {
+    fileprivate init(_ string: String, configure: (inout AttributedString) -> Void) {
         var attributedString = AttributedString(string)
         configure(&attributedString)
         self.init(attributedString)

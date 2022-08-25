@@ -101,7 +101,7 @@ extension Session {
         func start(app: AppProtocol) {
 
             self.app = app
-            self.experiments = Experiments(app: app, session: session)
+            experiments = Experiments(app: app, session: session)
 
             app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
                 .replaceError(with: false)

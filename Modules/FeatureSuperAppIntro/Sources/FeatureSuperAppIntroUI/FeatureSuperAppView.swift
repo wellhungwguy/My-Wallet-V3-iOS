@@ -1,5 +1,7 @@
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
+import Localization
 import SwiftUI
 
 public struct FeatureSuperAppIntroView: View {
@@ -59,25 +61,25 @@ extension FeatureSuperAppIntroView {
                     image: {
                         Image("icon_blockchain_blue", bundle: .featureSuperAppIntro)
                     },
-                    title: "Your Wallet just got better",
-                    text: " We’ve made some major improvements to the Blockchain.com app."
+                    title: LocalizationConstants.SuperAppIntro.CarouselPage1.title,
+                    text: LocalizationConstants.SuperAppIntro.CarouselPage1.subtitle
                 )
             case .newWayToNavigate:
                 carouselView(
                     image: {
                         Image("image_superapp_intro_slide2", bundle: .featureSuperAppIntro)
                     },
-                    title: "A new way to navigate",
-                    text: " Easily move between Trading Account and DeFi Wallet."
+                    title: LocalizationConstants.SuperAppIntro.CarouselPage2.title,
+                    text: LocalizationConstants.SuperAppIntro.CarouselPage2.subtitle
                 )
             case .newHomeForDefi:
                 carouselView(
                     image: {
                         Image("image_superapp_intro_slide3", bundle: .featureSuperAppIntro)
                     },
-                    title: "Your new home for DeFi",
-                    text: "Access your Private Key Wallets and engage with web3 and decentralized finance.",
-                    badge: "Held by you",
+                    title: LocalizationConstants.SuperAppIntro.CarouselPage3.title,
+                    text: LocalizationConstants.SuperAppIntro.CarouselPage3.subtitle,
+                    badge: LocalizationConstants.SuperAppIntro.CarouselPage3.badge,
                     badgeTint: .semantic.defi
                 )
             case .tradingAccount:
@@ -85,9 +87,9 @@ extension FeatureSuperAppIntroView {
                     image: {
                         Image("image_superapp_intro_slide4", bundle: .featureSuperAppIntro)
                     },
-                    title: "Your trading account",
-                    text: "Access your Trading and Rewards accounts and buy and sell crypto.",
-                    badge: "Held by Blockchain.com",
+                    title: LocalizationConstants.SuperAppIntro.CarouselPage4.title,
+                    text: LocalizationConstants.SuperAppIntro.CarouselPage4.subtitle,
+                    badge: LocalizationConstants.SuperAppIntro.CarouselPage4.badge,
                     badgeTint: .semantic.primary
                 )
             }
@@ -160,7 +162,7 @@ extension FeatureSuperAppIntroView {
         if viewStore.currentStep == .tradingAccount {
             VStack(spacing: .zero) {
                 Spacer()
-                PrimaryButton(title: "Get Started", action: {
+                PrimaryButton(title: LocalizationConstants.SuperAppIntro.getStartedButton, action: {
                     presentationMode.wrappedValue.dismiss()
                 })
             }
@@ -180,5 +182,18 @@ struct FeatureSuperAppIntroView_Previews: PreviewProvider {
             environment: ()
         )
         )
+    }
+}
+
+extension AppMode {
+    public var displayName: String {
+        switch self {
+        case .defi:
+            return LocalizationConstants.AppMode.privateKeyWallet
+        case .trading:
+            return LocalizationConstants.AppMode.tradingAccount
+        case .both:
+            return ""
+        }
     }
 }

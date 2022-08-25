@@ -54,8 +54,8 @@ struct AddressSearchState: Equatable, NavigationState {
     ) {
         self.address = address
         self.error = error
-        self.route = nil
-        self.searchText = address?.searchText ?? ""
+        route = nil
+        searchText = address?.searchText ?? ""
     }
 }
 
@@ -109,7 +109,7 @@ let addressSearchReducer = Reducer.combine(
                 )
             )
 
-        case let .selectAddress(searchAddressResult):
+        case .selectAddress(let searchAddressResult):
             if searchAddressResult.isAddressType {
                 return Effect(value: .modifySelectedAddress(addressId: searchAddressResult.addressId))
             } else {
@@ -123,7 +123,7 @@ let addressSearchReducer = Reducer.combine(
                 )
             }
 
-        case let .modifySelectedAddress(addressId):
+        case .modifySelectedAddress(let addressId):
             return Effect(
                 value: .navigate(to: .modifyAddress(selectedAddressId: addressId, address: nil))
             )
@@ -153,7 +153,7 @@ let addressSearchReducer = Reducer.combine(
         case .route(let route):
             if let routeValue = route?.route {
                 switch routeValue {
-                case let .modifyAddress(selectedAddressId, address):
+                case .modifyAddress(let selectedAddressId, let address):
                     state.addressModificationState = .init(
                         addressDetailsId: selectedAddressId,
                         address: address
@@ -173,7 +173,7 @@ let addressSearchReducer = Reducer.combine(
         case .binding:
             return .none
 
-        case let .updateSelectedAddress(address):
+        case .updateSelectedAddress(let address):
             state.address = address
             return Effect(value: .cancelSearch)
 
@@ -181,9 +181,10 @@ let addressSearchReducer = Reducer.combine(
             env.onComplete(state.address)
             return .none
 
-        case let .searchAddresses(searchText, containerId, country):
+        case .searchAddresses(let searchText, let containerId, let country):
             guard let searchText = searchText, searchText.isNotEmpty,
-                  let country = country, country.isNotEmpty else {
+                  let country = country, country.isNotEmpty
+            else {
                 state.searchResults = []
                 return .none
             }
@@ -212,9 +213,9 @@ let addressSearchReducer = Reducer.combine(
             }
             return .none
 
-        case let .addressModificationAction(modificationAction):
+        case .addressModificationAction(let modificationAction):
             switch modificationAction {
-            case let .updateAddressResponse(.success(address)):
+            case .updateAddressResponse(.success(let address)):
                 state.address = address
                 state.isAddressModificationVisible = false
                 return .merge(
@@ -254,7 +255,7 @@ extension Address {
 extension AddressSearchServiceError {
     var nabuError: Nabu.Error {
         switch self {
-        case let .network(error):
+        case .network(let error):
             return error
         }
     }
@@ -305,6 +306,7 @@ extension MockServices: AddressServiceAPI {
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         .just(Self.address)
     }
+
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
         .just(Self.address)
     }

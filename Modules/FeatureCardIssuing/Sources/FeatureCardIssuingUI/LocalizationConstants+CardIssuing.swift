@@ -148,10 +148,10 @@ extension LocalizationConstants.CardIssuing {
             )
 
             public static let subtitle = NSLocalizedString(
-                    """
+                """
                     Confirm your address below. You will be able to specify a different shipping address later.
-                    """
-                    ,
+                    """,
+
                     comment: "Card Issuing Address: Edit address screen"
             )
         }

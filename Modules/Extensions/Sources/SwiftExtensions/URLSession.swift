@@ -1,5 +1,5 @@
-import Foundation
 import Combine
+import Foundation
 
 public protocol URLSessionDataTaskProtocol {
     func resume()
@@ -69,8 +69,8 @@ public class ImmediateURLSession: URLSessionProtocol {
         with request: URLRequest,
         completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void
     ) -> URLSessionDataTaskProtocol {
-        let data = self.data
-        let error = self.error
+        let data = data
+        let error = error
         return ImmediateURLSessionDataTask {
             completionHandler(data, nil, error)
         }
@@ -91,7 +91,7 @@ extension URLRequest {
 
     public init(_ method: String, _ url: URL) {
         self.init(url: url)
-        self.httpMethod = method
+        httpMethod = method
     }
 
     public var key: MockURLProtocol.Key {
@@ -122,10 +122,10 @@ public class MockURLProtocol: URLProtocol {
         map[request.key] = body
     }
 
-    public override class func canInit(with request: URLRequest) -> Bool { true }
-    public override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override public class func canInit(with request: URLRequest) -> Bool { true }
+    override public class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
-    public override func startLoading() {
+    override public func startLoading() {
         do {
             let (response, data) = try Self.map[request.key].or(
                 throw: Error(message: "No value for request")
@@ -140,7 +140,7 @@ public class MockURLProtocol: URLProtocol {
         }
     }
 
-    public override func stopLoading() { }
+    override public func stopLoading() {}
 }
 
 #endif

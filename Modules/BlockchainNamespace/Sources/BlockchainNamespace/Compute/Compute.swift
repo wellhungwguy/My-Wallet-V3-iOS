@@ -1,4 +1,4 @@
-public enum Compute { }
+public enum Compute {}
 
 extension Compute {
 

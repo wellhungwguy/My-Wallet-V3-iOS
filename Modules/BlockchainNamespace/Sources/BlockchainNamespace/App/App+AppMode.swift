@@ -7,17 +7,6 @@ public enum AppMode: String, Decodable, Equatable {
     case defi
     case trading
     case both
-
-    public var displayName: String {
-        switch self {
-        case .defi:
-            return "Private Key Wallet"
-        case .trading:
-            return "Trading Account"
-        case .both:
-            return "N/A"
-        }
-    }
 }
 
 extension AppProtocol {

@@ -2,6 +2,7 @@ import BlockchainComponentLibrary
 import BlockchainNamespace
 import ComposableArchitecture
 import DIKit
+import Localization
 import SwiftUI
 
 public struct AppModeSwitcherView: View {
@@ -39,7 +40,7 @@ public struct AppModeSwitcherView: View {
     private var headerView: some View {
         HStack {
             VStack(alignment: .leading, spacing: Spacing.padding1, content: {
-                Text("Your total balance")
+                Text(LocalizationConstants.AppModeSwitcher.totalBalanceLabel)
                     .typography(.caption2)
                     .foregroundColor(.semantic.title)
 
@@ -106,14 +107,14 @@ public struct AppModeSwitcherView: View {
                 .defiAccountBalance?
                 .toDisplayString(includeSymbol: true) ?? ""
         }
-        return "Enable to get Started"
+        return LocalizationConstants.AppModeSwitcher.defiSubtitle
     }
 
     private var defiDescriptionString: String? {
         guard viewStore.shouldShowDefiModeIntro else {
             return nil
         }
-        return "Connect to web3 apps, collect NFTs, and swap on DEXs."
+        return LocalizationConstants.AppModeSwitcher.defiDescription
     }
 
     private var chevronIcon: some View {

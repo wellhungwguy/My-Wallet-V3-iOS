@@ -137,10 +137,10 @@ let cardManagementReducer: Reducer<
     CardManagementAction,
     CardManagementEnvironment
 > = Reducer<
-        CardManagementState,
-        CardManagementAction,
-        CardManagementEnvironment
-    > { state, action, env in
+    CardManagementState,
+    CardManagementAction,
+    CardManagementEnvironment
+> { state, action, env in
         switch action {
         case .close:
             return .fireAndForget {

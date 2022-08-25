@@ -284,7 +284,7 @@ extension Address {
 extension AddressServiceError {
     var nabuError: Nabu.Error {
         switch self {
-        case let .network(error):
+        case .network(let error):
             return error
         }
     }

@@ -250,6 +250,7 @@ let createAccountStepTwoReducer = Reducer<
         guard state.inputValidationState == .valid else {
             return .none
         }
+
         return environment.recaptchaService.verifyForSignup()
             .receive(on: environment.mainQueue)
             .catchToEffect()

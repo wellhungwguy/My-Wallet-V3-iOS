@@ -90,7 +90,7 @@ struct AddressSearchView: View {
     private var content: some View {
         WithViewStore(store) { viewStore in
             GeometryReader { geometry in
-                ScrollView() {
+                ScrollView {
                     if viewStore.isAddressSearchResultsNotFoundVisible {
                         addressSearchResultsNotFound
                     } else {
@@ -235,8 +235,9 @@ extension String {
         highlight: String?,
         isFirstComponent: Bool
     ) -> [Range<String.Index>] {
-        guard self.isNotEmpty,
-              let highlight = highlight, !highlight.isEmpty else {
+        guard isNotEmpty,
+              let highlight = highlight, !highlight.isEmpty
+        else {
             return []
         }
 
@@ -257,10 +258,11 @@ extension String {
         let ranges: [Range<String.Index>] = textHighlightRanges.compactMap {
             let components = $0.components(separatedBy: "-")
             guard let first = components.first, let firstInt = Int(first),
-                  let second = components.last, let secondInt = Int(second) else {
+                  let second = components.last, let secondInt = Int(second)
+            else {
                 return nil
             }
-            return self.range(startingAt: firstInt, length: (secondInt - firstInt))
+            return self.range(startingAt: firstInt, length: secondInt - firstInt)
         }
         return ranges
     }

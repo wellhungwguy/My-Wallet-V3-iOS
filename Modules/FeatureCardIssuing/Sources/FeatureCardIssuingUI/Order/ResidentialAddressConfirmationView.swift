@@ -30,7 +30,7 @@ struct ResidentialAddressConfirmationView: View {
                         .foregroundColor(.WalletSemantic.title)
                         .multilineTextAlignment(.leading)
                 }
-                VStack() {
+                VStack {
                     PrimaryRow(
                         title: viewStore.state.address?.shortDisplayTitleString ?? "",
                         subtitle: viewStore.state.address?.shortDisplaySubtitleString,
