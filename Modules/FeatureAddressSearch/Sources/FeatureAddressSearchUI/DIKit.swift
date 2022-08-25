@@ -9,12 +9,5 @@ extension DependencyContainer {
 
     // MARK: - FeatureAddressSearch Module
 
-    public static var featureAddressSearchUI = module {
-
-        factory {
-            AddressSearchRouter(
-                topMostViewControllerProvider: DIKit.resolve()
-            ) as AddressSearchRouterAPI
-        }
-    }
+    public static var featureAddressSearchUI = module { }
 }

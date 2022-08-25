@@ -87,6 +87,7 @@ public final class L_blockchain_app_configuration: L, I_blockchain_app_configura
 }
 public protocol I_blockchain_app_configuration: I {}
 public extension I_blockchain_app_configuration {
+	var `addresssearch`: L_blockchain_app_configuration_addresssearch { .init("\(__).addresssearch") }
 	var `announcements`: L_blockchain_app_configuration_announcements { .init("\(__).announcements") }
 	var `app`: L_blockchain_app_configuration_app { .init("\(__).app") }
 	var `apple`: L_blockchain_app_configuration_apple { .init("\(__).apple") }
@@ -119,6 +120,31 @@ public extension I_blockchain_app_configuration {
 	var `unified`: L_blockchain_app_configuration_unified { .init("\(__).unified") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
+public final class L_blockchain_app_configuration_addresssearch: L, I_blockchain_app_configuration_addresssearch {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.addresssearch", comment: "") }
+}
+public protocol I_blockchain_app_configuration_addresssearch: I {}
+public extension I_blockchain_app_configuration_addresssearch {
+	var `kyc`: L_blockchain_app_configuration_addresssearch_kyc { .init("\(__).kyc") }
+}
+public final class L_blockchain_app_configuration_addresssearch_kyc: L, I_blockchain_app_configuration_addresssearch_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.addresssearch.kyc", comment: "") }
+}
+public protocol I_blockchain_app_configuration_addresssearch_kyc: I {}
+public extension I_blockchain_app_configuration_addresssearch_kyc {
+	var `is`: L_blockchain_app_configuration_addresssearch_kyc_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_addresssearch_kyc_is: L, I_blockchain_app_configuration_addresssearch_kyc_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.addresssearch.kyc.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_addresssearch_kyc_is: I {}
+public extension I_blockchain_app_configuration_addresssearch_kyc_is {
+	var `enabled`: L_blockchain_app_configuration_addresssearch_kyc_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_addresssearch_kyc_is_enabled: L, I_blockchain_app_configuration_addresssearch_kyc_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.addresssearch.kyc.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_addresssearch_kyc_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_announcements: L, I_blockchain_app_configuration_announcements {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.announcements", comment: "") }
 }

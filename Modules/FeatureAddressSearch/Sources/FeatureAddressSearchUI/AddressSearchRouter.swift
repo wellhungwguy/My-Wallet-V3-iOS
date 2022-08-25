@@ -11,9 +11,14 @@ import UIKitExtensions
 public final class AddressSearchRouter: AddressSearchRouterAPI {
 
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let addressService: AddressServiceAPI
 
-    init(topMostViewControllerProvider: TopMostViewControllerProviding) {
+    public init(
+        topMostViewControllerProvider: TopMostViewControllerProviding,
+        addressService: AddressServiceAPI
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.addressService = addressService
     }
 
     public func presentSearchAddressFlow(
@@ -23,11 +28,13 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
         Deferred {
             Future { [weak self] promise in
 
-                let presenter = self?.topMostViewControllerProvider.topMostViewController
+                guard let self = self else { return }
+
+                let presenter = self.topMostViewControllerProvider.topMostViewController
                 let env = AddressSearchEnvironment(
                     mainQueue: .main,
                     config: config,
-                    addressService: resolve(),
+                    addressService: self.addressService,
                     addressSearchService: resolve(),
                     onComplete: { address in
                         presenter?.dismiss(animated: true)
@@ -53,11 +60,13 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
         Deferred {
             Future { [weak self] promise in
 
-                let presenter = self?.topMostViewControllerProvider.topMostViewController
+                guard let self = self else { return }
+
+                let presenter = self.topMostViewControllerProvider.topMostViewController
                 let env = AddressModificationEnvironment(
                     mainQueue: .main,
                     config: config,
-                    addressService: resolve(),
+                    addressService: self.addressService,
                     addressSearchService: resolve(),
                     onComplete: { address in
                         presenter?.dismiss(animated: true)

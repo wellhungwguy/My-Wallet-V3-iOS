@@ -53,7 +53,7 @@ struct ResidentialAddressConfirmationView: View {
                 PrimaryButton(title: L10n.Buttons.next) {
                     viewStore.send(.binding(.set(\.$isSSNInputVisible, true)))
                 }
-                .disabled(viewStore.state.address == .none)
+                .disabled(!(viewStore.state.address?.hasAllRequiredInformation ?? false))
                 .padding(Spacing.padding2)
             }
             .padding(.vertical, Spacing.padding3)
@@ -117,5 +117,14 @@ extension Card.Address {
         ].filter(\.isNotNilOrEmpty)
             .compactMap { $0 }
             .joined(separator: " ")
+    }
+}
+
+extension Card.Address {
+    fileprivate var hasAllRequiredInformation: Bool {
+        line1.isNotNilOrEmpty
+        && city.isNotNilOrEmpty
+        && postCode.isNotNilOrEmpty
+        && country.isNotNilOrEmpty
     }
 }

@@ -23,11 +23,11 @@ public struct Address: Hashable {
     public let country: String?
 
     public init(
-        line1: String?,
-        line2: String?,
-        city: String?,
-        postCode: String?,
-        state: String?,
+        line1: String? = nil,
+        line2: String? = nil,
+        city: String? = nil,
+        postCode: String? = nil,
+        state: String? = nil,
         country: String?
     ) {
         self.line1 = line1

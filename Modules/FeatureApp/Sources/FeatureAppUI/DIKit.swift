@@ -9,6 +9,8 @@ import FeatureAuthenticationDomain
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
+import FeatureKYCDomain
+import FeatureKYCUI
 import FeatureOpenBankingUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
@@ -18,6 +20,11 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 import UIKit
+
+private enum AddressSearchTag: String {
+    case cardOrder
+    case kyc
+}
 
 extension DependencyContainer {
 
@@ -100,14 +107,38 @@ extension DependencyContainer {
 
         factory {
             CardIssuingAddressSearchRouter(
-                addressSearchRouterRouter: DIKit.resolve()
+                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.cardOrder)
             ) as FeatureCardIssuingUI.AddressSearchRouterAPI
         }
 
-        factory {
+        factory(tag: AddressSearchTag.cardOrder) {
+            AddressSearchRouter(
+                topMostViewControllerProvider: DIKit.resolve(),
+                addressService: DIKit.resolve(tag: AddressSearchTag.cardOrder)
+            ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
+        }
+
+        factory(tag: AddressSearchTag.cardOrder) {
             AddressService(
                 repository: DIKit.resolve()
             ) as FeatureAddressSearchDomain.AddressServiceAPI
+        }
+
+        factory { () -> AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenter(
+                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.kyc)
+            ) as AddressSearchFlowPresenterAPI
+        }
+
+        factory(tag: AddressSearchTag.kyc) {
+            AddressSearchRouter(
+                topMostViewControllerProvider: DIKit.resolve(),
+                addressService: DIKit.resolve(tag: AddressSearchTag.kyc)
+            ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
+        }
+
+        factory(tag: AddressSearchTag.kyc) {
+            AddressKYCService() as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
         single { () -> AssetInformationRepositoryAPI in

@@ -9,6 +9,8 @@ import FeatureAddressSearchDomain
 import FeatureAddressSearchUI
 import FeatureCardIssuingDomain
 import FeatureCardIssuingUI
+import FeatureKYCDomain
+import FeatureKYCUI
 import FeatureSettingsUI
 import FeatureTransactionUI
 import Foundation
@@ -201,7 +203,7 @@ final class AddressService: AddressServiceAPI {
         self.repository = repository
     }
 
-    func fetchAddress() -> AnyPublisher<Address, AddressServiceError> {
+    func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         repository.fetchResidentialAddress()
             .map(Address.init(cardAddress:))
             .mapError(AddressServiceError.network)
@@ -211,6 +213,60 @@ final class AddressService: AddressServiceAPI {
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
         repository.update(residentialAddress: Card.Address(address: address))
             .map(Address.init(cardAddress:))
+            .mapError(AddressServiceError.network)
+            .eraseToAnyPublisher()
+    }
+}
+
+final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterAPI {
+
+    private let addressSearchRouterRouter: FeatureAddressSearchDomain.AddressSearchRouterAPI
+
+    init(
+        addressSearchRouterRouter: FeatureAddressSearchDomain.AddressSearchRouterAPI
+    ) {
+        self.addressSearchRouterRouter = addressSearchRouterRouter
+    }
+
+    func openSearchAddressFlow(
+        countryCode: String
+    ) -> AnyPublisher<UserAddress?, Never> {
+        typealias Localization = LocalizationConstants.NewKYC.AddressVerification
+        let title = Localization.title
+        return addressSearchRouterRouter.presentSearchAddressFlow(
+            prefill: Address(country: countryCode),
+            config: .init(
+                addressSearchScreen: .init(title: title),
+                addressEditScreen: .init(
+                    title: title,
+                    saveAddressButtonTitle: Localization.saveButtonTitle
+                )
+            )
+        )
+        .compactMap { $0.map { UserAddress(address: $0, defaultCountryCode: countryCode) } }
+        .eraseToAnyPublisher()
+    }
+}
+
+final class AddressKYCService: FeatureAddressSearchDomain.AddressServiceAPI {
+    typealias Address = FeatureAddressSearchDomain.Address
+
+    private let locationUpdateService: LocationUpdateService
+
+    init(locationUpdateService: LocationUpdateService = LocationUpdateService()) {
+        self.locationUpdateService = locationUpdateService
+    }
+
+    func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
+        .just(nil)
+    }
+    func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
+        guard let userAddress = UserAddress(address: address) else {
+            return .failure(AddressServiceError.network(Nabu.Error.unknown))
+        }
+        return locationUpdateService
+            .save(address: userAddress)
+            .map { address }
             .mapError(AddressServiceError.network)
             .eraseToAnyPublisher()
     }
@@ -383,6 +439,42 @@ extension Address {
             postCode: cardAddress.postCode,
             state: cardAddress.state,
             country: cardAddress.country
+        )
+    }
+}
+
+extension UserAddress {
+    fileprivate init?(
+        address: FeatureAddressSearchDomain.Address,
+        defaultCountryCode: String? = nil
+    ) {
+        guard let countryCode = address.country ?? defaultCountryCode else {
+            assertionFailure("country cannot be nil")
+            return nil
+        }
+
+        self.init(
+            lineOne: address.line1,
+            lineTwo: address.line2,
+            postalCode: address.postCode,
+            city: address.city,
+            state: address.state,
+            countryCode: countryCode
+        )
+    }
+}
+
+extension FeatureAddressSearchDomain.Address {
+    fileprivate init(
+        address: UserAddress
+    ) {
+        self.init(
+            line1: address.lineOne,
+            line2: address.lineTwo,
+            city: address.city,
+            postCode: address.postalCode,
+            state: address.state,
+            country: address.countryCode
         )
     }
 }

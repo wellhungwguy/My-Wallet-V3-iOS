@@ -65,24 +65,6 @@ struct AddressSearchView: View {
                     viewStore.send(.onAppear)
                 }
                 .navigationRoute(in: store)
-                .bottomSheet(
-                    isPresented: viewStore.binding(
-                        get: { $0.error != nil },
-                        send: AddressSearchAction.closeError
-                    ),
-                    content: {
-                        IfLetStore(store.scope(state: \.error)) { store in
-                            WithViewStore(store) { viewStore in
-                                ErrorView(
-                                    ux: .init(nabu: viewStore.state),
-                                    dismiss: {
-                                        viewStore.send(.closeError)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                )
             }
         }
     }

@@ -54,23 +54,9 @@ struct AddressModificationView: View {
                 .onAppear {
                     viewStore.send(.onAppear)
                 }
-                .bottomSheet(
-                    isPresented: viewStore.binding(
-                        get: { $0.error != nil },
-                        send: AddressModificationAction.closeError
-                    ),
-                    content: {
-                        IfLetStore(store.scope(state: \.error)) { store in
-                            WithViewStore(store) { viewStore in
-                                ErrorView(
-                                    ux: .init(nabu: viewStore.state),
-                                    dismiss: {
-                                        viewStore.send(.closeError)
-                                    }
-                                )
-                            }
-                        }
-                    }
+                .alert(
+                    store.scope(state: \.failureAlert),
+                    dismiss: .dismissAlert
                 )
             }
         }
@@ -156,7 +142,7 @@ struct AddressModificationView: View {
                         isFirstResponder: .constant(false),
                         label: L10n.Form.country
                     )
-                    .disabled(viewStore.country.isNotEmpty)
+                    .disabled(true)
                 }
                 .padding(.horizontal, Spacing.padding3)
             }
@@ -166,7 +152,7 @@ struct AddressModificationView: View {
     private var footer: some View {
         WithViewStore(store) { viewStore in
             PrimaryButton(
-                title: L10n.Buttons.save,
+                title: viewStore.saveButtonTitle ?? L10n.Buttons.save,
                 isLoading: viewStore.state.loading
             ) {
                 viewStore.send(.updateAddress)

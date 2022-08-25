@@ -35,6 +35,12 @@ protocol KYCRouterDelegate: AnyObject {
     func apply(model: KYCPageModel)
 }
 
+public protocol AddressSearchFlowPresenterAPI {
+    func openSearchAddressFlow(
+        countryCode: String
+    ) -> AnyPublisher<UserAddress?, Never>
+}
+
 // swiftlint:disable type_body_length
 
 /// Coordinates the KYC flow. This component can be used to start a new KYC flow, or if
@@ -58,7 +64,7 @@ final class KYCRouter: KYCRouterAPI {
 
     private weak var rootViewController: UIViewController?
 
-    private var navController: KYCOnboardingNavigationController!
+    private var navController: KYCOnboardingNavigationController?
 
     private let disposables = CompositeDisposable()
 
@@ -89,6 +95,8 @@ final class KYCRouter: KYCRouterAPI {
     private var errorRecorder: ErrorRecording
     private var alertPresenter: AlertViewPresenterAPI
 
+    private var addressSearchFlowPresenter: AddressSearchFlowPresenterAPI
+
     /// KYC finsihed with `tier1` in-progress / approved
     var tier1Finished: Observable<Void> {
         kycFinishedRelay
@@ -111,6 +119,8 @@ final class KYCRouter: KYCRouterAPI {
         kycStoppedRelay.asObservable()
     }
 
+    private var bag = Set<AnyCancellable>()
+
     init(
         app: AppProtocol = resolve(),
         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
@@ -120,6 +130,7 @@ final class KYCRouter: KYCRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
+        addressSearchFlowPresenter: AddressSearchFlowPresenterAPI = resolve(),
         nabuUserService: NabuUserServiceAPI = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
@@ -129,6 +140,7 @@ final class KYCRouter: KYCRouterAPI {
         self.requestBuilder = requestBuilder
         self.errorRecorder = errorRecorder
         self.alertPresenter = alertPresenter
+        self.addressSearchFlowPresenter = addressSearchFlowPresenter
         self.analyticsRecorder = analyticsRecorder
         self.nabuUserService = nabuUserService
         self.webViewServiceAPI = webViewServiceAPI
@@ -153,6 +165,7 @@ final class KYCRouter: KYCRouterAPI {
         start(tier: tier, parentFlow: parentFlow, from: nil)
     }
 
+    // swiftlint:disable function_body_length
     func start(
         tier: KYC.Tier,
         parentFlow: KYCParentFlow,
@@ -316,7 +329,7 @@ final class KYCRouter: KYCRouterAPI {
     }
 
     private func dismiss(completion: @escaping () -> Void) {
-        guard navController != nil else {
+        guard let navController = navController else {
             completion()
             return
         }
@@ -366,10 +379,22 @@ final class KYCRouter: KYCRouterAPI {
                         payload: payload
                     )
 
-                    if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
-                        self.presentInformationController(informationController)
-                    } else {
-                        self.navController.pushViewController(controller, animated: true)
+                    self.isNewAddressSearchEnabled { isNewAddressSearchEnabled in
+                        if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
+                            self.presentInformationController(informationController)
+                        } else if isNewAddressSearchEnabled, nextPage == .address {
+                            guard let countryCode = self.country?.code ?? self.user?.address?.countryCode else { return }
+                            if let navController = self.navController {
+                                navController.dismiss(animated: true) {
+                                    self.navController = nil
+                                    self.presentAddressSearchFlow(countryCode: countryCode)
+                                }
+                            } else {
+                                self.presentAddressSearchFlow(countryCode: countryCode)
+                            }
+                        } else {
+                            self.safePushInNavController(controller)
+                        }
                     }
                 }, onError: { error in
                     Logger.shared.error("Error getting next page: \(String(describing: error))")
@@ -383,6 +408,34 @@ final class KYCRouter: KYCRouterAPI {
                 })
             disposables.insertWithDiscardableResult(disposable)
         }
+    }
+
+    private func isNewAddressSearchEnabled(onComplete: @escaping (Bool) -> Void) {
+        Task(priority: .userInitiated) { @MainActor in
+            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
+                for: blockchain.app.configuration.addresssearch.kyc.is.enabled,
+                as: Bool.self
+            )
+                .await()
+                .value
+            onComplete(isNewAddressSearchEnabled ?? false)
+        }
+    }
+
+    private func presentAddressSearchFlow(countryCode: String) {
+        self.addressSearchFlowPresenter
+            .openSearchAddressFlow(
+                countryCode: countryCode
+            )
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] address in
+                guard let address = address, address.hasAllRequiredInformation else {
+                    self?.stop()
+                    return
+                }
+                self?.handle(event: .nextPageFromPageType(.address, nil))
+            })
+            .store(in: &self.bag)
     }
 
     func presentInformationController(_ controller: KYCInformationController) {
@@ -421,7 +474,7 @@ final class KYCRouter: KYCRouterAPI {
                         }
                     }
 
-                    self.navController.pushViewController(controller, animated: true)
+                    self.safePushInNavController(controller)
                 }
             )
             .disposed(by: disposeBag)
@@ -489,7 +542,7 @@ final class KYCRouter: KYCRouterAPI {
                 payload: createPagePayload(page: currentPage, user: currentUser)
             )
 
-            navController.pushViewController(nextController, animated: false)
+            safePushInNavController(nextController, animated: false)
         }
     }
 
@@ -542,24 +595,32 @@ final class KYCRouter: KYCRouterAPI {
         if startingPage == .finish {
             return
         }
-        var controller: KYCBaseViewController
-        if startingPage == .accountStatus {
-            controller = pageFactory.createFrom(
-                pageType: startingPage,
-                in: self,
-                payload: .accountStatus(
-                    status: response.tierAccountStatus(for: .tier2),
-                    isReceivingAirdrop: false
-                )
-            )
-        } else {
-            controller = pageFactory.createFrom(
-                pageType: startingPage,
-                in: self
-            )
-        }
 
-        navController = presentInNavigationController(controller, in: viewController)
+        isNewAddressSearchEnabled { [weak self] isNewAddressSearchEnabled in
+
+            guard let self = self else { return }
+            var controller: KYCBaseViewController
+            if startingPage == .accountStatus {
+                controller = self.pageFactory.createFrom(
+                    pageType: startingPage,
+                    in: self,
+                    payload: .accountStatus(
+                        status: response.tierAccountStatus(for: .tier2),
+                        isReceivingAirdrop: false
+                    )
+                )
+                self.navController = self.presentInNavigationController(controller, in: viewController)
+            } else if isNewAddressSearchEnabled, startingPage == .address {
+                guard let countryCode = self.country?.code ?? self.user?.address?.countryCode else { return }
+                self.presentAddressSearchFlow(countryCode: countryCode)
+            } else {
+                controller = self.pageFactory.createFrom(
+                    pageType: startingPage,
+                    in: self
+                )
+                self.navController = self.presentInNavigationController(controller, in: viewController)
+            }
+        }
     }
 
     // MARK: Private Methods
@@ -602,7 +663,7 @@ final class KYCRouter: KYCRouterAPI {
                 )
                 self.disposables.insertWithDiscardableResult(disposable)
             }
-            presentInNavigationController(informationViewController, in: navController)
+            safePresentInNavigationController(informationViewController)
         case .stateNotSupported(let state):
             kycSettings.isCompletingKyc = false
             informationViewController.viewModel = KYCInformationViewModel.createForUnsupportedState(state)
@@ -615,7 +676,7 @@ final class KYCRouter: KYCRouterAPI {
                 )
                 self.disposables.insertWithDiscardableResult(disposable)
             }
-            presentInNavigationController(informationViewController, in: navController)
+            safePresentInNavigationController(informationViewController)
         }
     }
 
@@ -666,6 +727,33 @@ final class KYCRouter: KYCRouterAPI {
             authenticated: true
         )!
         return networkAdapter.perform(request: request)
+    }
+
+    private func safePushInNavController(
+        _ viewController: UIViewController,
+        animated: Bool = true
+    ) {
+        if let navController = navController {
+            navController.pushViewController(viewController, animated: animated)
+        } else {
+            guard let rootViewController = rootViewController else {
+                return
+            }
+            self.navController = presentInNavigationController(viewController, in: rootViewController)
+        }
+    }
+
+    private func safePresentInNavigationController(
+        _ viewController: UIViewController
+    ) {
+        if let navController = navController {
+            presentInNavigationController(viewController, in: navController)
+        } else {
+            guard let rootViewController = rootViewController else {
+                return
+            }
+            self.navController = presentInNavigationController(viewController, in: rootViewController)
+        }
     }
 
     @discardableResult private func presentInNavigationController(
@@ -739,5 +827,14 @@ extension KYCPageType {
         guard tiersResponse.canCompleteTier2 == false else { return .verifyIdentity }
 
         return nil
+    }
+}
+
+extension UserAddress {
+    fileprivate var hasAllRequiredInformation: Bool {
+        lineOne.isNotNilOrEmpty
+        && city.isNotNilOrEmpty
+        && postalCode.isNotNilOrEmpty
+        && countryCode.isNotEmpty
     }
 }

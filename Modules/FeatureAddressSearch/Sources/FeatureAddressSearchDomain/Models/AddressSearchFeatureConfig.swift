@@ -17,13 +17,16 @@ public struct AddressSearchFeatureConfig {
     public struct AddressEditScreenConfig {
         public let title: String
         public let subtitle: String?
+        public let saveAddressButtonTitle: String?
 
         public init(
             title: String,
-            subtitle: String?
+            subtitle: String? = nil,
+            saveAddressButtonTitle: String? = nil
         ) {
             self.title = title
             self.subtitle = subtitle
+            self.saveAddressButtonTitle = saveAddressButtonTitle
         }
     }
 

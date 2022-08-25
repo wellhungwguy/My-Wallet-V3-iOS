@@ -121,5 +121,12 @@ extension LocalizationConstants.AddressSearch {
                 comment: "Address Search: Form Placeholder"
             )
         }
+
+        public enum Errors {
+            public static let genericError = NSLocalizedString(
+                "Please check the information you provided and try again.",
+                comment: "Generic error message displayed when an error occurs in address form"
+            )
+        }
     }
 }

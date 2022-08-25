@@ -14,13 +14,16 @@ enum AddressModificationAction: Equatable, BindableAction {
     case onAppear
     case updateAddress
     case fetchPrefilledAddress
-    case didReceivePrefilledAddressResult(Result<Address, AddressServiceError>)
+    case didReceivePrefilledAddressResult(Result<Address?, AddressServiceError>)
     case updateAddressResponse(Result<Address, AddressServiceError>)
     case fetchAddressDetails(addressId: String?)
     case didReceiveAdressDetailsResult(Result<AddressDetailsSearchResult, AddressSearchServiceError>)
     case addressResponse(Result<Address, AddressServiceError>)
     case closeError
     case cancelEdit
+    case showAlert(title: String, message: String)
+    case dismissAlert
+    case showGenericError
     case binding(BindingAction<AddressModificationState>)
 }
 
@@ -45,6 +48,8 @@ struct AddressModificationState: Equatable {
     var isPresentedWithoutSearchView: Bool
     var screenTitle: String = ""
     var screenSubtitle: String?
+    var saveButtonTitle: String?
+    var failureAlert: AlertState<AddressModificationAction>?
 
     init(
         addressDetailsId: String? = nil,
@@ -141,7 +146,18 @@ let addressModificationReducer = Reducer<
         case .failure(let error):
             state.error = error.nabuError
         }
-        return Effect(value: .addressResponse(result))
+        return .merge(
+            Effect(value: .showGenericError),
+            Effect(value: .addressResponse(result))
+        )
+
+    case .showGenericError:
+        return Effect(
+            value: .showAlert(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.AddressSearch.Form.Errors.genericError
+            )
+        )
 
     case .fetchAddressDetails(let addressId):
         guard let addressId = addressId else {
@@ -183,6 +199,7 @@ let addressModificationReducer = Reducer<
     case .onAppear:
         state.screenTitle = env.config.title
         state.screenSubtitle = env.config.subtitle
+        state.saveButtonTitle = env.config.saveAddressButtonTitle
         guard state.address == .none else {
             return .none
         }
@@ -203,6 +220,7 @@ let addressModificationReducer = Reducer<
             .catchToEffect(AddressModificationAction.didReceivePrefilledAddressResult)
 
     case .didReceivePrefilledAddressResult(.success(let address)):
+        guard let address = address else { return .none }
         state.address = address
         state.updateAddressInputs(address: address)
         return .none
@@ -221,6 +239,20 @@ let addressModificationReducer = Reducer<
         return .none
 
     case .binding:
+        return .none
+    case .showAlert(let title, let message):
+        state.failureAlert = AlertState(
+            title: TextState(verbatim: title),
+            message: TextState(verbatim: message),
+            dismissButton: .default(
+                TextState(LocalizationConstants.okString),
+                action: .send(.dismissAlert)
+            )
+        )
+        return .none
+
+    case .dismissAlert:
+        state.failureAlert = nil
         return .none
     }
 }

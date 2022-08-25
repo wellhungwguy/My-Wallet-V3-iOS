@@ -10,6 +10,6 @@ public enum AddressServiceError: Error, Equatable {
 
 public protocol AddressServiceAPI {
 
-    func fetchAddress() -> AnyPublisher<Address, AddressServiceError>
+    func fetchAddress() -> AnyPublisher<Address?, AddressServiceError>
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError>
 }

@@ -208,7 +208,7 @@ let addressSearchReducer = Reducer.combine(
             case .success(let searchedAddresses):
                 state.searchResults = searchedAddresses
             case .failure(let error):
-                print(error)
+                state.error = error.nabuError
             }
             return .none
 
@@ -302,10 +302,10 @@ struct MockServices: AddressSearchServiceAPI {
 }
 
 extension MockServices: AddressServiceAPI {
-    func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
+    func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         .just(Self.address)
     }
-    func fetchAddress() -> AnyPublisher<Address, AddressServiceError> {
+    func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
         .just(Self.address)
     }
 }
