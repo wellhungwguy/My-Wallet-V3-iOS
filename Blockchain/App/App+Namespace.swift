@@ -38,7 +38,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,
-            blockchain.app.configuration.addresssearch.kyc.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.addresssearch.kyc.is.enabled: false,
             blockchain.ux.onboarding.promotion.cowboys.welcome.announcement: blockchain.ux.onboarding.promotion.cowboys.welcome.announcement.json(in: .main),
             blockchain.ux.onboarding.promotion.cowboys.welcome.story: blockchain.ux.onboarding.promotion.cowboys.welcome.story.json(in: .main),
             blockchain.ux.onboarding.promotion.cowboys.raffle.announcement: blockchain.ux.onboarding.promotion.cowboys.raffle.announcement.json(in: .main),
