@@ -15,15 +15,20 @@ extension Mock {
 
     public class Preferences: SwiftExtensions.Preferences {
 
+        let lock = NSRecursiveLock()
         var store: [String: Any] = [:]
 
         public init() {}
 
         public func object(forKey defaultName: String) -> Any? {
-            store[defaultName]
+            lock.lock()
+            defer { lock.unlock() }
+            return store[defaultName]
         }
 
         public func set(_ value: Any?, forKey defaultName: String) {
+            lock.lock()
+            defer { lock.unlock() }
             store[defaultName] = value
         }
     }

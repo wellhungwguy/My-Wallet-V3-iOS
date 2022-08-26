@@ -244,23 +244,22 @@ extension Session.State.Data {
     }
 
     func set(_ key: Tag.Reference, to value: Any) {
-        sync {
-            dirty.data[key] = value
-            if isNotInTransaction {
-                update([key: value])
+        sync { dirty.data[key] = value }
+        if isNotInTransaction {
+            update([key: value])
+        }
+        if key.tag == blockchain.user.id[], let id = value as? String {
+            beginTransaction()
+            let user = key
+            let keys = sync { subjects.keys }
+            for key in keys {
+                guard key != user else { continue }
+                guard key.tag.is(blockchain.session.state.preference.value) else { continue }
+                guard key.tag.isNot(blockchain.session.state.shared.value) else { continue }
+                guard let value = preference(key, in: id) else { continue }
+                set(key, to: value)
             }
-            if key.tag == blockchain.user.id[], let id = value as? String {
-                beginTransaction()
-                let user = key
-                for key in subjects.keys {
-                    guard key != user else { continue }
-                    guard key.tag.is(blockchain.session.state.preference.value) else { continue }
-                    guard key.tag.isNot(blockchain.session.state.shared.value) else { continue }
-                    guard let value = preference(key, in: id) else { continue }
-                    set(key, to: value)
-                }
-                endTransaction()
-            }
+            endTransaction()
         }
     }
 
@@ -269,12 +268,10 @@ extension Session.State.Data {
     }
 
     func clear(_ key: Tag.Reference) {
-        sync {
-            if isInTransaction {
-                dirty.data[key] = Tombstone.self
-            } else {
-                update([key: Tombstone.self])
-            }
+        if isInTransaction {
+            sync { dirty.data[key] = Tombstone.self }
+        } else {
+            update([key: Tombstone.self])
         }
     }
 
@@ -319,37 +316,36 @@ extension Session.State.Data {
     }
 
     private func update(_ data: [Tag.Reference: Any]) {
-        sync {
-            for (key, value) in data {
-                switch value {
-                case is Tombstone.Type:
-                    store.removeValue(forKey: key)
-                default:
-                    store[key] = value
-                }
+        for (key, value) in data {
+            switch value {
+            case is Tombstone.Type:
+                sync { store.removeValue(forKey: key) }
+            default:
+                sync { store[key] = value }
             }
-            preferences.transaction(blockchain.session.state(\.id)) { object in
+        }
+        preferences.transaction(blockchain.session.state(\.id)) { object in
+            update(
+                object: &object,
+                from: data,
+                scope: shared,
+                filter: { $0.is(blockchain.session.state.shared.value) }
+            )
+            if let user = user {
                 update(
                     object: &object,
                     from: data,
-                    scope: shared,
-                    filter: { $0.is(blockchain.session.state.shared.value) }
+                    scope: user,
+                    filter: { $0.isNot(blockchain.session.state.shared.value) }
                 )
-                if let user = user {
-                    update(
-                        object: &object,
-                        from: data,
-                        scope: user,
-                        filter: { $0.isNot(blockchain.session.state.shared.value) }
-                    )
-                } else {
-                    #if DEBUG
-                    let preferences = data.keys.filter { key in
-                        key.tag.is(blockchain.session.state.preference.value)
-                            && key.tag.isNot(blockchain.session.state.shared.value)
-                    }
-                    if preferences.isNotEmpty {
-                        print(
+            } else {
+                #if DEBUG
+                let preferences = data.keys.filter { key in
+                    key.tag.is(blockchain.session.state.preference.value)
+                        && key.tag.isNot(blockchain.session.state.shared.value)
+                }
+                if preferences.isNotEmpty {
+                    print(
                             """
                             ⚠️ Attempted to write user preference without being signed in.
 
@@ -361,18 +357,18 @@ extension Session.State.Data {
 
                             \(preferences.map(\.string).joined(by: ", "))
                             """
-                        )
-                    }
-                    #endif
+                    )
                 }
+                #endif
             }
-            for (key, value) in data {
-                switch value {
-                case is Tombstone.Type:
-                    subjects[key]?.send(.error(.keyDoesNotExist(key), key.metadata(.state)))
-                default:
-                    subjects[key]?.send(.value(value, key.metadata(.state)))
-                }
+        }
+        for (key, value) in data {
+            let subject = sync { subjects[key] }
+            switch value {
+            case is Tombstone.Type:
+                subject?.send(.error(.keyDoesNotExist(key), key.metadata(.state)))
+            default:
+                subject?.send(.value(value, key.metadata(.state)))
             }
         }
     }
