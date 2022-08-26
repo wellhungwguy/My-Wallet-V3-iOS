@@ -5,7 +5,7 @@ import Foundation
 public struct Address: Hashable {
 
     public enum Constants {
-        static let usIsoCode = "US"
+        public static let usIsoCode = "US"
         public static let usPrefix = "US-"
     }
 
@@ -17,6 +17,7 @@ public struct Address: Hashable {
 
     public let postCode: String?
 
+    /// US state code
     public let state: String?
 
     /// Country code in ISO-2
@@ -33,7 +34,7 @@ public struct Address: Hashable {
         self.line1 = line1
         self.line2 = line2
         self.city = city
-        self.postCode = postCode
+        self.postCode = postCode?.components(separatedBy: "-").first
         self.country = country
 
         if let state = state,

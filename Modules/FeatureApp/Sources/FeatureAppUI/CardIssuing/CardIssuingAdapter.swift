@@ -180,11 +180,11 @@ final class CardIssuingAddressSearchRouter: FeatureCardIssuingUI.AddressSearchRo
     }
 
     func openEditAddressFlow(
-        isPresentedWithoutSearchView: Bool
+        isPresentedWithSearchView: Bool
     ) -> AnyPublisher<Card.Address?, Never> {
         typealias Localization = LocalizationConstants.CardIssuing.AddressSearch.AddressEditSearchScreen
         return addressSearchRouterRouter.presentEditAddressFlow(
-            isPresentedWithoutSearchView: isPresentedWithoutSearchView,
+            isPresentedWithSearchView: isPresentedWithSearchView,
             config: .init(
                 title: Localization.title,
                 subtitle: nil
@@ -229,12 +229,13 @@ final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterA
     }
 
     func openSearchAddressFlow(
-        countryCode: String
+        country: String,
+        state: String?
     ) -> AnyPublisher<UserAddress?, Never> {
         typealias Localization = LocalizationConstants.NewKYC.AddressVerification
         let title = Localization.title
         return addressSearchRouterRouter.presentSearchAddressFlow(
-            prefill: Address(country: countryCode),
+            prefill: Address(state: state, country: country),
             config: .init(
                 addressSearchScreen: .init(title: title),
                 addressEditScreen: .init(
@@ -243,7 +244,7 @@ final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterA
                 )
             )
         )
-        .compactMap { $0.map { UserAddress(address: $0, defaultCountryCode: countryCode) } }
+        .compactMap { $0.map { UserAddress(address: $0, defaultCountryCode: country) } }
         .eraseToAnyPublisher()
     }
 }

@@ -21,6 +21,8 @@ enum AddressModificationAction: Equatable, BindableAction {
     case addressResponse(Result<Address, AddressServiceError>)
     case closeError
     case cancelEdit
+    case showStateDoesNotMatchAlert
+    case stateDoesNotMatch
     case showAlert(title: String, message: String)
     case dismissAlert
     case showGenericError
@@ -37,6 +39,7 @@ struct AddressModificationState: Equatable {
     @BindableState var line2 = ""
     @BindableState var city = ""
     @BindableState var state = ""
+    @BindableState var stateName = ""
     @BindableState var postcode = ""
     @BindableState var country = ""
     @BindableState var selectedInputField: Field?
@@ -45,33 +48,41 @@ struct AddressModificationState: Equatable {
     var loading: Bool = false
     var addressDetailsId: String?
     var error: Nabu.Error?
-    var isPresentedWithoutSearchView: Bool
+    var isPresentedWithSearchView: Bool
     var screenTitle: String = ""
     var screenSubtitle: String?
     var saveButtonTitle: String?
+    var isStateFieldVisible: Bool {
+        address?.country == Address.Constants.usIsoCode
+    }
     var failureAlert: AlertState<AddressModificationAction>?
 
     init(
         addressDetailsId: String? = nil,
         address: Address? = nil,
-        isPresentedWithoutSearchView: Bool = false,
+        isPresentedWithSearchView: Bool = true,
         error: Nabu.Error? = nil
     ) {
         self.addressDetailsId = addressDetailsId
         self.address = address
-        self.isPresentedWithoutSearchView = isPresentedWithoutSearchView
+        self.isPresentedWithSearchView = isPresentedWithSearchView
         self.error = error
-        line1 = address?.line1 ?? ""
-        line2 = address?.line2 ?? ""
-        city = address?.city ?? ""
+
         state = address?
             .state?
             .replacingOccurrences(
                 of: Address.Constants.usPrefix,
                 with: ""
             ) ?? ""
-        postcode = address?.postCode ?? ""
+        stateName = usaStates[state] ?? ""
         country = address?.country ?? ""
+
+        if !isPresentedWithSearchView {
+            line1 = address?.line1 ?? ""
+            line2 = address?.line2 ?? ""
+            city = address?.city ?? ""
+            postcode = address?.postCode ?? ""
+        }
     }
 }
 
@@ -87,6 +98,7 @@ extension AddressModificationState {
                 of: Address.Constants.usPrefix,
                 with: ""
             ) ?? ""
+        stateName = usaStates[state] ?? ""
         postcode = address.postCode ?? ""
         country = address.country ?? ""
     }
@@ -178,9 +190,15 @@ let addressModificationReducer = Reducer<
         switch result {
         case .success(let searchedAddress):
             let address = Address(addressDetails: searchedAddress)
-            state.address = address
-            state.updateAddressInputs(address: address)
-            return .none
+            if let state = state.address?.state, state.isNotEmpty,
+               state != address.state {
+                return Effect(value: .showStateDoesNotMatchAlert)
+            } else {
+                state.address = address
+                state.updateAddressInputs(address: address)
+                return .none
+            }
+
         case .failure(let error):
             state.error = error.nabuError
             return .none
@@ -200,11 +218,9 @@ let addressModificationReducer = Reducer<
         state.screenTitle = env.config.title
         state.screenSubtitle = env.config.subtitle
         state.saveButtonTitle = env.config.saveAddressButtonTitle
-        guard state.address == .none else {
-            return .none
-        }
+
         guard let addressDetailsId = state.addressDetailsId else {
-            if state.isPresentedWithoutSearchView {
+            if !state.isPresentedWithSearchView {
                 return Effect(value: .fetchPrefilledAddress)
             } else {
                 return .none
@@ -240,6 +256,7 @@ let addressModificationReducer = Reducer<
 
     case .binding:
         return .none
+
     case .showAlert(let title, let message):
         state.failureAlert = AlertState(
             title: TextState(verbatim: title),
@@ -253,6 +270,20 @@ let addressModificationReducer = Reducer<
 
     case .dismissAlert:
         state.failureAlert = nil
+        return .none
+
+    case .showStateDoesNotMatchAlert:
+        let loc = LocalizationConstants.AddressSearch.Form.Errors.self
+        state.failureAlert = AlertState(
+            title: TextState(verbatim: loc.cannotEditStateTitle),
+            message: TextState(verbatim: loc.cannotEditStateMessage),
+            dismissButton: .default(
+                TextState(LocalizationConstants.okString),
+                action: .send(.stateDoesNotMatch)
+            )
+        )
+        return .none
+    case .stateDoesNotMatch:
         return .none
     }
 }
@@ -289,3 +320,61 @@ extension AddressServiceError {
         }
     }
 }
+
+private let usaStates: [String: String] = [
+    "AK": "Alaska",
+    "AL": "Alabama",
+    "AR": "Arkansas",
+    "AS": "American Samoa",
+    "AZ": "Arizona",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DC": "District of Columbia",
+    "DE": "Delaware",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "GU": "Guam",
+    "HI": "Hawaii",
+    "IA": "Iowa",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "MA": "Massachusetts",
+    "MD": "Maryland",
+    "ME": "Maine",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MO": "Missouri",
+    "MS": "Mississippi",
+    "MT": "Montana",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "NE": "Nebraska",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NV": "Nevada",
+    "NY": "New York",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "PR": "Puerto Rico",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VA": "Virginia",
+    "VI": "Virgin Islands",
+    "VT": "Vermont",
+    "WA": "Washington",
+    "WI": "Wisconsin",
+    "WV": "West Virginia",
+    "WY": "Wyoming"
+]

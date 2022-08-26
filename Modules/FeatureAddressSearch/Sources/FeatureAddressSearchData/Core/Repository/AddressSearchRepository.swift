@@ -16,13 +16,15 @@ final class AddressSearchRepository: AddressSearchRepositoryAPI {
     func fetchAddresses(
         searchText: String,
         containerId: String?,
-        countryCode: String
+        countryCode: String,
+        sateCode: String?
     ) -> AnyPublisher<[AddressSearchResult], Nabu.Error> {
         client
             .fetchAddresses(
                 searchText: searchText,
                 containerId: containerId,
-                countryCode: countryCode
+                countryCode: countryCode,
+                sateCode: sateCode
             )
     }
 

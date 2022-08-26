@@ -15,12 +15,14 @@ final class AddressSearchService: AddressSearchServiceAPI {
     func fetchAddresses(
         searchText: String,
         containerId: String?,
-        countryCode: String
+        countryCode: String,
+        sateCode: String?
     ) -> AnyPublisher<[AddressSearchResult], AddressSearchServiceError> {
         repository.fetchAddresses(
             searchText: searchText,
             containerId: containerId,
-            countryCode: countryCode
+            countryCode: countryCode,
+            sateCode: sateCode
         )
         .mapError(AddressSearchServiceError.network)
         .eraseToAnyPublisher()

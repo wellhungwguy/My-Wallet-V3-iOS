@@ -37,7 +37,8 @@ protocol KYCRouterDelegate: AnyObject {
 
 public protocol AddressSearchFlowPresenterAPI {
     func openSearchAddressFlow(
-        countryCode: String
+        country: String,
+        state: String?
     ) -> AnyPublisher<UserAddress?, Never>
 }
 
@@ -383,14 +384,13 @@ final class KYCRouter: KYCRouterAPI {
                         if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
                             self.presentInformationController(informationController)
                         } else if isNewAddressSearchEnabled, nextPage == .address {
-                            guard let countryCode = self.country?.code ?? self.user?.address?.countryCode else { return }
                             if let navController = self.navController {
                                 navController.dismiss(animated: true) {
                                     self.navController = nil
-                                    self.presentAddressSearchFlow(countryCode: countryCode)
+                                    self.presentAddressSearchFlow()
                                 }
                             } else {
-                                self.presentAddressSearchFlow(countryCode: countryCode)
+                                self.presentAddressSearchFlow()
                             }
                         } else {
                             self.safePushInNavController(controller)
@@ -422,10 +422,12 @@ final class KYCRouter: KYCRouterAPI {
         }
     }
 
-    private func presentAddressSearchFlow(countryCode: String) {
+    private func presentAddressSearchFlow() {
+        guard let countryCode = country?.code ?? user?.address?.countryCode else { return }
         self.addressSearchFlowPresenter
             .openSearchAddressFlow(
-                countryCode: countryCode
+                country: countryCode,
+                state: user?.address?.state
             )
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] address in
@@ -611,8 +613,7 @@ final class KYCRouter: KYCRouterAPI {
                 )
                 self.navController = self.presentInNavigationController(controller, in: viewController)
             } else if isNewAddressSearchEnabled, startingPage == .address {
-                guard let countryCode = self.country?.code ?? self.user?.address?.countryCode else { return }
-                self.presentAddressSearchFlow(countryCode: countryCode)
+                self.presentAddressSearchFlow()
             } else {
                 controller = self.pageFactory.createFrom(
                     pageType: startingPage,

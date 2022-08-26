@@ -26,9 +26,7 @@ enum AddressSearchAction: Equatable, BindableAction, NavigationAction {
     case binding(BindingAction<AddressSearchState>)
 }
 
-enum SearchAddressId {
-    struct SearchDebounceId: Hashable {}
-}
+struct AddressSearchIdentifier: Hashable {}
 
 struct AddressSearchState: Equatable, NavigationState {
 
@@ -43,7 +41,6 @@ struct AddressSearchState: Equatable, NavigationState {
     var address: Address?
     var route: RouteIntent<AddressSearchRoute>?
     var addressModificationState: AddressModificationState?
-    var isAddressModificationVisible = false
     var loading = false
     var screenTitle: String = ""
     var error: Nabu.Error?
@@ -125,12 +122,18 @@ let addressSearchReducer = Reducer.combine(
 
         case .modifySelectedAddress(let addressId):
             return Effect(
-                value: .navigate(to: .modifyAddress(selectedAddressId: addressId, address: nil))
+                value: .navigate(to: .modifyAddress(
+                    selectedAddressId: addressId,
+                    address: state.address
+                ))
             )
 
         case .modifyAddress:
             return Effect(
-                value: .navigate(to: .modifyAddress(selectedAddressId: nil, address: state.address))
+                value: .navigate(to: .modifyAddress(
+                    selectedAddressId: nil,
+                    address: state.address
+                ))
             )
 
         case .onAppear:
@@ -186,19 +189,21 @@ let addressSearchReducer = Reducer.combine(
                   let country = country, country.isNotEmpty
             else {
                 state.searchResults = []
-                return .none
+                state.isSearchResultsLoading = false
+                return .cancel(id: AddressSearchIdentifier())
             }
             state.isSearchResultsLoading = true
             return env
                 .addressSearchService
-                .fetchAddresses(searchText: searchText, containerId: containerId, countryCode: country)
+                .fetchAddresses(
+                    searchText: searchText,
+                    containerId: containerId,
+                    countryCode: country,
+                    sateCode: state.address?.state
+                )
                 .receive(on: env.mainQueue)
                 .catchToEffect()
-                .debounce(
-                    id: SearchAddressId.SearchDebounceId(),
-                    for: .milliseconds(500),
-                    scheduler: env.mainQueue
-                )
+                .cancellable(id: AddressSearchIdentifier(), cancelInFlight: true)
                 .map { result in
                     .didReceiveAddressesResult(result)
                 }
@@ -217,13 +222,15 @@ let addressSearchReducer = Reducer.combine(
             switch modificationAction {
             case .updateAddressResponse(.success(let address)):
                 state.address = address
-                state.isAddressModificationVisible = false
                 return .merge(
                     Effect(value: .dismiss()),
                     Effect(value: .updateSelectedAddress(address))
                 )
             case .cancelEdit:
                 env.onComplete(state.address)
+                return .none
+            case .stateDoesNotMatch:
+                state.route = nil
                 return .none
             default:
                 return .none
@@ -235,16 +242,10 @@ let addressSearchReducer = Reducer.combine(
 
 extension Address {
     fileprivate var searchText: String {
-        let state = state?.replacingOccurrences(
-            of: Address.Constants.usPrefix,
-            with: ""
-        ) ?? ""
-        return [
+        [
             postCode,
             line1,
-            line2,
-            city,
-            state
+            city
         ]
             .compactMap { $0 }
             .filter(\.isNotEmpty)
@@ -279,7 +280,8 @@ struct MockServices: AddressSearchServiceAPI {
     func fetchAddresses(
         searchText: String,
         containerId: String?,
-        countryCode: String
+        countryCode: String,
+        sateCode: String?
     ) -> AnyPublisher<[AddressSearchResult], AddressSearchServiceError> {
         .just([])
     }
@@ -293,8 +295,7 @@ struct MockServices: AddressSearchServiceAPI {
                 buildingNumber: "32",
                 city: "Gotham City",
                 postCode: "89109-1234",
-                state: "Arizona",
-                stateCode: nil,
+                state: "AZ",
                 country: "US",
                 label: "32 Evergreen Boulevard \nGOTHAM CITY\n89109-1234\nUNITED STATES"
             )

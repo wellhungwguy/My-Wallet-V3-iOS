@@ -115,7 +115,7 @@ public protocol AddressSearchRouterAPI {
     ) -> AnyPublisher<Card.Address?, Never>
 
     func openEditAddressFlow(
-        isPresentedWithoutSearchView: Bool
+        isPresentedWithSearchView: Bool
     ) -> AnyPublisher<Card.Address?, Never>
 }
 
@@ -222,6 +222,7 @@ let cardOrderingReducer: Reducer<
             state.selectedProduct = state.products[safe: index]
             return .none
         case .fetchAddress:
+            state.updatingAddress = true
             return env
                 .addressService
                 .fetchResidentialAddress()
@@ -232,9 +233,13 @@ let cardOrderingReducer: Reducer<
             state.address = address
             return .none
         case .addressResponse(.failure(let error)):
+            state.isAddressConfirmationVisible = false
             state.error = error
             return .none
         case .editAddress:
+            guard state.address?.country != nil else {
+                return .none
+            }
             return env.addressSearchRouter
                 .openSearchAddressFlow(prefill: state.address)
                 .receive(on: env.mainQueue)
@@ -476,7 +481,7 @@ extension MockServices: AddressSearchRouterAPI {
     }
 
     func openEditAddressFlow(
-        isPresentedWithoutSearchView: Bool
+        isPresentedWithSearchView: Bool
     ) -> AnyPublisher<Card.Address?, Never> {
         .just(MockServices.address)
     }

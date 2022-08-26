@@ -59,7 +59,12 @@ public final class ResidentialAddressClient: ResidentialAddressClientAPI {
         )!
 
         return networkAdapter
-            .perform(request: request, responseType: Card.Address.self)
+            .perform(request: request, responseType: UpdateAddressRepsponse.self)
+            .map { $0.address }
             .eraseToAnyPublisher()
     }
+}
+
+private struct UpdateAddressRepsponse: Decodable {
+    let address: Card.Address
 }

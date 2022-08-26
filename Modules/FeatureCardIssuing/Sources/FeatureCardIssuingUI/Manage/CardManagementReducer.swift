@@ -322,7 +322,7 @@ let cardManagementReducer: Reducer<
             return .none
         case .editAddress:
             return env.addressSearchRouter
-                .openEditAddressFlow(isPresentedWithoutSearchView: true)
+                .openEditAddressFlow(isPresentedWithSearchView: false)
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardManagementAction.editAddressComplete)
         case .editAddressComplete(.success(let address)):

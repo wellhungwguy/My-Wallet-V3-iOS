@@ -13,7 +13,8 @@ public protocol AddressSearchServiceAPI {
     func fetchAddresses(
         searchText: String,
         containerId: String?,
-        countryCode: String
+        countryCode: String,
+        sateCode: String?
     ) -> AnyPublisher<[AddressSearchResult], AddressSearchServiceError>
 
     func fetchAddress(

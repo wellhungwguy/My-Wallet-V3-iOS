@@ -127,6 +127,16 @@ extension LocalizationConstants.AddressSearch {
                 "Please check the information you provided and try again.",
                 comment: "Generic error message displayed when an error occurs in address form"
             )
+
+            public static let cannotEditStateTitle = NSLocalizedString(
+                "You cannot change your State",
+                comment: "Title for an alert warning users that they can't change their State if we already have that data"
+            )
+            // swiftlint:disable line_length
+            public static let cannotEditStateMessage = NSLocalizedString(
+                "If you need to change your State, please contact our customer support.",
+                comment: "Longer explanation in an alert warning users that they can't change their State if we already have that data. If they need that, they should conact the customer support."
+            )
         }
     }
 }

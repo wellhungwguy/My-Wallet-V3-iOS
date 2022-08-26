@@ -18,6 +18,7 @@ final class AddressSearchClient: AddressSearchClientAPI {
     private enum Parameter {
         static let text = "text"
         static let countryCode = "country_code"
+        static let sateCode = "province_code"
         static let addressId = "id"
     }
 
@@ -41,7 +42,8 @@ final class AddressSearchClient: AddressSearchClientAPI {
     func fetchAddresses(
         searchText: String,
         containerId: String?,
-        countryCode: String
+        countryCode: String,
+        sateCode: String?
     ) -> AnyPublisher<[AddressSearchResult], Nabu.Error> {
         var parameters = [
             URLQueryItem(
@@ -58,6 +60,14 @@ final class AddressSearchClient: AddressSearchClientAPI {
                 URLQueryItem(
                     name: Parameter.addressId,
                     value: containerId
+                )
+            )
+        }
+        if let sateCode = sateCode {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameter.sateCode,
+                    value: sateCode
                 )
             )
         }

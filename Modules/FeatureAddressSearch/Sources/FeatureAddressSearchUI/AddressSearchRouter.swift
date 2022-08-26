@@ -37,8 +37,9 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
                     addressService: self.addressService,
                     addressSearchService: resolve(),
                     onComplete: { address in
-                        presenter?.dismiss(animated: true)
-                        promise(.success(address))
+                        presenter?.dismiss(animated: true) {
+                            promise(.success(address))
+                        }
                     }
                 )
                 let view = AddressSearchView(
@@ -54,7 +55,7 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
     }
 
     public func presentEditAddressFlow(
-        isPresentedWithoutSearchView: Bool,
+        isPresentedWithSearchView: Bool,
         config: AddressSearchFeatureConfig.AddressEditScreenConfig
     ) -> AnyPublisher<Address?, Never> {
         Deferred {
@@ -69,13 +70,14 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
                     addressService: self.addressService,
                     addressSearchService: resolve(),
                     onComplete: { address in
-                        presenter?.dismiss(animated: true)
-                        promise(.success(address))
+                        presenter?.dismiss(animated: true) {
+                            promise(.success(address))
+                        }
                     }
                 )
                 let view = AddressModificationView(
                     store: .init(
-                        initialState: .init(isPresentedWithoutSearchView: isPresentedWithoutSearchView),
+                        initialState: .init(isPresentedWithSearchView: isPresentedWithSearchView),
                         reducer: addressModificationReducer,
                         environment: env
                     )

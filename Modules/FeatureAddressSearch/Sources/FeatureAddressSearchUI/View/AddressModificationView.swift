@@ -30,7 +30,7 @@ struct AddressModificationView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if viewStore.isPresentedWithoutSearchView {
+            if !viewStore.isPresentedWithSearchView {
                 PrimaryNavigationView {
                     content
                 }
@@ -48,7 +48,7 @@ struct AddressModificationView: View {
                 form
                 .padding(.vertical, Spacing.padding3)
                 .primaryNavigation(title: viewStore.screenTitle)
-                .trailingNavigationButton(.close, isVisible: viewStore.isPresentedWithoutSearchView) {
+                .trailingNavigationButton(.close, isVisible: !viewStore.isPresentedWithSearchView) {
                     viewStore.send(.cancelEdit)
                 }
                 .onAppear {
@@ -110,19 +110,22 @@ struct AddressModificationView: View {
                         }
                     )
                     HStack(spacing: Spacing.padding2) {
-                        Input(
-                            text: viewStore.binding(\.$state),
-                            isFirstResponder: viewStore
-                                .binding(\.$selectedInputField)
-                                .equals(.state),
-                            label: L10n.Form.state,
-                            configuration: {
-                                $0.textContentType = .addressState
-                            },
-                            onReturnTapped: {
-                                viewStore.send(.binding(.set(\.$selectedInputField, .zip)))
-                            }
-                        )
+                        if viewStore.isStateFieldVisible {
+                            Input(
+                                text: viewStore.binding(\.$stateName),
+                                isFirstResponder: viewStore
+                                    .binding(\.$selectedInputField)
+                                    .equals(.state),
+                                label: L10n.Form.state,
+                                configuration: {
+                                    $0.textContentType = .addressState
+                                },
+                                onReturnTapped: {
+                                    viewStore.send(.binding(.set(\.$selectedInputField, .zip)))
+                                }
+                            )
+                            .disabled(true)
+                        }
                         Input(
                             text: viewStore.binding(\.$postcode),
                             isFirstResponder: viewStore

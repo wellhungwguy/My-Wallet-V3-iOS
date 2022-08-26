@@ -15,8 +15,7 @@ public struct AddressDetailsSearchResult: Codable, Equatable {
         case buildingNumber
         case city
         case postCode = "postalCode"
-        case state = "province"
-        case stateCode = "provinceCode"
+        case state = "provinceCode"
         case country = "countryIso2"
         case label
     }
@@ -32,7 +31,6 @@ public struct AddressDetailsSearchResult: Codable, Equatable {
     public let city: String?
     public let postCode: String?
     public let state: String?
-    public let stateCode: String?
     /// Country code in ISO-2
     public let country: String?
     public let label: String?
@@ -49,7 +47,6 @@ public struct AddressDetailsSearchResult: Codable, Equatable {
         city: String?,
         postCode: String?,
         state: String?,
-        stateCode: String?,
         /// Country code in ISO-2
         country: String?,
         label: String?
@@ -65,7 +62,6 @@ public struct AddressDetailsSearchResult: Codable, Equatable {
         self.city = city
         self.postCode = postCode
         self.state = state
-        self.stateCode = stateCode
         self.country = country
         self.label = label
     }
