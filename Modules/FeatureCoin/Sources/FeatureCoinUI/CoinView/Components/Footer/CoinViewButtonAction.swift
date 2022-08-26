@@ -15,7 +15,7 @@ struct ButtonAction: Equatable {
         self.disabled = disabled
     }
 
-    static func buy(disabled: Bool) -> ButtonAction {
+    static func buy(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.buy,
             icon: Icon.plus,
@@ -24,7 +24,7 @@ struct ButtonAction: Equatable {
         )
     }
 
-    static func send(disabled: Bool) -> ButtonAction {
+    static func send(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.send,
             icon: Icon.walletSend,
@@ -33,7 +33,7 @@ struct ButtonAction: Equatable {
         )
     }
 
-    static func receive(disabled: Bool) -> ButtonAction {
+    static func receive(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.receive,
             icon: Icon.walletReceive,
@@ -42,7 +42,7 @@ struct ButtonAction: Equatable {
         )
     }
 
-    static func sell(disabled: Bool) -> ButtonAction {
+    static func sell(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.sell,
             icon: Icon.walletSell,
@@ -51,7 +51,7 @@ struct ButtonAction: Equatable {
         )
     }
 
-    static func swap(disabled: Bool) -> ButtonAction {
+    static func swap(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.swap,
             icon: Icon.walletSwap,
