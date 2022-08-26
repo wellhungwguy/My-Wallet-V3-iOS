@@ -29,7 +29,7 @@ extension LocalizationConstants {
 
 extension LocalizationConstants.AppMode {
     public static let privateKeyWallet = NSLocalizedString(
-        "Private Key Walelt",
+        "Private Key Wallet",
         comment: "Private Key Wallet"
     )
 
