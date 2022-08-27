@@ -25,7 +25,9 @@ extension URLSession: URLSessionProtocol {
         with request: URLRequest,
         completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void
     ) -> URLSessionDataTaskProtocol {
-        dataTask(with: request, completionHandler: completionHandler) as URLSessionDataTaskProtocol
+        dataTask(with: request, completionHandler: { data, response, error in
+            DispatchQueue.main.async { completionHandler(data, response, error) }
+        }) as URLSessionDataTaskProtocol
     }
 
     @_disfavoredOverload

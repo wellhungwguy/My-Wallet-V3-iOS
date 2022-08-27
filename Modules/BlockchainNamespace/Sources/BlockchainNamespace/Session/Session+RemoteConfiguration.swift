@@ -40,7 +40,6 @@ extension Session {
             self.session = session
             let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
-                Task(priority: .high) {
                     let cached = preferences.object(
                         forKey: blockchain.session.configuration(\.id)
                     ) as? [String: Any] ?? [:]
@@ -58,28 +57,31 @@ extension Session {
                         expiration = 3600 // 1 hour
                     }
 
-                    do {
-                        _ = try await remote.fetch(withExpirationDuration: expiration)
-                        _ = try await remote.activate()
-                    } catch {
-                        print("😱", "unable to fetch remote configuration, retrying...", error)
+                func errored() {
+                    Task.detached { @MainActor in
                         try await backoff.next()
                         self.fetch?(app, isStale)
                     }
+                }
 
-                    let keys = remote.allKeys(from: .remote)
-                    for key in keys {
-                        do {
-                            configuration[key] = try JSONSerialization.jsonObject(
-                                with: remote[key].dataValue,
-                                options: .fragmentsAllowed
-                            )
-                        } catch {
-                            configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
+                remote.fetch(withExpirationDuration: expiration) { _, error in
+                    guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
+                    remote.activate { _, error in
+                        guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
+                        let keys = remote.allKeys(from: .remote)
+                        for key in keys {
+                            do {
+                                configuration[key] = try JSONSerialization.jsonObject(
+                                    with: remote[key].dataValue,
+                                    options: .fragmentsAllowed
+                                )
+                            } catch {
+                                configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
+                            }
                         }
+                        _fetched.send(configuration)
+                        app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
                     }
-                    _fetched.send(configuration)
-                    app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
                 }
             }
 
@@ -103,6 +105,14 @@ extension Session {
             self.app = app
             experiments = Experiments(app: app, session: session)
 
+            _fetched
+                .flatMap(experiments.decode)
+                .handleEvents(receiveOutput: _decoded.send)
+                .sink { [unowned self] _ in
+                    _isSynchronized.send(true)
+                }
+                .store(in: &bag)
+
             app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
                 .replaceError(with: false)
                 .scan((stale: false, count: 0)) { ($1, $0.count + 1) }
@@ -110,14 +120,6 @@ extension Session {
                     if stale || count == 1 {
                         fetch?(app, stale)
                     }
-                }
-                .store(in: &bag)
-
-            _fetched
-                .flatMap(experiments.decode)
-                .sink { [unowned self] output in
-                    _decoded.send(output)
-                    _isSynchronized.send(true)
                 }
                 .store(in: &bag)
         }

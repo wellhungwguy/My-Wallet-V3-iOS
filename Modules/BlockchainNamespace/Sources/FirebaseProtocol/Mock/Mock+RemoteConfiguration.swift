@@ -19,13 +19,14 @@ extension Mock {
         }
 
         public func fetch(
-            withExpirationDuration expirationDuration: TimeInterval
-        ) async throws -> RemoteConfigurationFetchStatus {
-            .success
+            withExpirationDuration expirationDuration: TimeInterval,
+            completionHandler: ((RemoteConfigurationFetchStatus, Error?) -> Void)?
+        ) {
+            completionHandler?(.success, nil)
         }
 
-        public func activate() async throws -> Bool {
-            true
+        public func activate(completion: ((Bool, Error?) -> Void)?) {
+            completion?(true, nil)
         }
 
         public func allKeys(from source: RemoteConfigurationSource) -> [String] {
