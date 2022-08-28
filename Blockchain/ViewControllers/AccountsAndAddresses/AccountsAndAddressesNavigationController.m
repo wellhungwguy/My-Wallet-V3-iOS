@@ -4,7 +4,7 @@
 #import "AccountsAndAddressesViewController.h"
 #import "AccountsAndAddressesDetailViewController.h"
 #import "UIView+ChangeFrameAttribute.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 @interface AccountsAndAddressesNavigationController () <WalletAddressesDelegate>
 @end

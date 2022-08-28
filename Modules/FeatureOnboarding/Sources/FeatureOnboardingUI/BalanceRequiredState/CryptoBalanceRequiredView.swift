@@ -70,7 +70,7 @@ public struct CryptoBalanceRequiredView: View {
             ModalContainer(
                 title: LocalizedStrings.title,
                 subtitle: LocalizedStrings.subtitle,
-                onClose: viewStore.send(.close),
+                onClose: { viewStore.send(.close) },
                 topAccessory: {
                     Image("crypto_required_header", bundle: .onboarding)
                         .resizable()

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "NSNumberFormatter+Currencies.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 @import FeatureSettingsDomain;
 

@@ -15,7 +15,7 @@ import RxSwift
 import WalletPayloadKit
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import ComposableNavigation
 @testable import FeatureAppDomain
 @testable import FeatureAppUI

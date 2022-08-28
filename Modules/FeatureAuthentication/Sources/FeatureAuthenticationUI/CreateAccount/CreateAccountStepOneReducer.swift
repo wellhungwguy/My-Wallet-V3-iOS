@@ -27,7 +27,7 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.countriesPickerTitle,
                     subtitle: LocalizedStrings.countriesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
                 ) {
                     CountryPickerView(selectedItem: viewStore.binding(\.$country))
                 }
@@ -38,7 +38,7 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.statesPickerTitle,
                     subtitle: LocalizedStrings.statesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
                 ) {
                     StatePickerView(selectedItem: viewStore.binding(\.$countryState))
                 }

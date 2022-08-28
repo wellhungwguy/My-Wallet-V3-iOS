@@ -56,6 +56,7 @@ import RemoteNotificationsKit
 import RxToolKit
 import StellarKit
 import ToolKit
+import UIKit
 import WalletPayloadKit
 
 // MARK: - Settings Dependencies
@@ -477,7 +478,8 @@ extension DependencyContainer {
 
         factory { UIApplication.shared as ExternalAppOpener }
         factory { UIApplication.shared as URLOpener }
-
+        factory { UIApplication.shared as OpenURLProtocol }
+        
         // MARK: KYC Module
 
         factory { () -> FeatureSettingsUI.KYCRouterAPI in
@@ -886,3 +888,5 @@ extension DependencyContainer {
         }
     }
 }
+
+extension UIApplication: OpenURLProtocol {}

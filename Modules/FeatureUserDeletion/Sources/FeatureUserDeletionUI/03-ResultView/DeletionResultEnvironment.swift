@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import Foundation
 
 public struct DeletionResultEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>

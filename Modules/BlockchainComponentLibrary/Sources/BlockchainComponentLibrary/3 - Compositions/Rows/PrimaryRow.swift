@@ -215,7 +215,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         textColorWhenHighlightighed: Color,
         textColorWhenNotHighlightighed: Color
     ) -> some View {
-        if #available(iOS 15.0, *) {
+        if #available(iOS 15.0, *), #available(macOS 12.0, *) {
             return Text(text.text) { string in
                 string.font = textTypography.font
                 guard !text.highlightRanges.isEmpty else {
@@ -558,7 +558,7 @@ struct PrimaryRow_Previews: PreviewProvider {
 
 /// extension to make applying AttributedString even easier
 extension Text {
-    @available(iOS 15, *)
+    @available(iOS 15, macOS 12, *)
     fileprivate init(_ string: String, configure: (inout AttributedString) -> Void) {
         var attributedString = AttributedString(string)
         configure(&attributedString)

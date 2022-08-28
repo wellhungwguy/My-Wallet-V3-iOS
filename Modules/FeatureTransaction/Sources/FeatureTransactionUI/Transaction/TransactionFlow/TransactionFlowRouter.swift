@@ -5,6 +5,7 @@
 import AnalyticsKit
 import BINDWithdrawUI
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit

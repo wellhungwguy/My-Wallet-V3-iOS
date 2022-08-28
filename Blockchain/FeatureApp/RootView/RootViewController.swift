@@ -20,16 +20,16 @@ import ToolKit
 final class RootViewController: UIHostingController<RootView> {
 
     let viewStore: ViewStore<RootViewState, RootViewAction>
+    let global: ViewStore<LoggedIn.State, LoggedIn.Action>
 
     var defaults: CacheSuite = UserDefaults.standard
-    var send: (LoggedIn.Action) -> Void
 
     var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
 
     init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
 
-        send = ViewStore(global).send
+        self.global = ViewStore(global)
 
         let backupFundsRouter = BackupFundsRouter(entry: .defiIntroScreen, navigationRouter: resolve())
         let environment = RootViewEnvironment(
@@ -158,9 +158,7 @@ extension RootViewController {
         app.on(where: isDescendant(of: blockchain.ux.frequent.action))
             .sink { [weak self] _ in
                 guard let viewStore = self?.viewStore else { return }
-                withAnimation {
-                    viewStore.send(.binding(.set(\.$fab.isOn, false)))
-                }
+                viewStore.send(.binding(.set(\.$fab.isOn, false)), animation: .linear)
             }
             .store(in: &bag)
     }

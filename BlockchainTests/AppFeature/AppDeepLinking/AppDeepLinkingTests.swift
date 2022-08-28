@@ -3,7 +3,7 @@
 import Combine
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import FeatureAppUI
 
 class AppDeepLinkingTests: XCTestCase {

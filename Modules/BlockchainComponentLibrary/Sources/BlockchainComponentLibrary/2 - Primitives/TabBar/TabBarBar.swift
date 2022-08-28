@@ -32,7 +32,7 @@ struct TabBarBar: View {
         HStack(spacing: 0) {
             ForEach(items) { item in
                 switch item {
-                case .tab(identifier: let identifier, icon: let icon, title: let title):
+                case .tab(identifier: let identifier, icon: let icon, title: _):
                     TabBarButton(
                         isOn: Binding(
                             get: {

@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ToolKit
+import BlockchainUI
 import UIComponentsKit
 
 extension ImageResource {
 
-    var media: Media {
+    var media: UIComponentsKit.Media {
         switch self {
         case .local(name: let name, bundle: let bundle):
             return .image(named: name, in: bundle)

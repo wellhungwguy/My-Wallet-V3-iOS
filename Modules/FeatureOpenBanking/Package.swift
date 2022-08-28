@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import Foundation
 import PackageDescription
@@ -30,50 +30,25 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(
-            name: "combine-schedulers",
-            url: "https://github.com/pointfreeco/combine-schedulers",
-            from: "0.5.0"
-        ),
-        .package(
-            name: "swift-composable-architecture",
-            url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
-        ),
-        .package(
-            name: "swift-case-paths",
-            url: "https://github.com/pointfreeco/swift-case-paths",
-            from: "0.8.0"
-        ),
+        .package(path: "../Blockchain"),
         .package(path: "../Analytics"),
-        .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../BlockchainComponentLibrary"),
-        .package(path: "../BlockchainNamespace"),
-        .package(path: "../Errors"),
         .package(path: "../Network"),
         .package(path: "../Test"),
-        .package(path: "../Tool"),
         .package(path: "../UIComponents")
     ],
     targets: [
         .target(
             name: "FeatureOpenBankingDomain",
             dependencies: [
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
-                .product(name: "CasePaths", package: "swift-case-paths"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
-                .product(name: "Errors", package: "Errors")
+                .product(name: "Blockchain", package: "Blockchain")
             ]
         ),
         .target(
             name: "FeatureOpenBankingData",
             dependencies: [
                 .target(name: "FeatureOpenBankingDomain"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
-                .product(name: "NetworkKit", package: "Network"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
+                .product(name: "Blockchain", package: "Blockchain"),
+                .product(name: "NetworkKit", package: "Network")
             ]
         ),
         .target(
@@ -82,11 +57,8 @@ let package = Package(
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingData"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
-                .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "ErrorsUI", package: "Errors")
+                .product(name: "BlockchainUI", package: "Blockchain"),
+                .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
         .target(
@@ -94,7 +66,6 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOpenBankingData"),
                 .target(name: "FeatureOpenBankingDomain"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ],
             resources: [
@@ -118,7 +89,6 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOpenBankingData"),
                 .target(name: "FeatureOpenBankingTestFixture"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),
@@ -128,7 +98,6 @@ let package = Package(
                 .target(name: "FeatureOpenBankingData"),
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingTestFixture"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),
@@ -137,7 +106,6 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOpenBankingUI"),
                 .target(name: "FeatureOpenBankingTestFixture"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         )

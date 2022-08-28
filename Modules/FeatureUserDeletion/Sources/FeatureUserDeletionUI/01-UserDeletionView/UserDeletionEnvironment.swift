@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import FeatureUserDeletionDomain
+import Foundation
 
 public struct UserDeletionEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>

@@ -38,8 +38,9 @@ extension Tab {
     }
 }
 
+let _app = app
 struct RootView: View {
-    var app: AppProtocol = Blockchain.app
+    var app: AppProtocol = _app
 
     let store: Store<RootViewState, RootViewAction>
     @ObservedObject private var viewStore: ViewStore<RootViewState, RootViewAction>
@@ -223,7 +224,7 @@ struct RootView: View {
     }
 
     @ViewBuilder func referrals() -> some View {
-        let onReferralTapAction = {
+        let onReferralTapAction: () -> Void = {
             viewStore.send(.onReferralTap)
         }
 

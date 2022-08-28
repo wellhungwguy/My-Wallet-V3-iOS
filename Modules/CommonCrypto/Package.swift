@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -15,14 +15,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "CryptoSwift",
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
             from: "1.4.2"
         ),
         .package(
-            name: "WalletCore",
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
-            .exact("2.9.8-blockchain")
+            exact: "2.9.8-blockchain"
         ),
         .package(path: "../Test")
     ],
@@ -30,8 +28,8 @@ let package = Package(
         .target(
             name: "CommonCryptoKit",
             dependencies: [
-                .product(name: "WalletCore", package: "WalletCore"),
-                .product(name: "SwiftProtobuf", package: "WalletCore"),
+                .product(name: "WalletCore", package: "wallet-core"),
+                .product(name: "SwiftProtobuf", package: "wallet-core"),
                 .product(name: "CryptoSwift", package: "CryptoSwift")
             ],
             linkerSettings: [

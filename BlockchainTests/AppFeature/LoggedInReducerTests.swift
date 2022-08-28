@@ -12,7 +12,7 @@ import RxSwift
 import WalletPayloadKit
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import FeatureAppUI
 
 // swiftlint:disable type_body_length

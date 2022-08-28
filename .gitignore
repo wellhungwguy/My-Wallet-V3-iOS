@@ -137,4 +137,4 @@ yarn-error.log*
 .swiftpm
 SourcePackages/
 PackageCache/
-
+Modules/**/Package.resolved

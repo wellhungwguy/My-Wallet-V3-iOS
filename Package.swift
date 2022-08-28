@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -58,42 +58,34 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "combine-schedulers",
             url: "https://github.com/pointfreeco/combine-schedulers",
-            from: "0.5.0"
+            from: "0.7.3"
         ),
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "swift-case-paths",
             url: "https://github.com/pointfreeco/swift-case-paths",
-            from: "0.7.0"
+            from: "0.9.1"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
         .package(
-            name: "swift-markdown",
             url: "https://github.com/apple/swift-markdown.git",
-            .revision("1023300b1d6847360ac9ceebbcff2bccacbcf2a5")
+            revision: "52563fc74a540b29854fde20e836b27394be2749"
         ),
         .package(
-            name: "Lexicon",
-            url: "https://github.com/screensailor/Lexicon",
-            .revision("160c4c417f8490658a8396d0283fb0d6fb98c327")
+            url: "https://github.com/thousandyears/Lexicon",
+            from: "0.6.2"
         ),
         .package(
-            name: "swift-algorithms",
             url: "https://github.com/apple/swift-algorithms.git",
             from: "1.0.0"
         )

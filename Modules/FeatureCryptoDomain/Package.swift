@@ -31,7 +31,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.38.3"
+            exact: "0.39.1"
         ),
         .package(
             url: "https://github.com/apple/swift-collections",
@@ -83,7 +83,6 @@ let package = Package(
                 .target(name: "FeatureCryptoDomainDomain")
             ],
             resources: [
-                // swiftlint:disable line_length
                 .process("Fixtures/GET/explorer-gateway/resolution/ud/search/Searchkey/GET_explorer-gateway_resolution_ud_search_Searchkey.json"),
                 .process("Fixtures/GET/explorer-gateway/resolution/ud/suggestions/Firstname/GET_explorer-gateway_resolution_ud_suggestions_Firstname.json"),
                 .process("Fixtures/POST/nabu-gateway/users/domain-campaigns/claim/POST_nabu-gateway_users_domain-campaigns_claim.json")

@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -38,12 +38,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.2.0"
         ),

@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Blockchain
+import BlockchainApp
 import ToolKit
 import XCTest
 

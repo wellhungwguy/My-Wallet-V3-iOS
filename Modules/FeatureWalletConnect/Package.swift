@@ -1,5 +1,4 @@
-// swift-tools-version:5.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -35,17 +34,14 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "WalletConnectSwift",
             url: "https://github.com/crucheton-bc/WalletConnectSwift.git",
             from: "1.6.2"
         ),

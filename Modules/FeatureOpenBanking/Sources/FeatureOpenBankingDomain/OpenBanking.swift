@@ -1,12 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@_exported import BlockchainNamespace
-import CasePaths
-import Combine
-import CombineSchedulers
+import Blockchain
 import DIKit
 import Foundation
-import ToolKit
 
 public final class OpenBanking {
 

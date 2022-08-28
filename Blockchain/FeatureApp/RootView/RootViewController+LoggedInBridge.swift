@@ -426,7 +426,7 @@ extension RootViewController: LoggedInBridge {
 
     func enableBiometrics() {
         let logout = { [weak self] () -> Void in
-            self?.send(.logout)
+            self?.global.send(.logout)
         }
         let flow = PinRouting.Flow.enableBiometrics(
             parent: UnretainedContentBox<UIViewController>(topMostViewController ?? self),
@@ -434,7 +434,7 @@ extension RootViewController: LoggedInBridge {
         )
         pinRouter = PinRouter(flow: flow) { [weak self] input in
             guard let password = input.password else { return }
-            self?.send(.wallet(.authenticateForBiometrics(password: password)))
+            self?.global.send(.wallet(.authenticateForBiometrics(password: password)))
             self?.pinRouter = nil
         }
         pinRouter?.execute()
@@ -442,7 +442,7 @@ extension RootViewController: LoggedInBridge {
 
     func changePin() {
         let logout = { [weak self] () -> Void in
-            self?.send(.logout)
+            self?.global.send(.logout)
         }
         let flow = PinRouting.Flow.change(
             parent: UnretainedContentBox<UIViewController>(topMostViewController ?? self),
@@ -471,7 +471,7 @@ extension RootViewController: LoggedInBridge {
                         style: .default
                     ) { [weak self] _ in
                         self?.viewStore.send(.dismiss())
-                        self?.send(.logout)
+                        self?.global.send(.logout)
                     },
                     UIAlertAction(
                         title: LocalizationConstants.cancel,
@@ -484,7 +484,7 @@ extension RootViewController: LoggedInBridge {
 
     func logoutAndForgetWallet() {
         viewStore.send(.dismiss())
-        send(.deleteWallet)
+        global.send(.deleteWallet)
     }
 
     func handleAccountsAndAddresses() {

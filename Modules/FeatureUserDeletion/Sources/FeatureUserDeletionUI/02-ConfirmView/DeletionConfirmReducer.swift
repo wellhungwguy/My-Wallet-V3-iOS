@@ -2,6 +2,7 @@ import Combine
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureUserDeletionDomain
+import Foundation
 
 public enum DeletionConfirmModule {}
 

@@ -3,7 +3,7 @@
 #import "AccountsAndAddressesViewController.h"
 #import "AccountsAndAddressesDetailViewController.h"
 #import "ReceiveTableCell.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 #import "UIView+ChangeFrameAttribute.h"
 #import "NSNumberFormatter+Currencies.h"
 

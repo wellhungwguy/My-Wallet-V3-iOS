@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -26,24 +26,20 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "Stripe",
             url: "https://github.com/stripe/stripe-ios",
             from: "22.0.0"
         ),
         .package(
-            name: "Frames",
             url: "https://github.com/checkout/frames-ios.git",
-            .upToNextMajor(from: "3.5.2")
+            from: "3.5.2"
         ),
         .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),
@@ -71,8 +67,8 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Errors", package: "Errors"),
-                .product(name: "Frames", package: "Frames"),
-                .product(name: "Stripe", package: "Stripe"),
+                .product(name: "Frames", package: "frames-ios"),
+                .product(name: "Stripe", package: "stripe-ios"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "MoneyKit", package: "Money")
             ]
@@ -87,8 +83,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "Frames", package: "Frames"),
-                .product(name: "Stripe", package: "Stripe")
+                .product(name: "Frames", package: "frames-ios"),
+                .product(name: "Stripe", package: "stripe-ios")
             ]
         )
     ]

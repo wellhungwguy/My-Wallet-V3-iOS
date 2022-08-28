@@ -43,7 +43,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.38.3"
+            exact: "0.39.1"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainNamespace"),

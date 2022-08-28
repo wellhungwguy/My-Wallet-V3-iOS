@@ -133,7 +133,9 @@ public struct AccountPickerView<
                             WithViewStore(self.store.scope { $0.balances(for: row.id) }) { balancesStore in
                                 AccountPickerRowView(
                                     model: row,
-                                    send: viewStore.send,
+                                    send: { action in
+                                        viewStore.send(action)
+                                    },
                                     badgeView: badgeView,
                                     iconView: iconView,
                                     multiBadgeView: multiBadgeView,

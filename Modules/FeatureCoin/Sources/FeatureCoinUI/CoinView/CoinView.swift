@@ -56,9 +56,7 @@ public struct CoinView: View {
                     account: account,
                     isVerified: viewStore.kycStatus != .unverified,
                     onClose: {
-                        withAnimation(.spring()) {
-                            viewStore.send(.set(\.$account, nil))
-                        }
+                        viewStore.send(.set(\.$account, nil), animation: .spring())
                     }
                 )
                 .context(
@@ -75,9 +73,7 @@ public struct CoinView: View {
                 AccountExplainer(
                     account: account,
                     onClose: {
-                        withAnimation(.spring()) {
-                            viewStore.send(.set(\.$explainer, nil))
-                        }
+                        viewStore.send(.set(\.$explainer, nil), animation: .spring())
                     }
                 )
                 .context(

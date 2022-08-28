@@ -24,7 +24,7 @@ public struct OnboardingChecklistView: View {
         ModalContainer(
             title: LocalizationConstants.Onboarding.Checklist.screenTitle,
             subtitle: LocalizationConstants.Onboarding.Checklist.screenSubtitle,
-            onClose: viewStore.send(.dismissFullScreenChecklist),
+            onClose: { viewStore.send(.dismissFullScreenChecklist) },
             topAccessory: {
                 VStack(spacing: Spacing.padding2) {
                     CountedProgressView(

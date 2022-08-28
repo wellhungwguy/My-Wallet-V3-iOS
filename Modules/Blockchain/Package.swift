@@ -15,9 +15,14 @@ let package = Package(
         .library(name: "BlockchainUI", targets: ["BlockchainUI"])
     ],
     dependencies: [
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            exact: "0.39.1"
+        ),
         .package(path: "../AnyCoding"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
+        .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Errors"),
         .package(path: "../Extensions"),
         .package(path: "../Keychain"),
@@ -40,6 +45,9 @@ let package = Package(
             dependencies: [
                 .target(name: "Blockchain"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "ErrorsUI", package: "Errors")
             ]
         )

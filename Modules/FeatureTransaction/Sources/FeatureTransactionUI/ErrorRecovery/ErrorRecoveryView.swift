@@ -75,7 +75,7 @@ struct ErrorRecoveryView: View {
         WithViewStore(store) { viewStore in
             BottomSheetModal(
                 title: viewStore.title,
-                onClose: viewStore.send(.closeTapped)
+                onClose: { viewStore.send(.closeTapped) }
             ) {
                 VStack(alignment: .leading, spacing: Spacing.padding2) {
                     RichText(viewStore.message)
@@ -116,7 +116,7 @@ struct BottomSheetModal<Content: View>: View {
 
     init(
         title: String,
-        onClose: @autoclosure @escaping () -> Void,
+        onClose: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title

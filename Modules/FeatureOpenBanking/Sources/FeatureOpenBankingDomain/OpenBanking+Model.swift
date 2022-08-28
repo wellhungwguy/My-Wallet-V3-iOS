@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Errors
-import Foundation
-import ToolKit
+import Blockchain
 
 extension OpenBanking {
 

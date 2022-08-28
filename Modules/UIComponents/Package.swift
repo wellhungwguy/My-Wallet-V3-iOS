@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -18,14 +18,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
         .package(
-            name: "swift-case-paths",
             url: "https://github.com/pointfreeco/swift-case-paths",
-            from: "0.8.0"
+            from: "0.9.1"
         ),
         .package(path: "../Tool"),
         .package(path: "../BlockchainComponentLibrary")
@@ -44,7 +42,7 @@ let package = Package(
             name: "UIComponentsKitTests",
             dependencies: [
                 "UIComponentsKit",
-                .product(name: "SnapshotTesting", package: "SnapshotTesting")
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
             path: "UIComponentsKitTests",
             exclude: ["__Snapshots__"]

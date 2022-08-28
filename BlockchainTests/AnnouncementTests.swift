@@ -5,7 +5,7 @@ import PlatformKit
 import ToolKit
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 
 final class AnnouncementTests: XCTestCase {
 

@@ -1,9 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainNamespace
-import Combine
-import CombineSchedulers
-import ToolKit
+import Blockchain
 
 public protocol OpenBankingClientAPI {
 

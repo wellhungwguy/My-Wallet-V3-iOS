@@ -50,7 +50,7 @@ struct TradingCurrencySelector: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            ModalContainer(onClose: viewStore.send(.close)) {
+            ModalContainer(onClose: { viewStore.send(.close) }) {
                 VStack(spacing: Spacing.padding3) {
                     Icon.globe
                         .accentColor(.semantic.primary)

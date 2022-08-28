@@ -22,6 +22,9 @@ private func xcrun(command: String...) -> Data {
     process.arguments = command
     process.launchPath = "/usr/bin/xcrun"
     process.environment = ["OS_ACTIVITY_MODE": "disable"]
+
+    print("⌛️", "xcrun", command.joined(separator: " "))
+
     process.launch()
 
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
@@ -45,8 +48,19 @@ private struct Package: Decodable {
 /// - Returns: A `Package` struct describing the containing swift package
 private func packageDump(path: String) throws -> Package {
     let data = xcrun(command: "swift", "package", "dump-package", "--package-path", "Modules/\(path)")
-    let package = try decoder.decode(Package.self, from: data)
-    return package
+    var output = String(decoding: data, as: UTF8.self)
+    var errorDescription: String?
+    if !output.hasPrefix("{"), let bracket = output.firstIndex(of: "{") {
+        output = String(output[bracket...])
+        errorDescription = String(output[...bracket])
+    }
+    do {
+        return try decoder.decode(Package.self, from: Data(output.utf8))
+    } catch {
+        print("❌", path)
+        print(errorDescription ?? output)
+        throw error
+    }
 }
 
 extension Path {

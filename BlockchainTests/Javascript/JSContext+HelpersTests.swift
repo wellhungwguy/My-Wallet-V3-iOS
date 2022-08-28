@@ -3,7 +3,7 @@
 import JavaScriptCore
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 
 class JSContextHelpersTests: XCTestCase {
 

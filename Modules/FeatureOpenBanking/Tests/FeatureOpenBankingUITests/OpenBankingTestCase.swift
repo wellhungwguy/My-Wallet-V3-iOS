@@ -1,11 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable line_length
 
-import ComposableArchitecture
+import BlockchainUI
 @testable import FeatureOpenBankingUI
 import NetworkKit
 import TestKit
-import ToolKit
 
 class OpenBankingTestCase: XCTestCase {
 
@@ -49,7 +48,7 @@ class OpenBankingTestCase: XCTestCase {
     }
 }
 
-struct OpenURL: URLOpener {
+struct OpenURL: OpenURLProtocol {
 
     var yield: (URL) -> Void
 
