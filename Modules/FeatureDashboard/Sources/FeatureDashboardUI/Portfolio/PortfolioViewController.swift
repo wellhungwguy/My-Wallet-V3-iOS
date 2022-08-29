@@ -238,7 +238,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         view.addSubview(floatingViewContainer)
         floatingViewContainer.layoutToSuperview(.trailing, offset: -Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.leading, offset: Spacing.padding3)
-        floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding3)
+        floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding5)
     }
 
     private func showFloatingViewContent() {
