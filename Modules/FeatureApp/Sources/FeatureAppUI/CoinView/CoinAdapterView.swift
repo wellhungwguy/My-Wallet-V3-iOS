@@ -72,12 +72,12 @@ public struct CoinAdapterView: View {
                                         filter: app.currentMode.filter
                                     )
                                 }
-                           .map { accounts in
-                                accounts
-                                    .filter { !($0 is ExchangeAccount) }
-                                    .map { Account($0, fiatCurrency) }
-                           }
-                            .eraseToAnyPublisher()
+                                .map { accounts in
+                                    accounts
+                                        .filter { !($0 is ExchangeAccount) }
+                                        .map { Account($0, fiatCurrency) }
+                                }
+                                .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()
                 },
@@ -215,9 +215,11 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var buy = app.on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { @MainActor [unowned self] event in
-        try await transactionsRouter.presentTransactionFlow(
-            to: .buy(cryptoAccount(for: .buy, from: event))
-        )
+        do {
+            try await transactionsRouter.presentTransactionFlow(
+                to: .buy(cryptoAccount(for: .buy, from: event))
+            )
+        }
     }
 
     lazy var sell = app.on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { @MainActor [unowned self] event in
@@ -340,19 +342,35 @@ public final class CoinViewObserver: Session.Observer {
                         .error(message: "No account found with id \(id)")
                 )
         } else {
-            return try await (
-                   app.get(blockchain.app.mode) == AppMode.defi
-                       ? accounts.first(where: { account in account is NonCustodialAccount })
-                       : accounts.first(where: { account in account is TradingAccount })
+            let appMode = app.currentMode
+            switch appMode {
+            case .both:
+                return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
-               )
-            .or(
-                throw: blockchain.ux.asset.error[]
-                    .error(message: "\(event) has no valid accounts for \(String(describing: action))")
-            )
+                )
+                .or(
+                    throw: blockchain.ux.asset.error[]
+                        .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                )
+
+            case .trading:
+                return  try(accounts.first(where: { account in account is TradingAccount }))
+                    .or(
+                        throw: blockchain.ux.asset.error[]
+                            .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                    )
+
+            case .defi:
+                return try(accounts.first(where: { account in account is NonCustodialAccount }))
+                    .or(
+                        throw: blockchain.ux.asset.error[]
+                            .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                    )
+            }
         }
     }
 }
+
 
 extension FeatureCoinDomain.Account {
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
