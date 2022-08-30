@@ -21,6 +21,10 @@ let package = Package(
         .library(
             name: "FeatureAddressSearchDomain",
             targets: ["FeatureAddressSearchDomain"]
+        ),
+        .library(
+            name: "FeatureAddressSearchMock",
+            targets: ["FeatureAddressSearchMock"]
         )
     ],
     dependencies: [
@@ -82,6 +86,13 @@ let package = Package(
                 .product(name: "UIKitExtensions", package: "UIKitExtensions")
             ]
         ),
+        .target(
+            name: "FeatureAddressSearchMock",
+            dependencies: [
+                .target(name: "FeatureAddressSearchData"),
+                .target(name: "FeatureAddressSearchDomain")
+            ]
+        ),
         .testTarget(
             name: "FeatureAddressSearchDataTests",
             dependencies: [
@@ -97,7 +108,8 @@ let package = Package(
         .testTarget(
             name: "FeatureAddressSearchUITests",
             dependencies: [
-                .target(name: "FeatureAddressSearchUI")
+                .target(name: "FeatureAddressSearchUI"),
+                .target(name: "FeatureAddressSearchMock")
             ]
         )
     ]

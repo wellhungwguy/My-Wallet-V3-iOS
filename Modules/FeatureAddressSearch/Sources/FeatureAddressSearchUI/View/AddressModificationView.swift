@@ -30,7 +30,7 @@ struct AddressModificationView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if !viewStore.isPresentedWithSearchView {
+            if !viewStore.isPresentedFromSearchView {
                 PrimaryNavigationView {
                     content
                 }
@@ -48,7 +48,7 @@ struct AddressModificationView: View {
                 form
                 .padding(.vertical, Spacing.padding3)
                 .primaryNavigation(title: viewStore.screenTitle)
-                .trailingNavigationButton(.close, isVisible: !viewStore.isPresentedWithSearchView) {
+                .trailingNavigationButton(.close, isVisible: !viewStore.isPresentedFromSearchView) {
                     viewStore.send(.cancelEdit)
                 }
                 .onAppear {
@@ -218,7 +218,10 @@ struct AddressModification_Previews: PreviewProvider {
         NavigationView {
             AddressModificationView(
                 store: Store(
-                    initialState: .init(addressDetailsId: MockServices.addressId),
+                    initialState: .init(
+                        addressDetailsId: MockServices.addressId,
+                        isPresentedFromSearchView: false
+                    ),
                     reducer: addressModificationReducer,
                     environment: .init(
                         mainQueue: .main,

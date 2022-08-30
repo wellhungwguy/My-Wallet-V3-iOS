@@ -7,10 +7,10 @@ public protocol AddressSearchRouterAPI {
     func presentSearchAddressFlow(
         prefill: Address?,
         config: AddressSearchFeatureConfig
-    ) -> AnyPublisher<Address?, Never>
+    ) -> AnyPublisher<AddressResult, Never>
 
     func presentEditAddressFlow(
-        isPresentedWithSearchView: Bool,
+        isPresentedFromSearchView: Bool,
         config: AddressSearchFeatureConfig.AddressEditScreenConfig
-    ) -> AnyPublisher<Address?, Never>
+    ) -> AnyPublisher<AddressResult, Never>
 }

@@ -38,7 +38,7 @@ enum CardOrderingAction: Equatable, BindableAction {
     case displayEligibleStateList
     case selectProduct(Int)
     case editAddress
-    case editAddressComplete(Result<Card.Address?, Never>)
+    case editAddressComplete(Result<CardAddressSearchResult, Never>)
     case binding(BindingAction<CardOrderingState>)
 }
 
@@ -109,14 +109,19 @@ struct CardOrderingState: Equatable {
     }
 }
 
+public enum CardAddressSearchResult: Equatable {
+    case abandoned
+    case saved(Card.Address)
+}
+
 public protocol AddressSearchRouterAPI {
     func openSearchAddressFlow(
         prefill: Card.Address?
-    ) -> AnyPublisher<Card.Address?, Never>
+    ) -> AnyPublisher<CardAddressSearchResult, Never>
 
     func openEditAddressFlow(
-        isPresentedWithSearchView: Bool
-    ) -> AnyPublisher<Card.Address?, Never>
+        isPresentedFromSearchView: Bool
+    ) -> AnyPublisher<CardAddressSearchResult, Never>
 }
 
 struct CardOrderingEnvironment {
@@ -148,7 +153,6 @@ struct CardOrderingEnvironment {
     }
 }
 
-// swiftlint:disable closure_body_length
 let cardOrderingReducer: Reducer<
     CardOrderingState,
     CardOrderingAction,
@@ -244,8 +248,13 @@ let cardOrderingReducer: Reducer<
                 .openSearchAddressFlow(prefill: state.address)
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardOrderingAction.editAddressComplete)
-        case .editAddressComplete(.success(let address)):
-            state.address = address
+        case .editAddressComplete(.success(let addressResult)):
+            switch addressResult {
+            case let .saved(address):
+                state.address = address
+            case let .abandoned:
+                break
+            }
             return .none
         case .binding:
             return .none
@@ -476,14 +485,14 @@ extension MockServices: LegalServiceAPI {
 extension MockServices: AddressSearchRouterAPI {
     func openSearchAddressFlow(
         prefill: Card.Address?
-    ) -> AnyPublisher<Card.Address?, Never> {
-        .just(prefill)
+    ) -> AnyPublisher<CardAddressSearchResult, Never> {
+        .just(.saved(MockServices.address))
     }
 
     func openEditAddressFlow(
-        isPresentedWithSearchView: Bool
-    ) -> AnyPublisher<Card.Address?, Never> {
-        .just(MockServices.address)
+        isPresentedFromSearchView: Bool
+    ) -> AnyPublisher<CardAddressSearchResult, Never> {
+        .just(.saved(MockServices.address))
     }
 }
 #endif
