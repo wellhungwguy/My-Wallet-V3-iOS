@@ -70,8 +70,9 @@ let package = Package(
             from: "0.9.1"
         ),
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            name: "DIKit",
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            .branch("safe-property-wrappers-locks")
         ),
         .package(
             url: "https://github.com/attaswift/BigInt.git",

@@ -26,8 +26,8 @@ let package = Package(
             from: "5.2.1"
         ),
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(path: "../Tool"),
         .package(path: "../Localization")

@@ -30,7 +30,7 @@ let package = Package(
             from: "1.9.0"
         ),
         .package(url: "https://github.com/kean/Nuke.git", from: "11.0.0"),
-        .package(url: "https://github.com/jackpooleybc/DIKit.git", branch: "safe-property-wrappers"),
+        .package(url: "https://github.com/dchatzieleftheriou-bc/DIKit.git", branch: "safe-property-wrappers-locks"),
         .package(path: "../Localization"),
         .package(path: "../Platform"),
         .package(path: "../UIComponents"),

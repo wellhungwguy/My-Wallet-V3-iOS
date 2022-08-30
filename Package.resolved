@@ -21,9 +21,9 @@
       },
       {
         "package": "DIKit",
-        "repositoryURL": "https://github.com/jackpooleybc/DIKit.git",
+        "repositoryURL": "https://github.com/dchatzieleftheriou-bc/DIKit.git",
         "state": {
-          "branch": "safe-property-wrappers",
+          "branch": "safe-property-wrappers-locks",
           "revision": "1d20369ab59d123b4d0bf85dffbe045f4f405ec1",
           "version": null
         }
