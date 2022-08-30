@@ -32,7 +32,7 @@ struct TabBarBar: View {
         HStack(spacing: 0) {
             ForEach(items) { item in
                 switch item {
-                case .tab(identifier: let identifier, icon: let icon, title: _):
+                case .tab(identifier: let identifier, icon: let icon, title: let title):
                     TabBarButton(
                         isOn: Binding(
                             get: {
@@ -43,7 +43,7 @@ struct TabBarBar: View {
                             }
                         ),
                         icon: icon,
-                        title: "title"
+                        title: title
                     )
                     .frame(maxWidth: .infinity)
                     .anchorPreference(key: AnchorFramesPreferenceKey.self, value: .bounds) {
