@@ -55,7 +55,7 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement, Actionabl
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.both]
+        [AppMode.trading, AppMode.legacy]
     }
 
     var shouldShow: Bool {

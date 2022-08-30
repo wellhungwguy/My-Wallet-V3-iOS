@@ -34,7 +34,7 @@ public struct CoinViewState: Equatable {
     @BindableState public var explainer: Account.Snapshot?
 
     var actions: [ButtonAction] {
-        appMode == .both ? defaultCoinActions() : superAppCoinActions()
+        appMode == .legacy ? defaultCoinActions() : superAppCoinActions()
     }
 
     private func defaultCoinActions() -> [ButtonAction] {

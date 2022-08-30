@@ -31,7 +31,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var isAppModeSwitcherPresented: Bool = false
 
     var appSwitcherEnabled: Bool {
-        appMode != .both
+        appMode != .legacy
     }
 
     var appModeSwitcherState: AppModeSwitcherState?
@@ -124,18 +124,21 @@ struct RootViewEnvironment: PublishedEnvironment {
     var app: AppProtocol
     var backupFundsRouter: BackupFundsRouterAPI
     var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
+    var analyticsRecorder: AnalyticsEventRecorderAPI
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
         backupFundsRouter: BackupFundsRouterAPI,
         coincore: CoincoreAPI,
-        recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
+        recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding,
+        analyticsRecoder: AnalyticsEventRecorderAPI
     ) {
         self.app = app
         self.coincore = coincore
         self.recoveryPhraseStatusProviding = recoveryPhraseStatusProviding
         self.backupFundsRouter = backupFundsRouter
+        analyticsRecorder = analyticsRecoder
     }
 
     func fetchTotalBalance(filter: AssetFilter) -> AnyPublisher<MoneyValue?, Never> {
@@ -168,7 +171,8 @@ let rootMainReducer = Reducer.combine(
                       AppModeSwitcherEnvironment(
                           app: environment.app,
                           recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding,
-                          backupFundsRouter: environment.backupFundsRouter
+                          backupFundsRouter: environment.backupFundsRouter,
+                          analyticsRecorder: environment.analyticsRecorder
                       )
             }
         )
@@ -237,7 +241,7 @@ let rootViewReducer = Reducer<
                 case .trading:
                     return environment.app.publisher(for: blockchain.app.configuration.frequent.action.trading, as: FrequentActionData.self)
 
-                case .both:
+                case .legacy:
                     return environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 }
             }

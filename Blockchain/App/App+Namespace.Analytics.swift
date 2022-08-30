@@ -5,25 +5,58 @@ import ToolKit
 import UIKit
 
 final class AppAnalyticsTraitRepository: Session.Observer, TraitRepositoryAPI {
+    struct Value: Decodable {
+        let value: Either<Tag.Reference, AnyJSON>
+        let condition: Condition?
+    }
 
     unowned let app: AppProtocol
-    var traits: [String: String] = [:]
-
+    var _traits: [String: String] = [:]
+    var _config: FetchResult.Value<[String: Value?]>?
+    var traits: [String: String] { resolveTraits() }
     init(app: AppProtocol) {
         self.app = app
     }
 
-    private var experiments: AnyCancellable? {
+    private var subscription: AnyCancellable? {
         didSet { oldValue?.cancel() }
     }
 
     func start() {
-        experiments = Session.RemoteConfiguration.experiments(in: app)
-            .sink { [unowned self] experiments in traits = experiments.mapValues(String.init) }
+        subscription = Session.RemoteConfiguration.experiments(in: app)
+            .combineLatest(app.publisher(for: blockchain.ux.type.analytics.configuration.segment.user.traits, as: [String: Value?].self))
+            .sink(to: My.fetched(experiments:additional:), on: self)
     }
 
     func stop() {
-        experiments = nil
+        subscription = nil
+    }
+
+    private func fetched(experiments: [String: Int], additional: FetchResult.Value<[String: Value?]>) {
+        _traits = experiments.mapValues(String.init)
+        _config = additional
+    }
+
+    private func resolveTraits() -> [String: String] {
+        var traits = _traits
+        if let additional = _config?.value?.compactMapValues(\.wrapped) {
+            for (key, result) in additional {
+                if let condition = result.condition {
+                    guard condition.check() else { continue }
+                }
+                switch result.value {
+                case .left(let ref):
+                    traits[key] = (
+                        try? app.state.get(ref)
+                    ) ?? (
+                        try? app.remoteConfiguration.get(ref)
+                    )
+                case .right(let json):
+                    traits[key] = String(describing: json.thing)
+                }
+            }
+        }
+        return traits
     }
 }
 
@@ -32,12 +65,6 @@ final class AppAnalyticsObserver: Session.Observer {
     typealias Analytics = [Tag.Reference: Value]
 
     struct Value: Decodable {
-
-        struct Condition: Decodable {
-            let `if`: [Tag.Reference]?
-            let unless: [Tag.Reference]?
-        }
-
         let name: String
         let context: [String: Either<Tag.Reference, AnyJSON>]?
         let condition: Condition?
@@ -110,10 +137,7 @@ final class AppAnalyticsObserver: Session.Observer {
 
     func record(_ event: Session.Event, _ value: Value, _ type: AnalyticsEventType) {
         if let condition = value.condition {
-            guard
-                (condition.if ?? []).allSatisfy(isYes),
-                (condition.unless ?? []).none(isYes)
-            else { return }
+            guard condition.check() else { return }
         }
         Task { @MainActor in
             do {
@@ -139,16 +163,27 @@ final class AppAnalyticsObserver: Session.Observer {
             }
         }
     }
+}
 
-    func isYes(_ ref: Tag.Reference) -> Bool {
-        switch ref.tag {
-        case blockchain.session.state.value:
-            return app.state.result(for: ref).isYes
-        case blockchain.session.configuration.value:
-            return app.remoteConfiguration.result(for: ref).isYes
-        default:
-            return false
-        }
+struct Condition: Decodable {
+    let `if`: [Tag.Reference]?
+    let unless: [Tag.Reference]?
+}
+
+extension Condition {
+    func check() -> Bool {
+        (`if` ?? []).allSatisfy(isYes) && (unless ?? []).none(isYes)
+    }
+}
+
+func isYes(_ ref: Tag.Reference) -> Bool {
+    switch ref.tag {
+    case blockchain.session.state.value:
+        return app.state.result(for: ref).isYes
+    case blockchain.session.configuration.value:
+        return app.remoteConfiguration.result(for: ref).isYes
+    default:
+        return false
     }
 }
 

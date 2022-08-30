@@ -55,7 +55,7 @@ final class UKEntitySwitchAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.both]
+        [AppMode.trading, AppMode.legacy]
     }
 
     var shouldShow: Bool {

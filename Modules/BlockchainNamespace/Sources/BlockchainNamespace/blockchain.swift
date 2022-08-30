@@ -3287,6 +3287,7 @@ public final class L_blockchain_ux_frequent_action: L, I_blockchain_ux_frequent_
 public protocol I_blockchain_ux_frequent_action: I_blockchain_ux_type_story {}
 public extension I_blockchain_ux_frequent_action {
 	var `buy`: L_blockchain_ux_frequent_action_buy { .init("\(__).buy") }
+	var `defi`: L_blockchain_ux_frequent_action_defi { .init("\(__).defi") }
 	var `deposit`: L_blockchain_ux_frequent_action_deposit { .init("\(__).deposit") }
 	var `nft`: L_blockchain_ux_frequent_action_nft { .init("\(__).nft") }
 	var `receive`: L_blockchain_ux_frequent_action_receive { .init("\(__).receive") }
@@ -3300,6 +3301,36 @@ public final class L_blockchain_ux_frequent_action_buy: L, I_blockchain_ux_frequ
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.buy", comment: "") }
 }
 public protocol I_blockchain_ux_frequent_action_buy: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_frequent_action_defi: L, I_blockchain_ux_frequent_action_defi {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.defi", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_defi: I {}
+public extension I_blockchain_ux_frequent_action_defi {
+	var `buy`: L_blockchain_ux_frequent_action_defi_buy { .init("\(__).buy") }
+	var `switch`: L_blockchain_ux_frequent_action_defi_switch { .init("\(__).switch") }
+}
+public final class L_blockchain_ux_frequent_action_defi_buy: L, I_blockchain_ux_frequent_action_defi_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.defi.buy", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_defi_buy: I {}
+public final class L_blockchain_ux_frequent_action_defi_switch: L, I_blockchain_ux_frequent_action_defi_switch {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.defi.switch", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_defi_switch: I {}
+public extension I_blockchain_ux_frequent_action_defi_switch {
+	var `to`: L_blockchain_ux_frequent_action_defi_switch_to { .init("\(__).to") }
+}
+public final class L_blockchain_ux_frequent_action_defi_switch_to: L, I_blockchain_ux_frequent_action_defi_switch_to {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.defi.switch.to", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_defi_switch_to: I {}
+public extension I_blockchain_ux_frequent_action_defi_switch_to {
+	var `trading`: L_blockchain_ux_frequent_action_defi_switch_to_trading { .init("\(__).trading") }
+}
+public final class L_blockchain_ux_frequent_action_defi_switch_to_trading: L, I_blockchain_ux_frequent_action_defi_switch_to_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.defi.switch.to.trading", comment: "") }
+}
+public protocol I_blockchain_ux_frequent_action_defi_switch_to_trading: I {}
 public final class L_blockchain_ux_frequent_action_deposit: L, I_blockchain_ux_frequent_action_deposit {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent.action.deposit", comment: "") }
 }
@@ -4721,11 +4752,23 @@ public final class L_blockchain_ux_type_analytics_configuration_segment: L, I_bl
 public protocol I_blockchain_ux_type_analytics_configuration_segment: I {}
 public extension I_blockchain_ux_type_analytics_configuration_segment {
 	var `map`: L_blockchain_ux_type_analytics_configuration_segment_map { .init("\(__).map") }
+	var `user`: L_blockchain_ux_type_analytics_configuration_segment_user { .init("\(__).user") }
 }
 public final class L_blockchain_ux_type_analytics_configuration_segment_map: L, I_blockchain_ux_type_analytics_configuration_segment_map {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.segment.map", comment: "") }
 }
 public protocol I_blockchain_ux_type_analytics_configuration_segment_map: I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_type_analytics_configuration_segment_user: L, I_blockchain_ux_type_analytics_configuration_segment_user {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.segment.user", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_segment_user: I {}
+public extension I_blockchain_ux_type_analytics_configuration_segment_user {
+	var `traits`: L_blockchain_ux_type_analytics_configuration_segment_user_traits { .init("\(__).traits") }
+}
+public final class L_blockchain_ux_type_analytics_configuration_segment_user_traits: L, I_blockchain_ux_type_analytics_configuration_segment_user_traits {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.segment.user.traits", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_segment_user_traits: I_blockchain_session_configuration_value {}
 public final class L_blockchain_ux_type_analytics_current: L, I_blockchain_ux_type_analytics_current {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.current", comment: "") }
 }

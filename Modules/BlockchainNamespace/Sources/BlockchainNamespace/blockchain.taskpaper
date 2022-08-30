@@ -846,6 +846,11 @@ blockchain:
 			+ blockchain.ux.type.story
 				buy:
 				+ blockchain.ux.type.story
+				defi:
+					buy:
+					switch:
+						to:
+							trading:
 				deposit:
 				+ blockchain.ux.type.story
 				nft:
@@ -1188,6 +1193,9 @@ blockchain:
 					segment:
 						map:
 						+ blockchain.session.configuration.value
+						user:
+							traits:
+							+ blockchain.session.configuration.value
 				current:
 					state:
 					+ blockchain.db.type.tag

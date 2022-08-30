@@ -36,7 +36,8 @@ final class RootViewController: UIHostingController<RootView> {
             app: app,
             backupFundsRouter: backupFundsRouter,
             coincore: resolve(),
-            recoveryPhraseStatusProviding: resolve()
+            recoveryPhraseStatusProviding: resolve(),
+            analyticsRecoder: resolve()
         )
 
         let store = Store(

@@ -22,7 +22,7 @@ public struct AssetFilter: OptionSet, Hashable {
 extension AppMode {
     public var filter: AssetFilter {
         switch self {
-        case .both:
+        case .legacy:
             return .all
         case .defi:
             return .nonCustodial

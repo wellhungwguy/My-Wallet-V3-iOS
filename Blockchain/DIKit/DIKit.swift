@@ -479,7 +479,7 @@ extension DependencyContainer {
         factory { UIApplication.shared as ExternalAppOpener }
         factory { UIApplication.shared as URLOpener }
         factory { UIApplication.shared as OpenURLProtocol }
-        
+
         // MARK: KYC Module
 
         factory { () -> FeatureSettingsUI.KYCRouterAPI in

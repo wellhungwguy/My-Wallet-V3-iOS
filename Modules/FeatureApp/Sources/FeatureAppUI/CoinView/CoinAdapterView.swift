@@ -344,7 +344,7 @@ public final class CoinViewObserver: Session.Observer {
         } else {
             let appMode = app.currentMode
             switch appMode {
-            case .both:
+            case .legacy:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
                 )
