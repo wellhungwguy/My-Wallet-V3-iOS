@@ -45,7 +45,7 @@ let package = Package(
         .package(
             name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
+            from: "6.5.0"
         ),
         .package(path: "../CommonCrypto"),
         .package(path: "../FeatureAuthentication"),

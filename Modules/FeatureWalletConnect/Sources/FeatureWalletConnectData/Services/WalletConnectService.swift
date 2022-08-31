@@ -140,7 +140,7 @@ final class WalletConnectService {
     }
 }
 
-extension WalletConnectService: ServerDelegate {
+extension WalletConnectService: ServerDelegateV2 {
 
     // MARK: - ServerDelegate
 
@@ -152,8 +152,23 @@ extension WalletConnectService: ServerDelegate {
     }
 
     func server(_ server: Server, shouldStart session: Session, completion: @escaping (Session.WalletInfo) -> Void) {
+        // Method not called on `ServerDelegateV2`.
+    }
+
+    func server(_ server: Server, didReceiveConnectionRequest requestId: RequestID, for session: Session) {
         addOrUpdateSession(session: session)
+        let completion: (Session.WalletInfo) -> Void = { [server] walletInfo in
+            server.sendCreateSessionResponse(
+                for: requestId,
+                session: session,
+                walletInfo: walletInfo
+            )
+        }
         sessionEventsSubject.send(.shouldStart(session, completion))
+    }
+
+    func server(_ server: Server, willReconnect session: Session) {
+        // NOOP
     }
 
     func server(_ server: Server, didConnect session: Session) {

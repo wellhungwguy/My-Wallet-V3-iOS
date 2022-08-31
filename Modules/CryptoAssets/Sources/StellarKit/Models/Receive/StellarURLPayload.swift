@@ -15,7 +15,7 @@ struct SEP7URI {
 
     var absoluteString: String {
         URIScheme().getPayOperationURI(
-            accountID: address,
+            destination: address,
             amount: amount?.displayMajorValue,
             memo: memo
         )

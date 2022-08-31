@@ -36,7 +36,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/attaswift/BigInt.git",
-            from: "5.2.1"
+            from: "5.3.0"
         ),
         .package(
             url: "https://github.com/jackpooleybc/DIKit.git",
@@ -44,7 +44,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
+            from: "6.5.0"
         ),
         .package(
             url: "https://github.com/Veriff/veriff-ios-spm.git",
