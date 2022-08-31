@@ -3274,6 +3274,84 @@ public final class L_blockchain_ux_error: L, I_blockchain_ux_error {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.error", comment: "") }
 }
 public protocol I_blockchain_ux_error: I_blockchain_ux_type_story, I_blockchain_ui_device_haptic_feedback_notification_error, I_blockchain_ux_type_action {}
+public extension I_blockchain_ux_error {
+	var `context`: L_blockchain_ux_error_context { .init("\(__).context") }
+}
+public final class L_blockchain_ux_error_context: L, I_blockchain_ux_error_context {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context", comment: "") }
+}
+public protocol I_blockchain_ux_error_context: I {}
+public extension I_blockchain_ux_error_context {
+	var `action`: L_blockchain_ux_error_context_action { .init("\(__).action") }
+	var `category`: L_blockchain_ux_error_context_category { .init("\(__).category") }
+	var `id`: L_blockchain_ux_error_context_id { .init("\(__).id") }
+	var `network`: L_blockchain_ux_error_context_network { .init("\(__).network") }
+	var `source`: L_blockchain_ux_error_context_source { .init("\(__).source") }
+	var `title`: L_blockchain_ux_error_context_title { .init("\(__).title") }
+	var `type`: L_blockchain_ux_error_context_type { .init("\(__).type") }
+}
+public final class L_blockchain_ux_error_context_action: L, I_blockchain_ux_error_context_action {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.action", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_action: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_error_context_category: L, I_blockchain_ux_error_context_category {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.category", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_category: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_id: L, I_blockchain_ux_error_context_id {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.id", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_id: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_network: L, I_blockchain_ux_error_context_network {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network: I {}
+public extension I_blockchain_ux_error_context_network {
+	var `endpoint`: L_blockchain_ux_error_context_network_endpoint { .init("\(__).endpoint") }
+	var `error`: L_blockchain_ux_error_context_network_error { .init("\(__).error") }
+}
+public final class L_blockchain_ux_error_context_network_endpoint: L, I_blockchain_ux_error_context_network_endpoint {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.endpoint", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_endpoint: I_blockchain_db_type_url {}
+public final class L_blockchain_ux_error_context_network_error: L, I_blockchain_ux_error_context_network_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.error", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_error: I {}
+public extension I_blockchain_ux_error_context_network_error {
+	var `code`: L_blockchain_ux_error_context_network_error_code { .init("\(__).code") }
+	var `description`: L_blockchain_ux_error_context_network_error_description { .init("\(__).description") }
+	var `id`: L_blockchain_ux_error_context_network_error_id { .init("\(__).id") }
+	var `type`: L_blockchain_ux_error_context_network_error_type { .init("\(__).type") }
+}
+public final class L_blockchain_ux_error_context_network_error_code: L, I_blockchain_ux_error_context_network_error_code {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.error.code", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_error_code: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_network_error_description: L, I_blockchain_ux_error_context_network_error_description {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.error.description", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_error_description: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_network_error_id: L, I_blockchain_ux_error_context_network_error_id {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.error.id", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_error_id: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_network_error_type: L, I_blockchain_ux_error_context_network_error_type {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.network.error.type", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_network_error_type: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_source: L, I_blockchain_ux_error_context_source {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.source", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_source: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_title: L, I_blockchain_ux_error_context_title {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.title", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_title: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_error_context_type: L, I_blockchain_ux_error_context_type {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.error.context.type", comment: "") }
+}
+public protocol I_blockchain_ux_error_context_type: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_frequent: L, I_blockchain_ux_frequent {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent", comment: "") }
 }

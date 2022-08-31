@@ -44,7 +44,10 @@ public struct ErrorView<Fallback: View>: View {
                 state.set(blockchain.ux.error, to: ux)
                 state.set(blockchain.ux.error.then.close, to: Session.State.Function { dismiss?() })
             }
-            app.post(event: blockchain.ux.error, context: context)
+            app.post(
+                event: blockchain.ux.error,
+                context: context + ux.context(in: app)
+            )
         }
         .apply { view in
             #if os(iOS)

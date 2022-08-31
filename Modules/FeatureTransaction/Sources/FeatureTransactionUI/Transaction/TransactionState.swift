@@ -419,6 +419,10 @@ enum TransactionFlowStep: Equatable {
 
 extension TransactionFlowStep {
 
+    var label: String {
+        (Mirror(reflecting: self).children.first?.label ?? String(describing: self)).snakeCase().uppercased()
+    }
+
     var addToBackStack: Bool {
         switch self {
         case .selectSource,
