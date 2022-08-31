@@ -57,7 +57,8 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: DispatchQueue(label: "receive.address.mock.queue")
         )
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(
@@ -157,7 +158,8 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: DispatchQueue(label: "receive.address.mock.queue")
         )
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(
@@ -257,7 +259,8 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: DispatchQueue(label: "receive.address.mock.queue")
         )
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(

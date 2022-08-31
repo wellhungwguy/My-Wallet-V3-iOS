@@ -50,11 +50,16 @@ extension DependencyContainer {
             )
         }
 
+        single(tag: BitcoinChain.chainQueue) {
+            DispatchQueue(label: "bitcoin.chain.receive.address.queue", qos: .userInitiated)
+        }
+
         factory(tag: BitcoinChainCoin.bitcoin) { () -> BitcoinChainReceiveAddressProviderAPI in
             BitcoinChainReceiveAddressProvider<BitcoinToken>(
                 mnemonicProvider: DIKit.resolve(),
                 fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
-                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
+                operationQueue: DIKit.resolve(tag: BitcoinChain.chainQueue)
             )
         }
 
@@ -101,7 +106,8 @@ extension DependencyContainer {
             BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
                 mnemonicProvider: DIKit.resolve(),
                 fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
-                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash)
+                unspentOutputRepository: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
+                operationQueue: DIKit.resolve(tag: BitcoinChain.chainQueue)
             )
         }
 

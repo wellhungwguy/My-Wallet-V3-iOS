@@ -371,7 +371,6 @@ public final class CoinViewObserver: Session.Observer {
     }
 }
 
-
 extension FeatureCoinDomain.Account {
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
         self.init(
