@@ -22,6 +22,7 @@ final class BuyTransactionEngine: TransactionEngine {
     // Used to convert payment method currencies into the wallet's trading currency
     let walletCurrencyService: FiatCurrencyServiceAPI
 
+    private let app: AppProtocol
     // Used to convert the user input into an actual quote with fee (takes a fiat amount)
     private let orderQuoteService: OrderQuoteServiceAPI
     // Used to create a pending order when the user confirms the transaction
@@ -40,6 +41,7 @@ final class BuyTransactionEngine: TransactionEngine {
     private var pendingCheckoutData: CheckoutData?
 
     init(
+        app: AppProtocol = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         orderQuoteService: OrderQuoteServiceAPI = resolve(),
@@ -49,6 +51,7 @@ final class BuyTransactionEngine: TransactionEngine {
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
+        self.app = app
         self.currencyConversionService = currencyConversionService
         self.walletCurrencyService = walletCurrencyService
         self.orderQuoteService = orderQuoteService
@@ -275,23 +278,35 @@ extension BuyTransactionEngine {
         case limitsError(TransactionLimitsServiceError)
     }
 
+    private var isCardSuccessRateEnabled: AnyPublisher<Bool, Never> {
+        let event: Tag.Event = blockchain.app.configuration.card.success.rate.is.enabled
+        return app.publisher(for: event, as: Bool.self)
+            .prefix(1)
+            .replaceError(with: false)
+    }
+
     private func validateIfSourceAccountIsBlocked(
         _ pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
-            return .error(TransactionValidationFailure(state: .optionInvalid))
-        }
-        if let ux = sourceAccount.paymentMethodType.ux {
-            guard !sourceAccount.paymentMethodType.block else {
-                return .just(
-                    pendingTransaction
-                        .update(
-                            validationState: .sourceAccountUsageIsBlocked(ux)
+        isCardSuccessRateEnabled
+            .asSingle()
+            .flatMap { [sourceAccount] isEnabled -> Single<PendingTransaction> in
+                guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
+                    return .error(TransactionValidationFailure(state: .optionInvalid))
+                }
+                guard isEnabled else { return .just(pendingTransaction) }
+                if let ux = sourceAccount.paymentMethodType.ux {
+                    guard !sourceAccount.paymentMethodType.block else {
+                        return .just(
+                            pendingTransaction
+                                .update(
+                                    validationState: .sourceAccountUsageIsBlocked(ux)
+                                )
                         )
-                )
+                    }
+                }
+                return .just(pendingTransaction)
             }
-        }
-        return .just(pendingTransaction)
     }
 
     private func makeTransaction(amount: MoneyValue? = nil) -> Single<PendingTransaction> {

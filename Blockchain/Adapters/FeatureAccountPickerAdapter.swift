@@ -148,6 +148,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     self.withdrawalLocksView()
                 }
             )
+            .app(app)
         )
         addChild(child)
     }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 @testable import FeatureAccountPickerUI
@@ -125,6 +126,7 @@ class AccountPickerViewTests: XCTestCase {
             multiBadgeView: { _ in EmptyView() },
             withdrawalLocksView: { EmptyView() }
         )
+        .app(App.preview)
 
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
     }

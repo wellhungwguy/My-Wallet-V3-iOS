@@ -267,6 +267,7 @@ public final class L_blockchain_app_configuration_card: L, I_blockchain_app_conf
 public protocol I_blockchain_app_configuration_card: I {}
 public extension I_blockchain_app_configuration_card {
 	var `issuing`: L_blockchain_app_configuration_card_issuing { .init("\(__).issuing") }
+	var `success`: L_blockchain_app_configuration_card_success { .init("\(__).success") }
 }
 public final class L_blockchain_app_configuration_card_issuing: L, I_blockchain_app_configuration_card_issuing {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing", comment: "") }
@@ -286,6 +287,31 @@ public final class L_blockchain_app_configuration_card_issuing_is_enabled: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_card_issuing_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_card_success: L, I_blockchain_app_configuration_card_success {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.success", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_success: I {}
+public extension I_blockchain_app_configuration_card_success {
+	var `rate`: L_blockchain_app_configuration_card_success_rate { .init("\(__).rate") }
+}
+public final class L_blockchain_app_configuration_card_success_rate: L, I_blockchain_app_configuration_card_success_rate {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.success.rate", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_success_rate: I {}
+public extension I_blockchain_app_configuration_card_success_rate {
+	var `is`: L_blockchain_app_configuration_card_success_rate_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_card_success_rate_is: L, I_blockchain_app_configuration_card_success_rate_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.success.rate.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_success_rate_is: I {}
+public extension I_blockchain_app_configuration_card_success_rate_is {
+	var `enabled`: L_blockchain_app_configuration_card_success_rate_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_card_success_rate_is_enabled: L, I_blockchain_app_configuration_card_success_rate_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.success.rate.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_success_rate_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_customer: L, I_blockchain_app_configuration_customer {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.customer", comment: "") }
 }
