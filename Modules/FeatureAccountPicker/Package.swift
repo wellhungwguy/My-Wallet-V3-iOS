@@ -31,7 +31,7 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "0.1.2"),
+        .package(url: "https://github.com/pointfreeco/combine-schedulers", .exact("0.7.2")),
         .package(path: "../UIComponents"),
         .package(path: "../Test"),
         .package(path: "../Platform"),

@@ -27,7 +27,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
-            from: "0.7.0"
+            exact: "0.7.2"
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-case-paths",
