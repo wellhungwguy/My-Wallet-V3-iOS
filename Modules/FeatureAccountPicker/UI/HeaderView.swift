@@ -13,8 +13,13 @@ struct HeaderView: View {
         switch viewModel {
         case .none:
             EmptyView()
-        case .simple(subtitle: let subtitle):
-            SimpleHeaderView(subtitle: subtitle)
+        case .simple(subtitle: let subtitle, searchable: let searchable):
+            SimpleHeaderView(
+                subtitle: subtitle,
+                searchable: searchable,
+                searchText: $searchText,
+                isSearching: $isSearching
+            )
         case .normal(
             title: let title,
             subtitle: let subtitle,
@@ -128,24 +133,36 @@ private struct NormalHeaderView: View {
 
 private struct SimpleHeaderView: View {
     let subtitle: String
+    let searchable: Bool
+
+    @Binding var searchText: String?
+    @Binding var isSearching: Bool
 
     private enum Layout {
-        static let margins = EdgeInsets(top: 23.5, leading: 24, bottom: 23.5, trailing: 24)
+        static let margins = EdgeInsets(top: 8.0, leading: 24, bottom: 8.0, trailing: 24)
 
         static let dividerLineHeight: CGFloat = 1
         static let subtitleFontSize: CGFloat = 14
     }
 
     var body: some View {
-        ZStack(alignment: Alignment(horizontal: .leading, vertical: .bottom)) {
-            Text(subtitle)
-                .font(Font(weight: .medium, size: Layout.subtitleFontSize))
-                .foregroundColor(.textSubheading)
-                .padding(Layout.margins)
+        VStack(alignment: .leading, spacing: 0) {
+            if !isSearching {
+                Text(subtitle)
+                    .font(Font(weight: .medium, size: Layout.subtitleFontSize))
+                    .foregroundColor(.textSubheading)
+                    .padding(Layout.margins)
+            }
 
-            Rectangle()
-                .frame(height: Layout.dividerLineHeight)
-                .foregroundColor(.dividerLineLight)
+            if searchable {
+                SearchBar(text: $searchText, isActive: $isSearching)
+                    .padding(.trailing, Layout.margins.trailing - 8)
+                    .padding(.leading, Layout.margins.leading - 8)
+            } else {
+                Rectangle()
+                    .frame(height: Layout.dividerLineHeight)
+                    .foregroundColor(.dividerLineLight)
+            }
         }
     }
 }

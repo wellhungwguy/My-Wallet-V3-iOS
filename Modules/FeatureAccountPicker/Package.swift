@@ -32,7 +32,7 @@ let package = Package(
         .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
             from: "0.7.3"
-         ),
+        ),
         .package(path: "../UIComponents"),
         .package(path: "../Test"),
         .package(path: "../Platform"),

@@ -765,12 +765,14 @@ extension TransactionFlowRouter {
         )
         let shouldAddMoreButton = canAddMoreSources && action.supportsAddingSourceAccounts
         let button: ButtonViewModel? = shouldAddMoreButton ? .secondary(with: LocalizationConstants.addNew) : nil
+        let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let isSearchEnabled = action == .swap && searchable
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
             buttonViewModel: button
         )
     }
@@ -791,10 +793,12 @@ extension TransactionFlowRouter {
             action: action
         )
         let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
+        let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let isSearchEnabled = action == .swap && searchable
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
             buttonViewModel: button
         )
     }

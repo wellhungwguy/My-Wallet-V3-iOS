@@ -16,8 +16,10 @@ public struct AccountPickerHeaderBuilder {
 
     var isAlwaysVisible: Bool {
         switch headerType {
-        case .none, .simple:
+        case .none:
             return false
+        case .simple(let model):
+            return model.searchable
         case .default(let model):
             return model.searchable
         }
@@ -29,8 +31,8 @@ public struct AccountPickerHeaderBuilder {
             return 0
         case .default(let model):
             return model.height
-        case .simple:
-            return AccountPickerSimpleHeaderModel.defaultHeight
+        case .simple(let model):
+            return model.height
         }
     }
 

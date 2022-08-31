@@ -429,7 +429,7 @@ final class KYCRouter: KYCRouterAPI {
 
     private func presentAddressSearchFlow() {
         guard let countryCode = country?.code ?? user?.address?.countryCode else { return }
-        self.addressSearchFlowPresenter
+        addressSearchFlowPresenter
             .openSearchAddressFlow(
                 country: countryCode,
                 state: user?.address?.state
@@ -443,7 +443,7 @@ final class KYCRouter: KYCRouterAPI {
                     self?.stop()
                 }
             })
-            .store(in: &self.bag)
+            .store(in: &bag)
     }
 
     func presentInformationController(_ controller: KYCInformationController) {
@@ -746,7 +746,7 @@ final class KYCRouter: KYCRouterAPI {
             guard let rootViewController = rootViewController else {
                 return
             }
-            self.navController = presentInNavigationController(viewController, in: rootViewController)
+            navController = presentInNavigationController(viewController, in: rootViewController)
         }
     }
 
@@ -759,7 +759,7 @@ final class KYCRouter: KYCRouterAPI {
             guard let rootViewController = rootViewController else {
                 return
             }
-            self.navController = presentInNavigationController(viewController, in: rootViewController)
+            navController = presentInNavigationController(viewController, in: rootViewController)
         }
     }
 

@@ -98,7 +98,8 @@ class HeaderViewTests: XCTestCase {
     func testSimple() {
         let view = HeaderView(
             viewModel: .simple(
-                subtitle: "Subtitle"
+                subtitle: "Subtitle",
+                searchable: false
             ),
             searchText: .constant(nil),
             isSearching: .constant(false)

@@ -114,6 +114,7 @@ public extension I_blockchain_app_configuration {
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
 	var `SSL`: L_blockchain_app_configuration_SSL { .init("\(__).SSL") }
 	var `stx`: L_blockchain_app_configuration_stx { .init("\(__).stx") }
+	var `swap`: L_blockchain_app_configuration_swap { .init("\(__).swap") }
 	var `tabs`: L_blockchain_app_configuration_tabs { .init("\(__).tabs") }
 	var `test`: L_blockchain_app_configuration_test { .init("\(__).test") }
 	var `transaction`: L_blockchain_app_configuration_transaction { .init("\(__).transaction") }
@@ -786,6 +787,31 @@ public final class L_blockchain_app_configuration_stx_all_users_is_enabled: L, I
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.stx.all.users.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_stx_all_users_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_swap: L, I_blockchain_app_configuration_swap {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap: I {}
+public extension I_blockchain_app_configuration_swap {
+	var `search`: L_blockchain_app_configuration_swap_search { .init("\(__).search") }
+}
+public final class L_blockchain_app_configuration_swap_search: L, I_blockchain_app_configuration_swap_search {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.search", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_search: I {}
+public extension I_blockchain_app_configuration_swap_search {
+	var `is`: L_blockchain_app_configuration_swap_search_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_swap_search_is: L, I_blockchain_app_configuration_swap_search_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.search.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_search_is: I {}
+public extension I_blockchain_app_configuration_swap_search_is {
+	var `enabled`: L_blockchain_app_configuration_swap_search_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_swap_search_is_enabled: L, I_blockchain_app_configuration_swap_search_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.search.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_search_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_tabs: L, I_blockchain_app_configuration_tabs {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.tabs", comment: "") }
 }

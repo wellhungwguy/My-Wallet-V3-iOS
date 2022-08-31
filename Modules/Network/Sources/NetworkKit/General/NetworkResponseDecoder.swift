@@ -240,7 +240,7 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                         type: .payloadError(.badData(rawPayload: rawPayload), response: response.response)
                     )
                 )
-            }
+        }
     }
 
     private func debugErrorMessage<ResponseType: Decodable>(

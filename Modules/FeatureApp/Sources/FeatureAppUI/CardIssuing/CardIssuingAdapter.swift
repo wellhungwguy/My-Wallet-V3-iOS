@@ -261,6 +261,7 @@ final class AddressKYCService: FeatureAddressSearchDomain.AddressServiceAPI {
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         .just(nil)
     }
+
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
         guard let userAddress = UserAddress(address: address, countryCode: address.country) else {
             return .failure(AddressServiceError.network(Nabu.Error.unknown))

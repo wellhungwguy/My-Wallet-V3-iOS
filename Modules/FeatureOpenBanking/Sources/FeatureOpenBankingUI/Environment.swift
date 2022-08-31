@@ -9,6 +9,7 @@ import SwiftUI
 public protocol OpenURLProtocol {
     func open(_ url: URL, completionHandler: @escaping (Bool) -> Void)
 }
+
 extension OpenURLProtocol {
     func open(_ url: URL) { open(url, completionHandler: { _ in }) }
 }

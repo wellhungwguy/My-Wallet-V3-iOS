@@ -31,7 +31,6 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     let recorder: AnnouncementRecorder
     let type: AnnouncementType
     let analyticsRecorder: AnalyticsEventRecorderAPI
-    
 
     init(
         type: AnnouncementType,
