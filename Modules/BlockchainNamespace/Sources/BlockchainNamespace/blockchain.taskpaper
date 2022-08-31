@@ -841,6 +841,33 @@ blockchain:
 		+ blockchain.ui.device.haptic.feedback.notification.error
 		+ blockchain.ux.type.action
 		+ blockchain.ux.type.story
+			context:
+				action:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
+				category:
+				+ blockchain.db.type.string
+				id:
+				+ blockchain.db.type.string
+				network:
+					endpoint:
+					+ blockchain.db.type.url
+					error:
+						code:
+						+ blockchain.db.type.string
+						description:
+						+ blockchain.db.type.string
+						id:
+						+ blockchain.db.type.string
+						type:
+						+ blockchain.db.type.string
+				source:
+				+ blockchain.db.type.string
+				title:
+				+ blockchain.db.type.string
+				type:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 		frequent:
 			action:
 			+ blockchain.ux.type.story

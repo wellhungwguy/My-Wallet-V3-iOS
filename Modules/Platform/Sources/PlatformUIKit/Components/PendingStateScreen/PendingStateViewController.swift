@@ -159,7 +159,6 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
 
     typealias L10n = LocalizationConstants.PendingCardStatusScreen.LoadingScreen
 
-    private let analytics: AnalyticsEventRecorderAPI
     private let app: AppProtocol
     private let presenter: PendingStatePresenterAPI & RibBridgePresenter
 
@@ -167,12 +166,10 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
 
     public required init(
         presenter: PendingStatePresenterAPI & RibBridgePresenter,
-        analytics: AnalyticsEventRecorderAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
         self.presenter = presenter
         self.app = app
-        self.analytics = analytics
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -253,8 +250,6 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
             self?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
         }
         .start()
-
-        analytics.record(event: error.analytics(label: "LINK", action: "LINK"))
     }
 }
 

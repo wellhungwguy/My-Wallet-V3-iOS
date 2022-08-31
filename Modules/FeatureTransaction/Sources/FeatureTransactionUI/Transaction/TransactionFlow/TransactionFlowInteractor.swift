@@ -903,10 +903,20 @@ extension TransactionFlowInteractor {
 
         transactionModel.state.distinctUntilChanged(\.step).publisher
             .sink { [app] state in
-                switch state.step {
+                let tx = state
+                app.state.transaction { state in
+                    state.set(blockchain.ux.error.context.action, to: tx.step.label)
+                    state.set(blockchain.ux.error.context.type, to: tx.step.label)
+                }
+
+                switch tx.step {
                 case .closed:
                     app.post(event: blockchain.ux.transaction.event.will.finish)
                     app.post(event: blockchain.ux.transaction.event.did.finish)
+                    app.state.transaction { state in
+                        state.clear(blockchain.ux.error.context.action)
+                        state.clear(blockchain.ux.error.context.type)
+                    }
                 case .inProgress:
                     app.post(event: blockchain.ux.transaction.event.in.progress)
                 case .enterAmount:
@@ -932,7 +942,7 @@ extension TransactionFlowInteractor {
                     app.post(event: blockchain.ux.transaction.event.select.target)
                 case .error:
                     app.post(
-                        value: state.errorState.ux(action: state.action),
+                        value: tx.errorState.ux(action: tx.action),
                         of: blockchain.ux.transaction.event.did.error
                     )
                 default:

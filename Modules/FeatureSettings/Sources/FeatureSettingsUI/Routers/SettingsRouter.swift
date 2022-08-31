@@ -386,10 +386,12 @@ final class SettingsRouter: SettingsRouterAPI {
 
     private func showCardLinkingFlow() {
         let presenter = topViewController
-        paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
+        app.state.set(blockchain.ux.error.context.action, to: "SETTINGS_CARD_LINKING")
+        paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [app, addCardCompletionRelay] in
             presenter.dismiss(animated: true) {
                 addCardCompletionRelay.accept(())
             }
+            app.state.clear(blockchain.ux.error.context.action)
         }
     }
 

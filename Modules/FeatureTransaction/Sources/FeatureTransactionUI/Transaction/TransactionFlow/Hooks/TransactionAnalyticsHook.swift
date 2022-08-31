@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -17,14 +18,17 @@ final class TransactionAnalyticsHook {
     typealias NewBuyAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
     typealias NewReceiveAnalyticsEvent = AnalyticsEvents.New.Receive
 
+    private let app: AppProtocol
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let pricesService: PriceServiceAPI
     private var cancellables = Set<AnyCancellable>()
 
     init(
+        app: AppProtocol = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         pricesService: PriceServiceAPI = resolve()
     ) {
+        self.app = app
         self.analyticsRecorder = analyticsRecorder
         self.pricesService = pricesService
     }
@@ -415,8 +419,11 @@ final class TransactionAnalyticsHook {
 
     func onTransactionFailure(with state: TransactionState) {
 
-        if let error = state.errorState.analytics(for: state.action) {
-            analyticsRecorder.record(event: error)
+        let tx = state
+
+        app.state.transaction { state in
+            state.set(blockchain.ux.error.context.action, to: tx.action)
+            state.set(blockchain.ux.error.context.type, to: tx.errorState.label)
         }
 
         let target = state.destination?.label

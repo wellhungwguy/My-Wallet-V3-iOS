@@ -1,3 +1,4 @@
+import BlockchainNamespace
 import Extensions
 import Foundation
 import Localization
@@ -169,29 +170,23 @@ extension Array where Element == UX.Action {
     ]
 }
 
-#if canImport(AnalyticsKit)
-
-import AnalyticsKit
-
 extension UX.Error {
 
-    public func analytics(label: String, action: String) -> ClientEvent {
+    public func context(in app: AppProtocol) -> Tag.Context {
         let nabu = extract(Nabu.Error.self, from: source)
         let network = extract(NetworkError.self, from: source)
-        return ClientEvent.clientError(
-            id: id,
-            error: expected ? label.snakeCase().uppercased() : "OOPS_ERROR",
-            networkEndpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
-            networkErrorCode: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
-            networkErrorDescription: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
-            networkErrorId: nabu?.id,
-            networkErrorType: nabu?.type.rawValue,
-            source: nabu.isNotNil ? "NABU" : "CLIENT",
-            title: title,
-            action: action,
-            category: categories
-        )
+        return [
+            blockchain.ux.error.context.id: id,
+            blockchain.ux.error.context.type: expected ? (try? app.state.get(blockchain.ux.error.context.type)) ?? "ERROR" : "OOPS_ERROR",
+            blockchain.ux.error.context.action: (try? app.state.get(blockchain.ux.error.context.action)) ?? "NONE",
+            blockchain.ux.error.context.category: categories,
+            blockchain.ux.error.context.network.endpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
+            blockchain.ux.error.context.network.error.code: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
+            blockchain.ux.error.context.network.error.description: nabu?.description ?? extract(CustomStringConvertible.self, from: self).description,
+            blockchain.ux.error.context.network.error.id: nabu?.id,
+            blockchain.ux.error.context.network.error.type: nabu?.type.rawValue,
+            blockchain.ux.error.context.title: title,
+            blockchain.ux.error.context.source: nabu.isNotNil ? "NABU" : "CLIENT"
+        ]
     }
 }
-
-#endif
