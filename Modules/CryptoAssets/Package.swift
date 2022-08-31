@@ -28,7 +28,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/attaswift/BigInt.git",
-            from: "5.2.1"
+            from: "5.3.0"
         ),
         .package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
@@ -36,11 +36,11 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
+            from: "6.5.0"
         ),
         .package(
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
-            exact: "2.2.1"
+            exact: "2.2.3"
         ),
         .package(
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
@@ -48,7 +48,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/paulo-bc/YenomBitcoinKit.git",
-            branch: "paulo/dust-mixing"
+            branch: "paulo/dust-mixing-crypto-swift"
         ),
         .package(path: "../Metadata"),
         .package(path: "../Network"),

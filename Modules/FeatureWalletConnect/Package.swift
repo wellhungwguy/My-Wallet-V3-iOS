@@ -42,8 +42,8 @@ let package = Package(
             exact: "0.39.1"
         ),
         .package(
-            url: "https://github.com/crucheton-bc/WalletConnectSwift.git",
-            from: "1.6.2"
+            url: "https://github.com/WalletConnect/WalletConnectSwift.git",
+            exact: "1.7.0"
         ),
         .package(path: "../Analytics"),
         .package(path: "../Localization"),

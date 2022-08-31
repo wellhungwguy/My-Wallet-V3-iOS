@@ -76,7 +76,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/attaswift/BigInt.git",
-            from: "5.2.1"
+            from: "5.3.0"
         ),
         .package(
             url: "https://github.com/apple/swift-markdown.git",

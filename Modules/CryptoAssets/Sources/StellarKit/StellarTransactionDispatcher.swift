@@ -200,14 +200,14 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
         Single
             .zip(operation(sendDetails: sendDetails), sendTimeOutSeconds)
             .map { operation, sendTimeOutSeconds -> StellarTransaction in
-                var timebounds: TimeBounds?
+                var timeBounds: TimeBounds?
                 let expirationDate = Calendar.current.date(
                     byAdding: .second,
                     value: sendTimeOutSeconds,
                     to: Date()
                 )
                 if let expirationDate = expirationDate?.timeIntervalSince1970 {
-                    timebounds = TimeBounds(
+                    timeBounds = TimeBounds(
                         minTime: 0,
                         maxTime: UInt64(expirationDate)
                     )
@@ -216,7 +216,7 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
                     sourceAccount: sourceAccount,
                     operations: [operation],
                     memo: sendDetails.horizonMemo,
-                    timeBounds: timebounds,
+                    preconditions: TransactionPreconditions(timeBounds: timeBounds),
                     maxOperationFee: UInt32(sendDetails.fee.minorString)!
                 )
                 return transaction
