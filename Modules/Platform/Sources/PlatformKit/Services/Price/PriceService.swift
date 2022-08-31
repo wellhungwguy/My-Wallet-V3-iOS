@@ -80,7 +80,6 @@ final class PriceService: PriceServiceAPI {
 
     private let repository: PriceRepositoryAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    private let scheduler: DispatchQueue
 
     // MARK: - Setup
 
@@ -91,10 +90,8 @@ final class PriceService: PriceServiceAPI {
     ///   - enabledCurrenciesService: An enabled currencies service.
     init(
         repository: PriceRepositoryAPI = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        scheduler: DispatchQueue = DispatchQueue(label: "PriceService", qos: .default)
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
-        self.scheduler = scheduler
         self.repository = repository
         self.enabledCurrenciesService = enabledCurrenciesService
     }
@@ -155,7 +152,6 @@ final class PriceService: PriceServiceAPI {
                 }
             }
         }
-        .subscribe(on: scheduler)
         .flatMap { [repository] bases in
             repository.prices(of: bases, in: quote, at: time)
         }
