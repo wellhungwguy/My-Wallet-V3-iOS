@@ -2,8 +2,6 @@ import Foundation
 import PathKit
 import XcodeProj // @tuist ~> 8.0.0
 
-print("Adding swift package test targets to schemes")
-
 enum Error: Swift.Error {
     case invalidModule
 }
@@ -92,56 +90,62 @@ extension Path {
 /// Create `xcodeproj` testable references from given modules path
 /// - Parameter modules: Directory containing all project modules
 /// - Returns: An array of testable references for injecting into a project's schemes.
-private func testableReferences(in modules: Path) throws -> [XCScheme.TestableReference] {
-    try modules.children()
-        .reduce(into: []) { result, path in
+private func testableReferences(in modules: Path) async throws -> [XCScheme.TestableReference] {
+    try await withThrowingTaskGroup(of: [XCScheme.TestableReference].self) { group in
 
-            guard try path.containsSwiftPackage() else {
-                return
-            }
+        for path in try modules.children() where try path.containsSwiftPackage() {
 
-            let module = try path.swiftPackageModule()
-            let targets = try path.swiftPackageTestTargets()
-
-            targets.forEach { target in
-
-                let reference = XCScheme.BuildableReference(
-                    referencedContainer: "container:Modules/\(module)",
-                    blueprintIdentifier: target,
-                    buildableName: target,
-                    blueprintName: target
-                )
-                let testableReference = XCScheme.TestableReference(
-                    skipped: false,
-                    parallelizable: false,
-                    randomExecutionOrdering: true,
-                    buildableReference: reference
-                )
-
-                print("Found \(module): \(target)")
-                result.append(testableReference)
+            group.addTask {
+                let module = try path.swiftPackageModule()
+                let targets = try path.swiftPackageTestTargets()
+                return targets.reduce(into: [XCScheme.TestableReference]()) { results, target in
+                    let reference = XCScheme.BuildableReference(
+                        referencedContainer: "container:Modules/\(module)",
+                        blueprintIdentifier: target,
+                        buildableName: target,
+                        blueprintName: target
+                    )
+                    let testableReference = XCScheme.TestableReference(
+                        skipped: false,
+                        parallelizable: false,
+                        randomExecutionOrdering: true,
+                        buildableReference: reference
+                    )
+                    results.append(testableReference)
+                }
             }
         }
-}
 
-do {
-    let path = Path("Blockchain.xcodeproj")
-    let xcodeproj = try XcodeProj(path: path)
-
-    let modules = Path("Modules")
-    let testableReferences = try testableReferences(in: modules)
-
-    xcodeproj.sharedData?.schemes
-        .filter { $0.name.hasPrefix("Blockchain") }
-        .forEach { scheme in
-            print("Adding to \(scheme.name)")
-            scheme.testAction?.testables.append(contentsOf: testableReferences)
+        return try await group.reduce(into: [XCScheme.TestableReference]()) { sum, next in
+            sum.append(contentsOf: next)
         }
-
-    try xcodeproj.write(path: path)
-} catch {
-    print("Error: \(error)")
-    exit(0)
+    }
 }
 
-print("Done!")
+@main
+struct AddTests {
+
+    static func main() async throws {
+        print("Adding swift package test targets to schemes")
+        do {
+            let path = Path("Blockchain.xcodeproj")
+            let xcodeproj = try XcodeProj(path: path)
+            let modules = Path("Modules")
+
+            let testableReferences = try await testableReferences(in: modules)
+
+            xcodeproj.sharedData?.schemes
+                .filter { $0.name.hasPrefix("Blockchain") }
+                .forEach { scheme in
+                    print("Adding to \(scheme.name)")
+                    scheme.testAction?.testables.append(contentsOf: testableReferences)
+                }
+
+            try xcodeproj.write(path: path)
+            print("Done!")
+        } catch {
+            print("Error: \(error)")
+            exit(1)
+        }
+    }
+}
