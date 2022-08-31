@@ -54,34 +54,50 @@ final class ReferralTableViewCell: UITableViewCell {
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
 
-        guard let viewModel = viewModel, let container = iconContainer else { return }
+        guard let viewModel = viewModel else { return }
 
-        for subview in container.subviews {
-            subview.removeFromSuperview()
+        if let container = iconContainer {
+            for subview in container.subviews {
+                subview.removeFromSuperview()
+            }
+
+            if let icon = viewModel.referral.announcement?.icon, let viewController = findViewController() {
+                let media = UIHostingController(rootView: AsyncMedia(url: icon.url))
+                media.view.translatesAutoresizingMaskIntoConstraints = false
+                media.view.backgroundColor = .clear
+                viewController.addChild(media)
+                container.addSubview(media.view)
+                container.addConstraints(
+                    media.view.constraint(edgesTo: container)
+                )
+                media.didMove(toParent: viewController)
+            } else {
+                container.removeFromSuperview()
+            }
         }
 
-        if let icon = viewModel.referral.announcement?.icon, let viewController = findViewController() {
-            let media = UIHostingController(rootView: AsyncMedia(url: icon.url))
+        if let background = viewModel.referral.announcement?.style?.background?.media, let viewController = findViewController() {
+            backgroundImageView.image = nil
+            let media = UIHostingController(rootView: AsyncMedia(url: background.url))
             media.view.translatesAutoresizingMaskIntoConstraints = false
             media.view.backgroundColor = .clear
             viewController.addChild(media)
-            container.addSubview(media.view)
-            container.addConstraints(
-                media.view.constraint(edgesTo: container)
+            backgroundImageView.addSubview(media.view)
+            backgroundImageView.addConstraints(
+                media.view.constraint(edgesTo: backgroundImageView)
             )
             media.didMove(toParent: viewController)
         } else {
-            container.removeFromSuperview()
+            for view in backgroundImageView.subviews {
+                view.removeFromSuperview()
+            }
         }
     }
 
     private func configure(_ announcement: UX.Dialog) {
         titleLabel.text = announcement.title
         subtitleLabel.text = announcement.message
-        if let media = announcement.style?.background?.media {
-            backgroundImageView.contentMode = .scaleAspectFill
-            loadImage(with: media.url, into: backgroundImageView)
-        } else if let color = announcement.style?.background?.color {
+        if let color = announcement.style?.background?.color {
             backgroundImageView.image = nil
             backgroundColor = UIColor(color.swiftUI)
         } else {
