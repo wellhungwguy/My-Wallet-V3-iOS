@@ -282,20 +282,25 @@ extension Session.State.Data {
     }
 
     func endTransaction() {
-        sync {
+        let data: [Tag.Reference: Any]? = sync {
             let data = dirty.data
             switch dirty.level {
             case 1:
                 dirty.data.removeAll(keepingCapacity: true)
                 dirty.level = 0
-                update(data)
+                return data
             case 1...UInt.max:
                 dirty.level -= 1
+                return nil
             default:
                 assertionFailure(
                     "Misaligned begin -> end transaction calls. You must be in a transaction to end a transaction."
                 )
+                return nil
             }
+        }
+        if let data = data {
+            update(data)
         }
     }
 
@@ -346,17 +351,17 @@ extension Session.State.Data {
                 }
                 if preferences.isNotEmpty {
                     print(
-                            """
-                            ⚠️ Attempted to write user preference without being signed in.
+                        """
+                        ⚠️ Attempted to write user preference without being signed in.
 
-                            If you meant this to be written against the user, please ensure you are signed in
-                            before attempting to write - you can observe `blockchain.session.event.did.sign.in`.
+                        If you meant this to be written against the user, please ensure you are signed in
+                        before attempting to write - you can observe `blockchain.session.event.did.sign.in`.
 
-                            Most commonly, you will see this if you have mistakenly not marked a shared state value
-                            as `blockchain.session.state.shared.value`.
+                        Most commonly, you will see this if you have mistakenly not marked a shared state value
+                        as `blockchain.session.state.shared.value`.
 
-                            \(preferences.map(\.string).joined(by: ", "))
-                            """
+                        \(preferences.map(\.string).joined(by: ", "))
+                        """
                     )
                 }
                 #endif
