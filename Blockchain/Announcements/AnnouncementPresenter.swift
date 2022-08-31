@@ -174,12 +174,6 @@ final class AnnouncementPresenter {
 
         // For other users, keep the current logic in place
         for type in metadata.order {
-
-            // Wallets with no balance should show no announcements
-            guard preliminaryData.hasAnyWalletBalance || type.showsWhenWalletHasNoBalance else {
-                return .none
-            }
-
             let announcement: Announcement
             switch type {
             case .majorProductBlocked:
@@ -260,13 +254,15 @@ final class AnnouncementPresenter {
                 )
             }
 
+            // Wallets with no balance should show no announcements
+            let shouldShowBalanceCheck = preliminaryData.hasAnyWalletBalance
+                || type.showsWhenWalletHasNoBalance
+
             // For users that are not in the mode needed for the announcement we don't show it
-            if announcement.associatedAppModes.doesNotContain(app.currentMode) {
-                return .hide
-            }
+            let shouldShowCurrentModeCheck = announcement.associatedAppModes.contains(app.currentMode)
 
             // Return the first different announcement that should show
-            if announcement.shouldShow {
+            if shouldShowBalanceCheck, shouldShowCurrentModeCheck, announcement.shouldShow {
                 if currentAnnouncement?.type != announcement.type {
                     currentAnnouncement = announcement
                     return .show(announcement.viewModel)
@@ -297,18 +293,6 @@ final class AnnouncementPresenter {
                 url: absoluteURL,
                 from: destination
             )
-        }
-    }
-}
-
-extension AnnouncementType {
-    var showsWhenWalletHasNoBalance: Bool {
-        switch self {
-        case .claimFreeCryptoDomain,
-                .ukEntitySwitch:
-            return true
-        default:
-            return false
         }
     }
 }
