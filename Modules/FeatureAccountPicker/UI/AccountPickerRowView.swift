@@ -1,12 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import Errors
 import ErrorsUI
 import FeatureAccountPickerDomain
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 struct AccountPickerRowView<
@@ -185,6 +187,8 @@ private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View
 
 private struct PaymentMethodRow: View {
 
+    @BlockchainApp var app
+    @State var isCardsSuccessRateEnabled: Bool = false
     let model: AccountPickerRow.PaymentMethod
     let badgeTapped: (UX.Dialog) -> Void
 
@@ -215,7 +219,14 @@ private struct PaymentMethodRow: View {
                 .offset(x: 0, y: -2) // visually align due to font padding
                 Spacer()
             }
-            if let ux = model.ux {
+            .task {
+                do {
+                    isCardsSuccessRateEnabled = try await app.get(blockchain.app.configuration.card.success.rate.is.enabled)
+                } catch let error {
+                    app.post(error: error)
+                }
+            }
+            if let ux = model.ux, isCardsSuccessRateEnabled {
                 BadgeView(title: ux.title, style: model.block ? .error : .warning)
                     .onTapGesture {
                         badgeTapped(ux)

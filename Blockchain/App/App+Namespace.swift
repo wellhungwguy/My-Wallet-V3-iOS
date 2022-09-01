@@ -35,6 +35,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
             blockchain.app.configuration.stx.all.users.is.enabled: false,
+            blockchain.app.configuration.card.success.rate.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import ComposableArchitecture
 @testable import FeatureAccountPickerUI
 import FeatureCardPaymentDomain
@@ -238,6 +239,7 @@ class AccountPickerRowViewTests: XCTestCase {
             cryptoBalance: cryptoBalance,
             currencyCode: currencyCode
         )
+        .app(App.preview)
         .fixedSize()
     }
 
