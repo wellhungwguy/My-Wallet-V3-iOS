@@ -216,7 +216,14 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
             .asObservable()
             .map { [presenter] userHasCompletedOnboarding, currentMode -> Bool in
                 // if the user has completed onboarding, nothing to show
-                let isTradingMode = currentMode == .trading
+                var isTradingMode: Bool {
+                    switch currentMode {
+                    case .trading, .legacy:
+                        return true
+                    case .defi:
+                        return false
+                    }
+                }
                 return (!userHasCompletedOnboarding && isTradingMode) || presenter.isCowboyFan
             }
             .distinctUntilChanged()
