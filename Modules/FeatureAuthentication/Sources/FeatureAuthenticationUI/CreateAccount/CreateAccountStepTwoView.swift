@@ -166,45 +166,42 @@ private struct CreateAccountForm: View {
     }
 
     private var agreementText: some View {
-        VStack(alignment: .leading, spacing: .zero) {
-            let promptText = Text(
-                rich: String(
-                    format: LocalizedString.agreementPrompt,
-                    LocalizedString.recoveryPhrase
+        HStack {
+            VStack(alignment: .leading, spacing: .zero) {
+                let promptText = Text(
+                    rich: LocalizedString.agreementPrompt
                 )
-            )
-            promptText
-                .foregroundColor(.semantic.body)
-                .onTapGesture {
-                    viewStore.send(.openExternalLink(Constants.SupportURL.ResetAccount.walletBackupURL))
+                promptText
+                    .foregroundColor(.semantic.body)
+                    .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
+
+                HStack(alignment: .firstTextBaseline, spacing: .zero) {
+                    Text(LocalizedString.termsOfServiceLink)
+                        .foregroundColor(.semantic.primary)
+                        .onTapGesture {
+                            guard let url = URL(string: Constants.HostURL.terms) else { return }
+                            viewStore.send(.openExternalLink(url))
+                        }
+                        .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
+
+                    Text(" " + LocalizedString.and + " ")
+                        .foregroundColor(.semantic.body)
+
+                    let privacyPolicyComponent = Text(LocalizedString.privacyPolicyLink)
+                        .foregroundColor(.semantic.primary)
+                    let fullStopComponent = Text(".")
+                        .foregroundColor(.semantic.body)
+                    let privacyPolicyText = privacyPolicyComponent + fullStopComponent
+
+                    privacyPolicyText
+                        .onTapGesture {
+                            guard let url = URL(string: Constants.HostURL.privacyPolicy) else { return }
+                            viewStore.send(.openExternalLink(url))
+                        }
+                        .accessibility(identifier: AccessibilityIdentifier.privacyPolicyButton)
                 }
-                .accessibility(identifier: AccessibilityIdentifier.agreementPromptText)
-
-            HStack(alignment: .firstTextBaseline, spacing: .zero) {
-                Text(LocalizedString.termsOfServiceLink)
-                    .foregroundColor(.semantic.primary)
-                    .onTapGesture {
-                        guard let url = URL(string: Constants.HostURL.terms) else { return }
-                        viewStore.send(.openExternalLink(url))
-                    }
-                    .accessibility(identifier: AccessibilityIdentifier.termsOfServiceButton)
-
-                Text(" " + LocalizedString.and + " ")
-                    .foregroundColor(.semantic.body)
-
-                let privacyPolicyComponent = Text(LocalizedString.privacyPolicyLink)
-                    .foregroundColor(.semantic.primary)
-                let fullStopComponent = Text(".")
-                    .foregroundColor(.semantic.body)
-                let privacyPolicyText = privacyPolicyComponent + fullStopComponent
-
-                privacyPolicyText
-                    .onTapGesture {
-                        guard let url = URL(string: Constants.HostURL.privacyPolicy) else { return }
-                        viewStore.send(.openExternalLink(url))
-                    }
-                    .accessibility(identifier: AccessibilityIdentifier.privacyPolicyButton)
             }
+            Spacer()
         }
     }
 }

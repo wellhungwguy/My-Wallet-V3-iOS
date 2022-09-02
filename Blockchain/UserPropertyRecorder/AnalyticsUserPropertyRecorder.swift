@@ -66,7 +66,7 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
             Analytics.setUserProperty(value, forName: name)
         } catch { // Catch the error and record it using analytics event recorder
             defer {
-                logger.error("could not send user property! received error: \(String(describing: error))")
+                logger.error("could not send user property \(name)! \(value) received error: \(String(describing: error))")
             }
             guard let error = error as? AnalyticsUserPropertyValidator.UserPropertyError else {
                 return

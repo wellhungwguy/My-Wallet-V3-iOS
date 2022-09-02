@@ -172,6 +172,13 @@ final class AnnouncementPresenter {
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
 
+        if
+            app.state.yes(if: blockchain.user.is.cowboy.fan),
+            app.remoteConfiguration.yes(unless: blockchain.ux.onboarding.promotion.cowboys.announcements.is.enabled)
+        {
+            return .none
+        }
+
         // For other users, keep the current logic in place
         for type in metadata.order {
             let announcement: Announcement

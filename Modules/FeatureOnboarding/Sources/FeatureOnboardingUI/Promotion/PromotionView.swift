@@ -73,7 +73,7 @@ public struct PromotionView: View {
     @State private var isSwipeToDismiss: Bool = true
 
     public var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             if let header = ux.header {
                 Group {
                     header
