@@ -177,8 +177,12 @@ extension UX.Error {
         let network = extract(NetworkError.self, from: source)
         return [
             blockchain.ux.error.context.id: id,
-            blockchain.ux.error.context.type: expected ? (try? app.state.get(blockchain.ux.error.context.type)) ?? "ERROR" : "OOPS_ERROR",
-            blockchain.ux.error.context.action: (try? app.state.get(blockchain.ux.error.context.action)) ?? "NONE",
+            blockchain.ux.error.context.type: expected
+                ? (try? app.state.get(blockchain.ux.error.context.type, as: String.self))?.snakeCase().uppercased() ?? "ERROR"
+                : "OOPS_ERROR",
+            blockchain.ux.error.context.action: (
+                try? app.state.get(blockchain.ux.error.context.action, as: String.self)
+            )?.snakeCase().uppercased() ?? "NONE",
             blockchain.ux.error.context.category: categories,
             blockchain.ux.error.context.network.endpoint: nabu?.request?.url?.path ?? network?.request?.url?.path,
             blockchain.ux.error.context.network.error.code: (nabu?.code.rawValue.i ?? network?.response?.statusCode).map(String.init),
