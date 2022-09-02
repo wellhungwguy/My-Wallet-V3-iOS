@@ -1,3 +1,4 @@
+import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 @testable import FeatureUserDeletionDomainMock
@@ -11,6 +12,7 @@ final class FeatureUserDeletionSnapshotTests: XCTestCase {
 
     private var environment: UserDeletionEnvironment!
     private var mockEmailVerificationService: MockUserDeletionRepositoryAPI!
+    private var analyticsRecorder: MockAnalyticsRecorder!
     private var userDeletionState: UserDeletionState!
 
     enum Config {
@@ -23,9 +25,11 @@ final class FeatureUserDeletionSnapshotTests: XCTestCase {
         isRecording = Config.recordingSnapshots
 
         mockEmailVerificationService = MockUserDeletionRepositoryAPI()
+        analyticsRecorder = MockAnalyticsRecorder()
         environment = UserDeletionEnvironment(
             mainQueue: .immediate,
             userDeletionRepository: mockEmailVerificationService,
+            analyticsRecorder: analyticsRecorder,
             dismissFlow: {},
             logoutAndForgetWallet: {}
         )
@@ -34,6 +38,7 @@ final class FeatureUserDeletionSnapshotTests: XCTestCase {
     override func tearDownWithError() throws {
         mockEmailVerificationService = nil
         environment = nil
+        analyticsRecorder = nil
         try super.tearDownWithError()
     }
 

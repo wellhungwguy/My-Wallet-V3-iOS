@@ -99,6 +99,7 @@ let package = Package(
                 .target(name: "FeatureUserDeletionDomain"),
                 .target(name: "FeatureUserDeletionUI"),
                 .target(name: "FeatureUserDeletionDomainMock"),
+                .product(name: "AnalyticsKitMock", package: "Analytics"),
                 .product(name: "TestKit", package: "Test")
             ],
             exclude: [

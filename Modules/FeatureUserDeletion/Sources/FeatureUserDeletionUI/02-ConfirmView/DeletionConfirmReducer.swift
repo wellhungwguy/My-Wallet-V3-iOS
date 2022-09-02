@@ -18,6 +18,7 @@ extension DeletionConfirmModule {
                     environment: { env in
                         DeletionResultEnvironment(
                             mainQueue: .main,
+                            analyticsRecorder: env.analyticsRecorder,
                             dismissFlow: env.dismissFlow,
                             logoutAndForgetWallet: env.logoutAndForgetWallet
                         )
@@ -29,8 +30,8 @@ extension DeletionConfirmModule {
     public static var deletionConfirmReducer: Reducer<DeletionConfirmState, DeletionConfirmAction, DeletionConfirmEnvironment> {
         .init { state, action, environment in
             switch action {
-            case .showResultScreen(let success):
-                state.resultViewState = DeletionResultState(success: success)
+            case .showResultScreen(let result):
+                state.resultViewState = DeletionResultState(success: result.isSuccess)
                 state.route = .navigate(to: .showResultScreen)
                 return .none
             case .deleteUserAccount:
@@ -43,9 +44,7 @@ extension DeletionConfirmModule {
                     .deleteUser(with: nil)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
-                    .map { result -> DeletionConfirmAction in
-                        .showResultScreen(success: result.isSuccess)
-                    }
+                    .map(DeletionConfirmAction.showResultScreen)
             case .validateConfirmationInput:
                 state.validateConfirmationInputField()
                 return .none
@@ -64,5 +63,42 @@ extension DeletionConfirmModule {
             }
         }
         .binding()
+        .analytics()
+    }
+}
+
+// MARK: - Private
+
+extension Reducer where
+    Action == DeletionConfirmAction,
+    State == DeletionConfirmState,
+    Environment == DeletionConfirmEnvironment
+{
+    /// Helper function for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                DeletionConfirmState,
+                DeletionConfirmAction,
+                DeletionConfirmEnvironment
+            > { _, action, environment in
+                switch action {
+                case .showResultScreen(.success):
+                    environment.analyticsRecorder.record(
+                        event: .accountDeletionSuccess
+                    )
+                    return .none
+                case let .showResultScreen(.failure(error)):
+                    environment.analyticsRecorder.record(
+                        event: .accountDeletionFailure(
+                            errorMessage: error.localizedDescription
+                        )
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }
