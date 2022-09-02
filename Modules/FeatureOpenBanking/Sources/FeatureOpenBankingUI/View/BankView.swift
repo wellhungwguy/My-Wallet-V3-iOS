@@ -96,7 +96,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                         return .waitingForConsent
                     case .success(let output):
                         return .finalise(output)
-                    case .failure(let error):
+                    case .fail(let error):
                         return BankAction.failure(error)
                     }
                 }

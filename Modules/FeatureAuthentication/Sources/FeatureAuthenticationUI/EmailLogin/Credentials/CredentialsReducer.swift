@@ -241,11 +241,13 @@ let credentialsReducer = Reducer.combine(
             // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
-        case .binding(.set(\.$supportSheetShown, true)):
-            state.customerSupportState = .init(
-                applicationVersion: Bundle.applicationVersion ?? "",
-                bundleIdentifier: Bundle.main.bundleIdentifier ?? ""
-            )
+        case .binding(\.$supportSheetShown):
+            if state.supportSheetShown {
+                state.customerSupportState = .init(
+                    applicationVersion: Bundle.applicationVersion ?? "",
+                    bundleIdentifier: Bundle.main.bundleIdentifier ?? ""
+                )
+            }
             return .none
 
         case .binding:

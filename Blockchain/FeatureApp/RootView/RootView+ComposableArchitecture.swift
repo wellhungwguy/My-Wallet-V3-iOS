@@ -165,9 +165,9 @@ let rootMainReducer = Reducer.combine(
         .reducer
         .optional()
         .pullback(
-            state: \.appModeSwitcherState,
+            state: \RootViewState.appModeSwitcherState,
             action: /RootViewAction.appModeSwitcherAction,
-            environment: { environment in
+            environment: { (environment: RootViewEnvironment) in
                       AppModeSwitcherEnvironment(
                           app: environment.app,
                           recoveryPhraseStatusProviding: environment.recoveryPhraseStatusProviding,
@@ -188,8 +188,10 @@ let rootViewReducer = Reducer<
     case .tab(let tab):
         state.tab = tab
         return .none
-    case .binding(.set(\.$fab.isOn, true)):
-        state.fab.animate = false
+    case .binding(\.$fab.isOn):
+        if state.fab.isOn {
+            state.fab.animate = false
+        }
         return .none
 
     case .onAppModeSwitcherTapped:

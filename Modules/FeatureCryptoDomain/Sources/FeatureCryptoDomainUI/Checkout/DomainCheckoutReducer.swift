@@ -69,10 +69,12 @@ let domainCheckoutReducer = Reducer<
     switch action {
     case .route:
         return .none
-    case .binding(\.$removeCandidate):
-        return Effect(value: .set(\.$isRemoveBottomSheetShown, true))
-    case .binding(.set(\.$isRemoveBottomSheetShown, false)):
-        state.removeCandidate = nil
+    case .binding(\DomainCheckoutState.$removeCandidate):
+        return Effect(value: DomainCheckoutAction.set((\DomainCheckoutState.$isRemoveBottomSheetShown), true))
+    case .binding(\DomainCheckoutState.$isRemoveBottomSheetShown):
+        if state.isRemoveBottomSheetShown {
+            state.removeCandidate = nil
+        }
         return .none
     case .binding:
         return .none
@@ -81,7 +83,7 @@ let domainCheckoutReducer = Reducer<
             return .none
         }
         state.selectedDomains.remove(domain)
-        return Effect(value: .set(\.$isRemoveBottomSheetShown, false))
+        return Effect(value: DomainCheckoutAction.set((\DomainCheckoutState.$isRemoveBottomSheetShown), false))
     case .claimDomain:
         guard let domain = state.selectedDomains.first else {
             return .none
@@ -146,7 +148,7 @@ extension Reducer where
                 DomainCheckoutEnvironment
             > { state, action, environment in
                 switch action {
-                case .binding(\.$termsSwitchIsOn):
+                case .binding((\DomainCheckoutState.$termsSwitchIsOn)):
                     if state.termsSwitchIsOn {
                         environment.analyticsRecorder.record(event: .domainTermsAgreed)
                     }

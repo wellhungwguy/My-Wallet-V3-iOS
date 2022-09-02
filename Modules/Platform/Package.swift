@@ -23,8 +23,8 @@ let package = Package(
             from: "5.3.0"
         ),
         .package(
-            url: "https://github.com/danielgindi/Charts.git",
-            from: "3.6.0"
+            url: "https://github.com/audrea-bc/Charts.git",
+            branch: "fixForXcode14"
         ),
         .package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",

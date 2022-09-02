@@ -72,27 +72,27 @@ public final class PerformanceTracingObserver: Session.Observer {
         app.publisher(for: blockchain.app.configuration.performance.tracing, as: [NamepaceTrace?].self)
             .compactMap { result in result.value?.compacted() }
             .flatMap { [app, service] traces -> AnyPublisher<Session.Event, Never> in
-                let starts = traces.map { trace in
+                let starts = traces.map { (trace: NamepaceTrace) -> AnyPublisher<Session.Event, Never> in
                     app.on(trace.start)
                         .handleEvents(
                             receiveOutput: { event in
                                 let properties = trace.context.reduce(into: [String: String]()) { properties, next in
-                                    properties[next.key] = (
-                                        try? event.reference.context[next.value].decode()
-                                    ) ?? (
-                                        try? event.context[next.value].decode()
-                                    ) ?? (
-                                        try? app.state.get(next.value)
-                                    ) ?? (
-                                        try? app.remoteConfiguration.get(next.value)
-                                    )
+                                    if let refContext: String? = try? event.reference.context[next.value].decode() {
+                                        properties[next.key] = refContext
+                                    } else if let context: String? = try? event.context[next.value].decode() {
+                                        properties[next.key] = context
+                                    } else if let state: String? = try? app.state.get(next.value) {
+                                        properties[next.key] = state
+                                    } else if let remoteConfig: String? = try? app.remoteConfiguration.get(next.value) {
+                                        properties[next.key] = remoteConfig
+                                    }
                                 }
                                 service.begin(trace: TraceID(trace.id), properties: properties)
                             }
                         )
                         .eraseToAnyPublisher()
                 }
-                let ends = traces.map { trace in
+                let ends = traces.map { (trace: NamepaceTrace) -> AnyPublisher<Session.Event, Never> in
                     app.on(trace.stop)
                         .handleEvents(receiveOutput: { _ in service.end(trace: TraceID(trace.id)) })
                         .eraseToAnyPublisher()

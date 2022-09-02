@@ -72,7 +72,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         ),
     mainAppReducer
         .pullback(
-            state: \.coreState,
+            state: \AppState.coreState,
             action: /AppAction.core,
             environment: { env in
                 CoreAppEnvironment(

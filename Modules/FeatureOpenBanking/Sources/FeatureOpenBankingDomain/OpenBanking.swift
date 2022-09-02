@@ -35,7 +35,11 @@ public final class OpenBanking {
     public enum Action: FailureAction, Hashable {
         case waitingForConsent(Output)
         case success(Output)
-        case failure(OpenBanking.Error)
+        case fail(OpenBanking.Error)
+
+        public static func failure(_ error: OpenBanking.Error) -> OpenBanking.Action {
+            .fail(error)
+        }
     }
 
     public let banking: OpenBankingClientAPI
