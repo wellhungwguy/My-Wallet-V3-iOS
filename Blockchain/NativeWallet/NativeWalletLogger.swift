@@ -1,7 +1,7 @@
 //  Copyright © 2022 Blockchain Luxembourg S.A. All rights reserved.
 
 #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseCore
+import Pulse
 #endif
 
 import WalletPayloadKit

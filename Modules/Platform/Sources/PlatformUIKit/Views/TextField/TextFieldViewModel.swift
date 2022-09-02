@@ -387,7 +387,7 @@ extension TextFieldViewModel {
 
         /// Valid state - validation is passing, user may
         /// need to be informed of more information
-        case caution(reason: String?)
+        case caution(value: String, reason: String?)
 
         /// Empty field
         case empty
@@ -402,7 +402,7 @@ extension TextFieldViewModel {
             switch self {
             case .invalid(reason: let reason),
                  .mismatch(reason: let reason),
-                 .caution(reason: let reason):
+                 .caution(value: _, reason: let reason):
                 return reason
             default:
                 return nil
@@ -448,7 +448,8 @@ extension TextFieldViewModel {
         /// Returns the text value if there is a valid value
         public var value: String? {
             switch self {
-            case .valid(value: let value):
+            case .valid(value: let value),
+                 .caution(value: let value, reason: _):
                 return value
             default:
                 return nil
@@ -479,8 +480,8 @@ extension TextFieldViewModel {
             case (_, .invalid(reason: let reason), _),
                 (_, .blocked(reason: let reason), _):
                 self = .invalid(reason: reason)
-            case (_, .conceivable(reason: let reason), _):
-                self = .caution(reason: reason)
+            case (_, .conceivable(reason: let reason), let text):
+                self = .caution(value: text, reason: reason)
             default:
                 self = .invalid(reason: nil)
             }
