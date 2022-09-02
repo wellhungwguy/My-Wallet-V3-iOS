@@ -31,20 +31,23 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Table Rows](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A11163)
+
+public struct PrimaryRowTextValue {
+    public let text: String
+    public let highlightRanges: [Range<String.Index>]
+
+    public init(
+        text: String,
+        highlightRanges: [Range<String.Index>] = []
+    ) {
+        self.text = text
+        self.highlightRanges = highlightRanges
+    }
+}
+
 public struct PrimaryRow<Leading: View, Trailing: View>: View {
 
-    public struct TextValue {
-        public let text: String
-        public let highlightRanges: [Range<String.Index>]
-
-        public init(
-            text: String,
-            highlightRanges: [Range<String.Index>] = []
-        ) {
-            self.text = text
-            self.highlightRanges = highlightRanges
-        }
-    }
+    public typealias TextValue = PrimaryRowTextValue
 
     private let title: TextValue
     private let caption: String?
