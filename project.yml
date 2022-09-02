@@ -410,7 +410,6 @@ targets:
       - package: Pulse
         product: PulseUI
       - package: Pulse
-        product: Pulse
       - package: Intercom
 
       - package: Analytics
