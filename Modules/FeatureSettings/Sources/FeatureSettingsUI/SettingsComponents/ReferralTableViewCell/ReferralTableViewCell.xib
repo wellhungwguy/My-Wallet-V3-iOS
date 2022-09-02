@@ -32,20 +32,14 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="referral-image" translatesAutoresizingMaskIntoConstraints="NO" id="nwu-wN-sMd">
                                 <rect key="frame" x="0.0" y="0.0" width="343" height="87"/>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3a4-tP-6HK">
-                                <rect key="frame" x="16" y="22" width="40" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="ves-3G-Xdi"/>
-                                </constraints>
-                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Referral Program" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPr-9e-Cqe">
-                                <rect key="frame" x="72" y="22" width="96" height="15"/>
+                                <rect key="frame" x="16" y="22" width="96" height="15"/>
                                 <fontDescription key="fontDescription" name="Inter-Regular" family="Inter" pointSize="12"/>
                                 <color key="textColor" name="White"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="fmC-97-aMa">
-                                <rect key="frame" x="72" y="40" width="255" height="39"/>
+                                <rect key="frame" x="16" y="40" width="311" height="39"/>
                                 <string key="text">Invite friends, Get $30!
 </string>
                                 <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="16"/>
@@ -55,17 +49,12 @@
                         </subviews>
                         <color key="backgroundColor" name="Blue600"/>
                         <constraints>
-                            <constraint firstItem="3a4-tP-6HK" firstAttribute="top" secondItem="Vb4-Bl-hrl" secondAttribute="top" constant="22" id="0Tv-TI-5C9"/>
-                            <constraint firstItem="fmC-97-aMa" firstAttribute="leading" secondItem="3a4-tP-6HK" secondAttribute="trailing" constant="16" id="5kn-Ej-aVU"/>
-                            <constraint firstItem="QPr-9e-Cqe" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" priority="750" constant="16" id="EqW-fi-hL9"/>
+                            <constraint firstItem="QPr-9e-Cqe" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" constant="16" id="EqW-fi-hL9"/>
                             <constraint firstAttribute="height" constant="88" id="Fnn-4t-416"/>
                             <constraint firstAttribute="trailing" secondItem="fmC-97-aMa" secondAttribute="trailing" constant="16" id="V3L-Od-4sI"/>
-                            <constraint firstItem="QPr-9e-Cqe" firstAttribute="leading" secondItem="3a4-tP-6HK" secondAttribute="trailing" constant="16" id="dpx-ya-vMp"/>
-                            <constraint firstItem="fmC-97-aMa" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" priority="750" constant="16" id="izf-mg-3ux"/>
-                            <constraint firstItem="3a4-tP-6HK" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" constant="16" id="oQi-Vv-KFS"/>
+                            <constraint firstItem="fmC-97-aMa" firstAttribute="leading" secondItem="Vb4-Bl-hrl" secondAttribute="leading" constant="16" id="izf-mg-3ux"/>
                             <constraint firstItem="QPr-9e-Cqe" firstAttribute="top" secondItem="Vb4-Bl-hrl" secondAttribute="top" constant="22" id="oTh-ZL-Fy3"/>
                             <constraint firstItem="fmC-97-aMa" firstAttribute="top" secondItem="QPr-9e-Cqe" secondAttribute="bottom" constant="3" id="sZT-wK-kT3"/>
-                            <constraint firstAttribute="bottom" secondItem="3a4-tP-6HK" secondAttribute="bottom" constant="16" id="sxC-ds-6mb"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -83,7 +72,6 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="backgroundImageView" destination="nwu-wN-sMd" id="hSJ-mZ-2cI"/>
-                <outlet property="iconContainer" destination="3a4-tP-6HK" id="nOx-Pe-bBe"/>
                 <outlet property="subtitleLabel" destination="fmC-97-aMa" id="ZPp-zz-ZnL"/>
                 <outlet property="titleLabel" destination="QPr-9e-Cqe" id="gmm-JV-VgR"/>
             </connections>

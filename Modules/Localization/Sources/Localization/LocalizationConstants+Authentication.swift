@@ -538,8 +538,8 @@ extension LocalizationConstants.FeatureAuthentication {
         }
 
         public static let agreementPrompt = NSLocalizedString(
-            "I understand that Blockchain.com never stores passwords and therefore cannot recover or reset my password. If I lose access to my wallet, I must use my **%@** to access my funds. By creating a wallet, you agree to Blockchain’s",
-            comment: "Create Account screen: agreement prompt footnote. Don't change **%@**, it's a placeholder!"
+            "I agree to Blockchain.com’s",
+            comment: "Create Account screen: I agree to Blockchain.com’s Terms of Service & Privacy Policy."
         )
         public static let recoveryPhrase = NSLocalizedString(
             "Secret Private Key Recovery Phrase",

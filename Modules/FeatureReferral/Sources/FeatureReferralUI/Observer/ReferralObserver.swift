@@ -49,7 +49,8 @@ public final class ReferralAppObserver: Session.Observer {
 
     lazy var fetchReferral = app.on(
         blockchain.session.event.did.sign.in,
-        blockchain.ux.kyc.event.did.finish
+        blockchain.ux.kyc.event.did.finish,
+        blockchain.ux.home.event.did.pull.to.refresh
     ) { [unowned self] _ in
         do {
             guard try await app.get(blockchain.app.configuration.referral.is.enabled) else { return }

@@ -1012,6 +1012,11 @@ blockchain:
 		onboarding:
 			promotion:
 				cowboys:
+					announcements:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 					is:
 						enabled:
 						+ blockchain.db.type.boolean
@@ -1218,9 +1223,15 @@ blockchain:
 					firebase:
 						map:
 						+ blockchain.session.configuration.value
+						user:
+							traits:
+							+ blockchain.session.configuration.value
 					segment:
 						map:
 						+ blockchain.session.configuration.value
+						user:
+							traits:
+							+ blockchain.session.configuration.value
 				current:
 					state:
 					+ blockchain.db.type.tag
@@ -1336,6 +1347,10 @@ blockchain:
 				signed:
 					in:
 					+ blockchain.ux.type.analytics.event
+			experiments:
+				is:
+					enabled:
+					+ blockchain.session.configuration.value
 			nabu:
 				experiment:
 				+ blockchain.db.collection

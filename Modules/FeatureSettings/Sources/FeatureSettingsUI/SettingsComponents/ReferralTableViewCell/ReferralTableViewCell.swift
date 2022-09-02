@@ -38,7 +38,6 @@ final class ReferralTableViewCell: UITableViewCell {
                 subtitleLabel.text = viewModel.referral.rewardTitle
                 backgroundImageView.contentMode = .right
                 backgroundImageView.image = UIImage(named: "referral-image", in: .featureSettingsUI, with: nil)
-                iconContainer.removeFromSuperview()
             }
             accessibility = .id(viewModel.accessibilityID)
         }
@@ -48,7 +47,6 @@ final class ReferralTableViewCell: UITableViewCell {
 
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
-    @IBOutlet private var iconContainer: UIView!
     @IBOutlet private var backgroundImageView: UIImageView!
 
     override func didMoveToSuperview() {
@@ -56,29 +54,9 @@ final class ReferralTableViewCell: UITableViewCell {
 
         guard let viewModel = viewModel else { return }
 
-        if let container = iconContainer {
-            for subview in container.subviews {
-                subview.removeFromSuperview()
-            }
-
-            if let icon = viewModel.referral.announcement?.icon, let viewController = findViewController() {
-                let media = UIHostingController(rootView: AsyncMedia(url: icon.url))
-                media.view.translatesAutoresizingMaskIntoConstraints = false
-                media.view.backgroundColor = .clear
-                viewController.addChild(media)
-                container.addSubview(media.view)
-                container.addConstraints(
-                    media.view.constraint(edgesTo: container)
-                )
-                media.didMove(toParent: viewController)
-            } else {
-                container.removeFromSuperview()
-            }
-        }
-
         if let background = viewModel.referral.announcement?.style?.background?.media, let viewController = findViewController() {
             backgroundImageView.image = nil
-            let media = UIHostingController(rootView: AsyncMedia(url: background.url))
+            let media = UIHostingController(rootView: AsyncMedia(url: background.url).resizingMode(.aspectFill))
             media.view.translatesAutoresizingMaskIntoConstraints = false
             media.view.backgroundColor = .clear
             viewController.addChild(media)

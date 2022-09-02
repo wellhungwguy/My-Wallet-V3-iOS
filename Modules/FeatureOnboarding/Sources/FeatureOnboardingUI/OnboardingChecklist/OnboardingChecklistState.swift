@@ -211,7 +211,8 @@ public enum OnboardingChecklist {
                                 do {
                                     return try [
                                         blockchain.user.account.kyc.state.under_review[],
-                                        blockchain.user.account.kyc.state.pending[]
+                                        blockchain.user.account.kyc.state.pending[],
+                                        blockchain.user.account.kyc.state.verified[]
                                     ].contains(app.state.get(blockchain.user.account.kyc[blockchain.user.account.tier.gold].state))
                                         ? blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under.review
                                         : blockchain.ux.onboarding.promotion.cowboys.verify.identity

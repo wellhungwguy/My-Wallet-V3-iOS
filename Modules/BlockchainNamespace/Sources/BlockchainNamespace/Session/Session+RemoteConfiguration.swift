@@ -64,9 +64,9 @@ extension Session {
                     }
                 }
 
-                remote.fetch(withExpirationDuration: expiration) { _, error in
+                remote.fetch(withExpirationDuration: expiration) { [_fetched] _, error in
                     guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
-                    remote.activate { _, error in
+                    remote.activate { [_fetched] _, error in
                         guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
                         let keys = remote.allKeys(from: .remote)
                         for key in keys {
@@ -107,9 +107,9 @@ extension Session {
 
             _fetched
                 .flatMap(experiments.decode)
-                .handleEvents(receiveOutput: _decoded.send)
-                .sink { [unowned self] _ in
-                    _isSynchronized.send(true)
+                .sink { [unowned self] output in
+                    if !isSynchronized { _isSynchronized.send(true) }
+                    _decoded.send(output)
                 }
                 .store(in: &bag)
 
