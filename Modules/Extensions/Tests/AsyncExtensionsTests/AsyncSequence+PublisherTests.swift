@@ -1,17 +1,16 @@
+import AsyncExtensions
 import Combine
 import CombineSchedulers
 import Foundation
-import TestKit
-import ToolKit
 import XCTest
 
 final class AsyncSequencePublisherTests: XCTestCase {
 
     let limit = 10000
 
-    func test_async_sequence_publisher() throws {
+    func test_async_sequence_publisher() async throws {
         let publisher = Counter(howHigh: limit).publisher().collect()
-        let value = try publisher.wait()
+        let value = try await publisher.await()
         XCTAssertEqual(value, Array(1...limit))
     }
 
@@ -19,7 +18,7 @@ final class AsyncSequencePublisherTests: XCTestCase {
         let publisher = ThrowingCounter(howHigh: limit).publisher()
         var values: [Int] = []
         let promise = expectation(description: #function)
-        publisher.sink(
+        let s = publisher.sink(
             receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -35,9 +34,9 @@ final class AsyncSequencePublisherTests: XCTestCase {
                 values.append(value)
             }
         )
-        .store(withLifetimeOf: self)
         wait(for: [promise], timeout: 0.1)
         XCTAssertEqual(values, Array(1...limit))
+        s.cancel()
     }
 }
 

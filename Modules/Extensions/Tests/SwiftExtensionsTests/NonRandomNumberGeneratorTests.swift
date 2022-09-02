@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ToolKit
+import SwiftExtensions
 import XCTest
 
 final class NonRandomNumberGeneratorTests: XCTestCase {

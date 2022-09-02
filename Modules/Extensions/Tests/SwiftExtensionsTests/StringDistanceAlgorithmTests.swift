@@ -1,4 +1,4 @@
-import ToolKit
+import SwiftExtensions
 import XCTest
 
 final class StringDistanceAlgorithmTests: XCTestCase {

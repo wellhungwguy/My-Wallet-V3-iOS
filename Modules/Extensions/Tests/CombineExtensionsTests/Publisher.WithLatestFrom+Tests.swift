@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import ToolKit
+import CombineExtensions
 import XCTest
 
 final class PublisherWithLatestFromTests: XCTestCase {

@@ -77,7 +77,7 @@ let package = Package(
         ),
         .testTarget(
             name: "CombineExtensionsTests",
-            dependencies: ["CombineExtensions"]
+            dependencies: ["AsyncExtensions", "CombineExtensions"]
         ),
         .testTarget(
             name: "SwiftExtensionsTests",
