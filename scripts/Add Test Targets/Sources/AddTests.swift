@@ -122,12 +122,22 @@ private func testableReferences(in modules: Path) async throws -> [XCScheme.Test
     }
 }
 
+func updateVisibleSchemes() throws {
+    let username = NSUserName()
+    let url = URL(fileURLWithPath: "./Blockchain.xcodeproj/xcuserdata/\(username).xcuserdatad/xcschemes/xcschememanagement.plist")
+    let plist = try NSMutableDictionary(contentsOf: url, error: ())
+    var state = plist["SchemeUserState"] as! [String: [String: Any]]
+    state.removeAll()
+    try plist.write(to: url)
+}
+
 @main
 struct AddTests {
 
     static func main() async throws {
         print("Adding swift package test targets to schemes")
         do {
+
             let path = Path("Blockchain.xcodeproj")
             let xcodeproj = try XcodeProj(path: path)
             let modules = Path("Modules")
@@ -142,6 +152,9 @@ struct AddTests {
                 }
 
             try xcodeproj.write(path: path)
+
+            try? updateVisibleSchemes()
+
             print("Done!")
         } catch {
             print("Error: \(error)")
