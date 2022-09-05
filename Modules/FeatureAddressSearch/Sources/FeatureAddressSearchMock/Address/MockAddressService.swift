@@ -7,6 +7,7 @@ class MockAddressService: AddressServiceAPI {
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         .just(.sample())
     }
+
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
         .just(address)
     }

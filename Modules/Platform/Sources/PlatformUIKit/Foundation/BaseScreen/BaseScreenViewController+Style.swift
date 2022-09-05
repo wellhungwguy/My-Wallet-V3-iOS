@@ -231,7 +231,7 @@ extension Screen.Style.LeadingButton {
             )
         case .back:
             return Screen.NavigationBarContent(
-                image: UIImage(named: "back_icon"),
+                image: Icon.chevronLeft.uiImage,
                 accessibility: .id(Accessibility.Identifier.NavigationBar.backButton)
             )
         case .none:

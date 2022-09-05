@@ -26,6 +26,7 @@ let package = Package(
         .package(path: "../Errors"),
         .package(path: "../Extensions"),
         .package(path: "../Keychain"),
+        .package(path: "../Localization"),
         .package(path: "../Money")
     ],
     targets: [
@@ -37,6 +38,7 @@ let package = Package(
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "Extensions", package: "Extensions"),
                 .product(name: "KeychainKit", package: "Keychain"),
+                .product(name: "Localization", package: "Localization"),
                 .product(name: "MoneyKit", package: "Money")
             ]
         ),

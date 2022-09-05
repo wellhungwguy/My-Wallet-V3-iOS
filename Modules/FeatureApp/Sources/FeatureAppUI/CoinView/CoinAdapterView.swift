@@ -354,7 +354,7 @@ public final class CoinViewObserver: Session.Observer {
                 )
 
             case .trading:
-                return  try(accounts.first(where: { account in account is TradingAccount }))
+                return try(accounts.first(where: { account in account is TradingAccount }))
                     .or(
                         throw: blockchain.ux.asset.error[]
                             .error(message: "\(event) has no valid accounts for \(String(describing: action))")

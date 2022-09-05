@@ -35,7 +35,7 @@ public struct CoinView: View {
                 Color.clear
                     .frame(height: Spacing.padding2)
             }
-            if viewStore.accounts.isNotEmpty {
+            if viewStore.accounts.isNotEmpty, viewStore.actions.isNotEmpty {
                 actions()
             }
         }
@@ -211,14 +211,12 @@ public struct CoinView: View {
 
     @ViewBuilder func navigationLeadingView() -> some View {
         if let url = viewStore.currency.assetModel.logoPngUrl {
-            Backport.AsyncImage(
+            AsyncMedia(
                 url: url,
-                content: { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .cornerRadius(12)
-                }, placeholder: {
+                content: { media in
+                    media.cornerRadius(12)
+                },
+                placeholder: {
                     Color.semantic.muted
                         .opacity(0.3)
                         .overlay(
@@ -228,6 +226,7 @@ public struct CoinView: View {
                         .clipShape(Circle())
                 }
             )
+            .resizingMode(.aspectFit)
             .frame(width: 24.pt, height: 24.pt)
         }
     }
@@ -240,26 +239,22 @@ public struct CoinView: View {
     }
 
     @ViewBuilder func actions() -> some View {
-        VStack {
-            let actions = viewStore.actions
-            if actions.isNotEmpty {
-                VStack(spacing: 0) {
-                    PrimaryDivider()
-                    HStack(spacing: 8, content: {
-                        ForEach(actions, id: \.event) { action in
-                            SecondaryButton(
-                                title: action.title,
-                                leadingView: { action.icon },
-                                action: {
-                                    app.post(event: action.event[].ref(to: context), context: context)
-                                }
-                            )
-                            .disabled(action.disabled)
+        VStack(spacing: 0) {
+            PrimaryDivider()
+            HStack(spacing: 8.pt) {
+                ForEach(viewStore.actions, id: \.event) { action in
+                    SecondaryButton(
+                        title: action.title,
+                        leadingView: { action.icon },
+                        action: {
+                            app.post(event: action.event[].ref(to: context), context: context)
                         }
-                    })
-                    .padding(.horizontal, Spacing.padding2)
+                    )
+                    .disabled(action.disabled)
                 }
             }
+            .padding(.horizontal, Spacing.padding2)
+            .padding(.top)
         }
     }
 }

@@ -78,6 +78,7 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
+        .package(path: "Modules/Checkout"),
         .package(path: "Modules/BIND")
     ],
     targets: [
@@ -128,6 +129,7 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "FeatureCheckoutUI", package: "Checkout"),
                 .product(name: "BINDWithdrawUI", package: "BIND"),
                 .product(name: "BINDWithdrawDomain", package: "BIND")
             ]

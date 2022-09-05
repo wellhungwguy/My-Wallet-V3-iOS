@@ -9,7 +9,6 @@ import UIComponentsKit
 @objc
 public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
 
-    @available(*, deprecated, message: "Don't use this, resolve using DIKit instead.")
     @Inject @objc public static var shared: AlertViewPresenter
 
     public let disposeBag = DisposeBag()

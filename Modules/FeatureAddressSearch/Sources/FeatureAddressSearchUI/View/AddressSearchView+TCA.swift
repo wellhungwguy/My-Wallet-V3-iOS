@@ -187,7 +187,7 @@ let addressSearchReducer = Reducer.combine(
         case .cancelSearch:
             return Effect(value: .complete(.abandoned))
 
-        case let .complete(addressResult):
+        case .complete(let addressResult):
             env.onComplete(addressResult)
             return .none
 

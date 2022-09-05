@@ -102,7 +102,7 @@ public let cryptoCurrencySelectionReducer = CryptoCurrencySelectionReducer { sta
                     TextState(LocalizedStrings.errorButtonTitle),
                     action: .send(.loadCryptoCurrencies)
                 ),
-                secondaryButton: .cancel()
+                secondaryButton: .cancel(TextState(LocalizedStrings.cancelButtonTitle))
             )
         }
         return .none

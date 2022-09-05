@@ -4,6 +4,7 @@
 @_exported import ComposableArchitectureExtensions
 @_exported import ComposableNavigation
 @_exported import ErrorsUI
+@_exported import SwiftUIExtensions
 
 infix operator &&=: AssignmentPrecedence
 infix operator ?=: AssignmentPrecedence

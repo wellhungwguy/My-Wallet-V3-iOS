@@ -516,6 +516,8 @@ targets:
         OTHER_LDFLAGS:
           - -ObjC
         SWIFT_OBJC_BRIDGING_HEADER: Blockchain/Blockchain-Bridging-Header.h
+        OTHER_SWIFT_FLAGS: $(inherited) -Xcc -Wno-nullability-completeness
+        WARNING_CFLAGS: $(inherited) -Wno-nullability-completeness
       configs:
         Debug Dev:
           groups:

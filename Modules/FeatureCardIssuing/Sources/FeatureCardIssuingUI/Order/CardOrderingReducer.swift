@@ -250,7 +250,7 @@ let cardOrderingReducer: Reducer<
                 .catchToEffect(CardOrderingAction.editAddressComplete)
         case .editAddressComplete(.success(let addressResult)):
             switch addressResult {
-            case let .saved(address):
+            case .saved(let address):
                 state.address = address
             case let .abandoned:
                 break

@@ -422,7 +422,7 @@ extension FeatureCardIssuingDomain.Card.Address {
 extension CardAddressSearchResult {
     fileprivate init(addressResult: AddressResult) {
         switch addressResult {
-        case let .saved(address):
+        case .saved(let address):
             self = .saved(Card.Address(address: address))
         case .abandoned:
             self = .abandoned

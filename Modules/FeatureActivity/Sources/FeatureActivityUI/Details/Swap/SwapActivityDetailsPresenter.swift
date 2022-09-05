@@ -63,8 +63,6 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         event: SwapActivityItemEvent,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        titleViewRelay.accept(.text(value: LocalizedString.Title.swap))
-
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amounts.withdrawal.displayString,
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
@@ -74,16 +72,19 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         let badgeType: BadgeType
         switch event.status {
         case .complete:
+            titleViewRelay.accept(.text(value: LocalizedString.Title.swaped))
             badgeType = .verified
         case .delayed,
              .inProgress,
              .none,
              .pendingRefund:
             badgeType = .default(accessibilitySuffix: statusDescription)
+            titleViewRelay.accept(.text(value: LocalizedString.Title.swapping))
         case .expired,
              .failed,
              .refunded:
             badgeType = .destructive
+            titleViewRelay.accept(.text(value: LocalizedString.Title.swap))
         }
         badgesModel.badgesRelay.accept([statusBadge])
         statusBadge.interactor.stateRelay.accept(

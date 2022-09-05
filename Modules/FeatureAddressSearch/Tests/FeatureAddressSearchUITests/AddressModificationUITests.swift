@@ -212,7 +212,8 @@ extension TestStore {
                 config: .sample(),
                 addressService: MockAddressService(),
                 addressSearchService: MockAddressSearchService(),
-                onComplete: { _ in })
+                onComplete: { _ in }
+            )
         )
     }
 }

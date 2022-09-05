@@ -149,12 +149,6 @@ blockchain:
 					auth:
 					+ blockchain.db.type.array.of.strings
 					+ blockchain.session.state.preference.value
-			redesign:
-				checkout:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
 			referral:
 				is:
 					enabled:
@@ -1143,6 +1137,34 @@ blockchain:
 					wire:
 						transfer:
 							instructions:
+			checkout:
+			+ blockchain.ux.type.story
+				confirmed:
+				+ blockchain.ux.type.analytics.event
+				exchange:
+					rate:
+						disclaimer:
+						+ blockchain.ux.type.action
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
+				fee:
+					disclaimer:
+					+ blockchain.ux.type.action
+						url:
+						+ blockchain.db.type.url
+						+ blockchain.session.configuration.value
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
+				refund:
+					policy:
+						disclaimer:
+						+ blockchain.ux.type.action
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
 			configuration:
 				link:
 					a:

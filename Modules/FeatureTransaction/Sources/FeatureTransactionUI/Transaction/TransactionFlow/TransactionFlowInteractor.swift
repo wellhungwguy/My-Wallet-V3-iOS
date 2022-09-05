@@ -126,7 +126,7 @@ protocol TransactionFlowRouting: Routing {
     )
 
     /// Show the confirmation screen. This pushes onto the prior screen.
-    func routeToConfirmation(transactionModel: TransactionModel)
+    func routeToConfirmation(transactionModel: TransactionModel, action: AssetAction)
 
     /// Presents the KYC Flow if needed or progresses the transactionModel to the next step otherwise
     func presentKYCFlowIfNeeded(completion: @escaping (Bool) -> Void)
@@ -551,7 +551,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             }
 
         case .confirmDetail:
-            router?.routeToConfirmation(transactionModel: transactionModel)
+            router?.routeToConfirmation(transactionModel: transactionModel, action: action)
 
         case .inProgress:
             router?.routeToInProgress(

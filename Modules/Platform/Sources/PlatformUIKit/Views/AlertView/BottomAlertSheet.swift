@@ -153,7 +153,7 @@ public class BottomAlertSheet: UIView {
                 })
                 UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
                     self.dimmingView.alpha = 0.0
-                    guard let window = UIApplication.shared.keyWindow else { return }
+                    guard let window = UIApplication.shared.firstKeyWindow else { return }
                     self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
                 })
             },
@@ -188,7 +188,7 @@ public class BottomAlertSheet: UIView {
 
     private func setupDynamicBehavior() {
         guard animator == nil else { return }
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
 
         animator = UIDynamicAnimator(referenceView: window)
         snapBehavior = UISnapBehavior(
@@ -206,7 +206,7 @@ public class BottomAlertSheet: UIView {
     }
 
     private func presentSheetView() {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
         alpha = 0.0
         let width = window.bounds.width - BottomAlertSheet.horizontalOffset
         let height = BottomAlertSheet.estimatedHeight(
@@ -309,6 +309,8 @@ public class BottomAlertSheet: UIView {
             guard animator.behaviors.contains(pushBehavior) == false else { return }
             animator.addBehavior(snapBehavior)
         case .possible:
+            break
+        @unknown default:
             break
         }
     }

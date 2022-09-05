@@ -64,10 +64,10 @@ struct AddressModificationState: Equatable {
     ) {
         self.addressDetailsId = addressDetailsId
         self.isPresentedFromSearchView = isPresentedFromSearchView
-        self.shouldFetchPrefilledAddress = !isPresentedFromSearchView
+        shouldFetchPrefilledAddress = !isPresentedFromSearchView
         self.error = error
         self.state = state
-        self.stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
+        stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
         self.country = country ?? ""
     }
 }
@@ -222,7 +222,7 @@ let addressModificationReducer = Reducer<
     case .cancelEdit:
         return Effect(value: .complete(.abandoned))
 
-    case let .complete(addressResult):
+    case .complete(let addressResult):
         env.onComplete?(addressResult)
         return .none
 
@@ -286,7 +286,7 @@ extension Address {
 
 extension String {
     var stateWithoutUSPrefix: String? {
-        self.replacingOccurrences(
+        replacingOccurrences(
             of: Address.Constants.usPrefix,
             with: ""
         )

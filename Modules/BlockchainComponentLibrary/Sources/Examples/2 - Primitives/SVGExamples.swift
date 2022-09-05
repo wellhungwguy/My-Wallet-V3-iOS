@@ -245,7 +245,7 @@ struct W3SVGExamples: View {
                 LazyVStack(alignment: .center) {
                     ForEach(urls, id: \.self) { url in
                         let isSelected = selected == url
-                        AsyncSVG(
+                        AsyncMedia(
                             url: url,
                             content: { svg in
                                 svg.aspectRatio(contentMode: .fit)

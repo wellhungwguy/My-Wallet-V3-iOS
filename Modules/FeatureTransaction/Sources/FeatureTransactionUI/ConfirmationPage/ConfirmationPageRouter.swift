@@ -9,7 +9,7 @@ protocol ConfirmationPageRouting: AnyObject {
     func showWebViewWithTitledLink(_ titledLink: TitledLink)
 }
 
-final class ConfirmationPageRouter: ViewableRouter<ConfirmationPageInteractable, ViewControllable>, ConfirmationPageRouting {
+final class ConfirmationPageRouter: ViewableRouter<Interactable, ViewControllable>, ConfirmationPageRouting {
 
     private let webViewRouter: WebViewRouterAPI
 

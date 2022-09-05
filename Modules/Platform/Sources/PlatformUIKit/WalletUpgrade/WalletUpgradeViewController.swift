@@ -12,7 +12,7 @@ public final class WalletUpgradeViewController: UIViewController {
 
     private let presenter: WalletUpgradePresenter
     private let label = UILabel()
-    private let loading = UIActivityIndicatorView(style: .whiteLarge)
+    private let loading = UIActivityIndicatorView(style: .large)
     private let disposeBag = DisposeBag()
 
     // MARK: Init

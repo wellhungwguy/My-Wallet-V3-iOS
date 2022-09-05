@@ -73,7 +73,7 @@ public final class PortfolioScreenInteractor {
                 .cryptoAssets
                 .map { cryptoAsset -> Observable<CurrencyBalance> in
                     let currency = cryptoAsset.asset
-                    
+
                     return app.modePublisher()
                         .flatMap { appMode in
                             cryptoAsset
@@ -87,11 +87,12 @@ public final class PortfolioScreenInteractor {
                             }
                             return group
                                 .balance
-                                .flatMap{ [weak self] moneyValue -> AnyPublisher<Bool, Error> in
+                                .flatMap { [weak self] moneyValue -> AnyPublisher<Bool, Error> in
                                     let appMode = self?.app.currentMode
                                     if appMode == .defi,
                                         case .crypto(let currency) = group.currencyType,
-                                        currency.isCoin {
+                                        currency.isCoin
+                                    {
                                         return .just(true)
                                     }
                                     return .just(moneyValue.hasPositiveDisplayableBalance)

@@ -42,21 +42,29 @@ extension BottomButtonContainerView where Self: UIViewController {
 
     public func keyboardWillShow(with payload: KeyboardObserver.Payload?) {
         guard let payload = payload else { return }
-        UIView.beginAnimations(nil, context: nil)
-        UIView.setAnimationDuration(payload.duration)
-        UIView.setAnimationCurve(payload.curve)
-        layoutConstraintBottomButton.constant = originalBottomButtonConstraint + payload.end.height + optionalOffset
-        view.layoutIfNeeded()
-        UIView.commitAnimations()
+        UIView.animate(
+            withDuration: payload.duration,
+            delay: 0,
+            options: payload.curve.animationOption,
+            animations: { [self] in
+                layoutConstraintBottomButton.constant = originalBottomButtonConstraint + payload.end.height + optionalOffset
+                view.layoutIfNeeded()
+            },
+            completion: nil
+        )
     }
 
     public func keyboardWillHide(with payload: KeyboardObserver.Payload?) {
         guard let payload = payload else { return }
-        UIView.beginAnimations(nil, context: nil)
-        UIView.setAnimationDuration(payload.duration)
-        UIView.setAnimationCurve(payload.curve)
-        layoutConstraintBottomButton.constant = originalBottomButtonConstraint
-        view.layoutIfNeeded()
-        UIView.commitAnimations()
+        UIView.animate(
+            withDuration: payload.duration,
+            delay: 0,
+            options: payload.curve.animationOption,
+            animations: { [self] in
+                layoutConstraintBottomButton.constant = originalBottomButtonConstraint
+                view.layoutIfNeeded()
+            },
+            completion: nil
+        )
     }
 }
