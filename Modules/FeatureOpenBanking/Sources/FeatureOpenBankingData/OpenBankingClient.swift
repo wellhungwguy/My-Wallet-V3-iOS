@@ -295,7 +295,7 @@ extension OpenBanking.Payment {
         return banking.network.perform(request: request, responseType: OpenBanking.Payment.Details.self)
             .handleEvents(receiveOutput: { [banking] details in
                 guard let url = details.extraAttributes?.authorisationUrl else { return }
-                banking.app.state.set(blockchain.ux.payment.method.open.banking.authorisation.url, to: url)
+                banking.app.post(value: url, of: blockchain.ux.payment.method.open.banking.authorisation.url)
             })
             .mapError(OpenBanking.Error.init)
             .eraseToAnyPublisher()
