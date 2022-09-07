@@ -54,12 +54,3 @@ extension AppFeatureConfigurator: FeatureFetching {
             .eraseToAnyPublisher()
     }
 }
-
-// MARK: - RxFeatureFetching
-
-extension AppFeatureConfigurator: RxFeatureFetching {
-    func fetch<Feature: Decodable>(for key: AppFeature, as type: Feature.Type) -> Single<Feature> {
-        fetch(for: key, as: type)
-            .asSingle()
-    }
-}

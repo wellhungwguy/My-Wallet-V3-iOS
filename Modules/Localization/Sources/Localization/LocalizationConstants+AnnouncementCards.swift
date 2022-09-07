@@ -59,28 +59,6 @@ extension LocalizationConstants {
             )
         }
 
-        public enum SimpleBuyPendingTransaction {
-            public static let titlePrefix = NSLocalizedString(
-                "Pending",
-                comment: "Simple Buy Pending Transaction announcement card title"
-            )
-            public static let titleSuffix = NSLocalizedString(
-                "Buy",
-                comment: "Simple Buy Pending Transaction announcement card title"
-            )
-            public static let descriptionPrefix = NSLocalizedString(
-                "Once we receive your bank transfer, your",
-                comment: "Simple Buy Pending Transaction announcement card description prefix"
-            )
-            public static let descriptionSuffix = NSLocalizedString(
-                "buy order will complete",
-                comment: "Simple Buy Pending Transaction announcement card description suffix"
-            )
-            public static var ctaButton: String {
-                SimpleBuy.Checkout.Button.transferDetails
-            }
-        }
-
         public enum SimpleBuyFinishSignup {
             public static let title = NSLocalizedString(
                 "Finish Signing Up. Buy Crypto.",
@@ -158,44 +136,6 @@ extension LocalizationConstants {
             )
         }
 
-        public enum UKEntitySwap {
-
-            public static let title = NSLocalizedString(
-                "New legal entity",
-                comment: "UKEntitySwap announcement card title."
-            )
-
-            public static let description = NSLocalizedString(
-                "Starting later this month, UK customers will be served by our European subsidiary, Blockchain (LT), UAB. You will not experience any changes in user experience or lose access to your funds during this transition.",
-                comment: "UKEntitySwap announcement card description."
-            )
-
-            public static let ctaButtonPrimary = NSLocalizedString(
-                "I Understand",
-                comment: "UKEntitySwap card CTA button title."
-            )
-
-            public static let ctaButtonSecondary = NSLocalizedString(
-                "Learn More",
-                comment: "UKEntitySwap card CTA button title."
-            )
-        }
-
-        public enum CloudBackup {
-            public static let title = NSLocalizedString(
-                "Introducing Cloud Backups",
-                comment: "Cloud Backup announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "You can now backup your wallet securely to the cloud. You can opt-out of backups in your wallet settings.",
-                comment: "Cloud Backup announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Learn more",
-                comment: "Cloud Backup announcement card CTA button title"
-            )
-        }
-
         public enum MajorProductBlocked {
             public static let title = NSLocalizedString(
                 "Trading Restricted",
@@ -210,63 +150,6 @@ extension LocalizationConstants {
             public static let defaultMessage = NSLocalizedString(
                 "Default message for inelibility",
                 comment: "This operation cannot be performed at this time. Please try again later."
-            )
-        }
-
-        public enum Exchange {
-            public static let title = NSLocalizedString(
-                "Introducing the Exchange",
-                comment: "Exchange announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "It's time to Level Up to a better crypto exchange. Buy, sell, and trade more digital assets in the Blockchain.com Exchange.",
-                comment: "Exchange announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Checkout the Exchange",
-                comment: "Exchange announcement card CTA button title"
-            )
-        }
-
-        public enum CashIdentityVerification {
-            public static let title = NSLocalizedString("Keep Cash in Your Wallet", comment: "Keep Cash in Your Wallet")
-            public static let description = NSLocalizedString(
-                "Verify your identity to deposit cash into the Wallet and buy crypto.",
-                comment: "Verify your identity to deposit cash into the Wallet and buy crypto."
-            )
-            public static let badgeName = NSLocalizedString("NEW", comment: "NEW")
-            public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
-        }
-
-        public enum InterestIdentityVerification {
-            public static let title = NSLocalizedString("Earn 9.0% Rewards", comment: "Earn 4.5% Rewards")
-            public enum Description {
-                public static let kycd = NSLocalizedString(
-                    "Start earning up to 9.0% rewards on your crypto.",
-                    comment: "Start earning up to 9.0% rewards on your crypto."
-                )
-                public static let notKYCd = NSLocalizedString(
-                    "Verify your identity and start earning up to 9.0% rewards on your crypto.",
-                    comment: "Verify your identity and start earning up to 9.0% rewards on your crypto."
-                )
-            }
-
-            public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
-        }
-
-        public enum FiatFundsLinkBank {
-            public static let title = NSLocalizedString("Link a Bank to Buy Crypto", comment: "Link a Bank to Buy Crypto")
-            public static let description = NSLocalizedString(
-                "Hold cash in your Blockchain.com Wallet. Deposit and Withdraw at anytime.",
-                comment: "Hold cash in your Blockchain.com Wallet. Deposit and Withdraw at anytime."
-            )
-            public static let linkABank = NSLocalizedString("Link a Bank", comment: "Link a Bank")
-        }
-
-        public enum Bitpay {
-            public static let description = NSLocalizedString(
-                "With BitPay, you can now use your Blockchain wallet for purchases with supporting retailers.",
-                comment: "Bitpay announcement card description"
             )
         }
 
@@ -300,21 +183,6 @@ extension LocalizationConstants {
             )
         }
 
-        public enum TaxCenter {
-            public static let title = NSLocalizedString(
-                "Tax Center is Now Available!",
-                comment: "Tax Center announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "In partnership with CoinTracker, our new Tax Center is now live. Connect to your account on web and go to Account -> Tax Center.",
-                comment: "Tax Center announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "OK",
-                comment: "Tax Center announcement card CTA button title"
-            )
-        }
-
         // MARK: - Periodic
 
         public enum BuyBitcoin {
@@ -329,68 +197,6 @@ extension LocalizationConstants {
             public static let ctaButton = NSLocalizedString(
                 "Buy Crypto Now",
                 comment: "Buy BTC announcement card CTA button title"
-            )
-        }
-
-        public enum NewSwap {
-            public enum Promo {
-                public static let title = NSLocalizedString(
-                    "Swap Faster. Cheaper. Better.",
-                    comment: ""
-                )
-                public static let description = NSLocalizedString(
-                    "Get Full Access and Swap faster, with higher limits, lower fees, and a better experience.",
-                    comment: ""
-                )
-                public static let ctaButton = NSLocalizedString(
-                    "Upgrade now",
-                    comment: ""
-                )
-            }
-
-            public enum Eligible {
-                public static let title = NSLocalizedString(
-                    "Swap it like it’s hot.",
-                    comment: ""
-                )
-                public static let description = NSLocalizedString(
-                    "Faster. Cheaper. Better. Our new Swap experience lets you exchange crypto in fewer taps.",
-                    comment: ""
-                )
-                public static let ctaButton = NSLocalizedString(
-                    "Swap Now",
-                    comment: ""
-                )
-            }
-
-            public enum NotEligible {
-                public static let title = NSLocalizedString(
-                    "Swap better.",
-                    comment: ""
-                )
-                public static let description = NSLocalizedString(
-                    "We’ve updated Swap with a new look and better experience.",
-                    comment: ""
-                )
-                public static let ctaButton = NSLocalizedString(
-                    "Swap Now",
-                    comment: ""
-                )
-            }
-        }
-
-        public enum Swap {
-            public static let title = NSLocalizedString(
-                "Trade Crypto",
-                comment: "Swap announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "Trade one crypto for another without giving up control of your keys. Get competitive, real-time prices and fast on-chain settlement.",
-                comment: "Swap announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Check out Swap",
-                comment: "Swap announcement card CTA button title"
             )
         }
 

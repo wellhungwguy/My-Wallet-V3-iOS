@@ -141,28 +141,6 @@ extension RootViewController: LoggedInBridge {
         (topMostViewController ?? self).present(controller, animated: true, completion: nil)
     }
 
-    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {
-        var presenter: InterestDashboardAnnouncementPresenting
-        let router = InterestDashboardAnnouncementRouter(
-            navigationRouter: NavigationRouter()
-        )
-        if isKYCVerfied {
-            presenter = InterestDashboardAnnouncementScreenPresenter(
-                router: router
-            )
-        } else {
-            presenter = InterestIdentityVerificationScreenPresenter(
-                router: router
-            )
-        }
-        let controller = InterestDashboardAnnouncementViewController(presenter: presenter); do {
-            controller.transitioningDelegate = bottomSheetPresenter
-            controller.modalPresentationStyle = .custom
-            controller.isModalInPresentation = true
-        }
-        (topMostViewController ?? self).present(controller, animated: true, completion: nil)
-    }
-
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
 
         let interactor = InteractiveFundsTransferDetailsInteractor(

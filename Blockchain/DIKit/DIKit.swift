@@ -230,12 +230,6 @@ extension DependencyContainer {
                 as CashIdentityVerificationAnnouncementRouting
         }
 
-        factory { () -> InterestIdentityVerificationAnnouncementRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveInterestIdentityVerificationAnnouncementRouting()
-                as InterestIdentityVerificationAnnouncementRouting
-        }
-
         factory { () -> SettingsStarterAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveSettingsStarter() as SettingsStarterAPI
@@ -353,11 +347,6 @@ extension DependencyContainer {
         }
 
         factory { () -> FeatureFetching in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
-        factory { () -> RxFeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }

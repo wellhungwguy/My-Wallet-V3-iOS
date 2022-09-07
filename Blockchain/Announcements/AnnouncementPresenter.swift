@@ -43,11 +43,9 @@ final class AnnouncementPresenter {
     private let settingsStarter: SettingsStarterAPI
 
     private let app: AppProtocol
-    private let featureFetcher: RxFeatureFetching
+    private let featureFetcher: FeatureFetching
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
-    private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
-    private let wallet: Wallet
     private let kycSettings: KYCSettingsAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -79,19 +77,17 @@ final class AnnouncementPresenter {
         accountsRouter: AccountsRouting = DIKit.resolve(),
         interactor: AnnouncementInteracting = AnnouncementInteractor(),
         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
-        featureFetcher: RxFeatureFetching = DIKit.resolve(),
+        featureFetcher: FeatureFetching = DIKit.resolve(),
         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
-        interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = DIKit.resolve(),
         tabSwapping: TabSwapping = DIKit.resolve(),
         walletOperating: WalletOperationsRouting = DIKit.resolve(),
         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
         kycRouter: KYCRouterAPI = DIKit.resolve(),
-        reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
+        reactiveWallet: ReactiveWalletAPI = DIKit.resolve(),
         kycSettings: KYCSettingsAPI = DIKit.resolve(),
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI = DIKit.resolve(),
-        wallet: Wallet = WalletManager.shared.wallet,
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
         coincore: CoincoreAPI = DIKit.resolve(),
         nabuUserService: NabuUserServiceAPI = DIKit.resolve()
@@ -101,13 +97,11 @@ final class AnnouncementPresenter {
         self.viewWaitlistRegistration = viewWaitlistRegistration
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.kycRouter = kycRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
         self.featureFetcher = featureFetcher
-        self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
         self.tabSwapping = tabSwapping
         self.walletOperating = walletOperating
@@ -147,11 +141,15 @@ final class AnnouncementPresenter {
             .disposed(by: disposeBag)
     }
 
+    // MARK: - Private Helpers
+
     private func calculate() {
         let announcementsMetadata = featureFetcher
             .fetch(for: .announcements, as: AnnouncementsMetadata.self)
+            .asSingle()
         let delaySeconds = app.currentMode == .defi ? 0 : 10
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
+            .asSingle()
             .delaySubscription(.seconds(delaySeconds), scheduler: MainScheduler.asyncInstance)
         Single
             .zip(announcementsMetadata, data)
@@ -166,100 +164,23 @@ final class AnnouncementPresenter {
     }
 
     /// Resolves the first valid announcement according by the provided types and preliminary data
-    // swiftlint:disable:next cyclomatic_complexity
     private func resolve(
         metadata: AnnouncementsMetadata,
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
 
-        if
-            app.state.yes(if: blockchain.user.is.cowboy.fan),
-            app.remoteConfiguration.yes(unless: blockchain.ux.onboarding.promotion.cowboys.announcements.is.enabled)
-        {
+        // If Cowboys Promotios is enabled, do not display any announcement.
+        if preliminaryData.cowboysPromotionIsEnabled {
             return .none
         }
 
         // For other users, keep the current logic in place
         for type in metadata.order {
-            let announcement: Announcement
-            switch type {
-            case .majorProductBlocked:
-                let reason = preliminaryData.majorProductBlocked
-                announcement = majorProductBlocked(reason)
-            case .claimFreeCryptoDomain:
-                announcement = claimFreeCryptoDomainAnnouncement(
-                    claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
-                )
-            case .resubmitDocumentsAfterRecovery:
-                announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
-            case .sddUsersFirstBuy:
-                announcement = sddUsersFirstBuy(
-                    tiers: preliminaryData.tiers,
-                    isSDDEligible: preliminaryData.isSDDEligible,
-                    hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
-                    reappearanceTimeInterval: metadata.interval
-                )
-            case .cloudBackup:
-                announcement = cloudBackupAnnouncement
-            case .interestFunds:
-                announcement = interestAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
-            case .fiatFundsNoKYC:
-                announcement = cashAnnouncement(isKYCVerified: preliminaryData.tiers.isTier2Approved)
-            case .fiatFundsKYC:
-                announcement = fiatFundsLinkBank(
-                    isKYCVerified: preliminaryData.tiers.isTier2Approved,
-                    hasLinkedBanks: preliminaryData.simpleBuy.hasLinkedBanks
-                )
-            case .verifyEmail:
-                announcement = verifyEmail(
-                    user: preliminaryData.user,
-                    reappearanceTimeInterval: metadata.interval
-                )
-            case .twoFA:
-                announcement = twoFA(data: preliminaryData, reappearanceTimeInterval: metadata.interval)
-            case .backupFunds:
-                announcement = backupFunds(reappearanceTimeInterval: metadata.interval)
-            case .buyBitcoin:
-                announcement = buyBitcoin(reappearanceTimeInterval: metadata.interval)
-            case .transferBitcoin:
-                announcement = transferBitcoin(
-                    isKycSupported: preliminaryData.isKycSupported,
-                    reappearanceTimeInterval: metadata.interval
-                )
-            case .verifyIdentity:
-                announcement = verifyIdentity(using: preliminaryData.user)
-            case .bitpay:
-                announcement = bitpay
-            case .viewNFTWaitlist:
-                announcement = viewNFTComingSoonAnnouncement()
-            case .resubmitDocuments:
-                announcement = resubmitDocuments(user: preliminaryData.user)
-            case .simpleBuyKYCIncomplete:
-                announcement = simpleBuyFinishSignup(
-                    tiers: preliminaryData.tiers,
-                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow,
-                    reappearanceTimeInterval: metadata.interval
-                )
-            case .newSwap:
-                announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
-            case .newAsset:
-                announcement = newAsset(cryptoCurrency: preliminaryData.newAsset)
-            case .assetRename:
-                announcement = assetRename(
-                    data: preliminaryData.assetRename
-                )
-            case .ukEntitySwitch:
-                announcement = ukEntitySwitch(user: preliminaryData.user)
-            case .walletConnect:
-                announcement = walletConnect()
-            case .applePay:
-                announcement = applePay()
-            case .taxCenter:
-                announcement = taxCenter(
-                    userCountry: preliminaryData.user.address?.country,
-                    reappearanceTimeInterval: metadata.interval
-                )
-            }
+            let announcement: Announcement = announcement(
+                type: type,
+                metadata: metadata,
+                preliminaryData: preliminaryData
+            )
 
             // Wallets with no balance should show no announcements
             let shouldShowBalanceCheck = preliminaryData.hasAnyWalletBalance
@@ -282,7 +203,79 @@ final class AnnouncementPresenter {
         return .none
     }
 
-    // MARK: - Private Helpers
+    private func announcement(
+        type: AnnouncementType,
+        metadata: AnnouncementsMetadata,
+        preliminaryData: AnnouncementPreliminaryData
+    ) -> Announcement {
+        switch type {
+        case .majorProductBlocked:
+            let reason = preliminaryData.majorProductBlocked
+            return majorProductBlocked(reason)
+        case .claimFreeCryptoDomain:
+            return claimFreeCryptoDomainAnnouncement(
+                claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
+            )
+        case .resubmitDocumentsAfterRecovery:
+            return resubmitDocumentsAfterRecovery(user: preliminaryData.user)
+        case .sddUsersFirstBuy:
+            return sddUsersFirstBuy(
+                tiers: preliminaryData.tiers,
+                isSDDEligible: preliminaryData.isSDDEligible,
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .verifyEmail:
+            return verifyEmail(
+                user: preliminaryData.user,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .twoFA:
+            return twoFA(
+                hasTwoFA: preliminaryData.hasTwoFA,
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .backupFunds:
+            return backupFunds(
+                isRecoveryPhraseVerified: preliminaryData.isRecoveryPhraseVerified,
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .buyBitcoin:
+            return buyBitcoin(
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .transferBitcoin:
+            return transferBitcoin(
+                isKycSupported: preliminaryData.isKycSupported,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .verifyIdentity:
+            return verifyIdentity(using: preliminaryData.user)
+        case .viewNFTWaitlist:
+            return viewNFTComingSoonAnnouncement()
+        case .resubmitDocuments:
+            return resubmitDocuments(user: preliminaryData.user)
+        case .simpleBuyKYCIncomplete:
+            return simpleBuyFinishSignup(
+                tiers: preliminaryData.tiers,
+                hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .newAsset:
+            return newAsset(cryptoCurrency: preliminaryData.newAsset)
+        case .assetRename:
+            return assetRename(
+                data: preliminaryData.assetRename
+            )
+        case .walletConnect:
+            return walletConnect()
+        case .applePay:
+            return applePay()
+        }
+    }
 
     /// Hides whichever announcement is now displaying
     private var announcementDismissAction: CardAnnouncementAction {
@@ -386,13 +379,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Computes Bitpay announcement
-    private var bitpay: Announcement {
-        BitpayAnnouncement(
-            dismiss: announcementDismissAction
-        )
-    }
-
     private func showCoinView(for currency: CryptoCurrency) {
         app.post(
             event: blockchain.ux.asset[currency.code].select,
@@ -416,14 +402,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    private func ukEntitySwitch(user: NabuUser) -> Announcement {
-        UKEntitySwitchAnnouncement(
-            userCountry: user.address?.country,
-            dismiss: announcementDismissAction,
-            action: actionForOpening("https://support.blockchain.com/hc/en-us/articles/4418431131668")
-        )
-    }
-
     private func walletConnect() -> Announcement {
         let absolutURL = "https://medium.com/blockchain/" +
         "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
@@ -443,17 +421,6 @@ extension AnnouncementPresenter {
         )
     }
 
-    private func taxCenter(
-        userCountry: Country?,
-        reappearanceTimeInterval: TimeInterval
-    ) -> Announcement {
-        TaxCenterAnnouncement(
-            userCountry: userCountry,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: announcementDismissAction
-        )
-    }
-
     /// Computes new asset card announcement.
     private func newAsset(cryptoCurrency: CryptoCurrency?) -> Announcement {
         NewAssetAnnouncement(
@@ -465,25 +432,6 @@ extension AnnouncementPresenter {
                 }
                 self?.handleBuyCrypto(currency: cryptoCurrency)
             }
-        )
-    }
-
-    /// Cash Support Announcement for users who have not KYC'd
-    private func cashAnnouncement(isKYCVerified: Bool) -> Announcement {
-        CashIdentityVerificationAnnouncement(
-            shouldShowCashIdentityAnnouncement: !isKYCVerified,
-            dismiss: announcementDismissAction,
-            action: { [weak cashIdentityVerificationRouter] in
-                cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
-            }
-        )
-    }
-
-    /// Cash Support Announcement for users who have not KYC'd
-    private var cloudBackupAnnouncement: Announcement {
-        CloudBackupAnnouncement(
-            dismiss: announcementDismissAction,
-            action: actionForOpening("https://support.blockchain.com/hc/en-us/articles/360046143432")
         )
     }
 
@@ -582,29 +530,6 @@ extension AnnouncementPresenter {
         navigationRouter.present(viewController: nav, using: .modalOverTopMost)
     }
 
-    /// Interest Account Announcement for users who have not KYC'd
-    private func interestAnnouncement(isKYCVerified: Bool) -> Announcement {
-        InterestIdentityVerificationAnnouncement(
-            isKYCVerified: isKYCVerified,
-            dismiss: announcementDismissAction,
-            action: { [weak interestIdentityVerificationRouter] in
-                interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
-            }
-        )
-    }
-
-    /// Cash Support Announcement for users who have KYC'd
-    /// and have not linked a bank.
-    private func fiatFundsLinkBank(isKYCVerified: Bool, hasLinkedBanks: Bool) -> Announcement {
-        FiatFundsLinkBankAnnouncement(
-            shouldShowLinkBankAnnouncement: false, // TODO: remove `false` and uncomment this: isKYCVerified && !hasLinkedBanks,
-            dismiss: announcementDismissAction,
-            action: {
-                // TODO: Route to bank linking
-            }
-        )
-    }
-
     /// Computes SDD Users Buy announcement
     private func sddUsersFirstBuy(
         tiers: KYC.UserTiers,
@@ -624,9 +549,12 @@ extension AnnouncementPresenter {
     }
 
     /// Computes Buy BTC announcement
-    private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
+    private func buyBitcoin(
+        hasAnyWalletBalance: Bool,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         BuyBitcoinAnnouncement(
-            isEnabled: !wallet.isBitcoinWalletFunded,
+            isEnabled: !hasAnyWalletBalance,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: announcementDismissAction,
             action: { [weak self] in
@@ -635,25 +563,13 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Computes Swap card announcement
-    private func newSwap(
-        using data: AnnouncementPreliminaryData,
+    /// Computes Backup Funds (recovery phrase)
+    private func backupFunds(
+        isRecoveryPhraseVerified: Bool,
+        hasAnyWalletBalance: Bool,
         reappearanceTimeInterval: TimeInterval
     ) -> Announcement {
-        NewSwapAnnouncement(
-            isEligibleForSimpleBuy: data.simpleBuy.isEligible,
-            isTier1Or2Verified: data.tiers.isTier1Approved || data.tiers.isTier2Approved,
-            dismiss: announcementDismissAction,
-            action: { [weak self] in
-                self?.tabSwapping.switchTabToSwap()
-                self?.analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .dashboardPromo))
-            }
-        )
-    }
-
-    /// Computes Backup Funds (recovery phrase)
-    private func backupFunds(reappearanceTimeInterval: TimeInterval) -> Announcement {
-        let shouldBackupFunds = !wallet.isRecoveryPhraseVerified() && wallet.isBitcoinWalletFunded
+        let shouldBackupFunds = !isRecoveryPhraseVerified && hasAnyWalletBalance
         return BackupFundsAnnouncement(
             shouldBackupFunds: shouldBackupFunds,
             reappearanceTimeInterval: reappearanceTimeInterval,
@@ -665,8 +581,12 @@ extension AnnouncementPresenter {
     }
 
     /// Computes 2FA announcement
-    private func twoFA(data: AnnouncementPreliminaryData, reappearanceTimeInterval: TimeInterval) -> Announcement {
-        let shouldEnable2FA = !data.hasTwoFA && wallet.isBitcoinWalletFunded
+    private func twoFA(
+        hasTwoFA: Bool,
+        hasAnyWalletBalance: Bool,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
+        let shouldEnable2FA = !hasTwoFA && hasAnyWalletBalance
         return Enable2FAAnnouncement(
             shouldEnable2FA: shouldEnable2FA,
             reappearanceTimeInterval: reappearanceTimeInterval,
