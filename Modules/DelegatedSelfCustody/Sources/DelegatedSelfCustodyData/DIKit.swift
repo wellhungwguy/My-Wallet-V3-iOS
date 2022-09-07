@@ -47,7 +47,10 @@ extension DependencyContainer {
         }
 
         factory {
-            AssetSupportService(stacksSupport: DIKit.resolve())
+            AssetSupportService(
+                app: DIKit.resolve(),
+                stacksSupport: DIKit.resolve()
+            )
         }
 
         single {

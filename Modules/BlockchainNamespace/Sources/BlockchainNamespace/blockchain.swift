@@ -98,6 +98,7 @@ public extension I_blockchain_app_configuration {
 	var `debug`: L_blockchain_app_configuration_debug { .init("\(__).debug") }
 	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
 	var `defi`: L_blockchain_app_configuration_defi { .init("\(__).defi") }
+	var `dynamicselfcustody`: L_blockchain_app_configuration_dynamicselfcustody { .init("\(__).dynamicselfcustody") }
 	var `firebase`: L_blockchain_app_configuration_firebase { .init("\(__).firebase") }
 	var `frequent`: L_blockchain_app_configuration_frequent { .init("\(__).frequent") }
 	var `kyc`: L_blockchain_app_configuration_kyc { .init("\(__).kyc") }
@@ -375,6 +376,17 @@ public final class L_blockchain_app_configuration_defi_tabs: L, I_blockchain_app
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.defi.tabs", comment: "") }
 }
 public protocol I_blockchain_app_configuration_defi_tabs: I_blockchain_db_type_array_of_tags, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_dynamicselfcustody: L, I_blockchain_app_configuration_dynamicselfcustody {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.dynamicselfcustody", comment: "") }
+}
+public protocol I_blockchain_app_configuration_dynamicselfcustody: I {}
+public extension I_blockchain_app_configuration_dynamicselfcustody {
+	var `assets`: L_blockchain_app_configuration_dynamicselfcustody_assets { .init("\(__).assets") }
+}
+public final class L_blockchain_app_configuration_dynamicselfcustody_assets: L, I_blockchain_app_configuration_dynamicselfcustody_assets {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.dynamicselfcustody.assets", comment: "") }
+}
+public protocol I_blockchain_app_configuration_dynamicselfcustody_assets: I_blockchain_db_array, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_firebase: L, I_blockchain_app_configuration_firebase {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.firebase", comment: "") }
 }

@@ -73,6 +73,10 @@ blockchain:
 				tabs:
 				+ blockchain.db.type.array.of.tags
 				+ blockchain.session.configuration.value
+			dynamicselfcustody:
+				assets:
+				+ blockchain.db.array
+				+ blockchain.session.configuration.value
 			firebase:
 				project:
 					id:
