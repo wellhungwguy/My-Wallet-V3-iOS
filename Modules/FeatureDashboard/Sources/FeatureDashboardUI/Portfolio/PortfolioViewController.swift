@@ -18,6 +18,7 @@ import ToolKit
 import UIComponentsKit
 
 /// A view controller that displays the dashboard
+// swiftlint:disable type_body_length
 final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewController {
 
     // MARK: - Private Types
@@ -141,7 +142,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         tableView.register(FiatCustodialBalancesTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
-        tableView.registerNibCell(SimpleBalanceTableViewCell.self, in: .module)
+        tableView.register(SimpleBalanceTableViewCell.self)
         tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
         tableView.separatorColor = .clear
 
