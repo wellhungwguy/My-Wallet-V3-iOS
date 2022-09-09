@@ -58,7 +58,7 @@ let claimIntroductionReducer = Reducer.combine(
     searchCryptoDomainReducer
         .optional()
         .pullback(
-            state: (\ClaimIntroductionState.searchState),
+            state: \ClaimIntroductionState.searchState,
             action: /ClaimIntroductionAction.searchAction,
             environment: {
                 SearchCryptoDomainEnvironment(

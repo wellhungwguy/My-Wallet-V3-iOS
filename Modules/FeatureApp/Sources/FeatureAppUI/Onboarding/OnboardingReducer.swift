@@ -159,9 +159,9 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         ),
     // swiftlint:disable closure_body_length
     Reducer<
-    Onboarding.State,
-    Onboarding.Action,
-    Onboarding.Environment
+        Onboarding.State,
+        Onboarding.Action,
+        Onboarding.Environment
     > { state, action, environment in
         switch action {
         case .showAppUpgrade(let appUpgradeState):

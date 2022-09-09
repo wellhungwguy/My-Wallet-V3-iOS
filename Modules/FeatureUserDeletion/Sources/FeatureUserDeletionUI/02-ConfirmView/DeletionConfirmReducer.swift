@@ -88,7 +88,7 @@ extension Reducer where
                         event: .accountDeletionSuccess
                     )
                     return .none
-                case let .showResultScreen(.failure(error)):
+                case .showResultScreen(.failure(let error)):
                     environment.analyticsRecorder.record(
                         event: .accountDeletionFailure(
                             errorMessage: error.localizedDescription

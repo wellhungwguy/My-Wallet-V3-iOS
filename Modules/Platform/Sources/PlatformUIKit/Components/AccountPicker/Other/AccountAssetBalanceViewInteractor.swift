@@ -84,8 +84,8 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         .map { moneyValuePair -> InteractionState in
             InteractionState.loaded(
                 next: AssetBalanceViewModel.Value.Interaction(
-                    primaryValue: moneyValuePair.base,
-                    secondaryValue: moneyValuePair.quote,
+                    primaryValue: moneyValuePair.quote,
+                    secondaryValue: moneyValuePair.base,
                     pendingValue: nil
                 )
             )

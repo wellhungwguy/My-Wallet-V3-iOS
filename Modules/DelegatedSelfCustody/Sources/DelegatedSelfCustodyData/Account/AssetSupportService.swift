@@ -33,7 +33,7 @@ final class AssetSupportService {
         return assets
             .zip(stacksSupport.isEnabled)
             .eraseError()
-            .map { (assets, stacksSupportIsEnabled) -> [DelegatedCustodyDerivation] in
+            .map { assets, stacksSupportIsEnabled -> [DelegatedCustodyDerivation] in
                 guard stacksSupportIsEnabled else {
                     return assets.filter { $0.currencyCode != "STX" }
                 }
