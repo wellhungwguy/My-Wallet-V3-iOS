@@ -5,6 +5,11 @@ import XCTest
 
 final class BuyButtonTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: 5) {
             BuyButton_Previews.previews
@@ -18,8 +23,7 @@ final class BuyButtonTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

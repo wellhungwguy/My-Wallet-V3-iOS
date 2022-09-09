@@ -6,9 +6,14 @@ import XCTest
 
 final class ErrorStateViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testErrorStateView() {
         let view = ErrorStateView(title: "An error has occurred.")
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 
     func testRetryButton() {
@@ -17,6 +22,6 @@ final class ErrorStateViewTests: XCTestCase {
             button: ("Retry", {})
         )
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 }

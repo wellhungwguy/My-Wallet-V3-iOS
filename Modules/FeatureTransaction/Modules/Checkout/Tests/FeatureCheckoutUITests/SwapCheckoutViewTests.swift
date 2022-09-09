@@ -8,6 +8,11 @@ import XCTest
 
 final class SwapCheckoutViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func test_SwapCheckoutView() {
         let coinView = SwapCheckoutView(
             swapCheckoutPublisher: .just(.preview),
@@ -15,8 +20,7 @@ final class SwapCheckoutViewTests: XCTestCase {
         )
         assertSnapshot(
             matching: coinView,
-            as: .image(layout: .device(config: .iPhone8)),
-            record: false
+            as: .image(layout: .device(config: .iPhone8))
         )
     }
 
@@ -29,8 +33,7 @@ final class SwapCheckoutViewTests: XCTestCase {
         )
         assertSnapshot(
             matching: coinView,
-            as: .image(layout: .device(config: .iPhone8)),
-            record: false
+            as: .image(layout: .device(config: .iPhone8))
         )
     }
 }

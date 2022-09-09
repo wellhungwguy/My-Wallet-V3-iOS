@@ -9,6 +9,12 @@ import SwiftUI
 import XCTest
 
 final class PrefillButtonsViewTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func test_PrefillButtonsView() {
         let prefillButtonsView = PrefillButtonsView(
             store: Store<PrefillButtonsState, PrefillButtonsAction>(
@@ -22,6 +28,6 @@ final class PrefillButtonsViewTests: XCTestCase {
         )
         .frame(width: 375, height: 60)
 
-        assertSnapshot(matching: prefillButtonsView, as: .image, record: false)
+        assertSnapshot(matching: prefillButtonsView, as: .image)
     }
 }

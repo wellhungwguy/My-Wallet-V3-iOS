@@ -15,14 +15,10 @@ final class FeatureUserDeletionSnapshotTests: XCTestCase {
     private var analyticsRecorder: MockAnalyticsRecorder!
     private var userDeletionState: UserDeletionState!
 
-    enum Config {
-        static let recordingSnapshots: Bool = false
-    }
-
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        isRecording = Config.recordingSnapshots
+        isRecording = false
 
         mockEmailVerificationService = MockUserDeletionRepositoryAPI()
         analyticsRecorder = MockAnalyticsRecorder()

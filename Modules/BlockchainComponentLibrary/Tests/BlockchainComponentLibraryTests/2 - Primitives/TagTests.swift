@@ -7,9 +7,14 @@ import XCTest
 
 final class TagTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testTags() {
         let view = HStack { TagView_Previews.previews.fixedSize() }
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }

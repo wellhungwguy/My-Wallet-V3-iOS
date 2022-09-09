@@ -21,14 +21,19 @@ final class EitherViewControllerTests: XCTestCase {
         }
     }
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testEither() {
         let either: Either<Green, Blue> = .left(Green())
         let controller = EitherViewController(child: either)
 
-        assertSnapshot(matching: controller, as: .image, record: false)
+        assertSnapshot(matching: controller, as: .image)
 
         controller.child = .right(Blue())
 
-        assertSnapshot(matching: controller, as: .image, record: false)
+        assertSnapshot(matching: controller, as: .image)
     }
 }

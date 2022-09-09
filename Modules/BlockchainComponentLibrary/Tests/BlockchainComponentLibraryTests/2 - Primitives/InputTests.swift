@@ -5,6 +5,12 @@ import SnapshotTesting
 import XCTest
 
 final class InputTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testInput() {
         let view = Input_Previews.previews
             .frame(width: 300)
@@ -14,8 +20,7 @@ final class InputTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

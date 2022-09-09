@@ -98,6 +98,11 @@ class AccountPickerViewTests: XCTestCase {
         searchable: false
     )
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testView() {
         let view = AccountPickerView(
             store: Store(
@@ -128,6 +133,6 @@ class AccountPickerViewTests: XCTestCase {
         )
         .app(App.preview)
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 }

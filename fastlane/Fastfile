@@ -121,7 +121,7 @@ platform :ios do
       project: "Blockchain.xcodeproj",
       scheme: "Blockchain (Staging)",
       configuration: "Debug Staging",
-      xcargs: flatten + " -destination 'platform=iOS Simulator,name=iPhone 8,OS=15.5' -clonedSourcePackagesDirPath #{clonedSourcesPath} -packageCachePath #{packageCachePath} -disableAutomaticPackageResolution test"
+      xcargs: flatten + " -destination 'platform=iOS Simulator,name=iPhone 8,OS=16.0' -clonedSourcePackagesDirPath #{clonedSourcesPath} -packageCachePath #{packageCachePath} -disableAutomaticPackageResolution test"
     )
   end
   

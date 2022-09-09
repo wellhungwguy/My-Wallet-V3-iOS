@@ -16,14 +16,10 @@ final class FeatureNotificationPreferencesSnapshotTests: XCTestCase {
     private var notificationRepoMock: NotificationPreferencesRepositoryMock!
     private var rootStore: Store<NotificationPreferencesState, NotificationPreferencesAction>!
 
-    enum Config {
-        static let recordingSnapshots: Bool = false
-    }
-
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        isRecording = Config.recordingSnapshots
+        isRecording = false
 
         let preferencesToReturn = [
             MockGenerator.marketingNotificationPreference,

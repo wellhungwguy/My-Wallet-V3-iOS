@@ -7,12 +7,17 @@ import XCTest
 
 final class BalanceSectionHeaderTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             BalanceSectionHeader_Previews.previews
         }
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
     }
 }

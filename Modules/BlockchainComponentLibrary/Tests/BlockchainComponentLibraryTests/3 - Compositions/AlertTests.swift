@@ -5,12 +5,17 @@ import XCTest
 
 final class AlertTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = Alert_Previews.previews
             .frame(width: 320)
             .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
     }
 
     func testSnapshot_largeDevices() {
@@ -18,6 +23,6 @@ final class AlertTests: XCTestCase {
             .frame(width: 1024)
             .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
     }
 }

@@ -5,6 +5,12 @@ import SnapshotTesting
 import XCTest
 
 final class ColorsTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = Colors_Previews.previews
             .frame(width: 320)
@@ -15,8 +21,7 @@ final class ColorsTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

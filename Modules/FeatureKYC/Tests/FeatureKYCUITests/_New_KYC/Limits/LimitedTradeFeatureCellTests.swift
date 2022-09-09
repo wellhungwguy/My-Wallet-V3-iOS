@@ -9,6 +9,11 @@ import XCTest
 
 final class LimitedTradeFeatureCellTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     let exampleFeatures: [LimitedTradeFeature] = [
         LimitedTradeFeature(
             id: .send,
@@ -75,8 +80,7 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
                 as: [
                     .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                     .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-                ],
-                record: false
+                ]
             )
         }
     }

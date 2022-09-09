@@ -4,6 +4,12 @@ import SwiftUI
 import XCTest
 
 final class ExchangeSellButtonTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: 5) {
             ExchangeSellButton_Previews.previews
@@ -17,8 +23,7 @@ final class ExchangeSellButtonTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }
