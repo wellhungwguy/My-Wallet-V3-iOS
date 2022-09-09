@@ -24,6 +24,9 @@ public struct CoinViewState: Equatable {
     var appMode: AppMode?
 
     var swapButton: ButtonAction? {
+        guard appMode != .legacy else {
+            return nil
+        }
         let swapDisabled = !accounts.hasPositiveBalanceForSelling
         let swapAction = ButtonAction.swap(disabled: swapDisabled)
         let action = action(swapAction, whenAccountCan: .swap)
