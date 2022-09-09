@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "Errors",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "Errors",
@@ -27,24 +32,25 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../Localization"),
-        .package(path: "../Tool")
+        .package(path: "../Extensions"),
+        .package(path: "../AnyCoding")
     ],
     targets: [
         .target(
             name: "Errors",
             dependencies: [
-                .product(name: "AnyCoding", package: "BlockchainNamespace"),
+                .product(name: "AnyCoding", package: "AnyCoding"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "Collections", package: "swift-collections"),
-                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "Extensions", package: "Extensions"),
                 .product(name: "Localization", package: "Localization")
             ]
         ),
         .target(
             name: "ErrorsUI",
             dependencies: [
-                .target(name: "Errors"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
+                .target(name: "Errors")
             ]
         ),
         .testTarget(

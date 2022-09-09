@@ -92,7 +92,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             }
             amountViewInteracting = AmountTranslationInteractor(
                 fiatCurrencyClosure: { [fiatCurrencyService] in
-                    fiatCurrencyService.displayCurrency.asObservable()
+                    fiatCurrencyService.tradingCurrency.asObservable()
                 },
                 cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),

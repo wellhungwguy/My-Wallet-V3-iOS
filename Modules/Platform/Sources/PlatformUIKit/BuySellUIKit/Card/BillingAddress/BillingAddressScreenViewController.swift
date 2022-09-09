@@ -152,7 +152,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .disposed(by: disposeBag)
     }
 
-    private func presentUXError(_ error: Nabu.Error.UX) {
+    private func presentUXError(_ error: UX.Dialog) {
         navigationController?
             .pushViewController(
                 UIHostingController(

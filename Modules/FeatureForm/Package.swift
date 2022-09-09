@@ -6,7 +6,10 @@ let package = Package(
     name: "FeatureForm",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(name: "FeatureForm", targets: ["FeatureFormDomain", "FeatureFormUI"]),
@@ -17,7 +20,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            .exact("0.38.3")
         ),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../Tool")

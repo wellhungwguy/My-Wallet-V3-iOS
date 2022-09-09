@@ -11,7 +11,6 @@ import MoneyKit
 import SwiftUI
 
 public struct AccountListView: View {
-
     private typealias Localization = LocalizationConstants.Coin.Accounts
 
     @BlockchainApp var app
@@ -32,9 +31,12 @@ public struct AccountListView: View {
         }
     }
 
+    var isDefiMode: Bool {
+        accounts.count == 1 && accounts.first?.accountType == .privateKey
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
-            SectionHeader(title: Localization.sectionTitle)
             if accounts.isEmpty {
                 loading()
             } else {
@@ -44,7 +46,12 @@ public struct AccountListView: View {
                         assetColor: currency.color,
                         interestRate: interestRate
                     )
-                    .context([blockchain.ux.asset.account.id: account.id])
+                    .context(
+                        [
+                            blockchain.ux.asset.account.id: account.id,
+                            blockchain.ux.asset.account: account
+                        ]
+                    )
                     PrimaryDivider()
                 }
                 switch kycStatus {
@@ -55,6 +62,11 @@ public struct AccountListView: View {
                 }
             }
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                    .stroke(isDefiMode ? Color.semantic.medium : .clear, lineWidth: 1)
+        )
+        .padding(.horizontal, Spacing.padding1)
     }
 
     @ViewBuilder func loading() -> some View {
@@ -130,6 +142,27 @@ struct AccountListView_PreviewProvider: PreviewProvider {
             kycStatus: .unverified
         )
         .previewDisplayName("Unverified")
+
+        AccountListView(
+            accounts: [
+                .preview.privateKey
+            ],
+            currency: .bitcoin,
+            interestRate: nil,
+            kycStatus: .unverified
+        )
+        .previewDisplayName("Single Account Defi")
+
+        AccountListView(
+            accounts: [
+                .preview.privateKey,
+                .preview.privateKey
+            ],
+            currency: .bitcoin,
+            interestRate: nil,
+            kycStatus: .unverified
+        )
+        .previewDisplayName("Double Account Defi")
     }
 }
 

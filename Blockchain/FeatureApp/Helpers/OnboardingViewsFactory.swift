@@ -12,6 +12,7 @@ import SwiftUI
 
 final class OnboardingViewsFactory {
 
+    private let app: AppProtocol
     private let kycAdapter: KYCAdapter
     private let userAdapter: UserAdapterAPI
     private let transactionsAdapter: TransactionsAdapterAPI
@@ -19,12 +20,14 @@ final class OnboardingViewsFactory {
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
+        app: AppProtocol = resolve(),
         kycAdapter: KYCAdapter = KYCAdapter(),
         userAdapter: UserAdapterAPI = resolve(),
         transactionsAdapter: TransactionsAdapterAPI = resolve(),
         paymentMethodLinkingAdapter: PaymentMethodsLinkingAdapterAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
+        self.app = app
         self.kycAdapter = kycAdapter
         self.userAdapter = userAdapter
         self.transactionsAdapter = transactionsAdapter
@@ -54,6 +57,7 @@ final class OnboardingViewsFactory {
 
     private func makeOnboardingChecklistEnvironment() -> OnboardingChecklist.Environment {
         OnboardingChecklist.Environment(
+            app: app,
             userState: userAdapter.onboardingUserState,
             presentBuyFlow: { [transactionsAdapter] completion in
                 if let viewController = UIApplication.shared.topMostViewController {
@@ -74,7 +78,7 @@ final class OnboardingViewsFactory {
                         requiredTier: .tier2
                     ) { result in
                         // view is dismissed automatically, so, no need to do that
-                        completion(result == .completed)
+                        completion(result == .completed || result == .skipped)
                     }
                 }
             },

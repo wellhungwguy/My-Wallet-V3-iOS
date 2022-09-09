@@ -2,6 +2,7 @@
 
 import Combine
 import CombineSchedulers
+import Errors
 import Foundation
 import SwiftUI
 
@@ -11,6 +12,7 @@ public class AccountPickerEnvironment {
 
     // Effects / Output
     let rowSelected: (AccountPickerRow.ID) -> Void
+    let uxSelected: (UX.Dialog) -> Void
     let backButtonTapped: () -> Void
     let closeButtonTapped: () -> Void
     let search: (String?) -> Void
@@ -29,6 +31,7 @@ public class AccountPickerEnvironment {
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         rowSelected: @escaping (AccountPickerRow.ID) -> Void,
+        uxSelected: @escaping (UX.Dialog) -> Void,
         backButtonTapped: @escaping () -> Void,
         closeButtonTapped: @escaping () -> Void,
         search: @escaping (String?) -> Void,
@@ -41,6 +44,7 @@ public class AccountPickerEnvironment {
     ) {
         self.mainQueue = mainQueue
         self.rowSelected = rowSelected
+        self.uxSelected = uxSelected
         self.backButtonTapped = backButtonTapped
         self.closeButtonTapped = closeButtonTapped
         self.search = search

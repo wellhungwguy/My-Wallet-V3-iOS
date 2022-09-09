@@ -50,7 +50,7 @@ final class BuyFlowListener: BuyFlowListening {
                     action: nil
                 )
             } receiveValue: { result in
-                completion(result == .completed)
+                completion(result == .completed || result == .skipped)
             }
             .store(in: &cancellables)
     }

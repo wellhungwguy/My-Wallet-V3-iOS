@@ -8,21 +8,23 @@ import ToolKit
 
 public protocol CryptoAssetRepositoryAPI {
 
-    var allAccountsGroup: AnyPublisher<AccountGroup, Never> { get }
+    var allAccountsGroup: AnyPublisher<AccountGroup?, Never> { get }
 
-    var custodialGroup: AnyPublisher<AccountGroup, Never> { get }
+    var custodialGroup: AnyPublisher<AccountGroup?, Never> { get }
 
-    var nonCustodialGroup: AnyPublisher<AccountGroup, Never> { get }
+    var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> { get }
 
-    var exchangeGroup: AnyPublisher<AccountGroup, Never> { get }
+    var exchangeGroup: AnyPublisher<AccountGroup?, Never> { get }
 
-    var interestGroup: AnyPublisher<AccountGroup, Never> { get }
+    var interestGroup: AnyPublisher<AccountGroup?, Never> { get }
+
+    var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> { get }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> { get }
 
     func accountGroup(
         filter: AssetFilter
-    ) -> AnyPublisher<AccountGroup, Never>
+    ) -> AnyPublisher<AccountGroup?, Never>
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never>
 
@@ -45,13 +47,13 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     // MARK: - Properties
 
-    public var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
+    public var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
         defaultAccountProvider()
             .map { [asset] account -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
             }
             .recordErrors(on: errorRecorder)
-            .replaceError(with: CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+            .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
 
@@ -64,7 +66,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    public var allAccountsGroup: AnyPublisher<AccountGroup, Never> {
+    public var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
         [
             nonCustodialGroup,
             custodialGroup,
@@ -72,11 +74,23 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             exchangeGroup
         ]
         .zip()
+        .compactMap { $0 }
         .eraseToAnyPublisher()
         .flatMapAllAccountGroup()
     }
 
-    public var exchangeGroup: AnyPublisher<AccountGroup, Never> {
+    public var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
+        [
+            custodialGroup,
+            interestGroup
+        ]
+        .zip()
+        .compactMap { $0 }
+        .eraseToAnyPublisher()
+        .flatMapAllAccountGroup()
+    }
+
+    public var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
         guard asset.supports(product: .mercuryDeposits) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
@@ -96,7 +110,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    public var interestGroup: AnyPublisher<AccountGroup, Never> {
+    public var interestGroup: AnyPublisher<AccountGroup?, Never> {
         guard asset.supports(product: .interestBalance) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
@@ -111,7 +125,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         )
     }
 
-    public var custodialGroup: AnyPublisher<AccountGroup, Never> {
+    public var custodialGroup: AnyPublisher<AccountGroup?, Never> {
         guard asset.supports(product: .custodialWalletBalance) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
@@ -155,7 +169,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     // MARK: - Public methods
 
-    public func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+    public func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
         switch filter {
         case .all:
             return allAccountsGroup
@@ -167,6 +181,10 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             return nonCustodialGroup
         case .exchange:
             return exchangeGroup
+        case [.custodial, .interest]:
+            return custodialAndInterestGroup
+        default:
+            return .just(nil)
         }
     }
 

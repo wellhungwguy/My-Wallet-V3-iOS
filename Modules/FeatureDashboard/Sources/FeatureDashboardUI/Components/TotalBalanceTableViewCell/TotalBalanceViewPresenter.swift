@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -25,7 +26,8 @@ final class TotalBalanceViewPresenter {
 
     init(
         coincore: CoincoreAPI,
-        fiatCurrencyService: FiatCurrencyServiceAPI
+        fiatCurrencyService: FiatCurrencyServiceAPI,
+        app: AppProtocol
     ) {
         let balanceInteractor = PortfolioBalanceChangeProvider(
             coincore: coincore,
@@ -33,7 +35,8 @@ final class TotalBalanceViewPresenter {
         )
         let chartInteractor = AssetPieChartInteractor(
             coincore: coincore,
-            fiatCurrencyService: fiatCurrencyService
+            fiatCurrencyService: fiatCurrencyService,
+            app: app
         )
         pieChartPresenter = AssetPieChartPresenter(
             edge: 88,
@@ -64,7 +67,7 @@ extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
                         next: .init(
                             currentPrice: change.balance,
                             time: .hours(24),
-                            changePercentage: change.changePercentage.doubleValue,
+                            changePercentage: change.changePercentage?.doubleValue,
                             priceChange: change.change
                         )
                     )

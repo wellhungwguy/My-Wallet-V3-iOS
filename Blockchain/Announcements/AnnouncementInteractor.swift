@@ -37,6 +37,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 }
                 return coincore[cryptoCurrency]
                     .accountGroup(filter: .all)
+                    .compactMap { $0 }
                     .flatMap(\.balance)
                     .map { balance in
                         AnnouncementPreliminaryData.AssetRename(
@@ -83,7 +84,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .asSingle()
         let countries = infoService.countries
 
-        let hasAnyWalletBalance = coincore.allAccounts
+        let hasAnyWalletBalance = coincore
+            .allAccounts(filter: .all)
             .map(\.accounts)
             .eraseError()
             .flatMap { accounts -> AnyPublisher<Bool, Error> in

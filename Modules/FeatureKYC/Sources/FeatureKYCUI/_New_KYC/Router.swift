@@ -21,6 +21,7 @@ import UIKit
 public enum FlowResult {
     case abandoned
     case completed
+    case skipped
 }
 
 public enum RouterError: Error {
@@ -254,6 +255,8 @@ public final class Router: Routing {
                                 publisher.send(.abandoned)
                             case .completed:
                                 publisher.send(.completed)
+                            case .skipped:
+                                publisher.send(.skipped)
                             }
                             publisher.send(completion: .finished)
                         }
@@ -261,6 +264,9 @@ public final class Router: Routing {
                     return publisher.eraseToAnyPublisher()
                 }
             }
+            .handleEvents(
+                receiveCompletion: { [app] _ in app.post(event: blockchain.ux.kyc.event.status.did.change) }
+            )
             .eraseToAnyPublisher()
     }
 
@@ -269,7 +275,7 @@ public final class Router: Routing {
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         guard requiredTier > .tier0 else {
-            return .just(.completed)
+            return .just(.skipped)
         }
 
         // step 1: check KYC status.
@@ -317,7 +323,7 @@ public final class Router: Routing {
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FlowResult, RouterError> {
         guard requiredTier > .tier0 else {
-            return .just(.completed)
+            return .just(.skipped)
         }
         let presentClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
         return kycService
@@ -327,7 +333,7 @@ public final class Router: Routing {
             .flatMap { userTiers -> AnyPublisher<FlowResult, RouterError> in
                 let currentTier = userTiers.latestApprovedTier
                 guard currentTier < requiredTier else {
-                    return .just(.completed)
+                    return .just(.skipped)
                 }
                 return presentClosure(presenter, currentTier)
                     .mapError()
@@ -367,7 +373,7 @@ public final class Router: Routing {
                 )
                 let canPresentNotice = userTiers.isTier1Approved && userTiers.canCompleteTier2
                 guard !didPresentNotice, canPresentNotice else {
-                    return .just(.completed)
+                    return .just(.skipped)
                 }
 
                 userDefaults.set(true, forKey: UserDefaultsKey.didPresentNoticeToUnlockTradingFeatures.rawValue)
@@ -397,6 +403,7 @@ public final class Router: Routing {
                     .store(in: &self.cancellables)
             }
         }
+        let app = app
         let view = TradingLimitsView(
             store: .init(
                 initialState: TradingLimitsState(),
@@ -410,6 +417,9 @@ public final class Router: Routing {
                 )
             )
         )
+        .onAppear {
+            app.post(event: blockchain.ux.kyc.trading.limits.overview)
+        }
         presenter.present(view)
     }
 }
@@ -475,6 +485,9 @@ extension Router {
             )
         )
         .embeddedInNavigationView()
+        .onAppear { [app] in
+            app.post(event: blockchain.ux.kyc.trading.upgrade)
+        }
         presenter.present(view)
         return publisher.eraseToAnyPublisher()
     }
@@ -518,6 +531,7 @@ extension Router {
         alertVC.modalTransitionStyle = .crossDissolve
         alertVC.view.backgroundColor = .clear
         presenter.present(alertVC, animated: true, completion: nil)
+        app.post(event: blockchain.ux.kyc.trading.unlock.more)
 
         let upgradeClosure = presentPromptToUnlockMoreTrading(from:currentUserTier:)
         return subject.flatMap { result -> AnyPublisher<FlowResult, Never> in

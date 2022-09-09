@@ -81,7 +81,7 @@ final class ERC20ActivityDetailsInteractor {
         .replaceError(with: nil)
         .eraseError()
         let feePrice = self.price(
-            of: .ethereum,
+            of: cryptoCurrency.feeCryptoCurrency,
             at: event.creationDate
         )
         .replaceError(with: nil)
@@ -117,7 +117,7 @@ final class ERC20ActivityDetailsInteractor {
         .replaceError(with: nil)
         .eraseError()
         let feePrice = self.price(
-            of: .ethereum,
+            of: cryptoCurrency.feeCryptoCurrency,
             at: event.creationDate
         )
         .replaceError(with: nil)
@@ -153,5 +153,16 @@ final class ERC20ActivityDetailsInteractor {
                 quote.moneyValue.fiatValue
             }
             .eraseToAnyPublisher()
+    }
+}
+
+extension CryptoCurrency {
+    var feeCryptoCurrency: CryptoCurrency {
+        switch assetModel.kind {
+        case .erc20(contractAddress: _, parentChain: let chain):
+            return chain.evmNetwork.cryptoCurrency
+        default:
+            return self
+        }
     }
 }

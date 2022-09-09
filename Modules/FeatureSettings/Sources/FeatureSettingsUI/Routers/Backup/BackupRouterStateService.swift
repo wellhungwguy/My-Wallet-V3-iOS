@@ -57,6 +57,9 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         /// The verification screen
         case verification
 
+        /// The verification has been skipped
+        case skipped
+
         /// ~Fin~
         case end
     }
@@ -75,6 +78,10 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         /// Dismiss the screen and the
         /// flow has been completed.
         case complete
+
+        /// Dismiss the screen and the
+        /// flow has been skipped.
+        case skip
     }
 
     // MARK: - Properties
@@ -127,6 +134,8 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
                 state = .backupFunds(.modalOverTopMost, entry)
             case .settings:
                 state = .backupFunds(.navigationFromCurrent, entry)
+            case .defiIntroScreen:
+                state = .backupFunds(.modalOverTopMost, entry)
             }
             action = .next(state)
         case .backupFunds:
@@ -138,6 +147,9 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         case .verification:
             state = .end
             action = .complete
+        case .skipped:
+            state = .skipped
+            action = .skip
         case .end:
             state = .end
             action = .complete
@@ -151,7 +163,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         let action: Action
         switch states.current {
         case .start:
-            action = .dismiss
+            action = .skip
         case .end:
             action = .complete
         default:

@@ -65,13 +65,19 @@ public struct CoinAdapterView: View {
                     fiatCurrencyService.displayCurrencyPublisher
                         .setFailureType(to: Error.self)
                         .flatMap { [coincore] fiatCurrency in
-                            coincore.cryptoAccounts(for: cryptoCurrency)
-                                .map { accounts in
-                                    accounts
-                                        .filter { !($0 is ExchangeAccount) }
-                                        .map { Account($0, fiatCurrency) }
+                            app.modePublisher()
+                                .flatMap { _ in
+                                    coincore.cryptoAccounts(
+                                        for: cryptoCurrency,
+                                        filter: app.currentMode.filter
+                                    )
                                 }
-                                .eraseToAnyPublisher()
+                           .map { accounts in
+                                accounts
+                                    .filter { !($0 is ExchangeAccount) }
+                                    .map { Account($0, fiatCurrency) }
+                           }
+                            .eraseToAnyPublisher()
                         }
                         .eraseToAnyPublisher()
                 },
@@ -334,10 +340,12 @@ public final class CoinViewObserver: Session.Observer {
                         .error(message: "No account found with id \(id)")
                 )
         } else {
-            return try (
-                accounts.first(where: { account in account is TradingAccount })
-                    ?? accounts.first(where: { account in account is NonCustodialAccount })
-            )
+            return try await (
+                   app.get(blockchain.app.mode) == AppMode.defi
+                       ? accounts.first(where: { account in account is NonCustodialAccount })
+                       : accounts.first(where: { account in account is TradingAccount })
+                           ?? accounts.first(where: { account in account is NonCustodialAccount })
+               )
             .or(
                 throw: blockchain.ux.asset.error[]
                     .error(message: "\(event) has no valid accounts for \(String(describing: action))")
@@ -347,7 +355,6 @@ public final class CoinViewObserver: Session.Observer {
 }
 
 extension FeatureCoinDomain.Account {
-
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
         self.init(
             id: account.identifier,
@@ -355,6 +362,12 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
+            receiveAddressPublisher: {
+                account
+                    .receiveAddress
+                    .map(\.address)
+                    .eraseToAnyPublisher()
+            },
             actionsPublisher: {
                 account.actions
                     .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
@@ -436,17 +449,16 @@ extension TransactionsRouterAPI {
 
     @discardableResult
     func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
-        await presentTransactionFlow(to: action).values.first
+        try? await presentTransactionFlow(to: action).stream().next()
     }
 }
 
 extension CoincoreAPI {
-
     func cryptoAccounts(
         for cryptoCurrency: CryptoCurrency,
         supporting action: AssetAction? = nil,
         filter: AssetFilter = .all
     ) async throws -> [CryptoAccount] {
-        try await cryptoAccounts(for: cryptoCurrency, supporting: action, filter: filter).values.first ?? []
+        try await cryptoAccounts(for: cryptoCurrency, supporting: action, filter: filter).stream().next()
     }
 }

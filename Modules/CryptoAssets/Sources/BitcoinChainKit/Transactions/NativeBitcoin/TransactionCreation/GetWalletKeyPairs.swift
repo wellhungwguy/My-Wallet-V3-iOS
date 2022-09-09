@@ -99,8 +99,7 @@ extension DerivationComponent {
 }
 
 extension HDKeyPath {
-
-    fileprivate var walletCoreComponents: [WalletCore.DerivationPath.Index] {
+    var walletCoreComponents: [WalletCore.DerivationPath.Index] {
         components.map(\.walletCoreDerivationComponent)
     }
 }

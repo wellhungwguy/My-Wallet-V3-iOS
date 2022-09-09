@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "ComposableArchitectureExtensions",
     platforms: [
-        .iOS(.v14), .macOS(.v11), .tvOS(.v14), .watchOS(.v7)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(
@@ -20,7 +23,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.38.3"
+            exact: "0.38.3"
         ),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import PlatformKit
 import RxSwift
@@ -34,11 +35,15 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
     private let singleAccountsOnly: Bool
     private let failSequence: Bool
     private let errorRecorder: ErrorRecording
+    private let app: AppProtocol
 
     // MARK: - Properties
 
     public var accounts: Observable<[BlockchainAccount]> {
-        coincore.allAccounts
+        app.modePublisher()
+            .flatMap { [coincore] appMode in
+                coincore.allAccounts(filter: appMode.filter)
+            }
             .map { [singleAccountsOnly] allAccountsGroup -> [BlockchainAccount] in
                 if singleAccountsOnly {
                     return allAccountsGroup.accounts
@@ -75,12 +80,14 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
         coincore: CoincoreAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         action: AssetAction,
-        failSequence: Bool
+        failSequence: Bool,
+        app: AppProtocol = resolve()
     ) {
         self.action = action
         self.coincore = coincore
         self.singleAccountsOnly = singleAccountsOnly
         self.failSequence = failSequence
         self.errorRecorder = errorRecorder
+        self.app = app
     }
 }

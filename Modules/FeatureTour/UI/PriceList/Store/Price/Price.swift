@@ -39,13 +39,13 @@ struct Price: Equatable, Identifiable {
         return "\(arrow) \(delta.string(with: 2))%"
     }
 
-    @ViewBuilder var icon: some View {
+    @MainActor @ViewBuilder var icon: some View {
         switch currency.logoResource.resource {
         case .image(let uiimage):
             Image(uiImage: uiimage)
                 .resizable()
         case .url(let url):
-            LazyImage(source: url.absoluteString)
+            LazyImage(url: url)
         case .none:
             Image("crypto-placeholder", bundle: .platformUIKit)
                 .resizable()

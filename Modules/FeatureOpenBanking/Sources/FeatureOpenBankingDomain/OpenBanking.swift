@@ -53,19 +53,13 @@ public final class OpenBanking {
     }
 
     public var authorisationURLPublisher: AnyPublisher<URL, Never> {
-        app.publisher(for: blockchain.ux.payment.method.open.banking.authorisation.url, as: URL.self)
-            .map(\.result)
-            .ignoreResultFailure()
-            .handleEvents(
-                receiveOutput: { [weak app] _ in
-                    app?.state.clear(blockchain.ux.payment.method.open.banking.authorisation.url)
-                }
-            )
+        app.on(blockchain.ux.payment.method.open.banking.authorisation.url)
+            .compactMap { event in event.context[event.reference] as? URL }
             .eraseToAnyPublisher()
     }
 
     public var isAuthorising: Bool {
-        app.state.result(for: blockchain.ux.payment.method.open.banking.authorisation.url).error == nil
+        app.state.contains(blockchain.ux.payment.method.open.banking.authorisation.url)
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {

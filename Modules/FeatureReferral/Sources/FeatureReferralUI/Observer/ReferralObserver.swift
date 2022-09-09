@@ -6,32 +6,23 @@ import DIKit
 import FeatureReferralDomain
 import Foundation
 import SwiftUI
-import ToolKit
-import UIComponentsKit
 
 public final class ReferralAppObserver: Session.Observer {
+
     unowned let app: AppProtocol
     let referralService: ReferralServiceAPI
-    let featureFlagService: FeatureFlagsServiceAPI
-    let topViewController: TopMostViewControllerProviding
-
-    private var cancellables: Set<AnyCancellable> = []
 
     public init(
         app: AppProtocol,
-        referralService: ReferralServiceAPI,
-        featureFlagService: FeatureFlagsServiceAPI,
-        topViewController: TopMostViewControllerProviding = DIKit.resolve()
+        referralService: ReferralServiceAPI
     ) {
         self.app = app
         self.referralService = referralService
-        self.featureFlagService = featureFlagService
-        self.topViewController = topViewController
     }
 
     var observers: [BlockchainEventSubscription] {
         [
-            signIn,
+            fetchReferral,
             walletCreated
         ]
     }
@@ -48,46 +39,26 @@ public final class ReferralAppObserver: Session.Observer {
         }
     }
 
-    private lazy var referralCodePublisher = app.publisher(
-        for: blockchain.user.creation.referral.code,
-        as: String.self
-    )
-    .compactMap(\.value)
-
-    private lazy var featureFlagPublisher = featureFlagService
-        .isEnabled(.referral)
-
     lazy var walletCreated = app.on(blockchain.user.wallet.created) { [unowned self] _ in
-        featureFlagPublisher
-            .zip(referralCodePublisher)
-            .filter(\.0)
-            .map(\.1)
-            .flatMap(referralService.createReferral(with:))
-            .subscribe()
-            .store(in: &cancellables)
+        guard try await app.get(blockchain.app.configuration.referral.is.enabled) else { return }
+        try await referralService.createReferral(
+            with: app.get(blockchain.user.creation.referral.code)
+        )
+        .await()
     }
 
-    lazy var signIn = app.on(blockchain.session.event.did.sign.in) { [unowned self] _ in
-        fetchReferralCampaign()
-    }
-
-    private func fetchReferralCampaign() {
-        Publishers
-            .CombineLatest(
-                featureFlagPublisher,
-                referralService
-                    .fetchReferralCampaign()
+    lazy var fetchReferral = app.on(
+        blockchain.session.event.did.sign.in,
+        blockchain.ux.kyc.event.did.finish
+    ) { [unowned self] _ in
+        do {
+            guard try await app.get(blockchain.app.configuration.referral.is.enabled) else { return }
+            try await app.post(
+                value: referralService.fetchReferralCampaign().await(),
+                of: blockchain.user.referral.campaign
             )
-            .sink(receiveValue: { [weak self] isEnabled, referralCampaign in
-                guard let self = self,
-                      isEnabled,
-                      let referralCampaign = referralCampaign
-                else {
-                    self?.app.state.clear(blockchain.user.referral.campaign)
-                    return
-                }
-                self.app.post(value: referralCampaign, of: blockchain.user.referral.campaign)
-            })
-            .store(in: &cancellables)
+        } catch {
+            app.state.clear(blockchain.user.referral.campaign)
+        }
     }
 }

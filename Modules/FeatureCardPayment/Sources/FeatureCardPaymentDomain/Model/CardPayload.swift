@@ -36,7 +36,8 @@ public struct CardPayload {
     public let additionDate: String
 
     public let lastError: String?
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
+    public let block: Bool
 
     public init(
         identifier: String,
@@ -46,8 +47,9 @@ public struct CardPayload {
         state: State,
         card: CardDetails!,
         additionDate: String,
+        block: Bool = false,
         lastError: String? = nil,
-        ux: Nabu.Error.UX? = nil
+        ux: UX.Dialog? = nil
     ) {
         self.identifier = identifier
         self.partner = Partner(rawValue: partner) ?? .unknown
@@ -57,6 +59,7 @@ public struct CardPayload {
         self.card = card
         self.additionDate = additionDate
         self.lastError = lastError
+        self.block = block
         self.ux = ux
     }
 }
@@ -74,6 +77,7 @@ extension CardPayload: Decodable {
         case card
         case additionDate = "addedAt"
         case lastError
+        case block
         case ux
     }
 
@@ -91,9 +95,10 @@ extension CardPayload: Decodable {
 
         additionDate = try values.decode(String.self, forKey: .additionDate)
 
+        block = try values.decodeIfPresent(Bool.self, forKey: .block) ?? false
         card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
         lastError = try? values.decodeIfPresent(String.self, forKey: .lastError)
-        ux = try? values.decodeIfPresent(Nabu.Error.UX.self, forKey: .ux)
+        ux = try? values.decodeIfPresent(UX.Dialog.self, forKey: .ux)
     }
 }
 

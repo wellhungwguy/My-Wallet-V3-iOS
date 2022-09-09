@@ -165,7 +165,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
 
     func routeToWireTransfer() {
         fiatCurrencyService
-            .displayCurrency
+            .tradingCurrency
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] fiatCurrency in

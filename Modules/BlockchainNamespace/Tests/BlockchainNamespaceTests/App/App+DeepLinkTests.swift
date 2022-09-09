@@ -93,7 +93,9 @@ final class AppDeepLinkTests: XCTestCase {
         app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
 
         app.on(blockchain.db.type.string)
-            .sink { event in self.count[event.reference.tag, default: 0] += 1 }
+            .sink { event in
+                self.count[event.reference.tag, default: 0] += 1
+            }
             .store(in: &bag)
 
         app.post(

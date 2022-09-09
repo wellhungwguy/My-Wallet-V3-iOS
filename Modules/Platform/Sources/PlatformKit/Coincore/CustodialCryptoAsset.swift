@@ -66,19 +66,29 @@ final class CustodialCryptoAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
-        switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
-            return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
-        case .exchange:
-            return exchangeGroup
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
+        var groups: [AnyPublisher<AccountGroup?, Never>] = []
+
+        if filter.contains(.custodial) {
+            groups.append(custodialGroup)
         }
+
+        if filter.contains(.interest) {
+            groups.append(interestGroup)
+        }
+
+        if filter.contains(.nonCustodial) {
+            groups.append(nonCustodialGroup)
+        }
+
+        if filter.contains(.exchange) {
+            groups.append(exchangeGroup)
+        }
+
+        return groups
+        .zip()
+        .eraseToAnyPublisher()
+        .flatMapAllAccountGroup()
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
@@ -108,7 +118,7 @@ final class CustodialCryptoAsset: CryptoAsset {
         )
     }
 
-    private var allAccountsGroup: AnyPublisher<AccountGroup, Never> {
+    private var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
         [
             nonCustodialGroup,
             custodialGroup,
@@ -120,35 +130,41 @@ final class CustodialCryptoAsset: CryptoAsset {
         .flatMapAllAccountGroup()
     }
 
-    private var exchangeGroup: AnyPublisher<AccountGroup, Never> {
+    private var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.exchangeGroup
     }
 
-    private var custodialGroup: AnyPublisher<AccountGroup, Never> {
+    private var custodialGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.custodialGroup
     }
 
-    private var interestGroup: AnyPublisher<AccountGroup, Never> {
+    private var interestGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.interestGroup
     }
 
-    private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
+    private var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
+        [
+            custodialGroup,
+            interestGroup
+        ]
+        .zip()
+        .eraseToAnyPublisher()
+        .flatMapAllAccountGroup()
+    }
+
+    private var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
         delegatedCustodyAccount
             .map { [asset, addressFactory] delegatedCustodyAccount in
                 guard let delegatedCustodyAccount = delegatedCustodyAccount else {
-                    return CryptoAccountNonCustodialGroup(
-                        asset: asset,
-                        accounts: []
-                    )
+                    return nil
                 }
                 let account = CryptoDelegatedCustodyAccount(
                     activityRepository: resolve(),
                     addressesRepository: resolve(),
                     addressFactory: addressFactory,
-                    asset: delegatedCustodyAccount.coin,
                     balanceRepository: resolve(),
                     priceService: resolve(),
-                    publicKey: delegatedCustodyAccount.publicKey.hex
+                    delegatedCustodyAccount: delegatedCustodyAccount
                 )
                 return CryptoAccountNonCustodialGroup(
                     asset: asset,

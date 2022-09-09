@@ -6,13 +6,13 @@ import Errors
 import FeatureFormDomain
 import NetworkKit
 
-public struct SimplifiedDueDiligenceResponse: Codable {
+public struct SimplifiedDueDiligenceResponse: Codable, Equatable {
     public let eligible: Bool
     public let tier: Int
 }
 
 // swiftlint:disable:next type_name
-public struct SimplifiedDueDiligenceVerificationResponse: Codable {
+public struct SimplifiedDueDiligenceVerificationResponse: Codable, Equatable {
     let verified: Bool
     let taskComplete: Bool
 }

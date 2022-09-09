@@ -73,7 +73,9 @@ final class BitcoinAsset: CryptoAsset {
 
     func initialize() -> AnyPublisher<Void, AssetError> {
         // Run wallet renaming procedure on initialization.
-        cryptoAssetRepository.nonCustodialGroup
+        cryptoAssetRepository
+            .nonCustodialGroup
+            .compactMap { $0 }
             .map(\.accounts)
             .flatMap { [upgradeLegacyLabels] accounts in
                 upgradeLegacyLabels(accounts)
@@ -82,19 +84,29 @@ final class BitcoinAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
-        switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
-            return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
-        case .exchange:
-            return exchangeGroup
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
+        var groups: [AnyPublisher<AccountGroup?, Never>] = []
+
+        if filter.contains(.custodial) {
+            groups.append(custodialGroup)
         }
+
+        if filter.contains(.interest) {
+            groups.append(interestGroup)
+        }
+
+        if filter.contains(.nonCustodial) {
+            groups.append(nonCustodialGroup)
+        }
+
+        if filter.contains(.exchange) {
+            groups.append(exchangeGroup)
+        }
+
+        return groups
+        .zip()
+        .eraseToAnyPublisher()
+        .flatMapAllAccountGroup()
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
@@ -111,7 +123,7 @@ final class BitcoinAsset: CryptoAsset {
 
     // MARK: - Private methods
 
-    private var allAccountsGroup: AnyPublisher<AccountGroup, Never> {
+    private var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
         [
             nonCustodialGroup,
             custodialGroup,
@@ -123,19 +135,23 @@ final class BitcoinAsset: CryptoAsset {
         .flatMapAllAccountGroup()
     }
 
-    private var exchangeGroup: AnyPublisher<AccountGroup, Never> {
+    private var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.exchangeGroup
     }
 
-    private var interestGroup: AnyPublisher<AccountGroup, Never> {
+    private var interestGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.interestGroup
     }
 
-    private var custodialGroup: AnyPublisher<AccountGroup, Never> {
+    private var custodialGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.custodialGroup
     }
 
-    private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
+    private var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
+        cryptoAssetRepository.custodialAndInterestGroup
+    }
+
+    private var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
         repository.activeAccounts
             .eraseToAnyPublisher()
             .eraseError()
@@ -153,11 +169,14 @@ final class BitcoinAsset: CryptoAsset {
                     )
                 }
             }
-            .map { [asset] accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
+            .map { [asset] accounts -> AccountGroup? in
+                if accounts.isEmpty {
+                    return nil
+                }
+                return CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
             .recordErrors(on: errorRecorder)
-            .replaceError(with: CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+            .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
 }

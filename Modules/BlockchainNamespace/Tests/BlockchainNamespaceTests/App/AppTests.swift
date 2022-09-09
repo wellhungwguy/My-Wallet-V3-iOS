@@ -63,6 +63,33 @@ final class AppTests: XCTestCase {
 
         XCTAssertEqual(token, "Token")
     }
+
+    func test_action() {
+        var count: Int = 0
+        let subscription = app.on(blockchain.ui.type.action.then.launch.url) { _ in count += 1 }
+            .subscribe()
+        addTeardownBlock {
+            subscription.cancel()
+        }
+        app.post(event: blockchain.ux.error.then.launch.url)
+        XCTAssertEqual(count, 1)
+    }
+
+    func test_observer_to_ref() {
+
+        var count: Int = 0
+        let subscription = app.on(blockchain.db.collection["test"]) { _ in count += 1 }
+            .subscribe()
+        addTeardownBlock {
+            subscription.cancel()
+        }
+
+        app.post(event: blockchain.db.collection["test"])
+        XCTAssertEqual(count, 1)
+
+        app.post(event: blockchain.db.collection)
+        XCTAssertEqual(count, 1)
+    }
 }
 
 extension App {

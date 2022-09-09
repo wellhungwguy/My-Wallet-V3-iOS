@@ -22,7 +22,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
                 cardNumberValidator.cardType,
                 cardNumberValidator.validationState
             )
-            .map { (type, validationState) in
+            .map { type, validationState in
                 /// The card is a valid entry thus far but
                 /// there is a non-zero possibility the card
                 /// will not work.

@@ -51,7 +51,7 @@ final class SellFlowListener: SellFlowListening {
                     action: nil
                 )
             } receiveValue: { result in
-                completion(result == .completed)
+                completion(result == .completed || result == .skipped)
             }
             .store(in: &cancellables)
     }

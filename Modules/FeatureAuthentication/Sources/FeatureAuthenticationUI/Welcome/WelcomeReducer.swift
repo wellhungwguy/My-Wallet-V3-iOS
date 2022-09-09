@@ -34,7 +34,7 @@ public enum WelcomeAction: Equatable, NavigationAction {
 
     // MARK: - Local Action
 
-    case createWallet(CreateAccountAction)
+    case createWallet(CreateAccountStepOneAction)
     case emailLogin(EmailLoginAction)
     case restoreWallet(SeedPhraseAction)
     case setManualPairingEnabled // should only be on internal build
@@ -57,7 +57,7 @@ public enum WelcomeAction: Equatable, NavigationAction {
 public struct WelcomeState: Equatable, NavigationState {
     public var buildVersion: String
     public var route: RouteIntent<WelcomeRoute>?
-    public var createWalletState: CreateAccountState?
+    public var createWalletState: CreateAccountStepOneState?
     public var emailLoginState: EmailLoginState?
     public var restoreWalletState: SeedPhraseState?
     public var manualPairingEnabled: Bool
@@ -130,13 +130,13 @@ public struct WelcomeEnvironment {
 }
 
 public let welcomeReducer = Reducer.combine(
-    createAccountReducer
+    createAccountStepOneReducer
         .optional()
         .pullback(
             state: \.createWalletState,
             action: /WelcomeAction.createWallet,
             environment: {
-                CreateAccountEnvironment(
+                CreateAccountStepOneEnvironment(
                     mainQueue: $0.mainQueue,
                     passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,

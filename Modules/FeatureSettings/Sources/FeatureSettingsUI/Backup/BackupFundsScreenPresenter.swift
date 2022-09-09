@@ -44,7 +44,16 @@ final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
         }
     }
 
-    let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default
+    var navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction {
+        switch entry {
+        case .defiIntroScreen:
+            return .custom { [weak self] in
+                self?.stateService.previousRelay.accept(())
+            }
+        default:
+            return .default
+        }
+    }
 
     let reloadRelay: PublishRelay<Void> = .init()
 
@@ -56,6 +65,8 @@ final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
             return .none
         case .custody:
             return .close
+        case .defiIntroScreen:
+            return .skip
         }
     }
 
@@ -64,6 +75,8 @@ final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
         case .settings:
             return .back
         case .custody:
+            return .none
+        case .defiIntroScreen:
             return .none
         }
     }

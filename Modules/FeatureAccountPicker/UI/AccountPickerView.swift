@@ -265,6 +265,7 @@ struct AccountPickerView_Previews: PreviewProvider {
                 reducer: accountPickerReducer,
                 environment: AccountPickerEnvironment(
                     rowSelected: { _ in },
+                    uxSelected: { _ in },
                     backButtonTapped: {},
                     closeButtonTapped: {},
                     search: { _ in },

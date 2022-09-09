@@ -11,7 +11,9 @@ func loadCustomFonts() {
         Typography.FontResource.allCases
             .map(\.rawValue)
             .forEach { registerFont(fileName: $0) }
-        registerImageFormats()
+        Task(priority: .userInitiated) { @MainActor in
+            registerImageFormats()
+        }
     }
 }
 
@@ -23,8 +25,8 @@ func registerFont(fileName: String, bundle: Bundle = Bundle.componentLibrary) {
 
     var error: Unmanaged<CFError>?
     CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
-    if error == nil {
-        print("Successfully registered font: \(fileName)")
+    if error != nil {
+        print("Failed to register font: \(fileName)")
     }
 }
 
@@ -33,6 +35,7 @@ extension AssetType {
     public static let lottie: AssetType = "public.lottie"
 }
 
+@MainActor
 func registerImageFormats() {
 
     ImageDecoderRegistry.shared.register { context in

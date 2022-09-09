@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Errors
 import FeatureCardPaymentDomain
 import FeatureTransactionDomain
 import Localization
@@ -66,6 +67,14 @@ enum TransactionAction: MviAction {
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
     case fatalTransactionError(Error)
+    /// Shows a `UX.Dialog` that is from user interaction and not
+    /// from an `errorState`. This `UX.Dialog` is a property on `TransactionState`
+    /// Both this event and `showErrorRecoverySuggestion`
+    /// show an `ErrorView` but only `showErrorRecoverySuggestion` is from
+    /// the transaction's `errorState`.
+    case showUxDialogSuggestion(UX.Dialog)
+    /// Presents either a bespoke error view *or* an ErrorView
+    /// if the `TransactionState.errorState` returns a `UX.Dialog`.
     case showErrorRecoverySuggestion
     case invalidateTransaction
 }
@@ -376,7 +385,17 @@ extension TransactionAction {
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
 
+        case .showUxDialogSuggestion(let dialog):
+            var newState = oldState
+            newState.dialog = dialog
+            return newState
+                .stateForMovingForward(to: .uxFromUserInteraction)
+
         case .showErrorRecoverySuggestion:
+            if oldState.errorState.isUX {
+                return oldState
+                    .stateForMovingForward(to: .uxFromErrorState)
+            }
             return oldState
                 .stateForMovingForward(to: .errorRecoveryInfo)
 
@@ -543,6 +562,8 @@ extension TransactionValidationState {
             return .nabuError(error)
         case .insufficientFunds(let balance, let desired, let sourceCurrency, let targetCurrency):
             return .insufficientFunds(balance, desired, sourceCurrency, targetCurrency)
+        case .sourceAccountUsageIsBlocked(let ux):
+            return .ux(ux)
         case .belowFees(let fees, let balance):
             return .belowFees(fees, balance)
         case .belowMinimumLimit(let minimumLimit):

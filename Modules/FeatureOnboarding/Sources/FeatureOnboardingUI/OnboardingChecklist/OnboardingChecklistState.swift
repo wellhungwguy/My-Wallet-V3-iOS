@@ -2,9 +2,11 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import ComposableNavigation
+import Errors
 import Foundation
 import Localization
 import SwiftUI
@@ -44,6 +46,21 @@ public enum OnboardingChecklist {
 
     public struct State: Equatable, NavigationState {
 
+        public struct Promotion: Equatable {
+
+            public var visible: Bool
+            public var id: L & I_blockchain_ux_onboarding_type_promotion
+            public var ux: UX.Dialog
+
+            public static func == (lhs: OnboardingChecklist.State.Promotion, rhs: OnboardingChecklist.State.Promotion) -> Bool {
+                lhs.visible == rhs.visible
+                    && lhs.id == rhs.id
+                    && lhs.ux == rhs.ux
+            }
+        }
+
+        var promotion: Promotion?
+        var isSynchronised: Bool = false
         var items: [Item]
         var pendingItems: Set<Item>
         var completedItems: Set<Item>
@@ -77,10 +94,13 @@ public enum OnboardingChecklist {
         case startObservingUserState
         case stopObservingUserState
         case userStateDidChange(UserState)
+        case updatePromotion
+        case updatedPromotion(State.Promotion?)
     }
 
     public struct Environment {
 
+        let app: AppProtocol
         /// A publisher that streams `UserState` values on subscription and every time the state changes
         let userState: AnyPublisher<UserState, Never>
         /// A closure that presents the Buy Flow from the top-most view controller on screen and automatically dismissed the presented flow when done.
@@ -101,6 +121,7 @@ public enum OnboardingChecklist {
         let analyticsRecorder: AnalyticsEventRecorderAPI
 
         public init(
+            app: AppProtocol,
             userState: AnyPublisher<UserState, Never>,
             presentBuyFlow: @escaping (@escaping (Bool) -> Void) -> Void,
             presentKYCFlow: @escaping (@escaping (Bool) -> Void) -> Void,
@@ -108,6 +129,7 @@ public enum OnboardingChecklist {
             analyticsRecorder: AnalyticsEventRecorderAPI,
             mainQueue: AnySchedulerOf<DispatchQueue> = .main
         ) {
+            self.app = app
             self.userState = userState
             self.presentBuyFlow = presentBuyFlow
             self.presentKYCFlow = presentKYCFlow
@@ -120,6 +142,8 @@ public enum OnboardingChecklist {
     public static let reducer = Reducer<State, Action, Environment> { state, action, environment in
 
         struct UserStateObservableIdentifier: Hashable {}
+        struct UserDidUpdateIdentifier: Hashable {}
+        struct PromotionIdentifier: Hashable {}
 
         switch action {
         case .route(let route):
@@ -139,24 +163,81 @@ public enum OnboardingChecklist {
             return .enter(into: .fullScreenChecklist, context: .none)
 
         case .startObservingUserState:
-            return .concatenate(
-                // cancel any active observation of state to avoid duplicates
-                .cancel(id: UserStateObservableIdentifier()),
-                // start observing the user state
-                environment
-                    .userState
-                    .receive(on: environment.mainQueue)
-                    .map(OnboardingChecklist.Action.userStateDidChange)
-                    .eraseToEffect()
-                    .cancellable(id: UserStateObservableIdentifier())
+            return .merge(
+                .concatenate(
+                    .cancel(id: UserDidUpdateIdentifier()),
+                    environment.app.on(blockchain.user.event.did.update)
+                        .receive(on: environment.mainQueue)
+                        .eraseToEffect { _ in OnboardingChecklist.Action.updatePromotion }
+                        .cancellable(id: UserDidUpdateIdentifier())
+                ),
+                .concatenate(
+                    // cancel any active observation of state to avoid duplicates
+                    .cancel(id: UserStateObservableIdentifier()),
+                    // start observing the user state
+                    environment
+                        .userState
+                        .receive(on: environment.mainQueue)
+                        .map(OnboardingChecklist.Action.userStateDidChange)
+                        .eraseToEffect()
+                        .cancellable(id: UserStateObservableIdentifier())
+                )
             )
 
         case .stopObservingUserState:
-            return .cancel(id: UserStateObservableIdentifier())
+            return .cancel(
+                ids: [UserStateObservableIdentifier(), UserDidUpdateIdentifier(), PromotionIdentifier()]
+            )
 
         case .userStateDidChange(let userState):
+            state.isSynchronised = true
             state.completedItems = userState.completedOnboardingChecklistItems
             state.pendingItems = userState.kycStatus == .verificationPending ? [.verifyIdentity] : []
+            return Effect(value: .updatePromotion)
+
+        case .updatePromotion:
+            return .concatenate(
+                .cancel(id: PromotionIdentifier()),
+                .task(priority: .userInitiated) { @MainActor in
+                    do {
+                        let app = environment.app
+                        let promotion: L & I_blockchain_ux_onboarding_type_promotion = try {
+                            switch try app.state.get(blockchain.user.account.tier) as Tag {
+                            case blockchain.user.account.tier.none:
+                                return try app.state.get(blockchain.user.email.is.verified)
+                                    ? blockchain.ux.onboarding.promotion.cowboys.raffle
+                                    : blockchain.ux.onboarding.promotion.cowboys.welcome
+                            case blockchain.user.account.tier.silver:
+                                do {
+                                    return try [
+                                        blockchain.user.account.kyc.state.under_review[],
+                                        blockchain.user.account.kyc.state.pending[]
+                                    ].contains(app.state.get(blockchain.user.account.kyc[blockchain.user.account.tier.gold].state))
+                                        ? blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under.review
+                                        : blockchain.ux.onboarding.promotion.cowboys.verify.identity
+                                } catch {
+                                    return blockchain.ux.onboarding.promotion.cowboys.verify.identity
+                                }
+                            case _:
+                                return blockchain.ux.onboarding.promotion.cowboys.refer.friends
+                            }
+                        }()
+                        let isEnabled: Bool = try await app.get(blockchain.ux.onboarding.promotion.cowboys.is.enabled)
+                        return try await .updatedPromotion(
+                            State.Promotion(
+                                visible: app.get(blockchain.user.is.cowboy.fan) && isEnabled,
+                                id: promotion,
+                                ux: app.get(promotion.announcement)
+                            )
+                        )
+                    } catch {
+                        return .updatedPromotion(nil)
+                    }
+                }
+                .cancellable(id: PromotionIdentifier())
+            )
+        case .updatedPromotion(let promotion):
+            state.promotion = promotion
             return .none
         }
     }

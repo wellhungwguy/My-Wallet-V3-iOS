@@ -177,6 +177,7 @@ private func bootstrap() {
         #endif
     }()
 
+    FirebaseConfiguration.shared.setLoggerLevel(.min)
     FirebaseApp.configure()
     defineDependencies()
 

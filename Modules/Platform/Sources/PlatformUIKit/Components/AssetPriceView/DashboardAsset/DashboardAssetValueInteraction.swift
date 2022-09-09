@@ -97,10 +97,21 @@ extension DashboardAsset.Value.Interaction {
 
         public init(
             currentPrice: MoneyValue,
-            time: Time,
-            changePercentage: Double,
-            priceChange: MoneyValue
+            time: Time?,
+            changePercentage: Double?,
+            priceChange: MoneyValue?
         ) {
+            guard let time = time,
+                  let changePercentage = changePercentage,
+                  let priceChange = priceChange
+            else {
+                self.init(
+                    currentPrice: currentPrice,
+                    historicalPrice: nil,
+                    marketCap: nil
+                )
+                return
+            }
             self.init(
                 currentPrice: currentPrice,
                 historicalPrice: HistoricalPrice(

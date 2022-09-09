@@ -10,7 +10,7 @@ extension OpenBanking {
     public enum Error: Swift.Error, Equatable, Hashable {
         case message(String)
         case code(String)
-        case ux(Nabu.Error.UX)
+        case ux(UX.Dialog)
         case namespace(FetchResult.Error)
         case other(Swift.Error)
         case timeout
@@ -23,7 +23,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
         switch error {
         case let error as OpenBanking.Error:
             self = error
-        case let error as Nabu.Error.UX:
+        case let error as UX.Dialog:
             self = .ux(error)
         case let error as FetchResult.Error:
             self = .namespace(error)
@@ -90,7 +90,7 @@ extension OpenBanking.Error: Codable {
 
     public init(from decoder: Decoder) throws {
         do {
-            self = try .ux(Nabu.Error.UX(from: decoder))
+            self = try .ux(UX.Dialog(from: decoder))
         } catch {
             self = try .code(String(from: decoder))
         }

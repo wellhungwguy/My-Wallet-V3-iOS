@@ -41,21 +41,12 @@ public struct AssetListView: View {
             .onAppear { viewStore.send(.onAppear) }
         }
         .navigationRoute(in: store)
-        .primaryNavigation(
-            trailing: {
-                dismiss()
-            }
-        )
-    }
-
-    @ViewBuilder func dismiss() -> some View {
-        IconButton(icon: .closev2.circle()) {
-            presentationMode.wrappedValue.dismiss()
-        }
-        .frame(width: 24.pt, height: 24.pt)
+        .primaryNavigation()
     }
 
     struct NFTListView: View {
+
+        @Environment(\.openURL) private var openURL
 
         let columns = [
             GridItem(.flexible(minimum: 100.0, maximum: 300)),
@@ -70,25 +61,41 @@ public struct AssetListView: View {
 
         var body: some View {
             WithViewStore(store) { viewStore in
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 16.0) {
-                        ForEach(viewStore.assets) { asset in
-                            AssetListItem(asset: asset)
-                                .onAppear {
-                                    if viewStore.assets.last == asset {
-                                        viewStore.send(.increaseOffset)
+                ZStack(alignment: .bottom) {
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 16.0) {
+                            ForEach(viewStore.assets) { asset in
+                                AssetListItem(asset: asset)
+                                    .onAppear {
+                                        if viewStore.assets.last == asset {
+                                            viewStore.send(.increaseOffset)
+                                        }
                                     }
-                                }
-                                .onTapGesture {
-                                    viewStore.send(.assetTapped(asset))
-                                }
+                                    .onTapGesture {
+                                        viewStore.send(.assetTapped(asset))
+                                    }
+                            }
+                        }
+                        .padding()
+                        if viewStore.isPaginating {
+                            LoadingStateView(title: "")
+                                .fixedSize()
                         }
                     }
-                    .padding()
-                    if viewStore.isPaginating {
-                        LoadingStateView(title: "")
-                            .fixedSize()
-                    }
+                    Spacer()
+                    PrimaryButton(
+                        title: LocalizationId.shopOnOpenSea,
+                        leadingView: {
+                            Icon.newWindow
+                                .frame(width: 24, height: 24)
+                        },
+                        action: {
+                            if let url = URL(string: "https://www.opensea.io") {
+                                openURL(url)
+                            }
+                        }
+                    )
+                    .padding([.leading, .trailing, .bottom], 24)
                 }
             }
             .navigationRoute(in: store)

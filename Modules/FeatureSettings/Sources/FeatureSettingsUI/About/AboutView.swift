@@ -84,3 +84,10 @@ final class AboutView: UIView {
         return verticalPadding + version + copyright + logoHeight
     }
 }
+
+extension Date {
+
+    var currentYear: Int {
+        Calendar.current.component(.year, from: self)
+    }
+}

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
@@ -112,35 +113,78 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let client: KYCClientAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+
     private let cachedTiers: CachedValueNew<
         Key,
         KYC.UserTiers,
         Nabu.Error
     >
+
+    private let sddCache: CachedValueNew<
+        KYC.Tier,
+        SimplifiedDueDiligenceResponse,
+        Never
+    >
+
+    private let sddVerificationCache: CachedValueNew<
+        KYC.Tier,
+        SimplifiedDueDiligenceVerificationResponse,
+        Never
+    >
+
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     // MARK: - Setup
 
     init(
+        app: AppProtocol = resolve(),
         client: KYCClientAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
+        self.app = app
         self.client = client
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
 
         let cache: AnyCache<Key, KYC.UserTiers> = InMemoryCache(
             configuration: .onLoginLogoutKYCChanged(),
-            refreshControl: PerpetualCacheRefreshControl()
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
         ).eraseToAnyCache()
         cachedTiers = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client.tiers()
+            }
+        )
+
+        sddCache = CachedValueNew(
+            cache: InMemoryCache<KYC.Tier, SimplifiedDueDiligenceResponse>(
+                configuration: .onLoginLogoutKYCChanged(),
+                refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
+            )
+            .eraseToAnyCache(),
+            fetch: { tier in
+                client.checkSimplifiedDueDiligenceEligibility()
+                    .replaceError(with: SimplifiedDueDiligenceResponse(eligible: false, tier: tier.rawValue))
+                    .eraseToAnyPublisher()
+            }
+        )
+
+        sddVerificationCache = CachedValueNew(
+            cache: InMemoryCache<KYC.Tier, SimplifiedDueDiligenceVerificationResponse>(
+                configuration: .onLoginLogoutKYCChanged(),
+                refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
+            )
+            .eraseToAnyCache(),
+            fetch: { _ in
+                client.checkSimplifiedDueDiligenceVerification()
+                    .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
+                    .eraseToAnyPublisher()
             }
         )
     }
@@ -155,24 +199,33 @@ final class KYCTiersService: KYCTiersServiceAPI {
             return .just(SimplifiedDueDiligenceResponse(eligible: true, tier: tier.rawValue))
         }
         return featureFlagsService.isEnabled(.sddEnabled)
-            .flatMap { [client] sddEnabled -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> in
+            .zip(
+                app.publisher(for: blockchain.app.configuration.kyc.sdd.cache.is.enabled)
+                    .replaceError(with: true)
+                    .prefix(1)
+            )
+            .flatMap { [client, sddCache] sddEnabled, cacheEnabled -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> in
                 guard sddEnabled else {
                     return .just(SimplifiedDueDiligenceResponse(eligible: false, tier: KYC.Tier.tier0.rawValue))
                 }
-                return client.checkSimplifiedDueDiligenceEligibility()
-                    .replaceError(with: SimplifiedDueDiligenceResponse(eligible: false, tier: tier.rawValue))
-                    .eraseToAnyPublisher()
+                if cacheEnabled {
+                    return sddCache.get(key: tier)
+                } else {
+                    return client.checkSimplifiedDueDiligenceEligibility()
+                        .replaceError(with: SimplifiedDueDiligenceResponse(eligible: false, tier: tier.rawValue))
+                        .eraseToAnyPublisher()
+                }
             }
             .eraseToAnyPublisher()
     }
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
         featureFlagsService.isEnabled(.sddEnabled)
-            .flatMap { [fetchTiers, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
+            .flatMap { [cachedTiers, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return fetchTiers()
+                return cachedTiers.get(key: Key())
                     .flatMap { userTiers -> AnyPublisher<Bool, Nabu.Error> in
                         simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
                             .map(\.eligible)
@@ -206,18 +259,36 @@ final class KYCTiersService: KYCTiersServiceAPI {
         }
 
         return featureFlagsService.isEnabled(.sddEnabled)
-            .flatMap { [client] sddEnabled -> AnyPublisher<Bool, Never> in
+            .zip(
+                app.publisher(for: blockchain.app.configuration.kyc.sdd.cache.is.enabled)
+                    .replaceError(with: true)
+                    .prefix(1)
+            )
+            .flatMap { [sddVerificationCache, client] sddEnabled, cacheEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return client
-                    .checkSimplifiedDueDiligenceVerification()
-                    .startPolling(until: { response in
-                        response.taskComplete || !pollUntilComplete
-                    })
-                    .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
-                    .map(\.verified)
-                    .eraseToAnyPublisher()
+                return (
+                    cacheEnabled
+                        ? sddVerificationCache.get(key: tier)
+                        : client.checkSimplifiedDueDiligenceVerification()
+                            .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
+                            .eraseToAnyPublisher()
+                )
+                .flatMap { response -> AnyPublisher<Bool, Never> in
+                    if response.taskComplete {
+                        return .just(response.verified)
+                    } else {
+                        return client.checkSimplifiedDueDiligenceVerification()
+                            .startPolling(until: { response in
+                                response.taskComplete || !pollUntilComplete
+                            })
+                            .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
+                            .map(\.verified)
+                            .eraseToAnyPublisher()
+                    }
+                }
+                .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [analyticsRecorder] isSDDEligible in
                 if isSDDEligible {

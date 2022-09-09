@@ -30,6 +30,7 @@ final class ActivityRepository: DelegatedCustodyActivityRepositoryAPI {
             cache: cache,
             fetch: { [authenticationDataRepository, client] key in
                 authenticationDataRepository.authenticationData
+                    .eraseError()
                     .flatMap { [client] authenticationData in
                         client.transactionHistory(
                             guidHash: authenticationData.guidHash,

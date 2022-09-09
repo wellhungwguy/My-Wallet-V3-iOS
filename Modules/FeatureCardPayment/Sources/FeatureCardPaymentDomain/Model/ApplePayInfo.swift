@@ -27,4 +27,13 @@ public struct ApplePayInfo: Codable, Equatable {
 
     /// Enable the prepaid cards if doable
     public let allowPrepaidCards: Bool?
+
+    // https://developer.apple.com/documentation/apple_pay_on_the_web/applepaypaymentrequest/2216120-requiredbillingcontactfields
+    public let requiredBillingContactFields: [String]?
+
+    /// https://developer.apple.com/documentation/apple_pay_on_the_web/applepaypaymentrequest/2928612-supportedcountries
+    public let supportedCountries: [String]?
+
+    /// https://developer.apple.com/documentation/apple_pay_on_the_web/applepaypaymentrequest/1916122-supportednetworks
+    public let supportedNetworks: [String]?
 }

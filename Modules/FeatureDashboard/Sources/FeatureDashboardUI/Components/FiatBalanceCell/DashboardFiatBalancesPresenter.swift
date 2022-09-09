@@ -38,8 +38,12 @@ final class DashboardFiatBalancesPresenter {
 
     private lazy var setup: Void = {
         let presenter = self.presenter
-        interactor.hasBalances
-            .map { $0 ? .show(presenter) : .hide }
+        return Observable
+            .combineLatest(
+                interactor.hasBalances,
+                interactor.isInTradingMode
+            )
+            .map { $0 && $1 ? .show(presenter) : .hide }
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }()

@@ -45,7 +45,7 @@ class KYCSettings: KYCSettingsAPI {
             }
 
             let previousPage = cacheSuite.integer(forKey: UserDefaults.KYC.Keys.kycLatestPage.rawValue)
-            guard let newPage = newValue, previousPage < newPage.rawValue else {
+            guard let newPage = newValue else {
                 Logger.shared.warning("\(newValue?.rawValue ?? 0) is not less than \(previousPage) for 'latestKycPage'.")
                 return
             }

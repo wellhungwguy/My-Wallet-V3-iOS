@@ -2,7 +2,6 @@
 
 import Foundation
 
-@available(*, deprecated, message: "Don't use this")
 public final class BlockchainAPI {
 
     // MARK: - Static Properties

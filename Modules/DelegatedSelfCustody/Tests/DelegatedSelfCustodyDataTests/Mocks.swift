@@ -50,13 +50,13 @@ final class SubscriptionsStateServiceMock: SubscriptionsStateServiceAPI {
 }
 
 final class AuthenticationDataRepositoryMock: AuthenticationDataRepositoryAPI {
-    var initialAuthenticationDataResult: Result<(guid: String, sharedKeyHash: String), Error>!
-    var initialAuthenticationData: AnyPublisher<(guid: String, sharedKeyHash: String), Error> {
+    var initialAuthenticationDataResult: Result<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError>!
+    var initialAuthenticationData: AnyPublisher<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError> {
         initialAuthenticationDataResult.publisher.eraseToAnyPublisher()
     }
 
-    var authenticationDataResult: Result<(guidHash: String, sharedKeyHash: String), Error>!
-    var authenticationData: AnyPublisher<(guidHash: String, sharedKeyHash: String), Error> {
+    var authenticationDataResult: Result<AuthenticationDataPayload, AuthenticationDataRepositoryError>!
+    var authenticationData: AnyPublisher<AuthenticationDataPayload, AuthenticationDataRepositoryError> {
         authenticationDataResult.publisher.eraseToAnyPublisher()
     }
 }

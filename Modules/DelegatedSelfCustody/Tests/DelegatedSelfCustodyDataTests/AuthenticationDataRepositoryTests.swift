@@ -31,7 +31,7 @@ final class AuthenticationDataRepositoryTests: XCTestCase {
         let expectation = expectation(description: "test initial authentication data")
 
         var error: Error?
-        var receivedValue: (guid: String, sharedKeyHash: String)?
+        var receivedValue: InitialAuthenticationDataPayload?
         subject.initialAuthenticationData
             .sink(
                 receiveCompletion: { completion in
@@ -59,7 +59,7 @@ final class AuthenticationDataRepositoryTests: XCTestCase {
         let expectation = expectation(description: "test authentication data")
 
         var error: Error?
-        var receivedValue: (guidHash: String, sharedKeyHash: String)?
+        var receivedValue: AuthenticationDataPayload?
         subject.authenticationData
             .sink(
                 receiveCompletion: { completion in

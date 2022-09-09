@@ -44,8 +44,8 @@ extension Pin: Hashable {
         pinCode == (object as? Pin)?.pinCode
     }
 
-    public var hashValue: Int {
-        Int(pinCode)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(pinCode)
     }
 }
 

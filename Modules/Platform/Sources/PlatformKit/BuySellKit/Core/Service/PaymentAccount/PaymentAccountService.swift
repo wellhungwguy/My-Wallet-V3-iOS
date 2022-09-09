@@ -26,7 +26,7 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
     /// Using a currency service, get the currency currency and check if the user has a
     /// payment account for the currenctly set fiat currency
     var paymentAccount: Single<PaymentAccountDescribing> {
-        fiatCurrencyService.displayCurrency
+        fiatCurrencyService.tradingCurrency
             .asSingle()
             .flatMap(weak: self) { (self, currency) in
                 self.paymentAccount(for: currency)

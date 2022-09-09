@@ -99,6 +99,14 @@ extension SwiftUI.Text {
             defaultVisit(link)
                 .foregroundColor(.semantic.primary)
         }
+
+        mutating func visitLineBreak(_ lineBreak: LineBreak) -> SwiftUI.Text {
+            defaultVisit(lineBreak) + .init("\n\n")
+        }
+
+        mutating func visitSoftBreak(_ softBreak: SoftBreak) -> SwiftUI.Text {
+            defaultVisit(softBreak) + .init("\n")
+        }
     }
 }
 
@@ -131,6 +139,16 @@ extension Markup {
 struct RichText_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading, spacing: 8) {
+            Group {
+                SwiftUI.Text(
+                    rich: """
+                    A
+
+                    **B**
+                    C
+                    """
+                )
+            }
             Group {
                 SwiftUI.Text(rich: "# Heading 1")
                 SwiftUI.Text(rich: "## Heading 2")

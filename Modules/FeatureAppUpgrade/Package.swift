@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureAppUpgrade",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureAppUpgrade",
@@ -22,7 +27,10 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.0"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.34.0"),
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            exact: "0.38.3"
+        ),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../Localization"),

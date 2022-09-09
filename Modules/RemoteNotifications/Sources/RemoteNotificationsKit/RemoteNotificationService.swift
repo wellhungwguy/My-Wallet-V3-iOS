@@ -83,7 +83,10 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
 
 extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
     func appDidFailToRegisterForRemoteNotifications(with error: Error) {
+        #if targetEnvironment(simulator)
+        #else
         Logger.shared.info("Remote Notification Registration Failed with error: \(error)")
+        #endif
     }
 
     func appDidRegisterForRemoteNotifications(with deviceToken: Data) {

@@ -30,35 +30,27 @@ let package = Package(
             from: "1.9.0"
         ),
         .package(
-            url: "https://github.com/pointfreeco/swift-case-paths",
-            from: "0.8.0"
-        ),
-        .package(
             url: "https://github.com/apple/swift-markdown.git",
-            revision: "1023300b1d6847360ac9ceebbcff2bccacbcf2a5"
-        ),
-        .package(
-            url: "https://github.com/apple/swift-algorithms.git",
-            from: "1.0.0"
+            revision: "52563fc74a540b29854fde20e836b27394be2749"
         ),
         .package(
             url: "https://github.com/airbnb/lottie-ios.git",
             from: "3.3.0"
         ),
         .package(
-            url: "https://github.com/kean/NukeUI.git",
-            from: "0.8.3"
-        )
+            url: "https://github.com/kean/Nuke.git",
+            from: "11.0.0"
+        ),
+        .package(path: "../Extensions")
     ],
     targets: [
         .target(
             name: "BlockchainComponentLibrary",
             dependencies: [
-                .product(name: "Algorithms", package: "swift-algorithms"),
-                .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "Markdown", package: "swift-markdown"),
                 .product(name: "Lottie", package: "lottie-ios"),
-                .product(name: "NukeUI", package: "NukeUI")
+                .product(name: "NukeUI", package: "Nuke"),
+                .product(name: "Extensions", package: "Extensions")
             ],
             resources: [
                 .process("Resources/Fonts"),

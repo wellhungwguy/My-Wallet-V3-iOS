@@ -23,7 +23,7 @@ final class ChangePasswordScreenPresenter {
         .text(value: LocalizationIDs.title)
     }
 
-    let barStyle = Screen.Style.Bar.lightContent()
+    let barStyle = Screen.Style.Bar.darkContent()
     let descriptionContent: LabelContent
     let currentPasswordTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: PasswordTextFieldViewModel

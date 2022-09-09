@@ -110,7 +110,7 @@ extension HDKeyPath {
             if value <= Int32.max {
                 Always(value)
             } else {
-                Fail<Substring, Int>(throwing: HDKeyPathError.invalidIndex)
+                Parsing.Fail<Substring, Int>(throwing: HDKeyPathError.invalidIndex)
             }
         }
 

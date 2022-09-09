@@ -73,15 +73,6 @@
       }
     },
     {
-      "identity" : "gifu",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kaishin/Gifu",
-      "state" : {
-        "revision" : "51f2eab32903e336f590c013267cfa4d7f8b06c4",
-        "version" : "3.3.1"
-      }
-    },
-    {
       "identity" : "lexicon",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/screensailor/Lexicon",
@@ -111,17 +102,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke.git",
       "state" : {
-        "revision" : "a002b7fd786f2df2ed4333fe73a9727499fd9d97",
-        "version" : "10.11.2"
-      }
-    },
-    {
-      "identity" : "nukeui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kean/NukeUI.git",
-      "state" : {
-        "revision" : "db55022a8e483774ebbf3568727071477546d9ea",
-        "version" : "0.8.3"
+        "revision" : "c1c36dff9fa838c9d5d01a4096a9a9bab84d5a5e",
+        "version" : "11.0.1"
       }
     },
     {
@@ -326,8 +308,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/oliveratkinson-bc/wallet-core.git",
       "state" : {
-        "revision" : "5b4f031f62ad9acea38da1da30aa5678e001aa96",
-        "version" : "2.6.36-blockchain"
+        "revision" : "1c41130990d1b00ed8cf4877cd94453df42fa13d",
+        "version" : "2.9.8-blockchain"
       }
     },
     {

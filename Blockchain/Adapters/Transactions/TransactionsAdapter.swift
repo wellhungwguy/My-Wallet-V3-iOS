@@ -40,7 +40,7 @@ enum TransactionType: Equatable {
             return lhsAccount.identifier == rhsAccount.identifier
         case (.sign(let lhsSourceAccount, let lhsDestination), .sign(let rhsSourceAccount, let rhsDestination)):
             return lhsSourceAccount.identifier == rhsSourceAccount.identifier
-                && lhsDestination.label == rhsDestination.label
+            && lhsDestination.label == rhsDestination.label
         default:
             return false
         }
@@ -119,15 +119,18 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
 
     private let router: FeatureTransactionUI.TransactionsRouterAPI
     private let coincore: CoincoreAPI
+    private let app: AppProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
     init(
         router: FeatureTransactionUI.TransactionsRouterAPI,
-        coincore: CoincoreAPI
+        coincore: CoincoreAPI,
+        app: AppProtocol
     ) {
         self.router = router
         self.coincore = coincore
+        self.app = app
     }
 
     func presentTransactionFlow(
@@ -144,16 +147,26 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
         to transactionToPerform: TransactionType,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        router.presentTransactionFlow(to: transactionToPerform.transactionFlowActionValue, from: presenter)
-            .map(TransactionResult.init)
-            .eraseToAnyPublisher()
+        router.presentTransactionFlow(
+            to: transactionToPerform.transactionFlowActionValue,
+            from: presenter
+        )
+        .map(TransactionResult.init)
+        .eraseToAnyPublisher()
     }
 
     func presentTransactionFlow(
         toBuy cryptoCurrency: CryptoCurrency,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionResult, Never> {
-        coincore.cryptoAccounts(for: .bitcoin, supporting: .buy, filter: .custodial)
+        app.modePublisher()
+            .flatMap { [coincore] appMode in
+                coincore.cryptoAccounts(
+                    for: .bitcoin,
+                    supporting: .buy,
+                    filter: appMode.filter
+                )
+            }
             .replaceError(with: [])
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in

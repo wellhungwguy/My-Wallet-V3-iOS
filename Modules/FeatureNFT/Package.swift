@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureNFT",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureNFT",
@@ -27,12 +32,12 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.32.0"
+            .exact("0.38.3")
         ),
         .package(
             name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
-            from: "10.3.1"
+            from: "11.0.0"
         ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),

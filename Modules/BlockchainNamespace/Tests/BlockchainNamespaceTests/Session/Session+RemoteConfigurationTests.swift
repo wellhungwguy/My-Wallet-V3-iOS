@@ -25,6 +25,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                         .remote: [
                             "ios_app_maintenance": true,
                             "ios_ff_apple_pay": true,
+                            "ios_ff_app_superapp": true,
                             "blockchain_app_configuration_announcements": ["1", "2", "3"],
                             "blockchain_app_configuration_deep_link_rules": []
                         ]
@@ -73,7 +74,6 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         let announcements = try await app.publisher(for: blockchain.app.configuration.announcements, as: Bool.self)
             .values
             .next()
-            .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
     }
@@ -83,7 +83,6 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         let announcements = try await app.publisher(for: blockchain.user.email.address, as: String.self)
             .values
             .next()
-            .unwrap()
 
         XCTAssertThrowsError(try announcements.get())
     }
@@ -113,6 +112,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             [
                 "ios_app_maintenance",
                 "ios_ff_apple_pay",
+                "ios_ff_app_superapp",
                 "!blockchain.app.configuration.manual.login.is.enabled",
                 "blockchain_app_configuration_announcements",
                 "blockchain_app_configuration_deep_link_rules"
@@ -195,6 +195,24 @@ final class SessionRemoteConfigurationTests: XCTestCase {
             XCTAssertTrue(preference as? Bool == true)
         }
     }
+
+    func test_fetch_superapp_feature_flag() async throws {
+        let app = App(
+            remoteConfiguration: .init(
+                remote: Mock.RemoteConfiguration(
+                    [
+                        .remote: [
+                            "ios_ff_app_superapp": true
+                        ]
+                    ]
+                ),
+                preferences: Mock.Preferences(),
+                default: [:]
+            )
+        )
+        let superAppEnabled = try await app.get(blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
+        XCTAssertEqual(superAppEnabled, true)
+    }
 }
 
 @available(iOS 15.0, macOS 12.0, *)
@@ -203,7 +221,6 @@ extension Publisher where Output == FetchResult {
     func wait() async throws -> Any {
         try await values
             .next()
-            .unwrap()
             .get()
     }
 }
@@ -214,7 +231,6 @@ extension Publisher where Output: FetchResult.Decoded {
     func wait() async throws -> Output.Value {
         try await values
             .next()
-            .unwrap()
             .get()
     }
 }

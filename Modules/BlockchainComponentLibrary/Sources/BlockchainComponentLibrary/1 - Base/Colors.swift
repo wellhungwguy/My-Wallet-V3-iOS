@@ -87,14 +87,17 @@ extension Color {
             dark: .palette.red400
         )
 
+        public static let defi = Color(
+            light: .palette.purple,
+            dark: .palette.purple
+        )
+
         public static let fadedBackground: Color = .palette.grey600.opacity(0.6)
 
+        public static let darkBG: Color = .palette.dark900
         public static let blueBG: Color = .palette.blue000
-
         public static let greenBG: Color = .palette.green100
-
         public static let orangeBG: Color = .palette.orange100
-
         public static let redBG: Color = .palette.red100
 
         public static let gold: Color = .palette.gold
@@ -183,6 +186,9 @@ extension Color {
         // tiers
         static let silver: Color = Asset.silver.color()
         static let gold: Color = Asset.gold.color()
+
+        // purple
+        static let purple: Color = Asset.purple.color()
     }
 }
 
@@ -245,6 +251,8 @@ extension Color {
         case silver
         case gold
 
+        case purple
+
         func color() -> SwiftUI.Color {
             SwiftUI.Color(rawValue, bundle: Bundle.componentLibrary)
         }
@@ -275,7 +283,8 @@ struct Colors_Previews: PreviewProvider {
         ColorMap(color: .semantic.blueBG, name: "blueBG"),
         ColorMap(color: .semantic.greenBG, name: "greenBG"),
         ColorMap(color: .semantic.orangeBG, name: "orangeBG"),
-        ColorMap(color: .semantic.redBG, name: "redBG")
+        ColorMap(color: .semantic.redBG, name: "redBG"),
+        ColorMap(color: .semantic.defi, name: "defi")
     ]
 
     static var previews: some View {

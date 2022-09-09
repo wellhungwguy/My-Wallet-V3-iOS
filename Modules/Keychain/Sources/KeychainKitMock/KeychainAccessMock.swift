@@ -2,7 +2,6 @@
 
 import Foundation
 import KeychainKit
-import ToolKit
 
 public class KeychainAccessMock: KeychainAccessAPI {
     public required init(service: String) {}
@@ -19,20 +18,20 @@ public class KeychainAccessMock: KeychainAccessAPI {
     }
 
     public var writeCalled: Bool = false
-    public var writeResult: Result<EmptyValue, KeychainAccessError> = .failure(.readFailure(.itemNotFound(account: "")))
+    public var writeResult: Result<Void, KeychainAccessError> = .failure(.readFailure(.itemNotFound(account: "")))
     public func write(
         value: Data,
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError> {
+    ) -> Result<Void, KeychainAccessError> {
         writeCalled = true
         return writeResult
     }
 
     public var removeCalled: Bool = false
-    public var removeResult: Result<EmptyValue, KeychainAccessError> = .failure(.readFailure(.itemNotFound(account: "")))
+    public var removeResult: Result<Void, KeychainAccessError> = .failure(.readFailure(.itemNotFound(account: "")))
     public func remove(
         for key: String
-    ) -> Result<EmptyValue, KeychainAccessError> {
+    ) -> Result<Void, KeychainAccessError> {
         removeCalled = true
         return removeResult
     }

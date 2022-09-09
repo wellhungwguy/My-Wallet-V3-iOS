@@ -1,0 +1,27 @@
+{
+  "title": "Win suite tickets for you and 7 friends",
+  "message": "**Verify your ID, refer 3+ friends**, and you'll be entered for a chance to win **8 tickets** to the **Blockchain.com suite** for the **December 11th** game against the Texans.\n\nWinners will be announced on [DATE]",
+  "header": {
+    "media": {
+      "url": "https://firebasestorage.googleapis.com/v0/b/fir-staging-92d79.appspot.com/o/header-cowboys-promotion.svg?alt=media&token=7d6ee44d-95d6-49de-8cf4-6926b5ff73e5"
+    }
+  },
+  "icon": {
+    "url": "https://firebasestorage.googleapis.com/v0/b/fir-staging-92d79.appspot.com/o/tickets.png?alt=media&token=b3fa42b6-55a7-4680-ba63-9d08657c0da3"
+  },
+  "style": {
+    "background": {
+      "media": {"url": "https://firebasestorage.googleapis.com/v0/b/fir-staging-92d79.appspot.com/o/prescott.png?alt=media&token=443cc5cb-0f04-4e46-9712-a052b2437fa1"},
+      "color": {"hsb": [0, 0, 0, 1]}
+    },
+    "foreground": {
+      "color": {"hsb": [0, 0, 1, 1]}
+    }
+  },
+  "actions": [
+    {
+      "title": "Verify my ID",
+      "url": "https://blockchain.com/app/kyc?tier=2"
+    }
+  ]
+}

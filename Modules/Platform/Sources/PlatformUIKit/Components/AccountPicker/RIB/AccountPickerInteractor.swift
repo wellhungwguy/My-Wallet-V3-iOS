@@ -3,6 +3,7 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import Errors
 import MoneyKit
 import PlatformKit
 import RIBs
@@ -129,6 +130,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             searchRelay.accept(string)
         case .button:
             listener?.didSelectActionButton()
+        case .ux(let ux):
+            listener?.didSelect(ux: ux)
         case .none:
             break
         }
@@ -146,6 +149,7 @@ extension AccountPickerInteractor {
         case select(BlockchainAccount)
         case back
         case closed
+        case ux(UX.Dialog)
         case filter(String?)
         case button
         case none
@@ -241,7 +245,7 @@ extension Collection where Element == BlockchainAccount {
         app: AppProtocol,
         priceRepository: PriceRepositoryAPI
     ) -> AnyPublisher<[BlockchainAccountSnapshot], Never> {
-        Task<[BlockchainAccountSnapshot], Error>.ThrowingPublisher {
+        Task<[BlockchainAccountSnapshot], Error>.Publisher {
             guard try await app.get(blockchain.ux.transaction.smart.sort.order.is.enabled) else {
                 throw BlockchainAccountSnapshotError.isNotEnabled
             }
@@ -256,7 +260,7 @@ extension Collection where Element == BlockchainAccount {
                 at: .oneDay
             )
             .stream()
-            .first
+            .next()
             var accounts = [BlockchainAccountSnapshot]()
             for account in self {
                 let count: Int? = try? await app.get(
@@ -267,14 +271,14 @@ extension Collection where Element == BlockchainAccount {
                 )
                 let balance = try? await account.fiatBalance(fiatCurrency: currency)
                     .stream()
-                    .first
+                    .next()
                 accounts.append(
                     BlockchainAccountSnapshot(
                         account: account,
                         balance: balance?.fiatValue ?? .zero(currency: currency),
                         count: count ?? 0,
                         isSelectedAsset: currentId?.lowercased() == account.currencyType.code.lowercased(),
-                        volume24h: prices?["\(account.currencyType.code)-USD"].flatMap { quote in
+                        volume24h: prices["\(account.currencyType.code)-USD"].flatMap { quote in
                             quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
                         } ?? .zero
                     )

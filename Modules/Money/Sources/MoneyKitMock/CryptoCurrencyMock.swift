@@ -28,7 +28,8 @@ extension AssetModel {
                     websiteUrl: "ETH"
                 )
             ),
-            sortIndex: sortIndex
+            sortIndex: sortIndex,
+            sanitizePolygonAssets: false
         )!
     }
 
@@ -56,7 +57,8 @@ extension AssetModel {
                     websiteUrl: nil
                 )
             ),
-            sortIndex: sortIndex
+            sortIndex: sortIndex,
+            sanitizePolygonAssets: false
         )!
     }
 }

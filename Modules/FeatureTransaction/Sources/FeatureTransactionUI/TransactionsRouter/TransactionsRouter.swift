@@ -205,7 +205,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 switch result {
                 case .abandoned:
                     return .abandoned
-                case .completed:
+                case .completed, .skipped:
                     return .completed
                 }
             }
@@ -266,7 +266,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 switch result {
                 case .abandoned:
                     subject.send(.abandoned)
-                case .completed:
+                case .completed, .skipped:
                     self.continuePresentingTransactionFlow(
                         to: action,
                         from: presenter,
@@ -460,7 +460,6 @@ extension TransactionsRouter {
                     .account(where: { $0.currencyType == currency })
                     .values
                     .next()
-                    .or([])
                     .first as? TransactionTarget
                 await startRouterOnMainThread(target: account)
             } catch {
@@ -656,7 +655,7 @@ extension TransactionFlowAction {
         case .send:
             return .withdrawCrypto
         case .interestTransfer:
-            return .withdrawCrypto
+            return .depositInterest
         case .interestWithdraw:
             return .withdrawCrypto
         default:

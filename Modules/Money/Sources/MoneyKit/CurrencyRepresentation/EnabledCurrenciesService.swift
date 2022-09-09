@@ -67,9 +67,13 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         guard polygonSupport.isEnabled else {
             return []
         }
+        let allowList = PolygonERC20CodeAllowList.allCases.map(\.rawValue)
+        let isAllTokensEnabled = polygonSupport.isAllTokensEnabled
         return repository.polygonERC20Assets
             .currencies
-            .filter { PolygonERC20CodeAllowList.allCases.map(\.rawValue).contains($0.code) }
+            .filter { model in
+                isAllTokensEnabled || allowList.contains(model.code)
+            }
             .filter(\.kind.isERC20)
             .compactMap(\.cryptoCurrency)
     }
@@ -105,4 +109,6 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
 public protocol PolygonSupport: AnyObject {
     var isEnabled: Bool { get }
+    var isAllTokensEnabled: Bool { get }
+    var sanitizeTokenNamesEnabled: Bool { get }
 }

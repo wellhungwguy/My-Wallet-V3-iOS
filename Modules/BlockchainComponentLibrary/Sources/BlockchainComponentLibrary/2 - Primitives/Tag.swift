@@ -12,21 +12,28 @@ public struct TagView: View, Hashable {
     private let text: String
     private let variant: Variant
     private let size: Size
+    private let foregroundColor: Color?
 
     /// Create a tag view
     /// - Parameters:
     ///   - text: Text displayed in the tag
     ///   - variant: Color variant. See `extension TagView.Variant` below for options.
-    public init(text: String, variant: Variant = .default, size: Size = .small) {
+    public init(
+        text: String,
+        variant: Variant = .default,
+        size: Size = .small,
+        foregroundColor: Color? = nil
+    ) {
         self.text = text
         self.variant = variant
         self.size = size
+        self.foregroundColor = foregroundColor
     }
 
     public var body: some View {
         Text(text)
             .typography(size.typography)
-            .foregroundColor(variant.textColor)
+            .foregroundColor(foregroundColor ?? variant.textColor)
             .padding(size.padding)
             .background(
                 RoundedRectangle(cornerRadius: 4)

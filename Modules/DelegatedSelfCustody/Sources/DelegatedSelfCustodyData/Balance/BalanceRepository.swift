@@ -42,6 +42,7 @@ final class BalanceRepository: DelegatedCustodyBalanceRepositoryAPI {
             cache: cache,
             fetch: { [authenticationDataRepository, fiatCurrencyService, client, enabledCurrenciesService] _ in
                 authenticationDataRepository.authenticationData
+                    .eraseError()
                     .zip(fiatCurrencyService.fiatCurrency.eraseError())
                     .flatMap { [client] authenticationData, fiatCurrency in
                         client.balance(

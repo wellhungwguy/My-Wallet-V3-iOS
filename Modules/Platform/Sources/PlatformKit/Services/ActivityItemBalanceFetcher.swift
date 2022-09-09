@@ -5,6 +5,8 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+public typealias MoneyValuePairCalculationState = ValueCalculationState<MoneyValuePair>
+
 public protocol ActivityItemBalanceFetching {
     /// The pair exchange service
     var pairExchangeService: PairExchangeServiceAPI { get }

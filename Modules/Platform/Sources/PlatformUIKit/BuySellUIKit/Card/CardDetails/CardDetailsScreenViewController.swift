@@ -147,7 +147,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         if #available(iOS 15.0, *) {
             if let sheet = errorViewController.sheetPresentationController {
                 sheet.prefersGrabberVisible = true
-                sheet.detents = [ .medium() ]
+                sheet.detents = [.medium()]
             }
         }
 

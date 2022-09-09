@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureApp",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "FeatureApp", targets: ["FeatureAppUI", "FeatureAppDomain"]),
         .library(name: "FeatureAppUI", targets: ["FeatureAppUI"]),
@@ -21,7 +26,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            exact: "0.38.3"
         ),
         .package(
             url: "https://github.com/embrace-io/embrace-spm",
@@ -51,6 +56,7 @@ let package = Package(
         .package(path: "../FeatureTransaction"),
         .package(path: "../FeatureWalletConnect"),
         .package(path: "../FeatureWithdrawalLocks"),
+        .package(path: "../FeatureSuperAppIntro"),
         .package(path: "../Localization"),
         .package(path: "../Money"),
         .package(path: "../Observability"),
@@ -88,6 +94,7 @@ let package = Package(
                 .product(name: "FeatureInterestUI", package: "FeatureInterest"),
                 .product(name: "FeatureNFTDomain", package: "FeatureNFT"),
                 .product(name: "FeatureNFTUI", package: "FeatureNFT"),
+                .product(name: "FeatureSuperAppIntroUI", package: "FeatureSuperAppIntro"),
                 .product(name: "FeatureOnboardingUI", package: "FeatureOnboarding"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),

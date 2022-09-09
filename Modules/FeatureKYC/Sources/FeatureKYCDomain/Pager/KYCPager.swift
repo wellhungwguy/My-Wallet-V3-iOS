@@ -152,6 +152,10 @@ extension KYCPageType {
             return .accountUsageForm
         }
 
+        if isSDDEligible, isSDDVerified {
+            return .finish
+        }
+
         return .sddVerificationCheck
     }
 
@@ -186,6 +190,8 @@ extension KYCPageType {
         tiersResponse: KYC.UserTiers
     ) -> KYCPageType? {
         switch self {
+        case .finish:
+            return nil
         case .welcome:
             if let user = user {
                 // We can pass true here, as non-eligible users would get send to the Tier 2 upgrade path anyway
@@ -268,7 +274,7 @@ extension KYCPageType {
         case .applicationComplete:
             // Not used
             return nil
-        case .accountStatus:
+        case .accountStatus, .finish:
             return nil
         case .welcome,
              .enterEmail,

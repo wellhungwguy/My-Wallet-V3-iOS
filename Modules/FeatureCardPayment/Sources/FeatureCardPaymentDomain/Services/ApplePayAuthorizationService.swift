@@ -20,11 +20,28 @@ final class ApplePayAuthorizationService: NSObject, ApplePayAuthorizationService
         return tokenSubject
             .handleEvents(receiveSubscription: { [weak self] _ in
                 guard let self = self else { return }
+                var requiredBillingContactFields: Set<PKContactField>? {
+                    guard let fields = info.requiredBillingContactFields, fields.isNotEmpty else {
+                        return nil
+                    }
+                    return Set(fields.map(PKContactField.init(rawValue:)))
+                }
+                var supportedNetworks: [PKPaymentNetwork] {
+                    guard let networks = info.supportedNetworks, networks.isNotEmpty else {
+                        return [.visa, .masterCard]
+                    }
+                    return networks.compactMap(PKPaymentNetwork.init(rawValue:))
+                }
                 let paymentAuthorizationController = paymentController(
                     request: paymentRequest(
                         amount: amount,
                         currencyCode: currencyCode,
-                        info: info
+                        info: info,
+                        requiredBillingContactFields: requiredBillingContactFields,
+                        supportedCountries: info.supportedCountries.isNilOrEmpty
+                        ? nil
+                        : info.supportedCountries.map(Set.init),
+                        supportedNetworks: supportedNetworks
                     ),
                     delegate: self
                 )
@@ -53,10 +70,14 @@ private func paymentController(
     return controller
 }
 
+// swiftlint:disable function_parameter_count
 private func paymentRequest(
     amount: Decimal,
     currencyCode: String,
-    info: ApplePayInfo
+    info: ApplePayInfo,
+    requiredBillingContactFields: Set<PKContactField>?,
+    supportedCountries: Set<String>?,
+    supportedNetworks: [PKPaymentNetwork]?
 ) -> PKPaymentRequest {
     let paymentRequest = PKPaymentRequest()
 
@@ -64,7 +85,9 @@ private func paymentRequest(
     paymentRequest.countryCode = info.merchantBankCountryCode
 
     paymentRequest.merchantIdentifier = info.applePayMerchantID
-    paymentRequest.supportedNetworks = [.visa, .masterCard]
+    requiredBillingContactFields.map { paymentRequest.requiredBillingContactFields = $0 }
+    supportedNetworks.map { paymentRequest.supportedNetworks = $0 }
+    supportedCountries.map { paymentRequest.supportedCountries = $0 }
     paymentRequest.merchantCapabilities = info.capabilities
     paymentRequest.paymentSummaryItems = [
         PKPaymentSummaryItem(
@@ -88,7 +111,7 @@ extension ApplePayAuthorizationService: PKPaymentAuthorizationControllerDelegate
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
-        guard let token = ApplePayToken(token: payment.token) else {
+        guard let token = ApplePayToken(token: payment.token, billingContact: payment.billingContact) else {
             completion(.init(status: .failure, errors: [ApplePayError.invalidTokenParameters]))
             tokenSubject.send(.failure(.invalidTokenParameters))
             return

@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import Combine
 import ComposableArchitecture
 import DIKit
+import Errors
 import FeatureAccountPickerUI
 import FeatureWithdrawalLocksUI
 import Foundation
@@ -22,6 +23,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     var shouldOverrideNavigationEffects: Bool = false
 
     fileprivate let modelSelectedRelay = PublishRelay<AccountPickerCellItem>()
+    fileprivate let uxRelay = PublishRelay<UX.Dialog>()
     fileprivate let backButtonRelay = PublishRelay<Void>()
     fileprivate let closeButtonRelay = PublishRelay<Void>()
     private let searchRelay = PublishRelay<String?>()
@@ -34,6 +36,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                 modelSelectedRelay.accept(viewModel)
             }
         },
+        uxSelected: { [uxRelay] ux in uxRelay.accept(ux) },
         backButtonTapped: { [backButtonRelay] in backButtonRelay.accept(()) },
         closeButtonTapped: { [closeButtonRelay] in closeButtonRelay.accept(()) },
         search: { [searchRelay] searchText in searchRelay.accept(searchText) },
@@ -341,6 +344,14 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                             return .paymentMethodAccount(
                                 .init(
                                     id: item.identity,
+                                    block: presenter
+                                        .account
+                                        .paymentMethodType
+                                        .block,
+                                    ux: presenter
+                                        .account
+                                        .paymentMethodType
+                                        .ux,
                                     title: presenter.account.label,
                                     description: presenter
                                         .account
@@ -389,6 +400,10 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { _ in AccountPickerInteractor.Effects.button }
             .asDriver(onErrorJustReturn: .none)
 
+        let badgeSelected = uxRelay
+            .map { AccountPickerInteractor.Effects.ux($0) }
+            .asDriverCatchError()
+
         let backButtonEffect = backButtonRelay
             .map { AccountPickerInteractor.Effects.back }
             .asDriverCatchError()
@@ -401,6 +416,13 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.filter($0) }
             .asDriverCatchError()
 
-        return .merge(modelSelected, buttonSelected, backButtonEffect, closeButtonEffect, searchEffect)
+        return .merge(
+            modelSelected,
+            badgeSelected,
+            buttonSelected,
+            backButtonEffect,
+            closeButtonEffect,
+            searchEffect
+        )
     }
 }

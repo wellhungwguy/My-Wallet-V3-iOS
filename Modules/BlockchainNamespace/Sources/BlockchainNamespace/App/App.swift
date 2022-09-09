@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Extensions
 import FirebaseProtocol
 import Foundation
 
@@ -20,7 +21,6 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
 }
 
 public class App: AppProtocol {
-
     public let language: Language
 
     public let events: Session.Events
@@ -76,9 +76,11 @@ public class App: AppProtocol {
         state.app = self
         deepLinks.start()
         remoteConfiguration.start(app: self)
-        #if DEBUG
-        _ = logger
-        #endif
+        do {
+            #if DEBUG
+            _ = logger
+            #endif
+        }
     }
 
     // Observers
@@ -158,7 +160,7 @@ extension AppProtocol {
     ) {
         events.send(
             Session.Event(
-                event: event,
+                origin: event,
                 reference: reference,
                 context: [
                     s.file: file,
@@ -222,6 +224,12 @@ extension AppProtocol {
     ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
         events.filter(tags.map { $0.key().in(self) })
             .eraseToAnyPublisher()
+    }
+
+    public func on(
+        where filter: @escaping (Tag) -> Bool
+    ) -> AnyPublisher<Session.Event, Never> {
+        events.filter { filter($0.tag) }.eraseToAnyPublisher()
     }
 
     public func on<Tags>(
@@ -298,7 +306,7 @@ extension AppProtocol {
     public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
         try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
             .stream()
-            .next().or(throw: FetchResult.Error.keyDoesNotExist(event.key()))
+            .next()
             .get()
     }
 

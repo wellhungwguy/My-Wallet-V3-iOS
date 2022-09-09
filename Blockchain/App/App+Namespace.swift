@@ -17,6 +17,8 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
+// swiftlint:disable line_length
+
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
@@ -28,19 +30,25 @@ let app: AppProtocol = App(
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
             blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.redesign.checkout.is.enabled: false,
+            blockchain.app.configuration.app.superapp.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
             blockchain.app.configuration.stx.all.users.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.argentinalinkbank.is.enabled: false
+            blockchain.app.configuration.argentinalinkbank.is.enabled: false,
+            blockchain.ux.onboarding.promotion.cowboys.welcome.announcement: blockchain.ux.onboarding.promotion.cowboys.welcome.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.welcome.story: blockchain.ux.onboarding.promotion.cowboys.welcome.story.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.raffle.announcement: blockchain.ux.onboarding.promotion.cowboys.raffle.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.raffle.story: blockchain.ux.onboarding.promotion.cowboys.raffle.story.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement: blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement.json(in: .main),
+            blockchain.ux.onboarding.promotion.cowboys.verify.identity.story: blockchain.ux.onboarding.promotion.cowboys.verify.identity.story.json(in: .main)
         ]
     )
 )
 
 extension AppProtocol {
-
     func bootstrap(
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
         deepLink: DeepLinkCoordinator = resolve(),
@@ -50,26 +58,21 @@ extension AppProtocol {
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
 
-        state.transaction { state in
-            state.set(blockchain.app.deep_link.dsl.is.enabled, to: BuildFlag.isInternal)
-        }
-
+        observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
+        observers.insert(AppAnalyticsObserver(app: self))
         observers.insert(KYCExtraQuestionsObserver(app: self))
         observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
         observers.insert(CoinViewObserver(app: self))
-        observers.insert(ReferralAppObserver(
-            app: self,
-            referralService: referralService,
-            featureFlagService: featureFlagService
-        ))
+        observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
+        observers.insert(SuperAppIntroObserver(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
-        observers.insert(ErrorActionObserver(app: self, application: UIApplication.shared))
+        observers.insert(ActionObserver(app: self, application: UIApplication.shared))
         observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 

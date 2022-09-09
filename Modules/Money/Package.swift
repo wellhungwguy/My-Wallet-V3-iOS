@@ -1,10 +1,15 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "Money",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "MoneyKit",
@@ -17,14 +22,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(path: "../Tool"),
         .package(path: "../Localization")

@@ -14,9 +14,11 @@ final class TotalBalanceTableViewCell: UITableViewCell {
                 titleLabel.content = presenter.titleContent
                 balanceView.presenter = presenter.balancePresenter
                 pieChartView.presenter = presenter.pieChartPresenter
+                pieChartView.isHidden = false
             } else {
                 balanceView.presenter = nil
                 pieChartView.presenter = nil
+                pieChartView.isHidden = true
             }
         }
     }

@@ -15,34 +15,12 @@ final class TabBarTests: XCTestCase {
         activeTabIdentifier: TabBar_Previews.ExchangePreviewContainer.Tab.home
     )
 
-    func testWallet_iPhoneX() {
-        assertSnapshots(
-            matching: wallet,
-            as: [
-                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
-                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
-        )
-    }
-
     func testWallet_iPhone8() {
         assertSnapshots(
             matching: wallet,
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
-        )
-    }
-
-    func testExchange_iPhoneX() {
-        assertSnapshots(
-            matching: exchange,
-            as: [
-                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
-                .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
             ],
             record: false
         )

@@ -19,7 +19,7 @@ public enum AssetError: LocalizedError, Equatable {
 
 public protocol Asset: AnyObject {
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never>
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never>
 
     func transactionTargets(account: SingleAccount) -> AnyPublisher<[SingleAccount], Never>
 

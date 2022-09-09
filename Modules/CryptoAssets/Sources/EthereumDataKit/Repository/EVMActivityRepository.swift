@@ -154,7 +154,7 @@ extension EVMHistoricalTransaction {
         self.init(
             amount: amount ?? .zero(currency: cryptoCurrency),
             confirmation: confirmation,
-            createdAt: Date(timeIntervalSince1970: response.timestamp / 1000),
+            createdAt: Date(timeIntervalSince1970: response.timestamp),
             direction: direction,
             fee: fee,
             from: fromAddress,

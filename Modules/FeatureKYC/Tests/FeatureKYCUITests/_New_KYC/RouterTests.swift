@@ -200,7 +200,7 @@ final class RouterTests: XCTestCase {
         let mockViewController = MockViewController()
         let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
         // THEN: The flow should not be presented and the request complete
-        XCTAssertPublisherValues(publisher, .completed)
+        XCTAssertPublisherValues(publisher, .skipped)
     }
 
     func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_2_when_tier_1_required() throws {
@@ -230,7 +230,7 @@ final class RouterTests: XCTestCase {
         let mockViewController = MockViewController()
         let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
         // THEN: The flow should not be presented and the request complete
-        XCTAssertPublisherValues(publisher, .completed)
+        XCTAssertPublisherValues(publisher, .skipped)
     }
 
     func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_1_when_tier_0_required() throws {
@@ -240,7 +240,7 @@ final class RouterTests: XCTestCase {
         let mockViewController = MockViewController()
         let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
         // THEN: The flow should not be presented and the request complete
-        XCTAssertPublisherValues(publisher, .completed)
+        XCTAssertPublisherValues(publisher, .skipped)
     }
 
     func test_presentsKYCIfNeeded_presents_KYC_if_user_is_tier_0_when_tier_1_required() throws {

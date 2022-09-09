@@ -68,7 +68,9 @@ final class EVMAsset: CryptoAsset {
             return .just(())
         }
         // Run wallet renaming procedure on initialization.
-        return cryptoAssetRepository.nonCustodialGroup
+        return cryptoAssetRepository
+            .nonCustodialGroup
+            .compactMap { $0 }
             .map(\.accounts)
             .flatMap { [upgradeLegacyLabels] accounts in
                 upgradeLegacyLabels(accounts)
@@ -77,7 +79,7 @@ final class EVMAsset: CryptoAsset {
             .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.accountGroup(filter: filter)
     }
 

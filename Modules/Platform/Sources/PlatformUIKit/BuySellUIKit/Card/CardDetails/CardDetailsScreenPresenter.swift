@@ -277,7 +277,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .disposed(by: disposeBag)
 
         buttonTapped
-            .compactMap(\.successData)
+            .compactMap(\.success)
             .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {

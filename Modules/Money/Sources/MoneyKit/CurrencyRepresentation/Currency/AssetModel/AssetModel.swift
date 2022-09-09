@@ -37,10 +37,10 @@ public struct AssetModel: Hashable {
     /// - Parameters:
     ///   - assetResponse: A supported SupportedAssetsResponse.Asset object.
     ///   - sortIndex:     A sorting index.
-    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int) {
+    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int, sanitizePolygonAssets: Bool) {
         code = assetResponse.symbol
-        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
-        name = assetResponse.name
+        displayCode = Self.displayCode(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
+        name = Self.name(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
         precision = assetResponse.precision
         var products = assetResponse.products.compactMap(AssetModelProduct.init)
         if BuildFlag.isInternal, code == "STX" {
@@ -108,6 +108,35 @@ public struct AssetModel: Hashable {
 
     public func supports(product: AssetModelProduct) -> Bool {
         products.contains(product)
+    }
+
+    static func name(
+        _ response: SupportedAssetsResponse.Asset,
+        sanitizePolygonAssets: Bool
+    ) -> String {
+        let polygonSuffix = " - Polygon"
+        let name = response.name
+        guard sanitizePolygonAssets else {
+            return name
+        }
+        guard response.type.parentChain == "MATIC" else {
+            return name
+        }
+        guard !name.hasSuffix(polygonSuffix) else {
+            return name
+        }
+        return name + polygonSuffix
+    }
+
+    static func displayCode(
+        _ response: SupportedAssetsResponse.Asset,
+        sanitizePolygonAssets: Bool
+    ) -> String {
+        let displaySymbol = response.displaySymbol ?? response.symbol
+        guard sanitizePolygonAssets, response.type.parentChain == "MATIC" else {
+            return displaySymbol
+        }
+        return String(displaySymbol.dropSuffix(".MATIC"))
     }
 }
 

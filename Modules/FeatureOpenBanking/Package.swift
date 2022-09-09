@@ -5,7 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureOpenBanking",
-    platforms: [.macOS(.v11), .iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureOpenBanking",
@@ -33,7 +38,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            .exact("0.38.3")
         ),
         .package(
             name: "swift-case-paths",

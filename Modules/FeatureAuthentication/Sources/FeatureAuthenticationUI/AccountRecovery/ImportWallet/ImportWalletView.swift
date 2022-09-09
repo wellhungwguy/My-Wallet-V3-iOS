@@ -66,7 +66,7 @@ struct ImportWalletView: View {
                         state: \.createAccountState,
                         action: ImportWalletAction.createAccount
                     ),
-                    then: CreateAccountView.init(store:)
+                    then: CreateAccountStepOneView.init(store:)
                 ),
                 isActive: viewStore.binding(
                     get: \.isCreateAccountScreenVisible,

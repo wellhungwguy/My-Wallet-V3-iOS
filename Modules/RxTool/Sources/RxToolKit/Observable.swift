@@ -17,8 +17,8 @@ extension ObservableConvertibleType {
         publisher
     }
 
-    public func await() async throws -> Element? {
-        try await publisher.values.first
+    public func await() async throws -> Element {
+        try await publisher.values.next()
     }
 }
 

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Extensions
 import FirebaseProtocol
 import Foundation
 
@@ -32,7 +33,7 @@ extension Session {
             self.preferences = preferences
             let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
-                Task(priority: .userInitiated) {
+                Task(priority: .high) {
                     let cached = preferences.object(
                         forKey: blockchain.session.configuration(\.id)
                     ) as? [String: Any] ?? [:]
@@ -196,6 +197,37 @@ extension Session {
             return false
             #endif
         }
+    }
+}
+
+extension Session.RemoteConfiguration {
+
+    @inlinable public func yes(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        yes(if: ifs, unless: buts)
+    }
+
+    @inlinable public func yes(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        ifs.allSatisfy { result(for: $0).isYes } && buts.none { result(for: $0).isYes }
+    }
+
+    @inlinable public func no(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        no(if: ifs, unless: buts)
+    }
+
+    @inlinable public func no(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        yes(if: ifs, unless: buts) ? false : true
     }
 }
 

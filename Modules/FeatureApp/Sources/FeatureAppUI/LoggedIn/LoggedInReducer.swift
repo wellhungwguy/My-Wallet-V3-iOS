@@ -89,7 +89,7 @@ let loggedInReducer = Reducer<
     switch action {
     case .start(let context):
         return .merge(
-            .fireAndForget{
+            .fireAndForget {
                 environment.app.post(event: blockchain.ux.user.event.signed.in)
             },
             .run { subscriber in

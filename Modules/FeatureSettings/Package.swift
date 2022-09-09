@@ -4,7 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureSettings",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureSettings",
@@ -44,6 +49,7 @@ let package = Package(
         ),
         .package(path: "../CommonCrypto"),
         .package(path: "../FeatureAuthentication"),
+        .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
@@ -92,7 +98,8 @@ let package = Package(
                 .product(name: "FeatureReferralUI", package: "FeatureReferral"),
                 .product(name: "FeatureUserDeletionData", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
-                .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion")
+                .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion"),
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
             ]
         ),
         .target(

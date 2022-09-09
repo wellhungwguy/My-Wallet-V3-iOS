@@ -29,6 +29,7 @@ final class AddressesRepository: DelegatedCustodyAddressesRepositoryAPI {
             cache: cache,
             fetch: { [authenticationDataRepository, client] key in
                 authenticationDataRepository.authenticationData
+                    .eraseError()
                     .flatMap { [client] authenticationData in
                         client.addresses(
                             guidHash: authenticationData.guidHash,

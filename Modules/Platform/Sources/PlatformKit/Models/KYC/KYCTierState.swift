@@ -8,5 +8,6 @@ extension KYC.Tier {
         case rejected
         case pending
         case verified
+        case under_review
     }
 }

@@ -7,12 +7,12 @@ struct SubscriptionEntry: Encodable, Equatable {
     }
 
     struct PubKey: Encodable, Equatable {
-        let pubkey: String
+        let pubKey: String
         let style: String
         let descriptor: Int
     }
 
     let currency: String
     let account: Account
-    let pubkeys: [PubKey]
+    let pubKeys: [PubKey]
 }

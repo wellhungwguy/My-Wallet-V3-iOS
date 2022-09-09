@@ -128,13 +128,13 @@ final class MetadataServiceTests: XCTestCase {
             let decryptedJSON = decryptMetadata(
                 metadata: environment.secondPasswordNode.metadataNode,
                 payload: body.payload
-            ).successData ?? ""
+            ).success ?? ""
 
             let decoded = decryptedJSON
                 .decodeJSON(
                     to: RemoteMetadataNodesResponse.self
                 )
-                .successData!
+                .success!
             XCTAssertEqual(decoded.metadata!, expectedRootXpriv)
             return .just(())
         }

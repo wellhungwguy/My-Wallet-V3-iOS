@@ -18,13 +18,13 @@ struct SupportedAssets {
     /// Creates a list of supported assets.
     ///
     /// - Parameter response: A supported assets response.
-    init(response: SupportedAssetsResponse) {
+    init(response: SupportedAssetsResponse, sanitizePolygonAssets: Bool) {
         currencies = response.currencies
             .enumerated()
             .compactMap { index, item -> AssetModel? in
                 // TODO: IOS-5091: remove sortIndex, cryptocurrencies should not have an order,
                 // but accounts should be sorted by balance.
-                AssetModel(assetResponse: item, sortIndex: index)
+                AssetModel(assetResponse: item, sortIndex: index, sanitizePolygonAssets: sanitizePolygonAssets)
             }
     }
 

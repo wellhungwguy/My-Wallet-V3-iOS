@@ -110,6 +110,7 @@ class AccountPickerViewTests: XCTestCase {
                 reducer: accountPickerReducer,
                 environment: AccountPickerEnvironment(
                     rowSelected: { _ in },
+                    uxSelected: { _ in },
                     backButtonTapped: {},
                     closeButtonTapped: {},
                     search: { _ in },

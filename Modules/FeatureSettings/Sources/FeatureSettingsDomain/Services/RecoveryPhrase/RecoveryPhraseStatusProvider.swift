@@ -6,7 +6,6 @@ import PlatformKit
 import WalletPayloadKit
 
 public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
-
     public let fetchTriggerSubject = PassthroughSubject<Void, Never>()
 
     public let isRecoveryPhraseVerifiedPublisher: AnyPublisher<Bool, Never>
@@ -26,6 +25,7 @@ public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
         self.mnemonicVerificationStatusProvider = mnemonicVerificationStatusProvider
 
         isRecoveryPhraseVerifiedPublisher = fetchTriggerSubject
+            .prepend(())
             .zip(nativeWalletFlagEnabled())
             .flatMap { _, isEnabled -> AnyPublisher<Bool, Never> in
                 guard isEnabled else {

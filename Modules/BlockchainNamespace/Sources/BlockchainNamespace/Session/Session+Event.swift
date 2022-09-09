@@ -11,7 +11,7 @@ extension Session {
 
         public let id: UInt
         public let date: Date
-        public let event: Tag.Event
+        public let origin: Tag.Event
         public let reference: Tag.Reference
         public let context: Tag.Context
 
@@ -21,7 +21,7 @@ extension Session {
 
         init(
             date: Date = Date(),
-            event: Tag.Event,
+            origin: Tag.Event,
             reference: Tag.Reference,
             context: Tag.Context = [:],
             file: String = #fileID,
@@ -29,7 +29,7 @@ extension Session {
         ) {
             id = Self.id
             self.date = date
-            self.event = event
+            self.origin = origin
             self.reference = reference
             self.context = context
             source = (file, line)
@@ -46,7 +46,7 @@ extension Session {
 }
 
 extension Session.Event: CustomStringConvertible {
-    public var description: String { String(describing: event) }
+    public var description: String { String(describing: origin) }
 }
 
 extension Session.Event {
@@ -67,7 +67,7 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter(_ type: Tag) -> Publishers.Filter<Self> {
-        filter(type.reference)
+        filter([type])
     }
 
     public func filter(_ type: Tag.Reference) -> Publishers.Filter<Self> {
@@ -75,12 +75,15 @@ extension Publisher where Output == Session.Event {
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
-        filter { $0.reference.tag.is(types) }
+        filter { $0.tag.is(types) }
     }
 
     public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
         filter { event in
-            types.contains(where: { type in event.reference == type || event.tag.is(type.tag) })
+            types.contains { type in
+                event.reference == type ||
+                    (event.tag.is(type.tag) && type.indices.allSatisfy { event.reference.indices[$0] == $1 })
+            }
         }
     }
 }
@@ -239,6 +242,10 @@ public final class BlockchainEventSubscription: Hashable {
         return self
     }
 
+    public func cancel() {
+        stop()
+    }
+
     @discardableResult
     public func stop() -> Self {
         subscription?.cancel()
@@ -249,7 +256,7 @@ public final class BlockchainEventSubscription: Hashable {
 
 extension BlockchainEventSubscription {
 
-    public func subscribe() -> AnyCancellable {
+    @inlinable public func subscribe() -> AnyCancellable {
         start()
         return AnyCancellable { [self] in stop() }
     }

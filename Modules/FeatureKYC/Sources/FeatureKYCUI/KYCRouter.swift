@@ -196,8 +196,6 @@ final class KYCRouter: KYCRouterAPI {
             )
         }
 
-        loadingViewPresenter.show(with: LocalizationConstants.loading)
-
         let postTierObservable = post(tier: tier).asObservable()
             .flatMap { [tiersService] tiersResponse in
                 Observable.zip(
@@ -247,6 +245,10 @@ final class KYCRouter: KYCRouterAPI {
                     hasQuestions: strongSelf.hasQuestions
                 )
 
+                if startingPage == .finish {
+                    return strongSelf.finish()
+                }
+
                 if startingPage != .accountStatus {
                     /// If the starting page is accountStatus, they do not have any additional
                     /// pages to view, so we don't want to set `isCompletingKyc` to `true`.
@@ -293,6 +295,7 @@ final class KYCRouter: KYCRouterAPI {
                 object: nil
             )
             NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
+            NotificationCenter.default.post(name: .kycFinished, object: nil)
             app.post(event: blockchain.ux.kyc.event.did.finish)
             app.post(event: blockchain.ux.kyc.event.status.did.change)
         }
@@ -307,7 +310,7 @@ final class KYCRouter: KYCRouterAPI {
                 object: nil
             )
             NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
-            app.post(event: blockchain.ux.kyc.event.did.cancel)
+            app.post(event: blockchain.ux.kyc.event.did.stop)
             app.post(event: blockchain.ux.kyc.event.status.did.change)
         }
     }
@@ -324,10 +327,23 @@ final class KYCRouter: KYCRouterAPI {
         switch event {
         case .pageWillAppear(let type):
             handlePageWillAppear(for: type)
-        case .failurePageForPageType(_, let error):
+            app.state.set(blockchain.ux.kyc.current.state, to: type.tag[])
+            app.post(
+                event: blockchain.ux.kyc.event.did.enter.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
+        case .failurePageForPageType(let type, let error):
             handleFailurePage(for: error)
+            app.post(
+                event: blockchain.ux.kyc.event.did.fail.on.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
         case .nextPageFromPageType(let type, let payload):
             handlePayloadFromPageType(type, payload)
+            app.post(
+                event: blockchain.ux.kyc.event.did.confirm.state[][type.descendant]!,
+                context: [blockchain.ux.kyc.current.state: type.tag[]]
+            )
             let disposable = pager.nextPage(from: type, payload: payload)
                 .subscribe(on: MainScheduler.asyncInstance)
                 .observe(on: MainScheduler.instance)
@@ -435,6 +451,10 @@ final class KYCRouter: KYCRouterAPI {
             hasQuestions: hasQuestions
         )
 
+        if startingPage == .finish {
+            return
+        }
+
         if startingPage == .accountStatus {
             /// The `tier` on KYCPager cannot be `tier1` if the user's `startingPage` is `.accountStatus`.
             /// If their `startingPage` is `.accountStatus`, they're done.
@@ -497,7 +517,8 @@ final class KYCRouter: KYCRouterAPI {
              .enterPhone,
              .verifyIdentity,
              .resubmitIdentity,
-             .applicationComplete:
+             .applicationComplete,
+             .finish:
             return nil
         }
     }
@@ -518,6 +539,9 @@ final class KYCRouter: KYCRouterAPI {
             isSDDVerified: isSDDVerified,
             hasQuestions: hasQuestions
         )
+        if startingPage == .finish {
+            return
+        }
         var controller: KYCBaseViewController
         if startingPage == .accountStatus {
             controller = pageFactory.createFrom(
@@ -613,7 +637,8 @@ final class KYCRouter: KYCRouterAPI {
              .accountStatus,
              .accountUsageForm,
              .applicationComplete,
-             .resubmitIdentity:
+             .resubmitIdentity,
+             .finish:
             break
         case .enterEmail:
             guard let current = user else { return }

@@ -3,8 +3,9 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
-// swiftlint:disable type_body_length
+// swiftlint:disable all
 
+@MainActor
 struct SVGExamples: View {
 
     @State var url: String = "https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/json.svg"

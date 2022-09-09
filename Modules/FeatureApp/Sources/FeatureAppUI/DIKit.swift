@@ -75,6 +75,7 @@ extension DependencyContainer {
                 transactionsRouter: DIKit.resolve(),
                 analyticsRecording: DIKit.resolve(),
                 walletConnectService: { DIKit.resolve() },
+                onboardingRouter: DIKit.resolve(),
                 accountsRouter: {
                     DIKit.resolve()
                 }

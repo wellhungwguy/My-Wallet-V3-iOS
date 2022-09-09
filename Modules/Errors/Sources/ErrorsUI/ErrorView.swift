@@ -8,15 +8,16 @@ public struct ErrorView<Fallback: View>: View {
     typealias L10n = LocalizationConstants.UX.Error
 
     @BlockchainApp var app
+    @Environment(\.context) var context
 
     public let ux: UX.Error
     public let fallback: () -> Fallback
-    public let dismiss: () -> Void
+    public let dismiss: (() -> Void)?
 
     public init(
         ux: UX.Error,
         @ViewBuilder fallback: @escaping () -> Fallback,
-        dismiss: @escaping () -> Void
+        dismiss: (() -> Void)? = nil
     ) {
         self.ux = ux
         self.fallback = fallback
@@ -39,19 +40,29 @@ public struct ErrorView<Fallback: View>: View {
         }
         .padding()
         .onAppear {
-            app.post(value: ux, of: blockchain.ux.error)
+            app.state.transaction { state in
+                state.set(blockchain.ux.error, to: ux)
+                state.set(blockchain.ux.error.then.close, to: Session.State.Function { dismiss?() })
+            }
+            app.post(event: blockchain.ux.error, context: context)
         }
         .apply { view in
             #if os(iOS)
             view.navigationBarBackButtonHidden(true)
-                .navigationBarItems(
+            #endif
+        }
+        .apply { view in
+            if let dismiss = dismiss {
+                #if os(iOS)
+                view.navigationBarItems(
                     leading: EmptyView(),
                     trailing: IconButton(
                         icon: Icon.closeCirclev2,
                         action: dismiss
                     )
                 )
-            #endif
+                #endif
+            }
         }
         .background(Color.semantic.background)
     }
@@ -202,9 +213,14 @@ public struct ErrorView<Fallback: View>: View {
     private func post(_ action: UX.Action) {
         switch action.url {
         case let url?:
-            app.post(value: url, of: blockchain.ux.error.then.launch.url)
+            app.post(
+                event: blockchain.ux.error.then.launch.url,
+                context: [
+                    blockchain.ui.type.action.then.launch.url: url
+                ]
+            )
         case nil:
-            dismiss()
+            app.post(event: blockchain.ux.error.then.close)
         }
     }
 }
@@ -213,7 +229,7 @@ extension ErrorView where Fallback == AnyView {
 
     public init(
         ux: UX.Error,
-        dismiss: @escaping () -> Void
+        dismiss: (() -> Void)? = nil
     ) {
         self.ux = ux
         fallback = {
@@ -251,8 +267,7 @@ struct ErrorView_Preview: PreviewProvider {
                         .init(title: "Secondary"),
                         .init(title: "Small Primary")
                     ]
-                ),
-                dismiss: {}
+                )
             )
             .app(App.preview)
         }

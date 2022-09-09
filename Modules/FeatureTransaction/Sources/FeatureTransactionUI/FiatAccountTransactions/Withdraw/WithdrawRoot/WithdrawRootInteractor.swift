@@ -179,7 +179,7 @@ final class WithdrawRootInteractor: Interactor,
 
     func routeToWireTransfer() {
         fiatCurrencyService
-            .displayCurrency
+            .tradingCurrency
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] fiatCurrency in

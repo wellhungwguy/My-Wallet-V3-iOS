@@ -5,7 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureQRCodeScanner",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureQRCodeScanner",
@@ -41,7 +46,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            .exact("0.38.3")
         ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),

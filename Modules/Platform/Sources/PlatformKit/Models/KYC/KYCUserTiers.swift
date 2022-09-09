@@ -89,6 +89,8 @@ extension KYC.Tier.State {
             return .pending
         case .verified:
             return .approved
+        case .under_review:
+            return .underReview
         }
     }
 }

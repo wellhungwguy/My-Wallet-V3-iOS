@@ -85,6 +85,7 @@ extension TransactionFlowAction {
 
 // swiftlint:disable switch_case_on_newline
 extension TransactionFlowAction {
+
     public var asset: AssetAction {
         switch self {
         case .buy: return .buy

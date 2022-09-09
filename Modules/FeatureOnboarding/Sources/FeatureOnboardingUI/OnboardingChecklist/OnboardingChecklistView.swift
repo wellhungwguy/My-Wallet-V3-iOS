@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
@@ -126,6 +127,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 initialState: OnboardingChecklist.State(),
                 reducer: OnboardingChecklist.reducer,
                 environment: OnboardingChecklist.Environment(
+                    app: App.preview,
                     userState: .just(
                         UserState(
                             kycStatus: .notVerified,
@@ -146,6 +148,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 initialState: OnboardingChecklist.State(),
                 reducer: OnboardingChecklist.reducer,
                 environment: OnboardingChecklist.Environment(
+                    app: App.preview,
                     userState: .just(
                         UserState(
                             kycStatus: .verificationPending,
@@ -166,6 +169,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 initialState: OnboardingChecklist.State(),
                 reducer: OnboardingChecklist.reducer,
                 environment: OnboardingChecklist.Environment(
+                    app: App.preview,
                     userState: .just(
                         UserState(
                             kycStatus: .verified,
@@ -186,6 +190,7 @@ struct OnboardingChecklistView_Previews: PreviewProvider {
                 initialState: OnboardingChecklist.State(),
                 reducer: OnboardingChecklist.reducer,
                 environment: OnboardingChecklist.Environment(
+                    app: App.preview,
                     userState: .just(
                         UserState(
                             kycStatus: .verified,

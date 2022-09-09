@@ -6,7 +6,6 @@ import PlatformKit
 import RxSwift
 
 final class MockCoincore: CoincoreAPI {
-    var allAccounts: AnyPublisher<AccountGroup, CoincoreError> = .empty()
     func account(
         where isIncluded: @escaping (BlockchainAccount) -> Bool
     ) -> AnyPublisher<[BlockchainAccount], Error> {
@@ -32,6 +31,10 @@ final class MockCoincore: CoincoreAPI {
 
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         cryptoAssets.first(where: { $0.asset == cryptoCurrency })!
+    }
+
+    func allAccounts(filter: AssetFilter) -> AnyPublisher<AccountGroup, CoincoreError> {
+        .empty()
     }
 }
 
@@ -66,7 +69,7 @@ class MockAsset: CryptoAsset {
         .failure(.invalidAddress)
     }
 
-    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
         .just(accountGroup)
     }
 

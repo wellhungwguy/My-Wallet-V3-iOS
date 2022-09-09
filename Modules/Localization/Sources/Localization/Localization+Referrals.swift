@@ -27,7 +27,7 @@ extension LocalizationConstants.Referrals.ReferralScreen {
         comment: "To qualify, your friends must:"
     )
 
-    public static let referalCodeLabel = NSLocalizedString(
+    public static let referralCodeLabel = NSLocalizedString(
         "Your referral code",
         comment: "Your referral code"
     )

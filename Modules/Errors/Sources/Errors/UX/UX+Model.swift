@@ -1,8 +1,42 @@
 import AnyCoding
+import struct BlockchainComponentLibrary.Texture
+import Extensions
 import Foundation
-import ToolKit
 
 extension UX {
+
+    public struct Dialog: Equatable, Hashable, Codable {
+
+        public var id: String?
+
+        public var header: Texture?
+        public var title: String
+        public var message: String
+        public var icon: Errors.UX.Icon?
+        public var actions: [Errors.UX.Action]?
+        public var categories: [String]?
+        public var style: Style?
+
+        public init(
+            id: String? = nil,
+            header: Texture? = nil,
+            title: String,
+            message: String,
+            icon: UX.Icon? = nil,
+            actions: [UX.Action]? = nil,
+            categories: [String]? = nil,
+            style: Style? = nil
+        ) {
+            self.id = id
+            self.header = header
+            self.title = title
+            self.message = message
+            self.icon = icon
+            self.actions = actions
+            self.categories = categories
+            self.style = style
+        }
+    }
 
     public struct Action: Equatable, Hashable, Codable {
 
@@ -46,6 +80,19 @@ extension UX {
 
         public init(description: String) {
             self.description = description
+        }
+    }
+
+    public struct Style: Codable, Hashable {
+        public var foreground: Texture?
+        public var background: Texture?
+
+        public init(
+            foreground: Texture? = nil,
+            background: Texture? = nil
+        ) {
+            self.foreground = foreground
+            self.background = background
         }
     }
 }

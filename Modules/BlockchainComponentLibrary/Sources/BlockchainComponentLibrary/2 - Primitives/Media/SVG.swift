@@ -190,7 +190,7 @@ extension SVG: UIViewRepresentable {
         var svg: SVG
         public init(_ svg: SVG) {
             self.svg = svg
-            super.init(frame: .zero)
+            super.init(frame: .init(origin: .zero, size: svg.size))
             isOpaque = false
         }
 

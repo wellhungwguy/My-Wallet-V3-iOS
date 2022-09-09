@@ -5,7 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureUserDeletion",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureUserDeletionData",
@@ -24,7 +29,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            exact: "0.38.3"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),

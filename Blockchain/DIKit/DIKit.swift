@@ -1,5 +1,4 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-// swiftlint:disable file_length
 
 import AnalyticsKit
 import BitcoinCashKit
@@ -50,6 +49,7 @@ import FirebaseRemoteConfig
 import MoneyKit
 import NetworkKit
 import ObservabilityKit
+import PlatformDataKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -498,7 +498,8 @@ extension DependencyContainer {
         factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
-                coincore: DIKit.resolve()
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 
@@ -515,7 +516,8 @@ extension DependencyContainer {
         factory { () -> TransactionsAdapterAPI in
             TransactionsAdapter(
                 router: DIKit.resolve(),
-                coincore: DIKit.resolve()
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 
@@ -791,12 +793,9 @@ extension DependencyContainer {
         }
 
         factory { () -> ReferralServiceAPI in
-            let currencyService: FiatCurrencyServiceAPI = DIKit.resolve()
-            let repository: ReferralRepositoryAPI = DIKit.resolve()
-
-            return ReferralService(
-                repository: repository,
-                currencyService: currencyService
+            ReferralService(
+                app: DIKit.resolve(),
+                repository: DIKit.resolve()
             )
         }
 

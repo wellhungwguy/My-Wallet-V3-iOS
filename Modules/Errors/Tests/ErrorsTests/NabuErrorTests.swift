@@ -1,6 +1,6 @@
 import AnyCoding
 @testable import Errors
-import ToolKit
+import Extensions
 import XCTest
 
 final class NabuErrorTests: XCTestCase {

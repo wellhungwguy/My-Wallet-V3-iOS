@@ -107,3 +107,13 @@ final class RecoveryPhraseScreenPresenter {
         stateService.previousRelay.accept(())
     }
 }
+
+extension Array {
+
+    /// Randomly picks the given amount of elements.
+    ///
+    /// - parameter amount: The amount of elements to pick.
+    func pick(_ amount: Int) -> [Element] {
+        Array(shuffled().prefix(amount))
+    }
+}

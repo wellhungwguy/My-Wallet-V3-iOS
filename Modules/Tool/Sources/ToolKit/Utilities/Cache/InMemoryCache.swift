@@ -63,8 +63,6 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
         .eraseToAnyPublisher()
     }
 
-    // TODO: Handle duplicates without `Equatable` constraint on `Value`.
-
     public func stream(key: Key) -> AnyPublisher<CacheValue<Value>, Never> {
         cacheItems.publisher
             .map { $0[key] }

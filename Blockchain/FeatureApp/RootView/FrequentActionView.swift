@@ -18,20 +18,17 @@ struct FrequentAction: Hashable, Identifiable, Codable {
 struct FrequentActionView: View {
 
     @BlockchainApp var app
+    @Environment(\.context) var context
 
     var list: [FrequentAction]
     var buttons: [FrequentAction]
 
-    var action: (FrequentAction) -> Void
-
     init(
         list: [FrequentAction],
-        buttons: [FrequentAction],
-        action: @escaping (FrequentAction) -> Void
+        buttons: [FrequentAction]
     ) {
         self.list = list
         self.buttons = buttons
-        self.action = action
     }
 
     var body: some View {
@@ -45,13 +42,12 @@ struct FrequentActionView: View {
                     title: item.name.localized(),
                     subtitle: item.description.localized(),
                     leading: {
-                        item.icon.circle()
-                            .accentColor(.semantic.primary)
+                        item.icon.circle(backgroundColor: .semantic.light)
+                            .accentColor(.semantic.title)
                             .frame(width: 32.pt)
                     },
                     action: {
-                        app.post(event: item.tag)
-                        action(item)
+                        app.post(event: item.tag, context: context)
                     }
                 )
                 .identity(item.tag)
@@ -59,34 +55,26 @@ struct FrequentActionView: View {
         }
         HStack(spacing: 8.pt) {
             ForEach(buttons) { button in
-                switch button.tag {
-                case blockchain.ux.frequent.action.buy:
-                    PrimaryButton(
-                        title: button.name.localized(),
-                        leadingView: { button.icon },
-                        action: {
-                            app.post(event: button.tag)
-                            action(button)
-                        }
-                    )
-                    .identity(button.tag)
-                default:
-                    SecondaryButton(
-                        title: button.name.localized(),
-                        leadingView: { button.icon },
-                        action: {
-                            app.post(event: button.tag)
-                            action(button)
-                        }
-                    )
-                    .identity(button.tag)
-                }
+                PrimaryMenuCTAButton(
+                    title: button.name.localized(),
+                    subtitle: button.description.localized(),
+                    leadingView: {
+                        button
+                            .icon
+                            .circle(backgroundColor: .semantic.medium)
+                            .accentColor(.semantic.title)
+                    },
+                    action: {
+                        app.post(event: button.tag, context: context)
+                    }
+                )
+                .identity(button.tag)
             }
         }
         .padding([.top, .bottom])
         .padding([.leading, .trailing], 24.pt)
         .onAppear {
-            app.post(event: blockchain.ux.frequent.action)
+            app.post(event: blockchain.ux.frequent.action, context: context)
         }
     }
 }

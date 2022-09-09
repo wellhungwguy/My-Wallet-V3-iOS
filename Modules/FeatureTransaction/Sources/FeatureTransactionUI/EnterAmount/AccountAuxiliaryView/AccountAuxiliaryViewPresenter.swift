@@ -4,14 +4,17 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import SwiftUI
 
 final class AccountAuxiliaryViewPresenter {
 
     // MARK: - Public Properites
 
+    let badgeViewVisiblity: Driver<PlatformUIKit.Visibility>
     let badgeImageViewModel: Driver<BadgeImageViewModel>
     let titleLabel: Driver<LabelContent>
     let subtitleLabel: Driver<LabelContent>
+    let badgeViewModel: Driver<BadgeViewModel>
     let buttonEnabled: Driver<Bool>
     let tapRelay = PublishRelay<Void>()
 
@@ -31,6 +34,16 @@ final class AccountAuxiliaryViewPresenter {
         buttonEnabled = interactor
             .state
             .map(\.isEnabled)
+
+        badgeViewVisiblity = interactor
+            .state
+            .map(\.badgeViewModel)
+            .map { $0.isNil ? .hidden : .visible }
+
+        badgeViewModel = interactor
+            .state
+            .map(\.badgeViewModel)
+            .map { $0.isNil ? .default(with: "") : $0! }
 
         badgeImageViewModel = interactor
             .state

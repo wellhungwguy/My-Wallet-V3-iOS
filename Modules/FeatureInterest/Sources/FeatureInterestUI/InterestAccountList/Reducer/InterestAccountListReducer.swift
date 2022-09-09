@@ -145,7 +145,7 @@ let interestAccountListReducer = Reducer.combine(
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { values -> InterestAccountListAction in
-                        guard let (areAccountsAvailable, transactionState) = values.successData else {
+                        guard let (areAccountsAvailable, transactionState) = values.success else {
                             impossible()
                         }
                         if areAccountsAvailable {
@@ -237,7 +237,7 @@ let interestReducerCore = Reducer<
             }
             .catchToEffect()
             .map { transactionState in
-                guard let value = transactionState.successData else {
+                guard let value = transactionState.success else {
                     unimplemented()
                 }
                 return value

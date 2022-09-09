@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "FeatureTour",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(
@@ -18,13 +21,16 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
+        .package(
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            .exact("0.38.3")
+        ),
         .package(
             name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(name: "NukeUI", url: "https://github.com/kean/NukeUI.git", from: "0.8.3"),
+        .package(name: "Nuke", url: "https://github.com/kean/Nuke.git", from: "11.0.0"),
         .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(path: "../Localization"),
         .package(path: "../Platform"),
@@ -55,7 +61,7 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "NukeUI", package: "NukeUI"),
+                .product(name: "NukeUI", package: "Nuke"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions")
             ],
             path: "UI"

@@ -19,7 +19,7 @@ public enum OrderPayload {
         case pending
     }
 
-    struct ConfirmOrder: Encodable {
+    public struct ConfirmOrder: Encodable {
 
         enum Callback {
             static var url: URL {
@@ -37,6 +37,21 @@ public enum OrderPayload {
             case applePay(ApplePayToken)
         }
 
+        public struct PaymentContact: Encodable {
+            let line1: String?
+            let line2: String?
+            let city: String?
+            let state: String?
+            let country: String?
+            let postCode: String?
+            let name: String?
+            let firstname: String?
+            let middleName: String?
+            let lastname: String?
+            let phone: String?
+            let email: String?
+        }
+
         struct Attributes: Encodable {
             struct EveryPay: Encodable {
                 let customerUrl: String
@@ -45,9 +60,14 @@ public enum OrderPayload {
             let redirectURL: String?
             let everypay: EveryPay?
             let applePayPaymentToken: String?
+            let paymentContact: PaymentContact?
             let callback: String?
 
-            init(redirectURL: String?, callback: String?, applePay: ApplePayToken? = nil) {
+            init(
+                redirectURL: String?,
+                callback: String?,
+                applePay: ApplePayToken? = nil
+            ) {
                 everypay = redirectURL.map(EveryPay.init)
 
                 if let applePay = applePay,
@@ -59,6 +79,7 @@ public enum OrderPayload {
                 }
 
                 self.redirectURL = redirectURL
+                paymentContact = .init(contact: applePay?.billingPaymentContact)
                 self.callback = callback
             }
         }
@@ -223,7 +244,7 @@ public enum OrderPayload {
         public let paymentMethodId: String?
         let side: Side
         public let attributes: Attributes?
-        @Optional.Codable public var ux: Nabu.Error.UX?
+        @Optional.Codable public var ux: UX.Dialog?
 
         let processingErrorType: String?
     }
@@ -317,5 +338,25 @@ extension OrderPayload.Response {
             }
         }
         return .none
+    }
+}
+
+extension OrderPayload.ConfirmOrder.PaymentContact {
+    fileprivate init?(contact: ApplePayToken.BillingPaymentContact?) {
+        guard let contact = contact else { return nil }
+        self.init(
+            line1: contact.line1,
+            line2: contact.line2,
+            city: contact.city,
+            state: contact.state,
+            country: contact.country,
+            postCode: contact.postCode,
+            name: contact.name,
+            firstname: contact.firstname,
+            middleName: contact.middleName,
+            lastname: contact.lastname,
+            phone: contact.phone,
+            email: contact.email
+        )
     }
 }

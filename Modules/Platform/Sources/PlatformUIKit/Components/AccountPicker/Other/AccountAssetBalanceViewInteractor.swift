@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import MoneyKit
@@ -28,6 +29,27 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let refreshRelay = BehaviorRelay<Void>(value: ())
     private let account: Source
+    private let app: AppProtocol
+
+    public init(
+        account: BlockchainAccount,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        app: AppProtocol = resolve()
+    ) {
+        self.account = .account(account)
+        self.fiatCurrencyService = fiatCurrencyService
+        self.app = app
+    }
+
+    public init(
+        cryptoAsset: CryptoAsset,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        app: AppProtocol = resolve()
+    ) {
+        account = .asset(cryptoAsset)
+        self.fiatCurrencyService = fiatCurrencyService
+        self.app = app
+    }
 
     // MARK: - Setup
 
@@ -36,8 +58,13 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         case .account(let account):
             return account.balancePair(fiatCurrency: fiatCurrency)
         case .asset(let cryptoAsset):
-            return cryptoAsset
-                .accountGroup(filter: .all)
+            return app
+                .modePublisher()
+                .flatMap { appMode in
+                    cryptoAsset
+                        .accountGroup(filter: appMode.filter)
+                }
+                .compactMap { $0 }
                 .flatMap { accountGroup in
                     accountGroup.balancePair(fiatCurrency: fiatCurrency)
                 }
@@ -67,22 +94,6 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
             self?.stateRelay.accept(state)
         })
         .disposed(by: disposeBag)
-
-    public init(
-        account: BlockchainAccount,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
-    ) {
-        self.account = .account(account)
-        self.fiatCurrencyService = fiatCurrencyService
-    }
-
-    public init(
-        cryptoAsset: CryptoAsset,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
-    ) {
-        account = .asset(cryptoAsset)
-        self.fiatCurrencyService = fiatCurrencyService
-    }
 
     public func refresh() {
         refreshRelay.accept(())

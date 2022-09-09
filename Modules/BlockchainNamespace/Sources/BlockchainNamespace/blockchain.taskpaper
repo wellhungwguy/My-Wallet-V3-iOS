@@ -13,6 +13,11 @@ blockchain:
 				maintenance:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
+				superapp:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			apple:
 				pay:
 					is:
@@ -52,10 +57,38 @@ blockchain:
 			deep_link:
 				rules:
 				+ blockchain.session.configuration.value
+			defi:
+				tabs:
+				+ blockchain.db.type.array.of.tags
+				+ blockchain.session.configuration.value
+			firebase:
+				project:
+					id:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.shared.value
 			frequent:
 				action:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
+					pkw:
+					+ blockchain.db.type.any
+					+ blockchain.session.configuration.value
+					trading:
+					+ blockchain.db.type.any
+					+ blockchain.session.configuration.value
+			kyc:
+				sdd:
+					cache:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+					pkw:
+					+ blockchain.db.type.any
+					+ blockchain.session.configuration.value
+					trading:
+					+ blockchain.db.type.any
+					+ blockchain.session.configuration.value
 			localized:
 				error:
 					override:
@@ -78,10 +111,22 @@ blockchain:
 				tracing:
 				+ blockchain.session.configuration.value
 			polygon:
+				all:
+					tokens:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				is:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+				name:
+					sanitize:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			prefill:
 				is:
 					enabled:
@@ -98,6 +143,11 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			referral:
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			remote:
 				is:
 					stale:
@@ -169,10 +219,17 @@ blockchain:
 			dsl:
 				is:
 					enabled:
+					+ blockchain.db.type.boolean
 					+ blockchain.session.state.shared.value
 			kyc:
 				tier:
 				+ blockchain.db.type.integer
+				verify:
+					email:
+			onboarding:
+				post:
+					sign:
+						up:
 			qr:
 			referral:
 			send:
@@ -190,9 +247,18 @@ blockchain:
 			finish:
 				launching:
 				+ blockchain.db.type.boolean
+			update:
+			+ blockchain.db.type.boolean
+			+ blockchain.session.state.preference.value
+			+ blockchain.session.state.shared.value
 		enter:
 			into:
 			+ blockchain.ux.type.story
+		environment:
+		+ blockchain.db.type.enum
+		+ blockchain.session.state.shared.value
+			debug:
+			production:
 		fraud:
 			sardine:
 				client:
@@ -219,11 +285,39 @@ blockchain:
 					+ blockchain.db.type.string
 					+ blockchain.session.state.value
 		is:
+			first:
+				install:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.shared.value
+			in:
+				background:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.shared.value
 			ready:
 				for:
 					deep_link:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.state.value
+		launched:
+			at:
+				time:
+				+ blockchain.db.type.date
+				+ blockchain.session.state.shared.value
+		mode:
+		+ blockchain.session.state.preference.value
+		number:
+			of:
+				launches:
+				+ blockchain.db.type.integer
+				+ blockchain.session.state.preference.value
+				+ blockchain.session.state.shared.value
+		performance:
+			trace:
+				transaction:
+					start:
+						to:
+							enter:
+								amount:
 		process:
 			deep_link:
 				error:
@@ -231,6 +325,9 @@ blockchain:
 				url:
 				+ blockchain.db.type.url
 				+ blockchain.session.state.value
+		version:
+		+ blockchain.session.state.preference.value
+		+ blockchain.session.state.shared.value
 	db:
 		array:
 		collection:
@@ -404,6 +501,17 @@ blockchain:
 			+ blockchain.db.type.integer
 	ui:
 		device:
+			connection:
+			+ blockchain.db.type.enum
+			+ blockchain.session.state.shared.value
+				WiFi:
+				cellular:
+				unavailable:
+			current:
+				local:
+					time:
+					+ blockchain.db.type.date
+					+ blockchain.session.state.shared.value
 			haptic:
 				feedback:
 					impact:
@@ -416,9 +524,39 @@ blockchain:
 						error:
 						success:
 						warning:
+			id:
+			+ blockchain.db.type.string
+			+ blockchain.session.state.shared.value
+			locale:
+				language:
+					code:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.shared.value
+			os:
+				name:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.shared.value
+				version:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.shared.value
+			settings:
+				accessibility:
+					large_text:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.shared.value
 		type:
 			action:
 			+ blockchain.ux.type.analytics.action
+				then:
+					close:
+					+ blockchain.db.type.boolean
+					emit:
+					+ blockchain.db.type.tag
+					launch:
+						url:
+						+ blockchain.db.type.url
 			control:
 			+ sky.db.field
 			+ sky.ui.type.element
@@ -459,6 +597,25 @@ blockchain:
 	user:
 	+ blockchain.db.collection
 		account:
+			kyc:
+			+ blockchain.db.collection
+				limits:
+					annual:
+					+ blockchain.db.type.bigint
+					currency:
+					+ blockchain.db.type.string
+					daily:
+					+ blockchain.db.type.bigint
+				name:
+				+ blockchain.db.type.string
+				state:
+				+ blockchain.db.type.enum
+					expired:
+					none:
+					pending:
+					rejected:
+					under_review:
+					verified:
 			tier:
 			+ blockchain.db.type.enum
 				gold:
@@ -514,11 +671,20 @@ blockchain:
 			is:
 				verified:
 				+ blockchain.db.type.boolean
+		event:
+			did:
+				update:
+				+ blockchain.ux.type.analytics.event
 		is:
+			cowboy:
+				fan:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
 			tier:
 				gold:
 				+ blockchain.db.type.boolean
 				none:
+				+ blockchain.db.type.boolean
 				silver:
 				+ blockchain.db.type.boolean
 		name:
@@ -529,6 +695,11 @@ blockchain:
 		referral:
 			campaign:
 			+ blockchain.session.state.value
+		skipped:
+			seed_phrase:
+				backup:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.preference.value
 		token:
 			firebase:
 				installation:
@@ -662,12 +833,8 @@ blockchain:
 					+ blockchain.session.state.value
 		error:
 		+ blockchain.ui.device.haptic.feedback.notification.error
+		+ blockchain.ux.type.action
 		+ blockchain.ux.type.story
-			then:
-				launch:
-					url:
-					+ blockchain.db.type.url
-					+ blockchain.ux.type.analytics.action
 		frequent:
 			action:
 			+ blockchain.ux.type.story
@@ -702,13 +869,28 @@ blockchain:
 				+ blockchain.ui.device.haptic.feedback.impact.soft
 				+ blockchain.ux.type.action
 		kyc:
+			current:
+				state:
+				+ blockchain.ux.kyc.type.state
 			event:
 				did:
 					cancel:
 					+ blockchain.ux.type.analytics.event
+					confirm:
+						state:
+						+ blockchain.ux.kyc.type.state
+					enter:
+						state:
+						+ blockchain.ux.kyc.type.state
+					fail:
+						on:
+							state:
+							+ blockchain.ux.kyc.type.state
 					finish:
 					+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
+					stop:
 					+ blockchain.ux.type.analytics.event
 				status:
 					did:
@@ -737,6 +919,43 @@ blockchain:
 				none:
 				platinum:
 				silver:
+			trading:
+				limits:
+					overview:
+					+ blockchain.ux.type.story
+				unlock:
+					more:
+					+ blockchain.ux.type.story
+				upgrade:
+				+ blockchain.ux.type.story
+			type:
+				state:
+				+ blockchain.db.type.enum
+				+ blockchain.session.state.value
+					account:
+						form:
+						status:
+					address:
+					application:
+						complete:
+					confirm:
+						email:
+						phone:
+					country:
+					enter:
+						email:
+						phone:
+					finish:
+					force_gold:
+					profile:
+					resubmit:
+						identity:
+					sdd:
+						verification:
+					states:
+					verify:
+						identity:
+					welcome:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
@@ -746,10 +965,54 @@ blockchain:
 				select:
 			collection:
 			+ blockchain.db.collection
+			+ blockchain.ux.type.story
 				select:
 			wallet:
 			+ blockchain.db.collection
 				select:
+		onboarding:
+			promotion:
+				cowboys:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					raffle:
+					+ blockchain.ux.onboarding.type.promotion
+					refer:
+						friends:
+						+ blockchain.ux.onboarding.type.promotion
+					user:
+						kyc:
+							is:
+								under:
+									review:
+									+ blockchain.ux.onboarding.type.promotion
+					verify:
+						identity:
+						+ blockchain.ux.onboarding.type.promotion
+					welcome:
+					+ blockchain.ux.onboarding.type.promotion
+				launch:
+				+ blockchain.ux.type.analytics.event
+					story:
+					+ blockchain.db.type.tag
+					+ blockchain.session.state.value
+				product:
+				+ blockchain.db.collection
+				+ blockchain.ux.onboarding.type.promotion
+			type:
+				promotion:
+					announcement:
+					+ blockchain.session.configuration.value
+					+ blockchain.ux.type.story
+						action:
+						+ blockchain.ux.type.action
+					story:
+					+ blockchain.session.configuration.value
+					+ blockchain.ux.type.story
+						action:
+						+ blockchain.ux.type.action
 		payment:
 			method:
 				link:
@@ -802,6 +1065,9 @@ blockchain:
 		scan:
 			QR:
 			+ blockchain.ux.type.story
+		switcher:
+			entry:
+			+ blockchain.ux.type.story.entry
 		transaction:
 		+ blockchain.db.collection
 			action:
@@ -842,6 +1108,15 @@ blockchain:
 				enter:
 					address:
 					amount:
+				execution:
+					status:
+					+ blockchain.db.type.enum
+						completed:
+						error:
+						in:
+							progress:
+						pending:
+						starting:
 				in:
 					progress:
 				link:
@@ -900,6 +1175,13 @@ blockchain:
 			analytics:
 				action:
 				+ blockchain.ux.type.analytics.event
+				configuration:
+					firebase:
+						map:
+						+ blockchain.session.configuration.value
+					segment:
+						map:
+						+ blockchain.session.configuration.value
 				current:
 					state:
 					+ blockchain.db.type.tag

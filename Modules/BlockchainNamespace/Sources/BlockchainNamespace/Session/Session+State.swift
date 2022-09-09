@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import SwiftExtensions
 
 extension Session {
 
@@ -32,7 +33,7 @@ extension Session.State {
 
         var preferences: Preferences
 
-        private let shared = "ø"
+        private let shared = Tag.Context.genericIndex
         private var user: String? {
             store[blockchain.user.id.key()] as? String
         }
@@ -44,6 +45,36 @@ extension Session.State {
 
     private func key(_ event: Tag.Event) -> Tag.Reference {
         event.key().in(app)
+    }
+}
+
+extension Session.State {
+
+    public struct Function: Hashable {
+
+        public let id: UUID = UUID()
+        public let call: () throws -> Any
+
+        public init(_ call: @escaping () -> Any) {
+            self.call = call
+        }
+
+        public init(_ call: @escaping () throws -> Any) {
+            self.call = call
+        }
+
+        @discardableResult
+        public func callAsFunction() throws -> Any {
+            try call()
+        }
+
+        public static func == (x: Function, y: Function) -> Bool {
+            x.id == y.id
+        }
+
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
     }
 }
 
@@ -96,13 +127,13 @@ extension Session.State {
         data.set(key(event), to: value as Any)
     }
 
-    public func set(_ reference: Tag.Reference, to value: Any?) {
-        data.set(reference, to: value as Any)
-    }
-
     public func set(_ event: Tag.Event, to value: @escaping () throws -> Any) {
         let key = key(event)
-        data.set(key, to: Data.Computed(key: key, yield: value))
+        set(key, to: Data.Computed(key: key, yield: value))
+    }
+
+    public func set(_ reference: Tag.Reference, to value: Any?) {
+        data.set(reference, to: value as Any)
     }
 
     public func get(_ event: Tag.Event) throws -> Any {
@@ -143,6 +174,42 @@ extension Session.State {
         return Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
+    }
+}
+
+extension FetchResult {
+    @inlinable public var isYes: Bool { (value as? Bool) == true }
+    @inlinable public var isNo: Bool { (value as? Bool) == false }
+}
+
+extension Session.State {
+
+    @inlinable public func yes(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        yes(if: ifs, unless: buts)
+    }
+
+    @inlinable public func yes(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        ifs.allSatisfy { result(for: $0).isYes } && buts.none { result(for: $0).isYes }
+    }
+
+    @inlinable public func no(
+        if ifs: L & I_blockchain_db_type_boolean...,
+        unless buts: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        no(if: ifs, unless: buts)
+    }
+
+    @inlinable public func no(
+        if ifs: [L & I_blockchain_db_type_boolean],
+        unless buts: [L & I_blockchain_db_type_boolean]
+    ) -> Bool {
+        yes(if: ifs, unless: buts) ? false : true
     }
 }
 
@@ -266,21 +333,37 @@ extension Session.State.Data {
                     object: &object,
                     from: data,
                     scope: shared,
-                    filter: { tag in
-                        tag.is(blockchain.session.state.preference.value)
-                            && tag.is(blockchain.session.state.shared.value)
-                    }
+                    filter: { $0.is(blockchain.session.state.shared.value) }
                 )
                 if let user = user {
                     update(
                         object: &object,
                         from: data,
                         scope: user,
-                        filter: { tag in
-                            tag.is(blockchain.session.state.preference.value)
-                                && tag.isNot(blockchain.session.state.shared.value)
-                        }
+                        filter: { $0.isNot(blockchain.session.state.shared.value) }
                     )
+                } else {
+                    #if DEBUG
+                    let preferences = data.keys.filter { key in
+                        key.tag.is(blockchain.session.state.preference.value)
+                            && key.tag.isNot(blockchain.session.state.shared.value)
+                    }
+                    if preferences.isNotEmpty {
+                        print(
+                            """
+                            ⚠️ Attempted to write user preference without being signed in.
+
+                            If you meant this to be written against the user, please ensure you are signed in
+                            before attempting to write - you can observe `blockchain.session.event.did.sign.in`.
+
+                            Most commonly, you will see this if you have mistakenly not marked a shared state value
+                            as `blockchain.session.state.shared.value`.
+
+                            \(preferences.map(\.string).joined(by: ", "))
+                            """
+                        )
+                    }
+                    #endif
                 }
             }
             for (key, value) in data {
@@ -296,7 +379,9 @@ extension Session.State.Data {
 
     private func update(object: inout Any?, from data: [Tag.Reference: Any], scope: String, filter: (Tag) -> Bool) {
         var dictionary = object[scope] as? [String: Any] ?? [:]
-        for (key, value) in data.filter({ key, _ in filter(key.tag) }) {
+        for (key, value) in data.filter({ key, _ in
+            key.tag.is(blockchain.session.state.preference.value) && filter(key.tag)
+        }) {
             if value is Tombstone.Type {
                 dictionary.removeValue(forKey: key.id())
             } else {

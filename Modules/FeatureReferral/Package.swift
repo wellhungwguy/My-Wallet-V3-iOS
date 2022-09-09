@@ -6,7 +6,12 @@ import PackageDescription
 let package = Package(
     name: "FeatureReferral",
     defaultLocalization: "en",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(name: "FeatureReferral", targets: [
             "FeatureReferralDomain",
@@ -34,7 +39,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            exact: "0.38.3"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
@@ -42,9 +47,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
-        .package(path: "../Tool"),
-        .package(path: "../UIComponents"),
-        .package(path: "../Platform")
+        .package(path: "../Money"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -62,7 +66,10 @@ let package = Package(
                     name: "BlockchainComponentLibrary",
                     package: "BlockchainComponentLibrary"
                 ),
-                .product(name: "PlatformKit", package: "Platform")
+                .product(
+                    name: "MoneyKit",
+                    package: "Money"
+                )
             ],
             path: "Sources/FeatureReferralDomain"
         ),
@@ -103,10 +110,6 @@ let package = Package(
                 .product(
                     name: "Localization",
                     package: "Localization"
-                ),
-                .product(
-                    name: "ToolKit",
-                    package: "Tool"
                 ),
                 .product(
                     name: "Errors",

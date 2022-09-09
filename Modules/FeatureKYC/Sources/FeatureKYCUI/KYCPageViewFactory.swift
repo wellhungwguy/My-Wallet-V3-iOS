@@ -31,7 +31,7 @@ class KYCPageViewFactory {
                 confirmEmailController.email = email
             }
             return confirmEmailController
-        case .sddVerificationCheck:
+        case .sddVerificationCheck, .finish:
             return KYCSDDVerificationController.make(with: coordinator)
         case .tier1ForcedTier2:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycMoreInfoNeeded)

@@ -160,7 +160,7 @@ final class PricesViewController: BaseScreenViewController {
                     } else {
                         self?.app.post(
                             event: blockchain.ux.asset[currency.code].select,
-                            context: [blockchain.ux.asset.select.origin: "PRICES_SCREEN"]
+                            context: [blockchain.ux.asset.select.origin: "PRICES"]
                         )
                     }
                 }

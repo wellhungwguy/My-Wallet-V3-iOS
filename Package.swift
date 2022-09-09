@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "Blockchain",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(
@@ -62,7 +65,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.32.0"
+            .exact("0.38.3")
         ),
         .package(
             name: "swift-case-paths",

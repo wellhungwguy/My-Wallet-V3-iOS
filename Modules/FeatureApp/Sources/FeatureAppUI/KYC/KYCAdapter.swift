@@ -103,6 +103,8 @@ extension KYCRoutingResult {
             self = .abandoned
         case .completed:
             self = .completed
+        case .skipped:
+            self = .skipped
         }
     }
 }
@@ -173,6 +175,8 @@ extension OnboardingResult {
             self = .abandoned
         case .completed:
             self = .completed
+        case .skipped:
+            self = .skipped
         }
     }
 }
@@ -182,14 +186,29 @@ extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
     public func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         router.presentEmailVerificationIfNeeded(from: presenter)
             .map(OnboardingResult.init)
-            .replaceError(with: OnboardingResult.completed)
+            .replaceError(with: OnboardingResult.skipped)
             .eraseToAnyPublisher()
     }
 
     public func presentKYCUpgradePrompt(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         router.presentNoticeToUnlockMoreTradingIfNeeded(from: presenter, requiredTier: .tier2)
             .map(OnboardingResult.init)
-            .replaceError(with: OnboardingResult.completed)
+            .replaceError(with: OnboardingResult.skipped)
+            .eraseToAnyPublisher()
+    }
+
+    public func presentTier1KYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<OnboardingResult, Never> {
+        presentKYCIfNeeded(from: presenter, requiredTier: .tier1)
+            .catch(.abandoned)
+            .map { (result: KYCRoutingResult) -> OnboardingResult in
+                switch result {
+                case .abandoned: return .abandoned
+                case .completed: return .completed
+                case .skipped: return .skipped
+                }
+            }
             .eraseToAnyPublisher()
     }
 }

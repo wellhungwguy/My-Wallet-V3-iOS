@@ -5,18 +5,16 @@ import CryptoSwift
 import DelegatedSelfCustodyDomain
 import Foundation
 
+typealias InitialAuthenticationDataPayload = (guid: String, sharedKeyHash: String)
+typealias AuthenticationDataPayload = (guidHash: String, sharedKeyHash: String)
+
 protocol AuthenticationDataRepositoryAPI {
 
     /// Streams authentication data to be used on the initial auth call.
-    var initialAuthenticationData: AnyPublisher<(guid: String, sharedKeyHash: String), Error> { get }
+    var initialAuthenticationData: AnyPublisher<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError> { get }
 
     /// Streams authentication data to be used on endpoint calls.
-    var authenticationData: AnyPublisher<(guidHash: String, sharedKeyHash: String), Error> { get }
-}
-
-enum AuthenticationDataRepositoryError: Error {
-    case missingGUID
-    case missingSharedKey
+    var authenticationData: AnyPublisher<AuthenticationDataPayload, AuthenticationDataRepositoryError> { get }
 }
 
 final class AuthenticationDataRepository: AuthenticationDataRepositoryAPI {
@@ -32,17 +30,15 @@ final class AuthenticationDataRepository: AuthenticationDataRepositoryAPI {
         self.sharedKeyService = sharedKeyService
     }
 
-    var initialAuthenticationData: AnyPublisher<(guid: String, sharedKeyHash: String), Error> {
+    var initialAuthenticationData: AnyPublisher<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError> {
         guid.zip(sharedKeyHash)
             .map { ($0, $1) }
-            .eraseError()
             .eraseToAnyPublisher()
     }
 
-    var authenticationData: AnyPublisher<(guidHash: String, sharedKeyHash: String), Error> {
+    var authenticationData: AnyPublisher<AuthenticationDataPayload, AuthenticationDataRepositoryError> {
         guidHash.zip(sharedKeyHash)
             .map { ($0, $1) }
-            .eraseError()
             .eraseToAnyPublisher()
     }
 

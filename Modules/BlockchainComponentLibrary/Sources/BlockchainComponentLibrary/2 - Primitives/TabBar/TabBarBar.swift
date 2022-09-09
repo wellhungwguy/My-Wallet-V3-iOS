@@ -43,7 +43,7 @@ struct TabBarBar: View {
                             }
                         ),
                         icon: icon,
-                        title: title
+                        title: "title"
                     )
                     .frame(maxWidth: .infinity)
                     .anchorPreference(key: AnchorFramesPreferenceKey.self, value: .bounds) {

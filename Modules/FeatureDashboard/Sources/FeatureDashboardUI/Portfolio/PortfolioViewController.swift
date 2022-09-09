@@ -34,22 +34,34 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private let floatingViewContainer = UIView()
     private var onboardingChecklistViewController: UIViewController? {
-        willSet {
-            onboardingChecklistViewController?.view.removeFromSuperview()
-            onboardingChecklistViewController?.removeFromParent()
-        }
         didSet {
             guard onboardingChecklistViewController != oldValue else {
                 return
             }
             if let onboardingChecklistViewController = onboardingChecklistViewController {
-                add(child: onboardingChecklistViewController)
+
+                addChild(onboardingChecklistViewController)
                 onboardingChecklistViewController.view.backgroundColor = .clear
+                onboardingChecklistViewController.view.alpha = 0
                 floatingViewContainer.addSubview(onboardingChecklistViewController.view)
                 onboardingChecklistViewController.view.constraint(edgesTo: floatingViewContainer)
-                showFloatingViewContent()
-            } else {
-                hideFloatingViewContent()
+                floatingViewContainer.isHidden = false
+                UIView.animate(withDuration: 0.3, delay: 0, options: .transitionFlipFromBottom) {
+                    onboardingChecklistViewController.view.alpha = 1
+                    self.showFloatingViewContent()
+                } completion: { _ in
+                    onboardingChecklistViewController.didMove(toParent: self)
+                }
+            } else if let onboardingChecklistViewController = oldValue {
+                onboardingChecklistViewController.willMove(toParent: nil)
+                UIView.animate(withDuration: 0.3, delay: 0, options: .transitionFlipFromBottom) {
+                    onboardingChecklistViewController.view.alpha = 0
+                    self.hideFloatingViewContent()
+                } completion: { _ in
+                    self.floatingViewContainer.isHidden = true
+                    onboardingChecklistViewController.view.removeFromSuperview()
+                    onboardingChecklistViewController.removeFromParent()
+                }
             }
         }
     }
@@ -91,6 +103,14 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         NotificationCenter.when(.transaction) { [weak self] _ in
             self?.presenter.refreshRelay.accept(())
         }
+
+        app.on(blockchain.ux.kyc.event.did.finish) { @MainActor [weak self] _ in
+            self?.onboardingChecklistViewController = nil
+            try await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+            self?.presentOnboardingChecklistView()
+        }
+        .subscribe()
+        .store(withLifetimeOf: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -121,6 +141,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         tableView.register(FiatCustodialBalancesTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
+        tableView.registerNibCell(SimpleBalanceTableViewCell.self, in: .module)
         tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
         tableView.separatorColor = .clear
 
@@ -153,6 +174,8 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                     cell = self.balanceCell(for: indexPath, presenter: presenter)
                 case .crypto(let presenter):
                     cell = self.assetCell(for: indexPath, presenter: presenter)
+                case .defiCrypto(let presenter):
+                    cell = self.defiAssetCell(for: indexPath, presenter: presenter)
                 case .cryptoSkeleton:
                     cell = self.assetCell(for: indexPath, presenter: nil)
                 case .emptyState:
@@ -173,7 +196,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                      .fiatCustodialBalances,
                      .emptyState:
                     break
-                case .crypto(let cryptoPresenter):
+                case .crypto(let cryptoPresenter), .defiCrypto(let cryptoPresenter):
                     let currency = cryptoPresenter.cryptoCurrency
                     app.post(
                         event: blockchain.ux.asset[currency.code].select,
@@ -190,9 +213,11 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
         userHasCompletedOnboarding
             .asObservable()
-            .map { userHasCompletedOnboarding -> Bool in
+            .map { [app] userHasCompletedOnboarding -> Bool in
                 // if the user has completed onboarding, nothing to show
                 !userHasCompletedOnboarding
+                    || app.state.yes(if: blockchain.user.is.cowboy.fan)
+                    && app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled)
             }
             .distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)
@@ -211,20 +236,17 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private func setUpFloatingView() {
         view.addSubview(floatingViewContainer)
-        floatingViewContainer.layout(dimension: .height, to: BuyButtonView.height)
         floatingViewContainer.layoutToSuperview(.trailing, offset: -Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.leading, offset: Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding3)
     }
 
     private func showFloatingViewContent() {
-        floatingViewContainer.isHidden = false
         // pad the table view in order to let the last cell scroll past the floating view with some padding
         tableView.contentInset.bottom = Spacing.padding3 + BuyButtonView.height + Spacing.padding1
     }
 
     private func hideFloatingViewContent() {
-        floatingViewContainer.isHidden = true
         // reset the table view inset
         tableView.contentInset.bottom = 0
     }
@@ -282,6 +304,12 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
 
     private func assetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
+
+    private func defiAssetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
+        let cell = tableView.dequeue(SimpleBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

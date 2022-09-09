@@ -72,9 +72,15 @@ public extension I_blockchain_app {
 	var `deep_link`: L_blockchain_app_deep__link { .init("\(__).deep_link") }
 	var `did`: L_blockchain_app_did { .init("\(__).did") }
 	var `enter`: L_blockchain_app_enter { .init("\(__).enter") }
+	var `environment`: L_blockchain_app_environment { .init("\(__).environment") }
 	var `fraud`: L_blockchain_app_fraud { .init("\(__).fraud") }
 	var `is`: L_blockchain_app_is { .init("\(__).is") }
+	var `launched`: L_blockchain_app_launched { .init("\(__).launched") }
+	var `mode`: L_blockchain_app_mode { .init("\(__).mode") }
+	var `number`: L_blockchain_app_number { .init("\(__).number") }
+	var `performance`: L_blockchain_app_performance { .init("\(__).performance") }
 	var `process`: L_blockchain_app_process { .init("\(__).process") }
+	var `version`: L_blockchain_app_version { .init("\(__).version") }
 }
 public final class L_blockchain_app_configuration: L, I_blockchain_app_configuration {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration", comment: "") }
@@ -90,7 +96,10 @@ public extension I_blockchain_app_configuration {
 	var `customer`: L_blockchain_app_configuration_customer { .init("\(__).customer") }
 	var `debug`: L_blockchain_app_configuration_debug { .init("\(__).debug") }
 	var `deep_link`: L_blockchain_app_configuration_deep__link { .init("\(__).deep_link") }
+	var `defi`: L_blockchain_app_configuration_defi { .init("\(__).defi") }
+	var `firebase`: L_blockchain_app_configuration_firebase { .init("\(__).firebase") }
 	var `frequent`: L_blockchain_app_configuration_frequent { .init("\(__).frequent") }
+	var `kyc`: L_blockchain_app_configuration_kyc { .init("\(__).kyc") }
 	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
 	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
@@ -99,6 +108,7 @@ public extension I_blockchain_app_configuration {
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `redesign`: L_blockchain_app_configuration_redesign { .init("\(__).redesign") }
+	var `referral`: L_blockchain_app_configuration_referral { .init("\(__).referral") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
 	var `SSL`: L_blockchain_app_configuration_SSL { .init("\(__).SSL") }
@@ -119,11 +129,30 @@ public final class L_blockchain_app_configuration_app: L, I_blockchain_app_confi
 public protocol I_blockchain_app_configuration_app: I {}
 public extension I_blockchain_app_configuration_app {
 	var `maintenance`: L_blockchain_app_configuration_app_maintenance { .init("\(__).maintenance") }
+	var `superapp`: L_blockchain_app_configuration_app_superapp { .init("\(__).superapp") }
 }
 public final class L_blockchain_app_configuration_app_maintenance: L, I_blockchain_app_configuration_app_maintenance {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app.maintenance", comment: "") }
 }
 public protocol I_blockchain_app_configuration_app_maintenance: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_app_superapp: L, I_blockchain_app_configuration_app_superapp {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app.superapp", comment: "") }
+}
+public protocol I_blockchain_app_configuration_app_superapp: I {}
+public extension I_blockchain_app_configuration_app_superapp {
+	var `is`: L_blockchain_app_configuration_app_superapp_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_app_superapp_is: L, I_blockchain_app_configuration_app_superapp_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app.superapp.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_app_superapp_is: I {}
+public extension I_blockchain_app_configuration_app_superapp_is {
+	var `enabled`: L_blockchain_app_configuration_app_superapp_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_app_superapp_is_enabled: L, I_blockchain_app_configuration_app_superapp_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.app.superapp.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_app_superapp_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_apple: L, I_blockchain_app_configuration_apple {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.apple", comment: "") }
 }
@@ -283,6 +312,35 @@ public final class L_blockchain_app_configuration_deep__link_rules: L, I_blockch
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.deep_link.rules", comment: "") }
 }
 public protocol I_blockchain_app_configuration_deep__link_rules: I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_defi: L, I_blockchain_app_configuration_defi {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.defi", comment: "") }
+}
+public protocol I_blockchain_app_configuration_defi: I {}
+public extension I_blockchain_app_configuration_defi {
+	var `tabs`: L_blockchain_app_configuration_defi_tabs { .init("\(__).tabs") }
+}
+public final class L_blockchain_app_configuration_defi_tabs: L, I_blockchain_app_configuration_defi_tabs {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.defi.tabs", comment: "") }
+}
+public protocol I_blockchain_app_configuration_defi_tabs: I_blockchain_db_type_array_of_tags, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_firebase: L, I_blockchain_app_configuration_firebase {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.firebase", comment: "") }
+}
+public protocol I_blockchain_app_configuration_firebase: I {}
+public extension I_blockchain_app_configuration_firebase {
+	var `project`: L_blockchain_app_configuration_firebase_project { .init("\(__).project") }
+}
+public final class L_blockchain_app_configuration_firebase_project: L, I_blockchain_app_configuration_firebase_project {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.firebase.project", comment: "") }
+}
+public protocol I_blockchain_app_configuration_firebase_project: I {}
+public extension I_blockchain_app_configuration_firebase_project {
+	var `id`: L_blockchain_app_configuration_firebase_project_id { .init("\(__).id") }
+}
+public final class L_blockchain_app_configuration_firebase_project_id: L, I_blockchain_app_configuration_firebase_project_id {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.firebase.project.id", comment: "") }
+}
+public protocol I_blockchain_app_configuration_firebase_project_id: I_blockchain_db_type_string, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_configuration_frequent: L, I_blockchain_app_configuration_frequent {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent", comment: "") }
 }
@@ -294,6 +352,60 @@ public final class L_blockchain_app_configuration_frequent_action: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action", comment: "") }
 }
 public protocol I_blockchain_app_configuration_frequent_action: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public extension I_blockchain_app_configuration_frequent_action {
+	var `pkw`: L_blockchain_app_configuration_frequent_action_pkw { .init("\(__).pkw") }
+	var `trading`: L_blockchain_app_configuration_frequent_action_trading { .init("\(__).trading") }
+}
+public final class L_blockchain_app_configuration_frequent_action_pkw: L, I_blockchain_app_configuration_frequent_action_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action.pkw", comment: "") }
+}
+public protocol I_blockchain_app_configuration_frequent_action_pkw: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_frequent_action_trading: L, I_blockchain_app_configuration_frequent_action_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.frequent.action.trading", comment: "") }
+}
+public protocol I_blockchain_app_configuration_frequent_action_trading: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc: L, I_blockchain_app_configuration_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc: I {}
+public extension I_blockchain_app_configuration_kyc {
+	var `sdd`: L_blockchain_app_configuration_kyc_sdd { .init("\(__).sdd") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd: L, I_blockchain_app_configuration_kyc_sdd {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd: I {}
+public extension I_blockchain_app_configuration_kyc_sdd {
+	var `cache`: L_blockchain_app_configuration_kyc_sdd_cache { .init("\(__).cache") }
+	var `pkw`: L_blockchain_app_configuration_kyc_sdd_pkw { .init("\(__).pkw") }
+	var `trading`: L_blockchain_app_configuration_kyc_sdd_trading { .init("\(__).trading") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache: L, I_blockchain_app_configuration_kyc_sdd_cache {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache: I {}
+public extension I_blockchain_app_configuration_kyc_sdd_cache {
+	var `is`: L_blockchain_app_configuration_kyc_sdd_cache_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache_is: L, I_blockchain_app_configuration_kyc_sdd_cache_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache_is: I {}
+public extension I_blockchain_app_configuration_kyc_sdd_cache_is {
+	var `enabled`: L_blockchain_app_configuration_kyc_sdd_cache_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_kyc_sdd_cache_is_enabled: L, I_blockchain_app_configuration_kyc_sdd_cache_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.cache.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_cache_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc_sdd_pkw: L, I_blockchain_app_configuration_kyc_sdd_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.pkw", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_pkw: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc_sdd_trading: L, I_blockchain_app_configuration_kyc_sdd_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd.trading", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_sdd_trading: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_localized: L, I_blockchain_app_configuration_localized {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.localized", comment: "") }
 }
@@ -385,8 +497,35 @@ public final class L_blockchain_app_configuration_polygon: L, I_blockchain_app_c
 }
 public protocol I_blockchain_app_configuration_polygon: I {}
 public extension I_blockchain_app_configuration_polygon {
+	var `all`: L_blockchain_app_configuration_polygon_all { .init("\(__).all") }
 	var `is`: L_blockchain_app_configuration_polygon_is { .init("\(__).is") }
+	var `name`: L_blockchain_app_configuration_polygon_name { .init("\(__).name") }
 }
+public final class L_blockchain_app_configuration_polygon_all: L, I_blockchain_app_configuration_polygon_all {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all: I {}
+public extension I_blockchain_app_configuration_polygon_all {
+	var `tokens`: L_blockchain_app_configuration_polygon_all_tokens { .init("\(__).tokens") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens: L, I_blockchain_app_configuration_polygon_all_tokens {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens: I {}
+public extension I_blockchain_app_configuration_polygon_all_tokens {
+	var `is`: L_blockchain_app_configuration_polygon_all_tokens_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens_is: L, I_blockchain_app_configuration_polygon_all_tokens_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens_is: I {}
+public extension I_blockchain_app_configuration_polygon_all_tokens_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_all_tokens_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_all_tokens_is_enabled: L, I_blockchain_app_configuration_polygon_all_tokens_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all.tokens.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_all_tokens_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_polygon_is: L, I_blockchain_app_configuration_polygon_is {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is", comment: "") }
 }
@@ -398,6 +537,31 @@ public final class L_blockchain_app_configuration_polygon_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_polygon_name: L, I_blockchain_app_configuration_polygon_name {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name: I {}
+public extension I_blockchain_app_configuration_polygon_name {
+	var `sanitize`: L_blockchain_app_configuration_polygon_name_sanitize { .init("\(__).sanitize") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize: L, I_blockchain_app_configuration_polygon_name_sanitize {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize: I {}
+public extension I_blockchain_app_configuration_polygon_name_sanitize {
+	var `is`: L_blockchain_app_configuration_polygon_name_sanitize_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize_is: L, I_blockchain_app_configuration_polygon_name_sanitize_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize_is: I {}
+public extension I_blockchain_app_configuration_polygon_name_sanitize_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_name_sanitize_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_name_sanitize_is_enabled: L, I_blockchain_app_configuration_polygon_name_sanitize_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_name_sanitize_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_prefill: L, I_blockchain_app_configuration_prefill {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill", comment: "") }
 }
@@ -459,6 +623,24 @@ public final class L_blockchain_app_configuration_redesign_checkout_is_enabled: 
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.redesign.checkout.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_redesign_checkout_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_referral: L, I_blockchain_app_configuration_referral {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral: I {}
+public extension I_blockchain_app_configuration_referral {
+	var `is`: L_blockchain_app_configuration_referral_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_referral_is: L, I_blockchain_app_configuration_referral_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral_is: I {}
+public extension I_blockchain_app_configuration_referral_is {
+	var `enabled`: L_blockchain_app_configuration_referral_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_referral_is_enabled: L, I_blockchain_app_configuration_referral_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_referral_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_remote: L, I_blockchain_app_configuration_remote {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.remote", comment: "") }
 }
@@ -699,6 +881,7 @@ public extension I_blockchain_app_deep__link {
 	var `buy`: L_blockchain_app_deep__link_buy { .init("\(__).buy") }
 	var `dsl`: L_blockchain_app_deep__link_dsl { .init("\(__).dsl") }
 	var `kyc`: L_blockchain_app_deep__link_kyc { .init("\(__).kyc") }
+	var `onboarding`: L_blockchain_app_deep__link_onboarding { .init("\(__).onboarding") }
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
 	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
 	var `send`: L_blockchain_app_deep__link_send { .init("\(__).send") }
@@ -773,18 +956,55 @@ public extension I_blockchain_app_deep__link_dsl_is {
 public final class L_blockchain_app_deep__link_dsl_is_enabled: L, I_blockchain_app_deep__link_dsl_is_enabled {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.dsl.is.enabled", comment: "") }
 }
-public protocol I_blockchain_app_deep__link_dsl_is_enabled: I_blockchain_session_state_shared_value {}
+public protocol I_blockchain_app_deep__link_dsl_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_deep__link_kyc: L, I_blockchain_app_deep__link_kyc {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_kyc: I {}
 public extension I_blockchain_app_deep__link_kyc {
 	var `tier`: L_blockchain_app_deep__link_kyc_tier { .init("\(__).tier") }
+	var `verify`: L_blockchain_app_deep__link_kyc_verify { .init("\(__).verify") }
 }
 public final class L_blockchain_app_deep__link_kyc_tier: L, I_blockchain_app_deep__link_kyc_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc.tier", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_kyc_tier: I_blockchain_db_type_integer {}
+public final class L_blockchain_app_deep__link_kyc_verify: L, I_blockchain_app_deep__link_kyc_verify {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc.verify", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_kyc_verify: I {}
+public extension I_blockchain_app_deep__link_kyc_verify {
+	var `email`: L_blockchain_app_deep__link_kyc_verify_email { .init("\(__).email") }
+}
+public final class L_blockchain_app_deep__link_kyc_verify_email: L, I_blockchain_app_deep__link_kyc_verify_email {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.kyc.verify.email", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_kyc_verify_email: I {}
+public final class L_blockchain_app_deep__link_onboarding: L, I_blockchain_app_deep__link_onboarding {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding: I {}
+public extension I_blockchain_app_deep__link_onboarding {
+	var `post`: L_blockchain_app_deep__link_onboarding_post { .init("\(__).post") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post: L, I_blockchain_app_deep__link_onboarding_post {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post: I {}
+public extension I_blockchain_app_deep__link_onboarding_post {
+	var `sign`: L_blockchain_app_deep__link_onboarding_post_sign { .init("\(__).sign") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post_sign: L, I_blockchain_app_deep__link_onboarding_post_sign {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post.sign", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post_sign: I {}
+public extension I_blockchain_app_deep__link_onboarding_post_sign {
+	var `up`: L_blockchain_app_deep__link_onboarding_post_sign_up { .init("\(__).up") }
+}
+public final class L_blockchain_app_deep__link_onboarding_post_sign_up: L, I_blockchain_app_deep__link_onboarding_post_sign_up {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.onboarding.post.sign.up", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_onboarding_post_sign_up: I {}
 public final class L_blockchain_app_deep__link_qr: L, I_blockchain_app_deep__link_qr {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.qr", comment: "") }
 }
@@ -838,6 +1058,7 @@ public final class L_blockchain_app_did: L, I_blockchain_app_did {
 public protocol I_blockchain_app_did: I {}
 public extension I_blockchain_app_did {
 	var `finish`: L_blockchain_app_did_finish { .init("\(__).finish") }
+	var `update`: L_blockchain_app_did_update { .init("\(__).update") }
 }
 public final class L_blockchain_app_did_finish: L, I_blockchain_app_did_finish {
 	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish", comment: "") }
@@ -850,6 +1071,10 @@ public final class L_blockchain_app_did_finish_launching: L, I_blockchain_app_di
 	public override class var localized: String { NSLocalizedString("blockchain.app.did.finish.launching", comment: "") }
 }
 public protocol I_blockchain_app_did_finish_launching: I_blockchain_db_type_boolean {}
+public final class L_blockchain_app_did_update: L, I_blockchain_app_did_update {
+	public override class var localized: String { NSLocalizedString("blockchain.app.did.update", comment: "") }
+}
+public protocol I_blockchain_app_did_update: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_enter: L, I_blockchain_app_enter {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter", comment: "") }
 }
@@ -861,6 +1086,22 @@ public final class L_blockchain_app_enter_into: L, I_blockchain_app_enter_into {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter.into", comment: "") }
 }
 public protocol I_blockchain_app_enter_into: I_blockchain_ux_type_story {}
+public final class L_blockchain_app_environment: L, I_blockchain_app_environment {
+	public override class var localized: String { NSLocalizedString("blockchain.app.environment", comment: "") }
+}
+public protocol I_blockchain_app_environment: I_blockchain_db_type_enum, I_blockchain_session_state_shared_value {}
+public extension I_blockchain_app_environment {
+	var `debug`: L_blockchain_app_environment_debug { .init("\(__).debug") }
+	var `production`: L_blockchain_app_environment_production { .init("\(__).production") }
+}
+public final class L_blockchain_app_environment_debug: L, I_blockchain_app_environment_debug {
+	public override class var localized: String { NSLocalizedString("blockchain.app.environment.debug", comment: "") }
+}
+public protocol I_blockchain_app_environment_debug: I {}
+public final class L_blockchain_app_environment_production: L, I_blockchain_app_environment_production {
+	public override class var localized: String { NSLocalizedString("blockchain.app.environment.production", comment: "") }
+}
+public protocol I_blockchain_app_environment_production: I {}
 public final class L_blockchain_app_fraud: L, I_blockchain_app_fraud {
 	public override class var localized: String { NSLocalizedString("blockchain.app.fraud", comment: "") }
 }
@@ -935,8 +1176,32 @@ public final class L_blockchain_app_is: L, I_blockchain_app_is {
 }
 public protocol I_blockchain_app_is: I {}
 public extension I_blockchain_app_is {
+	var `first`: L_blockchain_app_is_first { .init("\(__).first") }
+	var `in`: L_blockchain_app_is_in { .init("\(__).in") }
 	var `ready`: L_blockchain_app_is_ready { .init("\(__).ready") }
 }
+public final class L_blockchain_app_is_first: L, I_blockchain_app_is_first {
+	public override class var localized: String { NSLocalizedString("blockchain.app.is.first", comment: "") }
+}
+public protocol I_blockchain_app_is_first: I {}
+public extension I_blockchain_app_is_first {
+	var `install`: L_blockchain_app_is_first_install { .init("\(__).install") }
+}
+public final class L_blockchain_app_is_first_install: L, I_blockchain_app_is_first_install {
+	public override class var localized: String { NSLocalizedString("blockchain.app.is.first.install", comment: "") }
+}
+public protocol I_blockchain_app_is_first_install: I_blockchain_db_type_boolean, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_app_is_in: L, I_blockchain_app_is_in {
+	public override class var localized: String { NSLocalizedString("blockchain.app.is.in", comment: "") }
+}
+public protocol I_blockchain_app_is_in: I {}
+public extension I_blockchain_app_is_in {
+	var `background`: L_blockchain_app_is_in_background { .init("\(__).background") }
+}
+public final class L_blockchain_app_is_in_background: L, I_blockchain_app_is_in_background {
+	public override class var localized: String { NSLocalizedString("blockchain.app.is.in.background", comment: "") }
+}
+public protocol I_blockchain_app_is_in_background: I_blockchain_db_type_boolean, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_app_is_ready: L, I_blockchain_app_is_ready {
 	public override class var localized: String { NSLocalizedString("blockchain.app.is.ready", comment: "") }
 }
@@ -955,6 +1220,92 @@ public final class L_blockchain_app_is_ready_for_deep__link: L, I_blockchain_app
 	public override class var localized: String { NSLocalizedString("blockchain.app.is.ready.for.deep_link", comment: "") }
 }
 public protocol I_blockchain_app_is_ready_for_deep__link: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
+public final class L_blockchain_app_launched: L, I_blockchain_app_launched {
+	public override class var localized: String { NSLocalizedString("blockchain.app.launched", comment: "") }
+}
+public protocol I_blockchain_app_launched: I {}
+public extension I_blockchain_app_launched {
+	var `at`: L_blockchain_app_launched_at { .init("\(__).at") }
+}
+public final class L_blockchain_app_launched_at: L, I_blockchain_app_launched_at {
+	public override class var localized: String { NSLocalizedString("blockchain.app.launched.at", comment: "") }
+}
+public protocol I_blockchain_app_launched_at: I {}
+public extension I_blockchain_app_launched_at {
+	var `time`: L_blockchain_app_launched_at_time { .init("\(__).time") }
+}
+public final class L_blockchain_app_launched_at_time: L, I_blockchain_app_launched_at_time {
+	public override class var localized: String { NSLocalizedString("blockchain.app.launched.at.time", comment: "") }
+}
+public protocol I_blockchain_app_launched_at_time: I_blockchain_db_type_date, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_app_mode: L, I_blockchain_app_mode {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode", comment: "") }
+}
+public protocol I_blockchain_app_mode: I_blockchain_session_state_preference_value {}
+public final class L_blockchain_app_number: L, I_blockchain_app_number {
+	public override class var localized: String { NSLocalizedString("blockchain.app.number", comment: "") }
+}
+public protocol I_blockchain_app_number: I {}
+public extension I_blockchain_app_number {
+	var `of`: L_blockchain_app_number_of { .init("\(__).of") }
+}
+public final class L_blockchain_app_number_of: L, I_blockchain_app_number_of {
+	public override class var localized: String { NSLocalizedString("blockchain.app.number.of", comment: "") }
+}
+public protocol I_blockchain_app_number_of: I {}
+public extension I_blockchain_app_number_of {
+	var `launches`: L_blockchain_app_number_of_launches { .init("\(__).launches") }
+}
+public final class L_blockchain_app_number_of_launches: L, I_blockchain_app_number_of_launches {
+	public override class var localized: String { NSLocalizedString("blockchain.app.number.of.launches", comment: "") }
+}
+public protocol I_blockchain_app_number_of_launches: I_blockchain_db_type_integer, I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_app_performance: L, I_blockchain_app_performance {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance", comment: "") }
+}
+public protocol I_blockchain_app_performance: I {}
+public extension I_blockchain_app_performance {
+	var `trace`: L_blockchain_app_performance_trace { .init("\(__).trace") }
+}
+public final class L_blockchain_app_performance_trace: L, I_blockchain_app_performance_trace {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace: I {}
+public extension I_blockchain_app_performance_trace {
+	var `transaction`: L_blockchain_app_performance_trace_transaction { .init("\(__).transaction") }
+}
+public final class L_blockchain_app_performance_trace_transaction: L, I_blockchain_app_performance_trace_transaction {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace.transaction", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace_transaction: I {}
+public extension I_blockchain_app_performance_trace_transaction {
+	var `start`: L_blockchain_app_performance_trace_transaction_start { .init("\(__).start") }
+}
+public final class L_blockchain_app_performance_trace_transaction_start: L, I_blockchain_app_performance_trace_transaction_start {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace.transaction.start", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace_transaction_start: I {}
+public extension I_blockchain_app_performance_trace_transaction_start {
+	var `to`: L_blockchain_app_performance_trace_transaction_start_to { .init("\(__).to") }
+}
+public final class L_blockchain_app_performance_trace_transaction_start_to: L, I_blockchain_app_performance_trace_transaction_start_to {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace.transaction.start.to", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace_transaction_start_to: I {}
+public extension I_blockchain_app_performance_trace_transaction_start_to {
+	var `enter`: L_blockchain_app_performance_trace_transaction_start_to_enter { .init("\(__).enter") }
+}
+public final class L_blockchain_app_performance_trace_transaction_start_to_enter: L, I_blockchain_app_performance_trace_transaction_start_to_enter {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace.transaction.start.to.enter", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace_transaction_start_to_enter: I {}
+public extension I_blockchain_app_performance_trace_transaction_start_to_enter {
+	var `amount`: L_blockchain_app_performance_trace_transaction_start_to_enter_amount { .init("\(__).amount") }
+}
+public final class L_blockchain_app_performance_trace_transaction_start_to_enter_amount: L, I_blockchain_app_performance_trace_transaction_start_to_enter_amount {
+	public override class var localized: String { NSLocalizedString("blockchain.app.performance.trace.transaction.start.to.enter.amount", comment: "") }
+}
+public protocol I_blockchain_app_performance_trace_transaction_start_to_enter_amount: I {}
 public final class L_blockchain_app_process: L, I_blockchain_app_process {
 	public override class var localized: String { NSLocalizedString("blockchain.app.process", comment: "") }
 }
@@ -978,6 +1329,10 @@ public final class L_blockchain_app_process_deep__link_url: L, I_blockchain_app_
 	public override class var localized: String { NSLocalizedString("blockchain.app.process.deep_link.url", comment: "") }
 }
 public protocol I_blockchain_app_process_deep__link_url: I_blockchain_db_type_url, I_blockchain_session_state_value {}
+public final class L_blockchain_app_version: L, I_blockchain_app_version {
+	public override class var localized: String { NSLocalizedString("blockchain.app.version", comment: "") }
+}
+public protocol I_blockchain_app_version: I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_db: L, I_blockchain_db {
 	public override class var localized: String { NSLocalizedString("blockchain.db", comment: "") }
 }
@@ -1724,8 +2079,53 @@ public final class L_blockchain_ui_device: L, I_blockchain_ui_device {
 }
 public protocol I_blockchain_ui_device: I {}
 public extension I_blockchain_ui_device {
+	var `connection`: L_blockchain_ui_device_connection { .init("\(__).connection") }
+	var `current`: L_blockchain_ui_device_current { .init("\(__).current") }
 	var `haptic`: L_blockchain_ui_device_haptic { .init("\(__).haptic") }
+	var `id`: L_blockchain_ui_device_id { .init("\(__).id") }
+	var `locale`: L_blockchain_ui_device_locale { .init("\(__).locale") }
+	var `os`: L_blockchain_ui_device_os { .init("\(__).os") }
+	var `settings`: L_blockchain_ui_device_settings { .init("\(__).settings") }
 }
+public final class L_blockchain_ui_device_connection: L, I_blockchain_ui_device_connection {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.connection", comment: "") }
+}
+public protocol I_blockchain_ui_device_connection: I_blockchain_db_type_enum, I_blockchain_session_state_shared_value {}
+public extension I_blockchain_ui_device_connection {
+	var `cellular`: L_blockchain_ui_device_connection_cellular { .init("\(__).cellular") }
+	var `unavailable`: L_blockchain_ui_device_connection_unavailable { .init("\(__).unavailable") }
+	var `WiFi`: L_blockchain_ui_device_connection_WiFi { .init("\(__).WiFi") }
+}
+public final class L_blockchain_ui_device_connection_cellular: L, I_blockchain_ui_device_connection_cellular {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.connection.cellular", comment: "") }
+}
+public protocol I_blockchain_ui_device_connection_cellular: I {}
+public final class L_blockchain_ui_device_connection_unavailable: L, I_blockchain_ui_device_connection_unavailable {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.connection.unavailable", comment: "") }
+}
+public protocol I_blockchain_ui_device_connection_unavailable: I {}
+public final class L_blockchain_ui_device_connection_WiFi: L, I_blockchain_ui_device_connection_WiFi {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.connection.WiFi", comment: "") }
+}
+public protocol I_blockchain_ui_device_connection_WiFi: I {}
+public final class L_blockchain_ui_device_current: L, I_blockchain_ui_device_current {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.current", comment: "") }
+}
+public protocol I_blockchain_ui_device_current: I {}
+public extension I_blockchain_ui_device_current {
+	var `local`: L_blockchain_ui_device_current_local { .init("\(__).local") }
+}
+public final class L_blockchain_ui_device_current_local: L, I_blockchain_ui_device_current_local {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.current.local", comment: "") }
+}
+public protocol I_blockchain_ui_device_current_local: I {}
+public extension I_blockchain_ui_device_current_local {
+	var `time`: L_blockchain_ui_device_current_local_time { .init("\(__).time") }
+}
+public final class L_blockchain_ui_device_current_local_time: L, I_blockchain_ui_device_current_local_time {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.current.local.time", comment: "") }
+}
+public protocol I_blockchain_ui_device_current_local_time: I_blockchain_db_type_date, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_ui_device_haptic: L, I_blockchain_ui_device_haptic {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic", comment: "") }
 }
@@ -1793,6 +2193,76 @@ public final class L_blockchain_ui_device_haptic_feedback_notification_warning: 
 	public override class var localized: String { NSLocalizedString("blockchain.ui.device.haptic.feedback.notification.warning", comment: "") }
 }
 public protocol I_blockchain_ui_device_haptic_feedback_notification_warning: I {}
+public final class L_blockchain_ui_device_id: L, I_blockchain_ui_device_id {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.id", comment: "") }
+}
+public protocol I_blockchain_ui_device_id: I_blockchain_db_type_string, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_ui_device_locale: L, I_blockchain_ui_device_locale {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.locale", comment: "") }
+}
+public protocol I_blockchain_ui_device_locale: I {}
+public extension I_blockchain_ui_device_locale {
+	var `language`: L_blockchain_ui_device_locale_language { .init("\(__).language") }
+}
+public final class L_blockchain_ui_device_locale_language: L, I_blockchain_ui_device_locale_language {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.locale.language", comment: "") }
+}
+public protocol I_blockchain_ui_device_locale_language: I {}
+public extension I_blockchain_ui_device_locale_language {
+	var `code`: L_blockchain_ui_device_locale_language_code { .init("\(__).code") }
+}
+public final class L_blockchain_ui_device_locale_language_code: L, I_blockchain_ui_device_locale_language_code {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.locale.language.code", comment: "") }
+}
+public protocol I_blockchain_ui_device_locale_language_code: I_blockchain_db_type_string, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_ui_device_os: L, I_blockchain_ui_device_os {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.os", comment: "") }
+}
+public protocol I_blockchain_ui_device_os: I {}
+public extension I_blockchain_ui_device_os {
+	var `name`: L_blockchain_ui_device_os_name { .init("\(__).name") }
+	var `version`: L_blockchain_ui_device_os_version { .init("\(__).version") }
+}
+public final class L_blockchain_ui_device_os_name: L, I_blockchain_ui_device_os_name {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.os.name", comment: "") }
+}
+public protocol I_blockchain_ui_device_os_name: I_blockchain_db_type_string, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_ui_device_os_version: L, I_blockchain_ui_device_os_version {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.os.version", comment: "") }
+}
+public protocol I_blockchain_ui_device_os_version: I_blockchain_db_type_string, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_ui_device_settings: L, I_blockchain_ui_device_settings {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.settings", comment: "") }
+}
+public protocol I_blockchain_ui_device_settings: I {}
+public extension I_blockchain_ui_device_settings {
+	var `accessibility`: L_blockchain_ui_device_settings_accessibility { .init("\(__).accessibility") }
+}
+public final class L_blockchain_ui_device_settings_accessibility: L, I_blockchain_ui_device_settings_accessibility {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.settings.accessibility", comment: "") }
+}
+public protocol I_blockchain_ui_device_settings_accessibility: I {}
+public extension I_blockchain_ui_device_settings_accessibility {
+	var `large_text`: L_blockchain_ui_device_settings_accessibility_large__text { .init("\(__).large_text") }
+}
+public final class L_blockchain_ui_device_settings_accessibility_large__text: L, I_blockchain_ui_device_settings_accessibility_large__text {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.settings.accessibility.large_text", comment: "") }
+}
+public protocol I_blockchain_ui_device_settings_accessibility_large__text: I {}
+public extension I_blockchain_ui_device_settings_accessibility_large__text {
+	var `is`: L_blockchain_ui_device_settings_accessibility_large__text_is { .init("\(__).is") }
+}
+public final class L_blockchain_ui_device_settings_accessibility_large__text_is: L, I_blockchain_ui_device_settings_accessibility_large__text_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.settings.accessibility.large_text.is", comment: "") }
+}
+public protocol I_blockchain_ui_device_settings_accessibility_large__text_is: I {}
+public extension I_blockchain_ui_device_settings_accessibility_large__text_is {
+	var `enabled`: L_blockchain_ui_device_settings_accessibility_large__text_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_ui_device_settings_accessibility_large__text_is_enabled: L, I_blockchain_ui_device_settings_accessibility_large__text_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.device.settings.accessibility.large_text.is.enabled", comment: "") }
+}
+public protocol I_blockchain_ui_device_settings_accessibility_large__text_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_state_shared_value {}
 public final class L_blockchain_ui_type: L, I_blockchain_ui_type {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type", comment: "") }
 }
@@ -1806,6 +2276,37 @@ public final class L_blockchain_ui_type_action: L, I_blockchain_ui_type_action {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action", comment: "") }
 }
 public protocol I_blockchain_ui_type_action: I_blockchain_ux_type_analytics_action {}
+public extension I_blockchain_ui_type_action {
+	var `then`: L_blockchain_ui_type_action_then { .init("\(__).then") }
+}
+public final class L_blockchain_ui_type_action_then: L, I_blockchain_ui_type_action_then {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then: I {}
+public extension I_blockchain_ui_type_action_then {
+	var `close`: L_blockchain_ui_type_action_then_close { .init("\(__).close") }
+	var `emit`: L_blockchain_ui_type_action_then_emit { .init("\(__).emit") }
+	var `launch`: L_blockchain_ui_type_action_then_launch { .init("\(__).launch") }
+}
+public final class L_blockchain_ui_type_action_then_close: L, I_blockchain_ui_type_action_then_close {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.close", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_close: I_blockchain_db_type_boolean {}
+public final class L_blockchain_ui_type_action_then_emit: L, I_blockchain_ui_type_action_then_emit {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.emit", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_emit: I_blockchain_db_type_tag {}
+public final class L_blockchain_ui_type_action_then_launch: L, I_blockchain_ui_type_action_then_launch {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.launch", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_launch: I {}
+public extension I_blockchain_ui_type_action_then_launch {
+	var `url`: L_blockchain_ui_type_action_then_launch_url { .init("\(__).url") }
+}
+public final class L_blockchain_ui_type_action_then_launch_url: L, I_blockchain_ui_type_action_then_launch_url {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.launch.url", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_launch_url: I_blockchain_db_type_url {}
 public final class L_blockchain_ui_type_control: L, I_blockchain_ui_type_control {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.control", comment: "") }
 }
@@ -1921,9 +2422,11 @@ public extension I_blockchain_user {
 	var `creation`: L_blockchain_user_creation { .init("\(__).creation") }
 	var `currency`: L_blockchain_user_currency { .init("\(__).currency") }
 	var `email`: L_blockchain_user_email { .init("\(__).email") }
+	var `event`: L_blockchain_user_event { .init("\(__).event") }
 	var `is`: L_blockchain_user_is { .init("\(__).is") }
 	var `name`: L_blockchain_user_name { .init("\(__).name") }
 	var `referral`: L_blockchain_user_referral { .init("\(__).referral") }
+	var `skipped`: L_blockchain_user_skipped { .init("\(__).skipped") }
 	var `token`: L_blockchain_user_token { .init("\(__).token") }
 	var `wallet`: L_blockchain_user_wallet { .init("\(__).wallet") }
 }
@@ -1932,8 +2435,79 @@ public final class L_blockchain_user_account: L, I_blockchain_user_account {
 }
 public protocol I_blockchain_user_account: I {}
 public extension I_blockchain_user_account {
+	var `kyc`: L_blockchain_user_account_kyc { .init("\(__).kyc") }
 	var `tier`: L_blockchain_user_account_tier { .init("\(__).tier") }
 }
+public final class L_blockchain_user_account_kyc: L, I_blockchain_user_account_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc: I_blockchain_db_collection {}
+public extension I_blockchain_user_account_kyc {
+	var `limits`: L_blockchain_user_account_kyc_limits { .init("\(__).limits") }
+	var `name`: L_blockchain_user_account_kyc_name { .init("\(__).name") }
+	var `state`: L_blockchain_user_account_kyc_state { .init("\(__).state") }
+}
+public final class L_blockchain_user_account_kyc_limits: L, I_blockchain_user_account_kyc_limits {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits: I {}
+public extension I_blockchain_user_account_kyc_limits {
+	var `annual`: L_blockchain_user_account_kyc_limits_annual { .init("\(__).annual") }
+	var `currency`: L_blockchain_user_account_kyc_limits_currency { .init("\(__).currency") }
+	var `daily`: L_blockchain_user_account_kyc_limits_daily { .init("\(__).daily") }
+}
+public final class L_blockchain_user_account_kyc_limits_annual: L, I_blockchain_user_account_kyc_limits_annual {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.annual", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_annual: I_blockchain_db_type_bigint {}
+public final class L_blockchain_user_account_kyc_limits_currency: L, I_blockchain_user_account_kyc_limits_currency {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.currency", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_currency: I_blockchain_db_type_string {}
+public final class L_blockchain_user_account_kyc_limits_daily: L, I_blockchain_user_account_kyc_limits_daily {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.limits.daily", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_limits_daily: I_blockchain_db_type_bigint {}
+public final class L_blockchain_user_account_kyc_name: L, I_blockchain_user_account_kyc_name {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.name", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_name: I_blockchain_db_type_string {}
+public final class L_blockchain_user_account_kyc_state: L, I_blockchain_user_account_kyc_state {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state: I_blockchain_db_type_enum {}
+public extension I_blockchain_user_account_kyc_state {
+	var `expired`: L_blockchain_user_account_kyc_state_expired { .init("\(__).expired") }
+	var `none`: L_blockchain_user_account_kyc_state_none { .init("\(__).none") }
+	var `pending`: L_blockchain_user_account_kyc_state_pending { .init("\(__).pending") }
+	var `rejected`: L_blockchain_user_account_kyc_state_rejected { .init("\(__).rejected") }
+	var `under_review`: L_blockchain_user_account_kyc_state_under__review { .init("\(__).under_review") }
+	var `verified`: L_blockchain_user_account_kyc_state_verified { .init("\(__).verified") }
+}
+public final class L_blockchain_user_account_kyc_state_expired: L, I_blockchain_user_account_kyc_state_expired {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.expired", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_expired: I {}
+public final class L_blockchain_user_account_kyc_state_none: L, I_blockchain_user_account_kyc_state_none {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.none", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_none: I {}
+public final class L_blockchain_user_account_kyc_state_pending: L, I_blockchain_user_account_kyc_state_pending {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.pending", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_pending: I {}
+public final class L_blockchain_user_account_kyc_state_rejected: L, I_blockchain_user_account_kyc_state_rejected {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.rejected", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_rejected: I {}
+public final class L_blockchain_user_account_kyc_state_under__review: L, I_blockchain_user_account_kyc_state_under__review {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.under_review", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_under__review: I {}
+public final class L_blockchain_user_account_kyc_state_verified: L, I_blockchain_user_account_kyc_state_verified {
+	public override class var localized: String { NSLocalizedString("blockchain.user.account.kyc.state.verified", comment: "") }
+}
+public protocol I_blockchain_user_account_kyc_state_verified: I {}
 public final class L_blockchain_user_account_tier: L, I_blockchain_user_account_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.user.account.tier", comment: "") }
 }
@@ -2117,13 +2691,43 @@ public final class L_blockchain_user_email_is_verified: L, I_blockchain_user_ema
 	public override class var localized: String { NSLocalizedString("blockchain.user.email.is.verified", comment: "") }
 }
 public protocol I_blockchain_user_email_is_verified: I_blockchain_db_type_boolean {}
+public final class L_blockchain_user_event: L, I_blockchain_user_event {
+	public override class var localized: String { NSLocalizedString("blockchain.user.event", comment: "") }
+}
+public protocol I_blockchain_user_event: I {}
+public extension I_blockchain_user_event {
+	var `did`: L_blockchain_user_event_did { .init("\(__).did") }
+}
+public final class L_blockchain_user_event_did: L, I_blockchain_user_event_did {
+	public override class var localized: String { NSLocalizedString("blockchain.user.event.did", comment: "") }
+}
+public protocol I_blockchain_user_event_did: I {}
+public extension I_blockchain_user_event_did {
+	var `update`: L_blockchain_user_event_did_update { .init("\(__).update") }
+}
+public final class L_blockchain_user_event_did_update: L, I_blockchain_user_event_did_update {
+	public override class var localized: String { NSLocalizedString("blockchain.user.event.did.update", comment: "") }
+}
+public protocol I_blockchain_user_event_did_update: I_blockchain_ux_type_analytics_event {}
 public final class L_blockchain_user_is: L, I_blockchain_user_is {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is", comment: "") }
 }
 public protocol I_blockchain_user_is: I {}
 public extension I_blockchain_user_is {
+	var `cowboy`: L_blockchain_user_is_cowboy { .init("\(__).cowboy") }
 	var `tier`: L_blockchain_user_is_tier { .init("\(__).tier") }
 }
+public final class L_blockchain_user_is_cowboy: L, I_blockchain_user_is_cowboy {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.cowboy", comment: "") }
+}
+public protocol I_blockchain_user_is_cowboy: I {}
+public extension I_blockchain_user_is_cowboy {
+	var `fan`: L_blockchain_user_is_cowboy_fan { .init("\(__).fan") }
+}
+public final class L_blockchain_user_is_cowboy_fan: L, I_blockchain_user_is_cowboy_fan {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.cowboy.fan", comment: "") }
+}
+public protocol I_blockchain_user_is_cowboy_fan: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
 public final class L_blockchain_user_is_tier: L, I_blockchain_user_is_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.tier", comment: "") }
 }
@@ -2140,7 +2744,7 @@ public protocol I_blockchain_user_is_tier_gold: I_blockchain_db_type_boolean {}
 public final class L_blockchain_user_is_tier_none: L, I_blockchain_user_is_tier_none {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.tier.none", comment: "") }
 }
-public protocol I_blockchain_user_is_tier_none: I {}
+public protocol I_blockchain_user_is_tier_none: I_blockchain_db_type_boolean {}
 public final class L_blockchain_user_is_tier_silver: L, I_blockchain_user_is_tier_silver {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.tier.silver", comment: "") }
 }
@@ -2172,6 +2776,24 @@ public final class L_blockchain_user_referral_campaign: L, I_blockchain_user_ref
 	public override class var localized: String { NSLocalizedString("blockchain.user.referral.campaign", comment: "") }
 }
 public protocol I_blockchain_user_referral_campaign: I_blockchain_session_state_value {}
+public final class L_blockchain_user_skipped: L, I_blockchain_user_skipped {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped", comment: "") }
+}
+public protocol I_blockchain_user_skipped: I {}
+public extension I_blockchain_user_skipped {
+	var `seed_phrase`: L_blockchain_user_skipped_seed__phrase { .init("\(__).seed_phrase") }
+}
+public final class L_blockchain_user_skipped_seed__phrase: L, I_blockchain_user_skipped_seed__phrase {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped.seed_phrase", comment: "") }
+}
+public protocol I_blockchain_user_skipped_seed__phrase: I {}
+public extension I_blockchain_user_skipped_seed__phrase {
+	var `backup`: L_blockchain_user_skipped_seed__phrase_backup { .init("\(__).backup") }
+}
+public final class L_blockchain_user_skipped_seed__phrase_backup: L, I_blockchain_user_skipped_seed__phrase_backup {
+	public override class var localized: String { NSLocalizedString("blockchain.user.skipped.seed_phrase.backup", comment: "") }
+}
+public protocol I_blockchain_user_skipped_seed__phrase_backup: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_user_token: L, I_blockchain_user_token {
 	public override class var localized: String { NSLocalizedString("blockchain.user.token", comment: "") }
 }
@@ -2244,10 +2866,12 @@ public extension I_blockchain_ux {
 	var `kyc`: L_blockchain_ux_kyc { .init("\(__).kyc") }
 	var `maintenance`: L_blockchain_ux_maintenance { .init("\(__).maintenance") }
 	var `nft`: L_blockchain_ux_nft { .init("\(__).nft") }
+	var `onboarding`: L_blockchain_ux_onboarding { .init("\(__).onboarding") }
 	var `payment`: L_blockchain_ux_payment { .init("\(__).payment") }
 	var `prices`: L_blockchain_ux_prices { .init("\(__).prices") }
 	var `referral`: L_blockchain_ux_referral { .init("\(__).referral") }
 	var `scan`: L_blockchain_ux_scan { .init("\(__).scan") }
+	var `switcher`: L_blockchain_ux_switcher { .init("\(__).switcher") }
 	var `transaction`: L_blockchain_ux_transaction { .init("\(__).transaction") }
 	var `type`: L_blockchain_ux_type { .init("\(__).type") }
 	var `user`: L_blockchain_ux_user { .init("\(__).user") }
@@ -2623,28 +3247,7 @@ public protocol I_blockchain_ux_customer_support_unread_count: I_blockchain_db_t
 public final class L_blockchain_ux_error: L, I_blockchain_ux_error {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.error", comment: "") }
 }
-public protocol I_blockchain_ux_error: I_blockchain_ux_type_story, I_blockchain_ui_device_haptic_feedback_notification_error {}
-public extension I_blockchain_ux_error {
-	var `then`: L_blockchain_ux_error_then { .init("\(__).then") }
-}
-public final class L_blockchain_ux_error_then: L, I_blockchain_ux_error_then {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then", comment: "") }
-}
-public protocol I_blockchain_ux_error_then: I {}
-public extension I_blockchain_ux_error_then {
-	var `launch`: L_blockchain_ux_error_then_launch { .init("\(__).launch") }
-}
-public final class L_blockchain_ux_error_then_launch: L, I_blockchain_ux_error_then_launch {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then.launch", comment: "") }
-}
-public protocol I_blockchain_ux_error_then_launch: I {}
-public extension I_blockchain_ux_error_then_launch {
-	var `url`: L_blockchain_ux_error_then_launch_url { .init("\(__).url") }
-}
-public final class L_blockchain_ux_error_then_launch_url: L, I_blockchain_ux_error_then_launch_url {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.error.then.launch.url", comment: "") }
-}
-public protocol I_blockchain_ux_error_then_launch_url: I_blockchain_db_type_url, I_blockchain_ux_type_analytics_action {}
+public protocol I_blockchain_ux_error: I_blockchain_ux_type_story, I_blockchain_ui_device_haptic_feedback_notification_error, I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_frequent: L, I_blockchain_ux_frequent {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.frequent", comment: "") }
 }
@@ -2759,10 +3362,24 @@ public final class L_blockchain_ux_kyc: L, I_blockchain_ux_kyc {
 }
 public protocol I_blockchain_ux_kyc: I {}
 public extension I_blockchain_ux_kyc {
+	var `current`: L_blockchain_ux_kyc_current { .init("\(__).current") }
 	var `event`: L_blockchain_ux_kyc_event { .init("\(__).event") }
 	var `extra`: L_blockchain_ux_kyc_extra { .init("\(__).extra") }
 	var `tier`: L_blockchain_ux_kyc_tier { .init("\(__).tier") }
+	var `trading`: L_blockchain_ux_kyc_trading { .init("\(__).trading") }
+	var `type`: L_blockchain_ux_kyc_type { .init("\(__).type") }
 }
+public final class L_blockchain_ux_kyc_current: L, I_blockchain_ux_kyc_current {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.current", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_current: I {}
+public extension I_blockchain_ux_kyc_current {
+	var `state`: L_blockchain_ux_kyc_current_state { .init("\(__).state") }
+}
+public final class L_blockchain_ux_kyc_current_state: L, I_blockchain_ux_kyc_current_state {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.current.state", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_current_state: I_blockchain_ux_kyc_type_state {}
 public final class L_blockchain_ux_kyc_event: L, I_blockchain_ux_kyc_event {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event", comment: "") }
 }
@@ -2777,13 +3394,57 @@ public final class L_blockchain_ux_kyc_event_did: L, I_blockchain_ux_kyc_event_d
 public protocol I_blockchain_ux_kyc_event_did: I {}
 public extension I_blockchain_ux_kyc_event_did {
 	var `cancel`: L_blockchain_ux_kyc_event_did_cancel { .init("\(__).cancel") }
+	var `confirm`: L_blockchain_ux_kyc_event_did_confirm { .init("\(__).confirm") }
+	var `enter`: L_blockchain_ux_kyc_event_did_enter { .init("\(__).enter") }
+	var `fail`: L_blockchain_ux_kyc_event_did_fail { .init("\(__).fail") }
 	var `finish`: L_blockchain_ux_kyc_event_did_finish { .init("\(__).finish") }
 	var `start`: L_blockchain_ux_kyc_event_did_start { .init("\(__).start") }
+	var `stop`: L_blockchain_ux_kyc_event_did_stop { .init("\(__).stop") }
 }
 public final class L_blockchain_ux_kyc_event_did_cancel: L, I_blockchain_ux_kyc_event_did_cancel {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.cancel", comment: "") }
 }
 public protocol I_blockchain_ux_kyc_event_did_cancel: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_kyc_event_did_confirm: L, I_blockchain_ux_kyc_event_did_confirm {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.confirm", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_confirm: I {}
+public extension I_blockchain_ux_kyc_event_did_confirm {
+	var `state`: L_blockchain_ux_kyc_event_did_confirm_state { .init("\(__).state") }
+}
+public final class L_blockchain_ux_kyc_event_did_confirm_state: L, I_blockchain_ux_kyc_event_did_confirm_state {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.confirm.state", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_confirm_state: I_blockchain_ux_kyc_type_state {}
+public final class L_blockchain_ux_kyc_event_did_enter: L, I_blockchain_ux_kyc_event_did_enter {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.enter", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_enter: I {}
+public extension I_blockchain_ux_kyc_event_did_enter {
+	var `state`: L_blockchain_ux_kyc_event_did_enter_state { .init("\(__).state") }
+}
+public final class L_blockchain_ux_kyc_event_did_enter_state: L, I_blockchain_ux_kyc_event_did_enter_state {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.enter.state", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_enter_state: I_blockchain_ux_kyc_type_state {}
+public final class L_blockchain_ux_kyc_event_did_fail: L, I_blockchain_ux_kyc_event_did_fail {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.fail", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_fail: I {}
+public extension I_blockchain_ux_kyc_event_did_fail {
+	var `on`: L_blockchain_ux_kyc_event_did_fail_on { .init("\(__).on") }
+}
+public final class L_blockchain_ux_kyc_event_did_fail_on: L, I_blockchain_ux_kyc_event_did_fail_on {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.fail.on", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_fail_on: I {}
+public extension I_blockchain_ux_kyc_event_did_fail_on {
+	var `state`: L_blockchain_ux_kyc_event_did_fail_on_state { .init("\(__).state") }
+}
+public final class L_blockchain_ux_kyc_event_did_fail_on_state: L, I_blockchain_ux_kyc_event_did_fail_on_state {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.fail.on.state", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_fail_on_state: I_blockchain_ux_kyc_type_state {}
 public final class L_blockchain_ux_kyc_event_did_finish: L, I_blockchain_ux_kyc_event_did_finish {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.finish", comment: "") }
 }
@@ -2792,6 +3453,10 @@ public final class L_blockchain_ux_kyc_event_did_start: L, I_blockchain_ux_kyc_e
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.start", comment: "") }
 }
 public protocol I_blockchain_ux_kyc_event_did_start: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_kyc_event_did_stop: L, I_blockchain_ux_kyc_event_did_stop {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.did.stop", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_event_did_stop: I_blockchain_ux_type_analytics_event {}
 public final class L_blockchain_ux_kyc_event_status: L, I_blockchain_ux_kyc_event_status {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.event.status", comment: "") }
 }
@@ -2897,6 +3562,188 @@ public final class L_blockchain_ux_kyc_tier_silver: L, I_blockchain_ux_kyc_tier_
 	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.tier.silver", comment: "") }
 }
 public protocol I_blockchain_ux_kyc_tier_silver: I {}
+public final class L_blockchain_ux_kyc_trading: L, I_blockchain_ux_kyc_trading {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading: I {}
+public extension I_blockchain_ux_kyc_trading {
+	var `limits`: L_blockchain_ux_kyc_trading_limits { .init("\(__).limits") }
+	var `unlock`: L_blockchain_ux_kyc_trading_unlock { .init("\(__).unlock") }
+	var `upgrade`: L_blockchain_ux_kyc_trading_upgrade { .init("\(__).upgrade") }
+}
+public final class L_blockchain_ux_kyc_trading_limits: L, I_blockchain_ux_kyc_trading_limits {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading.limits", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading_limits: I {}
+public extension I_blockchain_ux_kyc_trading_limits {
+	var `overview`: L_blockchain_ux_kyc_trading_limits_overview { .init("\(__).overview") }
+}
+public final class L_blockchain_ux_kyc_trading_limits_overview: L, I_blockchain_ux_kyc_trading_limits_overview {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading.limits.overview", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading_limits_overview: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_kyc_trading_unlock: L, I_blockchain_ux_kyc_trading_unlock {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading.unlock", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading_unlock: I {}
+public extension I_blockchain_ux_kyc_trading_unlock {
+	var `more`: L_blockchain_ux_kyc_trading_unlock_more { .init("\(__).more") }
+}
+public final class L_blockchain_ux_kyc_trading_unlock_more: L, I_blockchain_ux_kyc_trading_unlock_more {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading.unlock.more", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading_unlock_more: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_kyc_trading_upgrade: L, I_blockchain_ux_kyc_trading_upgrade {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.trading.upgrade", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_trading_upgrade: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_kyc_type: L, I_blockchain_ux_kyc_type {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type: I {}
+public extension I_blockchain_ux_kyc_type {
+	var `state`: L_blockchain_ux_kyc_type_state { .init("\(__).state") }
+}
+public final class L_blockchain_ux_kyc_type_state: L, I_blockchain_ux_kyc_type_state {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state: I_blockchain_db_type_enum, I_blockchain_session_state_value {}
+public extension I_blockchain_ux_kyc_type_state {
+	var `account`: L_blockchain_ux_kyc_type_state_account { .init("\(__).account") }
+	var `address`: L_blockchain_ux_kyc_type_state_address { .init("\(__).address") }
+	var `application`: L_blockchain_ux_kyc_type_state_application { .init("\(__).application") }
+	var `confirm`: L_blockchain_ux_kyc_type_state_confirm { .init("\(__).confirm") }
+	var `country`: L_blockchain_ux_kyc_type_state_country { .init("\(__).country") }
+	var `enter`: L_blockchain_ux_kyc_type_state_enter { .init("\(__).enter") }
+	var `finish`: L_blockchain_ux_kyc_type_state_finish { .init("\(__).finish") }
+	var `force_gold`: L_blockchain_ux_kyc_type_state_force__gold { .init("\(__).force_gold") }
+	var `profile`: L_blockchain_ux_kyc_type_state_profile { .init("\(__).profile") }
+	var `resubmit`: L_blockchain_ux_kyc_type_state_resubmit { .init("\(__).resubmit") }
+	var `sdd`: L_blockchain_ux_kyc_type_state_sdd { .init("\(__).sdd") }
+	var `states`: L_blockchain_ux_kyc_type_state_states { .init("\(__).states") }
+	var `verify`: L_blockchain_ux_kyc_type_state_verify { .init("\(__).verify") }
+	var `welcome`: L_blockchain_ux_kyc_type_state_welcome { .init("\(__).welcome") }
+}
+public final class L_blockchain_ux_kyc_type_state_account: L, I_blockchain_ux_kyc_type_state_account {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.account", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_account: I {}
+public extension I_blockchain_ux_kyc_type_state_account {
+	var `form`: L_blockchain_ux_kyc_type_state_account_form { .init("\(__).form") }
+	var `status`: L_blockchain_ux_kyc_type_state_account_status { .init("\(__).status") }
+}
+public final class L_blockchain_ux_kyc_type_state_account_form: L, I_blockchain_ux_kyc_type_state_account_form {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.account.form", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_account_form: I {}
+public final class L_blockchain_ux_kyc_type_state_account_status: L, I_blockchain_ux_kyc_type_state_account_status {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.account.status", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_account_status: I {}
+public final class L_blockchain_ux_kyc_type_state_address: L, I_blockchain_ux_kyc_type_state_address {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.address", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_address: I {}
+public final class L_blockchain_ux_kyc_type_state_application: L, I_blockchain_ux_kyc_type_state_application {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.application", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_application: I {}
+public extension I_blockchain_ux_kyc_type_state_application {
+	var `complete`: L_blockchain_ux_kyc_type_state_application_complete { .init("\(__).complete") }
+}
+public final class L_blockchain_ux_kyc_type_state_application_complete: L, I_blockchain_ux_kyc_type_state_application_complete {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.application.complete", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_application_complete: I {}
+public final class L_blockchain_ux_kyc_type_state_confirm: L, I_blockchain_ux_kyc_type_state_confirm {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.confirm", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_confirm: I {}
+public extension I_blockchain_ux_kyc_type_state_confirm {
+	var `email`: L_blockchain_ux_kyc_type_state_confirm_email { .init("\(__).email") }
+	var `phone`: L_blockchain_ux_kyc_type_state_confirm_phone { .init("\(__).phone") }
+}
+public final class L_blockchain_ux_kyc_type_state_confirm_email: L, I_blockchain_ux_kyc_type_state_confirm_email {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.confirm.email", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_confirm_email: I {}
+public final class L_blockchain_ux_kyc_type_state_confirm_phone: L, I_blockchain_ux_kyc_type_state_confirm_phone {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.confirm.phone", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_confirm_phone: I {}
+public final class L_blockchain_ux_kyc_type_state_country: L, I_blockchain_ux_kyc_type_state_country {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.country", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_country: I {}
+public final class L_blockchain_ux_kyc_type_state_enter: L, I_blockchain_ux_kyc_type_state_enter {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.enter", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_enter: I {}
+public extension I_blockchain_ux_kyc_type_state_enter {
+	var `email`: L_blockchain_ux_kyc_type_state_enter_email { .init("\(__).email") }
+	var `phone`: L_blockchain_ux_kyc_type_state_enter_phone { .init("\(__).phone") }
+}
+public final class L_blockchain_ux_kyc_type_state_enter_email: L, I_blockchain_ux_kyc_type_state_enter_email {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.enter.email", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_enter_email: I {}
+public final class L_blockchain_ux_kyc_type_state_enter_phone: L, I_blockchain_ux_kyc_type_state_enter_phone {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.enter.phone", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_enter_phone: I {}
+public final class L_blockchain_ux_kyc_type_state_finish: L, I_blockchain_ux_kyc_type_state_finish {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.finish", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_finish: I {}
+public final class L_blockchain_ux_kyc_type_state_force__gold: L, I_blockchain_ux_kyc_type_state_force__gold {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.force_gold", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_force__gold: I {}
+public final class L_blockchain_ux_kyc_type_state_profile: L, I_blockchain_ux_kyc_type_state_profile {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.profile", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_profile: I {}
+public final class L_blockchain_ux_kyc_type_state_resubmit: L, I_blockchain_ux_kyc_type_state_resubmit {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.resubmit", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_resubmit: I {}
+public extension I_blockchain_ux_kyc_type_state_resubmit {
+	var `identity`: L_blockchain_ux_kyc_type_state_resubmit_identity { .init("\(__).identity") }
+}
+public final class L_blockchain_ux_kyc_type_state_resubmit_identity: L, I_blockchain_ux_kyc_type_state_resubmit_identity {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.resubmit.identity", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_resubmit_identity: I {}
+public final class L_blockchain_ux_kyc_type_state_sdd: L, I_blockchain_ux_kyc_type_state_sdd {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.sdd", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_sdd: I {}
+public extension I_blockchain_ux_kyc_type_state_sdd {
+	var `verification`: L_blockchain_ux_kyc_type_state_sdd_verification { .init("\(__).verification") }
+}
+public final class L_blockchain_ux_kyc_type_state_sdd_verification: L, I_blockchain_ux_kyc_type_state_sdd_verification {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.sdd.verification", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_sdd_verification: I {}
+public final class L_blockchain_ux_kyc_type_state_states: L, I_blockchain_ux_kyc_type_state_states {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.states", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_states: I {}
+public final class L_blockchain_ux_kyc_type_state_verify: L, I_blockchain_ux_kyc_type_state_verify {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.verify", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_verify: I {}
+public extension I_blockchain_ux_kyc_type_state_verify {
+	var `identity`: L_blockchain_ux_kyc_type_state_verify_identity { .init("\(__).identity") }
+}
+public final class L_blockchain_ux_kyc_type_state_verify_identity: L, I_blockchain_ux_kyc_type_state_verify_identity {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.verify.identity", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_verify_identity: I {}
+public final class L_blockchain_ux_kyc_type_state_welcome: L, I_blockchain_ux_kyc_type_state_welcome {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.kyc.type.state.welcome", comment: "") }
+}
+public protocol I_blockchain_ux_kyc_type_state_welcome: I {}
 public final class L_blockchain_ux_maintenance: L, I_blockchain_ux_maintenance {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.maintenance", comment: "") }
 }
@@ -2924,7 +3771,7 @@ public protocol I_blockchain_ux_nft_asset_select: I {}
 public final class L_blockchain_ux_nft_collection: L, I_blockchain_ux_nft_collection {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.nft.collection", comment: "") }
 }
-public protocol I_blockchain_ux_nft_collection: I_blockchain_db_collection {}
+public protocol I_blockchain_ux_nft_collection: I_blockchain_ux_type_story, I_blockchain_db_collection {}
 public extension I_blockchain_ux_nft_collection {
 	var `select`: L_blockchain_ux_nft_collection_select { .init("\(__).select") }
 }
@@ -2943,6 +3790,160 @@ public final class L_blockchain_ux_nft_wallet_select: L, I_blockchain_ux_nft_wal
 	public override class var localized: String { NSLocalizedString("blockchain.ux.nft.wallet.select", comment: "") }
 }
 public protocol I_blockchain_ux_nft_wallet_select: I {}
+public final class L_blockchain_ux_onboarding: L, I_blockchain_ux_onboarding {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding: I {}
+public extension I_blockchain_ux_onboarding {
+	var `promotion`: L_blockchain_ux_onboarding_promotion { .init("\(__).promotion") }
+	var `type`: L_blockchain_ux_onboarding_type { .init("\(__).type") }
+}
+public final class L_blockchain_ux_onboarding_promotion: L, I_blockchain_ux_onboarding_promotion {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion: I {}
+public extension I_blockchain_ux_onboarding_promotion {
+	var `cowboys`: L_blockchain_ux_onboarding_promotion_cowboys { .init("\(__).cowboys") }
+	var `launch`: L_blockchain_ux_onboarding_promotion_launch { .init("\(__).launch") }
+	var `product`: L_blockchain_ux_onboarding_promotion_product { .init("\(__).product") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys: L, I_blockchain_ux_onboarding_promotion_cowboys {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys {
+	var `is`: L_blockchain_ux_onboarding_promotion_cowboys_is { .init("\(__).is") }
+	var `raffle`: L_blockchain_ux_onboarding_promotion_cowboys_raffle { .init("\(__).raffle") }
+	var `refer`: L_blockchain_ux_onboarding_promotion_cowboys_refer { .init("\(__).refer") }
+	var `user`: L_blockchain_ux_onboarding_promotion_cowboys_user { .init("\(__).user") }
+	var `verify`: L_blockchain_ux_onboarding_promotion_cowboys_verify { .init("\(__).verify") }
+	var `welcome`: L_blockchain_ux_onboarding_promotion_cowboys_welcome { .init("\(__).welcome") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_is: L, I_blockchain_ux_onboarding_promotion_cowboys_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.is", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_is: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_is {
+	var `enabled`: L_blockchain_ux_onboarding_promotion_cowboys_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_is_enabled: L, I_blockchain_ux_onboarding_promotion_cowboys_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.is.enabled", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_raffle: L, I_blockchain_ux_onboarding_promotion_cowboys_raffle {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.raffle", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_raffle: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_refer: L, I_blockchain_ux_onboarding_promotion_cowboys_refer {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.refer", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_refer: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_refer {
+	var `friends`: L_blockchain_ux_onboarding_promotion_cowboys_refer_friends { .init("\(__).friends") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_refer_friends: L, I_blockchain_ux_onboarding_promotion_cowboys_refer_friends {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.refer.friends", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_refer_friends: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user: L, I_blockchain_ux_onboarding_promotion_cowboys_user {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user {
+	var `kyc`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc { .init("\(__).kyc") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc {
+	var `is`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is { .init("\(__).is") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is {
+	var `under`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under { .init("\(__).under") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under {
+	var `review`: L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review { .init("\(__).review") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review: L, I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.user.kyc.is.under.review", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_user_kyc_is_under_review: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_verify: L, I_blockchain_ux_onboarding_promotion_cowboys_verify {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.verify", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_verify: I {}
+public extension I_blockchain_ux_onboarding_promotion_cowboys_verify {
+	var `identity`: L_blockchain_ux_onboarding_promotion_cowboys_verify_identity { .init("\(__).identity") }
+}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_verify_identity: L, I_blockchain_ux_onboarding_promotion_cowboys_verify_identity {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.verify.identity", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_verify_identity: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_cowboys_welcome: L, I_blockchain_ux_onboarding_promotion_cowboys_welcome {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.cowboys.welcome", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_cowboys_welcome: I_blockchain_ux_onboarding_type_promotion {}
+public final class L_blockchain_ux_onboarding_promotion_launch: L, I_blockchain_ux_onboarding_promotion_launch {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.launch", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_launch: I_blockchain_ux_type_analytics_event {}
+public extension I_blockchain_ux_onboarding_promotion_launch {
+	var `story`: L_blockchain_ux_onboarding_promotion_launch_story { .init("\(__).story") }
+}
+public final class L_blockchain_ux_onboarding_promotion_launch_story: L, I_blockchain_ux_onboarding_promotion_launch_story {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.launch.story", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_launch_story: I_blockchain_db_type_tag, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_onboarding_promotion_product: L, I_blockchain_ux_onboarding_promotion_product {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.promotion.product", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_promotion_product: I_blockchain_ux_onboarding_type_promotion, I_blockchain_db_collection {}
+public final class L_blockchain_ux_onboarding_type: L, I_blockchain_ux_onboarding_type {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type: I {}
+public extension I_blockchain_ux_onboarding_type {
+	var `promotion`: L_blockchain_ux_onboarding_type_promotion { .init("\(__).promotion") }
+}
+public final class L_blockchain_ux_onboarding_type_promotion: L, I_blockchain_ux_onboarding_type_promotion {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type.promotion", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type_promotion: I {}
+public extension I_blockchain_ux_onboarding_type_promotion {
+	var `announcement`: L_blockchain_ux_onboarding_type_promotion_announcement { .init("\(__).announcement") }
+	var `story`: L_blockchain_ux_onboarding_type_promotion_story { .init("\(__).story") }
+}
+public final class L_blockchain_ux_onboarding_type_promotion_announcement: L, I_blockchain_ux_onboarding_type_promotion_announcement {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type.promotion.announcement", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type_promotion_announcement: I_blockchain_ux_type_story, I_blockchain_session_configuration_value {}
+public extension I_blockchain_ux_onboarding_type_promotion_announcement {
+	var `action`: L_blockchain_ux_onboarding_type_promotion_announcement_action { .init("\(__).action") }
+}
+public final class L_blockchain_ux_onboarding_type_promotion_announcement_action: L, I_blockchain_ux_onboarding_type_promotion_announcement_action {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type.promotion.announcement.action", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type_promotion_announcement_action: I_blockchain_ux_type_action {}
+public final class L_blockchain_ux_onboarding_type_promotion_story: L, I_blockchain_ux_onboarding_type_promotion_story {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type.promotion.story", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type_promotion_story: I_blockchain_ux_type_story, I_blockchain_session_configuration_value {}
+public extension I_blockchain_ux_onboarding_type_promotion_story {
+	var `action`: L_blockchain_ux_onboarding_type_promotion_story_action { .init("\(__).action") }
+}
+public final class L_blockchain_ux_onboarding_type_promotion_story_action: L, I_blockchain_ux_onboarding_type_promotion_story_action {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.onboarding.type.promotion.story.action", comment: "") }
+}
+public protocol I_blockchain_ux_onboarding_type_promotion_story_action: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_payment: L, I_blockchain_ux_payment {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.payment", comment: "") }
 }
@@ -3119,6 +4120,17 @@ public final class L_blockchain_ux_scan_QR: L, I_blockchain_ux_scan_QR {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.scan.QR", comment: "") }
 }
 public protocol I_blockchain_ux_scan_QR: I_blockchain_ux_type_story {}
+public final class L_blockchain_ux_switcher: L, I_blockchain_ux_switcher {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.switcher", comment: "") }
+}
+public protocol I_blockchain_ux_switcher: I {}
+public extension I_blockchain_ux_switcher {
+	var `entry`: L_blockchain_ux_switcher_entry { .init("\(__).entry") }
+}
+public final class L_blockchain_ux_switcher_entry: L, I_blockchain_ux_switcher_entry {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.switcher.entry", comment: "") }
+}
+public protocol I_blockchain_ux_switcher_entry: I_blockchain_ux_type_story_entry {}
 public final class L_blockchain_ux_transaction: L, I_blockchain_ux_transaction {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction", comment: "") }
 }
@@ -3310,6 +4322,7 @@ public extension I_blockchain_ux_transaction_event {
 	var `checkout`: L_blockchain_ux_transaction_event_checkout { .init("\(__).checkout") }
 	var `did`: L_blockchain_ux_transaction_event_did { .init("\(__).did") }
 	var `enter`: L_blockchain_ux_transaction_event_enter { .init("\(__).enter") }
+	var `execution`: L_blockchain_ux_transaction_event_execution { .init("\(__).execution") }
 	var `in`: L_blockchain_ux_transaction_event_in { .init("\(__).in") }
 	var `link`: L_blockchain_ux_transaction_event_link { .init("\(__).link") }
 	var `select`: L_blockchain_ux_transaction_event_select { .init("\(__).select") }
@@ -3357,6 +4370,51 @@ public final class L_blockchain_ux_transaction_event_enter_amount: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.enter.amount", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_event_enter_amount: I {}
+public final class L_blockchain_ux_transaction_event_execution: L, I_blockchain_ux_transaction_event_execution {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution: I {}
+public extension I_blockchain_ux_transaction_event_execution {
+	var `status`: L_blockchain_ux_transaction_event_execution_status { .init("\(__).status") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status: L, I_blockchain_ux_transaction_event_execution_status {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status: I_blockchain_db_type_enum {}
+public extension I_blockchain_ux_transaction_event_execution_status {
+	var `completed`: L_blockchain_ux_transaction_event_execution_status_completed { .init("\(__).completed") }
+	var `error`: L_blockchain_ux_transaction_event_execution_status_error { .init("\(__).error") }
+	var `in`: L_blockchain_ux_transaction_event_execution_status_in { .init("\(__).in") }
+	var `pending`: L_blockchain_ux_transaction_event_execution_status_pending { .init("\(__).pending") }
+	var `starting`: L_blockchain_ux_transaction_event_execution_status_starting { .init("\(__).starting") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status_completed: L, I_blockchain_ux_transaction_event_execution_status_completed {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.completed", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_completed: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_error: L, I_blockchain_ux_transaction_event_execution_status_error {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.error", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_error: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_in: L, I_blockchain_ux_transaction_event_execution_status_in {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.in", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_in: I {}
+public extension I_blockchain_ux_transaction_event_execution_status_in {
+	var `progress`: L_blockchain_ux_transaction_event_execution_status_in_progress { .init("\(__).progress") }
+}
+public final class L_blockchain_ux_transaction_event_execution_status_in_progress: L, I_blockchain_ux_transaction_event_execution_status_in_progress {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.in.progress", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_in_progress: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_pending: L, I_blockchain_ux_transaction_event_execution_status_pending {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.pending", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_pending: I {}
+public final class L_blockchain_ux_transaction_event_execution_status_starting: L, I_blockchain_ux_transaction_event_execution_status_starting {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.execution.status.starting", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_execution_status_starting: I {}
 public final class L_blockchain_ux_transaction_event_in: L, I_blockchain_ux_transaction_event_in {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.in", comment: "") }
 }
@@ -3602,6 +4660,7 @@ public final class L_blockchain_ux_type_analytics: L, I_blockchain_ux_type_analy
 public protocol I_blockchain_ux_type_analytics: I {}
 public extension I_blockchain_ux_type_analytics {
 	var `action`: L_blockchain_ux_type_analytics_action { .init("\(__).action") }
+	var `configuration`: L_blockchain_ux_type_analytics_configuration { .init("\(__).configuration") }
 	var `current`: L_blockchain_ux_type_analytics_current { .init("\(__).current") }
 	var `error`: L_blockchain_ux_type_analytics_error { .init("\(__).error") }
 	var `event`: L_blockchain_ux_type_analytics_event { .init("\(__).event") }
@@ -3611,6 +4670,36 @@ public final class L_blockchain_ux_type_analytics_action: L, I_blockchain_ux_typ
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.action", comment: "") }
 }
 public protocol I_blockchain_ux_type_analytics_action: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_type_analytics_configuration: L, I_blockchain_ux_type_analytics_configuration {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration: I {}
+public extension I_blockchain_ux_type_analytics_configuration {
+	var `firebase`: L_blockchain_ux_type_analytics_configuration_firebase { .init("\(__).firebase") }
+	var `segment`: L_blockchain_ux_type_analytics_configuration_segment { .init("\(__).segment") }
+}
+public final class L_blockchain_ux_type_analytics_configuration_firebase: L, I_blockchain_ux_type_analytics_configuration_firebase {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.firebase", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_firebase: I {}
+public extension I_blockchain_ux_type_analytics_configuration_firebase {
+	var `map`: L_blockchain_ux_type_analytics_configuration_firebase_map { .init("\(__).map") }
+}
+public final class L_blockchain_ux_type_analytics_configuration_firebase_map: L, I_blockchain_ux_type_analytics_configuration_firebase_map {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.firebase.map", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_firebase_map: I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_type_analytics_configuration_segment: L, I_blockchain_ux_type_analytics_configuration_segment {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.segment", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_segment: I {}
+public extension I_blockchain_ux_type_analytics_configuration_segment {
+	var `map`: L_blockchain_ux_type_analytics_configuration_segment_map { .init("\(__).map") }
+}
+public final class L_blockchain_ux_type_analytics_configuration_segment_map: L, I_blockchain_ux_type_analytics_configuration_segment_map {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.configuration.segment.map", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_configuration_segment_map: I_blockchain_session_configuration_value {}
 public final class L_blockchain_ux_type_analytics_current: L, I_blockchain_ux_type_analytics_current {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.current", comment: "") }
 }

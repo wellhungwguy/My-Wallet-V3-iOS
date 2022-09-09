@@ -62,7 +62,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 paymentMethodType: target.paymentType
             ),
             walletCurrencyService
-                .displayCurrency
+                .tradingCurrency
                 .asSingle()
         )
         .map { [sourceAsset] values -> PendingTransaction in

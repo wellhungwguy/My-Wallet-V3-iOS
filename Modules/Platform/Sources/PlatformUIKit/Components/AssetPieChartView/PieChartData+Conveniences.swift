@@ -21,7 +21,7 @@ extension PieChartData {
         set.drawIconsEnabled = false
         set.drawValuesEnabled = false
         set.selectionShift = 0
-        set.colors = [.darkShimmering]
+        set.colors = [.clear]
         return PieChartData(dataSet: set)
     }
 }

@@ -16,7 +16,7 @@ struct Tab: Hashable, Identifiable, Codable {
     var id: AnyHashable { tag }
     var tag: Tag.Reference
     var name: String
-    var ux: Nabu.Error.UX?
+    var ux: UX.Dialog?
     var url: URL?
     var icon: Icon
 }
@@ -39,7 +39,6 @@ extension Tab {
 }
 
 struct RootView: View {
-
     var app: AppProtocol = Blockchain.app
 
     let store: Store<RootViewState, RootViewAction>
@@ -80,17 +79,27 @@ struct RootView: View {
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
+        .bottomSheet(
+            isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
+            content: {
+                IfLetStore(
+                    store.scope(
+                        state: \.appModeSwitcherState,
+                        action: RootViewAction.appModeSwitcherAction
+                    ),
+                    then: { store in
+                        AppModeSwitcherView(store: store)
+                    }
+                )
+            }
+        )
         .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn).animation(.spring())) {
             IfLetStore(store.scope(state: \.fab.data)) { store in
                 WithViewStore(store) { viewStore in
                     FrequentActionView(
                         list: viewStore.list,
                         buttons: viewStore.buttons
-                    ) { action in
-                        withAnimation {
-                            viewStore.send(.frequentAction(action))
-                        }
-                    }
+                    )
                 }
             }
         }
@@ -145,11 +154,11 @@ struct RootView: View {
                         maintenance(tab)
                     }
                 default:
-                    #if DEBUG
+#if DEBUG
                     fatalError("Unhandled \(tab)")
-                    #else
+#else
                     maintenance(tab)
-                    #endif
+#endif
                 }
             }
         }
@@ -171,8 +180,8 @@ struct RootView: View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(
-                    leading: account,
-                    title: tab.name.localized(),
+                    leading: leadingViews,
+                    title: viewStore.appSwitcherEnabled ? "" : tab.name.localized(),
                     trailing: trailingViews
                 )
         }
@@ -194,7 +203,22 @@ struct RootView: View {
         Group {
             referrals()
                 .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
+
             QR()
+
+            if viewStore.appSwitcherEnabled {
+                account()
+            }
+        }
+    }
+
+    @ViewBuilder func leadingViews() -> some View {
+        Group {
+            if viewStore.appSwitcherEnabled, let appMode = viewStore.appMode {
+                appModeSwitcher(with: appMode)
+            } else {
+                account()
+            }
         }
     }
 
@@ -208,7 +232,17 @@ struct RootView: View {
                 !viewStore.referralState.isHighlighted,
                 then: { view in view.update(icon: Icon.giftbox) }
             )
-            .identity(blockchain.ux.referral.entry)
+                .identity(blockchain.ux.referral.entry)
+    }
+
+    @ViewBuilder func appModeSwitcher(with appMode: AppMode) -> some View {
+        AppModeSwitcherButton(
+            appMode: appMode,
+            action: {
+                viewStore.send(.onAppModeSwitcherTapped)
+            }
+        )
+        .identity(blockchain.ux.switcher.entry)
     }
 
     @ViewBuilder func QR() -> some View {

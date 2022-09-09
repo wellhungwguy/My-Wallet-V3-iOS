@@ -164,12 +164,16 @@ extension AccountGroup {
     }
 }
 
-extension AnyPublisher where Output == [AccountGroup] {
-
-    public func flatMapAllAccountGroup() -> AnyPublisher<AccountGroup, Failure> {
+extension AnyPublisher where Output == [AccountGroup?] {
+    public func flatMapAllAccountGroup() -> AnyPublisher<AccountGroup?, Failure> {
         map { groups in
-            AllAccountsGroup(
-                accounts: groups.map(\.accounts).flatMap { $0 }
+            let compactedGroup = groups.compactMap({ $0 })
+
+            guard compactedGroup.isEmpty == false else {
+                return nil
+            }
+            return AllAccountsGroup(
+                accounts: compactedGroup.map(\.accounts).flatMap { $0 }
             )
         }
         .eraseToAnyPublisher()

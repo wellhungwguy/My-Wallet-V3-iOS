@@ -4,20 +4,20 @@ import Errors
 
 public struct CardSuccessRate: Decodable {
     public let block: Bool
-    public let ux: Nabu.Error.UX?
+    public let ux: UX.Dialog?
 
     public struct Response: Equatable {
         public let bin: String
         public let block: Bool
-        public let ux: Nabu.Error.UX?
+        public let ux: UX.Dialog?
 
         public init(
             _ successRate: CardSuccessRate,
             bin: String
         ) {
             self.bin = bin
-            self.block = successRate.block
-            self.ux = successRate.ux
+            block = successRate.block
+            ux = successRate.ux
         }
     }
 }

@@ -5,7 +5,6 @@ import DIKit
 import FeatureCardPaymentDomain
 import Localization
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 
 public final class CardAuthorizationScreenPresenter: RibBridgePresenter {
