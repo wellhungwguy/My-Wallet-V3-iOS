@@ -256,10 +256,7 @@ extension AppProtocol {
     public func publisher<T: Equatable>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
         publisher(for: event).decode(T.self)
             .removeDuplicates(
-                by: { lhs, rhs in
-                    do { return try lhs.get() == rhs.get() }
-                    catch { return false }
-                }
+                by: { lhs, rhs in (try? lhs.get() == rhs.get()) ?? false }
             )
             .eraseToAnyPublisher()
     }
