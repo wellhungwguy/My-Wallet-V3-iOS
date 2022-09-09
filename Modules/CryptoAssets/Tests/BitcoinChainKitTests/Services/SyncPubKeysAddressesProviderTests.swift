@@ -11,10 +11,11 @@ import ToolKit
 import XCTest
 
 // swiftlint:disable line_length type_body_length function_body_length
-class SyncPubKeysAddressesProviderTests: XCTestCase {
+final class SyncPubKeysAddressesProviderTests: XCTestCase {
+
+    private static let timeout: TimeInterval = 10
 
     private var cancellables: Set<AnyCancellable>!
-    private let queue = DispatchQueue(label: "receive.address.queue")
 
     override func setUp() {
         super.setUp()
@@ -96,15 +97,11 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let expectedAddresses = (activeAddresses + expectedGeneratedAddresses).joined(separator: "|")
 
-        Just(())
-            .subscribe(on: queue)
-            .flatMap { _ -> AnyPublisher<String, SyncPubKeysAddressesProviderError> in
-                syncPubKeysProvider
-                    .provideAddresses(
-                        active: activeAddresses,
-                        accounts: accounts
-                    )
-            }
+        syncPubKeysProvider
+            .provideAddresses(
+                active: activeAddresses,
+                accounts: accounts
+            )
             .sink(
                 receiveCompletion: { completion in
                     guard case .failure = completion else {
@@ -119,7 +116,7 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
             )
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: Self.timeout)
     }
 
     func test_provides_correct_addresses_for_syncing_a_different_multiAddress_index() {
@@ -197,15 +194,11 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let expectedAddresses = (activeAddresses + expectedGeneratedAddresses).joined(separator: "|")
 
-        Just(())
-            .subscribe(on: queue)
-            .flatMap { _ -> AnyPublisher<String, SyncPubKeysAddressesProviderError> in
-                syncPubKeysProvider
-                    .provideAddresses(
-                        active: activeAddresses,
-                        accounts: accounts
-                    )
-            }
+        syncPubKeysProvider
+            .provideAddresses(
+                active: activeAddresses,
+                accounts: accounts
+            )
             .sink(
                 receiveCompletion: { completion in
                     guard case .failure = completion else {
@@ -220,7 +213,7 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
             )
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: Self.timeout)
     }
 
     func test_provides_correct_addresses_for_syncing_multiple_accounts() {
@@ -320,15 +313,11 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
         let generatedAddresses = expectedGeneratedAddressesAccount_1 + expectedGeneratedAddressesAccount_2
         let expectedAddresses = (activeAddresses + generatedAddresses).joined(separator: "|")
 
-        Just(())
-            .subscribe(on: queue)
-            .flatMap { _ -> AnyPublisher<String, SyncPubKeysAddressesProviderError> in
-                syncPubKeysProvider
-                    .provideAddresses(
-                        active: activeAddresses,
-                        accounts: accounts
-                    )
-            }
+        syncPubKeysProvider
+            .provideAddresses(
+                active: activeAddresses,
+                accounts: accounts
+            )
             .sink(
                 receiveCompletion: { completion in
                     guard case .failure = completion else {
@@ -343,6 +332,6 @@ class SyncPubKeysAddressesProviderTests: XCTestCase {
             )
             .store(in: &cancellables)
 
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: Self.timeout)
     }
 }

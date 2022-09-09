@@ -6,15 +6,22 @@ import RxToolKit
 import TestKit
 import XCTest
 
-class ObservableAsPublisherTests: XCTestCase {
+final class ObservableAsPublisherTests: XCTestCase {
 
-    private var subscription: AnyCancellable!
+    static let timeout: TimeInterval = 1
+
+    var bag: DisposeBag!
+
+    override func setUp() {
+        super.setUp()
+        bag = DisposeBag()
+    }
 
     func test_int() throws {
         let source = Observable.range(start: 1, count: 100)
         let values = try source.asPublisher()
             .collect()
-            .wait()
+            .wait(timeout: Self.timeout)
         XCTAssertEqual(values, Array(1...100))
     }
 
@@ -23,7 +30,7 @@ class ObservableAsPublisherTests: XCTestCase {
         let source = Observable.from(input)
         let values = try source.asPublisher()
             .collect()
-            .wait()
+            .wait(timeout: Self.timeout)
         XCTAssertEqual(values, input)
     }
 
@@ -44,7 +51,7 @@ class ObservableAsPublisherTests: XCTestCase {
                     values.append(i)
                 })
                 .collect()
-                .wait()
+                .wait(timeout: Self.timeout)
         ) { error in
             XCTAssertEqual(values, Array(1..<15))
             XCTAssertTrue(error is Test)
@@ -62,13 +69,11 @@ class ObservableAsPublisherTests: XCTestCase {
 
         let values = try source.asPublisher()
             .collect()
-            .wait()
+            .wait(timeout: Self.timeout)
 
-        wait(for: [expect], timeout: 0)
+        wait(for: [expect], timeout: Self.timeout)
         XCTAssertEqual(values, Array(1...10))
     }
-
-    var bag: DisposeBag = .init()
 
     func test_concurrency() throws {
 
@@ -113,7 +118,7 @@ class ObservableAsPublisherTests: XCTestCase {
             }
         }
 
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: Self.timeout)
         XCTAssertEqual(routes, actual)
     }
 }
