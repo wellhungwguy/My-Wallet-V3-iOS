@@ -60,45 +60,52 @@ extension TransactionFlowAction: Equatable {
 
 extension TransactionFlowAction {
 
-    public var isCustodial: Bool {
+    var isCustodial: Bool {
         switch self {
-        case
-            .buy,
-            .sell,
-            .swap:
-                return true
-        case
-            .send(let account, _),
-            .sign(let account as BlockchainAccount?, _),
-            .receive(let account as BlockchainAccount?):
-                return account?.accountType.isCustodial ?? false
-        case
-            .order,
-            .interestTransfer,
-            .interestWithdraw,
-            .withdraw,
-            .deposit:
-                return true
+        case .buy,
+             .sell,
+             .swap:
+            return true
+        case .send(let account, _),
+             .sign(let account as BlockchainAccount?, _),
+             .receive(let account as BlockchainAccount?):
+            return account?.accountType.isCustodial ?? false
+        case .order,
+             .interestTransfer,
+             .interestWithdraw,
+             .withdraw,
+             .deposit:
+            return true
         }
     }
 }
 
-// swiftlint:disable switch_case_on_newline
 extension TransactionFlowAction {
 
-    public var asset: AssetAction {
+    var asset: AssetAction {
         switch self {
-        case .buy: return .buy
-        case .sell: return .sell
-        case .swap: return .swap
-        case .send: return .send
-        case .receive: return .receive
-        case .order: return .buy
-        case .deposit: return .deposit
-        case .withdraw: return .withdraw
-        case .interestTransfer: return .interestTransfer
-        case .interestWithdraw: return .interestWithdraw
-        case .sign: return .sign
+        case .buy:
+            return .buy
+        case .sell:
+            return .sell
+        case .swap:
+            return .swap
+        case .send:
+            return .send
+        case .receive:
+            return .receive
+        case .order:
+            return .buy
+        case .deposit:
+            return .deposit
+        case .withdraw:
+            return .withdraw
+        case .interestTransfer:
+            return .interestTransfer
+        case .interestWithdraw:
+            return .interestWithdraw
+        case .sign:
+            return .sign
         }
     }
 }

@@ -139,10 +139,38 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
         transactionTarget: TransactionTarget,
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
+        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
+            return legacyRestart(
+                transactionTarget: transactionTarget,
+                pendingTransaction: pendingTransaction
+            )
+        }
+        return nativeRestart(
+            transactionTarget: transactionTarget,
+            pendingTransaction: pendingTransaction
+        )
+    }
+
+    private func legacyRestart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
         )
+    }
+
+    private func nativeRestart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        self.transactionTarget = transactionTarget
+        return nativeUpdate(
+            amount: pendingTransaction.amount,
+            pendingTransaction: pendingTransaction
+        )
+        .asSingle()
     }
 
     private var isNativeTransactionEnabled: AnyPublisher<Bool, Never> {
