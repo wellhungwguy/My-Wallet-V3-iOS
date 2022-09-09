@@ -55,6 +55,10 @@ final class TaxCenterAnnouncement: PeriodicAnnouncement {
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         guard userCountry == .US else {
             return false

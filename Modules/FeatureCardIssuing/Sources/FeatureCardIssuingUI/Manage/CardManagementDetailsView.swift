@@ -56,7 +56,7 @@ struct CardManagementDetailsView: View {
                         subtitle: L10n.Personal.subtitle,
                         trailing: { chevronRight },
                         action: {
-                            viewStore.send(.binding(.set(\.$isPersonalDetailsVisible, true)))
+                            viewStore.send(.editAddress)
                         }
                     )
                     PrimaryDivider()
@@ -80,17 +80,6 @@ struct CardManagementDetailsView: View {
                 isPresented: viewStore.binding(\.$isDeleteCardPresented),
                 content: {
                     CloseCardView(store: store)
-                }
-            )
-            .bottomSheet(
-                isPresented: viewStore.binding(\.$isPersonalDetailsVisible),
-                content: {
-                    ResidentialAddressModificationView(store: store
-                        .scope(
-                            state: \.residentialAddressModificationState,
-                            action: CardManagementAction.residentialAddressModificationAction
-                        )
-                    )
                 }
             )
         }

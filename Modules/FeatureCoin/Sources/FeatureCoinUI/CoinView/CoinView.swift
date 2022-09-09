@@ -138,6 +138,8 @@ public struct CoinView: View {
 
                     if let swapAction = viewStore.swapButton {
                         PrimaryButton(title: swapAction.title) {
+                            swapAction.icon
+                        } action: {
                             app.post(event: swapAction.event[].ref(to: context), context: context)
                         }
                         .disabled(swapAction.disabled)

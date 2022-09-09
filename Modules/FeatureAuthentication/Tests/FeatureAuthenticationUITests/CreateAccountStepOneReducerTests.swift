@@ -4,7 +4,7 @@ import AnalyticsKitMock
 import ComposableArchitecture
 import ComposableNavigation
 @testable import FeatureAuthenticationDomain
-import FeatureAuthenticationMock
+@testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
 import ToolKitMock
 import UIComponentsKit
@@ -35,7 +35,8 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
-                featureFlagsService: mockFeatureFlagService
+                featureFlagsService: mockFeatureFlagService,
+                recaptchaService: MockRecaptchaService()
             )
         )
     }
@@ -90,7 +91,8 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
                 walletRecoveryService: .mock(),
                 walletCreationService: .failing(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
-                featureFlagsService: MockFeatureFlagsService()
+                featureFlagsService: MockFeatureFlagsService(),
+                recaptchaService: MockRecaptchaService()
             )
         )
         // GIVEN: The form is valid

@@ -119,6 +119,13 @@ final class AnnouncementPresenter {
         self.coincore = coincore
         self.nabuUserService = nabuUserService
 
+        app.modePublisher()
+            .asObservable()
+            .bind { [weak self] _ in
+                self?.calculate()
+            }
+            .disposed(by: disposeBag)
+
         announcement
             .asObservable()
             .filter(\.isHide)
@@ -143,8 +150,9 @@ final class AnnouncementPresenter {
     private func calculate() {
         let announcementsMetadata = featureFetcher
             .fetch(for: .announcements, as: AnnouncementsMetadata.self)
+        let delaySeconds = app.currentMode == .defi ? 0 : 10
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
-            .delaySubscription(.seconds(10), scheduler: MainScheduler.asyncInstance)
+            .delaySubscription(.seconds(delaySeconds), scheduler: MainScheduler.asyncInstance)
         Single
             .zip(announcementsMetadata, data)
             .flatMap(weak: self) { (self, payload) -> Single<AnnouncementDisplayAction> in
@@ -163,13 +171,16 @@ final class AnnouncementPresenter {
         metadata: AnnouncementsMetadata,
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
+
+        if
+            app.state.yes(if: blockchain.user.is.cowboy.fan),
+            app.remoteConfiguration.yes(unless: blockchain.ux.onboarding.promotion.cowboys.announcements.is.enabled)
+        {
+            return .none
+        }
+
         // For other users, keep the current logic in place
         for type in metadata.order {
-            // Wallets with no balance should show no announcements
-            guard preliminaryData.hasAnyWalletBalance || type.showsWhenWalletHasNoBalance else {
-                return .none
-            }
-
             let announcement: Announcement
             switch type {
             case .majorProductBlocked:
@@ -250,8 +261,15 @@ final class AnnouncementPresenter {
                 )
             }
 
+            // Wallets with no balance should show no announcements
+            let shouldShowBalanceCheck = preliminaryData.hasAnyWalletBalance
+                || type.showsWhenWalletHasNoBalance
+
+            // For users that are not in the mode needed for the announcement we don't show it
+            let shouldShowCurrentModeCheck = announcement.associatedAppModes.contains(app.currentMode)
+
             // Return the first different announcement that should show
-            if announcement.shouldShow {
+            if shouldShowBalanceCheck, shouldShowCurrentModeCheck, announcement.shouldShow {
                 if currentAnnouncement?.type != announcement.type {
                     currentAnnouncement = announcement
                     return .show(announcement.viewModel)
@@ -282,18 +300,6 @@ final class AnnouncementPresenter {
                 url: absoluteURL,
                 from: destination
             )
-        }
-    }
-}
-
-extension AnnouncementType {
-    var showsWhenWalletHasNoBalance: Bool {
-        switch self {
-        case .claimFreeCryptoDomain,
-             .ukEntitySwitch:
-            return true
-        default:
-            return false
         }
     }
 }
@@ -420,7 +426,7 @@ extension AnnouncementPresenter {
 
     private func walletConnect() -> Announcement {
         let absolutURL = "https://medium.com/blockchain/" +
-            "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
+        "introducing-walletconnect-access-web3-from-your-blockchain-com-wallet-da02e49ccea9"
         return WalletConnectAnnouncement(
             dismiss: announcementDismissAction,
             action: actionForOpening(absolutURL)
@@ -685,7 +691,7 @@ extension AnnouncementPresenter {
     private func resubmitDocuments(user: NabuUser) -> Announcement {
         ResubmitDocumentsAnnouncement(
             needsDocumentResubmission: user.needsDocumentResubmission != nil
-                && user.needsDocumentResubmission?.reason != 1,
+            && user.needsDocumentResubmission?.reason != 1,
             dismiss: announcementDismissAction,
             action: { [weak self] in
                 guard let self = self else { return }

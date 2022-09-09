@@ -271,6 +271,7 @@ public enum LocalizationConstants {
         public static let retryValidation = NSLocalizedString("Retry Validation", comment: "")
         public static let manualPairing = NSLocalizedString("Manual Pairing", comment: "")
         public static let invalidTwoFactorAuthenticationType = NSLocalizedString("Invalid two-factor authentication type", comment: "")
+        public static let recaptchaVerificationFailure = NSLocalizedString("Couldn't create your wallet, please try again.", comment: "")
     }
 
     public enum Pin {

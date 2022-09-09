@@ -35,9 +35,11 @@ let app: AppProtocol = App(
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
             blockchain.app.configuration.stx.all.users.is.enabled: false,
+            blockchain.app.configuration.card.success.rate.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,
+            blockchain.app.configuration.addresssearch.kyc.is.enabled: false,
             blockchain.ux.onboarding.promotion.cowboys.welcome.announcement: blockchain.ux.onboarding.promotion.cowboys.welcome.announcement.json(in: .main),
             blockchain.ux.onboarding.promotion.cowboys.welcome.story: blockchain.ux.onboarding.promotion.cowboys.welcome.story.json(in: .main),
             blockchain.ux.onboarding.promotion.cowboys.raffle.announcement: blockchain.ux.onboarding.promotion.cowboys.raffle.announcement.json(in: .main),
@@ -61,6 +63,7 @@ extension AppProtocol {
         observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
         observers.insert(AppAnalyticsObserver(app: self))
+        observers.insert(resolve() as AppAnalyticsTraitRepository)
         observers.insert(KYCExtraQuestionsObserver(app: self))
         observers.insert(NabuUserSessionObserver(app: self))
         observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))

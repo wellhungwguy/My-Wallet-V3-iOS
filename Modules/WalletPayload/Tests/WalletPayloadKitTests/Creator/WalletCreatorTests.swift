@@ -101,7 +101,7 @@ class WalletCreatorTests: XCTestCase {
         let email = "some@some.com"
         let password = "1234"
         let accountName = "Private Key Wallet"
-        creator.createWallet(email: email, password: password, accountName: accountName, language: "en")
+        creator.createWallet(email: email, password: password, accountName: accountName, recaptchaToken: nil, language: "en")
             .sink(
                 receiveCompletion: { completion in
                     guard case .failure(let error) = completion else {

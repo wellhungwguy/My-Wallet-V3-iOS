@@ -9,6 +9,9 @@ import DelegatedSelfCustodyData
 import ERC20DataKit
 import EthereumDataKit
 import FeatureActivityData
+import FeatureAddressSearchData
+import FeatureAddressSearchDomain
+import FeatureAddressSearchUI
 import FeatureAppDomain
 import FeatureAppUI
 import FeatureCardIssuingData
@@ -32,6 +35,7 @@ import MetadataKit
 import PlatformDataKit
 import ToolKit
 import UIKit
+import UIKitExtensions
 import WalletPayloadDataKit
 
 @UIApplicationMain
@@ -125,6 +129,9 @@ func defineDependencies() {
         DependencyContainer.buySellKit
         DependencyContainer.featureActivityDomain
         DependencyContainer.featureActivityUI
+        DependencyContainer.featureAddressSearchDomain
+        DependencyContainer.featureAddressSearchData
+        DependencyContainer.featureAddressSearchUI
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
         DependencyContainer.blockchain
@@ -150,6 +157,7 @@ func defineDependencies() {
         DependencyContainer.delegatedSelfCustodyData
         DependencyContainer.blockchainActivity
         DependencyContainer.blockchainDelegatedSelfCustody
+        DependencyContainer.uiKitExtensions
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

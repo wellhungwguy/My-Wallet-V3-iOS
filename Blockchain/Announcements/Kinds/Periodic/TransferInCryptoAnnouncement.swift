@@ -53,6 +53,10 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnoun
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         guard !isKycSupported else {
             return false

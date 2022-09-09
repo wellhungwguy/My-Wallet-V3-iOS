@@ -31,11 +31,12 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "0.1.2"),
+        .package(url: "https://github.com/pointfreeco/combine-schedulers", .exact("0.7.2")),
         .package(path: "../UIComponents"),
         .package(path: "../Test"),
         .package(path: "../Platform"),
         .package(path: "../Localization"),
+        .package(path: "../Errors"),
         .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
@@ -62,7 +63,8 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
-                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions")
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
+                .product(name: "ErrorsUI", package: "Errors")
             ],
             path: "UI"
         ),

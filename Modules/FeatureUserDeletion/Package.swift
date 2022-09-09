@@ -59,6 +59,7 @@ let package = Package(
         .target(
             name: "FeatureUserDeletionUI",
             dependencies: [
+                .target(name: "FeatureUserDeletionDomain"),
                 .product(
                     name: "AnalyticsKit",
                     package: "Analytics"

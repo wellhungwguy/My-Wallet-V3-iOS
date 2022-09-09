@@ -388,7 +388,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
-                    accountRecoveryService: NoOpAccountRecoveryService()
+                    accountRecoveryService: NoOpAccountRecoveryService(),
+                    recaptchaService: NoOpGoogleRecatpchaService()
                 )
             )
         )

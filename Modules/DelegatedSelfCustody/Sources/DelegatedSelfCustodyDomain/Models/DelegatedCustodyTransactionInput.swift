@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct DelegatedCustodyTransactionInput {
+public struct DelegatedCustodyTransactionInput: Hashable {
     public let account: Int
     public let amount: DelegatedCustodyAmount
     public let currency: String
@@ -36,14 +36,14 @@ public struct DelegatedCustodyTransactionInput {
     }
 }
 
-public enum DelegatedCustodyFee {
+public enum DelegatedCustodyFee: Hashable {
     case low
     case normal
     case high
     case custom(String)
 }
 
-public enum DelegatedCustodyAmount {
+public enum DelegatedCustodyAmount: Hashable {
     case max
     case custom(String)
 }

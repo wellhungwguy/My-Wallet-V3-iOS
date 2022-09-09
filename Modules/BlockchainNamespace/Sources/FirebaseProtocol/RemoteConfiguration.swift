@@ -8,8 +8,8 @@ public protocol RemoteConfiguration_p {
     associatedtype Source: RemoteConfigurationSource_p
     associatedtype Value: RemoteConfigurationValue_p
 
-    func fetch(withExpirationDuration expirationDuration: TimeInterval) async throws -> FetchStatus
-    func activate() async throws -> Bool
+    func fetch(withExpirationDuration expirationDuration: TimeInterval, completionHandler: ((FetchStatus, Error?) -> Void)?)
+    func activate(completion: ((Bool, Error?) -> Void)?)
     func allKeys(from source: Source) -> [String]
 
     subscript(key: String) -> Value { get }

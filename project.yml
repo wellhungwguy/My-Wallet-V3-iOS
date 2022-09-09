@@ -187,7 +187,7 @@ packages:
     version: 0.13.0
   Pulse:
     url: https://github.com/kean/Pulse.git
-    version: 1.1.0
+    version: 2.0.3
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -210,6 +210,8 @@ packages:
     path: Modules/FeatureAccountPicker
   FeatureActivity:
     path: Modules/FeatureActivity
+  FeatureAddressSearch:
+    path: Modules/FeatureAddressSearch
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
   FeatureCardPayment:
@@ -360,6 +362,7 @@ targets:
         product: FeatureAttribution
       - package: FeatureAccountPicker
       - package: FeatureActivity
+      - package: FeatureAddressSearch
       - package: FeatureApp
       - package: FeatureAuthentication
       - package: FeatureCardPayment
@@ -407,7 +410,6 @@ targets:
       - package: Pulse
         product: PulseUI
       - package: Pulse
-        product: PulseCore
       - package: Intercom
 
       - package: Analytics

@@ -3,10 +3,14 @@
 import Combine
 import DIKit
 import Embrace
+import FeatureAddressSearchDomain
+import FeatureAddressSearchUI
 import FeatureAuthenticationDomain
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
+import FeatureKYCDomain
+import FeatureKYCUI
 import FeatureOpenBankingUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
@@ -16,6 +20,11 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 import UIKit
+
+private enum AddressSearchTag: String {
+    case cardOrder
+    case kyc
+}
 
 extension DependencyContainer {
 
@@ -94,6 +103,42 @@ extension DependencyContainer {
                 coincore: DIKit.resolve(),
                 transactionsRouter: DIKit.resolve()
             ) as TopUpRouterAPI
+        }
+
+        factory {
+            CardIssuingAddressSearchRouter(
+                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.cardOrder)
+            ) as FeatureCardIssuingUI.AddressSearchRouterAPI
+        }
+
+        factory(tag: AddressSearchTag.cardOrder) {
+            AddressSearchRouter(
+                topMostViewControllerProvider: DIKit.resolve(),
+                addressService: DIKit.resolve(tag: AddressSearchTag.cardOrder)
+            ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
+        }
+
+        factory(tag: AddressSearchTag.cardOrder) {
+            AddressService(
+                repository: DIKit.resolve()
+            ) as FeatureAddressSearchDomain.AddressServiceAPI
+        }
+
+        factory { () -> AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenter(
+                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.kyc)
+            ) as AddressSearchFlowPresenterAPI
+        }
+
+        factory(tag: AddressSearchTag.kyc) {
+            AddressSearchRouter(
+                topMostViewControllerProvider: DIKit.resolve(),
+                addressService: DIKit.resolve(tag: AddressSearchTag.kyc)
+            ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
+        }
+
+        factory(tag: AddressSearchTag.kyc) {
+            AddressKYCService() as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
         single { () -> AssetInformationRepositoryAPI in

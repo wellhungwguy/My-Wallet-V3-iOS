@@ -131,6 +131,35 @@ extension Card.Status {
 
 extension LocalizationConstants.CardIssuing {
 
+    public enum AddressSearch {
+        public enum AddressSearchScreen {
+
+            public static let title = NSLocalizedString(
+                "Address Verification",
+                comment: "Card Issuing Address Search: Search Address Screen title"
+            )
+        }
+
+        public enum AddressEditSearchScreen {
+
+            public static let title = NSLocalizedString(
+                "Address Verification",
+                comment: "Card Issuing Address: Edit address screen"
+            )
+
+            public static let subtitle = NSLocalizedString(
+                """
+                    Confirm your address below. You will be able to specify a different shipping address later.
+                    """,
+
+                    comment: "Card Issuing Address: Edit address screen"
+            )
+        }
+    }
+}
+
+extension LocalizationConstants.CardIssuing {
+
     enum Legal {
 
         enum Button {

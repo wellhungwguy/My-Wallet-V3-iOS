@@ -3,9 +3,9 @@
 import Foundation
 import ToolKit
 
-public struct DelegatedCustodyTransactionOutput {
+public struct DelegatedCustodyTransactionOutput: Hashable {
 
-    public struct PreImage {
+    public struct PreImage: Hashable {
 
         public let preImage: String
         public let signingKey: String
@@ -56,7 +56,7 @@ public enum DelegatedCustodySigningError: Error {
     case failed
 }
 
-public enum DelegatedCustodySignatureAlgorithm {
+public enum DelegatedCustodySignatureAlgorithm: Hashable {
     case secp256k1
 }
 

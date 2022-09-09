@@ -21,34 +21,34 @@ public struct DefiWalletIntroView: View {
                 .padding(.top, 140)
 
             VStack(spacing: 8) {
-                Text("Introducing the Private Key Wallet!")
+                Text(LocalizationConstants.DefiWalletIntro.title)
                     .typography(.title2)
-                Text("Explore all of Web3 and DeFi in one place")
+                Text(LocalizationConstants.DefiWalletIntro.subtitle)
                     .typography(.paragraph1)
             }
 
             VStack(spacing: 8) {
                 introRow(
                     number: 1,
-                    title: "Self-Custody Your Assets",
-                    subtitle: "DeFi wallets are on-chain"
+                    title: LocalizationConstants.DefiWalletIntro.step1Title,
+                    subtitle: LocalizationConstants.DefiWalletIntro.step1Subtitle
                 )
                 introRow(
                     number: 2,
-                    title: "Multi-chain Support",
-                    subtitle: "Manage your portfolio across 7 chains"
+                    title: LocalizationConstants.DefiWalletIntro.step2Title,
+                    subtitle: LocalizationConstants.DefiWalletIntro.step2Subtitle
                 )
                 introRow(
                     number: 3,
-                    title: "Connect to Decentralized Finance",
-                    subtitle: "Log into DApps and sign transactions"
+                    title: LocalizationConstants.DefiWalletIntro.step3Title,
+                    subtitle: LocalizationConstants.DefiWalletIntro.step3Subtitle
                 )
             }
             .padding(.top, Spacing.padding4)
             .padding(.horizontal, Spacing.padding3)
             Spacer()
 
-            PrimaryButton(title: "Enable Primary Key Wallet") {
+            PrimaryButton(title: LocalizationConstants.DefiWalletIntro.enableButton) {
                 viewStore.send(.onEnableDefiTap)
             }
             .padding(.horizontal, Spacing.padding3)

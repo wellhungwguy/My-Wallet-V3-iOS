@@ -21,7 +21,10 @@ public final class FormPresentationStateReducer {
 
     public func reduce(states: [TextFieldViewModel.State]) throws -> FormPresentationState {
         guard !states.isEmpty else { throw ReducingError.forbiddenEmptyInput }
-        if states.count > 1, states.areAllElements(equal: .valid(value: "")) {
+        let isValid = states
+            .map { ($0.isValid || $0.isCautioning) }
+            .areAllElements(equal: true)
+        if states.count > 1, isValid {
             return .valid
         }
         if states.contains(.empty) {

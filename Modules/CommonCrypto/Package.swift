@@ -17,7 +17,7 @@ let package = Package(
         .package(
             name: "CryptoSwift",
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
-            from: "1.4.2"
+            from: "1.5.1"
         ),
         .package(
             name: "WalletCore",

@@ -12,10 +12,10 @@
     {
       "identity" : "lexicon",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/thousandyears/Lexicon",
+      "location" : "https://github.com/thousandyears/Lexicon.git",
       "state" : {
-        "revision" : "a939924e470270a9bdaff22219ca82eee2f07ea5",
-        "version" : "0.6.1"
+        "revision" : "ad872021299ba5673b705c05852d45d3efe2a804",
+        "version" : "0.6.2"
       }
     },
     {

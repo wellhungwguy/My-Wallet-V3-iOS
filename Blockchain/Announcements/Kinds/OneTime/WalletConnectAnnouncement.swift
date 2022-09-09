@@ -56,6 +56,10 @@ final class WalletConnectAnnouncement: OneTimeAnnouncement, ActionableAnnounceme
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed
     }

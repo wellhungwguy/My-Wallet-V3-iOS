@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 
 /// Protocol for an announcement that is shown to the user. These are typically
 /// used for new products and features that we launch in the wallet.
@@ -21,6 +22,9 @@ public protocol Announcement {
 
     /// An analytics event for appearance
     var didAppearAnalyticsEvent: AnalyticsEvents.Announcement { get }
+
+    // App mode that can display the announcement
+    var associatedAppModes: [AppMode] { get }
 }
 
 extension Announcement {

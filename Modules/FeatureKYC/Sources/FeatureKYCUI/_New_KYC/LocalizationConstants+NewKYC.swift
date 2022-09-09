@@ -3,10 +3,9 @@
 import Foundation
 import Localization
 
-// swiftlint:disable line_length
 extension LocalizationConstants {
 
-    enum NewKYC {
+    public enum NewKYC {
 
         // MARK: - Generic Error
 
@@ -24,6 +23,20 @@ extension LocalizationConstants {
             static let cancelButtonTitle = NSLocalizedString(
                 "Cancel",
                 comment: "A generic alert's cancel button"
+            )
+        }
+
+        // MARK: - Address
+
+        public enum AddressVerification {
+            public static let title = NSLocalizedString(
+                "Address Verification",
+                comment: "KYC Address Verification title"
+            )
+
+            public static let saveButtonTitle = NSLocalizedString(
+                "Save",
+                comment: "KYC Address Verification save address button title"
             )
         }
 

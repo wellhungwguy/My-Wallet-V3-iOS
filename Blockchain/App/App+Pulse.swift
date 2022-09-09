@@ -1,7 +1,7 @@
 //  Copyright © 2022 Blockchain Luxembourg S.A. All rights reserved.
 
 #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseCore
+import Pulse
 import PulseUI
 #endif
 
@@ -14,7 +14,7 @@ import SwiftUI
 #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
 final class PulseBlockchainNamespaceEventLogger: Session.Observer {
 
-    typealias Logger = PulseCore.LoggerStore
+    typealias Logger = Pulse.LoggerStore
 
     unowned var app: AppProtocol
 
@@ -73,8 +73,7 @@ final class PulseNetworkDebugLogger: NetworkDebugLogger {
             response: response,
             error: error,
             data: data,
-            metrics: metrics,
-            session: session
+            metrics: metrics
         )
         #endif
     }

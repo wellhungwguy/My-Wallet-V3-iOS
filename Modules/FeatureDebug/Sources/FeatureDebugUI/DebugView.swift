@@ -117,17 +117,28 @@ extension DebugView {
                     Text(key.string)
                         .typography(.micro.bold())
                     HStack(alignment: .top) {
-                        Text(description(for: key))
-                            .typography(.micro)
                         switch key.tag {
                         case blockchain.db.type.boolean:
+                            Text(description(for: key))
+                                .typography(.micro)
                             Spacer()
                             PrimarySwitch(
                                 accessibilityLabel: key.string,
                                 isOn: app.binding(key).isYes
                             )
+                        case blockchain.db.type.integer:
+                            Spacer()
+                            Stepper(
+                                label: {
+                                    Text(description(for: key))
+                                        .typography(.body1.bold())
+                                },
+                                onIncrement: { app.state.set(key, to: (try? app.state.get(key, as: Int.self) + 1).or(0).clamped(to: 0...)) },
+                                onDecrement: { app.state.set(key, to: (try? app.state.get(key, as: Int.self) - 1).or(0).clamped(to: 0...)) }
+                            )
                         default:
-                            EmptyView()
+                            Text(description(for: key))
+                                .typography(.micro)
                         }
                     }
                 }

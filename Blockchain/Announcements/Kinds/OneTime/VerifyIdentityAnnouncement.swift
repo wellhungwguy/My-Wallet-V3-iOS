@@ -53,6 +53,10 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         guard isCompletingKyc else {
             return false

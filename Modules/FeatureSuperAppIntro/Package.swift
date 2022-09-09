@@ -33,6 +33,7 @@ let package = Package(
             name: "FeatureSuperAppIntroUI",
             dependencies: [
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(
                     name: "BlockchainComponentLibrary",

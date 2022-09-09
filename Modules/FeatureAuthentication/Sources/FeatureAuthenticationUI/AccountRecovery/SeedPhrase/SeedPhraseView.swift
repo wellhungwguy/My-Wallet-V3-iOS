@@ -301,7 +301,8 @@ struct SeedPhraseView_Previews: PreviewProvider {
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
                     accountRecoveryService: NoOpAccountRecoveryService(),
-                    errorRecorder: NoOpErrorRecoder()
+                    errorRecorder: NoOpErrorRecoder(),
+                    recaptchaService: NoOpGoogleRecatpchaService()
                 )
             )
         )

@@ -54,6 +54,10 @@ final class UKEntitySwitchAnnouncement: OneTimeAnnouncement, ActionableAnnouncem
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed && userCountry == .GB
     }

@@ -78,3 +78,11 @@ extension Dictionary {
         lhs.merge(rhs, uniquingKeysWith: { $1 })
     }
 }
+
+extension Dictionary {
+
+    @inlinable public subscript<R: RawRepresentable>(value: R) -> Value? where R.RawValue == Key {
+        get { self[value.rawValue] }
+        set { self[value.rawValue] = newValue }
+    }
+}

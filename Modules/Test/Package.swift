@@ -20,7 +20,7 @@ let package = Package(
         .package(
             name: "combine-schedulers",
             url: "https://github.com/pointfreeco/combine-schedulers",
-            from: "0.5.0"
+            .exact("0.7.2")
         ),
         .package(
             name: "SnapshotTesting",

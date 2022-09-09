@@ -130,6 +130,7 @@ struct SeedPhraseEnvironment {
     let accountRecoveryService: AccountRecoveryServiceAPI
     let errorRecorder: ErrorRecording
     let featureFlagsService: FeatureFlagsServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -142,6 +143,7 @@ struct SeedPhraseEnvironment {
         walletFetcherService: WalletFetcherService,
         accountRecoveryService: AccountRecoveryServiceAPI,
         errorRecorder: ErrorRecording,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.mainQueue = mainQueue
@@ -154,6 +156,7 @@ struct SeedPhraseEnvironment {
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
         self.errorRecorder = errorRecorder
+        self.recaptchaService = recaptchaService
         self.featureFlagsService = featureFlagsService
     }
 }
@@ -184,7 +187,8 @@ let seedPhraseReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    featureFlagsService: $0.featureFlagsService
+                    featureFlagsService: $0.featureFlagsService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),
@@ -319,7 +323,8 @@ let seedPhraseReducer = Reducer.combine(
                     .createWallet(
                         state.emailAddress,
                         password,
-                        accountName
+                        accountName,
+                        nil
                     )
                     .receive(on: environment.mainQueue)
                     .catchToEffect()

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnyCoding
 import DIKit
 import Foundation
 
@@ -60,7 +61,7 @@ public struct NetworkRequest {
     public let endpoint: URL
     public private(set) var headers: HTTPHeaders
     public let contentType: ContentType
-    let decoder: NetworkResponseDecoderAPI
+    var decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
 
     /// Defaults to `true` for `GET` requests
@@ -122,6 +123,16 @@ public struct NetworkRequest {
         var request = self
         request.headers[HttpHeaderField.authorization] = authenticationToken
         return request
+    }
+
+    public func decodingAnyJSON(using decoder: @escaping () -> AnyDecoderProtocol) -> Self {
+        var request = self
+        request.decoder = NetworkResponseDecoder(.any(decoder))
+        return request
+    }
+
+    public func decodingAnyJSON(using decoder: AnyDecoderProtocol = AnyDecoder()) -> Self {
+        decodingAnyJSON(using: { decoder })
     }
 
     /// Used by the handler to print debug detailed information about the request and response

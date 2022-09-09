@@ -63,6 +63,10 @@ final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         data != nil
             && !isDismissed

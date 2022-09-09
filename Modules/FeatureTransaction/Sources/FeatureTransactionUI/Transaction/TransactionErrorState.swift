@@ -121,13 +121,4 @@ extension TransactionErrorState {
             metadata: error?.metadata ?? [:]
         )
     }
-
-    func analytics(for action: AssetAction) -> ClientEvent? {
-        guard self != .none else { return nil }
-        return ux(action: action)
-            .analytics(
-                label: label,
-                action: action.description.snakeCase().uppercased()
-            )
-    }
 }

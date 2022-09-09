@@ -212,12 +212,19 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
             .disposed(by: disposeBag)
 
         userHasCompletedOnboarding
+            .combineLatest(app.modePublisher())
             .asObservable()
-            .map { [app] userHasCompletedOnboarding -> Bool in
+            .map { [presenter] userHasCompletedOnboarding, currentMode -> Bool in
                 // if the user has completed onboarding, nothing to show
-                !userHasCompletedOnboarding
-                    || app.state.yes(if: blockchain.user.is.cowboy.fan)
-                    && app.remoteConfiguration.yes(if: blockchain.ux.onboarding.promotion.cowboys.is.enabled)
+                var isTradingMode: Bool {
+                    switch currentMode {
+                    case .trading, .both:
+                        return true
+                    case .defi:
+                        return false
+                    }
+                }
+                return (!userHasCompletedOnboarding && isTradingMode) || presenter.isCowboyFan
             }
             .distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)
@@ -226,9 +233,11 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                     if self?.onboardingChecklistViewController == nil {
                         self?.presentOnboardingChecklistView()
                     }
+                    self?.floatingViewContainer.isHidden = false
                 } else {
                     // hide, don't remove, otherwise the close button on the modal won't work as only the checklist overview has a NavigationView
                     self?.hideFloatingViewContent()
+                    self?.floatingViewContainer.isHidden = true
                 }
             }
             .disposed(by: disposeBag)
@@ -238,7 +247,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         view.addSubview(floatingViewContainer)
         floatingViewContainer.layoutToSuperview(.trailing, offset: -Spacing.padding3)
         floatingViewContainer.layoutToSuperview(.leading, offset: Spacing.padding3)
-        floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding3)
+        floatingViewContainer.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.padding5)
     }
 
     private func showFloatingViewContent() {

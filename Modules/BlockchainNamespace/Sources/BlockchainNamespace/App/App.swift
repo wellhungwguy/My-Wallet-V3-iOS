@@ -253,6 +253,17 @@ private let s = (
 
 extension AppProtocol {
 
+    public func publisher<T: Equatable>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
+        publisher(for: event).decode(T.self)
+            .removeDuplicates(
+                by: { lhs, rhs in
+                    do { return try lhs.get() == rhs.get() }
+                    catch { return false }
+                }
+            )
+            .eraseToAnyPublisher()
+    }
+
     public func publisher<T>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
         publisher(for: event).decode(T.self)
     }
@@ -332,22 +343,29 @@ extension App {
 
 extension App {
 
-    public static var preview: AppProtocol = App()
+    public static var preview: AppProtocol = debug
 
-    public convenience init() {
+#if DEBUG
+    public static var test: AppProtocol { debug }
+#endif
+
+    /// Creates a mock AppProtocol instance.
+    private static var debug: AppProtocol {
         let preferences: Preferences = Mock.Preferences()
-        self.init(
+        let urlSession: URLSessionProtocol
+#if DEBUG
+        urlSession = URLSession.test
+#else
+        urlSession = URLSession.shared
+#endif
+
+        return App(
             state: Session.State([:], preferences: preferences),
             remoteConfiguration: Session.RemoteConfiguration(
                 remote: Mock.RemoteConfiguration(),
+                session: urlSession,
                 preferences: preferences
             )
         )
     }
 }
-
-#if DEBUG
-extension App {
-    public static var test: AppProtocol { App() }
-}
-#endif

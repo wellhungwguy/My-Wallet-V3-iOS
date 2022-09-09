@@ -43,6 +43,9 @@ extension Optional: OptionalProtocol {
     @inlinable public var wrapped: Wrapped? { self }
 }
 
+// Optional Throw
+infix operator ??^: AssignmentPrecedence
+
 extension Optional {
 
     @discardableResult
@@ -62,6 +65,10 @@ extension Optional {
 
     public subscript<T>(_: T.Type = T.self) -> T? {
         wrapped as? T
+    }
+
+    public static func ??^ <Err: Error>(lhs: Optional, rhs: @autoclosure () -> Err) throws -> Wrapped {
+        try lhs.or(throw: rhs())
     }
 }
 

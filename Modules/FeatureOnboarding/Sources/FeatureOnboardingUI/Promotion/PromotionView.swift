@@ -73,12 +73,14 @@ public struct PromotionView: View {
     @State private var isSwipeToDismiss: Bool = true
 
     public var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             if let header = ux.header {
-                Group {
+                HStack {
+                    Spacer()
                     header
                         .aspectRatio(16 / 9, contentMode: .fit)
                         .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
                 }
                 .padding(.top, 36.pt)
             }

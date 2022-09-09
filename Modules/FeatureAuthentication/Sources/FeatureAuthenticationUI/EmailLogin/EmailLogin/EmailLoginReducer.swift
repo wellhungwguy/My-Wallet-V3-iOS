@@ -97,6 +97,7 @@ struct EmailLoginEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let recaptchaService: GoogleRecaptchaServiceAPI
     let validateEmail: (String) -> Bool
 
     init(
@@ -112,6 +113,7 @@ struct EmailLoginEnvironment {
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
         self.app = app
@@ -126,6 +128,7 @@ struct EmailLoginEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.recaptchaService = recaptchaService
         self.validateEmail = validateEmail
     }
 }
@@ -148,7 +151,8 @@ let emailLoginReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
-                    accountRecoveryService: $0.accountRecoveryService
+                    accountRecoveryService: $0.accountRecoveryService,
+                    recaptchaService: $0.recaptchaService
                 )
             }
         ),

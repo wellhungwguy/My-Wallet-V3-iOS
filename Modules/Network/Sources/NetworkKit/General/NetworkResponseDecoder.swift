@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnyCoding
+import Combine
 import DIKit
 import Errors
 import Foundation
@@ -39,20 +41,29 @@ public protocol NetworkResponseDecoderAPI {
 
 public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
+    public enum DecoderType {
+        case json(() -> JSONDecoder)
+        case any(() -> AnyDecoderProtocol)
+    }
+
     // MARK: - Properties
 
-    public static let defaultJSONDecoder: () -> JSONDecoder = {
+    public static let defaultDecoder: DecoderType = .json {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
     }
 
-    private let makeJSONDecoder: () -> JSONDecoder
+    public static let anyDecoder: DecoderType = .any {
+        AnyDecoder()
+    }
+
+    private let makeDecoder: DecoderType
 
     // MARK: - Setup
 
-    public init(_ makeJSONDecoder: @escaping () -> JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
-        self.makeJSONDecoder = makeJSONDecoder
+    public init(_ makeDecoder: DecoderType = NetworkResponseDecoder.defaultDecoder) {
+        self.makeDecoder = makeDecoder
     }
 
     // MARK: - NetworkResponseDecoderAPI
@@ -137,10 +148,21 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
         let errorResponse: ErrorResponseType
         do {
-            let decoder = makeJSONDecoder()
-            decoder.userInfo[.networkURLRequest] = request.urlRequest
-            decoder.userInfo[.networkHTTPResponse] = error.response
-            errorResponse = try decoder.decode(ErrorResponseType.self, from: payload)
+            switch makeDecoder {
+            case .json(let json):
+                let decoder = json()
+                decoder.userInfo[.networkURLRequest] = request.urlRequest
+                decoder.userInfo[.networkHTTPResponse] = error.response
+                errorResponse = try decoder.decode(ErrorResponseType.self, from: payload)
+            case .any(let any):
+                let decoder = any()
+                decoder.userInfo[.networkURLRequest] = request.urlRequest
+                decoder.userInfo[.networkHTTPResponse] = error.response
+                errorResponse = try decoder.decode(
+                    ErrorResponseType.self,
+                    from: JSONSerialization.jsonObject(with: payload, options: [.fragmentsAllowed])
+                )
+            }
         } catch _ {
             return ErrorResponseType.from(error)
         }
@@ -177,11 +199,28 @@ public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let message = String(data: payload, encoding: .utf8) ?? ""
             return .success(message as! ResponseType)
         }
-        let decoder = makeJSONDecoder()
-        decoder.userInfo[.networkURLRequest] = request.urlRequest
-        decoder.userInfo[.networkHTTPResponse] = response.response
-        return Result { try decoder.decode(ResponseType.self, from: payload) }
-            .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
+
+        let result: Result<ResponseType, Error>
+
+        switch makeDecoder {
+        case .json(let json):
+            let decoder = json()
+            decoder.userInfo[.networkURLRequest] = request.urlRequest
+            decoder.userInfo[.networkHTTPResponse] = response.response
+            result = Result { try decoder.decode(ResponseType.self, from: payload) }
+        case .any(let any):
+            let decoder = any()
+            decoder.userInfo[.networkURLRequest] = request.urlRequest
+            decoder.userInfo[.networkHTTPResponse] = response.response
+            result = Result {
+                try decoder.decode(
+                    ResponseType.self,
+                    from: JSONSerialization.jsonObject(with: payload, options: [.fragmentsAllowed])
+                )
+            }
+        }
+
+        return result.flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
                     for: decodingError,

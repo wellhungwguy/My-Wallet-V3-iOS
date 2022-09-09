@@ -27,7 +27,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
-            from: "0.1.2"
+            exact: "0.7.2"
         ),
         .package(
             url: "https://github.com/jackpooleybc/DIKit.git",
@@ -35,7 +35,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
-            from: "1.4.2"
+            from: "1.5.1"
         ),
         .package(
             url: "https://github.com/jackpooleybc/MetadataHDWalletKit",
@@ -74,7 +74,6 @@ let package = Package(
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry.json"),
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry_response.json"),
                 .copy("Fixtures/Entries/WalletCredentials/wallet_credentials_entry_response.json"),
-                // swiftlint:disable line_length
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU.json"),
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81.json"),
                 .copy("Fixtures/MetadataResponse/root_metadata_response.json"),

@@ -85,6 +85,7 @@ public enum Onboarding {
         let featureFlagsService: FeatureFlagsServiceAPI
         let externalAppOpener: ExternalAppOpener
         let forgetWalletService: ForgetWalletService
+        let recaptchaService: GoogleRecaptchaServiceAPI
         var buildVersionProvider: () -> String
         var appUpgradeState: () -> AnyPublisher<AppUpgradeState?, Never>
     }
@@ -103,6 +104,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
+                    recaptchaService: $0.recaptchaService,
                     buildVersionProvider: $0.buildVersionProvider,
                     nativeWalletEnabled: { nativeWalletFlagEnabled() }
                 )

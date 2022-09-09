@@ -121,7 +121,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     walletPayloadService: env.walletPayloadService,
                     walletService: env.walletService,
                     walletStateProvider: env.walletStateProvider,
-                    walletUpgradeService: env.walletUpgradeService
+                    walletUpgradeService: env.walletUpgradeService,
+                    recaptchaService: env.recaptchaService
                 )
             }
         ),

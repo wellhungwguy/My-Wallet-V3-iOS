@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnyCoding
 import Combine
 import Extensions
 import FirebaseProtocol
@@ -15,25 +16,30 @@ extension Session {
         public var allKeys: [String] { Array(fetched.keys) }
 
         private var fetched: [String: Any?] {
-            get { _fetched.value }
-            set { _fetched.send(newValue) }
+            get { _decoded.value }
+            set { _decoded.send(newValue) }
         }
 
-        private var _fetched: CurrentValueSubject<[String: Any?], Never> = .init([:])
+        private var _fetched: PassthroughSubject<[String: Any?], Never> = .init()
+        private var _decoded: CurrentValueSubject<[String: Any?], Never> = .init([:])
+
         private var fetch: ((AppProtocol, Bool) -> Void)?
         private var bag: Set<AnyCancellable> = []
+        private let session: URLSessionProtocol
         private var preferences: Preferences
+        private var experiments: Experiments!
         private unowned var app: AppProtocol!
 
         public init<Remote: RemoteConfiguration_p>(
             remote: Remote,
+            session: URLSessionProtocol = URLSession.shared,
             preferences: Preferences = UserDefaults.standard,
             default defaultValue: Default = [:]
         ) {
             self.preferences = preferences
+            self.session = session
             let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
-                Task(priority: .high) {
                     let cached = preferences.object(
                         forKey: blockchain.session.configuration(\.id)
                     ) as? [String: Any] ?? [:]
@@ -51,32 +57,35 @@ extension Session {
                         expiration = 3600 // 1 hour
                     }
 
-                    do {
-                        _ = try await remote.fetch(withExpirationDuration: expiration)
-                        _ = try await remote.activate()
-                    } catch {
-                        print("😱", "unable to fetch remote configuration, retrying...", error)
+                func errored() {
+                    Task.detached { @MainActor in
                         try await backoff.next()
                         self.fetch?(app, isStale)
                     }
+                }
 
-                    let keys = remote.allKeys(from: .remote)
-                    for key in keys {
-                        do {
-                            configuration[key] = try JSONSerialization.jsonObject(
-                                with: remote[key].dataValue,
-                                options: .fragmentsAllowed
-                            )
-                        } catch {
-                            configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
+                remote.fetch(withExpirationDuration: expiration) { [_fetched] _, error in
+                    guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
+                    remote.activate { [_fetched] _, error in
+                        guard error.peek(as: .error, if: \.isNotNil).isNil else { return errored() }
+                        let keys = remote.allKeys(from: .remote)
+                        for key in keys {
+                            do {
+                                configuration[key] = try JSONSerialization.jsonObject(
+                                    with: remote[key].dataValue,
+                                    options: .fragmentsAllowed
+                                )
+                            } catch {
+                                configuration[key] = String(decoding: remote[key].dataValue, as: UTF8.self)
+                            }
                         }
+                        _fetched.send(configuration)
+                        app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
                     }
-                    _fetched.send(configuration)
-                    _isSynchronized.send(true)
-                    app.state.set(blockchain.app.configuration.remote.is.stale, to: false)
                 }
             }
-            _fetched.sink { configuration in
+
+            _decoded.sink { configuration in
                 let overrides = configuration
                     .filter { key, _ in key.starts(with: important) }
                     .mapKeys { key in
@@ -92,7 +101,18 @@ extension Session {
         }
 
         func start(app: AppProtocol) {
+
             self.app = app
+            experiments = Experiments(app: app, session: session)
+
+            _fetched
+                .flatMap(experiments.decode)
+                .sink { [unowned self] output in
+                    if !isSynchronized { _isSynchronized.send(true) }
+                    _decoded.send(output)
+                }
+                .store(in: &bag)
+
             app.publisher(for: blockchain.app.configuration.remote.is.stale, as: Bool.self)
                 .replaceError(with: false)
                 .scan((stale: false, count: 0)) { ($1, $0.count + 1) }
@@ -156,7 +176,7 @@ extension Session {
 
         public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
             _isSynchronized
-                .combineLatest(_fetched)
+                .combineLatest(_decoded)
                 .filter(\.0)
                 .map(\.1)
                 .flatMap { [key] configuration -> Just<FetchResult> in
@@ -182,7 +202,7 @@ extension Session {
 
         public func publisher(for string: String) -> AnyPublisher<Any?, Never> {
             _isSynchronized
-                .combineLatest(_fetched)
+                .combineLatest(_decoded)
                 .filter(\.0)
                 .map(\.1)
                 .map { configuration -> Any? in configuration[string] as Any? }
@@ -353,5 +373,128 @@ private actor ExponentialBackoff {
                 using: &rng
             ) * 1_000_000)
         )
+    }
+}
+
+extension Session.RemoteConfiguration {
+
+    typealias Experiment = [String: [Int: AnyJSON]]
+
+    public static func experiments(in app: AppProtocol) -> AnyPublisher<[String: Int], Never> {
+        app.publisher(for: blockchain.ux.user.nabu.experiments, as: [String].self)
+            .compactMap(\.value)
+            .flatMap { [app] ids -> AnyPublisher<[String: Int], Never> in
+                guard ids.isNotEmpty else { return .just([:]) }
+                return ids.map { id in
+                    app.publisher(for: blockchain.ux.user.nabu.experiment[id].group, as: Int.self)
+                        .compactMap { result in result.value.map { (id, $0) } }
+                }
+                .combineLatest()
+                .map(Dictionary.init(uniqueKeysWithValues:))
+                .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    class Experiments {
+
+        unowned let app: AppProtocol
+        let session: URLSessionProtocol
+
+        private var subscription: AnyCancellable?
+        private var http: URLSessionDataTaskProtocol?
+        private let baseURL = URL(string: "https://\(Bundle.main.plist?.RETAIL_CORE_URL ?? "api.blockchain.info/nabu-gateway")")!
+
+        init(app: AppProtocol, session: URLSessionProtocol) {
+
+            self.app = app
+            self.session = session
+
+            subscription = app.on(
+                blockchain.session.event.did.sign.in,
+                blockchain.session.event.did.sign.out
+            ) { [unowned self] event in
+                switch event.tag {
+                case blockchain.session.event.did.sign.in:
+                    try await request(token: app.stream(blockchain.user.token.nabu).compactMap(\.value).next())
+                case blockchain.session.event.did.sign.out:
+                    request(token: nil)
+                default:
+                    break
+                }
+            }
+            .subscribe()
+
+            request(token: nil)
+        }
+
+        deinit {
+            subscription?.cancel()
+            http?.cancel()
+        }
+
+        func request(token: String?) {
+            var request = URLRequest(url: baseURL.appendingPathComponent("experiments"))
+            do {
+                request.allHTTPHeaderFields = try [
+                    "Authorization": "Bearer " + token.or(throw: "No Authorization Token"),
+                    "Accept-Language": "application/json"
+                ]
+            } catch {
+                request.allHTTPHeaderFields = ["Accept-Language": "application/json"]
+            }
+            http = session.dataTask(with: request.peek("🌎", \.cURLCommand)) { [app] data, _, err in
+                do {
+                    let json = try JSONSerialization.jsonObject(
+                        with: data.or(throw: err ?? "No data"),
+                        options: []
+                    ) as? [String: Int] ??^ "Expected [String: Int]"
+
+                    app.state.transaction { state in
+                        for (id, group) in json {
+                            state.set(blockchain.ux.user.nabu.experiment[id].group, to: group)
+                        }
+                        state.set(blockchain.ux.user.nabu.experiments, to: Array(json.keys))
+                    }
+                } catch {
+                    if app.state.doesNotContain(blockchain.ux.user.nabu.experiments) {
+                        app.state.set(blockchain.ux.user.nabu.experiments, to: [String]())
+                    }
+                    app.post(error: error)
+                }
+            }
+            http?.resume()
+        }
+
+        func decode(_ fetched: [String: Any?]) -> AnyPublisher<[String: Any?], Never> {
+            Session.RemoteConfiguration.experiments(in: app)
+                .map { [app] experiments in
+                    fetched.deepMap { k, v in
+                        do {
+                            if let v = v as? [String: Any], let returns = v[Compute.CodingKey.returns] as? [String: Any] {
+                                do {
+                                    let experiment = try returns["experiment"].decode(Experiment.self)
+                                    guard let (id, nabu) = experiment.firstAndOnly else {
+                                        throw "Expected 1 experiment, got \(experiment.keys.count)"
+                                    }
+                                    return try (k, nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'")
+                                } catch {
+                                    if let defaultValue = v[Compute.CodingKey.default] {
+                                        return (k, defaultValue)
+                                    } else {
+                                        throw error
+                                    }
+                                }
+                            } else {
+                                return (k, v)
+                            }
+                        } catch {
+                            app.post(error: error)
+                            return (k, v)
+                        }
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }

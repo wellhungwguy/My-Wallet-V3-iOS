@@ -67,7 +67,8 @@ extension AppEnvironment {
             walletStateProvider: .live(
                 holder: DIKit.resolve()
             ),
-            walletUpgradeService: resolve()
+            walletUpgradeService: resolve(),
+            recaptchaService: resolve()
         )
     }
 }

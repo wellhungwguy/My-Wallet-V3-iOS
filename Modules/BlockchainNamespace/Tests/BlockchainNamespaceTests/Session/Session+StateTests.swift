@@ -239,6 +239,31 @@ final class SessionStateTests: XCTestCase {
             )
         )
     }
+
+    func x_test_concurrency() async throws {
+        let limit = 100
+        actor Count {
+            var i: Int = 0, limit: Int
+            var expectation: XCTestExpectation
+            init(limit: Int, expectation: XCTestExpectation) {
+                self.limit = limit
+                self.expectation = expectation
+            }
+            func increment() {
+                i += 1
+                if i == limit { expectation.fulfill() }
+            }
+        }
+        let count = Count(limit: limit, expectation: expectation(description: "finished"))
+        DispatchQueue.concurrentPerform(iterations: limit) { i in
+            app.state.set(blockchain.db.collection[String(i)], to: i)
+            Task { await count.increment() }
+        }
+        await waitForExpectations(timeout: 1)
+        for i in 0..<limit {
+            try XCTAssertEqual(app.state.get(blockchain.db.collection[String(i)]), i)
+        }
+    }
 }
 
 extension Mock {

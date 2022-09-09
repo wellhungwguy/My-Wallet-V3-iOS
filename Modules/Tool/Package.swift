@@ -29,7 +29,7 @@ let package = Package(
         .package(
             name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
-            from: "5.2.1"
+            from: "5.3.0"
         ),
         .package(path: "../Test"),
         .package(path: "../Extensions")

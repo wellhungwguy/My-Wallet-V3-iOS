@@ -70,6 +70,7 @@ public struct AppEnvironment {
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
     var walletUpgradeService: WalletUpgradeServicing
+    var recaptchaService: GoogleRecaptchaServiceAPI
 
     public init(
         accountRecoveryService: AccountRecoveryServiceAPI,
@@ -119,7 +120,8 @@ public struct AppEnvironment {
         walletRepoPersistence: WalletRepoPersistenceAPI,
         walletService: WalletService,
         walletStateProvider: WalletStateProvider,
-        walletUpgradeService: WalletUpgradeServicing
+        walletUpgradeService: WalletUpgradeServicing,
+        recaptchaService: GoogleRecaptchaServiceAPI
     ) {
         self.accountRecoveryService = accountRecoveryService
         self.alertViewPresenter = alertViewPresenter
@@ -169,5 +171,6 @@ public struct AppEnvironment {
         self.walletService = walletService
         self.walletStateProvider = walletStateProvider
         self.walletUpgradeService = walletUpgradeService
+        self.recaptchaService = recaptchaService
     }
 }

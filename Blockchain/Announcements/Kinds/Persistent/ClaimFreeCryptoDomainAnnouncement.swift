@@ -58,6 +58,10 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         claimFreeDomainEligible
     }

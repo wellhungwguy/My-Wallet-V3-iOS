@@ -19,37 +19,45 @@ struct ResidentialAddressConfirmationView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: Spacing.padding3) {
-                VStack(alignment: .leading, spacing: Spacing.padding1) {
-                    Text(L10n.Address.title)
-                        .typography(.title3)
-                        .multilineTextAlignment(.center)
+            VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: Spacing.padding3) {
                     Text(L10n.Address.description)
                         .typography(.paragraph1)
                         .foregroundColor(.WalletSemantic.body)
                         .multilineTextAlignment(.leading)
+                    Text(L10n.Address.title)
+                        .typography(.paragraph2)
+                        .foregroundColor(.WalletSemantic.title)
+                        .multilineTextAlignment(.leading)
                 }
-                .padding(.horizontal, Spacing.padding2)
                 VStack {
-                    PrimaryDivider()
                     PrimaryRow(
-                        title: L10n.Address.Navigation.title,
-                        subtitle: viewStore.state.address?.shortDisplayString,
-                        leading: { EmptyView() },
-                        action: {
-                            viewStore.send(.binding(.set(\.$isAddressModificationVisible, true)))
+                        title: viewStore.state.address?.shortDisplayTitleString ?? "",
+                        subtitle: viewStore.state.address?.shortDisplaySubtitleString,
+                        trailing: {
+                            SmallMinimalButton(title: L10n.Buttons.edit, action: {
+                                viewStore.send(.editAddress)
+                            })
                         }
                     )
-                    PrimaryDivider()
                 }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.WalletSemantic.medium, lineWidth: 0.5)
+                )
+                Text(L10n.Address.commericalAddressNotAccepted)
+                    .typography(.caption1)
+                    .foregroundColor(.WalletSemantic.body)
+                    .multilineTextAlignment(.leading)
                 Spacer()
                 PrimaryButton(title: L10n.Buttons.next) {
                     viewStore.send(.binding(.set(\.$isSSNInputVisible, true)))
                 }
-                .disabled(viewStore.state.address == .none)
+                .disabled(!(viewStore.state.address?.hasAllRequiredInformation ?? false))
                 .padding(Spacing.padding2)
             }
             .padding(.vertical, Spacing.padding3)
+            .padding(.horizontal, Spacing.padding2)
             .primaryNavigation(title: L10n.Address.Navigation.title)
             .onAppear {
                 viewStore.send(.fetchAddress)
@@ -58,20 +66,6 @@ struct ResidentialAddressConfirmationView: View {
             PrimaryNavigationLink(
                 destination: SSNInputView(store: store),
                 isActive: viewStore.binding(\.$isSSNInputVisible),
-                label: EmptyView.init
-            )
-            PrimaryNavigationLink(
-                destination: IfLetStore(
-                    store.scope(
-                        state: \.residentialAddressModificationState,
-                        action: CardOrderingAction.residentialAddressModificationAction
-                    ),
-                    then: { store in
-                        ResidentialAddressModificationView(store: store)
-                    }
-                ),
-                isActive: viewStore
-                    .binding(\.$isAddressModificationVisible),
                 label: EmptyView.init
             )
         }
@@ -95,10 +89,18 @@ struct ResidentialAddressConfirmation_Previews: PreviewProvider {
 #endif
 
 extension Card.Address {
-    var shortDisplayString: String {
+    fileprivate var shortDisplayTitleString: String {
         [
             line1,
-            line2,
+            line2
+        ]
+            .filter(\.isNotNilOrEmpty)
+            .compactMap { $0 }
+            .joined(separator: " ")
+    }
+
+    fileprivate var shortDisplaySubtitleString: String {
+        let firstPart: String = [
             city,
             state?
                 .replacingOccurrences(
@@ -106,8 +108,23 @@ extension Card.Address {
                     with: ""
                 )
         ]
-        .filter(\.isNotNilOrEmpty)
-        .compactMap { $0 }
-        .joined(separator: ", ")
+            .filter(\.isNotNilOrEmpty)
+            .compactMap { $0 }
+            .joined(separator: ", ")
+        return [
+            firstPart,
+            postCode
+        ].filter(\.isNotNilOrEmpty)
+            .compactMap { $0 }
+            .joined(separator: " ")
+    }
+}
+
+extension Card.Address {
+    fileprivate var hasAllRequiredInformation: Bool {
+        line1.isNotNilOrEmpty
+        && city.isNotNilOrEmpty
+        && postCode.isNotNilOrEmpty
+        && country.isNotNilOrEmpty
     }
 }

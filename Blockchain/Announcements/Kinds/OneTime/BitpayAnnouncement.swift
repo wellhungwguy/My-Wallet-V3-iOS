@@ -36,6 +36,10 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed
     }

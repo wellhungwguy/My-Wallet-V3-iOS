@@ -92,4 +92,14 @@ public enum AnnouncementType: String, Codable {
             return .applePay
         }
     }
+
+    public var showsWhenWalletHasNoBalance: Bool {
+        switch self {
+        case .claimFreeCryptoDomain,
+             .ukEntitySwitch:
+            return true
+        default:
+            return false
+        }
+    }
 }

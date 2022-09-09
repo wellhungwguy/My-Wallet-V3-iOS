@@ -1,20 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import Errors
 import PlatformKit
 import RxSwift
 
-final class LocationUpdateService {
+public final class LocationUpdateService {
     private let client: KYCClientAPI
 
-    init(client: KYCClientAPI = resolve()) {
+    public init(client: KYCClientAPI = resolve()) {
         self.client = client
     }
 
-    func update(address: UserAddress) -> Completable {
-        client.updateAddress(userAddress: address)
+    public func update(address: UserAddress) -> Completable {
+        save(address: address)
             .asObservable()
             .ignoreElements()
             .asCompletable()
+    }
+
+    public func save(address: UserAddress) -> AnyPublisher<Void, NabuNetworkError> {
+        client.updateAddress(userAddress: address)
     }
 }

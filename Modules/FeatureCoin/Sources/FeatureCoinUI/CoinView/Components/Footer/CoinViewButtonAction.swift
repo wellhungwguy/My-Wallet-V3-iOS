@@ -15,7 +15,7 @@ struct ButtonAction: Equatable {
         self.disabled = disabled
     }
 
-    static func buy(disabled: Bool) -> ButtonAction {
+    static func buy(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.buy,
             icon: Icon.plus,
@@ -24,37 +24,37 @@ struct ButtonAction: Equatable {
         )
     }
 
-    static func send(disabled: Bool) -> ButtonAction {
+    static func send(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.send,
-            icon: Icon.upload,
+            icon: Icon.walletSend,
             event: blockchain.ux.asset.send,
             disabled: disabled
         )
     }
 
-    static func receive(disabled: Bool) -> ButtonAction {
+    static func receive(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.receive,
-            icon: Icon.download,
+            icon: Icon.walletReceive,
             event: blockchain.ux.asset.receive,
             disabled: false
         )
     }
 
-    static func sell(disabled: Bool) -> ButtonAction {
+    static func sell(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.sell,
-            icon: Icon.minus,
+            icon: Icon.walletSell,
             event: blockchain.ux.asset.sell,
             disabled: disabled
         )
     }
 
-    static func swap(disabled: Bool) -> ButtonAction {
+    static func swap(disabled: Bool = false) -> ButtonAction {
         ButtonAction(
             title: LocalizationConstants.Coin.Button.Title.swap,
-            icon: Icon.swap,
+            icon: Icon.walletSwap,
             event: blockchain.ux.asset.account.swap,
             disabled: disabled
         )

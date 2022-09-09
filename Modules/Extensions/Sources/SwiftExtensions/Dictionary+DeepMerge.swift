@@ -9,6 +9,16 @@ public struct DeepMapOptions: OptionSet {
     public static let all: DeepMapOptions = [.mappingOverArrays]
 }
 
+extension Dictionary {
+
+    @inlinable public func deepMap(
+        _ options: DeepMapOptions = [],
+        _ transform: (Key, Value) throws -> (Key, Value)
+    ) rethrows -> Self {
+        try (self as [Key: Any]).deepMap(options) { k, v in try transform(k, v as! Value) } as! [Key: Value]
+    }
+}
+
 extension Dictionary where Value == Any {
 
     @inlinable public func deepMerging(
@@ -25,7 +35,7 @@ extension Dictionary where Value == Any {
     }
 
     @inlinable public func deepMap(
-        _ options: DeepMapOptions = [.mappingOverArrays],
+        _ options: DeepMapOptions = [],
         _ transform: (Key, Value) throws -> (Key, Value)
     ) rethrows -> Self {
         try reduce(into: [Key: Value](minimumCapacity: count)) { dictionary, next in
@@ -42,7 +52,7 @@ extension Dictionary where Value == Any {
     }
 
     @inlinable public func deepMapAndMerge(
-        _ options: DeepMapOptions = [.mappingOverArrays],
+        _ options: DeepMapOptions = [],
         _ transform: (Key, Value) throws -> (Key, Value),
         uniquingKeysWith policy: (Value, Value) -> Value = { $1 }
     ) rethrows -> Self {

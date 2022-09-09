@@ -58,6 +58,10 @@ final class ViewNFTComingSoonAnnouncement: OneTimeAnnouncement, ActionableAnnoun
         )
     }
 
+    var associatedAppModes: [AppMode] {
+        [AppMode.trading, AppMode.both]
+    }
+
     var shouldShow: Bool {
         !isDismissed
     }

@@ -24,6 +24,9 @@ public struct CoinViewState: Equatable {
     var appMode: AppMode?
 
     var swapButton: ButtonAction? {
+        guard appMode != .both else {
+            return nil
+        }
         let swapDisabled = !accounts.hasPositiveBalanceForSelling
         let swapAction = ButtonAction.swap(disabled: swapDisabled)
         let action = action(swapAction, whenAccountCan: .swap)
@@ -34,6 +37,33 @@ public struct CoinViewState: Equatable {
     @BindableState public var explainer: Account.Snapshot?
 
     var actions: [ButtonAction] {
+        appMode == .both ? defaultCoinActions() : superAppCoinActions()
+    }
+
+    private func defaultCoinActions() -> [ButtonAction] {
+        if !currency.isTradable || accounts.isEmpty {
+            return accounts.hasPositiveBalanceForSelling ? [.send()] : []
+        }
+        let (buy, sell, send, receive) = (
+            action(.buy(), whenAccountCan: .buy),
+            action(.sell(), whenAccountCan: .sell),
+            action(.send(), whenAccountCan: .send),
+            action(.receive(), whenAccountCan: .receive)
+        )
+
+        if kycStatus?.canSellCrypto == false || !accounts.hasPositiveBalanceForSelling {
+            return [receive, buy].compactMap { $0 }
+        }
+
+        let actions = [sell, buy].compactMap { $0 }
+        if actions.isEmpty {
+            return [send, receive].compactMap { $0 }
+        } else {
+            return actions
+        }
+    }
+
+    private func superAppCoinActions() -> [ButtonAction] {
         let sellingDisabled = kycStatus?.canSellCrypto == false || !accounts.hasPositiveBalanceForSelling
         let sell = ButtonAction.sell(disabled: sellingDisabled)
         let buy = ButtonAction.buy(disabled: false)

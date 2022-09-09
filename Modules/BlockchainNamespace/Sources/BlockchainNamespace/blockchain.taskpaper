@@ -7,6 +7,12 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			addresssearch:
+				kyc:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			announcements:
 			+ blockchain.session.configuration.value
 			app:
@@ -41,6 +47,12 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+				success:
+					rate:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			customer:
 				support:
 					is:
@@ -835,6 +847,33 @@ blockchain:
 		+ blockchain.ui.device.haptic.feedback.notification.error
 		+ blockchain.ux.type.action
 		+ blockchain.ux.type.story
+			context:
+				action:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
+				category:
+				+ blockchain.db.type.string
+				id:
+				+ blockchain.db.type.string
+				network:
+					endpoint:
+					+ blockchain.db.type.url
+					error:
+						code:
+						+ blockchain.db.type.string
+						description:
+						+ blockchain.db.type.string
+						id:
+						+ blockchain.db.type.string
+						type:
+						+ blockchain.db.type.string
+				source:
+				+ blockchain.db.type.string
+				title:
+				+ blockchain.db.type.string
+				type:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 		frequent:
 			action:
 			+ blockchain.ux.type.story
@@ -973,6 +1012,11 @@ blockchain:
 		onboarding:
 			promotion:
 				cowboys:
+					announcements:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 					is:
 						enabled:
 						+ blockchain.db.type.boolean
@@ -1179,9 +1223,15 @@ blockchain:
 					firebase:
 						map:
 						+ blockchain.session.configuration.value
+						user:
+							traits:
+							+ blockchain.session.configuration.value
 					segment:
 						map:
 						+ blockchain.session.configuration.value
+						user:
+							traits:
+							+ blockchain.session.configuration.value
 				current:
 					state:
 					+ blockchain.db.type.tag
@@ -1297,6 +1347,19 @@ blockchain:
 				signed:
 					in:
 					+ blockchain.ux.type.analytics.event
+			experiments:
+				is:
+					enabled:
+					+ blockchain.session.configuration.value
+			nabu:
+				experiment:
+				+ blockchain.db.collection
+					group:
+					+ blockchain.db.type.integer
+					+ blockchain.session.state.value
+				experiments:
+				+ blockchain.db.type.array.of.strings
+				+ blockchain.session.state.value
 			portfolio:
 			+ blockchain.ux.type.story
 			rewards:
