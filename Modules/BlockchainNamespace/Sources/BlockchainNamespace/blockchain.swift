@@ -564,6 +564,7 @@ public extension I_blockchain_app_configuration_polygon {
 	var `all`: L_blockchain_app_configuration_polygon_all { .init("\(__).all") }
 	var `is`: L_blockchain_app_configuration_polygon_is { .init("\(__).is") }
 	var `name`: L_blockchain_app_configuration_polygon_name { .init("\(__).name") }
+	var `tokens`: L_blockchain_app_configuration_polygon_tokens { .init("\(__).tokens") }
 }
 public final class L_blockchain_app_configuration_polygon_all: L, I_blockchain_app_configuration_polygon_all {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.all", comment: "") }
@@ -626,6 +627,38 @@ public final class L_blockchain_app_configuration_polygon_name_sanitize_is_enabl
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.name.sanitize.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_polygon_name_sanitize_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_polygon_tokens: L, I_blockchain_app_configuration_polygon_tokens {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.tokens", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_tokens: I {}
+public extension I_blockchain_app_configuration_polygon_tokens {
+	var `always`: L_blockchain_app_configuration_polygon_tokens_always { .init("\(__).always") }
+}
+public final class L_blockchain_app_configuration_polygon_tokens_always: L, I_blockchain_app_configuration_polygon_tokens_always {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.tokens.always", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_tokens_always: I {}
+public extension I_blockchain_app_configuration_polygon_tokens_always {
+	var `fetch`: L_blockchain_app_configuration_polygon_tokens_always_fetch { .init("\(__).fetch") }
+}
+public final class L_blockchain_app_configuration_polygon_tokens_always_fetch: L, I_blockchain_app_configuration_polygon_tokens_always_fetch {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.tokens.always.fetch", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_tokens_always_fetch: I {}
+public extension I_blockchain_app_configuration_polygon_tokens_always_fetch {
+	var `is`: L_blockchain_app_configuration_polygon_tokens_always_fetch_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_polygon_tokens_always_fetch_is: L, I_blockchain_app_configuration_polygon_tokens_always_fetch_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.tokens.always.fetch.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_tokens_always_fetch_is: I {}
+public extension I_blockchain_app_configuration_polygon_tokens_always_fetch_is {
+	var `enabled`: L_blockchain_app_configuration_polygon_tokens_always_fetch_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_polygon_tokens_always_fetch_is_enabled: L, I_blockchain_app_configuration_polygon_tokens_always_fetch_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_polygon_tokens_always_fetch_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_prefill: L, I_blockchain_app_configuration_prefill {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill", comment: "") }
 }

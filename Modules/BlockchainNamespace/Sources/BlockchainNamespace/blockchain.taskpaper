@@ -143,6 +143,13 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+				tokens:
+					always:
+						fetch:
+							is:
+								enabled:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 			prefill:
 				is:
 					enabled:
