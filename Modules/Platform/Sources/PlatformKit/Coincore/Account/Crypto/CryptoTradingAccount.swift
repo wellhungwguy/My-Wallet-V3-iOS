@@ -26,10 +26,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public let isDefault: Bool = false
     public var accountType: AccountType = .trading
 
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
     public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         custodialAddressService
             .receiveAddress(for: asset)

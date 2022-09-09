@@ -64,9 +64,7 @@ final class PrefetchingTests: XCTestCase {
         // To the debounce
         scheduler.advance(by: 0.25)
 
-        store.receive(.prefetching(.fetchIfNeeded)) {
-            $0.prefetching.seen = [0, 1]
-        }
+        store.receive(.prefetching(.fetchIfNeeded))
 
         store.receive(.prefetching(.fetch(indices: [0, 1]))) {
             $0.prefetching.seen = [0, 1]

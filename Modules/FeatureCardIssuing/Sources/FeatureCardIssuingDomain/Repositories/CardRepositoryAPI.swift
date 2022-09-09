@@ -30,3 +30,7 @@ public protocol CardRepositoryAPI {
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 }
+
+public protocol UserInfoProviderAPI {
+    var fullName: AnyPublisher<String, NabuNetworkError> { get }
+}

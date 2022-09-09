@@ -3,25 +3,6 @@
 import Foundation
 import MetadataKit
 
-extension MetadataFetchError: Equatable {
-
-    public static func == (
-        lhs: MetadataFetchError,
-        rhs: MetadataFetchError
-    ) -> Bool {
-        switch (lhs, rhs) {
-        case (.loadMetadataError(let lhsError), .loadMetadataError(let rhsError)):
-            return lhsError == rhsError
-        case (.failedToDeriveMetadataNode(let lhsError), .failedToDeriveMetadataNode(let rhsError)):
-            return lhsError == rhsError
-        case (.decodingError(let lhsError), .decodingError(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
-        default:
-            return false
-        }
-    }
-}
-
 extension LoadRemoteMetadataError: Equatable {
 
     public static func == (

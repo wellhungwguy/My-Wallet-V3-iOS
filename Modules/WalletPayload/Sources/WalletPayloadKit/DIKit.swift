@@ -81,6 +81,8 @@ extension DependencyContainer {
             let upgrader: WalletUpgraderAPI = DIKit.resolve()
             let tracer: LogMessageServiceAPI = DIKit.resolve()
             let traceMethod = tracer.logError(message:)
+            let walletCredentialsFetcher: WalletCredentialsFetcher = DIKit.resolve()
+            let credentialsSaveIfNeeded = walletCredentialsFetcher.saveIfNeeded
             return WalletLogic(
                 holder: DIKit.resolve(),
                 decoder: decoder,
@@ -89,7 +91,8 @@ extension DependencyContainer {
                 walletSync: DIKit.resolve(),
                 notificationCenter: .default,
                 logger: DIKit.resolve(),
-                payloadHealthChecker: walletPayloadHealthCheckProvider(tracer: traceMethod)
+                payloadHealthChecker: walletPayloadHealthCheckProvider(tracer: traceMethod),
+                checkAndSaveWalletCredentials: credentialsSaveIfNeeded
             )
         }
 
@@ -120,6 +123,7 @@ extension DependencyContainer {
                 createWalletRepository: DIKit.resolve(),
                 usedAccountsFinder: DIKit.resolve(),
                 operationQueue: queue,
+                logger: DIKit.resolve(),
                 tracer: DIKit.resolve(),
                 uuidProvider: uuidProvider,
                 generateWallet: generateWallet(context:),
@@ -168,6 +172,13 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletCredentialsFetcher in
+            WalletCredentialsFetcher(
+                service: DIKit.resolve(),
+                tracer: DIKit.resolve()
+            )
+        }
+
         factory { () -> BitcoinCashEntryFetcherAPI in
             let holder: WalletHolderAPI = DIKit.resolve()
             let metadata: WalletMetadataEntryServiceAPI = DIKit.resolve()
@@ -205,9 +216,12 @@ extension DependencyContainer {
         }
 
         factory { () -> ChangePasswordServiceAPI in
-            ChangePasswordService(
+            let walletCredentialsFetcher: WalletCredentialsFetcher = DIKit.resolve()
+            let credentialsSaveIfNeeded = walletCredentialsFetcher.saveIfNeeded
+            return ChangePasswordService(
                 walletSync: DIKit.resolve(),
                 walletHolder: DIKit.resolve(),
+                saveMetadataWalletCredetials: credentialsSaveIfNeeded,
                 logger: DIKit.resolve()
             )
         }

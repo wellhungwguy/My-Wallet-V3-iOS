@@ -199,6 +199,8 @@ extension RootViewController {
                 handleBuyCrypto(currency: .bitcoin)
             case blockchain.ux.frequent.action.sell:
                 handleSellCrypto(account: nil)
+            case blockchain.ux.frequent.action.nft:
+                handleNFTAssetView()
             default:
                 assertionFailure("Unhandled action \(action)")
             }

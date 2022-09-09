@@ -44,10 +44,6 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     public var accountType: AccountType = .exchange
 
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
     public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }

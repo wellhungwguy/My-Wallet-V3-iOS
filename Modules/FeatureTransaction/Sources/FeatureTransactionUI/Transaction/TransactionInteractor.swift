@@ -233,13 +233,12 @@ final class TransactionInteractor {
         }
     }
 
-    func verifyAndExecute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
+    func verifyAndExecute(order: TransactionOrder?) -> Single<TransactionResult> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.execute(
-            order: order,
-            secondPassword: secondPassword
+            order: order
         )
     }
 

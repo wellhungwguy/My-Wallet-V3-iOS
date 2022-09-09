@@ -51,7 +51,7 @@ func walletPayloadHealthCheckProvider(
 
 func missingDefaultHDWallet(_ value: [HDWallet]) -> Checker {
     {
-        if value.count == 0 {
+        if value.isEmpty {
             return "MISSING_DEFAULT_HD_WALLET"
         }
         return nil

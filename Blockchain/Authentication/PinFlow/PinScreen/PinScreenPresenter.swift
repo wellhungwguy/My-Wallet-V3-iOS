@@ -358,27 +358,24 @@ extension PinScreenPresenter {
 
 // MARK: - Error Display
 
-extension PinScreenPresenter {
-
-    /// Formatting remaining PIN lock time error message
-    /// - parameter duration: the lock time duration in seconds
-    private func formatRemainingLockTimeMessage(duration: Int) -> String {
-        var message = ""
-        if duration > 0, duration <= 60 {
-            message = LocalizationConstants.Pin.tryAgain +
-                String(" \(duration)") + LocalizationConstants.Pin.seconds
-        } else if duration > 60, duration <= 3600 {
-            message = LocalizationConstants.Pin.tryAgain +
-                String(" \(duration / 60)") + LocalizationConstants.Pin.minutes +
-                String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
-        } else if duration > 3600 {
-            message = LocalizationConstants.Pin.tryAgain +
-                String(" \(duration / 3600)") + LocalizationConstants.Pin.hours +
-                String(" \((duration / 60) % 60)") + LocalizationConstants.Pin.minutes +
-                String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
-        }
-        return message
+/// Formatting remaining PIN lock time error message
+/// - parameter duration: the lock time duration in seconds
+private func formatRemainingLockTimeMessage(duration: Int) -> String {
+    var message = ""
+    if duration > 0, duration <= 60 {
+        message = LocalizationConstants.Pin.tryAgain +
+            String(" \(duration)") + LocalizationConstants.Pin.seconds
+    } else if duration > 60, duration <= 3600 {
+        message = LocalizationConstants.Pin.tryAgain +
+            String(" \(duration / 60)") + LocalizationConstants.Pin.minutes +
+            String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
+    } else if duration > 3600 {
+        message = LocalizationConstants.Pin.tryAgain +
+            String(" \(duration / 3600)") + LocalizationConstants.Pin.hours +
+            String(" \((duration / 60) % 60)") + LocalizationConstants.Pin.minutes +
+            String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
     }
+    return message
 }
 
 // MARK: - API & Functionality
@@ -590,8 +587,8 @@ extension PinScreenPresenter {
                 .do(
                     onSuccess: { [weak self] data in
                         // Restore everything to settings so the app can progress normally
-                        self?.appSettings.guid = data.guid
-                        self?.appSettings.sharedKey = data.sharedKey
+                        self?.appSettings.set(guid: data.guid)
+                        self?.appSettings.set(sharedKey: data.sharedKey)
                     }
                 )
                 .asCompletable()

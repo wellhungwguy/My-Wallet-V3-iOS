@@ -23,6 +23,9 @@ extension WalletCreationService {
             },
             setResidentialInfo: { _, _ -> AnyPublisher<Void, Never> in
                 .just(())
+            },
+            updateCurrencyForNewWallets: { _, _, _ -> AnyPublisher<Void, Never> in
+                .just(())
             }
         )
     }
@@ -36,6 +39,9 @@ extension WalletCreationService {
                 .failure(.creationFailure(.genericFailure))
             },
             setResidentialInfo: { _, _ -> AnyPublisher<Void, Never> in
+                .just(())
+            },
+            updateCurrencyForNewWallets: { _, _, _ -> AnyPublisher<Void, Never> in
                 .just(())
             }
         )

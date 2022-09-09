@@ -19,6 +19,17 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			argentinalinkbank:
+				is:
+					enabled:
+			asset:
+				chart:
+					asset:
+						color:
+							is:
+								enabled:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 			card:
 				issuing:
 					is:
@@ -134,6 +145,12 @@ blockchain:
 					is:
 						enabled:
 						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+			wallet:
+				country:
+					to:
+						currency:
+						+ blockchain.db.type.map
 						+ blockchain.session.configuration.value
 		deep_link:
 			activity:
@@ -583,6 +600,12 @@ blockchain:
 			buy:
 			+ blockchain.ux.type.action
 			chart:
+				asset:
+					color:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				deselected:
 				+ blockchain.ux.type.analytics.action
 				interval:
@@ -651,6 +674,8 @@ blockchain:
 				buy:
 				+ blockchain.ux.type.story
 				deposit:
+				+ blockchain.ux.type.story
+				nft:
 				+ blockchain.ux.type.story
 				receive:
 				+ blockchain.ux.type.story
@@ -983,6 +1008,13 @@ blockchain:
 					+ blockchain.ux.type.story
 			activity:
 			+ blockchain.ux.type.story
+			event:
+				authenticated:
+					pin:
+					+ blockchain.ux.type.analytics.event
+				signed:
+					in:
+					+ blockchain.ux.type.analytics.event
 			portfolio:
 			+ blockchain.ux.type.story
 			rewards:

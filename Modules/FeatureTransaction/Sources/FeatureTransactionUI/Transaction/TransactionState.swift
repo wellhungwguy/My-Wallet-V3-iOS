@@ -62,11 +62,6 @@ struct TransactionState: StateType {
 
     var allowFiatInput: Bool = false
 
-    // MARK: Second Password Supporting Data
-
-    var passwordRequired: Bool = false
-    var secondPassword: String = ""
-
     // MARK: Navigation Supporting Data
 
     var nextEnabled: Bool = false
@@ -104,14 +99,12 @@ struct TransactionState: StateType {
         action: AssetAction,
         source: BlockchainAccount? = nil,
         destination: TransactionTarget? = nil,
-        passwordRequired: Bool = false,
         step: TransactionFlowStep = .initial,
         order: TransactionOrder? = nil
     ) {
         self.action = action
         self.source = source
         self.destination = destination
-        self.passwordRequired = passwordRequired
         self.step = step
         self.order = order
     }
@@ -170,9 +163,7 @@ extension TransactionState: Equatable {
             && lhs.executionStatus == rhs.executionStatus
             && lhs.isGoingBack == rhs.isGoingBack
             && lhs.nextEnabled == rhs.nextEnabled
-            && lhs.passwordRequired == rhs.passwordRequired
             && lhs.pendingTransaction == rhs.pendingTransaction
-            && lhs.secondPassword == rhs.secondPassword
             && lhs.source?.identifier == rhs.source?.identifier
             && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
@@ -396,7 +387,6 @@ extension TransactionState {
 
 enum TransactionFlowStep: Equatable {
     case initial
-    case enterPassword
     case selectSource
     case linkPaymentMethod
     case linkACard
@@ -430,7 +420,6 @@ extension TransactionFlowStep {
              .confirmDetail:
             return true
         case .closed,
-             .enterPassword,
              .initial,
              .kycChecks,
              .error,
@@ -459,7 +448,6 @@ extension TransactionFlowStep {
              .confirmDetail,
              .enterAddress,
              .enterAmount,
-             .enterPassword,
              .errorRecoveryInfo,
              .inProgress,
              .error,

@@ -44,6 +44,8 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
 
     private let memoized: LineShape.Memoized
 
+    @Environment(\.lineGraphColor) var lineGraphColor
+
     @State private var _size: CGSize = .zero
     @State private var _highlight: CGFloat?
     @State private var _titleWidth: CGFloat = 0
@@ -134,8 +136,8 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
                 LinearGradient(
                     gradient: Gradient(
                         colors: [
-                            .semantic.primary.opacity(0.08),
-                            .semantic.primary.opacity(0.00)
+                            lineGraphColor.opacity(0.08),
+                            lineGraphColor.opacity(0.00)
                         ]
                     ),
                     startPoint: .top,
@@ -145,7 +147,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
     }
 
     @ViewBuilder private func stroked() -> some View {
-        line.shape.stroke(Color.semantic.primary, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+        line.shape.stroke(lineGraphColor, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
             .clipShape(ClippedRectangle(x: _highlight ?? 1, y: 1))
     }
 
@@ -154,8 +156,8 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
             LinearGradient(
                 gradient: Gradient(
                     colors: [
-                        .semantic.primary.opacity(0.3),
-                        .semantic.primary.opacity(0.05)
+                        lineGraphColor.opacity(0.3),
+                        lineGraphColor.opacity(0.05)
                     ]
                 ),
                 startPoint: .leading,
@@ -171,7 +173,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
                 let length: CGFloat = 8
                 let offset = end * _size - (length / 2)
                 Circle()
-                    .fill(Color.semantic.primary)
+                    .fill(lineGraphColor)
                     .frame(width: length, height: length)
                     .pulse()
                     .transformEffect(
@@ -252,6 +254,30 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
                     }
             }
         }
+    }
+}
+
+/// Environment key set by `LineGraph`
+private struct LineGraphColor: EnvironmentKey {
+    static var defaultValue = Color.semantic.primary
+}
+
+extension EnvironmentValues {
+
+    /// Accent color for line graph in `LineGraph`
+    ///
+    /// Defaults to `.semantic.primary`
+    public var lineGraphColor: Color {
+        get { self[LineGraphColor.self] }
+        set { self[LineGraphColor.self] = newValue }
+    }
+}
+
+extension View {
+
+    @warn_unqualified_access
+    public func lineGraphColor(_ color: Color) -> some View {
+        environment(\.lineGraphColor, color)
     }
 }
 

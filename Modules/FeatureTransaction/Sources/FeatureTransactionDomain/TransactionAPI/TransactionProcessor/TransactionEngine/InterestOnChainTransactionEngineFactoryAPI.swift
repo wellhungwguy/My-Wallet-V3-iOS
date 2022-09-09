@@ -4,7 +4,6 @@ import PlatformKit
 
 public protocol InterestOnChainTransactionEngineFactoryAPI {
     func build(
-        requiresSecondPassword: Bool,
         action: AssetAction,
         onChainEngine: OnChainTransactionEngine
     ) -> InterestTransactionEngine

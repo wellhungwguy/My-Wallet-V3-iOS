@@ -3,6 +3,7 @@
 import Combine
 import FeatureWalletConnectDomain
 import Foundation
+import MetadataKit
 
 public enum WalletConnectMetadataError: Error {
     case unavailable

@@ -5,7 +5,7 @@ import ToolKit
 
 public enum PerformanceTracing {
 
-    public typealias CreateRemoteTrace = (TraceID) -> RemoteTrace
+    public typealias CreateRemoteTrace = (TraceID, [String: String]) -> RemoteTrace
 
     public typealias ClearTraces = () -> Void
 
@@ -21,9 +21,10 @@ public enum PerformanceTracing {
         listenForClearTraces: @escaping ListenForClearTraces
     ) -> PerformanceTracingServiceAPI {
         PerformanceTracingService(
-            createTrace: { traceId in
+            createTrace: { traceId, properties in
                 Trace.createTrace(
                     with: traceId,
+                    properties: properties,
                     create: createRemoteTrace
                 )
             },

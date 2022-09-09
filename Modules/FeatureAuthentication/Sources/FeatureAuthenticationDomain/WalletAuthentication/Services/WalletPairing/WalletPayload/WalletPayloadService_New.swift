@@ -101,21 +101,21 @@ public final class WalletPayloadServiceNew: WalletPayloadServiceAPI {
     private func cacheWalletData(
         from payload: WalletPayload
     ) -> AnyPublisher<WalletPayload, WalletPayloadServiceError> {
+        // cache essentials
+        walletRepo.set(keyPath: \.credentials.guid, value: payload.guid)
+        walletRepo.set(keyPath: \.properties.language, value: payload.language)
+        walletRepo.set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
         guard let authenticatorType = WalletAuthenticatorType(rawValue: payload.authType) else {
+            // fail on unkonwn auth type
             return .failure(.unsupported2FAType)
         }
-        guard let rawPayload = payload.payloadWrapper, !rawPayload.payload.isEmpty else {
-            return .failure(.missingPayload)
-        }
-        return walletRepo
-            .set(keyPath: \.credentials.guid, value: payload.guid)
-            .set(keyPath: \.properties.language, value: payload.language)
-            .set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
-            .set(keyPath: \.walletPayload, value: payload)
-            .set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+        walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+        // payload might be missing when we haven't fully authenticated, eg 2FA required
+        // we still save `WalletPayload` and will update the inner wrapper on `TwoFAWalletService`
+        return walletRepo.set(keyPath: \.walletPayload, value: payload)
             .get()
+            .mapError(to: WalletPayloadServiceError.self)
             .map { _ in payload }
-            .first()
-            .mapError()
+            .eraseToAnyPublisher()
     }
 }

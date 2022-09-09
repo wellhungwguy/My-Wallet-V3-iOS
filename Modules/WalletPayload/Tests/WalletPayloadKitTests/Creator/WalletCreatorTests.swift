@@ -2,6 +2,7 @@
 
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import ObservabilityKit
@@ -9,6 +10,7 @@ import TestKit
 import ToolKit
 import XCTest
 
+// swiftlint:disable function_body_length
 class WalletCreatorTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!
@@ -85,6 +87,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging(),
             tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,
@@ -190,6 +193,7 @@ class WalletCreatorTests: XCTestCase {
             createWalletRepository: mockCreateRepository,
             usedAccountsFinder: mockUsedAccountFinder,
             operationQueue: dispatchQueue,
+            logger: NoopNativeWalletLogging(),
             tracer: LogMessageTracing.noop,
             uuidProvider: uuidProvider,
             generateWallet: generateWalletMock,

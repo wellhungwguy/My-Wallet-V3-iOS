@@ -34,8 +34,6 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
     public var sourceAccount: BlockchainAccount!
     public var transactionTarget: TransactionTarget!
 
-    public var requireSecondPassword: Bool
-
     // MARK: - InterestTransactionEngine
 
     public let walletCurrencyService: FiatCurrencyServiceAPI
@@ -84,7 +82,6 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
@@ -92,7 +89,6 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
         productsService: FeatureProductsDomain.ProductsServiceAPI = resolve()
     ) {
         self.walletCurrencyService = walletCurrencyService
-        self.requireSecondPassword = requireSecondPassword
         self.currencyConversionService = currencyConversionService
         self.accountTransferRepository = accountTransferRepository
         self.accountLimitsRepository = accountLimitsRepository
@@ -218,8 +214,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
     }
 
     public func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         accountTransferRepository
             .createInterestAccountCustodialTransfer(pendingTransaction.amount)

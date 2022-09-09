@@ -5,7 +5,10 @@ import PackageDescription
 let package = Package(
     name: "CryptoAssets",
     platforms: [
-        .macOS(.v10_12), .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(name: "BitcoinCashKit", targets: ["BitcoinCashKit"]),
@@ -41,7 +44,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
-            from: "2.6.36-blockchain"
+            from: "2.9.8-blockchain"
         ),
         .package(
             url: "https://github.com/paulo-bc/YenomBitcoinKit.git",

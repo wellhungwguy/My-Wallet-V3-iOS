@@ -275,29 +275,22 @@ final class EmailVerificationReducerTests: XCTestCase {
     // MARK: Edit Email State Manipulation
 
     func test_edit_email_validates_email_on_appear_validEmail() throws {
-        testStore.assert(
-            .send(.editEmailAddress(.didAppear)) {
-                $0.editEmailAddress.isEmailValid = true
-            }
-        )
+        XCTAssertTrue(testStore.state.editEmailAddress.isEmailValid)
+        XCTAssertEqual(testStore.state.flowStep, .verifyEmailPrompt)
+        XCTAssertFalse(testStore.state.editEmailAddress.savingEmailAddress)
+        testStore.send(.editEmailAddress(.didAppear))
     }
 
     func test_edit_email_validates_email_on_appear_invalidEmail() throws {
         resetTestStore(emailAddress: "test_example.com")
-        testStore.assert(
-            .send(.editEmailAddress(.didAppear)) {
-                $0.editEmailAddress.isEmailValid = false
-            }
-        )
+        XCTAssertFalse(testStore.state.editEmailAddress.isEmailValid)
+        testStore.send(.editEmailAddress(.didAppear))
     }
 
     func test_edit_email_validates_email_on_appear_emptyEmail() throws {
         resetTestStore(emailAddress: "")
-        testStore.assert(
-            .send(.editEmailAddress(.didAppear)) {
-                $0.editEmailAddress.isEmailValid = false
-            }
-        )
+        XCTAssertFalse(testStore.state.editEmailAddress.isEmailValid)
+        testStore.send(.editEmailAddress(.didAppear))
     }
 
     func test_edit_email_updates_and_validates_email_when_changed_to_validEmail() throws {
@@ -328,20 +321,14 @@ final class EmailVerificationReducerTests: XCTestCase {
     }
 
     func test_edit_email_save_success() throws {
-        testStore.assert(
-            .send(.editEmailAddress(.didAppear)) {
-                $0.editEmailAddress.isEmailValid = true
-            },
-            .send(.editEmailAddress(.save)) {
-                $0.editEmailAddress.savingEmailAddress = true
-            },
-            .receive(.editEmailAddress(.didReceiveSaveResponse(.success(0)))) {
-                $0.editEmailAddress.savingEmailAddress = false
-            },
-            .receive(.presentStep(.verifyEmailPrompt)) {
-                $0.flowStep = .verifyEmailPrompt
-            }
-        )
+        testStore.send(.editEmailAddress(.didAppear))
+        testStore.send(.editEmailAddress(.save)) {
+            $0.editEmailAddress.savingEmailAddress = true
+        }
+        testStore.receive(.editEmailAddress(.didReceiveSaveResponse(.success(0)))) {
+            $0.editEmailAddress.savingEmailAddress = false
+        }
+        testStore.receive(.presentStep(.verifyEmailPrompt))
     }
 
     func test_edit_email_edit_and_save_success() throws {
@@ -358,9 +345,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                 $0.verifyEmail.emailAddress = "someone@example.com"
                 $0.emailVerificationHelp.emailAddress = "someone@example.com"
             },
-            .receive(.presentStep(.verifyEmailPrompt)) {
-                $0.flowStep = .verifyEmailPrompt
-            }
+            .receive(.presentStep(.verifyEmailPrompt))
         )
     }
 
@@ -370,9 +355,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                 $0.editEmailAddress.emailAddress = "someone_example.com"
                 $0.editEmailAddress.isEmailValid = false
             },
-            .send(.editEmailAddress(.save)) {
-                $0.editEmailAddress.savingEmailAddress = false
-            }
+            .send(.editEmailAddress(.save))
         )
     }
 
@@ -380,9 +363,7 @@ final class EmailVerificationReducerTests: XCTestCase {
         let mockService = testStore.environment.emailVerificationService as? MockEmailVerificationService
         mockService?.stubbedResults.updateEmailAddress = .failure(.missingCredentials)
         testStore.assert(
-            .send(.editEmailAddress(.didAppear)) {
-                $0.editEmailAddress.isEmailValid = true
-            },
+            .send(.editEmailAddress(.didAppear)),
             .send(.editEmailAddress(.save)) {
                 $0.editEmailAddress.savingEmailAddress = true
             },
@@ -423,9 +404,7 @@ final class EmailVerificationReducerTests: XCTestCase {
             .receive(.emailVerificationHelp(.didReceiveEmailSendingResponse(.success(0)))) {
                 $0.emailVerificationHelp.sendingVerificationEmail = false
             },
-            .receive(.presentStep(.verifyEmailPrompt)) {
-                $0.flowStep = .verifyEmailPrompt
-            }
+            .receive(.presentStep(.verifyEmailPrompt))
         )
     }
 

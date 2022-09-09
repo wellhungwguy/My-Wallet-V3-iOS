@@ -27,8 +27,6 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     public var sourceAccount: BlockchainAccount!
     public var transactionTarget: TransactionTarget!
 
-    public var requireSecondPassword: Bool
-
     // MARK: - Private Properties
 
     private var availableBalance: Single<MoneyValue> {
@@ -71,7 +69,6 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
@@ -80,7 +77,6 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     ) {
         self.accountTransferRepository = accountTransferRepository
         self.walletCurrencyService = walletCurrencyService
-        self.requireSecondPassword = requireSecondPassword
         self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
@@ -203,8 +199,7 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
     }
 
     public func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         accountTransferRepository
             .createInterestAccountCustodialWithdraw(pendingTransaction.amount)

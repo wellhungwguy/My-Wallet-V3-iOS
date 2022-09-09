@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import MetadataKit
 import WalletConnectSwift
 
 public protocol WalletConnectRouterAPI {

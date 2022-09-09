@@ -106,6 +106,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
                 )
             }
             .flatMap { [walletRepo] rawPayload -> AnyPublisher<Void, TwoFAWalletServiceError> in
+                // When 2FA is authenticated only the inner payload wrapper will be returned
                 walletRepo
                     .set(keyPath: \.walletPayload.payloadWrapper, value: rawPayload)
                     .get()

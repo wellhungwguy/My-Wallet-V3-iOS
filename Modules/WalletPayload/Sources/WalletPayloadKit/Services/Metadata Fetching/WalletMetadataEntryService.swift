@@ -64,11 +64,15 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
                 return .just(metadata)
             }
             .receive(on: queue)
-            .flatMap { [metadataService] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
+            .flatMap { [metadataService, logger] metadataState -> AnyPublisher<Entry, WalletAssetFetchError> in
                 metadataService.fetchEntry(with: metadataState)
+                    .logMessageOnOutput(logger: logger, message: { entry in
+                        "Fetched metadata entry: \(entry)"
+                    })
                     .mapError(WalletAssetFetchError.fetchFailed)
                     .eraseToAnyPublisher()
             }
+            .first()
             .eraseToAnyPublisher()
     }
 
@@ -82,7 +86,11 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
             }
             .receive(on: queue)
             .logMessageOnOutput(logger: logger, message: { _ in
-                "About to save metadata entry: \(node)"
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+                let encoded = (try? node.data(using: encoder)) ?? Data()
+                let formatted = String(decoding: encoded.bytes, as: UTF8.self)
+                return "About to save metadata entry: \(formatted)"
             })
             .flatMap { [metadataService, logger] metadataState -> AnyPublisher<EmptyValue, WalletAssetSaveError> in
                 metadataService.save(node: node, state: metadataState)

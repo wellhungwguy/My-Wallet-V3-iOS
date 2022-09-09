@@ -25,8 +25,7 @@ public struct BitPayEngineTransaction: EngineTransaction {
 public protocol BitPayClientEngine {
     /// Prepares and signs a `PendingTransaction` so it can be sent to BitPay.
     func doPrepareBitPayTransaction(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<EngineTransaction>
 
     /// Called after a BitPay transaction is successfully executed.

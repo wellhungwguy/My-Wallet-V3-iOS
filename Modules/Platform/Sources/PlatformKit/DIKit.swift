@@ -20,6 +20,7 @@ extension DependencyContainer {
         // MARK: - Clients
 
         factory { SettingsClient() as SettingsClientAPI }
+        factory { SettingsClient() as UpdateCurrencySettingsClientAPI }
 
         factory { SwapClient() as SwapClientAPI }
 
@@ -86,7 +87,15 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
-        single { Coincore() as CoincoreAPI }
+        single { () -> CoincoreAPI in
+            let queue = DispatchQueue(label: "coincore.op.queue", qos: .userInitiated)
+            return Coincore(
+                assetLoader: DynamicAssetLoader(),
+                fiatAsset: FiatAsset(),
+                reactiveWallet: DIKit.resolve(),
+                queue: queue
+            )
+        }
 
         single { ReactiveWallet() as ReactiveWalletAPI }
 

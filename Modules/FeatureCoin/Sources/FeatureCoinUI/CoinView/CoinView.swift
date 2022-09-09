@@ -13,101 +13,100 @@ import ToolKit
 public struct CoinView: View {
 
     let store: Store<CoinViewState, CoinViewAction>
+    @ObservedObject var viewStore: ViewStore<CoinViewState, CoinViewAction>
+
     @BlockchainApp var app
 
     @Environment(\.context) var context
 
     public init(store: Store<CoinViewState, CoinViewAction>) {
         self.store = store
+        _viewStore = .init(initialValue: ViewStore(store))
     }
 
     typealias Localization = LocalizationConstants.Coin
 
     public var body: some View {
-        WithViewStore(store) { viewStore in
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    header(viewStore)
-                    accounts(viewStore)
-                    about(viewStore)
-                    Color.clear
-                        .frame(height: Spacing.padding2)
-                }
-                if viewStore.accounts.isNotEmpty {
-                    actions(viewStore)
-                }
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+                header()
+                accounts()
+                about()
+                Color.clear
+                    .frame(height: Spacing.padding2)
             }
-            .primaryNavigation(
-                leading: navigationLeadingView,
-                title: viewStore.currency.name,
-                trailing: {
-                    dismiss(viewStore)
-                }
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear { viewStore.send(.onAppear) }
-            .onDisappear { viewStore.send(.onDisappear) }
-            .bottomSheet(
-                item: viewStore.binding(\.$account).animation(.spring()),
-                content: { account in
-                    AccountSheet(
-                        account: account,
-                        isVerified: viewStore.kycStatus != .unverified,
-                        onClose: {
-                            withAnimation(.spring()) {
-                                viewStore.send(.set(\.$account, nil))
-                            }
-                        }
-                    )
-                    .context([blockchain.ux.asset.account.id: account.id])
-                }
-            )
-            .bottomSheet(
-                item: viewStore.binding(\.$explainer).animation(.spring()),
-                content: { account in
-                    AccountExplainer(
-                        account: account,
-                        onClose: {
-                            withAnimation(.spring()) {
-                                viewStore.send(.set(\.$explainer, nil))
-                            }
-                        }
-                    )
-                    .context([blockchain.ux.asset.account.id: account.id])
-                }
-            )
+            if viewStore.accounts.isNotEmpty {
+                actions()
+            }
         }
+        .primaryNavigation(
+            leading: navigationLeadingView,
+            title: viewStore.currency.name,
+            trailing: {
+                dismiss()
+            }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear { viewStore.send(.onAppear) }
+        .onDisappear { viewStore.send(.onDisappear) }
+        .bottomSheet(
+            item: viewStore.binding(\.$account).animation(.spring()),
+            content: { account in
+                AccountSheet(
+                    account: account,
+                    isVerified: viewStore.kycStatus != .unverified,
+                    onClose: {
+                        withAnimation(.spring()) {
+                            viewStore.send(.set(\.$account, nil))
+                        }
+                    }
+                )
+                .context([blockchain.ux.asset.account.id: account.id])
+            }
+        )
+        .bottomSheet(
+            item: viewStore.binding(\.$explainer).animation(.spring()),
+            content: { account in
+                AccountExplainer(
+                    account: account,
+                    onClose: {
+                        withAnimation(.spring()) {
+                            viewStore.send(.set(\.$explainer, nil))
+                        }
+                    }
+                )
+                .context([blockchain.ux.asset.account.id: account.id])
+            }
+        )
     }
 
-    @ViewBuilder func header(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func header() -> some View {
         GraphView(
             store: store.scope(state: \.graph, action: CoinViewAction.graph)
         )
     }
 
     @ViewBuilder func totalBalance() -> some View {
-        WithViewStore(store) { viewStore in
-            TotalBalanceView(
-                currency: viewStore.currency,
-                accounts: viewStore.accounts,
-                trailing: {
-                    WithViewStore(store) { viewStore in
-                        if let isFavorite = viewStore.isFavorite {
-                            IconButton(icon: isFavorite ? .favorite : .favoriteEmpty) {
-                                viewStore.send(isFavorite ? .removeFromWatchlist : .addToWatchlist)
-                            }
-                        } else {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .frame(width: 28, height: 28)
+        TotalBalanceView(
+            currency: viewStore.currency,
+            accounts: viewStore.accounts,
+            trailing: {
+                WithViewStore(store) { viewStore in
+                    if let isFavorite = viewStore.isFavorite {
+                        IconButton(icon: isFavorite ? .favorite : .favoriteEmpty) {
+                            viewStore.send(isFavorite ? .removeFromWatchlist : .addToWatchlist)
                         }
+                    } else {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .frame(width: 28, height: 28)
                     }
                 }
-            )
-        }
+            }
+        )
     }
 
-    @ViewBuilder func accounts(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func accounts() -> some View {
         VStack {
             if viewStore.error == .failedToLoad {
                 AlertCard(
@@ -146,7 +145,7 @@ public struct CoinView: View {
 
     @State private var isExpanded: Bool = false
 
-    @ViewBuilder func about(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func about() -> some View {
         if viewStore.assetInformation?.description.nilIfEmpty == nil, viewStore.assetInformation?.website == nil {
             EmptyView()
         } else {
@@ -194,38 +193,36 @@ public struct CoinView: View {
     }
 
     @ViewBuilder func navigationLeadingView() -> some View {
-        WithViewStore(store) { viewStore in
-            if let url = viewStore.currency.assetModel.logoPngUrl {
-                Backport.AsyncImage(
-                    url: url,
-                    content: { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .cornerRadius(12)
-                    }, placeholder: {
-                        Color.semantic.muted
-                            .opacity(0.3)
-                            .overlay(
-                                ProgressView()
-                                    .progressViewStyle(.circular)
-                            )
-                            .clipShape(Circle())
-                    }
-                )
-                .frame(width: 24.pt, height: 24.pt)
-            }
+        if let url = viewStore.currency.assetModel.logoPngUrl {
+            Backport.AsyncImage(
+                url: url,
+                content: { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(12)
+                }, placeholder: {
+                    Color.semantic.muted
+                        .opacity(0.3)
+                        .overlay(
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        )
+                        .clipShape(Circle())
+                }
+            )
+            .frame(width: 24.pt, height: 24.pt)
         }
     }
 
-    @ViewBuilder func dismiss(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func dismiss() -> some View {
         IconButton(icon: .closev2.circle()) {
             viewStore.send(.dismiss)
         }
         .frame(width: 24.pt, height: 24.pt)
     }
 
-    @ViewBuilder func actions(_ viewStore: ViewStore<CoinViewState, CoinViewAction>) -> some View {
+    @ViewBuilder func actions() -> some View {
         VStack {
             let actions = viewStore.actions
             if actions.isNotEmpty {

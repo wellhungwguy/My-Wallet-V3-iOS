@@ -19,7 +19,7 @@ let package = Package(
         .package(
             name: "WalletCore",
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
-            .exact("2.6.36-blockchain")
+            .exact("2.9.8-blockchain")
         ),
         .package(path: "../Test")
     ],

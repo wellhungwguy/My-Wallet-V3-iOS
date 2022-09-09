@@ -2,8 +2,10 @@
 
 import BlockchainNamespace
 import Combine
+import Errors
 import FeatureCardIssuingDomain
 import FeatureSettingsDomain
+import PlatformKit
 import ToolKit
 
 final class CardIssuingAdapter: CardIssuingAdapterAPI {
@@ -51,5 +53,28 @@ final class CardIssuingAdapter: CardIssuingAdapterAPI {
             }
             .replaceError(with: false)
             .eraseToAnyPublisher()
+    }
+}
+
+final class UserInfoProvider: UserInfoProviderAPI {
+
+    private let userService: NabuUserServiceAPI
+
+    var fullName: AnyPublisher<String, NabuNetworkError> {
+        userService.user
+            .map(\.personalDetails.fullName)
+            .mapError { error -> NabuNetworkError in
+                switch error {
+                case .failedToFetchUser(let nabuError), .failedToSetAddress(let nabuError):
+                    return nabuError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    init(
+        userService: NabuUserServiceAPI
+    ) {
+        self.userService = userService
     }
 }

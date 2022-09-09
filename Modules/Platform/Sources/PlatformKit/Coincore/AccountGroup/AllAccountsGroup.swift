@@ -30,18 +30,6 @@ public final class AllAccountsGroup: AccountGroup {
             .eraseToAnyPublisher()
     }
 
-    public var requireSecondPassword: Single<Bool> {
-        guard !accounts.isEmpty else {
-            return .just(false)
-        }
-
-        return Single
-            .zip(accounts.map(\.requireSecondPassword))
-            .map { values -> Bool in
-                !values.contains(false)
-            }
-    }
-
     public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         guard !accounts.isEmpty else {
             return .failure(AccountGroupError.noAccounts)

@@ -21,7 +21,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    let requireSecondPassword: Bool
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -59,7 +58,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         network: EVMNetwork,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
@@ -79,7 +77,6 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.keyPairProvider = keyPairProvider
         self.network = network
         self.priceService = priceService
-        self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
         self.transactionSigningService = transactionSigningService
         self.pendingTransactionRepository = pendingTransactionRepository
@@ -140,6 +137,16 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, pendingTransaction) in
                 self.doBuildConfirmations(pendingTransaction: pendingTransaction)
             }
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                // NOTE: Some WalletConnect transactions, specificallly listing
+                // an NFT for sale on OpenSea has a tx amount of `0.00` and a fee.
+                // `updateAmount`, which would trigger tx validation
+                // only gets called in the event of a positive balance.
+                // To circumvent this we validate the tx once on initialization.
+                // ⚠️ This means any wallet connect tx with an amount of `0.00` may appear
+                // as valid if all other requirements are met (which in this case is needed).
+                self.doValidateAll(pendingTransaction: pendingTransaction)
+            }
     }
 
     func start(
@@ -188,8 +195,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard isCurrencyTypeValid(pendingTransaction.amount.currencyType) else {
             preconditionFailure("Not an \(network.rawValue) value.")
@@ -221,7 +227,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             return Single
                 .zip(
                     transactionPublisher.asSingle(),
-                    keyPairProvider.keyPair(with: secondPassword)
+                    keyPairProvider.keyPair(with: nil)
                 )
                 .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionEncoded> in
                     transactionSigningService.sign(
@@ -239,7 +245,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
-                        secondPassword: secondPassword,
+                        secondPassword: nil,
                         network: network
                     )
                 }
@@ -478,8 +484,8 @@ extension EthereumSendTransactionTarget {
             feeAmount: zeroMoneyValue,
             feeForFullAvailable: zeroMoneyValue,
             feeSelection: .init(
-                selectedLevel: .regular,
-                availableLevels: [.regular],
+                selectedLevel: .priority,
+                availableLevels: [.priority],
                 asset: .crypto(network.cryptoCurrency)
             ),
             selectedFiatCurrency: fiatCurrency

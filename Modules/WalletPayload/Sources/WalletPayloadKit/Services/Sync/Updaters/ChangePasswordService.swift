@@ -22,16 +22,19 @@ final class ChangePasswordService: ChangePasswordServiceAPI {
 
     private let walletSync: WalletSyncAPI
     private let walletHolder: WalletHolderAPI
+    private let saveMetadataWalletCredetials: CheckAndSaveWalletCredentials
     private let logger: NativeWalletLoggerAPI
 
     init(
         walletSync: WalletSyncAPI,
         walletHolder: WalletHolderAPI,
+        saveMetadataWalletCredetials: @escaping CheckAndSaveWalletCredentials,
         logger: NativeWalletLoggerAPI
     ) {
         self.walletSync = walletSync
         self.walletHolder = walletHolder
         self.logger = logger
+        self.saveMetadataWalletCredetials = saveMetadataWalletCredetials
     }
 
     func change(password: String) -> AnyPublisher<Void, ChangePasswordError> {
@@ -46,13 +49,23 @@ final class ChangePasswordService: ChangePasswordServiceAPI {
             .logMessageOnOutput(logger: logger, message: { _ in
                 "[ChangePassword] About to sync wallet"
             })
-            .flatMap { [walletSync] wrapper -> AnyPublisher<Void, ChangePasswordError> in
+            .flatMap { [walletSync] wrapper -> AnyPublisher<Wrapper, ChangePasswordError> in
                 walletSync.sync(wrapper: wrapper, password: password)
                     .mapError { _ in
                         ChangePasswordError.syncFailed
                     }
-                    .mapToVoid()
+                    .map { _ in wrapper }
                     .eraseToAnyPublisher()
+            }
+            .flatMap { [saveMetadataWalletCredetials] wrapper -> AnyPublisher<Void, ChangePasswordError> in
+                saveMetadataWalletCredetials(
+                    wrapper.wallet.guid,
+                    wrapper.wallet.sharedKey,
+                    password
+                )
+                .mapError(to: ChangePasswordError.self)
+                .mapToVoid()
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

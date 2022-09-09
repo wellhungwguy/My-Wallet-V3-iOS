@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import WalletPayloadKit
 
@@ -45,10 +46,13 @@ extension DependencyContainer {
         }
 
         factory { () -> WalletCreationService in
-            WalletCreationService.live(
+            let app: AppProtocol = DIKit.resolve()
+            let settingsClient: UpdateSettingsClientAPI = DIKit.resolve()
+            return WalletCreationService.live(
                 walletManager: DIKit.resolve(),
                 walletCreator: DIKit.resolve(),
                 nabuRepository: DIKit.resolve(),
+                updateCurrencyService: provideUpdateCurrencyForWallets(app: app, client: settingsClient),
                 nativeWalletCreationEnabled: { nativeWalletCreationFlagEnabled() }
             )
         }

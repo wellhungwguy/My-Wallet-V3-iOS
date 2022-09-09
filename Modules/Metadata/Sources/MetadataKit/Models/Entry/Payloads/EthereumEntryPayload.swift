@@ -31,6 +31,14 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
                 self.correct = correct
                 self.label = label
             }
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                address = try container.decode(String.self, forKey: .address)
+                archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+                correct = try container.decodeIfPresent(Bool.self, forKey: .correct) ?? true
+                label = try container.decode(String.self, forKey: .label)
+            }
         }
 
         public struct ERC20: Codable, Hashable {
@@ -57,6 +65,14 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
                 self.hasSeen = hasSeen
                 self.label = label
                 self.txNotes = txNotes
+            }
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                contract = try container.decode(String.self, forKey: .contract)
+                hasSeen = try container.decodeIfPresent(Bool.self, forKey: .hasSeen) ?? false
+                label = try container.decode(String.self, forKey: .label)
+                txNotes = try container.decodeIfPresent([String: String].self, forKey: .txNotes) ?? [:]
             }
         }
 
@@ -90,6 +106,16 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
             self.hasSeen = hasSeen
             self.lastTxTimestamp = lastTxTimestamp
             self.transactionNotes = transactionNotes
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            accounts = try container.decode([Account].self, forKey: .accounts)
+            defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
+            erc20 = try container.decodeIfPresent([String: ERC20].self, forKey: .erc20) ?? [:]
+            hasSeen = try container.decode(Bool.self, forKey: .hasSeen)
+            lastTxTimestamp = try container.decodeIfPresent(Int.self, forKey: .lastTxTimestamp)
+            transactionNotes = try container.decodeIfPresent([String: String].self, forKey: .transactionNotes) ?? [:]
         }
     }
 

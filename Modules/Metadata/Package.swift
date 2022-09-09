@@ -1,11 +1,14 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "Metadata",
     platforms: [
-        .iOS(.v14), .macOS(.v11)
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
     ],
     products: [
         .library(
@@ -27,19 +30,16 @@ let package = Package(
             from: "0.1.2"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "CryptoSwift",
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
             from: "1.4.2"
         ),
         .package(
-            name: "MetadataHDWalletKit",
             url: "https://github.com/jackpooleybc/MetadataHDWalletKit",
-            .revision("cbd5bc9e2dfd9720a348c09392947fd37a83b304")
+            revision: "cbd5bc9e2dfd9720a348c09392947fd37a83b304"
         ),
         .package(path: "../Analytics"),
         .package(path: "../Network"),
@@ -77,7 +77,8 @@ let package = Package(
                 // swiftlint:disable line_length
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU.json"),
                 .copy("Fixtures/MetadataResponse/fetch_magic_metadata_response_129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81.json"),
-                .copy("Fixtures/MetadataResponse/root_metadata_response.json")
+                .copy("Fixtures/MetadataResponse/root_metadata_response.json"),
+                .copy("Fixtures/MetadataResponse/erroneous_root_metadata_response.json")
             ]
         ),
         .target(

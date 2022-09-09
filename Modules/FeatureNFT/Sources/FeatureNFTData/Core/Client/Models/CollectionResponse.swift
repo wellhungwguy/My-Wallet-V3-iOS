@@ -13,9 +13,7 @@ struct CollectionResponse: Decodable {
     let featured: Bool
     let featuredImageURL: URL
     let hidden: Bool
-    let imageURL: URL
     let instagramUsername: String
-    let largeImageURL: URL
     let name: String
     let paymentTokens: [PaymentToken]
     let payoutAddress: String
@@ -36,9 +34,7 @@ struct CollectionResponse: Decodable {
         case featured
         case featuredImageURL = "featured_image_url"
         case hidden
-        case imageURL = "image_url"
         case instagramUsername = "instagram_username"
-        case largeImageURL = "large_image_url"
         case name
         case paymentTokens = "payment_tokens"
         case payoutAddress = "payout_address"

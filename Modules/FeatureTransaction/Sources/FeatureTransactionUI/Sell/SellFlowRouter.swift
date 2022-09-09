@@ -13,6 +13,13 @@ import ToolKit
 
 protocol SellFlowRouting: Routing {
     func start(with currency: CryptoAccount?, from presenter: UIViewController)
+    func start(with currency: CryptoAccount?, target: TransactionTarget?, from presenter: UIViewController)
+}
+
+extension SellFlowRouting {
+    func start(with currency: CryptoAccount?, from presenter: UIViewController) {
+        start(with: currency, target: nil, from: presenter)
+    }
 }
 
 final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
@@ -34,7 +41,7 @@ final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
         super.init(interactor: interactor)
     }
 
-    func start(with currency: CryptoAccount?, from presenter: UIViewController) {
+    func start(with currency: CryptoAccount?, target: TransactionTarget?, from presenter: UIViewController) {
         analyticsRecorder.record(event:
             AnalyticsEvents.New.SimpleBuy.buySellViewed(type: .sell)
         )
@@ -43,7 +50,7 @@ final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
             withListener: interactor,
             action: .sell,
             sourceAccount: currency,
-            target: nil
+            target: target
         )
         attachChild(router)
         let viewController = router.viewControllable.uiviewController

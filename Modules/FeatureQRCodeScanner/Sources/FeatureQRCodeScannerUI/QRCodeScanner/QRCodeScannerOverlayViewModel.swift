@@ -107,21 +107,21 @@ final class QRCodeScannerOverlayViewModel {
 
         let walletConnectSessions = featureFlagsService
             .isEnabled(.walletConnectEnabled)
-            .flatMap { [walletConnectSessionRepository] isEnabled -> AnyPublisher<[WalletConnectSession], Never> in
-                isEnabled ? walletConnectSessionRepository.retrieve()
-                    : AnyPublisher<[WalletConnectSession], Never>.just([])
+            .flatMap { [walletConnectSessionRepository] isEnabled -> AnyPublisher<Int, Never> in
+                isEnabled ? walletConnectSessionRepository.retrieveConnectedApps()
+                    : AnyPublisher<Int, Never>.just(0)
             }
-            .map { sessions -> (Visibility, String) in
-                guard !sessions.isEmpty else {
+            .map { connectedSessions -> (Visibility, String) in
+                guard connectedSessions != 0 else {
                     return (.hidden, "")
                 }
                 let title: String
-                if sessions.count == 1 {
+                if connectedSessions == 1 {
                     title = LocalizationConstants.QRCodeScanner.connectedDApp
                 } else {
                     title = String(
                         format: LocalizationConstants.QRCodeScanner.connectedDapps,
-                        String(sessions.count)
+                        String(connectedSessions)
                     )
                 }
                 return (.visible, title)

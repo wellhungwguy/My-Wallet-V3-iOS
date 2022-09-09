@@ -1,36 +1,51 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
 import RxSwift
+import ToolKit
+
+enum BitcoinActivityDetailsError: Error {
+    case unableToRetrieveNote
+    case unableToSaveNote
+}
 
 final class BitcoinActivityDetailsInteractor {
 
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails>
-    private let wallet: BitcoinWalletBridgeAPI
+    private let bitcoinTxNoteService: BitcoinTxNotesStrategyAPI
 
     init(
-        wallet: BitcoinWalletBridgeAPI = resolve(),
+        bitcoinTxNoteService: BitcoinTxNotesStrategyAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = resolve()
     ) {
+        self.bitcoinTxNoteService = bitcoinTxNoteService
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
-        self.wallet = wallet
     }
 
-    private func note(for identifier: String) -> Single<String?> {
-        wallet.note(for: identifier)
+    private func note(for identifier: String) -> AnyPublisher<String?, BitcoinActivityDetailsError> {
+        bitcoinTxNoteService.note(txHash: identifier)
+            .mapError { _ in BitcoinActivityDetailsError.unableToRetrieveNote }
+            .eraseToAnyPublisher()
     }
 
-    func updateNote(for identifier: String, to note: String?) -> Completable {
-        wallet.updateNote(for: identifier, note: note)
+    func updateNote(
+        for identifier: String,
+        to note: String?
+    ) -> AnyPublisher<EmptyValue, BitcoinActivityDetailsError> {
+        bitcoinTxNoteService.updateNote(txHash: identifier, note: note)
+            .mapError { _ in BitcoinActivityDetailsError.unableToRetrieveNote }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
@@ -55,6 +70,7 @@ final class BitcoinActivityDetailsInteractor {
         let transaction = detailsService
             .details(for: identifier, cryptoCurrency: .bitcoin)
         let note = note(for: identifier)
+            .asSingle()
             .catchAndReturn(nil)
         let price = price(at: createdAt)
             .optional()

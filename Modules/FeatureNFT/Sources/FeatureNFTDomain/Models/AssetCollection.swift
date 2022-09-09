@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct AssetCollection {
+public struct AssetCollection: Equatable {
 
     let name: String
     let collectionDescription: String
@@ -36,18 +36,15 @@ public struct AssetCollection {
 
     public struct Media {
         let imageURL: URL
-        let largeImageURL: URL
         let bannerImageURL: URL
         let featuredImageURL: URL
 
         public init(
             imageURL: URL,
-            largeImageURL: URL,
             bannerImageURL: URL,
             featuredImageURL: URL
         ) {
             self.imageURL = imageURL
-            self.largeImageURL = largeImageURL
             self.bannerImageURL = bannerImageURL
             self.featuredImageURL = featuredImageURL
         }

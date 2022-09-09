@@ -92,5 +92,5 @@ private func recoverSecondPasswordNode(
 private func generateMasterKey(
     from mnemonic: Mnemonic
 ) -> Result<MasterKey, MasterKeyError> {
-    MasterKey.from(seedHex: mnemonic.seedHex)
+    MasterKey.from(masterNode: mnemonic.seedHex)
 }

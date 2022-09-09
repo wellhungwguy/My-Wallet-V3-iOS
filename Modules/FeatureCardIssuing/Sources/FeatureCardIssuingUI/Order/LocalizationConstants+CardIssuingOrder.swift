@@ -84,43 +84,6 @@ extension LocalizationConstants.CardIssuing {
                     comment: "Card Issuing: Fees description"
                 )
             }
-
-            enum Legal {
-                static let navigationTitle = NSLocalizedString(
-                    "Legal Disclosures",
-                    comment: "Card Issuing: Legal Navigation Title"
-                )
-
-                static let title = NSLocalizedString(
-                    "The Legal Stuff",
-                    comment: "Card Issuing: Legal Title"
-                )
-
-                static let contactless = NSLocalizedString(
-                    "Contactless Payment",
-                    comment: "Card Issuing: Contactless Payment"
-                )
-
-                static let consumerFinancialProtectionBureau = NSLocalizedString(
-                    "Consumer Financial Protection Bureau",
-                    comment: "Card Issuing: Consumer Financial Protection Bureau"
-                )
-
-                static let shortFormDisclosure = NSLocalizedString(
-                    "Short Form Disclosure",
-                    comment: "Card Issuing: Short Form Disclosure"
-                )
-
-                static let blockchainTermsAndConditions = NSLocalizedString(
-                    "Blockchain.com Terms & Conditions",
-                    comment: "Card Issuing: Blockchain.com Terms & Conditions"
-                )
-
-                static let termsAndConditions = NSLocalizedString(
-                    "Terms & Conditions",
-                    comment: "Card Issuing: Terms & Conditions"
-                )
-            }
         }
 
         enum Processing {

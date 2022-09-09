@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -20,7 +20,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            from: "0.38.3"
         ),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",
@@ -28,7 +28,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-custom-dump",
-            from: "0.3.0"
+            from: "0.5.0"
         ),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace")

@@ -19,7 +19,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderUpdateRepository: OrderUpdateRepositoryAPI
     let quotesEngine: QuotesEngineAPI
     let hotWalletAddressService: HotWalletAddressServiceAPI
-    let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
 
     var askForRefreshConfirmation: AskForRefreshConfirmation!
@@ -27,7 +26,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     var transactionTarget: TransactionTarget!
 
     init(
-        requireSecondPassword: Bool,
         onChainEngine: OnChainTransactionEngine,
         quotesEngine: QuotesEngineAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
@@ -40,7 +38,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         hotWalletAddressService: HotWalletAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
-        self.requireSecondPassword = requireSecondPassword
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
@@ -123,7 +120,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
             }
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
             .flatMap { [weak self] sellOrder -> Single<TransactionResult> in
                 guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
@@ -146,7 +143,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                     .flatMap { [weak self] pendingTransaction -> Single<TransactionResult> in
                         guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                         return self.onChainEngine
-                            .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+                            .execute(pendingTransaction: pendingTransaction)
                             .catch { [weak self] error -> Single<TransactionResult> in
                                 guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
                                 return self.orderUpdateRepository

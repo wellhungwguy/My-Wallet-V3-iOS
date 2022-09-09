@@ -31,6 +31,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
     private let accountModelProvider: AccountProviderAPI
     private let cardService: CardServiceAPI
+    private let legalService: LegalServiceAPI
     private let productService: ProductsServiceAPI
     private let residentialAddressService: ResidentialAddressServiceAPI
     private let transactionService: TransactionServiceAPI
@@ -40,6 +41,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     init(
         accountModelProvider: AccountProviderAPI,
         cardService: CardServiceAPI,
+        legalService: LegalServiceAPI,
         productService: ProductsServiceAPI,
         residentialAddressService: ResidentialAddressServiceAPI,
         transactionService: TransactionServiceAPI,
@@ -48,6 +50,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     ) {
         self.accountModelProvider = accountModelProvider
         self.cardService = cardService
+        self.legalService = legalService
         self.productService = productService
         self.residentialAddressService = residentialAddressService
         self.transactionService = transactionService
@@ -76,6 +79,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         let env = CardOrderingEnvironment(
             mainQueue: .main,
             cardService: cardService,
+            legalService: legalService,
             productsService: productService,
             residentialAddressService: residentialAddressService,
             onComplete: onComplete

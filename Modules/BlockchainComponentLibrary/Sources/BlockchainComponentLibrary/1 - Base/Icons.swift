@@ -202,6 +202,7 @@ extension Icon {
     public static let `moreHorizontal` = Icon(name: "More Horizontal")
     public static let `moreVertical` = Icon(name: "More Vertical")
     public static let `newWindow` = Icon(name: "New Window")
+    public static let `nft` = Icon(name: "NFT")
     public static let `notificationOff` = Icon(name: "Notification Off")
     public static let `notificationOn` = Icon(name: "Notification On")
     public static let `paperclip` = Icon(name: "Paperclip")

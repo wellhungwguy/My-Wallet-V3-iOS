@@ -4,12 +4,8 @@ import Combine
 import DIKit
 import FeatureWalletConnectDomain
 import Foundation
+import MetadataKit
 import WalletPayloadKit
-
-/// A wrapper that encapsulates the versions on WalletConnectSession from metadata
-struct WalletConnectSessionWrapper: Codable {
-    let v1: [WalletConnectSession]
-}
 
 final class SessionRepositoryMetadata: SessionRepositoryAPI {
 
@@ -88,12 +84,9 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
                 }
                 return walletConnectFetcher.fetchSessions()
                     .mapError { _ in WalletConnectMetadataError.unavailable }
-                    .flatMap { sessions -> AnyPublisher<WalletConnectSessionWrapper, WalletConnectMetadataError> in
-                        decodeWalletConnectData(json: sessions)
-                            .publisher
-                            .eraseToAnyPublisher()
+                    .compactMap { wrapper in
+                        wrapper.retrieveSessions(version: .v1)
                     }
-                    .map(\.v1)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -108,42 +101,12 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
                         .replaceError(with: ())
                         .eraseToAnyPublisher()
                 }
-                return encodeWalletConnectSession(model: sessions)
-                    .publisher
-                    .eraseToAnyPublisher()
-                    .flatMap { json -> AnyPublisher<Void, Never> in
-                        walletConnectFetcher
-                            .update(v1Sessions: json)
-                            .replaceError(with: ())
-                            .eraseToAnyPublisher()
-                    }
-                    .mapToVoid()
+                return walletConnectFetcher
+                    .update(v1Sessions: sessions)
                     .replaceError(with: ())
+                    .mapToVoid()
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
-}
-
-private func decodeWalletConnectData(
-    json: String
-) -> Result<WalletConnectSessionWrapper, WalletConnectMetadataError> {
-    let wrapper = try? JSONDecoder().decode(WalletConnectSessionWrapper.self, from: Data(json.utf8))
-    guard let wrapper = wrapper else {
-        return .failure(.unavailable)
-    }
-    return .success(wrapper)
-}
-
-private func encodeWalletConnectSession(
-    model: [WalletConnectSession]
-) -> Result<String, WalletConnectMetadataError> {
-    let wrapper = WalletConnectSessionWrapper(v1: model)
-    let encoded = try? JSONEncoder().encode(wrapper)
-    guard let encoded = encoded,
-          let json = String(data: encoded, encoding: .utf8)
-    else {
-        return .failure(.unavailable)
-    }
-    return .success(json)
 }

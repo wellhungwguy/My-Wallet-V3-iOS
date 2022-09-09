@@ -25,14 +25,6 @@ extension CryptoNonCustodialAccount {
         return false
     }
 
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
-    public var requireSecondPasswordPublisher: AnyPublisher<Bool, Never> {
-        .just(false)
-    }
-
     public func updateLabel(_ newLabel: String) -> AnyPublisher<Void, Never> {
         .just(())
     }

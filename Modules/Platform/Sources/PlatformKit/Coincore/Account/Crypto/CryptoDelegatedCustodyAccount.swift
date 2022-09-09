@@ -7,14 +7,14 @@ import MoneyKit
 import RxSwift
 import ToolKit
 
-final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
-    let asset: CryptoCurrency
+public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
+    public let asset: CryptoCurrency
 
-    let isDefault: Bool = true
+    public let isDefault: Bool = true
 
-    lazy var identifier: AnyHashable = "CryptoDelegatedCustodyAccount.\(asset.code)"
+    public lazy var identifier: AnyHashable = "CryptoDelegatedCustodyAccount.\(asset.code)"
 
-    var activity: AnyPublisher<[ActivityItemEvent], Error> {
+    public var activity: AnyPublisher<[ActivityItemEvent], Error> {
         activityRepository
             .activity(for: asset)
             .zip(receiveAddress)
@@ -30,7 +30,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
         addressesRepository
             .addresses(for: asset)
             .map { [publicKey] addresses in
@@ -54,11 +54,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    var requireSecondPassword: Single<Bool> {
-        .never()
-    }
-
-    var balance: AnyPublisher<MoneyValue, Error> {
+    public var balance: AnyPublisher<MoneyValue, Error> {
         balanceRepository
             .balances
             .map { [asset] balances in
@@ -67,19 +63,19 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    var pendingBalance: AnyPublisher<MoneyValue, Error> {
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
-    var actionableBalance: AnyPublisher<MoneyValue, Error> {
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
         .just(.zero(currency: asset))
     }
 
-    var label: String {
+    public var label: String {
         asset.defaultWalletName
     }
 
-    let accountType: AccountType = .nonCustodial
+    public let accountType: AccountType = .nonCustodial
 
     private let activityRepository: DelegatedCustodyActivityRepositoryAPI
     private let addressesRepository: DelegatedCustodyAddressesRepositoryAPI
@@ -106,7 +102,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
         self.publicKey = publicKey
     }
 
-    func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
+    public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         switch action {
         case .buy,
              .deposit,
@@ -124,7 +120,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
         }
     }
 
-    func balancePair(
+    public func balancePair(
         fiatCurrency: FiatCurrency,
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
@@ -135,7 +131,7 @@ final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAccount {
         )
     }
 
-    func invalidateAccountBalance() {}
+    public func invalidateAccountBalance() {}
 }
 
 extension DelegatedCustodyActivity {

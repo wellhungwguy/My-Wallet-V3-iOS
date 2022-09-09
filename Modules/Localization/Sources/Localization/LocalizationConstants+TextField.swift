@@ -206,6 +206,14 @@ extension LocalizationConstants {
                 "Invalid Card Number",
                 comment: "Error label when the card number is invalid"
             )
+            public static let buyingCryptoNotSupported = NSLocalizedString(
+                "Buying crypto not supported.",
+                comment: "Buying crypto not supported."
+            )
+            public static let thisCardOftenDeclines = NSLocalizedString(
+                "This card often declines crypto transactions.",
+                comment: "This card often declines crypto transactions."
+            )
             public static let unsupportedCardType = NSLocalizedString(
                 "Card Not Supported",
                 comment: "Error label when the card type is not supported"

@@ -23,8 +23,6 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     public let currencyConversionService: CurrencyConversionServiceAPI
     public var askForRefreshConfirmation: AskForRefreshConfirmation!
 
-    public var requireSecondPassword: Bool
-
     public var transactionTarget: TransactionTarget!
     public var sourceAccount: BlockchainAccount!
 
@@ -69,14 +67,12 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
         transferRepository: CustodialTransferRepositoryAPI = resolve(),
         interestAccountWithdrawRepository: InterestAccountWithdrawRepositoryAPI = resolve()
     ) {
-        self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
@@ -201,8 +197,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     }
 
     public func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard let receiveAddress = transactionTarget as? CryptoReceiveAddress else {
             return .error(TransactionValidationFailure(state: .unknownError))

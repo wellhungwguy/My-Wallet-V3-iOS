@@ -18,10 +18,6 @@ public class FiatAccountGroup: AccountGroup {
 
     public var accountType: AccountType = .group
 
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
     public var isFunded: AnyPublisher<Bool, Error> {
         .failure(AccountGroupError.noBalance)
     }

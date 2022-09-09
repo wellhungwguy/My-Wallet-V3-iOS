@@ -119,7 +119,7 @@ final class PinInteractor: PinInteracting {
                 guard let self = self else { throw PinError.unretainedSelf }
                 return try self.pinValidationStatus(from: response)
             }
-            .catch { error in
+            .catch { [weak self] error in
                 if let response = error as? PinStoreResponse {
                     // TODO: Check for invalid numerical value error by string comparison for now, should revisit when backend make necessary changes
                     if let error = response.error,
@@ -130,10 +130,10 @@ final class PinInteractor: PinInteracting {
                     let pinError = response.toPinError()
                     switch pinError {
                     case .incorrectPin(let message, let remaining, _):
-                        let pinAlert = self.getPinAlertIfNeeded(remaining)
+                        let pinAlert = self?.getPinAlertIfNeeded(remaining)
                         throw PinError.incorrectPin(message, remaining, pinAlert)
                     case .backoff(let message, let remaining, _):
-                        let pinAlert = self.getPinAlertIfNeeded(remaining)
+                        let pinAlert = self?.getPinAlertIfNeeded(remaining)
                         throw PinError.backoff(message, remaining, pinAlert)
                     default:
                         throw pinError
@@ -154,7 +154,7 @@ final class PinInteractor: PinInteracting {
     /// - Parameter pin: the pin value
     func persist(pin: Pin) {
         pin.save(using: appSettings)
-        appSettings.biometryEnabled = true
+        appSettings.set(biometryEnabled: true)
     }
 
     // MARK: - Accessors
@@ -175,16 +175,16 @@ final class PinInteractor: PinInteracting {
             .asObservable()
             .take(1)
             .asSingle()
-            .flatMap { password -> Single<(pin: String, password: String)> in
+            .flatMap { [weak self] password -> Single<(pin: String, password: String)> in
                 // Wallet must have password at the stage
                 guard let password = password else {
                     let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
-                    self.recorder.error(error)
+                    self?.recorder.error(error)
                     return .error(error)
                 }
 
                 guard response.error == nil else {
-                    self.recorder.error(PinError.serverError(""))
+                    self?.recorder.error(PinError.serverError(""))
                     return .error(PinError.serverError(response.error!))
                 }
 
@@ -194,7 +194,7 @@ final class PinInteractor: PinInteracting {
                         response.statusCode?.rawValue ?? -1
                     )
                     let error = PinError.serverError(message)
-                    self.recorder.error(error)
+                    self?.recorder.error(error)
                     return .error(error)
                 }
 
@@ -203,7 +203,7 @@ final class PinInteractor: PinInteracting {
                       !pinValue.isEmpty
                 else {
                     let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
-                    self.recorder.error(error)
+                    self?.recorder.error(error)
                     return .error(error)
                 }
                 return .just((pin: pinValue, password: password))
@@ -223,9 +223,9 @@ final class PinInteractor: PinInteracting {
                 // Once the pin has been created successfully, the wallet is not longer marked as new.
                 self.wallet.isNew = false
                 // Update the cache
-                self.appSettings.encryptedPinPassword = data.encryptedPinPassword
-                self.appSettings.pinKey = payload.pinKey
-                self.appSettings.passwordPartHash = data.password.passwordPartHash
+                self.appSettings.set(encryptedPinPassword: data.encryptedPinPassword)
+                self.appSettings.set(pinKey: payload.pinKey)
+                self.appSettings.set(passwordPartHash: data.password.passwordPartHash)
                 try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 return Completable.empty()
             }
@@ -248,8 +248,8 @@ final class PinInteractor: PinInteracting {
             persist(pin: pinPayload.pin!)
         case .deleted:
             // Clear pin from keychain if the user exceeded the number of retries when entering the pin.
-            appSettings.pin = nil
-            appSettings.biometryEnabled = false
+            appSettings.set(pin: nil)
+            appSettings.set(biometryEnabled: false)
         default:
             break
         }

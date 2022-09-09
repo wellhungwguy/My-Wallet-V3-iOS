@@ -10,6 +10,7 @@ import WalletPayloadKit
 
 public enum BitcoinWalletRepositoryError: Error {
     case missingWallet
+    case unableToRetrieveNote
     case failedToFetchAccount(Error)
 }
 

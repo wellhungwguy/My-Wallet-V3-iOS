@@ -13,7 +13,6 @@ import ToolKit
 final class TradingSellTransactionEngine: SellTransactionEngine {
 
     let canTransactFiat: Bool = true
-    var requireSecondPassword: Bool = false
     let quotesEngine: QuotesEngineAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
@@ -99,7 +98,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             }
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         createOrder(pendingTransaction: pendingTransaction)
             .map { order in
                 TransactionResult.unHashed(amount: pendingTransaction.amount, orderId: order.identifier)
@@ -111,8 +110,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         level: FeeLevel,
         customFeeAmount: MoneyValue
     ) -> Single<PendingTransaction> {
-        precondition(pendingTransaction.availableFeeLevels.contains(level))
-        return Single.just(pendingTransaction)
+        .just(pendingTransaction)
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

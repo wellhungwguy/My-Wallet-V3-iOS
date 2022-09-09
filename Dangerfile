@@ -12,8 +12,6 @@ swiftlint.lint_files
 swiftlint.lint_files inline_mode: true
 swiftlint.lint_all_files = false
 
-swiftformat.check_format(fail_on_error: true)
-
 ios_ticket_referenced = github.pr_title.include? "IOS-"
 
 if !ios_ticket_referenced

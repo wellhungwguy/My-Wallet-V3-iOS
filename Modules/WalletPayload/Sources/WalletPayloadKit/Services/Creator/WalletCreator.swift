@@ -67,6 +67,7 @@ final class WalletCreator: WalletCreatorAPI {
     private let uuidProvider: UUIDProvider
     private let generateWallet: GenerateWalletProvider
     private let generateWrapper: GenerateWrapperProvider
+    private let logger: NativeWalletLoggerAPI
     private let checksumProvider: (Data) -> String
 
     init(
@@ -76,6 +77,7 @@ final class WalletCreator: WalletCreatorAPI {
         createWalletRepository: CreateWalletRepositoryAPI,
         usedAccountsFinder: UsedAccountsFinderAPI,
         operationQueue: DispatchQueue,
+        logger: NativeWalletLoggerAPI,
         tracer: LogMessageServiceAPI,
         uuidProvider: @escaping UUIDProvider,
         generateWallet: @escaping GenerateWalletProvider,
@@ -88,6 +90,7 @@ final class WalletCreator: WalletCreatorAPI {
         self.createWalletRepository = createWalletRepository
         self.usedAccountsFinder = usedAccountsFinder
         self.operationQueue = operationQueue
+        self.logger = logger
         self.tracer = tracer
         self.entropyService = entropyService
         self.generateWallet = generateWallet
@@ -211,10 +214,12 @@ final class WalletCreator: WalletCreatorAPI {
             }
             .publisher
             .eraseToAnyPublisher()
-            .flatMap { [walletEncoder, encryptor] wrapper -> AnyPublisher<EncodedWalletPayload, WalletCreateError> in
+            .flatMap { [walletEncoder, encryptor, logger] wrapper
+                -> AnyPublisher<EncodedWalletPayload, WalletCreateError> in
                 encryptAndVerifyWrapper(
                     walletEncoder: walletEncoder,
                     encryptor: encryptor,
+                    logger: logger,
                     password: password,
                     wrapper: wrapper
                 )

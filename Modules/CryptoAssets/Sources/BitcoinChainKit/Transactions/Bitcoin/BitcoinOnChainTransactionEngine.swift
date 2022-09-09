@@ -25,7 +25,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
-    let requireSecondPassword: Bool
 
     var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: AskForRefreshConfirmation!
@@ -101,7 +100,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
 
     init(
         app: AppProtocol = resolve(),
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
@@ -109,7 +107,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         recorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
         self.app = app
-        self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.bridge = bridge
@@ -228,18 +225,15 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard pendingTransaction.nativeBitcoinTransactionEnabled else {
             return legacyExecute(
-                pendingTransaction: pendingTransaction,
-                secondPassword: secondPassword
+                pendingTransaction: pendingTransaction
             )
         }
         return nativeExecute(
-            pendingTransaction: pendingTransaction,
-            secondPassword: secondPassword
+            pendingTransaction: pendingTransaction
         )
     }
 }
@@ -249,22 +243,19 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
 extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
 
     func doPrepareBitPayTransaction(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<EngineTransaction> {
         guard pendingTransaction.nativeBitcoinTransactionEnabled else {
-            return bridge.sign(with: secondPassword)
+            return bridge.sign(with: nil)
         }
         return nativeDoPrepareTransactionPublisher(
-            pendingTransaction: pendingTransaction,
-            secondPassword: secondPassword
+            pendingTransaction: pendingTransaction
         )
         .asSingle()
     }
 
     private func nativeDoPrepareTransactionPublisher(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> AnyPublisher<EngineTransaction, Error> {
         let engineState = pendingTransaction.engineState.value
         let btcState = engineState[.btc] as? BTCOnChainTxEngineState<Token>
@@ -573,20 +564,17 @@ extension BitcoinOnChainTransactionEngine {
     }
 
     private func nativeExecute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         nativeExecutePublisher(
-            pendingTransaction: pendingTransaction,
-            secondPassword: secondPassword
+            pendingTransaction: pendingTransaction
         )
         .map(\.transactionResult)
         .asSingle()
     }
 
     private func nativeExecutePublisher(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> AnyPublisher<TransactionOutcome, Error> {
         let engineState = pendingTransaction.engineState.value
         let btcState = engineState[.btc] as? BTCOnChainTxEngineState<Token>
@@ -693,8 +681,7 @@ extension BitcoinOnChainTransactionEngine {
     }
 
     private func legacyExecute(
-        pendingTransaction: PendingTransaction,
-        secondPassword: String
+        pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard !didExecuteFlag else {
             recorder.error(BitcoinEngineError.alreadySent)
@@ -722,7 +709,7 @@ extension BitcoinOnChainTransactionEngine {
                 self.bridge.buildCandidate(with: proposal)
             }
             .flatMap(weak: self) { (self, _) -> Single<String> in
-                self.bridge.send(coin: Token.coin, with: secondPassword)
+                self.bridge.send(coin: Token.coin, with: nil)
             }
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }

@@ -4,7 +4,7 @@ import Foundation
 import PlatformKit
 
 public protocol OnChainTransactionEngineFactory {
-    func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine
+    func build() -> OnChainTransactionEngine
 }
 
 public protocol WalletConnectEngineFactoryAPI {

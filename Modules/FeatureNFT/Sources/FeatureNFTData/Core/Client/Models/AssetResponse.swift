@@ -15,9 +15,7 @@ public struct AssetResponse: Decodable {
     let imageOriginalURL: URL
     let imagePreviewURL: URL
     let imageThumbnailURL: URL
-    let imageURL: URL
-    let largeImageURL: URL
-    let isNsfw: Bool
+    let imageURL: URL?
     let name: String
     let numSales: Int
     let offers: [OfferResponse]
@@ -38,8 +36,6 @@ public struct AssetResponse: Decodable {
         case imagePreviewURL = "image_preview_url"
         case imageThumbnailURL = "image_thumbnail_url"
         case imageURL = "image_url"
-        case isNsfw = "is_nsfw"
-        case largeImageURL = "large_image_url"
         case name
         case numSales = "num_sales"
         case creator

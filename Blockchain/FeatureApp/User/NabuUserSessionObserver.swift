@@ -85,6 +85,12 @@ final class NabuUserSessionObserver: Session.Observer {
             state.set(blockchain.user.currency.preferred.fiat.trading.currency, to: user.currencies.preferredFiatTradingCurrency.code)
             state.set(blockchain.user.currency.available.currencies, to: user.currencies.usableFiatCurrencies.map(\.code))
             state.set(blockchain.user.currency.default, to: user.currencies.defaultWalletCurrency.code)
+            state.set(blockchain.user.address.line_1, to: user.address?.lineOne)
+            state.set(blockchain.user.address.line_2, to: user.address?.lineTwo)
+            state.set(blockchain.user.address.state, to: user.address?.state)
+            state.set(blockchain.user.address.city, to: user.address?.city)
+            state.set(blockchain.user.address.postal.code, to: user.address?.postalCode)
+            state.set(blockchain.user.address.country.code, to: user.address?.countryCode)
             let tag: Tag
             if let tier = user.tiers?.current {
                 switch tier {

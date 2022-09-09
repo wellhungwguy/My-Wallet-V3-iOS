@@ -34,8 +34,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    let requireSecondPassword: Bool
-
     // MARK: - Private Properties
 
     private let ethereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI
@@ -61,7 +59,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         erc20Token: AssetModel,
-        requireSecondPassword: Bool,
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
@@ -77,7 +74,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.feeService = feeService
         self.ethereumOnChainEngineCompanion = ethereumOnChainEngineCompanion
         self.receiveAddressFactory = receiveAddressFactory
-        self.requireSecondPassword = requireSecondPassword
         self.transactionBuildingService = transactionBuildingService
         self.pendingTransactionRepository = pendingTransactionRepository
         self.walletCurrencyService = walletCurrencyService
@@ -225,7 +221,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         let erc20CryptoAccount = erc20CryptoAccount
         let erc20Token = erc20Token
         let network = erc20CryptoAccount.network
@@ -273,7 +269,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher.send(
                     transaction: candidate,
-                    secondPassword: secondPassword,
+                    secondPassword: nil,
                     network: network
                 )
                 .asSingle()

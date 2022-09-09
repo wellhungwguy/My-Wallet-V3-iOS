@@ -1,10 +1,15 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
 let package = Package(
     name: "FeatureAuthentication",
-    platforms: [.iOS(.v14), .macOS(.v11)],
+    platforms: [
+        .iOS(.v14),
+        .macOS(.v11),
+        .watchOS(.v7),
+        .tvOS(.v14)
+    ],
     products: [
         .library(
             name: "FeatureAuthentication",
@@ -29,19 +34,16 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "Zxcvbn",
             url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
-            .branch("swift-package-manager")
+            branch: "swift-package-manager"
         ),
         .package(
-            name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            branch: "safe-property-wrappers"
         ),
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.34.0"
+            from: "0.38.3"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainNamespace"),
@@ -53,7 +55,8 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../WalletPayload")
+        .package(path: "../WalletPayload"),
+        .package(path: "../Money")
     ],
     targets: [
         .target(
@@ -61,9 +64,10 @@ let package = Package(
             dependencies: [
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkKit", package: "Network"),
+                .product(name: "MoneyKit", package: "Money"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "Zxcvbn", package: "zxcvbn-ios"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),

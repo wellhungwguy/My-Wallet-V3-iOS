@@ -57,6 +57,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockWalletService: FeatureAppDomain.WalletService!
     var mockWalletStateProvider: WalletStateProvider!
     var mockWalletUpgradeService: MockWalletUpgradeService!
+    var mockObservabilityService: ObservabilityServiceMock!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -108,7 +109,6 @@ final class MainAppReducerTests: XCTestCase {
         mockDelegatedCustodySubscriptionsService = DelegatedCustodySubscriptionsServiceMock()
         mockWalletService = WalletService(
             fetch: { _ in .empty() },
-            fetchUsingSecPassword: { _, _ in .empty() },
             recoverFromMetadata: { _ in .empty() }
         )
         mockWalletStateProvider = WalletStateProvider(
@@ -119,6 +119,7 @@ final class MainAppReducerTests: XCTestCase {
         mockForgetWalletService = ForgetWalletService.mock(called: {})
 
         mockPerformanceTracing = PerformanceTracing.mock
+        mockObservabilityService = ObservabilityServiceMock()
 
         mockNabuUser = NabuUser(
             identifier: "1234567890",
@@ -174,6 +175,7 @@ final class MainAppReducerTests: XCTestCase {
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 nabuUserService: mockNabuUserService,
                 nativeWalletFlagEnabled: { .just(false) },
+                observabilityService: mockObservabilityService,
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
@@ -239,8 +241,8 @@ final class MainAppReducerTests: XCTestCase {
 
         // given
         mockSettingsApp.isPairedWithWallet = false
-        mockSettingsApp.guid = "a"
-        mockSettingsApp.sharedKey = "b"
+        mockSettingsApp.set(guid: "a")
+        mockSettingsApp.set(sharedKey: "b")
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
@@ -252,8 +254,8 @@ final class MainAppReducerTests: XCTestCase {
 
         // given
         mockSettingsApp.isPairedWithWallet = false
-        mockSettingsApp.encryptedPinPassword = "a"
-        mockSettingsApp.pinKey = "b"
+        mockSettingsApp.set(encryptedPinPassword: "a")
+        mockSettingsApp.set(pinKey: "b")
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
@@ -265,10 +267,10 @@ final class MainAppReducerTests: XCTestCase {
 
         // given
         mockSettingsApp.isPairedWithWallet = false
-        mockSettingsApp.pinKey = nil
-        mockSettingsApp.encryptedPinPassword = nil
-        mockSettingsApp.guid = nil
-        mockSettingsApp.sharedKey = nil
+        mockSettingsApp.set(pinKey: nil)
+        mockSettingsApp.set(encryptedPinPassword: nil)
+        mockSettingsApp.set(guid: nil)
+        mockSettingsApp.set(sharedKey: nil)
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
@@ -294,8 +296,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_trying_to_login_withSecondPassword_account_displays_notice() {
         mockWallet.mockNeedsSecondPassword = true
-        mockSettingsApp.guid = nil
-        mockSettingsApp.sharedKey = nil
+        mockSettingsApp.set(guid: nil)
+        mockSettingsApp.set(sharedKey: nil)
         mockSettingsApp.isPinSet = false
 
         testStore.send(.onboarding(.start))
@@ -326,9 +328,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
-        mockSettingsApp.guid = String(repeating: "a", count: 36)
-        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        testStore.receive(.legacyWalletFetch(password: "password"))
+        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
+        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -371,8 +373,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_success_authentication_from_password_required_screen() {
         // given valid parameters
-        mockSettingsApp.guid = String(repeating: "a", count: 36)
-        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
+        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         mockSettingsApp.isPinSet = false
 
         testStore.send(.onboarding(.start))
@@ -391,7 +393,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
+        testStore.receive(.legacyWalletFetch(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -419,8 +421,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_success_authentication_from_pin() {
         // given valid parameters
-        mockSettingsApp.guid = String(repeating: "a", count: 36)
-        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
+        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         mockSettingsApp.isPinSet = true
 
         testStore.send(.onboarding(.start))
@@ -440,7 +442,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.fetchWallet(password: "password"))
         testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.doFetchWallet(password: "password"))
+        testStore.receive(.legacyWalletFetch(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -501,8 +503,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_logout_should_perform_cleanup_and_pin_screen() {
         // given valid parameters
-        mockSettingsApp.guid = String(repeating: "a", count: 36)
-        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
+        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         mockSettingsApp.isPinSet = true
 
         testStore.send(.onboarding(.start))
@@ -585,8 +587,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_appForegrounded_while_wallet_not_initialized_and_logged_in_state() {
         // given
-        mockSettingsApp.guid = String(repeating: "a", count: 36)
-        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
+        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
         mockSettingsApp.isPinSet = true
 
         mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
@@ -610,11 +612,11 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.loggedIn(.stop))
         testStore.receive(.requirePin) { state in
             state.loggedIn = nil
-            state.onboarding = Onboarding.State(pinState: .init())
+            state.onboarding = Onboarding.State(
+                pinState: PinCore.State()
+            )
         }
-        testStore.receive(.onboarding(.start)) { state in
-            state.onboarding?.pinState = .init()
-        }
+        testStore.receive(.onboarding(.start))
         testStore.receive(.onboarding(.proceedToFlow))
         testStore.receive(.onboarding(.pin(.authenticate))) { state in
             state.onboarding?.pinState?.authenticate = true
@@ -623,7 +625,7 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_clearPinIfNeeded_correctly_clears_pin() {
         // given a hashed password
-        mockSettingsApp.passwordPartHash = "a-hash"
+        mockSettingsApp.set(passwordPartHash: "a-hash")
 
         // 1. when the same password hash is used
         clearPinIfNeeded(for: "a-hash", appSettings: mockSettingsApp)
@@ -732,9 +734,12 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.mobileAuthSync(isLogin: true), file: file, line: line)
         mockMainQueue.advance()
         testStore.receive(.loggedIn(.handleExistingWalletSignIn), file: file, line: line)
-        testStore.receive(.loggedIn(.showPostSignInOnboardingFlow), file: file, line: line) {
-            $0.loggedIn?.displayPostSignInOnboardingFlow = true
-        }
+        testStore.receive(
+            .loggedIn(.showPostSignInOnboardingFlow),
+            { $0.loggedIn?.displayPostSignInOnboardingFlow = true },
+            file: file,
+            line: line
+        )
     }
 
     /// send logout to clear pending effects after logged in.
@@ -768,5 +773,13 @@ final class ERC20CryptoAssetServiceMock: ERC20CryptoAssetServiceAPI {
 final class DelegatedCustodySubscriptionsServiceMock: DelegatedCustodySubscriptionsServiceAPI {
     func subscribe() -> AnyPublisher<Void, Error> {
         .just(())
+    }
+}
+
+final class ObservabilityServiceMock: ObservabilityServiceAPI {
+    func start(with appKey: String) {}
+
+    func addSessionProperty(_ value: String, withKey key: String, permanent: Bool) -> Bool {
+        true
     }
 }

@@ -131,6 +131,38 @@ extension Card.Status {
 
 extension LocalizationConstants.CardIssuing {
 
+    enum Legal {
+
+        enum Button {
+
+            static let next = NSLocalizedString(
+                "Next",
+                comment: "Card Issuing Legal Item: Next Button"
+            )
+
+            static let accept = NSLocalizedString(
+                "Accept All",
+                comment: "Card Issuing Legal Item: Accept All"
+            )
+        }
+
+        enum Item {
+
+            static let title = NSLocalizedString(
+                """
+                I understand and accept the terms and conditions of the Blockchain.com Visa Card Program, \
+                the Pathward Bank Cardholder Agreement, the Pathward Bank E-Sign Agreement and \
+                the Pathward Bank Privacy Policy. I also understand and accept that these terms operate in addition \
+                to the Blockchain.com Terms of Service and Blockchain.com Privacy Policy.
+                """,
+                comment: "Card Issuing Legal Item: I agree to Blockchain.com's [legal item]"
+            )
+        }
+    }
+}
+
+extension LocalizationConstants.CardIssuing {
+
     enum Errors {
 
         enum TierTooLow {

@@ -12,7 +12,6 @@ import ToolKit
 
 enum CardManagementAction: Equatable, BindableAction {
     case addToAppleWallet
-    case cardHelperDidLoad
     case close
     case closeDetails
     case delete
@@ -57,7 +56,6 @@ public struct CardManagementState: Equatable {
 
     var card: Card?
     var cardHelperUrl: URL?
-    var cardHelperIsReady = false
     var error: NabuNetworkError?
     var recentTransactions: LoadingState<[Card.Transaction]> = .loading
     var transactions: [Card.Transaction] = []
@@ -73,14 +71,12 @@ public struct CardManagementState: Equatable {
         card: Card? = nil,
         isLocked: Bool = false,
         cardHelperUrl: URL? = nil,
-        cardHelperIsReady: Bool = false,
         error: NabuNetworkError? = nil,
         transactions: [Card.Transaction] = []
     ) {
         self.card = card
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
-        self.cardHelperIsReady = cardHelperIsReady
         self.error = error
         self.transactions = transactions
     }
@@ -273,9 +269,6 @@ let cardManagementReducer: Reducer<
         case .getCardHelperUrlResponse(.failure(let error)):
             state.error = error
             return .none
-        case .cardHelperDidLoad:
-            state.cardHelperIsReady = true
-            return .none
         case .lockCardResponse(.success(let card)),
              .unlockCardResponse(.success(let card)):
             state.card = card
@@ -403,7 +396,6 @@ extension CardManagementState {
             card: nil,
             isLocked: false,
             cardHelperUrl: nil,
-            cardHelperIsReady: false,
             error: nil,
             transactions: [.success, .pending, .failed]
         )

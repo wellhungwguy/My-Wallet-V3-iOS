@@ -32,10 +32,15 @@ public enum EncryptAndVerifyError: LocalizedError, Equatable {
 func encryptAndVerifyWrapper(
     walletEncoder: WalletEncodingAPI,
     encryptor: PayloadCryptoAPI,
+    logger: NativeWalletLoggerAPI,
     password: String,
     wrapper: Wrapper
 ) -> AnyPublisher<EncodedWalletPayload, EncryptAndVerifyError> {
     walletEncoder.transform(wrapper: wrapper)
+        .logMessageOnOutput(logger: logger, message: { payload in
+            let jsonPayload = String(data: payload.payloadContext.value, encoding: .utf8)
+            return "[Sync] Wallet json to be synced:\n \(String(describing: jsonPayload))"
+        })
         .mapError(EncryptAndVerifyError.encodingError)
         .flatMap { encodedPayload -> AnyPublisher<EncodedWalletPayload, EncryptAndVerifyError> in
             guard case .encoded(let payload) = encodedPayload.payloadContext else {

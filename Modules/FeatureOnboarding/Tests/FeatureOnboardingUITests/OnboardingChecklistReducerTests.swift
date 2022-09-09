@@ -162,9 +162,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         // user taps on close
         testStore.send(.dismissFullScreenChecklist)
         // then the full screen checklist gets dismissed
-        testStore.receive(.dismiss()) {
-            $0.route = nil
-        }
+        testStore.receive(.dismiss())
     }
 
     func test_action_presentFullScreenChecklist() throws {
@@ -202,9 +200,7 @@ extension OnboardingChecklistReducerTests {
         testStore.send(.startObservingUserState)
         resetUserState(to: .initialState)
         testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.initialState)) {
-            $0.completedItems = []
-        }
+        testStore.receive(.userStateDidChange(.initialState))
         testStore.send(.stopObservingUserState)
     }
 

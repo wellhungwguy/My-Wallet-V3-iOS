@@ -50,10 +50,6 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .failure(ReceiveAddressError.notSupported)
     }
 
-    var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
     var label: String {
         asset.defaultWalletName
     }

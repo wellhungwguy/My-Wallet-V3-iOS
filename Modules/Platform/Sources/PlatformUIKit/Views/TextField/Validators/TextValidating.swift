@@ -8,14 +8,39 @@ public enum TextValidationState {
     // The text is valid
     case valid
 
+    // The text is valid but there is a disclaimer
+    case conceivable(reason: String?)
+
+    // The text is valid but there are external reasons why
+    // this entry cannot work.
+    case blocked(reason: String?)
+
     /// The text is invalid
     case invalid(reason: String?)
 
     var isValid: Bool {
         switch self {
-        case .valid:
+        case .valid, .conceivable:
             return true
-        case .invalid:
+        case .invalid, .blocked:
+            return false
+        }
+    }
+
+    var isBlocked: Bool {
+        switch self {
+        case .blocked:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isConceivable: Bool {
+        switch self {
+        case .conceivable:
+            return true
+        default:
             return false
         }
     }

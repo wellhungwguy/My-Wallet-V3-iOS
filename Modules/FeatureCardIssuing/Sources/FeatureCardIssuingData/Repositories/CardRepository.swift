@@ -16,6 +16,7 @@ final class CardRepository: CardRepositoryAPI {
     }
 
     private let client: CardClientAPI
+    private let userInfoProvider: UserInfoProviderAPI
 
     private let baseCardHelperUrl: String
 
@@ -36,9 +37,11 @@ final class CardRepository: CardRepositoryAPI {
 
     init(
         client: CardClientAPI,
+        userInfoProvider: UserInfoProviderAPI,
         baseCardHelperUrl: String
     ) {
         self.client = client
+        self.userInfoProvider = userInfoProvider
         self.baseCardHelperUrl = baseCardHelperUrl
 
         let cardCache: AnyCache<String, [Card]> = InMemoryCache(
@@ -108,11 +111,13 @@ final class CardRepository: CardRepositoryAPI {
         let baseCardHelperUrl = baseCardHelperUrl
         return client
             .generateSensitiveDetailsToken(with: card.id)
-            .map { token in
+            .combineLatest(userInfoProvider.fullName)
+            .map { token, fullName in
                 Self.buildCardHelperUrl(
                     with: baseCardHelperUrl,
                     token: token,
-                    for: card
+                    for: card,
+                    with: fullName
                 )
             }
             .eraseToAnyPublisher()
@@ -165,10 +170,12 @@ final class CardRepository: CardRepositoryAPI {
     private static func buildCardHelperUrl(
         with base: String,
         token: String,
-        for card: Card
+        for card: Card,
+        with name: String
     ) -> URL {
-        URL(
-            string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)"
+        let nameParam = name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "-"
+        return URL(
+            string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)/\(nameParam)"
         )!
     }
 }

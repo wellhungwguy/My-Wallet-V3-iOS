@@ -1,7 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BINDWithdrawData
+import BINDWithdrawDomain
 import DIKit
 import FeatureTransactionDomain
+import NetworkKit
 
 extension DependencyContainer {
 
@@ -100,6 +103,13 @@ extension DependencyContainer {
         factory { () -> BlockchainNameResolutionClientAPI in
             let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
             return client as BlockchainNameResolutionClientAPI
+        }
+
+        factory {
+            BINDWithdrawRepository(
+                requestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                network: DIKit.resolve(tag: DIKitContext.retail)
+            ) as BINDWithdrawRepositoryProtocol
         }
     }
 }

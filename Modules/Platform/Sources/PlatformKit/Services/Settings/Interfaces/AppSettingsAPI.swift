@@ -4,8 +4,12 @@ import RxSwift
 import ToolKit
 
 public protocol AppSettingsAPI: AnyObject {
-    var sharedKey: String? { get set }
-    var guid: String? { get set }
+
+    var sharedKey: String? { get }
+    var guid: String? { get }
+
+    func set(sharedKey: String?)
+    func set(guid: String?)
 }
 
 extension AppSettingsAPI {

@@ -45,10 +45,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .eraseToAnyPublisher()
     }
 
-    public var requireSecondPassword: Single<Bool> {
-        .just(false)
-    }
-
     public var isFunded: AnyPublisher<Bool, Error> {
         balances
             .map { $0 != .absent }

@@ -76,7 +76,7 @@ public enum CoreAppAction: Equatable {
     // Wallet Authentication
     case wallet(WalletAction)
     case fetchWallet(password: String)
-    case doFetchWallet(password: String)
+    case legacyWalletFetch(password: String)
     case authenticate
     case didDecryptWallet(WalletDecryption)
     case decryptionFailure(AuthenticationError)
@@ -131,6 +131,7 @@ struct CoreAppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var nabuUserService: NabuUserServiceAPI
     var nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
+    var observabilityService: ObservabilityServiceAPI
     var performanceTracing: PerformanceTracingServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
@@ -329,41 +330,34 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.loadingViewPresenter.showCircular()
         return environment.nativeWalletFlagEnabled()
             .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
+                let updateObservabilitySession = updateNativeWalletObservability(
+                    using: environment.observabilityService,
+                    isNativeWallet: nativeWalletEnabled
+                )
                 guard nativeWalletEnabled else {
                     // As much as I (Dimitris) hate delay-ing work this is one of those method
                     // that I'm going to make an exception, mainly because it's going to be replaced soon.
                     // This is to give a change for the circular loader to appear before
                     // we call `fetch(with: _password_)` which will call the evil that is JS.
                     return .merge(
-                        Effect(value: .doFetchWallet(password: password))
+                        updateObservabilitySession,
+                        Effect(value: .legacyWalletFetch(password: password))
                             .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
                             .eraseToEffect()
                             .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true),
                         Effect(value: .authenticate)
                     )
                 }
-                return Effect(value: .doFetchWallet(password: password))
+                return .merge(
+                    updateObservabilitySession,
+                    Effect(value: .wallet(.fetch(password: password)))
+                )
             }
             .eraseToEffect()
 
-    case .doFetchWallet(let password):
-        let walletManager = environment.walletManager
-        let walletService = environment.walletService
-        let mainQueue = environment.mainQueue
-        return environment.nativeWalletFlagEnabled()
-            .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
-                guard nativeWalletEnabled else {
-                    walletManager.fetch(with: password)
-                    return .cancel(id: WalletCancelations.FetchId())
-                }
-                // Runs the native wallet fetching
-                return walletService.fetch(password)
-                    .receive(on: mainQueue)
-                    .catchToEffect()
-                    .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
-                    .map { CoreAppAction.wallet(.walletFetched($0)) }
-            }
-            .eraseToEffect()
+    case .legacyWalletFetch(let password):
+        environment.walletManager.fetch(with: password)
+        return .cancel(id: WalletCancelations.FetchId())
 
     case .authenticate:
         return .merge(
@@ -407,8 +401,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
 
         environment.loadingViewPresenter.showCircular()
-        environment.blockchainSettings.guid = decryption.guid
-        environment.blockchainSettings.sharedKey = decryption.sharedKey
+        environment.blockchainSettings.set(guid: decryption.guid)
+        environment.blockchainSettings.set(sharedKey: decryption.sharedKey)
 
         return .merge(
             // reset KYC verification if decrypted wallet under recovery context
@@ -486,8 +480,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         {
             // unfortunately during login we store the guid in the settings
             // we need to reset this if we detect a second password
-            environment.blockchainSettings.guid = nil
-            environment.blockchainSettings.sharedKey = nil
+            environment.blockchainSettings.set(guid: nil)
+            environment.blockchainSettings.set(sharedKey: nil)
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(
@@ -716,9 +710,13 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .onboarding(.pin(.handleAuthentication(let password))):
-        environment.performanceTracing.begin(trace: .pinToDashboard)
-        return Effect(
-            value: .fetchWallet(password: password)
+        return .merge(
+            .fireAndForget{
+                environment.app.post(event: blockchain.ux.user.event.authenticated.pin)
+            },
+            Effect(
+                value: .fetchWallet(password: password)
+            )
         )
 
     case .onboarding(.pin(.pinCreated)):
@@ -985,8 +983,8 @@ internal func syncPinKeyWithICloud(
 
         // Attempt to restore the pinKey from iCloud
         if let pinData = credentialsStore.pinData() {
-            blockchainSettings.pinKey = pinData.pinKey
-            blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
+            blockchainSettings.set(pinKey: pinData.pinKey)
+            blockchainSettings.set(encryptedPinPassword: pinData.encryptedPinPassword)
         }
     }
 }
@@ -1030,4 +1028,18 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: AppSettingsAut
     }
 
     appSettings.clearPin()
+}
+
+private func updateNativeWalletObservability(
+    using service: ObservabilityServiceAPI,
+    isNativeWallet: Bool
+) -> Effect<CoreAppAction, Never> {
+    Effect.fireAndForget {
+        _ = service
+            .addSessionProperty(
+                isNativeWallet ? "true" : "false",
+                withKey: "native-wallet",
+                permanent: false
+            )
+    }
 }

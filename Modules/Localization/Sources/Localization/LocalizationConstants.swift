@@ -552,6 +552,10 @@ public enum LocalizationConstants {
             "Rewards",
             comment: "Tab item: rewards"
         )
+        public static let nft = NSLocalizedString(
+            "NFT",
+            comment: "Tab item: nft"
+        )
     }
 
     public static let openWebsite = NSLocalizedString(

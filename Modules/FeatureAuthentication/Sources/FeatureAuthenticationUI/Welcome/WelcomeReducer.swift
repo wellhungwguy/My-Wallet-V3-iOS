@@ -308,6 +308,9 @@ public let welcomeReducer = Reducer.combine(
         case .manualPairing(.seedPhrase(.informWalletFetched(let context))):
             return Effect(value: .informWalletFetched(context))
 
+        case .manualPairing(.seedPhrase(.importWallet(.createAccount(.walletFetched(.success(.right(let context))))))):
+            return Effect(value: .informWalletFetched(context))
+
         case .manualPairing:
             return .none
 
@@ -319,6 +322,9 @@ public let welcomeReducer = Reducer.combine(
 
         case .restoreWallet(.restored(.success(.right(let context)))),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success(.right(let context))))))):
+            return Effect(value: .informWalletFetched(context))
+
+        case .restoreWallet(.importWallet(.createAccount(.walletFetched(.success(.right(let context)))))):
             return Effect(value: .informWalletFetched(context))
 
         case .restoreWallet(.restored(.success(.left(.noValue)))),

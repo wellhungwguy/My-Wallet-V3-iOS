@@ -148,6 +148,7 @@ private func saveOperations(
         encryptAndVerifyWrapper(
             walletEncoder: walletEncoder,
             encryptor: payloadCrypto,
+            logger: logger,
             password: password,
             wrapper: wrapper
         )
@@ -157,9 +158,6 @@ private func saveOperations(
                 .mapError(WalletSyncError.encodingError)
                 .eraseToAnyPublisher()
         }
-        .logMessageOnOutput(logger: logger, message: { walletPayload in
-            "Encrypted payload be synced: \(walletPayload)"
-        })
         .flatMap { [syncPubKeysAddressesProvider, logger] payload
             -> AnyPublisher<(WalletCreationPayload, String?), WalletSyncError> in
             guard wrapper.syncPubKeys else {
@@ -177,12 +175,12 @@ private func saveOperations(
             .map { addresses in (payload, addresses) }
             .logMessageOnOutput(logger: logger, message: { _, addresses in
                 let addresses = addresses ?? ""
-                return "Addresses to sync \(addresses)"
+                return "[Sync] Addresses to sync:\n \(addresses)"
             })
             .eraseToAnyPublisher()
         }
         .logMessageOnOutput(logger: logger, message: { payload, _ in
-            "!!! About to sync \(payload)"
+            "[Sync] !!! About to sync \(payload)"
         })
         .flatMap { [saveWalletRepository] payload, addresses -> AnyPublisher<WalletCreationPayload, WalletSyncError> in
             saveWalletRepository.saveWallet(

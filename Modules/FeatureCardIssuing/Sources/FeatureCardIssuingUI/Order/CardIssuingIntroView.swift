@@ -50,6 +50,7 @@ struct CardIssuingIntroView: View {
             }
             .onAppear {
                 viewStore.send(.fetchProducts)
+                viewStore.send(.fetchLegalItems)
             }
             .padding(Spacing.padding3)
             .primaryNavigation(title: LocalizationConstants.CardIssuing.Navigation.title)

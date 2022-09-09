@@ -41,6 +41,7 @@ public struct AsyncMedia<Content: View>: View {
                 }
             }
         )
+        .animation(nil)
     }
 }
 

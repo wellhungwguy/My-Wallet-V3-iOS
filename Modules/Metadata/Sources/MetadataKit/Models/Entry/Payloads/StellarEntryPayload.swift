@@ -31,6 +31,13 @@ public struct StellarEntryPayload: MetadataNodeEntry, Hashable {
             self.label = label
             self.publicKey = publicKey
         }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+            label = try container.decode(String.self, forKey: .label)
+            publicKey = try container.decode(String.self, forKey: .publicKey)
+        }
     }
 
     public static let type: EntryType = .stellar
@@ -42,10 +49,17 @@ public struct StellarEntryPayload: MetadataNodeEntry, Hashable {
     public init(
         accounts: [Account],
         defaultAccountIndex: Int,
-        txNotes: [String: String]
+        txNotes: [String: String]?
     ) {
         self.accounts = accounts
         self.defaultAccountIndex = defaultAccountIndex
         self.txNotes = txNotes
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        accounts = try container.decode([Account].self, forKey: .accounts)
+        defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
+        txNotes = try container.decodeIfPresent([String: String].self, forKey: .txNotes)
     }
 }

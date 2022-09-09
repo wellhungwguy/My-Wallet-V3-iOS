@@ -10,7 +10,12 @@ import ToolKit
 public protocol FeatureNFTClientAPI {
     func fetchAssetsFromEthereumAddress(
         _ address: String
-    ) -> AnyPublisher<[AssetResponse], NabuNetworkError>
+    ) -> AnyPublisher<Nft, NabuNetworkError>
+
+    func fetchAssetsFromEthereumAddress(
+        _ address: String,
+        pageKey: String
+    ) -> AnyPublisher<Nft, NabuNetworkError>
 
     func registerEmailForNFTViewWaitlist(
         _ email: String
@@ -21,9 +26,9 @@ public final class APIClient: FeatureNFTClientAPI {
 
     private enum Path {
         static let assets = [
-            "explorer-gateway",
+            "nft-market-api",
             "nft",
-            "assets"
+            "account_assets"
         ]
         static let waitlist = [
             "explorer-gateway",
@@ -32,8 +37,8 @@ public final class APIClient: FeatureNFTClientAPI {
         ]
     }
 
-    private enum Parameter {
-        static let owner = "owner"
+    fileprivate enum Parameter {
+        static let cursor = "cursor"
     }
 
     // MARK: - Private Properties
@@ -61,19 +66,29 @@ public final class APIClient: FeatureNFTClientAPI {
 
     public func fetchAssetsFromEthereumAddress(
         _ address: String
-    ) -> AnyPublisher<[AssetResponse], NabuNetworkError> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.owner,
-                value: address
-            )
-        ]
-        let request = retailRequestBuilder.post(
-            path: Path.assets,
-            parameters: parameters,
+    ) -> AnyPublisher<Nft, NabuNetworkError> {
+        let request = defaultRequestBuilder.get(
+            // NOTE: Space here due to backend bug
+            path: Path.assets + [address],
             contentType: .json
         )!
-        return retailNetworkAdapter.perform(request: request)
+        return defaultNetworkAdapter.perform(request: request)
+    }
+
+    public func fetchAssetsFromEthereumAddress(
+        _ address: String,
+        pageKey: String
+    ) -> AnyPublisher<Nft, NabuNetworkError> {
+        let param = URLQueryItem(
+            name: Parameter.cursor,
+            value: pageKey
+        )
+        let request = defaultRequestBuilder.get(
+            path: Path.assets + [address],
+            parameters: [param],
+            contentType: .json
+        )!
+        return defaultNetworkAdapter.perform(request: request)
     }
 
     public func registerEmailForNFTViewWaitlist(

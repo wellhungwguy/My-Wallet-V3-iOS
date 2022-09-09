@@ -2,11 +2,13 @@
 
 import Foundation
 
-struct RemoteMetadataNodesResponse: Codable {
+struct RemoteMetadataNodesResponse: MetadataNodeEntry, Codable {
 
     var areAllMetadataNodesAvailable: Bool {
         metadata != nil
     }
+
+    static var type: EntryType = .root
 
     var metadata: String?
 }

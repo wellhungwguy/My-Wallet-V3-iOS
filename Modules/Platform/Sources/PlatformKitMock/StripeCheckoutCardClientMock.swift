@@ -25,6 +25,12 @@ private class CardClientMock: CardClientAPI {
         cardClient.deleteCard(by: id)
     }
 
+    func getCardSuccessRate(
+        binNumber: String
+    ) -> AnyPublisher<CardSuccessRate.Response, NabuNetworkError> {
+        cardClient.getCardSuccessRate(binNumber: binNumber)
+    }
+
     func activateCard(
         by id: String,
         url: String,

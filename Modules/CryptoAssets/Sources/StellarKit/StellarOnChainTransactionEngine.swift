@@ -26,7 +26,6 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
     var askForRefreshConfirmation: AskForRefreshConfirmation!
-    var requireSecondPassword: Bool
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     var transactionDispatcher: StellarTransactionDispatcherAPI
@@ -84,13 +83,11 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Init
 
     init(
-        requireSecondPassword: Bool,
         walletCurrencyService: FiatCurrencyServiceAPI,
         currencyConversionService: CurrencyConversionServiceAPI,
         feeRepository: AnyCryptoFeeRepository<StellarTransactionFee>,
         transactionDispatcher: StellarTransactionDispatcherAPI
     ) {
-        self.requireSecondPassword = requireSecondPassword
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.transactionDispatcher = transactionDispatcher
@@ -240,10 +237,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         createTransaction(pendingTransaction: pendingTransaction)
             .flatMap(weak: self) { (self, sendDetails) -> Single<SendConfirmationDetails> in
-                self.transactionDispatcher.sendFunds(sendDetails: sendDetails, secondPassword: secondPassword)
+                self.transactionDispatcher.sendFunds(sendDetails: sendDetails, secondPassword: nil)
             }
             .map { result in
                 TransactionResult.hashed(txHash: result.transactionHash, amount: pendingTransaction.amount)

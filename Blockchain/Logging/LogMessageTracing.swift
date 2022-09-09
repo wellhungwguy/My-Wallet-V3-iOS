@@ -17,12 +17,19 @@ extension LogMessageTracing {
 
     static func provideLoggers() -> [LogMessageServiceAPI] {
     #if DEBUG || INTERNAL_BUILD
-        return [LocalLogMessaging()]
+        return [
+            LocalLogMessaging()
+        ]
     #else
-        return [EmbraceLogMessaging()]
+        return [
+            EmbraceLogMessaging(),
+            CrashlyticsLogMessaging(client: CrashlyticsRecorder())
+        ]
     #endif
     }
 }
+
+// MARK: - Services
 
 final class LocalLogMessaging: LogMessageServiceAPI {
     func logError(message: String, properties: [String: String]?) {
@@ -78,5 +85,34 @@ final class EmbraceLogMessaging: LogMessageServiceAPI {
             with: .info,
             properties: properties
         )
+    }
+}
+
+final class CrashlyticsLogMessaging: LogMessageServiceAPI {
+
+    enum LogError: Error {
+        case failure(String)
+    }
+
+    private let client: Recording
+
+    init(client: Recording) {
+        self.client = client
+    }
+
+    func logError(error: Error, properties: [String: String]?) {
+        client.error(error)
+    }
+
+    func logError(message: String, properties: [String: String]?) {
+        client.error(LogError.failure(message))
+    }
+
+    func logWarning(message: String, properties: [String: String]?) {
+        client.record("[Warning]: \(message)")
+    }
+
+    func logInfo(message: String, properties: [String: String]?) {
+        client.record("[Info]: \(message)")
     }
 }

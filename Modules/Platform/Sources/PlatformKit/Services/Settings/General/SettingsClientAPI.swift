@@ -3,8 +3,18 @@
 import Combine
 import Errors
 
+public protocol UpdateCurrencySettingsClientAPI: AnyObject {
+
+    func updatePublisher(
+        currency: String,
+        context: FlowContext,
+        guid: String,
+        sharedKey: String
+    ) -> AnyPublisher<Void, CurrencyUpdateError>
+}
+
 /// Protocol definition for interacting with the `WalletSettings` object.
-protocol SettingsClientAPI: AnyObject {
+protocol SettingsClientAPI: UpdateCurrencySettingsClientAPI {
 
     /// Fetches the wallet settings from the backend.
     /// - Parameter guid: The wallet identifier that must be valid.
@@ -83,11 +93,4 @@ protocol SettingsClientAPI: AnyObject {
         guid: String,
         sharedKey: String
     ) -> AnyPublisher<Void, NetworkError>
-
-    func updatePublisher(
-        currency: String,
-        context: FlowContext,
-        guid: String,
-        sharedKey: String
-    ) -> AnyPublisher<Void, CurrencyUpdateError>
 }

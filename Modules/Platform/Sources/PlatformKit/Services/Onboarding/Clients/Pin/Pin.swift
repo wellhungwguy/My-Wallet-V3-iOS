@@ -29,7 +29,7 @@ public struct Pin {
 
     /// Save using injected parameter
     public func save(using settings: AppSettingsAuthenticating) {
-        settings.pin = toString
+        settings.set(pin: toString)
     }
 }
 

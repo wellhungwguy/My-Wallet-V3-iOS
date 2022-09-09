@@ -13,6 +13,7 @@ extension DependencyContainer {
             CardIssuingBuilder(
                 accountModelProvider: DIKit.resolve(),
                 cardService: DIKit.resolve(),
+                legalService: DIKit.resolve(),
                 productService: DIKit.resolve(),
                 residentialAddressService: DIKit.resolve(),
                 transactionService: DIKit.resolve(),
