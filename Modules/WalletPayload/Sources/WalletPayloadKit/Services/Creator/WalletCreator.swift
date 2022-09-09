@@ -38,7 +38,8 @@ typealias ProcessWalletCreation = (
     _ email: String,
     _ password: String,
     _ language: String,
-    _ recaptchaToken: String?
+    _ recaptchaToken: String?,
+    _ siteKey: String
 ) -> AnyPublisher<WalletCreation, WalletCreateError>
 
 public protocol WalletCreatorAPI {
@@ -50,6 +51,7 @@ public protocol WalletCreatorAPI {
         password: String,
         accountName: String,
         recaptchaToken: String?,
+        siteKey: String,
         language: String
     ) -> AnyPublisher<WalletCreation, WalletCreateError>
 
@@ -124,6 +126,7 @@ final class WalletCreator: WalletCreatorAPI {
         password: String,
         accountName: String,
         recaptchaToken: String?,
+        siteKey: String,
         language: String = "en"
     ) -> AnyPublisher<WalletCreation, WalletCreateError> {
         provideMnemonic(
@@ -152,7 +155,8 @@ final class WalletCreator: WalletCreatorAPI {
                 email,
                 password,
                 language,
-                recaptchaToken
+                recaptchaToken,
+                siteKey
             )
         }
         .logErrorOrCrash(tracer: tracer)
@@ -207,7 +211,8 @@ final class WalletCreator: WalletCreatorAPI {
                     email,
                     password,
                     language,
-                    nil
+                    nil,
+                    ""
                 )
             }
             .logErrorOrCrash(tracer: tracer)
@@ -247,7 +252,7 @@ private func provideProcessCreationOfWallet(
     generateWrapper: @escaping GenerateWrapperProvider,
     checksumProvider: @escaping (Data) -> String
 ) -> ProcessWalletCreation {
-    { context, email, password, language, recaptchaToken -> AnyPublisher<WalletCreation, WalletCreateError> in
+    { context, email, password, language, recaptchaToken, siteKey -> AnyPublisher<WalletCreation, WalletCreateError> in
         generateWallet(context)
             .map { wallet -> Wrapper in
                 generateWrapper(wallet, language, WalletVersion.v4)
@@ -273,10 +278,15 @@ private func provideProcessCreationOfWallet(
                     .eraseToAnyPublisher()
             }
             .flatMap { [createWalletRepository] payload -> AnyPublisher<WalletCreationPayload, WalletCreateError> in
-                createWalletRepository.createWallet(email: email, payload: payload, recaptchaToken: recaptchaToken)
-                    .map { _ in payload }
-                    .mapError(WalletCreateError.networkError)
-                    .eraseToAnyPublisher()
+                createWalletRepository.createWallet(
+                    email: email,
+                    payload: payload,
+                    recaptchaToken: recaptchaToken,
+                    siteKey: siteKey
+                )
+                .map { _ in payload }
+                .mapError(WalletCreateError.networkError)
+                .eraseToAnyPublisher()
             }
             .map { payload in
                 WalletCreation(
