@@ -54,7 +54,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnoun
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.both]
+        [AppMode.trading, AppMode.legacy]
     }
 
     var shouldShow: Bool {

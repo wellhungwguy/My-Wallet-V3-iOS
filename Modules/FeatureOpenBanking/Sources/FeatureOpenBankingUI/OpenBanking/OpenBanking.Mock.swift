@@ -2,22 +2,20 @@
 
 #if DEBUG
 
-import CombineSchedulers
+import Blockchain
 import FeatureOpenBankingData
-import Foundation
 #if canImport(WalletNetworkKit)
 import WalletNetworkKit
 #else
 import NetworkKit
 #endif
-import ToolKit
 
 extension OpenBankingEnvironment {
 
     public static let mock = OpenBankingEnvironment(
         app: App.preview,
         openBanking: .mock,
-        openURL: ToLogAppOpener(),
+        openURL: LogOpenURL(),
         fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
         cryptoCurrencyFormatter: NoFormatCurrencyFormatter(),
         analytics: NoAnalyticsRecorder(),

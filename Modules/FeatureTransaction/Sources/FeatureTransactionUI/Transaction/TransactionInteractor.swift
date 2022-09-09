@@ -271,6 +271,10 @@ final class TransactionInteractor {
         transactionProcessor?.reset()
     }
 
+    func resetProcessor() {
+        transactionProcessor?.reset()
+    }
+
     var transactionExchangeRates: Observable<TransactionExchangeRates> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")

@@ -43,8 +43,8 @@ extension Dictionary where Value == Any {
             switch value {
             case let o as Self:
                 dictionary[key] = try o.deepMap(options, transform)
-            case let o as [Self] where options.contains(.mappingOverArrays):
-                dictionary[key] = try o.map { try $0.deepMap(options, transform) }
+            case let o as [Any] where options.contains(.mappingOverArrays):
+                dictionary[key] = try o.map { try ($0 as? Self)?.deepMap(options, transform) ?? $0 }
             default:
                 dictionary[key] = value
             }
@@ -66,9 +66,9 @@ extension Dictionary where Value == Any {
                 } else {
                     dictionary[key] = mapped
                 }
-            case let o as [Self] where options.contains(.mappingOverArrays):
+            case let o as [Any] where options.contains(.mappingOverArrays):
                 dictionary[key] = try o.map {
-                    try $0.deepMapAndMerge(options, transform, uniquingKeysWith: policy)
+                    try ($0 as? Self)?.deepMapAndMerge(options, transform, uniquingKeysWith: policy) ?? $0
                 }
             default:
                 dictionary[key] = value

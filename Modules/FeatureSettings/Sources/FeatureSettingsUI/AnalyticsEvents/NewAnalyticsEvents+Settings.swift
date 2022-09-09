@@ -9,6 +9,7 @@ extension AnalyticsEvents.New {
         case addMobileNumberClicked(origin: Origin)
         case changeMobileNumberClicked
         case notificationClicked
+        case deleteAccountClicked(origin: String)
         case walletReferralProgramClicked(origin: String)
         case notificationPreferencesUpdated(emailEnabled: Bool?, smsEnabled: Bool?)
         case settingsCurrencyClicked(currency: String)

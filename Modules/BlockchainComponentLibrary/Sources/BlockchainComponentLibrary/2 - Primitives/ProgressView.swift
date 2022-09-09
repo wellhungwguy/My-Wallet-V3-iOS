@@ -22,11 +22,11 @@ public struct BlockchainProgressViewStyle: ProgressViewStyle {
     }
 }
 
-extension ProgressViewStyle where Self == IndeterminateProgressViewStyle {
+extension ProgressViewStyle where Self == BlockchainCircularProgressViewStyle {
     public static var blockchain: BlockchainProgressViewStyle { .init() }
 }
 
-public struct IndeterminateProgressViewStyle: ProgressViewStyle {
+public struct BlockchainCircularProgressViewStyle: ProgressViewStyle {
 
     public var stroke: Color
     public var background: Color
@@ -84,8 +84,9 @@ public struct IndeterminateProgressViewStyle: ProgressViewStyle {
     }
 }
 
-extension ProgressViewStyle where Self == IndeterminateProgressViewStyle {
-    public static var indeterminate: IndeterminateProgressViewStyle { .init() }
+extension ProgressViewStyle where Self == BlockchainCircularProgressViewStyle {
+    public static var indeterminate: BlockchainCircularProgressViewStyle { .init() }
+    public static var determinate: BlockchainCircularProgressViewStyle { .init(indeterminate: false) }
 }
 
 #if DEBUG

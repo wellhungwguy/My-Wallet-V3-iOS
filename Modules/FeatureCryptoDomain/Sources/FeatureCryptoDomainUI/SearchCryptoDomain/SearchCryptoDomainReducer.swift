@@ -118,11 +118,11 @@ struct SearchCryptoDomainEnvironment {
     }
 }
 
-let searchCryptoDomainReducer = Reducer.combine(
+let searchCryptoDomainReducer = Reducer<SearchCryptoDomainState, SearchCryptoDomainAction, SearchCryptoDomainEnvironment>.combine(
     domainCheckoutReducer
         .optional()
         .pullback(
-            state: \.checkoutState,
+            state: \SearchCryptoDomainState.checkoutState,
             action: /SearchCryptoDomainAction.checkoutAction,
             environment: {
                 DomainCheckoutEnvironment(
@@ -145,9 +145,11 @@ let searchCryptoDomainReducer = Reducer.combine(
             ) != nil || state.searchText.isEmpty
             return state.isSearchTextValid ? Effect(value: .searchDomains(key: state.searchText)) : .none
 
-        case .binding(.set(\.$isPremiumDomainBottomSheetShown, false)):
-            state.selectedPremiumDomain = nil
-            state.selectedPremiumDomainRedirectUrl = nil
+        case .binding(\.$isPremiumDomainBottomSheetShown):
+            if !state.isPremiumDomainBottomSheetShown {
+                state.selectedPremiumDomain = nil
+                state.selectedPremiumDomainRedirectUrl = nil
+            }
             return .none
 
         case .binding:

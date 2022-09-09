@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -30,12 +30,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
             from: "11.0.0"
         ),

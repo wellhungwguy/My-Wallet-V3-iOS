@@ -70,7 +70,7 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
                     TextState(L10n.GenericError.retryButtonTitle),
                     action: .send(.sendVerificationEmail)
                 ),
-                secondaryButton: .cancel()
+                secondaryButton: .cancel(TextState(L10n.GenericError.cancelButtonTitle))
             )
             return .none
         }

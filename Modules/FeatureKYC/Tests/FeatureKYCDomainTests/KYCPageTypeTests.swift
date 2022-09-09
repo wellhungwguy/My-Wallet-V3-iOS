@@ -296,7 +296,7 @@ class KYCPageTypeTests: XCTestCase {
 
     private func createKycCountry(hasStates: Bool = false) -> CountryData {
         let states = hasStates ? ["state"] : []
-        return CountryData(code: "test", name: "Test Country", regions: [], scopes: nil, states: states)
+        return CountryData(code: "test", name: "Test Country", scopes: nil, states: states)
     }
 
     private func createNabuUser(

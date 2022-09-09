@@ -69,7 +69,7 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
         attributedTitle.addForegroundColor(#colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1), to: LocalizationConstants.KYC.sendAgain)
         buttonDidntGetEmail.attributedTitle = attributedTitle
         buttonDidntGetEmail.primaryButtonFont = 2
-        buttonDidntGetEmail.activityIndicatorStyle = .gray
+        buttonDidntGetEmail.activityIndicatorStyle = .medium
         buttonDidntGetEmail.actionBlock = { [unowned self] in
             self.sendVerificationEmail()
         }

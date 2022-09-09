@@ -1,42 +1,42 @@
+import AsyncExtensions
 import Combine
 import CombineSchedulers
 import Foundation
-import TestKit
-import ToolKit
+import SwiftExtensions
 import XCTest
 
 final class TaskPublisherTests: XCTestCase {
 
-    func test_task_publisher_emits_value() throws {
+    func test_task_publisher_emits_value() async throws {
 
         let publisher = Task<String, Never>.Publisher {
             await hello()
         }
 
-        let string = try publisher.wait()
+        let string = try await publisher.await()
 
         XCTAssertEqual(string, "Hello")
     }
 
-    func test_task_throwing_publisher_emits_value() throws {
+    func test_task_throwing_publisher_emits_value() async throws {
 
         let publisher = Task<String, Error>.Publisher {
             try await maybe_hello()
         }
 
-        let string = try publisher.wait()
+        let string = try await publisher.await()
 
         XCTAssertEqual(string, "Hello?")
     }
 
-    func test_task_throwing_publisher_emits_error() {
+    func test_task_throwing_publisher_emits_error() async {
 
         let publisher = Task<String, Error>.Publisher {
             try await error()
         }
 
         do {
-            _ = try publisher.wait()
+            _ = try await publisher.await()
             XCTFail("Expected failure, got success")
         } catch Error.test {
         } catch {
@@ -44,19 +44,19 @@ final class TaskPublisherTests: XCTestCase {
         }
     }
 
-    func test_publisher_to_task() throws {
+    func test_publisher_to_task() async throws {
 
-        let greeting = try Just("Dorothy")
+        let greeting = try await Just("Dorothy")
             .task { name in
                 await hello() + " " + name + "!"
             }
-            .wait()
+            .await()
 
         XCTAssertEqual(greeting, "Hello Dorothy!")
     }
 
     func test_values_first() async throws {
-        let value = await (1...10).publisher.values.first
+        let value = try await Just(1).values.next()
         XCTAssertEqual(value, 1)
     }
 
@@ -101,7 +101,7 @@ final class TaskPublisherTests: XCTestCase {
 
         let finished = expectation(description: #function)
 
-        subject
+        let s = subject
             .task(maxPublishers: .unlimited) {
                 await reversed($0)
             }
@@ -113,7 +113,7 @@ final class TaskPublisherTests: XCTestCase {
                     result.insert(either)
                 }
             )
-            .teardown(in: self)
+        addTeardownBlock { s.cancel() }
 
         for route in routes {
             subject.send(route)

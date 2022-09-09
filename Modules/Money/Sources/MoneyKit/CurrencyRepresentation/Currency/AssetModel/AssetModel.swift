@@ -43,9 +43,6 @@ public struct AssetModel: Hashable {
         name = Self.name(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
         precision = assetResponse.precision
         var products = assetResponse.products.compactMap(AssetModelProduct.init)
-        if BuildFlag.isInternal, code == "STX" {
-            products.append(.dynamicSelfCustody)
-        }
         self.products = products.unique
         logoPngUrl = URL(string: assetResponse.type.logoPngUrl ?? "")
         spotColor = assetResponse.type.spotColor

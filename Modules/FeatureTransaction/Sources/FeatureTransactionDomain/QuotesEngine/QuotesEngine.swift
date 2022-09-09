@@ -84,6 +84,7 @@ final class QuotesEngine: QuotesEngineAPI {
         pair: OrderPair
     ) {
         stop()
+
         let quotePublisher = repository
             .fetchQuote(
                 direction: direction,

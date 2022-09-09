@@ -49,7 +49,7 @@ struct TiersStatusView: View {
     }
 
     var body: some View {
-        ModalContainer(title: LocalizedStrings.LimitsStatus.pageTitle, onClose: viewStore.send(.close)) {
+        ModalContainer(title: LocalizedStrings.LimitsStatus.pageTitle, onClose: { viewStore.send(.close) }) {
             let displayableTiers = viewStore.tiers
                 .filter {
                     // We only want to show Silver and Gold.

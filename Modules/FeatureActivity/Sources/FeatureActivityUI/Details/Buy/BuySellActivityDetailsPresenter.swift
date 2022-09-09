@@ -74,19 +74,22 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         self.interactor = interactor
         self.event = event
 
-        let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
-        titleViewRelay.accept(.text(value: title))
-
         badgesModel.badgesRelay.accept([statusBadge])
         let description = event.status.localizedDescription
         let badgeType: BadgeAsset.Value.Interaction.BadgeItem.BadgeType
         switch event.status {
         case .pending:
             badgeType = .default(accessibilitySuffix: description)
+            let title = event.isBuy ? LocalizedString.Title.buying : LocalizedString.Title.selling
+            titleViewRelay.accept(.text(value: title))
         case .finished:
             badgeType = .verified
+            let title = event.isBuy ? LocalizedString.Title.bought : LocalizedString.Title.sold
+            titleViewRelay.accept(.text(value: title))
         default:
             badgeType = .destructive
+            let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
+            titleViewRelay.accept(.text(value: title))
         }
         statusBadge.interactor.stateRelay.accept(
             .loaded(

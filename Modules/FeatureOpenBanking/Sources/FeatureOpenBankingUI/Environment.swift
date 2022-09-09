@@ -1,12 +1,25 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import Combine
-import CombineSchedulers
+import BlockchainUI
 import DIKit
 import FeatureOpenBankingDomain
 import SwiftUI
-import ToolKit
+
+public protocol OpenURLProtocol {
+    func open(_ url: URL, completionHandler: @escaping (Bool) -> Void)
+}
+
+extension OpenURLProtocol {
+    func open(_ url: URL) { open(url, completionHandler: { _ in }) }
+}
+
+struct LogOpenURL: OpenURLProtocol {
+    func open(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
+        url.peek("🫙 Open URL")
+        completionHandler(true)
+    }
+}
 
 public struct OpenBankingEnvironment {
 
@@ -19,7 +32,7 @@ public struct OpenBankingEnvironment {
     public var showTransferDetails: () -> Void
     public var dismiss: () -> Void
     public var cancel: () -> Void
-    public var openURL: URLOpener
+    public var openURL: OpenURLProtocol
     public var fiatCurrencyFormatter: FiatCurrencyFormatter
     public var cryptoCurrencyFormatter: CryptoCurrencyFormatter
     public var analytics: AnalyticsEventRecorderAPI
@@ -31,7 +44,7 @@ public struct OpenBankingEnvironment {
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
         cancel: @escaping () -> Void = {},
-        openURL: URLOpener = resolve(),
+        openURL: OpenURLProtocol = resolve(),
         fiatCurrencyFormatter: FiatCurrencyFormatter = resolve(),
         cryptoCurrencyFormatter: CryptoCurrencyFormatter = resolve(),
         analytics: AnalyticsEventRecorderAPI = resolve(),

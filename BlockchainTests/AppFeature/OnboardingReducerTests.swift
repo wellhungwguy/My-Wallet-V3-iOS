@@ -10,7 +10,7 @@ import PlatformUIKit
 import RxSwift
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import FeatureAppUI
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI

@@ -65,9 +65,7 @@ struct SearchCryptoDomainView: View {
                     title: LocalizedString.Description.title,
                     message: LocalizedString.Description.body,
                     onCloseTapped: {
-                        withAnimation {
-                            viewStore.send(.set(\.$isAlertCardShown, false))
-                        }
+                        viewStore.send(.set(\.$isAlertCardShown, false), animation: .linear)
                     }
                 )
                 .accessibilityIdentifier(Accessibility.alertCard)

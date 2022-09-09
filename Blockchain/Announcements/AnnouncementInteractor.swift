@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import ERC20Kit
@@ -23,8 +24,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
-    var preliminaryData: Single<AnnouncementPreliminaryData> {
-        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
+    var preliminaryData: AnyPublisher<AnnouncementPreliminaryData, Error> {
+        let assetRename = featureFetcher
             .fetch(for: .assetRenameAnnouncement, as: AssetRenameAnnouncementFeature.self)
             .eraseError()
             .flatMap { [enabledCurrenciesService, coincore] data
@@ -50,38 +51,27 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     .eraseToAnyPublisher()
             }
             .replaceError(with: nil)
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
 
-        let hasLinkedBanks = beneficiariesService.hasLinkedBank
-            .take(1)
-            .asSingle()
         let isSimpleBuyAvailable = supportedPairsInteractor.pairs
             .map { !$0.pairs.isEmpty }
             .take(1)
             .asSingle()
-        let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
-        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails.asSingle()
+            .asPublisher()
+            .replaceError(with: false)
+            .eraseError()
+            .eraseToAnyPublisher()
 
-        let simpleBuy: Single<AnnouncementPreliminaryData.SimpleBuy> = Single
-            .zip(
-                hasLinkedBanks,
-                isSimpleBuyAvailable,
-                isSimpleBuyEligible,
-                simpleBuyOrderDetails
-            )
-            .map { hasLinkedBanks, isSimpleBuyAvailable, isSimpleBuyEligible, simpleBuyOrderDetails in
-                AnnouncementPreliminaryData.SimpleBuy(
-                    hasLinkedBanks: hasLinkedBanks,
-                    isAvailable: isSimpleBuyAvailable,
-                    isEligible: isSimpleBuyEligible,
-                    pendingOrderDetails: simpleBuyOrderDetails
-                )
-            }
-
-        let nabuUser = userService.user.asSingle()
-        let tiers = tiersService.tiers.asSingle()
+        let nabuUser = userService.user
+            .eraseError()
+            .eraseToAnyPublisher()
+        let tiers = tiersService.tiers
+            .eraseError()
+            .eraseToAnyPublisher()
         let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
         let countries = infoService.countries
 
         let hasAnyWalletBalance = coincore
@@ -97,10 +87,12 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     }
                     .eraseError()
             }
-            .asSingle()
+            .eraseToAnyPublisher()
 
-        let authenticatorType = repository.authenticatorType.asSingle()
-        let newAsset: Single<CryptoCurrency?> = featureFetcher
+        let authenticatorType = repository.authenticatorType
+            .eraseError()
+            .eraseToAnyPublisher()
+        let newAsset = featureFetcher
             .fetch(for: .newAssetAnnouncement, as: String.self)
             .map { [enabledCurrenciesService] code -> CryptoCurrency? in
                 CryptoCurrency(
@@ -109,14 +101,16 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 )
             }
             .replaceError(with: nil)
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
 
         let claimFreeDomainEligible = featureFetcher
             .fetch(for: .blockchainDomains, as: Bool.self)
             .flatMap { [claimEligibilityRepository] isEnabled in
                 isEnabled ? claimEligibilityRepository.checkClaimEligibility() : .just(false)
             }
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
 
         let majorProductBlocked = productsService
             .fetchProducts()
@@ -125,63 +119,78 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     .first(where: { $0.reasonNotEligible?.reason == .eu5Sanction })?
                     .reasonNotEligible
             }
-            .asSingle()
+            .eraseError()
+            .eraseToAnyPublisher()
 
-        let data = Single.zip(
-            nabuUser,
-            tiers,
-            countries,
-            authenticatorType,
-            hasAnyWalletBalance,
-            Single.zip(
-                newAsset,
-                assetRename,
-                simpleBuy,
-                sddEligibility,
-                claimFreeDomainEligible,
-                majorProductBlocked
-            )
+        let cowboysAnnouncementsIsEnabled = app.publisher(
+            for: blockchain.ux.onboarding.promotion.cowboys.announcements.is.enabled,
+            as: Bool.self
         )
-        .map { payload -> AnnouncementPreliminaryData in
-            let (
-                user,
-                tiers,
-                countries,
-                authenticatorType,
-                hasAnyWalletBalance,
-                (
-                    newAsset,
-                    assetRename,
-                    simpleBuy,
-                    isSDDEligible,
-                    claimFreeDomainEligible,
-                    majorProductBlocked
-                )
-            ) = payload
-            return AnnouncementPreliminaryData(
-                assetRename: assetRename,
-                authenticatorType: authenticatorType,
-                claimFreeDomainEligible: claimFreeDomainEligible,
-                countries: countries,
-                majorProductBlocked: majorProductBlocked,
-                hasAnyWalletBalance: hasAnyWalletBalance,
-                isSDDEligible: isSDDEligible,
-                newAsset: newAsset,
-                simpleBuy: simpleBuy,
-                tiers: tiers,
-                user: user
+        .prefix(1)
+        .map { $0.value ?? false }
+        let userIsCowboysFan = app.publisher(
+            for: blockchain.user.is.cowboy.fan,
+            as: Bool.self
+        )
+        .prefix(1)
+        .map { $0.value ?? false }
+
+        let cowboysPromotionIsEnabled = cowboysAnnouncementsIsEnabled
+            .zip(userIsCowboysFan)
+            .map { $0 && $1 }
+            .eraseError()
+            .eraseToAnyPublisher()
+
+        let isRecoveryPhraseVerified = recoveryPhraseStatusProvider.isRecoveryPhraseVerifiedPublisher
+            .eraseError()
+            .eraseToAnyPublisher()
+
+        let preliminaryData: AnyPublisher<AnnouncementPreliminaryData, Error> = Publishers
+            .Zip4(nabuUser, tiers, countries, authenticatorType)
+            .zip(
+                Publishers.Zip4(hasAnyWalletBalance, newAsset, assetRename, isSimpleBuyAvailable),
+                Publishers.Zip4(sddEligibility, claimFreeDomainEligible, majorProductBlocked, cowboysPromotionIsEnabled),
+                isRecoveryPhraseVerified
             )
-        }
+            .map { payload -> AnnouncementPreliminaryData in
+                let (
+                    nabuUser, tiers, countries, authenticatorType
+                ) = payload.0
+                let (
+                    hasAnyWalletBalance, newAsset, assetRename, isSimpleBuyAvailable
+                ) = payload.1
+                let (
+                    sddEligibility, claimFreeDomainEligible, majorProductBlocked, cowboysPromotionIsEnabled
+                ) = payload.2
+                let isRecoveryPhraseVerified = payload.3
+
+                return AnnouncementPreliminaryData(
+                    assetRename: assetRename,
+                    authenticatorType: authenticatorType,
+                    claimFreeDomainEligible: claimFreeDomainEligible,
+                    countries: countries,
+                    cowboysPromotionIsEnabled: cowboysPromotionIsEnabled,
+                    hasAnyWalletBalance: hasAnyWalletBalance,
+                    isRecoveryPhraseVerified: isRecoveryPhraseVerified,
+                    isSDDEligible: sddEligibility,
+                    majorProductBlocked: majorProductBlocked,
+                    newAsset: newAsset,
+                    simpleBuyIsAvailable: isSimpleBuyAvailable,
+                    tiers: tiers,
+                    user: nabuUser
+                )
+            }
+            .eraseToAnyPublisher()
 
         return isWalletInitialized()
-            .asSingle()
-            .flatMap { isInitialized -> Single<AnnouncementPreliminaryData> in
+            .flatMap { isInitialized -> AnyPublisher<AnnouncementPreliminaryData, Error> in
                 guard isInitialized else {
-                    return .error(AnnouncementError.uninitializedWallet)
+                    return .failure(AnnouncementError.uninitializedWallet)
                 }
-                return data
+                return preliminaryData
             }
-            .observe(on: MainScheduler.instance)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private properties
@@ -199,6 +208,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let tiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
     private let productsService: FeatureProductsDomain.ProductsServiceAPI
+    private let recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding
     private let wallet: WalletProtocol
     private let walletStateProvider: WalletStateProvider
 
@@ -212,14 +222,15 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         featureFetcher: FeatureFetching = resolve(),
         infoService: GeneralInformationServiceAPI = resolve(),
         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve(),
+        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve(),
         repository: AuthenticatorRepositoryAPI = resolve(),
         simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         userService: NabuUserServiceAPI = resolve(),
-        walletStateProvider: WalletStateProvider = resolve(),
-        productsService: FeatureProductsDomain.ProductsServiceAPI = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet
+        wallet: WalletProtocol = WalletManager.shared.wallet,
+        walletStateProvider: WalletStateProvider = resolve()
     ) {
         self.beneficiariesService = beneficiariesService
         self.claimEligibilityRepository = claimEligibilityRepository
@@ -228,12 +239,13 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.featureFetcher = featureFetcher
         self.infoService = infoService
         self.pendingOrderDetailsService = pendingOrderDetailsService
+        self.productsService = productsService
+        self.recoveryPhraseStatusProvider = recoveryPhraseStatusProvider
         self.repository = repository
         self.simpleBuyEligibilityService = simpleBuyEligibilityService
         self.supportedPairsInteractor = supportedPairsInteractor
         self.tiersService = tiersService
         self.userService = userService
-        self.productsService = productsService
         self.wallet = wallet
         self.walletStateProvider = walletStateProvider
     }

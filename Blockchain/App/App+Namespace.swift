@@ -29,7 +29,6 @@ let app: AppProtocol = App(
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
             blockchain.app.configuration.native.wallet.payload.is.enabled: false,
-            blockchain.app.configuration.redesign.checkout.is.enabled: false,
             blockchain.app.configuration.app.superapp.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
@@ -39,13 +38,11 @@ let app: AppProtocol = App(
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,
-            blockchain.app.configuration.addresssearch.kyc.is.enabled: false,
-            blockchain.ux.onboarding.promotion.cowboys.welcome.announcement: blockchain.ux.onboarding.promotion.cowboys.welcome.announcement.json(in: .main),
-            blockchain.ux.onboarding.promotion.cowboys.welcome.story: blockchain.ux.onboarding.promotion.cowboys.welcome.story.json(in: .main),
-            blockchain.ux.onboarding.promotion.cowboys.raffle.announcement: blockchain.ux.onboarding.promotion.cowboys.raffle.announcement.json(in: .main),
-            blockchain.ux.onboarding.promotion.cowboys.raffle.story: blockchain.ux.onboarding.promotion.cowboys.raffle.story.json(in: .main),
-            blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement: blockchain.ux.onboarding.promotion.cowboys.verify.identity.announcement.json(in: .main),
-            blockchain.ux.onboarding.promotion.cowboys.verify.identity.story: blockchain.ux.onboarding.promotion.cowboys.verify.identity.story.json(in: .main)
+            blockchain.app.configuration.addresssearch.kyc.is.enabled: BuildFlag.isAlpha,
+            blockchain.ux.transaction["swap"].checkout.is.enabled: BuildFlag.isInternal,
+            blockchain.ux.transaction["swap"].checkout.exchange.rate.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360061672651",
+            blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees",
+            blockchain.ux.transaction["swap"].checkout.refund.policy.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/4417063009172"
         ]
     )
 )
@@ -76,7 +73,6 @@ extension AppProtocol {
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         #endif
         observers.insert(ActionObserver(app: self, application: UIApplication.shared))
-        observers.insert(RootViewAnalyticsObserver(self, analytics: recorder))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 
         let intercom = (

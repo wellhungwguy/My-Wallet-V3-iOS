@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ComposableArchitecture
-import ComposableNavigation
+import BlockchainUI
 @_exported import FeatureOpenBankingDomain
 import SwiftUI
 

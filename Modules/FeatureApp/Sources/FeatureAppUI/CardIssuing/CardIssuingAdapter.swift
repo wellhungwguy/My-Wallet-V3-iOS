@@ -163,7 +163,7 @@ final class CardIssuingAddressSearchRouter: FeatureCardIssuingUI.AddressSearchRo
 
     func openSearchAddressFlow(
         prefill: Card.Address?
-    ) -> AnyPublisher<Card.Address?, Never> {
+    ) -> AnyPublisher<CardAddressSearchResult, Never> {
         typealias Localization = LocalizationConstants.CardIssuing.AddressSearch
         return addressSearchRouterRouter.presentSearchAddressFlow(
             prefill: prefill.map(Address.init(cardAddress:)),
@@ -175,22 +175,22 @@ final class CardIssuingAddressSearchRouter: FeatureCardIssuingUI.AddressSearchRo
                 )
             )
         )
-        .map { $0.map { Card.Address(address: $0) } }
+        .map { CardAddressSearchResult(addressResult: $0) }
         .eraseToAnyPublisher()
     }
 
     func openEditAddressFlow(
-        isPresentedWithSearchView: Bool
-    ) -> AnyPublisher<Card.Address?, Never> {
+        isPresentedFromSearchView: Bool
+    ) -> AnyPublisher<CardAddressSearchResult, Never> {
         typealias Localization = LocalizationConstants.CardIssuing.AddressSearch.AddressEditSearchScreen
         return addressSearchRouterRouter.presentEditAddressFlow(
-            isPresentedWithSearchView: isPresentedWithSearchView,
+            isPresentedFromSearchView: isPresentedFromSearchView,
             config: .init(
                 title: Localization.title,
                 subtitle: nil
             )
         )
-        .map { $0.map { Card.Address(address: $0) } }
+        .map { CardAddressSearchResult(addressResult: $0) }
         .eraseToAnyPublisher()
     }
 }
@@ -205,7 +205,7 @@ final class AddressService: AddressServiceAPI {
 
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         repository.fetchResidentialAddress()
-            .map(Address.init(cardAddress:))
+            .map { Address(cardAddress: $0) }
             .mapError(AddressServiceError.network)
             .eraseToAnyPublisher()
     }
@@ -231,7 +231,7 @@ final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterA
     func openSearchAddressFlow(
         country: String,
         state: String?
-    ) -> AnyPublisher<UserAddress?, Never> {
+    ) -> AnyPublisher<UserAddressSearchResult, Never> {
         typealias Localization = LocalizationConstants.NewKYC.AddressVerification
         let title = Localization.title
         return addressSearchRouterRouter.presentSearchAddressFlow(
@@ -244,7 +244,7 @@ final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterA
                 )
             )
         )
-        .compactMap { $0.map { UserAddress(address: $0, defaultCountryCode: country) } }
+        .map { UserAddressSearchResult(addressResult: $0) }
         .eraseToAnyPublisher()
     }
 }
@@ -261,8 +261,9 @@ final class AddressKYCService: FeatureAddressSearchDomain.AddressServiceAPI {
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
         .just(nil)
     }
+
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
-        guard let userAddress = UserAddress(address: address) else {
+        guard let userAddress = UserAddress(address: address, countryCode: address.country) else {
             return .failure(AddressServiceError.network(Nabu.Error.unknown))
         }
         return locationUpdateService
@@ -418,8 +419,19 @@ extension FeatureCardIssuingDomain.Card.Address {
     }
 }
 
+extension CardAddressSearchResult {
+    fileprivate init(addressResult: AddressResult) {
+        switch addressResult {
+        case .saved(let address):
+            self = .saved(Card.Address(address: address))
+        case .abandoned:
+            self = .abandoned
+        }
+    }
+}
+
 extension Card.Address {
-    public init(address: Address) {
+    fileprivate init(address: Address) {
         self.init(
             line1: address.line1,
             line2: address.line2,
@@ -432,7 +444,7 @@ extension Card.Address {
 }
 
 extension Address {
-    public init(cardAddress: Card.Address) {
+    fileprivate init(cardAddress: Card.Address) {
         self.init(
             line1: cardAddress.line1,
             line2: cardAddress.line2,
@@ -444,16 +456,23 @@ extension Address {
     }
 }
 
+extension UserAddressSearchResult {
+    fileprivate init(addressResult: AddressResult) {
+        switch addressResult {
+        case .saved:
+            self = .saved
+        case .abandoned:
+            self = .abandoned
+        }
+    }
+}
+
 extension UserAddress {
     fileprivate init?(
         address: FeatureAddressSearchDomain.Address,
-        defaultCountryCode: String? = nil
+        countryCode: String?
     ) {
-        guard let countryCode = address.country ?? defaultCountryCode else {
-            assertionFailure("country cannot be nil")
-            return nil
-        }
-
+        guard let countryCode = countryCode else { return nil }
         self.init(
             lineOne: address.line1,
             lineTwo: address.line2,

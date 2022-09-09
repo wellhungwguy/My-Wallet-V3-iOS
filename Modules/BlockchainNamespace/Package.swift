@@ -21,10 +21,6 @@ let package = Package(
             url: "https://github.com/thousandyears/Lexicon.git",
             from: "0.6.1"
         ),
-        .package(
-            url: "https://github.com/apple/swift-algorithms.git",
-            from: "1.0.0"
-        ),
         .package(path: "../Extensions"),
         .package(path: "../AnyCoding")
     ],
@@ -33,7 +29,6 @@ let package = Package(
             name: "BlockchainNamespace",
             dependencies: [
                 .target(name: "FirebaseProtocol"),
-                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "Lexicon", package: "Lexicon"),
                 .product(name: "AnyCoding", package: "AnyCoding"),
                 .product(name: "Extensions", package: "Extensions")

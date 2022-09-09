@@ -60,7 +60,7 @@ public final class ResidentialAddressClient: ResidentialAddressClientAPI {
 
         return networkAdapter
             .perform(request: request, responseType: UpdateAddressRepsponse.self)
-            .map { $0.address }
+            .map(\.address)
             .eraseToAnyPublisher()
     }
 }

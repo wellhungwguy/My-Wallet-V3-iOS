@@ -29,6 +29,21 @@ final class HistoricalBalanceCellPresenter {
         )
     }
 
+    var assetNetworkContent: Driver<LabelContent?> {
+        let network = cryptoCurrency.assetModel.kind.erc20ParentChain?.name
+        guard let network = network else {
+            return .just(nil)
+        }
+        return .just(
+            .init(
+                text: network,
+                font: .main(.semibold, 12),
+                color: .descriptionText,
+                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(network)")
+            )
+        )
+    }
+
     var displayCode: Driver<LabelContent> {
         .just(
             .init(

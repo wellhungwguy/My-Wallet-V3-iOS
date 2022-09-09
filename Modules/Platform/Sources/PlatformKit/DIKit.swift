@@ -70,7 +70,7 @@ extension DependencyContainer {
 
         single { NabuUserService() as NabuUserServiceAPI }
 
-        single { GeneralInformationService() as GeneralInformationServiceAPI }
+        single { GeneralInformationService(client: DIKit.resolve()) as GeneralInformationServiceAPI }
 
         single { EmailVerificationService() as EmailVerificationServiceAPI }
 

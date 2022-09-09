@@ -1,11 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainNamespace
-import Combine
-import CombineSchedulers
+import Blockchain
 import FeatureOpenBankingDomain
 import Foundation
-import ToolKit
 
 // swiftlint:disable force_try
 

@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Assets.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 @interface AccountsAndAddressesViewController : UIViewController
 @property (nonatomic) UITableView *tableView;

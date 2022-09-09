@@ -27,7 +27,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
-            exact: "0.7.2"
+            from: "0.7.3"
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-case-paths",
@@ -77,7 +77,7 @@ let package = Package(
         ),
         .testTarget(
             name: "CombineExtensionsTests",
-            dependencies: ["CombineExtensions"]
+            dependencies: ["AsyncExtensions", "CombineExtensions"]
         ),
         .testTarget(
             name: "SwiftExtensionsTests",

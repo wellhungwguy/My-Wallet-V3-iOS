@@ -1,10 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
-import ComposableArchitecture
+import BlockchainUI
 import FeatureOpenBankingDomain
 import SwiftUI
-import ToolKit
 import UIComponentsKit
 
 public final class OpenBankingViewController: UIHostingController<OpenBankingViewController.Container> {

@@ -58,11 +58,19 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         let title: String
-        switch event.type {
-        case .deposit:
+        switch (event.type, event.state) {
+        case (.deposit, .pending):
+            title = LocalizedString.Title.depositing
+        case (.deposit, .completed):
+            title = LocalizedString.Title.deposited
+        case (.deposit, .failed):
             title = LocalizedString.Title.deposit
-        case .withdrawal:
-            title = LocalizedString.Title.withdraw
+        case (.withdrawal, .pending):
+            title = LocalizedString.Title.withdrawing
+        case (.withdrawal, .completed):
+            title = LocalizedString.Title.withdrawn
+        case (.withdrawal, .failed):
+            title = LocalizedString.Title.withdrawal
         }
         titleViewRelay.accept(.text(value: title))
 

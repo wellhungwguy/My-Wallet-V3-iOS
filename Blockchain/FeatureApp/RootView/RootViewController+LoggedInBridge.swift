@@ -141,28 +141,6 @@ extension RootViewController: LoggedInBridge {
         (topMostViewController ?? self).present(controller, animated: true, completion: nil)
     }
 
-    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {
-        var presenter: InterestDashboardAnnouncementPresenting
-        let router = InterestDashboardAnnouncementRouter(
-            navigationRouter: NavigationRouter()
-        )
-        if isKYCVerfied {
-            presenter = InterestDashboardAnnouncementScreenPresenter(
-                router: router
-            )
-        } else {
-            presenter = InterestIdentityVerificationScreenPresenter(
-                router: router
-            )
-        }
-        let controller = InterestDashboardAnnouncementViewController(presenter: presenter); do {
-            controller.transitioningDelegate = bottomSheetPresenter
-            controller.modalPresentationStyle = .custom
-            controller.isModalInPresentation = true
-        }
-        (topMostViewController ?? self).present(controller, animated: true, completion: nil)
-    }
-
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
 
         let interactor = InteractiveFundsTransferDetailsInteractor(
@@ -426,7 +404,7 @@ extension RootViewController: LoggedInBridge {
 
     func enableBiometrics() {
         let logout = { [weak self] () -> Void in
-            self?.send(.logout)
+            self?.global.send(.logout)
         }
         let flow = PinRouting.Flow.enableBiometrics(
             parent: UnretainedContentBox<UIViewController>(topMostViewController ?? self),
@@ -434,7 +412,7 @@ extension RootViewController: LoggedInBridge {
         )
         pinRouter = PinRouter(flow: flow) { [weak self] input in
             guard let password = input.password else { return }
-            self?.send(.wallet(.authenticateForBiometrics(password: password)))
+            self?.global.send(.wallet(.authenticateForBiometrics(password: password)))
             self?.pinRouter = nil
         }
         pinRouter?.execute()
@@ -442,7 +420,7 @@ extension RootViewController: LoggedInBridge {
 
     func changePin() {
         let logout = { [weak self] () -> Void in
-            self?.send(.logout)
+            self?.global.send(.logout)
         }
         let flow = PinRouting.Flow.change(
             parent: UnretainedContentBox<UIViewController>(topMostViewController ?? self),
@@ -471,7 +449,7 @@ extension RootViewController: LoggedInBridge {
                         style: .default
                     ) { [weak self] _ in
                         self?.viewStore.send(.dismiss())
-                        self?.send(.logout)
+                        self?.global.send(.logout)
                     },
                     UIAlertAction(
                         title: LocalizationConstants.cancel,
@@ -484,7 +462,7 @@ extension RootViewController: LoggedInBridge {
 
     func logoutAndForgetWallet() {
         viewStore.send(.dismiss())
-        send(.deleteWallet)
+        global.send(.deleteWallet)
     }
 
     func handleAccountsAndAddresses() {

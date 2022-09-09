@@ -3,7 +3,7 @@
 import Foundation
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 
 class ArraysTests: XCTestCase {
 

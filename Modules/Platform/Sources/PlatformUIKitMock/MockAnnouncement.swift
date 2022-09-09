@@ -21,7 +21,7 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
         fatalError("\(#function) was not implemented")
     }
 
-    var associatedAppModes: [AppMode] = [.both, .trading]
+    var associatedAppModes: [AppMode] = [.legacy, .trading]
 
     var shouldShow: Bool {
         !isDismissed
@@ -31,7 +31,6 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     let recorder: AnnouncementRecorder
     let type: AnnouncementType
     let analyticsRecorder: AnalyticsEventRecorderAPI
-    
 
     init(
         type: AnnouncementType,

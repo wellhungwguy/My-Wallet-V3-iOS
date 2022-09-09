@@ -37,7 +37,7 @@ public final class AssetPieChartView: UIView {
         chartView.rotationEnabled = false
         chartView.holeRadiusPercent = 0.875
         chartView.transparentCircleRadiusPercent = 0
-        chartView.chartDescription?.enabled = false
+        chartView.chartDescription.enabled = false
         chartView.drawCenterTextEnabled = true
         chartView.drawHoleEnabled = true
         chartView.legend.enabled = false

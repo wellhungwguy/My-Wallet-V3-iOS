@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable line_length
 
-import ComposableArchitecture
+import BlockchainUI
 @testable import FeatureOpenBankingDomain
 @testable import FeatureOpenBankingUI
 import NetworkKit

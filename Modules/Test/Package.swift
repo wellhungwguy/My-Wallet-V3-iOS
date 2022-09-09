@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -18,12 +18,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "combine-schedulers",
             url: "https://github.com/pointfreeco/combine-schedulers",
-            .exact("0.7.2")
+            from: "0.7.3"
         ),
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         )
@@ -33,7 +31,7 @@ let package = Package(
             name: "TestKit",
             dependencies: [
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
-                .product(name: "SnapshotTesting", package: "SnapshotTesting")
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ]
         )
     ]

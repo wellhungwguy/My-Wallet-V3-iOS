@@ -3,7 +3,7 @@
 import Combine
 import FeatureAppUI
 
-@testable import Blockchain
+@testable import BlockchainApp
 
 class MockURIHandler: URIHandlingAPI {
     var passthroughSubject = PassthroughSubject<DeeplinkOutcome, AppDeeplinkError>()

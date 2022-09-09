@@ -5,8 +5,8 @@
 import AnalyticsKit
 import BINDWithdrawUI
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
-import ComposableArchitecture
 import DIKit
 import Errors
 import ErrorsUI
@@ -115,29 +115,12 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         interactor.router = self
     }
 
-    func routeToConfirmation(transactionModel: TransactionModel) {
-        let ref = blockchain.app.configuration.redesign.checkout.is.enabled
-        let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
-
-        if isEnabled ?? false {
-            viewController.push(
-                viewController: UIHostingController<ConfirmationView>(
-                    rootView: ConfirmationView(
-                        store: Store<ConfirmationState, ConfirmationAction>(
-                            initialState: ConfirmationState(),
-                            reducer: confirmationReducer,
-                            environment: ConfirmationEnvironment()
-                        )
-                    )
-                )
-            )
-        } else {
-            let builder = ConfirmationPageBuilder(transactionModel: transactionModel)
-            let router = builder.build(listener: interactor)
-            let viewControllable = router.viewControllable
-            attachChild(router)
-            viewController.push(viewController: viewControllable)
-        }
+    func routeToConfirmation(transactionModel: TransactionModel, action: AssetAction) {
+        let builder = ConfirmationPageBuilder(transactionModel: transactionModel, action: action)
+        let router = builder.build(listener: interactor)
+        let viewControllable = router.viewControllable
+        attachChild(router)
+        viewController.push(viewController: viewControllable)
     }
 
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction) {
@@ -174,35 +157,38 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     func routeToError(state: TransactionState, model: TransactionModel) {
         let error = state.errorState.ux(action: state.action)
-        let errorViewController = UIHostingController(
-            rootView: ErrorView(
-                ux: error,
-                fallback: {
-                    if let destination = state.destination {
-                        destination.currencyType.logoResource.view
-                    } else if let source = state.source {
-                        source.currencyType.logoResource.view
-                    } else {
-                        Icon.error.foregroundColor(.semantic.warning)
+
+        Task(priority: .userInitiated) { @MainActor in
+            let errorViewController = UIHostingController(
+                rootView: ErrorView(
+                    ux: error,
+                    fallback: {
+                        if let destination = state.destination {
+                            destination.currencyType.logoResource.view
+                        } else if let source = state.source {
+                            source.currencyType.logoResource.view
+                        } else {
+                            Icon.error.foregroundColor(.semantic.warning)
+                        }
+                    },
+                    dismiss: { [weak self] in
+                        guard let self = self else { return }
+                        self.closeFlow()
                     }
-                },
-                dismiss: { [weak self] in
-                    guard let self = self else { return }
-                    self.closeFlow()
-                }
+                )
+                .app(app)
             )
-            .app(app)
-        )
 
-        attachChild(Router<Interactor>(interactor: Interactor()))
+            attachChild(Router<Interactor>(interactor: Interactor()))
 
-        if state.stepsBackStack.isNotEmpty {
-            viewController.push(viewController: errorViewController)
-        } else {
-            viewController.replaceRoot(
-                viewController: errorViewController,
-                animated: false
-            )
+            if state.stepsBackStack.isNotEmpty {
+                viewController.push(viewController: errorViewController)
+            } else {
+                viewController.replaceRoot(
+                    viewController: errorViewController,
+                    animated: false
+                )
+            }
         }
     }
 
@@ -764,12 +750,14 @@ extension TransactionFlowRouter {
         )
         let shouldAddMoreButton = canAddMoreSources && action.supportsAddingSourceAccounts
         let button: ButtonViewModel? = shouldAddMoreButton ? .secondary(with: LocalizationConstants.addNew) : nil
+        let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let isSearchEnabled = action == .swap && searchable
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
             buttonViewModel: button
         )
     }
@@ -790,10 +778,12 @@ extension TransactionFlowRouter {
             action: action
         )
         let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
+        let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let isSearchEnabled = action == .swap && searchable
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
             buttonViewModel: button
         )
     }

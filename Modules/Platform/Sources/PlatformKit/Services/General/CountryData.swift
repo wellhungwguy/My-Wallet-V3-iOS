@@ -1,16 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct CountryData: Decodable {
+public struct CountryData: Decodable, Equatable {
     public let code: String
     public let name: String
-    public let regions: [String]
-    public let scopes: [String]?
+    private let scopes: [String]?
     public let states: [String]
 
-    public init(code: String, name: String, regions: [String], scopes: [String]?, states: [String]) {
+    public init(code: String, name: String, scopes: [String]?, states: [String]) {
         self.code = code
         self.name = name
-        self.regions = regions
         self.scopes = scopes
         self.states = states
     }

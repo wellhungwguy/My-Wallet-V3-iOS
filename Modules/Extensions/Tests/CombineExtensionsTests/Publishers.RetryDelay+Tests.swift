@@ -1,6 +1,6 @@
 import Combine
+import CombineExtensions
 import CombineSchedulers
-import ToolKit
 import XCTest
 
 final class RetryDelayTests: XCTestCase {

@@ -58,7 +58,7 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.both]
+        [AppMode.trading, AppMode.legacy]
     }
 
     let type = AnnouncementType.backupFunds

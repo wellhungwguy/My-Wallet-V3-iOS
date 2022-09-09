@@ -30,7 +30,7 @@ public class BottomSheetView: UIView {
     }
 
     public class func estimatedHeight(model: BottomSheet) -> CGFloat {
-        guard let window = UIApplication.shared.keyWindow else { return 0.0 }
+        guard let window = UIApplication.shared.firstKeyWindow else { return 0.0 }
 
         let buttonsHeight = model.actions.map { _ -> CGFloat in
             actionHeight
@@ -121,7 +121,7 @@ public class BottomSheetView: UIView {
     // MARK: Public
 
     public func show() {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = window else { return }
         alpha = 0.0
         let width = window.bounds.width
         let height = BottomSheetView.estimatedHeight(model: model)

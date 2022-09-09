@@ -52,32 +52,32 @@ public class ActionObserver: Session.Observer {
 extension UIApplication {
     var topViewController: UIViewController? {
         guard let window = windows.first(where: \.isKeyWindow) else { return nil }
-        return Blockchain.topViewController(of: window.rootViewController)
+        return _topViewController(of: window.rootViewController)
     }
 }
 
-private func topViewController(of viewController: UIViewController?) -> UIViewController? {
+private func _topViewController(of viewController: UIViewController?) -> UIViewController? {
 
     if
         let navigationController = viewController as? UINavigationController,
         let visibleViewController = navigationController.visibleViewController,
         !visibleViewController.isBeingDismissed
     {
-        return topViewController(of: visibleViewController)
+        return _topViewController(of: visibleViewController)
     }
 
     if
         let tabBarController = viewController as? UITabBarController,
         let selectedViewController = tabBarController.selectedViewController
     {
-        return topViewController(of: selectedViewController)
+        return _topViewController(of: selectedViewController)
     }
 
     if
         let presented = viewController?.presentedViewController,
         !presented.isBeingDismissed
     {
-        return topViewController(of: presented)
+        return _topViewController(of: presented)
     }
 
     return viewController

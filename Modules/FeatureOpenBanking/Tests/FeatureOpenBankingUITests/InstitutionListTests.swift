@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ComposableArchitecture
+import BlockchainUI
 @testable import FeatureOpenBankingUI
 import NetworkKit
 import TestKit

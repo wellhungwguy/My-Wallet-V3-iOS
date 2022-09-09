@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BlockchainNamespace
+import CasePaths
 import Combine
 import ComposableArchitecture
 import DelegatedSelfCustodyDomain
@@ -151,8 +152,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
     onBoardingReducer
         .optional()
         .pullback(
-            state: \.onboarding,
-            action: /CoreAppAction.onboarding,
+            state: \CoreAppState.onboarding,
+            action: CasePath.init(CoreAppAction.onboarding),
             environment: { environment -> Onboarding.Environment in
                 Onboarding.Environment(
                     app: environment.app,
@@ -177,8 +178,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
     loggedInReducer
         .optional()
         .pullback(
-            state: \.loggedIn,
-            action: /CoreAppAction.loggedIn,
+            state: \CoreAppState.loggedIn,
+            action: CasePath.init(CoreAppAction.loggedIn),
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
                     analyticsRecorder: environment.analyticsRecorder,
@@ -201,8 +202,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
     authorizeDeviceReducer
         .optional()
         .pullback(
-            state: \.deviceAuthorization,
-            action: /CoreAppAction.authorizeDevice,
+            state: \CoreAppState.deviceAuthorization,
+            action: CasePath.init(CoreAppAction.authorizeDevice),
             environment: {
                 AuthorizeDeviceEnvironment(
                     mainQueue: $0.mainQueue,

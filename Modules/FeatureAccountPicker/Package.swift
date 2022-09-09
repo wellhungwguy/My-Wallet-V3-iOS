@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -22,16 +22,17 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(url: "https://github.com/pointfreeco/combine-schedulers", .exact("0.7.2")),
+        .package(
+            url: "https://github.com/pointfreeco/combine-schedulers",
+            from: "0.7.3"
+        ),
         .package(path: "../UIComponents"),
         .package(path: "../Test"),
         .package(path: "../Platform"),
@@ -74,7 +75,7 @@ let package = Package(
                 .target(name: "FeatureAccountPickerData"),
                 .target(name: "FeatureAccountPickerDomain"),
                 .target(name: "FeatureAccountPickerUI"),
-                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "PlatformKit", package: "Platform"),

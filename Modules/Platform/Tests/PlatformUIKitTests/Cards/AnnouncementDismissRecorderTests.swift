@@ -42,7 +42,7 @@ final class AnnouncementRecorderTests: XCTestCase {
     private var cache: MemoryCacheSuite!
     private var dismissRecorder: AnnouncementRecorder!
     private var entry: AnnouncementRecorder.Entry!
-    private let key = AnnouncementRecord.Key.cloudBackup
+    private let key = AnnouncementRecord.Key.applePay
 
     override func setUp() {
         super.setUp()
@@ -68,7 +68,7 @@ final class AnnouncementTests: XCTestCase {
     func testAnnouncementQueue() {
         let cache = MemoryCacheSuite()
         let oneTimeAnnouncements = [
-            MockOneTimeAnnouncement(type: .cloudBackup, cacheSuite: cache, dismiss: {}),
+            MockOneTimeAnnouncement(type: .applePay, cacheSuite: cache, dismiss: {}),
             MockOneTimeAnnouncement(type: .resubmitDocuments, cacheSuite: cache, dismiss: {})
         ]
         oneTimeAnnouncements[1].markRemoved()

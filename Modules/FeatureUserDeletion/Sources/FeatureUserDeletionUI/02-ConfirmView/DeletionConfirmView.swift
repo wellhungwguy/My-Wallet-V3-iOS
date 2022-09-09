@@ -23,7 +23,7 @@ public struct DeletionConfirmView: View {
                 Group {
                     ProgressView()
                         .progressViewStyle(
-                            IndeterminateProgressViewStyle()
+                            BlockchainCircularProgressViewStyle()
                         )
                         .frame(width: 104, height: 104)
 

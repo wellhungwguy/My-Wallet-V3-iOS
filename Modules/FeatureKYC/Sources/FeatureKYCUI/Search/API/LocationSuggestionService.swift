@@ -10,7 +10,7 @@ class LocationSuggestionService: NSObject, LocationSuggestionAPI {
 
     override init() {
         completer = MKLocalSearchCompleter()
-        completer.filterType = .locationsOnly
+        completer.resultTypes = .address
         super.init()
         completer.delegate = self
     }

@@ -24,7 +24,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
         title: String?,
         subtitle: String?,
         headerStyle: HeaderStyle = .large,
-        onClose closeAction: @autoclosure @escaping () -> Void,
+        onClose closeAction: @escaping () -> Void,
         @ViewBuilder topAccessory: @escaping () -> TopAccessory,
         @ViewBuilder content: @escaping () -> Content
     ) {
@@ -174,13 +174,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 extension ModalContainer where TopAccessory == EmptyView {
 
     public init(
-        onClose closeAction: @autoclosure @escaping () -> Void,
+        onClose closeAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.init(
             title: nil,
             subtitle: nil,
-            onClose: closeAction(),
+            onClose: closeAction,
             topAccessory: EmptyView.init,
             content: content
         )
@@ -188,14 +188,14 @@ extension ModalContainer where TopAccessory == EmptyView {
 
     public init(
         title: String,
-        onClose closeAction: @autoclosure @escaping () -> Void,
+        onClose closeAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.init(
             title: title,
             subtitle: nil,
             headerStyle: .small,
-            onClose: closeAction(),
+            onClose: closeAction,
             topAccessory: EmptyView.init,
             content: content
         )
@@ -205,14 +205,14 @@ extension ModalContainer where TopAccessory == EmptyView {
         title: String,
         subtitle: String,
         headerStyle: HeaderStyle = .large,
-        onClose closeAction: @autoclosure @escaping () -> Void,
+        onClose closeAction: @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.init(
             title: title,
             subtitle: subtitle,
             headerStyle: headerStyle,
-            onClose: closeAction(),
+            onClose: closeAction,
             topAccessory: EmptyView.init,
             content: content
         )
@@ -224,14 +224,14 @@ struct ModalContainer_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ModalContainer(
-                onClose: print("Close")
+                onClose: { print("Close") }
             ) {
                 Color.red
             }
 
             ModalContainer(
                 title: "My Modal",
-                onClose: print("Close")
+                onClose: { print("Close") }
             ) {
                 Color.red
             }
@@ -239,7 +239,7 @@ struct ModalContainer_Previews: PreviewProvider {
             ModalContainer(
                 title: "My Modal",
                 subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                onClose: print("Close")
+                onClose: { print("Close") }
             ) {
                 Color.red
             }
@@ -248,7 +248,7 @@ struct ModalContainer_Previews: PreviewProvider {
                 title: "My Modal",
                 subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 headerStyle: .small,
-                onClose: print("Close")
+                onClose: { print("Close") }
             ) {
                 Color.red
             }
@@ -256,7 +256,7 @@ struct ModalContainer_Previews: PreviewProvider {
             ModalContainer(
                 title: "My Modal",
                 subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                onClose: print("Close"),
+                onClose: { print("Close") },
                 topAccessory: {
                     Icon.blockchain
                         .frame(width: 32, height: 32)

@@ -1,3 +1,4 @@
+import AnalyticsKit
 import BlockchainNamespace
 import ComposableArchitecture
 import ToolKit
@@ -97,5 +98,38 @@ extension AppModeSwitcherModule {
             }
         }
         .binding()
+        .analytics()
+    }
+}
+
+extension Reducer where
+    Action == AppModeSwitcherAction,
+    State == AppModeSwitcherState,
+    Environment == AppModeSwitcherEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                AppModeSwitcherState,
+                AppModeSwitcherAction,
+                AppModeSwitcherEnvironment
+            > { _, action, environment in
+                switch action {
+                case .onBrokerageTapped:
+                    environment.analyticsRecorder.record(
+                        event: AnalyticsEvents.New.AppModeSwitcher.switchedToTrading
+                    )
+                    return .none
+                case .onDefiTapped:
+                    environment.analyticsRecorder.record(
+                        event: AnalyticsEvents.New.AppModeSwitcher.switchedToDefi
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }

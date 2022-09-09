@@ -44,6 +44,7 @@ public enum ImageResource: Hashable {
         #endif
     }
 
+    @MainActor
     @ViewBuilder
     public var view: some View {
         switch self {
@@ -56,9 +57,8 @@ public enum ImageResource: Hashable {
                 #endif
             }
         case .remote(let url):
-            Backport.AsyncImage(
+            AsyncMedia(
                 url: url,
-                content: { image in image.resizable() },
                 placeholder: {
                     Image(systemName: "squareshape.squareshape.dashed")
                         .resizable()

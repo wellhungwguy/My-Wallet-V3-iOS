@@ -5,7 +5,10 @@ import SwiftUI
 
 public enum HeaderStyle: Equatable {
     case none
-    case simple(subtitle: String)
+    case simple(
+        subtitle: String,
+        searchable: Bool
+    )
     case normal(
         title: String,
         subtitle: String,

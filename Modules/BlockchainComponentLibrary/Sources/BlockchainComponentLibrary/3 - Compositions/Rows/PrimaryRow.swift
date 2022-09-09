@@ -31,20 +31,23 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Table Rows](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A11163)
+
+public struct PrimaryRowTextValue {
+    public let text: String
+    public let highlightRanges: [Range<String.Index>]
+
+    public init(
+        text: String,
+        highlightRanges: [Range<String.Index>] = []
+    ) {
+        self.text = text
+        self.highlightRanges = highlightRanges
+    }
+}
+
 public struct PrimaryRow<Leading: View, Trailing: View>: View {
 
-    public struct TextValue {
-        public let text: String
-        public let highlightRanges: [Range<String.Index>]
-
-        public init(
-            text: String,
-            highlightRanges: [Range<String.Index>] = []
-        ) {
-            self.text = text
-            self.highlightRanges = highlightRanges
-        }
-    }
+    public typealias TextValue = PrimaryRowTextValue
 
     private let title: TextValue
     private let caption: String?
@@ -215,7 +218,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         textColorWhenHighlightighed: Color,
         textColorWhenNotHighlightighed: Color
     ) -> some View {
-        if #available(iOS 15.0, *) {
+        if #available(iOS 15.0, *), #available(macOS 12.0, *) {
             return Text(text.text) { string in
                 string.font = textTypography.font
                 guard !text.highlightRanges.isEmpty else {
@@ -558,7 +561,7 @@ struct PrimaryRow_Previews: PreviewProvider {
 
 /// extension to make applying AttributedString even easier
 extension Text {
-    @available(iOS 15, *)
+    @available(iOS 15, macOS 12, *)
     fileprivate init(_ string: String, configure: (inout AttributedString) -> Void) {
         var attributedString = AttributedString(string)
         configure(&attributedString)

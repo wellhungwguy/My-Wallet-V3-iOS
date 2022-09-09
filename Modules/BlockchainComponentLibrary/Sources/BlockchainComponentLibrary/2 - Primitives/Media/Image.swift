@@ -32,10 +32,6 @@ extension Backport {
     public struct ContentView<Content> where Content: View {
         let content: Content
     }
-
-    @available(iOS, deprecated: 15.0, renamed: "SwiftUI.AsyncImage")
-    @available(macOS, deprecated: 12.0, renamed: "SwiftUI.AsyncImage")
-    public typealias AsyncImage<Content: View> = AsyncDataView<Image, Content>
 }
 
 extension Backport.ContentView {
@@ -78,47 +74,5 @@ extension Backport.ContentView {
         #else
         content
         #endif
-    }
-}
-
-struct BackportAsyncImage_Previews: PreviewProvider {
-
-    static var url: URL? {
-        URL(string: "http://httpbin.org/image/png")
-    }
-
-    static var previews: some View {
-        Backport.AsyncImage(url: url)
-            .frame(width: 100, height: 100)
-
-        Backport.AsyncImage(
-            url: url,
-            content: {
-                $0.resizable()
-                    .clipShape(Circle())
-            },
-            placeholder: {
-                Color.black
-            }
-        )
-        .frame(width: 100, height: 100)
-
-        Backport.AsyncImage(
-            url: url,
-            transaction: Transaction(animation: .linear),
-            content: { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                case .failure:
-                    Color.red
-                case .empty:
-                    Color.blue
-                }
-            }
-        )
-        .frame(width: 100, height: 100)
     }
 }

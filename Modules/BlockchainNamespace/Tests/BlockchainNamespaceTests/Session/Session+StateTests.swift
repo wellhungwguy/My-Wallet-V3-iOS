@@ -249,6 +249,7 @@ final class SessionStateTests: XCTestCase {
                 self.limit = limit
                 self.expectation = expectation
             }
+
             func increment() {
                 i += 1
                 if i == limit { expectation.fulfill() }

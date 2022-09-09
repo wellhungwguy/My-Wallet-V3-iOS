@@ -8,7 +8,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "Wallet.h"
 #import "Assets.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 #import "BTCAddress.h"
 #import "BTCData.h"
 #import "BTCKey.h"

@@ -5,7 +5,31 @@ struct DelegatedCustodyDerivation {
     let derivationPath: String
     let style: String
 
-    static var stacks: DelegatedCustodyDerivation {
-        .init(currencyCode: "STX", derivationPath: "m/44'/5757'/0'/0/0", style: "SINGLE")
+    init(currencyCode: String, derivationPath: String, style: String) {
+        self.currencyCode = currencyCode
+        self.derivationPath = derivationPath
+        self.style = style
     }
+
+    init(response: DelegatedCustodyDerivationResponse.Item) {
+        self.init(
+            currencyCode: response.code,
+            derivationPath: "m/\(response.purpose)'/\(response.coinType)'/0'/0/0",
+            style: response.style
+        )
+    }
+}
+
+struct DelegatedCustodyDerivationResponse: Decodable {
+
+    static let empty = DelegatedCustodyDerivationResponse(assets: [])
+
+    struct Item: Decodable {
+        let code: String
+        let purpose: String
+        let coinType: String
+        let style: String
+    }
+
+    let assets: [Item]
 }

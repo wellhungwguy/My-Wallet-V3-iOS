@@ -7,6 +7,7 @@ import SwiftUI
 public struct DefiBuyCryptoMessageView: View {
     @Environment(\.presentationMode) private var presentationMode
     let onOpenTradingModeTap: () -> Void
+
     public init(onOpenTradingModeTap: @escaping () -> Void) {
         self.onOpenTradingModeTap = onOpenTradingModeTap
     }

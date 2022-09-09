@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import ToolKit
+import CombineExtensions
 import XCTest
 
 final class PublisherZipTests: XCTestCase {
@@ -9,8 +9,8 @@ final class PublisherZipTests: XCTestCase {
     var result: [Int]?
     var bag: Set<AnyCancellable> = []
 
-    func test_zip() throws {
-        let latest = try (0...10).map(Just.init).zip().wait()
+    func test_zip() async throws {
+        let latest = try await (0...10).map(Just.init).zip().await()
         XCTAssertEqual(latest, Array(0...10))
     }
 

@@ -18,7 +18,7 @@ final class PulseBlockchainNamespaceEventLogger: Session.Observer {
 
     unowned var app: AppProtocol
 
-    var pulse: Logger = .default
+    var pulse: Logger = .shared
 
     private var subscription: BlockchainEventSubscription? {
         didSet { subscription?.start() }

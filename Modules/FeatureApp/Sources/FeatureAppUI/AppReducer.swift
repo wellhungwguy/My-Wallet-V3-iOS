@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -71,7 +72,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
         ),
     mainAppReducer
         .pullback(
-            state: \.coreState,
+            state: \AppState.coreState,
             action: /AppAction.core,
             environment: { env in
                 CoreAppEnvironment(

@@ -249,8 +249,6 @@ extension SVG: NSViewRepresentable {
 }
 #endif
 
-public typealias AsyncSVG<Content> = AsyncDataView<SVG, Content> where Content: View
-
 extension String {
     fileprivate var deobfuscated: String { Data(base64Encoded: String(reversed()))!.string }
 }

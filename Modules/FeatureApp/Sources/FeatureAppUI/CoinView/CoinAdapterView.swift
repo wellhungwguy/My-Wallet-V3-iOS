@@ -344,7 +344,7 @@ public final class CoinViewObserver: Session.Observer {
         } else {
             let appMode = app.currentMode
             switch appMode {
-            case .both:
+            case .legacy:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
                 )
@@ -354,7 +354,7 @@ public final class CoinViewObserver: Session.Observer {
                 )
 
             case .trading:
-                return  try(accounts.first(where: { account in account is TradingAccount }))
+                return try(accounts.first(where: { account in account is TradingAccount }))
                     .or(
                         throw: blockchain.ux.asset.error[]
                             .error(message: "\(event) has no valid accounts for \(String(describing: action))")
@@ -370,7 +370,6 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 }
-
 
 extension FeatureCoinDomain.Account {
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {

@@ -140,15 +140,16 @@ struct AddressSearchView: View {
     private func createItemRow(result: AddressSearchResult) -> some View {
         WithViewStore(store) { viewStore in
             let title = result.text ?? ""
+            let subtitle: PrimaryRowTextValue? = {
+                guard let description = result.description, description.isNotEmpty else { return nil }
+                return .init(
+                    text: description,
+                    highlightRanges: result.descriptionHighlightRanges
+                )
+            }()
             PrimaryRow(
                 title: .init(text: title, highlightRanges: result.textHighlightRanges),
-                subtitle: result.description
-                    .map {
-                        .init(
-                            text: $0,
-                            highlightRanges: result.descriptionHighlightRanges
-                        )
-                    },
+                subtitle: subtitle,
                 trailing: {
                     EmptyView()
                 },

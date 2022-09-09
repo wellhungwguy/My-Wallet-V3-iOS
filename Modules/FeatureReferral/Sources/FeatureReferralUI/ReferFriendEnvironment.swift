@@ -3,6 +3,7 @@
 import AnalyticsKit
 import ComposableArchitecture
 import DIKit
+import Foundation
 
 public struct ReferFriendEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>

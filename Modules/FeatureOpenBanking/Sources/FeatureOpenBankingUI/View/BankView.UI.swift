@@ -1,8 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainUI
 import FeatureOpenBankingDomain
-import Foundation
-import ToolKit
 import UIComponentsKit
 
 extension BankState.UI {
@@ -81,7 +80,7 @@ extension BankState.UI {
         }
 
         let resource = environment.fiatCurrencyFormatter.displayImage(currency: payment.amount.symbol)
-        let media: Media
+        let media: UIComponentsKit.Media
         switch resource {
         case .remote(url: let url):
             media = .image(at: url)
@@ -114,7 +113,7 @@ extension BankState.UI {
         }
 
         let resource = environment.cryptoCurrencyFormatter.displayImage(currency: order.outputCurrency)
-        let media: Media
+        let media: UIComponentsKit.Media
         switch resource {
         case .remote(url: let url):
             media = .image(at: url)
@@ -146,7 +145,7 @@ extension BankState.UI {
         }
 
         let resource = environment.cryptoCurrencyFormatter.displayImage(currency: order.outputCurrency)
-        let media: Media
+        let media: UIComponentsKit.Media
         switch resource {
         case .remote(url: let url):
             media = .image(at: url)

@@ -15,6 +15,7 @@ extension UserDeletionModule {
                         DeletionConfirmEnvironment(
                             mainQueue: .main,
                             userDeletionRepository: env.userDeletionRepository,
+                            analyticsRecorder: env.analyticsRecorder,
                             dismissFlow: env.dismissFlow,
                             logoutAndForgetWallet: env.logoutAndForgetWallet
                         )

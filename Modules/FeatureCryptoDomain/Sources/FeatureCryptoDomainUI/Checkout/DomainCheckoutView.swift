@@ -28,9 +28,7 @@ struct DomainCheckoutView: View {
                     createRemoveBottomSheet(
                         domain: viewStore.binding(\.$removeCandidate),
                         removeButtonTapped: {
-                            withAnimation {
-                                viewStore.send(.removeDomain(viewStore.removeCandidate))
-                            }
+                            viewStore.send(.removeDomain(viewStore.removeCandidate), animation: .linear)
                         }
                     )
                 }

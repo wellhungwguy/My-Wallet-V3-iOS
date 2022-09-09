@@ -2,7 +2,7 @@
 
 import Foundation
 
-@testable import Blockchain
+@testable import BlockchainApp
 
 class MockWalletData: WalletProtocol {
 

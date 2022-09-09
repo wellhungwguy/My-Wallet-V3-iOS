@@ -301,7 +301,10 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                         searchable: model.searchable
                     )
                 case .simple(let model):
-                    header = .simple(subtitle: model.subtitle)
+                    header = .simple(
+                        subtitle: model.subtitle,
+                        searchable: model.searchable
+                    )
                 case .none:
                     header = .none
                 }

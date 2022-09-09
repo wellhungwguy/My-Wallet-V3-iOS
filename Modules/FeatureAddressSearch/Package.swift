@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -21,13 +21,16 @@ let package = Package(
         .library(
             name: "FeatureAddressSearchDomain",
             targets: ["FeatureAddressSearchDomain"]
+        ),
+        .library(
+            name: "FeatureAddressSearchMock",
+            targets: ["FeatureAddressSearchMock"]
         )
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
@@ -83,6 +86,13 @@ let package = Package(
                 .product(name: "UIKitExtensions", package: "UIKitExtensions")
             ]
         ),
+        .target(
+            name: "FeatureAddressSearchMock",
+            dependencies: [
+                .target(name: "FeatureAddressSearchData"),
+                .target(name: "FeatureAddressSearchDomain")
+            ]
+        ),
         .testTarget(
             name: "FeatureAddressSearchDataTests",
             dependencies: [
@@ -98,7 +108,8 @@ let package = Package(
         .testTarget(
             name: "FeatureAddressSearchUITests",
             dependencies: [
-                .target(name: "FeatureAddressSearchUI")
+                .target(name: "FeatureAddressSearchUI"),
+                .target(name: "FeatureAddressSearchMock")
             ]
         )
     ]

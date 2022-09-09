@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import UIKit
 
 // swiftlint:disable type_body_length
 
@@ -258,7 +259,7 @@ public class AlertView: UIView {
                     case .default:
                         break
                     case .sheet:
-                        guard let window = UIApplication.shared.keyWindow else { return }
+                        guard let window = UIApplication.shared.firstKeyWindow else { return }
                         self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
                     }
                 })
@@ -294,6 +295,8 @@ public class AlertView: UIView {
             animator.addBehavior(snapBehavior)
         case .possible:
             break
+        @unknown default:
+            break
         }
     }
 
@@ -310,7 +313,7 @@ public class AlertView: UIView {
 
     fileprivate func setupDynamicBehavior() {
         guard animator == nil else { return }
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
 
         animator = UIDynamicAnimator(referenceView: window)
         snapBehavior = UISnapBehavior(
@@ -401,7 +404,7 @@ public class AlertView: UIView {
     // MARK: Public
 
     public func show() {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
 
         /// You can only present one `AlertView` at a time
         guard window.subviews.contains(where: { $0 is AlertView }) == false else {
@@ -418,7 +421,7 @@ public class AlertView: UIView {
     }
 
     fileprivate func presentDefaultView() {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
         alpha = 0.0
         let width = window.bounds.width - AlertView.horizontalOffset
         let height = AlertView.estimatedHeight(
@@ -455,7 +458,7 @@ public class AlertView: UIView {
     }
 
     fileprivate func presentSheetView() {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.firstKeyWindow else { return }
         alpha = 0.0
         let width = window.bounds.width - AlertView.horizontalOffset
         let height = AlertView.estimatedHeight(
@@ -529,5 +532,12 @@ extension CGPoint {
 extension CGPoint {
     var magnitude: CGFloat {
         sqrt(pow(x, 2) + pow(y, 2))
+    }
+}
+
+extension UIApplication {
+
+    public var firstKeyWindow: UIWindow? {
+        windows.first(where: \.isKeyWindow)
     }
 }

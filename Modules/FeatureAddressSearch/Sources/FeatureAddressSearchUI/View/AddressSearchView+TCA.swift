@@ -23,10 +23,12 @@ enum AddressSearchAction: Equatable, BindableAction, NavigationAction {
     case addressModificationAction(AddressModificationAction)
     case closeError
     case cancelSearch
+    case complete(AddressResult)
     case binding(BindingAction<AddressSearchState>)
 }
 
 struct AddressSearchIdentifier: Hashable {}
+let AddressSearchDebounceInMilliseconds: Int = 500
 
 struct AddressSearchState: Equatable, NavigationState {
 
@@ -62,14 +64,14 @@ struct AddressSearchEnvironment {
     let config: AddressSearchFeatureConfig
     let addressService: AddressServiceAPI
     let addressSearchService: AddressSearchServiceAPI
-    let onComplete: (Address?) -> Void
+    let onComplete: (AddressResult) -> Void
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         config: AddressSearchFeatureConfig,
         addressService: AddressServiceAPI,
         addressSearchService: AddressSearchServiceAPI,
-        onComplete: @escaping (Address?) -> Void
+        onComplete: @escaping (AddressResult) -> Void
     ) {
         self.mainQueue = mainQueue
         self.config = config
@@ -159,7 +161,9 @@ let addressSearchReducer = Reducer.combine(
                 case .modifyAddress(let selectedAddressId, let address):
                     state.addressModificationState = .init(
                         addressDetailsId: selectedAddressId,
-                        address: address
+                        country: address?.country,
+                        state: address?.state,
+                        isPresentedFromSearchView: true
                     )
                     state.route = route
                 }
@@ -178,10 +182,13 @@ let addressSearchReducer = Reducer.combine(
 
         case .updateSelectedAddress(let address):
             state.address = address
-            return Effect(value: .cancelSearch)
+            return Effect(value: .complete(.saved(address)))
 
         case .cancelSearch:
-            env.onComplete(state.address)
+            return Effect(value: .complete(.abandoned))
+
+        case .complete(let addressResult):
+            env.onComplete(addressResult)
             return .none
 
         case .searchAddresses(let searchText, let containerId, let country):
@@ -203,7 +210,11 @@ let addressSearchReducer = Reducer.combine(
                 )
                 .receive(on: env.mainQueue)
                 .catchToEffect()
-                .cancellable(id: AddressSearchIdentifier(), cancelInFlight: true)
+                .debounce(
+                    id: AddressSearchIdentifier(),
+                    for: .milliseconds(AddressSearchDebounceInMilliseconds),
+                    scheduler: env.mainQueue
+                )
                 .map { result in
                     .didReceiveAddressesResult(result)
                 }
@@ -227,7 +238,6 @@ let addressSearchReducer = Reducer.combine(
                     Effect(value: .updateSelectedAddress(address))
                 )
             case .cancelEdit:
-                env.onComplete(state.address)
                 return .none
             case .stateDoesNotMatch:
                 state.route = nil
@@ -241,7 +251,7 @@ let addressSearchReducer = Reducer.combine(
 )
 
 extension Address {
-    fileprivate var searchText: String {
+    var searchText: String {
         [
             postCode,
             line1,

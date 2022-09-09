@@ -164,7 +164,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     private func defaultAttributes() -> [NSAttributedString.Key: Any] { [
         .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-        .foregroundColor: countrySupportedDescription.textColor
+        .foregroundColor: countrySupportedDescription.textColor as Any
     ]
     }
 

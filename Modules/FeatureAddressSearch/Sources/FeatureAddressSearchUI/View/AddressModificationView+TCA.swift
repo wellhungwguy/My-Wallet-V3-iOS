@@ -18,7 +18,6 @@ enum AddressModificationAction: Equatable, BindableAction {
     case updateAddressResponse(Result<Address, AddressServiceError>)
     case fetchAddressDetails(addressId: String?)
     case didReceiveAdressDetailsResult(Result<AddressDetailsSearchResult, AddressSearchServiceError>)
-    case addressResponse(Result<Address, AddressServiceError>)
     case closeError
     case cancelEdit
     case showStateDoesNotMatchAlert
@@ -26,6 +25,7 @@ enum AddressModificationAction: Equatable, BindableAction {
     case showAlert(title: String, message: String)
     case dismissAlert
     case showGenericError
+    case complete(AddressResult)
     case binding(BindingAction<AddressModificationState>)
 }
 
@@ -38,67 +38,48 @@ struct AddressModificationState: Equatable {
     @BindableState var line1 = ""
     @BindableState var line2 = ""
     @BindableState var city = ""
-    @BindableState var state = ""
     @BindableState var stateName = ""
     @BindableState var postcode = ""
     @BindableState var country = ""
     @BindableState var selectedInputField: Field?
 
-    var address: Address?
+    var state: String?
     var loading: Bool = false
     var addressDetailsId: String?
     var error: Nabu.Error?
-    var isPresentedWithSearchView: Bool
+    var isPresentedFromSearchView: Bool
+    var shouldFetchPrefilledAddress: Bool
     var screenTitle: String = ""
     var screenSubtitle: String?
     var saveButtonTitle: String?
-    var isStateFieldVisible: Bool {
-        address?.country == Address.Constants.usIsoCode
-    }
+    var isStateFieldVisible: Bool { country == Address.Constants.usIsoCode }
     var failureAlert: AlertState<AddressModificationAction>?
 
     init(
         addressDetailsId: String? = nil,
-        address: Address? = nil,
-        isPresentedWithSearchView: Bool = true,
+        country: String? = nil,
+        state: String? = nil,
+        isPresentedFromSearchView: Bool,
         error: Nabu.Error? = nil
     ) {
         self.addressDetailsId = addressDetailsId
-        self.address = address
-        self.isPresentedWithSearchView = isPresentedWithSearchView
+        self.isPresentedFromSearchView = isPresentedFromSearchView
+        shouldFetchPrefilledAddress = !isPresentedFromSearchView
         self.error = error
-
-        state = address?
-            .state?
-            .replacingOccurrences(
-                of: Address.Constants.usPrefix,
-                with: ""
-            ) ?? ""
-        stateName = usaStates[state] ?? ""
-        country = address?.country ?? ""
-
-        if !isPresentedWithSearchView {
-            line1 = address?.line1 ?? ""
-            line2 = address?.line2 ?? ""
-            city = address?.city ?? ""
-            postcode = address?.postCode ?? ""
-        }
+        self.state = state
+        stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
+        self.country = country ?? ""
     }
 }
 
 extension AddressModificationState {
-    fileprivate mutating func updateAddressInputs(address: Address) {
+    mutating func updateAddressInputs(address: Address) {
         selectedInputField = nil
         line1 = address.line1 ?? ""
         line2 = address.line2 ?? ""
         city = address.city ?? ""
-        state = address
-            .state?
-            .replacingOccurrences(
-                of: Address.Constants.usPrefix,
-                with: ""
-            ) ?? ""
-        stateName = usaStates[state] ?? ""
+        state = address.state
+        stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
         postcode = address.postCode ?? ""
         country = address.country ?? ""
     }
@@ -110,14 +91,14 @@ struct AddressModificationEnvironment {
     let config: AddressSearchFeatureConfig.AddressEditScreenConfig
     let addressService: AddressServiceAPI
     let addressSearchService: AddressSearchServiceAPI
-    let onComplete: ((Address?) -> Void)?
+    let onComplete: ((AddressResult) -> Void)?
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         config: AddressSearchFeatureConfig.AddressEditScreenConfig,
         addressService: AddressServiceAPI,
         addressSearchService: AddressSearchServiceAPI,
-        onComplete: ((Address?) -> Void)? = nil
+        onComplete: ((AddressResult) -> Void)? = nil
     ) {
         self.mainQueue = mainQueue
         self.config = config
@@ -152,16 +133,15 @@ let addressModificationReducer = Reducer<
             .catchToEffect(AddressModificationAction.updateAddressResponse)
 
     case .updateAddressResponse(let result):
+        state.loading = false
         switch result {
         case .success(let address):
-            env.onComplete?(address)
+            state.updateAddressInputs(address: address)
+            return Effect(value: .complete(.saved(address)))
         case .failure(let error):
             state.error = error.nabuError
+            return Effect(value: .showGenericError)
         }
-        return .merge(
-            Effect(value: .showGenericError),
-            Effect(value: .addressResponse(result))
-        )
 
     case .showGenericError:
         return Effect(
@@ -190,11 +170,9 @@ let addressModificationReducer = Reducer<
         switch result {
         case .success(let searchedAddress):
             let address = Address(addressDetails: searchedAddress)
-            if let state = state.address?.state, state.isNotEmpty,
-               state != address.state {
+            if let state = state.state, state.isNotEmpty, state != address.state {
                 return Effect(value: .showStateDoesNotMatchAlert)
             } else {
-                state.address = address
                 state.updateAddressInputs(address: address)
                 return .none
             }
@@ -204,23 +182,13 @@ let addressModificationReducer = Reducer<
             return .none
         }
 
-    case .addressResponse(.success(let address)):
-        state.loading = false
-        state.updateAddressInputs(address: address)
-        return .none
-
-    case .addressResponse(.failure(let error)):
-        state.loading = false
-        state.error = error.nabuError
-        return .none
-
     case .onAppear:
         state.screenTitle = env.config.title
         state.screenSubtitle = env.config.subtitle
         state.saveButtonTitle = env.config.saveAddressButtonTitle
 
         guard let addressDetailsId = state.addressDetailsId else {
-            if !state.isPresentedWithSearchView {
+            if state.shouldFetchPrefilledAddress {
                 return Effect(value: .fetchPrefilledAddress)
             } else {
                 return .none
@@ -229,6 +197,7 @@ let addressModificationReducer = Reducer<
         return Effect(value: .fetchAddressDetails(addressId: addressDetailsId))
 
     case .fetchPrefilledAddress:
+        state.loading = true
         return env
             .addressService
             .fetchAddress()
@@ -236,8 +205,8 @@ let addressModificationReducer = Reducer<
             .catchToEffect(AddressModificationAction.didReceivePrefilledAddressResult)
 
     case .didReceivePrefilledAddressResult(.success(let address)):
+        state.loading = false
         guard let address = address else { return .none }
-        state.address = address
         state.updateAddressInputs(address: address)
         return .none
 
@@ -251,7 +220,10 @@ let addressModificationReducer = Reducer<
         return .none
 
     case .cancelEdit:
-        env.onComplete?(state.address)
+        return Effect(value: .complete(.abandoned))
+
+    case .complete(let addressResult):
+        env.onComplete?(addressResult)
         return .none
 
     case .binding:
@@ -290,7 +262,7 @@ let addressModificationReducer = Reducer<
 .binding()
 
 extension Address {
-    fileprivate init(addressDetails: AddressDetailsSearchResult) {
+    init(addressDetails: AddressDetailsSearchResult) {
         let line1 = [
             addressDetails.line1,
             addressDetails.line2,
@@ -308,6 +280,15 @@ extension Address {
             postCode: addressDetails.postCode,
             state: addressDetails.state,
             country: addressDetails.country
+        )
+    }
+}
+
+extension String {
+    var stateWithoutUSPrefix: String? {
+        replacingOccurrences(
+            of: Address.Constants.usPrefix,
+            with: ""
         )
     }
 }

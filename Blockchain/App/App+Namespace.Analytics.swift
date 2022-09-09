@@ -197,7 +197,9 @@ struct Condition: Decodable, Equatable {
 }
 
 extension Condition {
+
     static var yes: Condition { Condition(if: nil, unless: nil) }
+
     func check() -> Bool {
         (`if` ?? []).allSatisfy(isYes) && (unless ?? []).none(isYes)
     }
