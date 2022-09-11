@@ -14,7 +14,8 @@ final class MockCreateWalletRepository: CreateWalletRepositoryAPI {
     func createWallet(
         email: String,
         payload: WalletCreationPayload,
-        recaptchaToken: String?
+        recaptchaToken: String?,
+        siteKey: String
     ) -> AnyPublisher<Void, NetworkError> {
         createWalletCalled = true
         return createWallerResult
