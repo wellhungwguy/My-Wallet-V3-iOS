@@ -16,12 +16,14 @@ final class CreateWalletRepository: CreateWalletRepositoryAPI {
     func createWallet(
         email: String,
         payload: WalletCreationPayload,
-        recaptchaToken: String?
+        recaptchaToken: String?,
+        siteKey: String
     ) -> AnyPublisher<Void, NetworkError> {
         client.createWallet(
             email: email,
             payload: payload,
-            recaptchaToken: recaptchaToken
+            recaptchaToken: recaptchaToken,
+            siteKey: siteKey
         )
         .eraseToAnyPublisher()
     }

@@ -71,11 +71,13 @@ extension WalletCreationService {
                             )
                             .eraseToAnyPublisher()
                         }
+                        let siteKey = AuthenticationKeys.googleRecaptchaSiteKey
                         return walletCreator.createWallet(
                             email: email,
                             password: password,
                             accountName: accountName,
                             recaptchaToken: token,
+                            siteKey: siteKey,
                             language: "en"
                         )
                         .mapError(WalletCreationServiceError.creationFailure)

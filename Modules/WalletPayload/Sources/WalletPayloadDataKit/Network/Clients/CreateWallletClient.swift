@@ -9,7 +9,8 @@ protocol CreateWalletClientAPI {
     func createWallet(
         email: String,
         payload: WalletCreationPayload,
-        recaptchaToken: String?
+        recaptchaToken: String?,
+        siteKey: String
     ) -> AnyPublisher<Void, NetworkError>
 }
 
@@ -31,7 +32,8 @@ final class CreateWalletClient: CreateWalletClientAPI {
     func createWallet(
         email: String,
         payload: WalletCreationPayload,
-        recaptchaToken: String?
+        recaptchaToken: String?,
+        siteKey: String
     ) -> AnyPublisher<Void, NetworkError> {
         var parameters = provideDefaultParameters(
             with: email,
@@ -42,6 +44,12 @@ final class CreateWalletClient: CreateWalletClientAPI {
                 URLQueryItem(
                     name: "captcha",
                     value: recaptchaToken
+                )
+            )
+            parameters.append(
+                URLQueryItem(
+                    name: "siteKey",
+                    value: siteKey
                 )
             )
         }
