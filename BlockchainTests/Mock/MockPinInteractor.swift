@@ -38,8 +38,4 @@ class MockPinInteractor: PinInteracting {
     func password(from pinDecryptionKey: String) -> Single<String> {
         .just(expectedPassword)
     }
-
-    func serverStatus() -> Observable<ServerIncidents> {
-        .empty()
-    }
 }

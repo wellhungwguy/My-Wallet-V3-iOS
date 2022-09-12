@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -128,7 +129,8 @@ extension KYCConfirmEmailController: EmailConfirmationInterface {
     }
 
     func showError(message: String) {
-        AlertViewPresenter.shared.standardError(message: message, in: self)
+        let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+        alertPresenter.standardError(message: message, in: self)
     }
 
     func hideLoadingView() {

@@ -1,20 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
-public struct StellarKeyDerivationInput: KeyDerivationInput, Equatable {
+struct StellarKeyDerivationInput {
     /// The mnemonic phrase used to derive the key pair
-    public let mnemonic: String
+    let mnemonic: String
 
     /// An optional passphrase for deriving the key pair
-    public let passphrase: String?
+    let passphrase: String? = nil
 
     /// The index of the wallet
-    public let index: Int
+    let index: Int = 0
 
-    public init(mnemonic: String, passphrase: String? = nil, index: Int = 0) {
+    init(mnemonic: String) {
         self.mnemonic = mnemonic
-        self.passphrase = passphrase
-        self.index = index
     }
 }

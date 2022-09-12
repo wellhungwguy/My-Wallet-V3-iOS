@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureAuthenticationUI
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -23,7 +24,7 @@ final class PinScreenViewController: BaseScreenViewController {
     private lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: false)
 
     private let presenter: PinScreenPresenter
-    private let alertViewPresenter: AlertViewPresenter
+    private let alertViewPresenter: AlertViewPresenterAPI
 
     private let recorder: Recording
 
@@ -38,7 +39,7 @@ final class PinScreenViewController: BaseScreenViewController {
     init(
         using presenter: PinScreenPresenter,
         recorder: Recording = CrashlyticsRecorder(),
-        alertViewPresenter: AlertViewPresenter = .shared
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
         self.presenter = presenter
         self.recorder = recorder
@@ -106,15 +107,6 @@ final class PinScreenViewController: BaseScreenViewController {
             .bindAndCatch(to: remainingLockTimeLabel.rx.text)
             .disposed(by: disposeBag)
 
-        // TODO: Re-enable this once we have isolated the source of the crash
-//        presenter.serverStatus
-//            .drive(onNext: { [weak self] serverStatus in
-//                self?.securePinViewTopConstraint.isActive = false
-//                self?.serverStatusContainerView.isHidden = false
-//                self?.showOutage(status: serverStatus)
-//            })
-//            .disposed(by: disposeBag)
-
         NotificationCenter.when(UIApplication.willEnterForegroundNotification) { [weak self] _ in
             self?.prepareForAppearance()
         }
@@ -136,12 +128,7 @@ final class PinScreenViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    private func showOutage(status: ServerStatusViewModel) {
-        serverStatusTitleLabel.text = status.title
-        serverStatusTitleLabel.isHidden = status.title == nil
-        serverStatusSubtitleLabel.viewModel = status.textViewModel
-    }
-
+    // TODO: @native-wallet Remove this, remove UI components, check UI loads OK.
     private func createServerStatusView() {
         serverStatusContainerView = UIStackView(arrangedSubviews: [serverStatusTitleLabel, serverStatusSubtitleLabel])
         serverStatusContainerView.axis = .vertical
@@ -286,7 +273,18 @@ extension PinScreenViewController {
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
-            alertViewPresenter.internetConnection(in: self, completion: recovery)
+            let alertContent = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.noInternetConnection,
+                actions: [
+                    UIAlertAction(
+                        title: LocalizationConstants.okString,
+                        style: .cancel,
+                        handler: { _ in recovery() }
+                    )
+                ]
+            )
+            alertViewPresenter.notify(content: alertContent, in: self)
         case .serverMaintenance(message: let message):
             alertViewPresenter.standardError(message: message, in: self)
         case .serverError(message: let message):
@@ -356,12 +354,12 @@ extension PinScreenViewController {
             }),
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         ]
-        alertViewPresenter.standardNotify(
+        let content = AlertViewContent(
             title: LocalizationConstants.Pin.LogoutAlert.title,
             message: LocalizationConstants.Pin.LogoutAlert.message,
-            actions: actions,
-            in: self
+            actions: actions
         )
+        alertViewPresenter.notify(content: content, in: self)
     }
 
     /// Displays alert telling the user he has exhausted the max allowed number of PIN retries.

@@ -3,11 +3,11 @@
 import PlatformKit
 import stellarsdk
 
-public enum StellarAccountError: Error {
+enum StellarAccountError: Error {
     case unableToSaveNewAccount
 }
 
-public enum StellarNetworkError: Error {
+enum StellarNetworkError: Error {
     case notFound
     case parsingFailed
     case destinationRequiresMemo
@@ -15,7 +15,7 @@ public enum StellarNetworkError: Error {
 }
 
 extension HorizonRequestError {
-    public var stellarNetworkError: StellarNetworkError {
+    var stellarNetworkError: StellarNetworkError {
         switch self {
         case .notFound:
             return .notFound

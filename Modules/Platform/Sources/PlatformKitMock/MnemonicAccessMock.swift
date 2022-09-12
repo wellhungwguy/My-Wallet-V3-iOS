@@ -11,12 +11,4 @@ final class MnemonicAccessMock: MnemonicAccessAPI {
     var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         underlyingMnemonic
     }
-
-    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
-        underlyingMnemonic
-    }
-
-    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
-        underlyingMnemonic
-    }
 }

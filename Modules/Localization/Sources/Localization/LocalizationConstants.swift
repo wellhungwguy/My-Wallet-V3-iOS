@@ -131,22 +131,6 @@ public enum LocalizationConstants {
         public static let insufficientInterestWithdrawalBalanceMessage = NSLocalizedString("You do not have sufficient balance to withdraw from your rewards account, we have a 7 day holding period for interest accounts - if you believe this to be incorrect and a problem, please contact support.", comment: "Error message shown when the customer is unable to withdraw their crypto from the interest account.")
     }
 
-    public enum ServerStatus {
-        public static let mainTitle = NSLocalizedString(
-            "Service Unavailable",
-            comment: "Service Unavailable"
-        )
-
-        public static let majorOutageSubtitle = NSLocalizedString(
-            "We are experiencing an outage with the wallet. Please rest assured your funds are safe.",
-            comment: "We are experiencing an outage with the wallet. Please rest assured your funds are safe."
-        )
-        public static let learnMore = NSLocalizedString(
-            " Learn more.",
-            comment: " Learn more"
-        )
-    }
-
     public enum Authentication {
 
         public enum Support {

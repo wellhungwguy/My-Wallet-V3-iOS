@@ -65,14 +65,14 @@ public final class WebLoginScreenPresenter {
     // MARK: - Private Properties
 
     private let qrCodeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    private let alertPresenter: AlertViewPresenter
+    private let alertPresenter: AlertViewPresenterAPI
     private let service: WebLoginQRCodeServiceAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
     public init(
-        alertPresenter: AlertViewPresenter = resolve(),
+        alertPresenter: AlertViewPresenterAPI = resolve(),
         service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()
     ) {
         self.alertPresenter = alertPresenter

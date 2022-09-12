@@ -72,7 +72,7 @@ public final class SettingsScreenPresenter {
             credentialsStore: interactor.credentialsStore,
             biometryProvider: interactor.biometryProviding,
             settingsAuthenticater: interactor.settingsAuthenticating,
-            recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProviding,
+            recoveryPhraseStatusProvider: interactor.recoveryPhraseStatusProvider,
             authenticationCoordinator: interactor.authenticationCoordinator
         )
 

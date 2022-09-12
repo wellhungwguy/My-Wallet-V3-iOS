@@ -1,57 +1,33 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
-import PlatformKit
-import RxSwift
-import ToolKit
+import Combine
 import WalletPayloadKit
 
-final class EthereumKeyPairProvider: KeyPairProviderAPI {
+final class EthereumKeyPairProvider {
 
-    // MARK: - KeyPairProviderAPI
-
-    func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
+    var keyPair: AnyPublisher<EthereumKeyPair, Error> {
         mnemonicAccess
-            .mnemonic(with: secondPassword)
-            .asObservable()
-            .take(1)
-            .asSingle()
-            .flatMap(weak: self) { (self, mnemonic) -> Single<EthereumKeyPair> in
-                self.deriver.derive(
-                    input: EthereumKeyDerivationInput(
-                        mnemonic: mnemonic
-                    )
-                )
-                .single
+            .mnemonic
+            .eraseError()
+            .flatMap { [deriver] mnenonic in
+                deriver
+                    .derive(input: EthereumKeyDerivationInput(mnemonic: mnenonic))
+                    .publisher
+                    .eraseError()
             }
-    }
-
-    var keyPair: Single<EthereumKeyPair> {
-        mnemonicAccess
-            .mnemonicPromptingIfNeeded
-            .asObservable()
-            .take(1)
-            .asSingle()
-            .flatMap(weak: self) { (self, mnemonic) -> Single<EthereumKeyPair> in
-                self.deriver.derive(
-                    input: EthereumKeyDerivationInput(
-                        mnemonic: mnemonic
-                    )
-                )
-                .single
-            }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Properties
 
     private let mnemonicAccess: MnemonicAccessAPI
-    private let deriver: AnyEthereumKeyPairDeriver
+    private let deriver: EthereumKeyPairDeriver
 
     // MARK: - Init
 
     init(
-        mnemonicAccess: MnemonicAccessAPI = resolve(),
-        deriver: AnyEthereumKeyPairDeriver = AnyEthereumKeyPairDeriver(deriver: EthereumKeyPairDeriver())
+        mnemonicAccess: MnemonicAccessAPI,
+        deriver: EthereumKeyPairDeriver
     ) {
         self.mnemonicAccess = mnemonicAccess
         self.deriver = deriver

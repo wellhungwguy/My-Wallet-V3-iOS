@@ -3,6 +3,8 @@
 import PlatformUIKit
 
 class MockAlertViewPresenter: AlertViewPresenterAPI {
+    func standardError(message: String, in viewController: UIViewController?) {}
+
     var notifyCalled: Bool = false
 
     func notify(content: AlertViewContent, in viewController: UIViewController?) {

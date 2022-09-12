@@ -5,7 +5,6 @@ import Foundation
 public protocol ExternalActionsProviderAPI {
     func logout()
     func logoutAndForgetWallet()
-    func handleAccountsAndAddresses()
     func handleSupport()
     func handleSecureChannel()
 }

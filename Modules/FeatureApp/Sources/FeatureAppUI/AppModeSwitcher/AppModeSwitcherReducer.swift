@@ -13,7 +13,7 @@ extension AppModeSwitcherModule {
                 return .merge(
                     environment
                         .recoveryPhraseStatusProviding
-                        .isRecoveryPhraseVerifiedPublisher
+                        .isRecoveryPhraseVerified
                         .combineLatest(environment.app.publisher(for: blockchain.user.skipped.seed_phrase.backup, as: Bool.self)
                             .replaceError(with: false)
                         )

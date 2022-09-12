@@ -3,11 +3,9 @@
 import PlatformKit
 import WalletCore
 
-public typealias AnyEthereumKeyPairDeriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput, HDWalletError>
+struct EthereumKeyPairDeriver {
 
-public struct EthereumKeyPairDeriver: KeyPairDeriverAPI {
-
-    public func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, HDWalletError> {
+    func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, HDWalletError> {
         let ethereumCoinType = CoinType.ethereum
         // Hardcoding BIP39 passphrase as empty string as it is currently not  supported.
         guard let hdWallet = HDWallet(mnemonic: input.mnemonic, passphrase: "") else {

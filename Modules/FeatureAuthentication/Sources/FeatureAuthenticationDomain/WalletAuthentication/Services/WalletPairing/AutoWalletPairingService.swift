@@ -32,17 +32,7 @@ public protocol AutoWalletPairingServiceAPI: AnyObject {
 }
 
 /// A service that is responsible for the auto pairing process
-public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
-
-    // MARK: - Type
-
-    public typealias WalletRepositoryAPI = GuidRepositoryAPI &
-        SessionTokenRepositoryAPI &
-        SharedKeyRepositoryAPI &
-        LanguageRepositoryAPI &
-        SyncPubKeysRepositoryAPI &
-        AuthenticatorRepositoryAPI &
-        PayloadRepositoryAPI
+final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
 
     // MARK: - Properties
 
@@ -53,7 +43,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
 
     // MARK: - Setup
 
-    public init(
+    init(
         walletPayloadService: WalletPayloadServiceAPI,
         walletPairingRepository: AutoWalletPairingRepositoryAPI,
         walletCryptoService: WalletCryptoServiceAPI,
@@ -65,7 +55,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
         self.parsingService = parsingService
     }
 
-    public func pair(using pairingData: PairingData) -> AnyPublisher<String, AutoWalletPairingServiceError> {
+    func pair(using pairingData: PairingData) -> AnyPublisher<String, AutoWalletPairingServiceError> {
         walletPairingRepository
             .pair(using: pairingData)
             .map {
@@ -102,7 +92,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func encryptionPhrase(
+    func encryptionPhrase(
         using guid: String
     ) -> AnyPublisher<String, AutoWalletPairingServiceError> {
         walletPairingRepository.encryptionPhrase(using: guid)

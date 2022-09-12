@@ -39,75 +39,43 @@ public struct WalletFetcherService {
 extension WalletFetcherService {
 
     public static func live(
-        walletManager: WalletManagerAPI,
         accountRecoveryService: AccountRecoveryServiceAPI,
-        walletFetcher: WalletFetcherAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        walletFetcher: WalletFetcherAPI
     ) -> Self {
         Self(
             fetchWallet: { guid, sharedKey, password
                 -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
-                nativeWalletEnabled()
-                    .flatMap { isEnabled
-                        -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
-                        guard isEnabled else {
-                            return legacyLoadWallet(
-                                walletManager: walletManager,
-                                guid: guid,
-                                sharedKey: sharedKey,
-                                password: password
-                            )
-                            .mapError { _ in WalletFetcherServiceError.unknown }
-                            .map { _ in .left(.noValue) }
-                            .eraseToAnyPublisher()
-                        }
-                        return nativeLoadWallet(
-                            walletFetcher: walletFetcher,
-                            guid: guid,
-                            sharedKey: sharedKey,
-                            password: password
-                        )
-                        .map { value -> Either<EmptyValue, WalletFetchedContext> in
-                            .right(value)
-                        }
-                        .eraseToAnyPublisher()
-                    }
-                    .eraseToAnyPublisher()
+                nativeLoadWallet(
+                    walletFetcher: walletFetcher,
+                    guid: guid,
+                    sharedKey: sharedKey,
+                    password: password
+                )
+                .map { value -> Either<EmptyValue, WalletFetchedContext> in
+                        .right(value)
+                }
+                .eraseToAnyPublisher()
             },
             fetchWalletAfterAccountRecovery: { guid, sharedKey, password, offlineToken
                 -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
-                nativeWalletEnabled()
-                    .flatMap { isEnabled
-                        -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
-                        guard isEnabled else {
-                            return legacyLoadWallet(
-                                walletManager: walletManager,
-                                guid: guid,
-                                sharedKey: sharedKey,
-                                password: password
-                            )
-                            .mapError { _ in WalletFetcherServiceError.unknown }
-                            .map { _ in .left(.noValue) }
-                            .eraseToAnyPublisher()
-                        }
-                        return nativeLoadWallet(
-                            walletFetcher: walletFetcher,
-                            guid: guid,
-                            sharedKey: sharedKey,
-                            password: password
-                        )
-                        .map { value in .right(value) }
+                nativeLoadWallet(
+                    walletFetcher: walletFetcher,
+                    guid: guid,
+                    sharedKey: sharedKey,
+                    password: password
+                )
+                .map { value -> Either<EmptyValue, WalletFetchedContext> in
+                    .right(value)
+                }
+                .flatMap { value
+                    -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
+                    accountRecoveryService
+                        .store(offlineToken: offlineToken)
+                        .map { _ in value }
+                        .mapError { _ in WalletFetcherServiceError.unknown }
                         .eraseToAnyPublisher()
-                    }
-                    .flatMap { value
-                        -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError> in
-                        accountRecoveryService
-                            .store(offlineToken: offlineToken)
-                            .map { _ in value }
-                            .mapError { _ in WalletFetcherServiceError.unknown }
-                            .eraseToAnyPublisher()
-                    }
-                    .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
             }
         )
     }
@@ -124,31 +92,6 @@ extension WalletFetcherService {
             }
         )
     }
-}
-
-func legacyLoadWallet(
-    walletManager: WalletManagerAPI,
-    guid: String,
-    sharedKey: String,
-    password: String
-) -> AnyPublisher<EmptyValue, WalletFetcherServiceError> {
-    walletManager.forgetWallet()
-    walletManager.load(
-        with: guid,
-        sharedKey: sharedKey,
-        password: password
-    )
-    walletManager.markWalletAsNew()
-    return walletManager.didCompleteAuthentication
-        .flatMap { result -> AnyPublisher<EmptyValue, WalletFetcherServiceError> in
-            switch result {
-            case .success:
-                return .just(.noValue)
-            case .failure:
-                return .failure(.unknown)
-            }
-        }
-        .eraseToAnyPublisher()
 }
 
 func nativeLoadWallet(

@@ -3,6 +3,7 @@
 import AnalyticsKit
 import BlockchainComponentLibrary
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift

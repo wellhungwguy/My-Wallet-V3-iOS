@@ -70,13 +70,12 @@ final class SettingsRouter: SettingsRouterAPI {
 
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
-    private let alertPresenter: AlertViewPresenter
+    private let alertPresenter: AlertViewPresenterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let authenticationCoordinator: AuthenticationCoordinating
     private unowned let appStoreOpener: AppStoreOpening
     private let passwordRepository: PasswordRepositoryAPI
-    private let wallet: WalletRecoveryVerifing
     private let repository: DataRepositoryAPI
     private let pitConnectionAPI: PITConnectionStatusProviding
     private let builder: SettingsBuilding
@@ -101,13 +100,12 @@ final class SettingsRouter: SettingsRouterAPI {
 
     init(
         builder: SettingsBuilding = SettingsBuilder(),
-        wallet: WalletRecoveryVerifing = resolve(),
         guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve(),
         authenticationCoordinator: AuthenticationCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),
         navigationRouter: NavigationRouterAPI = resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI = resolve(),
-        alertPresenter: AlertViewPresenter = resolve(),
+        alertPresenter: AlertViewPresenterAPI = resolve(),
         kycRouter: KYCRouterAPI = resolve(),
         cardListService: CardListServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
@@ -122,7 +120,6 @@ final class SettingsRouter: SettingsRouterAPI {
         urlOpener: URLOpener = resolve(),
         exchangeUrlProvider: @escaping () -> String
     ) {
-        self.wallet = wallet
         self.builder = builder
         self.authenticationCoordinator = authenticationCoordinator
         self.appStoreOpener = appStoreOpener
@@ -169,7 +166,6 @@ final class SettingsRouter: SettingsRouterAPI {
 
     func makeViewController() -> SettingsViewController {
         let interactor = SettingsScreenInteractor(
-            wallet: wallet,
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
         )
@@ -324,7 +320,7 @@ final class SettingsRouter: SettingsRouterAPI {
         case .logout:
             externalActionsProvider.logout()
         case .showAccountsAndAddresses:
-            externalActionsProvider.handleAccountsAndAddresses()
+            break
         case .showContactSupport:
             externalActionsProvider.handleSupport()
         case .showWebLogin:

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-carthage bootstrap --use-ssh --cache-builds --platform iOS --use-xcframeworks --no-use-binaries
+sh ./scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS --use-xcframeworks --no-use-binaries

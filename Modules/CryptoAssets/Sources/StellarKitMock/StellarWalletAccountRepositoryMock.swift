@@ -1,25 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import Foundation
-import PlatformKit
-import StellarKit
+@testable import StellarKit
 
-class StellarWalletAccountRepositoryMock: StellarWalletAccountRepositoryAPI {
+final class StellarWalletAccountRepositoryMock: StellarWalletAccountRepositoryAPI {
+    var defaultAccount: AnyPublisher<StellarWalletAccount?, Never> {
+        .just(nil)
+    }
 
-    var defaultAccount: AnyPublisher<StellarWalletAccount?, StellarWalletAccountRepositoryError> = .empty()
-
-    func initializeMetadataMaybe() -> AnyPublisher<StellarWalletAccount, StellarWalletAccountRepositoryError> {
-        .empty()
+    func initializeMetadata() -> AnyPublisher<Void, StellarWalletAccountRepositoryError> {
+        .just(())
     }
 
     func loadKeyPair() -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> {
-        .empty()
-    }
-
-    func loadKeyPair(
-        with secondPassword: String?
-    ) -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> {
-        .empty()
+        .failure(.saveFailure)
     }
 }

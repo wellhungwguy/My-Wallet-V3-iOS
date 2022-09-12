@@ -1,38 +1,33 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import PlatformKit
+import ToolKit
 import WalletPayloadKit
 
-public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
-    public let fetchTriggerSubject = PassthroughSubject<Void, Never>()
+final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
 
-    public let isRecoveryPhraseVerifiedPublisher: AnyPublisher<Bool, Never>
+    let isRecoveryPhraseVerifiedAtomic: Atomic<Bool> = .init(false)
+    let fetchTriggerSubject = PassthroughSubject<Void, Never>()
+    let isRecoveryPhraseVerified: AnyPublisher<Bool, Never>
 
-    public var isRecoveryPhraseVerified: Bool {
-        walletRecoveryVerifier.isRecoveryPhraseVerified()
-    }
-
-    private let walletRecoveryVerifier: WalletRecoveryVerifing
     private let mnemonicVerificationStatusProvider: MnemonicVerificationStatusProvider
 
-    public init(
-        walletRecoveryVerifier: WalletRecoveryVerifing = resolve(),
-        mnemonicVerificationStatusProvider: @escaping MnemonicVerificationStatusProvider = resolve()
+    init(
+        mnemonicVerificationStatusProvider: @escaping MnemonicVerificationStatusProvider
     ) {
-        self.walletRecoveryVerifier = walletRecoveryVerifier
         self.mnemonicVerificationStatusProvider = mnemonicVerificationStatusProvider
 
-        isRecoveryPhraseVerifiedPublisher = fetchTriggerSubject
+        isRecoveryPhraseVerified = fetchTriggerSubject
             .prepend(())
-            .zip(nativeWalletFlagEnabled())
-            .flatMap { _, isEnabled -> AnyPublisher<Bool, Never> in
-                guard isEnabled else {
-                    return .just(walletRecoveryVerifier.isRecoveryPhraseVerified())
-                }
-                return mnemonicVerificationStatusProvider()
+            .flatMap { _ -> AnyPublisher<Bool, Never> in
+                mnemonicVerificationStatusProvider()
             }
+            .handleEvents(
+                receiveOutput: { [isRecoveryPhraseVerifiedAtomic] value in
+                    isRecoveryPhraseVerifiedAtomic.mutate { $0 = value }
+                }
+            )
             .eraseToAnyPublisher()
     }
 }

@@ -10,8 +10,6 @@ public struct AuthenticationError: Error, Equatable {
         case noInternet = 300
         case errorDecryptingWallet
         case invalidSharedKey
-        case failedToLoadWallet
-        case unknown
     }
 
     public let code: ErrorCode

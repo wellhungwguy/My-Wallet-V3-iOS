@@ -5,32 +5,14 @@ import RxSwift
 
 class WalletServiceMock: WalletOptionsAPI {
 
-    var underlyingServerUnderMaintenanceMessage: String?
-    var serverUnderMaintenanceMessage: Single<String?> {
-        .just(underlyingServerUnderMaintenanceMessage)
-    }
-
     var underlyingWalletOptions: WalletOptions = .empty
     var walletOptions: Single<WalletOptions> {
         .just(underlyingWalletOptions)
-    }
-
-    var serverStatus: Single<ServerIncidents> {
-        .just(ServerIncidents(page: .init(id: "", name: "", url: ""), incidents: []))
     }
 }
 
 extension WalletOptions {
     static var empty: WalletOptions {
-        WalletOptions(
-            domains: nil,
-            downForMaintenance: false,
-            hotWalletAddresses: nil,
-            mobile: nil,
-            mobileInfo: nil,
-            updateType: .none,
-            xlmExchangeAddresses: nil,
-            xlmMetadata: nil
-        )
+        WalletOptions(domains: nil, hotWalletAddresses: nil, xlmExchangeAddresses: nil, xlmMetadata: nil)
     }
 }

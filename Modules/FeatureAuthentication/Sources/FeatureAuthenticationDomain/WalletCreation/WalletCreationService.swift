@@ -50,72 +50,36 @@ extension WalletCreationService {
 
     // swiftlint:disable line_length
     public static func live(
-        walletManager: WalletManagerAPI,
         walletCreator: WalletCreatorAPI,
         nabuRepository: NabuRepositoryAPI,
-        updateCurrencyService: @escaping UpdateCurrencyForNewWallets,
-        nativeWalletCreationEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        updateCurrencyService: @escaping UpdateCurrencyForNewWallets
     ) -> Self {
-        let walletManager = walletManager
-        let walletCreator = walletCreator
-        let nativeWalletCreationEnabled = nativeWalletCreationEnabled
-        return Self(
+        Self(
             createWallet: { email, password, accountName, token -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
-                nativeWalletCreationEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
-                        guard isEnabled else {
-                            return legacyCreation(
-                                walletManager: walletManager,
-                                email: email,
-                                password: password
-                            )
-                            .eraseToAnyPublisher()
-                        }
-                        let siteKey = AuthenticationKeys.googleRecaptchaSiteKey
-                        return walletCreator.createWallet(
-                            email: email,
-                            password: password,
-                            accountName: accountName,
-                            recaptchaToken: token,
-                            siteKey: siteKey,
-                            language: "en"
-                        )
-                        .mapError(WalletCreationServiceError.creationFailure)
-                        .map(WalletCreatedContext.from(model:))
-                        .eraseToAnyPublisher()
-                    }
-                    .eraseToAnyPublisher()
+                let siteKey = AuthenticationKeys.googleRecaptchaSiteKey
+                return walletCreator.createWallet(
+                    email: email,
+                    password: password,
+                    accountName: accountName,
+                    recaptchaToken: token,
+                    siteKey: siteKey,
+                    language: "en"
+                )
+                .mapError(WalletCreationServiceError.creationFailure)
+                .map(WalletCreatedContext.from(model:))
+                .eraseToAnyPublisher()
             },
             importWallet: { email, password, accountName, mnemonic -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in
-                nativeWalletCreationEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError> in
-                        guard isEnabled else {
-                            return legacyImportWallet(
-                                email: email,
-                                password: password,
-                                mnemonic: mnemonic,
-                                walletManager: walletManager
-                            )
-                            .map { _ -> Either<WalletCreatedContext, EmptyValue> in
-                                // this makes me sad, for legacy JS code we ignore this as the loading of the wallet
-                                // happens internally just after `didRecoverWallet` delegate method is called
-                                .right(.noValue)
-                            }
-                            .mapError { _ in WalletCreationServiceError.creationFailure(.genericFailure) }
-                            .eraseToAnyPublisher()
-                        }
-                        return walletCreator.importWallet(
-                            mnemonic: mnemonic,
-                            email: email,
-                            password: password,
-                            accountName: accountName,
-                            language: "en"
-                        )
-                        .mapError(WalletCreationServiceError.creationFailure)
-                        .map { model -> Either<WalletCreatedContext, EmptyValue> in
-                            .left(WalletCreatedContext.from(model: model))
-                        }
-                        .eraseToAnyPublisher()
+                walletCreator.importWallet(
+                    mnemonic: mnemonic,
+                    email: email,
+                    password: password,
+                    accountName: accountName,
+                    language: "en"
+                )
+                    .mapError(WalletCreationServiceError.creationFailure)
+                    .map { model -> Either<WalletCreatedContext, EmptyValue> in
+                        .left(WalletCreatedContext.from(model: model))
                     }
                     .eraseToAnyPublisher()
             },
@@ -154,70 +118,6 @@ extension WalletCreationService {
             }
         )
     }
-}
-
-// MARK: - Legacy Import
-
-private func legacyImportWallet(
-    email: String,
-    password: String,
-    mnemonic: String,
-    walletManager: WalletManagerAPI
-) -> AnyPublisher<EmptyValue, WalletError> {
-    walletManager.loadWalletJS()
-    walletManager.recover(
-        email: email,
-        password: password,
-        seedPhrase: mnemonic
-    )
-    return listenForRecoveryEvents(walletManager: walletManager)
-}
-
-private func listenForRecoveryEvents(
-    walletManager: WalletManagerAPI
-) -> AnyPublisher<EmptyValue, WalletError> {
-    let recovered = walletManager.walletRecovered
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .map { _ in EmptyValue.noValue }
-        .eraseToAnyPublisher()
-
-    // always fail upon receiving an event from `walletRecoveryFailed`
-    let recoveryFailed = walletManager.walletRecoveryFailed
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .flatMap { _ -> AnyPublisher<EmptyValue, WalletError> in
-            .failure(.recovery(.failedToRecoverWallet))
-        }
-        .eraseToAnyPublisher()
-
-    return Publishers.Merge(recovered, recoveryFailed)
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .map { _ in .noValue }
-        .eraseToAnyPublisher()
-}
-
-// MARK: - Legacy Creation
-
-func legacyCreation(
-    walletManager: WalletManagerAPI,
-    email: String,
-    password: String
-) -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> {
-    walletManager.loadWalletJS()
-    walletManager.newWallet(password: password, email: email)
-
-    return walletManager.didCreateNewAccount
-        .flatMap { result -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in
-            switch result {
-            case .success(let value):
-                return .just(
-                    WalletCreatedContext.from(model: value)
-                )
-                .eraseToAnyPublisher()
-            case .failure(let error):
-                return .failure(WalletCreationServiceError.creationFailure(.legacyError(error)))
-            }
-        }
-        .eraseToAnyPublisher()
 }
 
 extension WalletCreatedContext {

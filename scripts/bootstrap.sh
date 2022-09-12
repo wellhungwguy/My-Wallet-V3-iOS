@@ -15,7 +15,7 @@ fi
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 echo "Running Carthage"
-sh ./scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS --use-xcframeworks --no-use-binaries
+sh ./scripts/carthage-bootstrap.sh
 
 echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh

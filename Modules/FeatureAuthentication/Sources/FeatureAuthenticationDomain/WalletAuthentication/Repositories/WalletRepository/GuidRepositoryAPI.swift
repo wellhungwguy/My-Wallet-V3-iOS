@@ -25,3 +25,14 @@ extension GuidRepositoryAPI {
             .eraseToAnyPublisher()
     }
 }
+
+public protocol LegacyGuidRepositoryAPI {
+    /// Streams the cached guid or `nil` if it is not cached
+    var guid: AnyPublisher<String?, Never> { get }
+    var directGuid: String? { get }
+
+    /// Sets the guid
+    func set(guid: String?) -> AnyPublisher<Void, Never>
+
+    func directSet(guid: String?)
+}

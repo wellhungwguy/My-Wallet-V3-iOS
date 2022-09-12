@@ -18,19 +18,19 @@ public protocol GuidServiceAPI: AnyObject {
     var guid: AnyPublisher<String, GuidServiceError> { get }
 }
 
-public final class GuidService: GuidServiceAPI {
+final class GuidService: GuidServiceAPI {
 
     // MARK: - Properties
 
     /// Fetches the `GUID`
-    public let guid: AnyPublisher<String, GuidServiceError>
+    let guid: AnyPublisher<String, GuidServiceError>
 
     private let sessionTokenRepository: SessionTokenRepositoryAPI
     private let guidRepository: RemoteGuidRepositoryAPI
 
     // MARK: - Setup
 
-    public init(
+    init(
         sessionTokenRepository: SessionTokenRepositoryAPI,
         guidRepository: RemoteGuidRepositoryAPI
     ) {

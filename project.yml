@@ -312,8 +312,6 @@ targets:
       Release Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
     dependencies:
       - sdk: libicucore.tbd
-      - framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
-        embed: false
       - framework: Carthage/Build/FirebasePerformance.xcframework
         embed: false
       - framework: Carthage/Build/FirebaseABTesting.xcframework
@@ -496,23 +494,12 @@ targets:
         path: Blockchain/Scripts/firebase_copy_plist.sh
       - name: Envman BUILT_PRODUCTS_DIR
         path: Blockchain/Scripts/export_built_products_dir.sh
-    preBuildScripts:
-      - name: my-wallet SHA256
-        script: "if [[ -z \"${BITRISE_PROJECT_PATH}\" ]]; then\n  exit 0\nfi\ncd ${PROJECT_DIR}\n\
-          if ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo \"\
-          Checksum failed:\" >&2\n  exit 1\nfi\n"
     settings:
       base:
         COMMIT_HASH: ${COMMIT_HASH}
-        GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
         FRAMEWORK_SEARCH_PATHS:
           - $(PROJECT_DIR)/Carthage/Build/iOS/
           - $(PROJECT_DIR)/Carthage/Build/
-          - Submodules/OpenSSL-for-iPhone/lib
-        HEADER_SEARCH_PATHS:
-          - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
-        LIBRARY_SEARCH_PATHS:
-          - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
         OTHER_LDFLAGS:
           - -ObjC
         SWIFT_OBJC_BRIDGING_HEADER: Blockchain/Blockchain-Bridging-Header.h
@@ -558,27 +545,11 @@ targets:
         group: Blockchain/Cert
         optional: true
         path: Blockchain/Cert/blockchain.der
-      - group: Blockchain/JavaScript
-        optional: true
-        path: Submodules/My-Wallet-V3/dist/my-wallet.js
       - excludes:
         - Firebase
         - Scripts
         - Cert
         path: Blockchain
-      - includes:
-        - BTCAddress.[hm]
-        - BTCBase58.[hm]
-        - BTCBigNumber.[hm]
-        - BTCCurvePoint.[hm]
-        - BTCData.[hm]
-        - BTCErrors.[hm]
-        - BTCKey.[hm]
-        - BTCKeychain.[hm]
-        - BTCNetwork.[hm]
-        - BTCProtocolSerialization.[hm]
-        - NSData+BTCData.[hm]
-        path: Submodules/CoreBitcoin/CoreBitcoin
     type: application
   BlockchainTests:
     settings:
@@ -621,17 +592,6 @@ targets:
     - createIntermediateGroups: true
       path: Modules/WalletPayload/Sources/WalletPayloadKitMock
     type: bundle.unit-test
-  CryptoDomainDemo:
-    dependencies:
-      - package: FeatureCryptoDomain
-        product: FeatureCryptoDomain
-      - package: FeatureCryptoDomain
-        product: FeatureCryptoDomainMock
-    platform: iOS
-    sources:
-      - createIntermediateGroups: true
-        path: Modules/FeatureCryptoDomain/CryptoDomainDemo
-    type: application
   SnapshotTestsHostApp: # A target only used to host (unit) snapshot tests as they require a hosting app
     platform: iOS
     sources:

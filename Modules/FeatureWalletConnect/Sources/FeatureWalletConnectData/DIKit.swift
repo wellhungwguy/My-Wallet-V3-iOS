@@ -14,7 +14,7 @@ extension DependencyContainer {
 
         single { () -> SessionRepositoryAPI in
             SessionRepositoryMetadata(
-                nativeWalletFlag: { nativeWalletFlagEnabled() }
+                walletConnectFetcher: DIKit.resolve()
             )
         }
     }

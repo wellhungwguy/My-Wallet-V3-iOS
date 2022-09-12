@@ -37,6 +37,7 @@ import ToolKit
 import UIKit
 import UIKitExtensions
 import WalletPayloadDataKit
+import WalletPayloadKit
 
 @UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -202,7 +203,8 @@ private func eraseWalletForUITestsIfNeeded() {
         // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
         // This behaviour happens even on non-debug builds, this is necessary because our UI tests
         // run on real devices with 'release-staging' builds.
-        WalletManager.shared.forgetWallet()
+        let forgetWallet: ForgetWalletAPI = DIKit.resolve()
+        _ = forgetWallet.forget().subscribe()
         UserDefaults.standard.removePersistentDomain(
             forName: MainBundleProvider.mainBundle.bundleIdentifier!
         )

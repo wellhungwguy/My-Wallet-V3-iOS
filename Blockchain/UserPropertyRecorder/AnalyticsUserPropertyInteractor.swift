@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import MoneyKit
 import PlatformKit
-import RxSwift
 import ToolKit
 import WalletPayloadKit
 
@@ -14,81 +14,110 @@ final class AnalyticsUserPropertyInteractor {
 
     // MARK: - Properties
 
+    private let authenticatorRepository: AuthenticatorRepositoryAPI
     private let coincore: CoincoreAPI
-    private let nabuUserService: NabuUserServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let guidRepository: GuidRepositoryAPI
+    private let nabuUserService: NabuUserServiceAPI
     private let recorder: UserPropertyRecording
     private let tiersService: KYCTiersServiceAPI
-    private let walletRepository: WalletRepositoryAPI
-    private var disposeBag = DisposeBag()
+    private let subject = PassthroughSubject<Bool, Never>()
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Setup
 
     init(
+        authenticatorRepository: AuthenticatorRepositoryAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
-        nabuUserService: NabuUserServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        guidRepository: GuidRepositoryAPI = resolve(),
+        nabuUserService: NabuUserServiceAPI = resolve(),
         recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
-        tiersService: KYCTiersServiceAPI = resolve(),
-        walletRepository: WalletRepositoryAPI = resolve()
+        tiersService: KYCTiersServiceAPI = resolve()
     ) {
+        self.authenticatorRepository = authenticatorRepository
         self.coincore = coincore
-        self.nabuUserService = nabuUserService
         self.fiatCurrencyService = fiatCurrencyService
+        self.guidRepository = guidRepository
+        self.nabuUserService = nabuUserService
         self.recorder = recorder
         self.tiersService = tiersService
-        self.walletRepository = walletRepository
+        subject
+            .throttle(
+                for: .seconds(10),
+                scheduler: DispatchQueue.global(qos: .userInitiated),
+                latest: true
+            )
+            .flatMap { [_record] _ -> AnyPublisher<Void, Never> in
+                _record()
+            }
+            .eraseToAnyPublisher()
+            .subscribe()
+            .store(in: &cancellables)
     }
 
-    func fiatBalances() -> Single<[CryptoCurrency: MoneyValue]> {
-        let balances: [Single<(asset: CryptoCurrency, moneyValue: MoneyValue?)>] = coincore.cryptoAssets
-            .map { asset in
+    /// Records all the user properties
+    func record() {
+        subject.send(true)
+    }
+
+    // MARK: Private Methods
+
+    private func fiatBalances() -> AnyPublisher<[CryptoCurrency: MoneyValue], Never> {
+        coincore.cryptoAssets
+            .map { asset -> AnyPublisher<(asset: CryptoCurrency, moneyValue: MoneyValue?), Never> in
                 asset
                     .accountGroup(filter: .all)
                     .compactMap { $0 }
-                    .flatMap { accountGroup in
+                    .flatMap { accountGroup -> AnyPublisher<MoneyValue, Error> in
                         // We want to record the fiat balance analytics event always in USD.
                         accountGroup.fiatBalance(fiatCurrency: .USD)
                     }
-                    .asSingle()
                     .optional()
-                    .catchAndReturn(nil)
+                    .replaceError(with: nil)
                     .map { (asset: asset.asset, moneyValue: $0) }
+                    .eraseToAnyPublisher()
             }
-        return Single.zip(balances)
+            .zip()
             .map { items in
                 items.reduce(into: [CryptoCurrency: MoneyValue]()) { result, item in
                     result[item.asset] = item.moneyValue
                 }
             }
+            .eraseToAnyPublisher()
     }
 
     /// Records all the user properties
-    func record() {
-        disposeBag = DisposeBag()
-        Single
-            .zip(
-                nabuUserService.user.asSingle(),
-                tiersService.tiers.asSingle(),
-                walletRepository.authenticatorType.asSingle(),
-                walletRepository.guid.asSingle(),
-                fiatBalances()
-            )
-            .subscribe(
-                onSuccess: { [weak self] user, tiers, authenticatorType, guid, balances in
-                    self?.record(
-                        user: user,
-                        tiers: tiers,
-                        authenticatorType: authenticatorType,
-                        guid: guid,
-                        balances: balances
-                    )
-                },
-                onFailure: { error in
+    private func _record() -> AnyPublisher<Void, Never> {
+        Publishers.Zip4(
+            nabuUserService.user.eraseError(),
+            tiersService.tiers.eraseError(),
+            authenticatorRepository.authenticatorType.eraseError(),
+            guidRepository.guid.eraseError()
+        )
+        .zip(fiatBalances().eraseError())
+        .handleEvents(
+            receiveOutput: { [weak self] userData, fiatBalances in
+                self?.record(
+                    user: userData.0,
+                    tiers: userData.1,
+                    authenticatorType: userData.2,
+                    guid: userData.3,
+                    balances: fiatBalances
+                )
+            },
+            receiveCompletion: { result in
+                switch result {
+                case .failure(let error):
                     Logger.shared.error(error)
+                case .finished:
+                    break
                 }
-            )
-            .disposed(by: disposeBag)
+            }
+        )
+        .mapToVoid()
+        .replaceError(with: ())
+        .eraseToAnyPublisher()
     }
 
     private func record(

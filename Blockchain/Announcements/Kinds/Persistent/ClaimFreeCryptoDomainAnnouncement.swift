@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import FeatureCryptoDomainDomain
+import Localization
 import PlatformUIKit
 import RxSwift
 import ToolKit

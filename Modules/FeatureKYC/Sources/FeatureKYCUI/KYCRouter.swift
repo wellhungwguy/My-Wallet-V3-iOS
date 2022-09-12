@@ -78,7 +78,6 @@ final class KYCRouter: KYCRouterAPI {
 
     private let pageFactory = KYCPageViewFactory()
 
-    private let appSettings: AppSettingsAPI
     private let loadingViewPresenter: LoadingViewPresenting
 
     private let app: AppProtocol
@@ -132,7 +131,6 @@ final class KYCRouter: KYCRouterAPI {
         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
         webViewServiceAPI: WebViewServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
-        appSettings: AppSettingsAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
@@ -151,7 +149,6 @@ final class KYCRouter: KYCRouterAPI {
         self.nabuUserService = nabuUserService
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
-        self.appSettings = appSettings
         self.kycSettings = kycSettings
         self.loadingViewPresenter = loadingViewPresenter
         self.networkAdapter = networkAdapter

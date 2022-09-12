@@ -12,10 +12,10 @@ import ObservabilityKit
 @testable import PlatformKit
 import PlatformUIKit
 import RxSwift
-import WalletPayloadKit
+@testable import WalletPayloadKit
 import XCTest
 
-@testable import BlockchainApp
+@testable import Blockchain
 @testable import ComposableNavigation
 @testable import FeatureAppDomain
 @testable import FeatureAppUI
@@ -51,14 +51,12 @@ final class MainAppReducerTests: XCTestCase {
     var mockResetPasswordService: MockResetPasswordService!
     var mockSettingsApp: MockBlockchainSettingsApp!
     var mockSiftService: MockSiftService!
-    var mockWallet: MockWallet! = MockWallet()
-    var mockWalletManager: WalletManager!
     var mockWalletPayloadService: MockWalletPayloadService!
     var mockWalletService: FeatureAppDomain.WalletService!
     var mockWalletStateProvider: WalletStateProvider!
-    var mockWalletUpgradeService: MockWalletUpgradeService!
     var mockObservabilityService: ObservabilityServiceMock!
-    var mockRecaptchaService: MockRecaptchaService!
+    var mockLegacyGuidRepo: MockLegacyGuidRepository!
+    var mockLegacySharedKeyRepo: MockLegacySharedKeyRepository!
 
     var mockPerformanceTracing: PerformanceTracingServiceAPI!
 
@@ -76,11 +74,6 @@ final class MainAppReducerTests: XCTestCase {
 
         mockNabuUserService = MockNabuUserService()
         mockSettingsApp = MockBlockchainSettingsApp()
-        mockWalletManager = WalletManager(
-            wallet: mockWallet,
-            appSettings: mockSettingsApp,
-            reactiveWallet: mockReactiveWallet
-        )
         mockExternalAppOpener = MockExternalAppOpener()
         mockMobileAuthSyncService = MockMobileAuthSyncService()
         mockResetPasswordService = MockResetPasswordService()
@@ -88,7 +81,6 @@ final class MainAppReducerTests: XCTestCase {
         mockDeviceVerificationService = MockDeviceVerificationService()
         mockCredentialsStore = CredentialsStoreAPIMock()
         mockAlertPresenter = MockAlertViewPresenter()
-        mockWalletUpgradeService = MockWalletUpgradeService()
         mockExchangeAccountRepository = MockExchangeAccountRepository()
         mockRemoteNotificationAuthorizer = MockRemoteNotificationAuthorizer(
             expectedAuthorizationStatus: UNAuthorizationStatus.authorized,
@@ -109,11 +101,11 @@ final class MainAppReducerTests: XCTestCase {
         mockERC20CryptoAssetService = ERC20CryptoAssetServiceMock()
         mockDelegatedCustodySubscriptionsService = DelegatedCustodySubscriptionsServiceMock()
         mockWalletService = WalletService(
-            fetch: { _ in .empty() },
+            fetch: { _ in .just(WalletFetchedContext(guid: "guid", sharedKey: "sharedKey", passwordPartHash: "")) },
             recoverFromMetadata: { _ in .empty() }
         )
         mockWalletStateProvider = WalletStateProvider(
-            isWalletInitializedPublisher: { .empty() },
+            isWalletInitializedPublisher: { .just(false) },
             releaseState: {}
         )
         mockWalletPayloadService = MockWalletPayloadService()
@@ -121,8 +113,6 @@ final class MainAppReducerTests: XCTestCase {
 
         mockPerformanceTracing = PerformanceTracing.mock
         mockObservabilityService = ObservabilityServiceMock()
-
-        mockRecaptchaService = MockRecaptchaService()
 
         mockNabuUser = NabuUser(
             identifier: "1234567890",
@@ -149,6 +139,9 @@ final class MainAppReducerTests: XCTestCase {
         mockNabuUserService.stubbedResults.setInitialResidentialInfo = .just(())
         mockNabuUserService.stubbedResults.setTradingCurrency = .just(())
 
+        mockLegacyGuidRepo = MockLegacyGuidRepository()
+        mockLegacySharedKeyRepo = MockLegacySharedKeyRepository()
+
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
@@ -173,25 +166,24 @@ final class MainAppReducerTests: XCTestCase {
                 featureFlagsService: mockFeatureFlagsService,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
                 forgetWalletService: mockForgetWalletService,
+                legacyGuidRepository: mockLegacyGuidRepo,
+                legacySharedKeyRepository: mockLegacySharedKeyRepo,
                 loadingViewPresenter: LoadingViewPresenter(),
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 nabuUserService: mockNabuUserService,
-                nativeWalletFlagEnabled: { .just(false) },
                 observabilityService: mockObservabilityService,
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
+                reactiveWallet: mockReactiveWallet,
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 resetPasswordService: mockResetPasswordService,
-                secondPasswordPrompter: SecondPasswordPromptableMock(),
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
-                walletManager: mockWalletManager,
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
                 walletStateProvider: mockWalletStateProvider,
-                walletUpgradeService: mockWalletUpgradeService,
-                recaptchaService: mockRecaptchaService
+                recaptchaService: MockRecaptchaService()
             )
         )
     }
@@ -199,14 +191,12 @@ final class MainAppReducerTests: XCTestCase {
     override func tearDownWithError() throws {
         mockSettingsApp = nil
         mockExternalAppOpener = nil
-        mockWalletManager = nil
         mockMobileAuthSyncService = nil
         mockResetPasswordService = nil
         mockAccountRecoveryService = nil
         mockDeviceVerificationService = nil
         mockCredentialsStore = nil
         mockAlertPresenter = nil
-        mockWalletUpgradeService = nil
         mockExchangeAccountRepository = nil
         mockRemoteNotificationAuthorizer = nil
         mockRemoteNotificationServiceContainer = nil
@@ -220,6 +210,8 @@ final class MainAppReducerTests: XCTestCase {
         mockFiatCurrencySettingsService = nil
         mockWalletService = nil
         mockWalletPayloadService = nil
+        mockLegacyGuidRepo = nil
+        mockLegacySharedKeyRepo = nil
         testStore = nil
 
         try super.tearDownWithError()
@@ -233,52 +225,60 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_syncPinKeyWithICloud() {
         // given
-        mockSettingsApp.isPairedWithWallet = true
+        mockSettingsApp.set(pinKey: "pinKey")
+        mockSettingsApp.set(encryptedPinPassword: "pinPass")
+        mockLegacyGuidRepo.directGuid = "guid"
+        mockLegacySharedKeyRepo.directSharedKey = "sharedKey"
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
             blockchainSettings: mockSettingsApp,
+            legacyGuid: mockLegacyGuidRepo,
+            legacySharedKey: mockLegacySharedKeyRepo,
             credentialsStore: mockCredentialsStore
         )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.isPairedWithWallet = false
-        mockSettingsApp.set(guid: "a")
-        mockSettingsApp.set(sharedKey: "b")
+        mockLegacyGuidRepo.directGuid = "guid"
+        mockLegacySharedKeyRepo.directSharedKey = "sharedKey"
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
             blockchainSettings: mockSettingsApp,
+            legacyGuid: mockLegacyGuidRepo,
+            legacySharedKey: mockLegacySharedKeyRepo,
             credentialsStore: mockCredentialsStore
         )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.isPairedWithWallet = false
         mockSettingsApp.set(encryptedPinPassword: "a")
         mockSettingsApp.set(pinKey: "b")
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
             blockchainSettings: mockSettingsApp,
+            legacyGuid: mockLegacyGuidRepo,
+            legacySharedKey: mockLegacySharedKeyRepo,
             credentialsStore: mockCredentialsStore
         )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.isPairedWithWallet = false
         mockSettingsApp.set(pinKey: nil)
         mockSettingsApp.set(encryptedPinPassword: nil)
-        mockSettingsApp.set(guid: nil)
-        mockSettingsApp.set(sharedKey: nil)
+        mockLegacyGuidRepo.directSet(guid: nil)
+        mockLegacySharedKeyRepo.directSet(sharedKey: nil)
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
             blockchainSettings: mockSettingsApp,
+            legacyGuid: mockLegacyGuidRepo,
+            legacySharedKey: mockLegacySharedKeyRepo,
             credentialsStore: mockCredentialsStore
         )
 
@@ -286,22 +286,59 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertTrue(mockCredentialsStore.expectedPinDataCalled)
     }
 
-    func test_verify_didDecryptWallet_action_updates_appSettings() {
-        testStore.send(
-            .didDecryptWallet(.init(guid: "a", sharedKey: "b", passwordPartHash: "c"))
-        )
-        testStore.receive(.resetVerificationStatusIfNeeded(guid: "a", sharedKey: "b"))
-        XCTAssertNotNil(testStore.environment.blockchainSettings.guid)
-        XCTAssertEqual(testStore.environment.blockchainSettings.guid, "a")
-
-        XCTAssertNotNil(testStore.environment.blockchainSettings.sharedKey)
-        XCTAssertEqual(testStore.environment.blockchainSettings.sharedKey, "b")
-    }
-
     func test_trying_to_login_withSecondPassword_account_displays_notice() {
-        mockWallet.mockNeedsSecondPassword = true
-        mockSettingsApp.set(guid: nil)
-        mockSettingsApp.set(sharedKey: nil)
+        let failingWalletService = FeatureAppDomain.WalletService(
+            fetch: { _ in .failure(.initialization(.needsSecondPassword)) },
+            recoverFromMetadata: { _ in .empty() }
+        )
+        // recreated testStore here with failingWalletService
+        testStore = TestStore(
+            initialState: CoreAppState(),
+            reducer: mainAppReducer,
+            environment: CoreAppEnvironment(
+                accountRecoveryService: mockAccountRecoveryService,
+                alertPresenter: mockAlertPresenter,
+                analyticsRecorder: mockAnalyticsRecorder,
+                app: App.test,
+                appStoreOpener: mockAppStoreOpener,
+                appUpgradeState: { .just(nil) },
+                blockchainSettings: mockSettingsApp,
+                buildVersionProvider: { "" },
+                coincore: mockCoincore,
+                credentialsStore: mockCredentialsStore,
+                deeplinkHandler: mockDeepLinkHandler,
+                deeplinkRouter: mockDeepLinkRouter,
+                delegatedCustodySubscriptionsService: mockDelegatedCustodySubscriptionsService,
+                deviceVerificationService: mockDeviceVerificationService,
+                erc20CryptoAssetService: mockERC20CryptoAssetService,
+                exchangeRepository: mockExchangeAccountRepository,
+                externalAppOpener: mockExternalAppOpener,
+                featureFlagsService: mockFeatureFlagsService,
+                fiatCurrencySettingsService: mockFiatCurrencySettingsService,
+                forgetWalletService: mockForgetWalletService,
+                legacyGuidRepository: mockLegacyGuidRepo,
+                legacySharedKeyRepository: mockLegacySharedKeyRepo,
+                loadingViewPresenter: LoadingViewPresenter(),
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                mobileAuthSyncService: mockMobileAuthSyncService,
+                nabuUserService: mockNabuUserService,
+                observabilityService: mockObservabilityService,
+                performanceTracing: mockPerformanceTracing,
+                pushNotificationsRepository: MockPushNotificationsRepository(),
+                reactiveWallet: mockReactiveWallet,
+                remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
+                resetPasswordService: mockResetPasswordService,
+                sharedContainer: SharedContainerUserDefaults(),
+                siftService: mockSiftService,
+                walletPayloadService: mockWalletPayloadService,
+                walletService: failingWalletService,
+                walletStateProvider: mockWalletStateProvider,
+                recaptchaService: MockRecaptchaService()
+            )
+        )
+
+        mockLegacyGuidRepo.directSet(guid: nil)
+        mockLegacySharedKeyRepo.directSet(sharedKey: nil)
         mockSettingsApp.isPinSet = false
 
         testStore.send(.onboarding(.start))
@@ -330,31 +367,14 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.requestedToDecryptWallet("password"))))
         testStore.receive(.fetchWallet(password: "password"))
-        testStore.receive(.authenticate)
+        testStore.receive(.wallet(.fetch(password: "password")))
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.legacyWalletFetch(password: "password"))
-        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
-        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
-        XCTAssertTrue(mockWallet.fetchCalled)
-        mockWallet.load(
-            withGuid: mockSettingsApp.guid!,
-            sharedKey: mockSettingsApp.sharedKey!,
-            password: "password".passwordPartHash
-        )
-        mockMainQueue.advance()
 
-        // wallet decryptions still expects the original values
-        let decryption = WalletDecryption(
-            guid: String(repeating: "a", count: 36),
-            sharedKey: String(repeating: "b", count: 36),
-            passwordPartHash: nil
-        )
-        testStore.receive(.didDecryptWallet(decryption))
-        testStore.receive(.authenticated(.success(true)))
+        testStore.receive(.wallet(.walletFetched(.failure(.initialization(.needsSecondPassword)))))
 
         // Assert that both of these values are nil
-        XCTAssertNil(mockSettingsApp.guid)
-        XCTAssertNil(mockSettingsApp.sharedKey)
+        XCTAssertNil(mockLegacyGuidRepo.directGuid)
+        XCTAssertNil(mockLegacySharedKeyRepo.directSharedKey)
 
         testStore.receive(.onboarding(.informSecondPasswordDetected))
         testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected)))
@@ -377,14 +397,14 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_success_authentication_from_password_required_screen() {
         // given valid parameters
-        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
-        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
+        mockLegacyGuidRepo.directSet(guid: "guid")
+        mockLegacySharedKeyRepo.directSet(sharedKey: "sharedKey")
         mockSettingsApp.isPinSet = false
 
         testStore.send(.onboarding(.start))
         testStore.receive(.onboarding(.proceedToFlow)) { state in
             state.onboarding?.passwordRequiredState = .init(
-                walletIdentifier: self.mockSettingsApp.guid ?? ""
+                walletIdentifier: self.mockLegacyGuidRepo.directGuid ?? ""
             )
         }
 
@@ -395,25 +415,20 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.passwordScreen(.authenticate("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
-        testStore.receive(.authenticate)
+        testStore.receive(.wallet(.fetch(password: "password")))
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.legacyWalletFetch(password: "password"))
-        XCTAssertTrue(mockWallet.fetchCalled)
-        mockWallet.load(
-            withGuid: mockSettingsApp.guid!,
-            sharedKey: mockSettingsApp.sharedKey!,
-            password: "password".passwordPartHash
-        )
-        mockMainQueue.advance()
 
-        let decryption = WalletDecryption(
-            guid: mockSettingsApp.guid,
-            sharedKey: mockSettingsApp.sharedKey,
-            passwordPartHash: nil
+        let decryption = WalletFetchedContext(
+            guid: mockLegacyGuidRepo.directGuid ?? "",
+            sharedKey: mockLegacySharedKeyRepo.directSharedKey ?? "",
+            passwordPartHash: ""
         )
-        testStore.receive(.didDecryptWallet(decryption))
+        testStore.receive(.wallet(.walletFetched(.success(decryption))))
+        testStore.receive(.wallet(.walletBootstrap(decryption)))
+        testStore.receive(.wallet(.walletSetup))
+
         testStore.receive(.resetVerificationStatusIfNeeded(guid: decryption.guid, sharedKey: decryption.sharedKey))
-        testStore.receive(.authenticated(.success(true)))
+
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordRequiredState = nil
@@ -425,8 +440,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_success_authentication_from_pin() {
         // given valid parameters
-        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
-        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
+        mockLegacyGuidRepo.directSet(guid: "guid")
+        mockLegacySharedKeyRepo.directSet(sharedKey: "sharedKey")
         mockSettingsApp.isPinSet = true
 
         testStore.send(.onboarding(.start))
@@ -444,34 +459,20 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.pin(.handleAuthentication("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
-        testStore.receive(.authenticate)
         mockMainQueue.advance(by: .seconds(1))
-        testStore.receive(.legacyWalletFetch(password: "password"))
-        XCTAssertTrue(mockWallet.fetchCalled)
-        mockWallet.load(
-            withGuid: mockSettingsApp.guid!,
-            sharedKey: mockSettingsApp.sharedKey!,
-            password: "password".passwordPartHash
-        )
+        testStore.receive(.wallet(.fetch(password: "password")))
+        mockMainQueue.advance(by: .seconds(1))
 
-        mockMainQueue.advance()
-
-        let decryption = WalletDecryption(
-            guid: mockSettingsApp.guid,
-            sharedKey: mockSettingsApp.sharedKey,
-            passwordPartHash: nil
+        let decryption = WalletFetchedContext(
+            guid: mockLegacyGuidRepo.directGuid ?? "",
+            sharedKey: mockLegacySharedKeyRepo.directSharedKey ?? "",
+            passwordPartHash: ""
         )
-        testStore.receive(.didDecryptWallet(decryption))
+        testStore.receive(.wallet(.walletFetched(.success(decryption))))
+        testStore.receive(.wallet(.walletBootstrap(decryption)))
+        testStore.receive(.wallet(.walletSetup))
         testStore.receive(.resetVerificationStatusIfNeeded(guid: decryption.guid, sharedKey: decryption.sharedKey))
-        testStore.receive(.authenticated(.success(true)))
-        testStore.receive(.initializeWallet)
-        mockReactiveWallet.mockState.send(.initialized)
-        mockMainQueue.advance()
-        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
-        testStore.receive(.walletInitialized)
-        mockMainQueue.advance()
-        testStore.receive(.checkWalletUpgrade)
-        testStore.receive(.walletNeedsUpgrade(false))
+
         testStore.receive(.prepareForLoggedIn)
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.onboarding = nil
@@ -507,8 +508,8 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_sending_logout_should_perform_cleanup_and_pin_screen() {
         // given valid parameters
-        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
-        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
+        mockLegacyGuidRepo.directSet(guid: "guid")
+        mockLegacySharedKeyRepo.directSet(sharedKey: "sharedKey")
         mockSettingsApp.isPinSet = true
 
         testStore.send(.onboarding(.start))
@@ -525,9 +526,8 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = nil
             state.onboarding = .init(
                 pinState: nil,
-                walletUpgradeState: nil,
                 passwordRequiredState: .init(
-                    walletIdentifier: self.mockSettingsApp.guid ?? ""
+                    walletIdentifier: self.mockLegacyGuidRepo.directGuid ?? ""
                 )
             )
         }
@@ -545,61 +545,14 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
 
-    func test_sending_walletInitialized_should_check_if_wallet_upgrade_is_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.send(true)
-
-        testStore.send(.walletInitialized)
-        mockMainQueue.advance()
-        testStore.receive(.checkWalletUpgrade)
-        testStore.receive(.walletNeedsUpgrade(true)) { state in
-            state.onboarding?.pinState = nil
-            state.onboarding?.walletUpgradeState = WalletUpgrade.State()
-            state.loggedIn = nil
-        }
-
-        testStore.receive(.onboarding(.walletUpgrade(.begin)))
-
-        testStore.send(.onboarding(.walletUpgrade(.completed)))
-        mockMainQueue.advance()
-        testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
-            state.loggedIn = LoggedIn.State()
-            state.onboarding = nil
-        }
-        assertDidPerformSignIn()
-        logout()
-
-        testStore.receive(.onboarding(.passwordScreen(.start)))
-    }
-
-    func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {
-        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
-        testStore.send(.walletInitialized)
-        mockMainQueue.advance()
-        testStore.receive(.checkWalletUpgrade)
-        testStore.receive(.walletNeedsUpgrade(false))
-        testStore.receive(.prepareForLoggedIn)
-        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
-            state.loggedIn = LoggedIn.State()
-            state.onboarding = nil
-        }
-        assertDidPerformSignIn()
-        logout()
-
-        testStore.receive(.onboarding(.passwordScreen(.start)))
-    }
-
     func test_sending_appForegrounded_while_wallet_not_initialized_and_logged_in_state() {
         // given
-        mockSettingsApp.set(guid: String(repeating: "a", count: 36))
-        mockSettingsApp.set(sharedKey: String(repeating: "b", count: 36))
+        mockLegacyGuidRepo.directSet(guid: "guid")
+        mockLegacySharedKeyRepo.directSet(sharedKey: "sharedKey")
         mockSettingsApp.isPinSet = true
 
-        mockWalletUpgradeService.needsWalletUpgradeRelay.send(false)
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
-        testStore.receive(.checkWalletUpgrade)
-        testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.prepareForLoggedIn)
         testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
@@ -608,7 +561,6 @@ final class MainAppReducerTests: XCTestCase {
         assertDidPerformSignIn()
 
         // when
-        mockWallet.mockIsInitialized = false
         testStore.send(.appForegrounded)
         mockMainQueue.advance()
         // then
@@ -642,67 +594,6 @@ final class MainAppReducerTests: XCTestCase {
 
         // 1. then it should clear the saved pin
         XCTAssertTrue(mockSettingsApp.clearPinCalled)
-    }
-
-    func test_wallet_decryption_outputs_decryption_failure_on_invalid_guid() {
-        // note: the count of a guid and shared key should equal to 36
-        // given a non valid guid
-        let decryption = WalletDecryption(
-            guid: "a",
-            sharedKey: "b",
-            passwordPartHash: "hashed"
-        )
-
-        // when
-        let action = handleWalletDecryption(decryption)
-
-        // then
-        let expectedError = AuthenticationError(
-            code: AuthenticationError.ErrorCode.errorDecryptingWallet,
-            description: LocalizationConstants.Authentication.errorDecryptingWallet
-        )
-
-        XCTAssertEqual(CoreAppAction.decryptionFailure(expectedError), action)
-    }
-
-    func test_wallet_decryption_outputs_failure_on_invalid_sharedKey() {
-        // note: the count of a guid and shared key should equal to 36
-        // given a non valid sharedKey
-        let guid = String(repeating: "a", count: 36)
-        let decryption = WalletDecryption(
-            guid: guid,
-            sharedKey: "b",
-            passwordPartHash: "hashed"
-        )
-
-        // when
-        let action = handleWalletDecryption(decryption)
-
-        // then
-        let expectedError = AuthenticationError(
-            code: AuthenticationError.ErrorCode.invalidSharedKey,
-            description: LocalizationConstants.Authentication.invalidSharedKey
-        )
-
-        XCTAssertEqual(CoreAppAction.decryptionFailure(expectedError), action)
-    }
-
-    func test_wallet_decryption_outputs_success_on_valid_creds() {
-        // note: the count of a guid and shared key should equal to 36
-        // given a valid guid
-        let guid = String(repeating: "a", count: 36)
-        let sharedKey = String(repeating: "b", count: 36)
-        let decryption = WalletDecryption(
-            guid: guid,
-            sharedKey: sharedKey,
-            passwordPartHash: "hashed"
-        )
-
-        // when
-        let action = handleWalletDecryption(decryption)
-
-        // then
-        XCTAssertEqual(CoreAppAction.didDecryptWallet(decryption), action)
     }
 
     func test_session_mismatch_deeplink_show_show_authorization() {
@@ -752,9 +643,8 @@ final class MainAppReducerTests: XCTestCase {
             state.loggedIn = nil
             state.onboarding = .init(
                 pinState: nil,
-                walletUpgradeState: nil,
                 passwordRequiredState: .init(
-                    walletIdentifier: self.mockSettingsApp.guid ?? ""
+                    walletIdentifier: self.mockLegacyGuidRepo.directGuid ?? ""
                 )
             )
         }

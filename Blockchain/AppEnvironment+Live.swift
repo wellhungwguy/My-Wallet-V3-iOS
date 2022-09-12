@@ -42,6 +42,8 @@ extension AppEnvironment {
             forgetWalletService: .live(
                 forgetWallet: DIKit.resolve()
             ),
+            legacyGuidRepository: resolve(),
+            legacySharedKeyRepository: resolve(),
             loadingViewPresenter: resolve(),
             mainQueue: .main,
             mobileAuthSyncService: resolve(),
@@ -50,14 +52,13 @@ extension AppEnvironment {
             openBanking: resolve(),
             performanceTracing: resolve(),
             pushNotificationsRepository: resolve(),
+            reactiveWallet: resolve(),
             remoteNotificationServiceContainer: resolve(),
             resetPasswordService: resolve(),
-            secondPasswordPrompter: resolve(),
             sharedContainer: .default,
             siftService: resolve(),
             supportedAssetsRemoteService: resolve(),
             urlSession: resolve(),
-            walletManager: resolve(),
             walletPayloadService: resolve(),
             walletRepoPersistence: resolve(),
             walletService: .live(
@@ -67,7 +68,6 @@ extension AppEnvironment {
             walletStateProvider: .live(
                 holder: DIKit.resolve()
             ),
-            walletUpgradeService: resolve(),
             recaptchaService: resolve()
         )
     }

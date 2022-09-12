@@ -12,7 +12,6 @@ public protocol EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        secondPassword: String?,
         network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, Error>
 }
@@ -20,11 +19,11 @@ public protocol EthereumTransactionDispatcherAPI {
 final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     private let recordLastTransaction: RecordLastTransaction
-    private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
+    private let keyPairProvider: EthereumKeyPairProvider
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
 
     init(
-        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>,
+        keyPairProvider: EthereumKeyPairProvider,
         transactionSendingService: EthereumTransactionSendingServiceAPI,
         recordLastTransaction: @escaping RecordLastTransaction
     ) {
@@ -35,11 +34,10 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        secondPassword: String?,
         network: EVMNetwork
     ) -> AnyPublisher<EthereumTransactionPublished, Error> {
-        keyPairProvider.keyPair(with: secondPassword)
-            .asPublisher()
+        keyPairProvider
+            .keyPair
             .flatMap { [transactionSendingService] keyPair
                 -> AnyPublisher<EthereumTransactionPublished, Error> in
                 transactionSendingService.signAndSend(

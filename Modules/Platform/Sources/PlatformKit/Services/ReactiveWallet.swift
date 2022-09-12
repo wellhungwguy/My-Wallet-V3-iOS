@@ -7,7 +7,7 @@ import ToolKit
 import WalletPayloadKit
 
 /// An extension to `Wallet` which makes wallet functionality Rx friendly.
-public final class ReactiveWallet: ReactiveWalletAPI {
+final class ReactiveWallet: ReactiveWalletAPI {
 
     // MARK: - Types
 
@@ -65,21 +65,21 @@ public final class ReactiveWallet: ReactiveWalletAPI {
         }
     }
 
-    // MARK: - Public properties
+    // MARK: - Properties
 
-    public var waitUntilInitialized: AnyPublisher<Void, Never> {
+    var waitUntilInitialized: AnyPublisher<Void, Never> {
         waitUntilInitializedPublisher
             .share()
             .eraseToAnyPublisher()
     }
 
-    public var waitUntilInitializedFirst: AnyPublisher<Void, Never> {
+    var waitUntilInitializedFirst: AnyPublisher<Void, Never> {
         waitUntilInitializedPublisher
             .first()
             .eraseToAnyPublisher()
     }
 
-    public var initializationState: AnyPublisher<WalletSetup.State, Never> {
+    var initializationState: AnyPublisher<WalletSetup.State, Never> {
         stateSubject
             .first()
             .eraseToAnyPublisher()

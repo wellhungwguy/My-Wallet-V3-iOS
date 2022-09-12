@@ -9,44 +9,25 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol KeychainItemWrapping {
-    func pinFromKeychain() -> String?
-    func removePinFromKeychain()
-    func setPINInKeychain(_ pin: String?)
+public protocol KeychainItemWrapping: AnyObject {
+    func pin() -> String?
+    func setPin(_ pin: String?)
 
     func guid() -> String?
-    func removeGuidFromKeychain()
-    func setGuidInKeychain(_ guid: String?)
+    func setGuid(_ guid: String?)
 
     func sharedKey() -> String?
-    func removeSharedKeyFromKeychain()
-    func setSharedKeyInKeychain(_ sharedKey: String?)
-
-    func removeAllSwipeAddresses()
-}
-
-public protocol LegacyPasswordProviding: AnyObject {
-    func setLegacyPassword(_ legacyPassword: String?)
+    func setSharedKey(_ sharedKey: String?)
 }
 
 public protocol AppSettingsBaseAPI: AnyObject {
     func reset()
 }
 
-public protocol SymbolLocalSettingsAPI: AnyObject {
-    var onSymbolLocalChanged: ((Bool) -> Void)? { get set }
-
-    /// Property indicating whether or not the currency symbol that should be used throughout the app
-    /// should be fiat, if set to true, or the asset-specific symbol, if false.
-    var symbolLocal: Bool { get set }
-}
-
-public typealias BlockchainSettingsAppAPI = AppSettingsAPI
-    & AppSettingsAuthenticating
+public typealias BlockchainSettingsAppAPI = AppSettingsAuthenticating
     & AppSettingsSecureChannel
     & CloudBackupConfiguring
     & PermissionSettingsAPI
-    & SymbolLocalSettingsAPI
     & AppSettingsBaseAPI
 
 /**
@@ -64,13 +45,6 @@ public final class BlockchainSettings: NSObject {
         @Inject @objc public static var shared: App
 
         @LazyInject private var defaults: CacheSuite
-
-        public var isPairedWithWallet: Bool {
-            guid != nil
-                && sharedKey != nil
-                && pinKey != nil
-                && encryptedPinPassword != nil
-        }
 
         // MARK: - Properties
 
@@ -146,18 +120,14 @@ public final class BlockchainSettings: NSObject {
         }
 
         public var pin: String? {
-            atomicGet(on: readWriteQueue) {
-                keychainItemWrapper.pinFromKeychain()
+            atomicGet(on: readWriteQueue) { [keychainItemWrapper] in
+                keychainItemWrapper.pin()
             }
         }
 
         public func set(pin: String?) {
-            atomicSet(value: pin, on: readWriteQueue) { pinValue in
-                guard let pin = pinValue else {
-                    keychainItemWrapper.removePinFromKeychain()
-                    return
-                }
-                keychainItemWrapper.setPINInKeychain(pin)
+            atomicSet(value: pin, on: readWriteQueue) { [keychainItemWrapper] pinValue in
+                keychainItemWrapper.setPin(pinValue)
             }
         }
 
@@ -170,26 +140,6 @@ public final class BlockchainSettings: NSObject {
         public func set(pinKey: String?) {
             atomicSet(value: pinKey, on: readWriteQueue) { pinKeyValue in
                 defaults.set(pinKeyValue, forKey: UserDefaults.Keys.pinKey.rawValue)
-            }
-        }
-
-        public var onSymbolLocalChanged: ((Bool) -> Void)?
-
-        /// Property indicating whether or not the currency symbol that should be used throughout the app
-        /// should be fiat, if set to true, or the asset-specific symbol, if false.
-        @objc
-        public var symbolLocal: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.symbolLocal.rawValue)
-            }
-            set {
-                let oldValue = symbolLocal
-
-                defaults.set(newValue, forKey: UserDefaults.Keys.symbolLocal.rawValue)
-
-                if oldValue != newValue {
-                    onSymbolLocalChanged?(newValue)
-                }
             }
         }
 
@@ -228,38 +178,6 @@ public final class BlockchainSettings: NSObject {
                     biometryEnabledValue,
                     forKey: UserDefaults.Keys.biometryEnabled.rawValue
                 )
-            }
-        }
-
-        public var guid: String? {
-            atomicGet(on: readWriteQueue) {
-                keychainItemWrapper.guid()
-            }
-        }
-
-        public func set(guid: String?) {
-            atomicSet(value: guid, on: readWriteQueue) { guidValue in
-                guard let guid = guidValue else {
-                    keychainItemWrapper.removeGuidFromKeychain()
-                    return
-                }
-                keychainItemWrapper.setGuidInKeychain(guid)
-            }
-        }
-
-        public var sharedKey: String? {
-            atomicGet(on: readWriteQueue) {
-                keychainItemWrapper.sharedKey()
-            }
-        }
-
-        public func set(sharedKey: String?) {
-            atomicSet(value: sharedKey, on: readWriteQueue) { sharedKeyValue in
-                guard let sharedKey = sharedKeyValue else {
-                    keychainItemWrapper.removeSharedKeyFromKeychain()
-                    return
-                }
-                keychainItemWrapper.setSharedKeyInKeychain(sharedKey)
             }
         }
 
@@ -325,18 +243,15 @@ public final class BlockchainSettings: NSObject {
         }
 
         private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-        private let legacyPasswordProvider: LegacyPasswordProviding
         private let keychainItemWrapper: KeychainItemWrapping
 
         private let readWriteQueue = DispatchQueue(label: "Atomic read/write queue", attributes: .concurrent)
 
         public init(
             enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-            keychainItemWrapper: KeychainItemWrapping = resolve(),
-            legacyPasswordProvider: LegacyPasswordProviding = resolve()
+            keychainItemWrapper: KeychainItemWrapping = resolve()
         ) {
             self.enabledCurrenciesService = enabledCurrenciesService
-            self.legacyPasswordProvider = legacyPasswordProvider
             self.keychainItemWrapper = keychainItemWrapper
 
             super.init()
@@ -344,8 +259,6 @@ public final class BlockchainSettings: NSObject {
             defaults.register(defaults: [
                 UserDefaults.Keys.cloudBackupEnabled.rawValue: true
             ])
-            migratePasswordAndPinIfNeeded()
-            handleMigrationIfNeeded()
         }
 
         // MARK: - Public
@@ -391,28 +304,6 @@ public final class BlockchainSettings: NSObject {
             set(encryptedPinPassword: nil)
             set(pinKey: nil)
             set(passwordPartHash: nil)
-        }
-
-        /// Migrates pin and password from NSUserDefaults to the Keychain
-        public func migratePasswordAndPinIfNeeded() {
-            guard let password = defaults.string(forKey: UserDefaults.Keys.password.rawValue),
-                  let pinStr = defaults.string(forKey: UserDefaults.Keys.pin.rawValue),
-                  let pinUInt = UInt(pinStr)
-            else {
-                return
-            }
-
-            legacyPasswordProvider.setLegacyPassword(password)
-
-            Pin(code: pinUInt).save(using: self)
-
-            defaults.removeObject(forKey: UserDefaults.Keys.password.rawValue)
-            defaults.removeObject(forKey: UserDefaults.Keys.pin.rawValue)
-        }
-
-        //: Handles settings migration when keys change
-        public func handleMigrationIfNeeded() {
-            defaults.migrateLegacyKeysIfNeeded()
         }
     }
 }

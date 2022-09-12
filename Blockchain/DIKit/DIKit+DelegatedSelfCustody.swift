@@ -54,9 +54,9 @@ final class DelegatedCustodyFiatCurrencyService: DelegatedCustodyFiatCurrencySer
 
 final class DelegatedCustodyGuidService: DelegatedCustodyGuidServiceAPI {
 
-    private let service: FeatureAuthenticationDomain.GuidRepositoryAPI
+    private let service: GuidRepositoryAPI
 
-    init(service: FeatureAuthenticationDomain.GuidRepositoryAPI) {
+    init(service: GuidRepositoryAPI) {
         self.service = service
     }
 
@@ -67,9 +67,9 @@ final class DelegatedCustodyGuidService: DelegatedCustodyGuidServiceAPI {
 
 final class DelegatedCustodySharedKeyService: DelegatedCustodySharedKeyServiceAPI {
 
-    private let service: FeatureAuthenticationDomain.SharedKeyRepositoryAPI
+    private let service: SharedKeyRepositoryAPI
 
-    init(service: FeatureAuthenticationDomain.SharedKeyRepositoryAPI) {
+    init(service: SharedKeyRepositoryAPI) {
         self.service = service
     }
 
@@ -137,9 +137,9 @@ enum DelegatedCustodyDerivationServiceError: Error {
 
 final class DelegatedCustodyDerivationService: DelegatedCustodyDerivationServiceAPI {
 
-    private let mnemonicAccess: WalletPayloadKit.MnemonicAccessAPI
+    private let mnemonicAccess: MnemonicAccessAPI
 
-    init(mnemonicAccess: WalletPayloadKit.MnemonicAccessAPI) {
+    init(mnemonicAccess: MnemonicAccessAPI) {
         self.mnemonicAccess = mnemonicAccess
     }
 

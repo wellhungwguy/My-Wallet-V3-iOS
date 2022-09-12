@@ -1,9 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import MoneyKit
-import PlatformKit
 
-public struct EthereumAddress: AssetAddress, Hashable {
+public struct EthereumAddress: Hashable {
 
     public let publicKey: String
     public let network: EVMNetwork

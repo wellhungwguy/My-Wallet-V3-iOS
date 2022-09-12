@@ -2,18 +2,12 @@
 
 import DIKit
 import Localization
-import RxSwift
 import ToolKit
 import UIComponentsKit
 
-@objc
-public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
+final class AlertViewPresenter: AlertViewPresenterAPI {
 
-    @Inject @objc public static var shared: AlertViewPresenter
-
-    public let disposeBag = DisposeBag()
-
-    // MARK: - Services
+    // MARK: - Private Properties
 
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
@@ -26,57 +20,20 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
     ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.loadingViewPresenter = loadingViewPresenter
-        super.init()
     }
 
-    @objc
-    public func standardNotify(
-        title: String,
-        message: String,
-        in viewController: UIViewController? = nil,
-        handler: AlertViewContent.Action? = nil
-    ) {
-        Execution.MainQueue.dispatch {
-            let standardAction = UIAlertAction(
-                title: LocalizationConstants.okString,
-                style: .cancel,
-                handler: handler
-            )
-            self.standardNotify(
-                title: title,
-                message: message,
-                actions: [standardAction],
-                in: viewController
-            )
-        }
+    // MARK: AlertViewPresenterAPI
+
+    func notify(content: AlertViewContent, in viewController: UIViewController?) {
+        standardNotify(
+            title: content.title,
+            message: content.message,
+            actions: content.actions,
+            in: viewController
+        )
     }
 
-    /// Allows custom actions to be included in the standard alert presentation
-    @objc
-    public func standardNotify(
-        title: String,
-        message: String,
-        actions: [UIAlertAction],
-        in viewController: UIViewController? = nil
-    ) {
-        Execution.MainQueue.dispatch {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            actions.forEach { alert.addAction($0) }
-            if actions.isEmpty {
-                alert.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil))
-            }
-            self.standardNotify(alert: alert, in: viewController)
-        }
-    }
-
-    public func notify(content: AlertViewContent, in viewController: UIViewController? = nil) {
-        standardNotify(title: content.title, message: content.message, actions: content.actions, in: viewController)
-    }
-
-    // MARK: - Error
-
-    /// Notify the user on error that occurred
-    public func error(
+    func error(
         in viewController: UIViewController? = nil,
         message: String? = nil,
         action: (() -> Void)? = nil
@@ -98,79 +55,71 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
         )
     }
 
-    // MARK: - Internet Connection
-
-    @objc
-    public func internetConnection() {
-        internetConnection(completion: nil)
-    }
-
-    @objc
-    public func internetConnection(in viewController: UIViewController? = nil, completion: (() -> Void)? = nil) {
+    func standardError(message: String, in viewController: UIViewController?) {
         standardNotify(
             title: LocalizationConstants.Errors.error,
-            message: LocalizationConstants.Errors.noInternetConnection,
-            in: viewController
-        ) { [weak self] _ in
-            self?.loadingViewPresenter.hide()
-            completion?()
-        }
+            message: message,
+            in: viewController,
+            handler: nil
+        )
     }
 
-    /// Displays the standard error alert
-    @objc
-    public func standardError(
-        title: String = LocalizationConstants.Errors.error,
+    // MARK: Private Methods
+
+    private func standardNotify(
+        title: String,
         message: String,
         in viewController: UIViewController? = nil,
         handler: AlertViewContent.Action? = nil
     ) {
-        standardNotify(
-            title: title,
-            message: message,
-            in: viewController,
-            handler: handler
-        )
+        runOnMainThread {
+            let standardAction = UIAlertAction(
+                title: LocalizationConstants.okString,
+                style: .cancel,
+                handler: handler
+            )
+            self.standardNotify(
+                title: title,
+                message: message,
+                actions: [standardAction],
+                in: viewController
+            )
+        }
     }
 
-    // MARK: - Dismissal
+    /// Allows custom actions to be included in the standard alert presentation
+    private func standardNotify(
+        title: String,
+        message: String,
+        actions: [UIAlertAction],
+        in viewController: UIViewController? = nil
+    ) {
+        runOnMainThread { [topMostViewControllerProvider] in
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            actions.forEach { alert.addAction($0) }
+            if actions.isEmpty {
+                alert.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil))
+            }
 
-    /// Dismisses an alert if needed
-    public func dismissIfNeeded(completion: (() -> Void)? = nil) {
-        guard let viewController = topMostViewControllerProvider.topMostViewController else {
-            completion?()
-            return
-        }
-        guard let alertController = viewController.presentedViewController as? UIAlertController else {
-            completion?()
-            return
-        }
-        alertController.dismiss(animated: true, completion: completion)
-    }
-
-    public func standardNotify(alert: UIAlertController, in viewController: UIViewController? = nil) {
-        Execution.MainQueue.dispatch {
-            guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
+            guard let presentingVC = viewController ?? topMostViewControllerProvider.topMostViewController else {
                 return
             }
 
-            let presentingVC = viewController ?? topMostViewController
-            self.present(alert: alert, from: presentingVC)
+            guard let previousAlertController = presentingVC.presentedViewController as? UIAlertController else {
+                presentingVC.present(alert, animated: true, completion: nil)
+                return
+            }
+            previousAlertController.dismiss(animated: false) {
+                presentingVC.present(alert, animated: true, completion: nil)
+            }
         }
     }
+}
 
-    // MARK: - Private Accessors
-
-    /// Dismisses an alert controller if currently presented.
-    /// Since only one alert is allowed at the same time, we need to dismiss
-    /// the currently displayed alert in case another one should be displayed
-    private func present(alert: UIAlertController, from presentingVC: UIViewController) {
-        guard let previousAlertController = presentingVC.presentedViewController as? UIAlertController else {
-            presentingVC.present(alert, animated: true, completion: nil)
-            return
-        }
-        previousAlertController.dismiss(animated: false) {
-            presentingVC.present(alert, animated: true, completion: nil)
-        }
+private func runOnMainThread(_ action: @escaping () -> Void) {
+    if Thread.isMainThread {
+        action()
+    } else {
+        DispatchQueue.main.async(execute: action)
     }
 }

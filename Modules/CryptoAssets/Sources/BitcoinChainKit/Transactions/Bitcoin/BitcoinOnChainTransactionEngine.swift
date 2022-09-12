@@ -45,7 +45,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
 
     private let app: AppProtocol
     private let feeRepository: AnyCryptoFeeRepository<BitcoinChainTransactionFee<Token>>
-    private let bridge: BitcoinChainSendBridgeAPI
     private let recorder: Recording
 
     /// didExecuteFlag will be used to log/check if there is an issue
@@ -102,14 +101,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken> {
         app: AppProtocol = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
-        bridge: BitcoinChainSendBridgeAPI = resolve(),
         feeRepository: AnyCryptoFeeRepository<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin),
         recorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
         self.app = app
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
-        self.bridge = bridge
         self.feeRepository = feeRepository
         self.recorder = recorder
     }
@@ -139,32 +136,6 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
         transactionTarget: TransactionTarget,
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
-            return legacyRestart(
-                transactionTarget: transactionTarget,
-                pendingTransaction: pendingTransaction
-            )
-        }
-        return nativeRestart(
-            transactionTarget: transactionTarget,
-            pendingTransaction: pendingTransaction
-        )
-    }
-
-    private func legacyRestart(
-        transactionTarget: TransactionTarget,
-        pendingTransaction: PendingTransaction
-    ) -> Single<PendingTransaction> {
-        defaultRestart(
-            transactionTarget: transactionTarget,
-            pendingTransaction: pendingTransaction
-        )
-    }
-
-    private func nativeRestart(
-        transactionTarget: TransactionTarget,
-        pendingTransaction: PendingTransaction
-    ) -> Single<PendingTransaction> {
         self.transactionTarget = transactionTarget
         return nativeUpdate(
             amount: pendingTransaction.amount,
@@ -173,35 +144,24 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
         .asSingle()
     }
 
-    private var isNativeTransactionEnabled: AnyPublisher<Bool, Never> {
-        let event: Tag.Event = blockchain.app.configuration.native.wallet.payload.is.enabled
-        return app.publisher(for: event, as: Bool.self)
-            .prefix(1)
-            .replaceError(with: false)
-    }
-
     func initializeTransaction() -> Single<PendingTransaction> {
-        Publishers.Zip3(
-            walletCurrencyService.displayCurrency.eraseError(),
-            actionableBalance,
-            isNativeTransactionEnabled.eraseError()
-        )
-        .map { [predefinedAmount] fiatCurrency, availableBalance, nativeBTCEnabled -> PendingTransaction in
-            PendingTransaction(
-                amount: predefinedAmount ?? .zero(currency: Token.coin.cryptoCurrency),
-                available: availableBalance,
-                feeAmount: .zero(currency: Token.coin.cryptoCurrency),
-                feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
-                feeSelection: FeeSelection(
-                    selectedLevel: .regular,
-                    availableLevels: [.regular, .priority],
-                    asset: Token.coin.cryptoCurrency.currencyType
-                ),
-                selectedFiatCurrency: fiatCurrency,
-                nativeBitcoinTransactionEnabled: nativeBTCEnabled
-            )
-        }
-        .asSingle()
+        walletCurrencyService.displayCurrency.eraseError()
+            .zip(actionableBalance)
+            .map { [predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+                PendingTransaction(
+                    amount: predefinedAmount ?? .zero(currency: Token.coin.cryptoCurrency),
+                    available: availableBalance,
+                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
+                    feeSelection: FeeSelection(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: Token.coin.cryptoCurrency.currencyType
+                    ),
+                    selectedFiatCurrency: fiatCurrency
+                )
+            }
+            .asSingle()
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -232,13 +192,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
         amount: MoneyValue,
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
-            return legacyUpdate(
-                amount: amount,
-                pendingTransaction: pendingTransaction
-            )
-        }
-        return nativeUpdate(
+        nativeUpdate(
             amount: amount,
             pendingTransaction: pendingTransaction
         )
@@ -255,12 +209,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
     func execute(
         pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
-        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
-            return legacyExecute(
-                pendingTransaction: pendingTransaction
-            )
-        }
-        return nativeExecute(
+        nativeExecute(
             pendingTransaction: pendingTransaction
         )
     }
@@ -273,10 +222,7 @@ extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
     func doPrepareBitPayTransaction(
         pendingTransaction: PendingTransaction
     ) -> Single<EngineTransaction> {
-        guard pendingTransaction.nativeBitcoinTransactionEnabled else {
-            return bridge.sign(with: nil)
-        }
-        return nativeDoPrepareTransactionPublisher(
+        nativeDoPrepareTransactionPublisher(
             pendingTransaction: pendingTransaction
         )
         .asSingle()
@@ -631,115 +577,6 @@ extension TransactionOutcome {
         case .hashed(txHash: let txHash, amount: let amount):
             return .hashed(txHash: txHash, amount: amount?.moneyValue)
         }
-    }
-}
-
-// MARK: - Legacy Methods
-
-extension BitcoinOnChainTransactionEngine {
-
-    private func legacyUpdate(
-        amount: MoneyValue,
-        pendingTransaction: PendingTransaction
-    ) -> Single<PendingTransaction> {
-        guard sourceAccount != nil else {
-            return .just(pendingTransaction)
-        }
-        guard let crypto = amount.cryptoValue else {
-            preconditionFailure("We should always be passing in `CryptoCurrency` amounts")
-        }
-        guard crypto.currencyType == Token.coin.cryptoCurrency else {
-            preconditionFailure("We should always be passing in BTC amounts's here")
-        }
-        // For BTC, JS does some internal validation of the proposal. We need to do this in order
-        // to run coin selection and get the fee. However, if we pass in a zero value, this is technically
-        // incorrect in JS land.
-
-        let feeSingle = fee(pendingTransaction: pendingTransaction).asSingle()
-
-        return Single
-            .zip(
-                feeSingle,
-                targetAddress.asSingle()
-            )
-            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
-                let (fees, receiveAddress) = values
-                return self.bridge.buildProposal(
-                    with: receiveAddress,
-                    amount: amount,
-                    fees: fees,
-                    source: self.bitcoinChainCryptoAccount
-                )
-            }
-            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
-                self.bridge
-                    .buildCandidate(with: proposal)
-                    .catch { error -> Single<BitcoinChainTransactionCandidate<Token>> in
-                        let candidate: BitcoinChainTransactionCandidate<Token>
-                        switch error {
-                        case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.belowDustThreshold(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.feeTooLow(let finalFee, let sweepAmount, let sweepFee),
-                             BitcoinChainTransactionError.unknown(let finalFee, let sweepAmount, let sweepFee):
-                            candidate = .init(
-                                proposal: proposal,
-                                fees: finalFee,
-                                sweepAmount: sweepAmount,
-                                sweepFee: sweepFee
-                            )
-                        default:
-                            candidate = .init(
-                                proposal: proposal,
-                                fees: .zero(currency: Token.coin.cryptoCurrency),
-                                sweepAmount: .zero(currency: Token.coin.cryptoCurrency),
-                                sweepFee: .zero(currency: Token.coin.cryptoCurrency)
-                            )
-                        }
-                        return .just(candidate)
-                    }
-            }
-            .map { candidate -> PendingTransaction in
-                pendingTransaction.update(
-                    amount: amount,
-                    available: candidate.sweepAmount,
-                    fee: candidate.fees,
-                    feeForFullAvailable: candidate.sweepFee
-                )
-            }
-    }
-
-    private func legacyExecute(
-        pendingTransaction: PendingTransaction
-    ) -> Single<TransactionResult> {
-        guard !didExecuteFlag else {
-            recorder.error(BitcoinEngineError.alreadySent)
-            fatalError("BitcoinEngineError.alreadySent")
-        }
-        didExecuteFlag = true
-
-        let feeSingle = fee(pendingTransaction: pendingTransaction).asSingle()
-
-        return Single
-            .zip(
-                feeSingle,
-                targetAddress.asSingle()
-            )
-            .flatMap(weak: self) { (self, values) -> Single<BitcoinChainTransactionProposal<Token>> in
-                let (fees, receiveAddress) = values
-                return self.bridge.buildProposal(
-                    with: receiveAddress,
-                    amount: pendingTransaction.amount,
-                    fees: fees,
-                    source: self.bitcoinChainCryptoAccount
-                )
-            }
-            .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
-                self.bridge.buildCandidate(with: proposal)
-            }
-            .flatMap(weak: self) { (self, _) -> Single<String> in
-                self.bridge.send(coin: Token.coin, with: nil)
-            }
-            .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
 }
 

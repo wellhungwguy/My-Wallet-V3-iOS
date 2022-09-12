@@ -17,7 +17,6 @@ import WalletPayloadKit
 public enum Onboarding {
     public enum Alert: Equatable {
         case proceedToLoggedIn(ProceedToLoggedInError)
-        case walletAuthentication(AuthenticationError)
         case walletCreation(WalletCreationServiceError)
         case walletRecovery(WalletRecoveryError)
     }
@@ -28,7 +27,6 @@ public enum Onboarding {
         case proceedToFlow
         case pin(PinCore.Action)
         case appUpgrade(AppUpgradeAction)
-        case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequiredAction)
         case welcomeScreen(WelcomeAction)
         /// Used to change state on sub-reducers
@@ -42,7 +40,6 @@ public enum Onboarding {
     public struct State: Equatable {
         public var pinState: PinCore.State?
         public var appUpgradeState: AppUpgradeState?
-        public var walletUpgradeState: WalletUpgrade.State?
         public var passwordRequiredState: PasswordRequiredState?
         public var welcomeState: WelcomeState?
         public var displayAlert: Alert?
@@ -53,7 +50,6 @@ public enum Onboarding {
         public init(
             pinState: PinCore.State? = nil,
             appUpgradeState: AppUpgradeState? = nil,
-            walletUpgradeState: WalletUpgrade.State? = nil,
             passwordRequiredState: PasswordRequiredState? = nil,
             welcomeState: WelcomeState? = nil,
             displayAlert: Alert? = nil,
@@ -62,7 +58,6 @@ public enum Onboarding {
         ) {
             self.pinState = pinState
             self.appUpgradeState = appUpgradeState
-            self.walletUpgradeState = walletUpgradeState
             self.passwordRequiredState = passwordRequiredState
             self.welcomeState = welcomeState
             self.displayAlert = displayAlert
@@ -78,7 +73,8 @@ public enum Onboarding {
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
         let deviceVerificationService: DeviceVerificationServiceAPI
-        let walletManager: WalletManagerAPI
+        var legacyGuidRepository: LegacyGuidRepositoryAPI
+        var legacySharedKeyRepository: LegacySharedKeyRepositoryAPI
         let mobileAuthSyncService: MobileAuthSyncServiceAPI
         let pushNotificationsRepository: PushNotificationsRepositoryAPI
         let walletPayloadService: WalletPayloadServiceAPI
@@ -105,8 +101,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     deviceVerificationService: env.deviceVerificationService,
                     featureFlagsService: env.featureFlagsService,
                     recaptchaService: env.recaptchaService,
-                    buildVersionProvider: env.buildVersionProvider,
-                    nativeWalletEnabled: { nativeWalletFlagEnabled() }
+                    buildVersionProvider: env.buildVersionProvider
                 )
             }
         ),
@@ -117,7 +112,6 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             action: /Onboarding.Action.pin,
             environment: { (env: Onboarding.Environment) in
                 PinCore.Environment(
-                    appSettings: env.appSettings,
                     alertPresenter: env.alertPresenter
                 )
             }
@@ -132,20 +126,10 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                     mainQueue: env.mainQueue,
                     externalAppOpener: env.externalAppOpener,
                     walletPayloadService: env.walletPayloadService,
-                    walletManager: env.walletManager,
                     pushNotificationsRepository: env.pushNotificationsRepository,
                     mobileAuthSyncService: env.mobileAuthSyncService,
                     forgetWalletService: env.forgetWalletService
                 )
-            }
-        ),
-    walletUpgradeReducer
-        .optional()
-        .pullback(
-            state: \Onboarding.State.walletUpgradeState,
-            action: /Onboarding.Action.walletUpgrade,
-            environment: { (_: Onboarding.Environment) in
-                WalletUpgrade.Environment()
             }
         ),
     appUpgradeReducer
@@ -181,7 +165,9 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .proceedToFlow:
             return decideFlow(
                 state: &state,
-                appSettings: environment.appSettings
+                legacyGuidRepository: environment.legacyGuidRepository,
+                legacySharedKeyRepository: environment.legacySharedKeyRepository,
+                settingsAuthenticating: environment.appSettings
             )
         case .pin:
             return .none
@@ -220,18 +206,20 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return Effect(value: .informForWalletInitialization)
         case .welcomeScreen:
             return .none
-        case .walletUpgrade(.begin):
-            return .none
-        case .walletUpgrade:
-            return .none
         case .passwordScreen(.forgetWallet),
              .forgetWallet:
             state.passwordRequiredState = nil
             state.pinState = nil
             state.welcomeState = .init()
-            environment.appSettings.clear()
-            environment.credentialsStore.erase()
-            return Effect(value: .welcomeScreen(.start))
+
+            return .merge(
+                .fireAndForget {
+                    environment.appSettings.clear()
+                    environment.credentialsStore.erase()
+                },
+                environment.forgetWalletService.forget().fireAndForget(),
+                Effect(value: .welcomeScreen(.start))
+            )
         case .passwordScreen:
             return .none
         case .informSecondPasswordDetected:
@@ -300,32 +288,34 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
 
 func decideFlow(
     state: inout Onboarding.State,
-    appSettings: BlockchainSettingsAppAPI
+    legacyGuidRepository: LegacyGuidRepositoryAPI,
+    legacySharedKeyRepository: LegacySharedKeyRepositoryAPI,
+    settingsAuthenticating: AppSettingsAuthenticating
 ) -> Effect<Onboarding.Action, Never> {
     state.appUpgradeState = nil
-    if appSettings.guid != nil, appSettings.sharedKey != nil {
+    if legacyGuidRepository.directGuid != nil, legacySharedKeyRepository.directSharedKey != nil {
         // Original flow
-        if appSettings.isPinSet {
+        if settingsAuthenticating.isPinSet {
             state.pinState = .init()
             state.passwordRequiredState = nil
             return Effect(value: .pin(.authenticate))
         } else {
             state.pinState = nil
             state.passwordRequiredState = .init(
-                walletIdentifier: appSettings.guid ?? ""
+                walletIdentifier: legacyGuidRepository.directGuid ?? ""
             )
             return Effect(value: .passwordScreen(.start))
         }
-    } else if appSettings.pinKey != nil, appSettings.encryptedPinPassword != nil {
+    } else if settingsAuthenticating.pinKey != nil, settingsAuthenticating.encryptedPinPassword != nil {
         // iCloud restoration flow
-        if appSettings.isPinSet {
+        if settingsAuthenticating.isPinSet {
             state.pinState = .init()
             state.passwordRequiredState = nil
             return Effect(value: .pin(.authenticate))
         } else {
             state.pinState = nil
             state.passwordRequiredState = .init(
-                walletIdentifier: appSettings.guid ?? ""
+                walletIdentifier: legacyGuidRepository.directGuid ?? ""
             )
             return Effect(value: .passwordScreen(.start))
         }

@@ -97,7 +97,7 @@ import UIKit
 
     /// Hides the loader
     @objc public func hide() {
-        Execution.MainQueue.dispatch { [weak self] in
+        runOnMainThread { [weak self] in
             guard let self = self else { return }
             guard self.view != nil else { return }
             self.state = .hidden
@@ -110,7 +110,7 @@ import UIKit
     /// if `nil` the loader is shown in one of the windows.
     /// - Parameter text: an optional String to be displayed
     @objc public func showCircular(in superview: UIView? = nil, with text: String? = nil) {
-        Execution.MainQueue.dispatch { [weak self] in
+        runOnMainThread { [weak self] in
             guard let self = self, self.isEnabled else { return }
             self.setupViewIfNeeded(in: superview, style: .circle)
             self.state = .animating(text)
@@ -122,7 +122,7 @@ import UIKit
     /// if `nil` the loader is shown in one of the windows.
     /// - Parameter text: an optional String to be displayed
     @objc public func show(in superview: UIView? = nil, with text: String? = nil) {
-        Execution.MainQueue.dispatch { [weak self] in
+        runOnMainThread { [weak self] in
             guard let self = self, self.isEnabled else { return }
             self.setupViewIfNeeded(in: superview, style: .activityIndicator)
             self.state = .animating(text)
@@ -202,5 +202,13 @@ import UIKit
                 return onMainScreen && isVisible && isLevelNormalOrStatusBar
             }!
         attach(to: topWindow)
+    }
+}
+
+private func runOnMainThread(_ action: @escaping () -> Void) {
+    if Thread.isMainThread {
+        action()
+    } else {
+        DispatchQueue.main.async(execute: action)
     }
 }

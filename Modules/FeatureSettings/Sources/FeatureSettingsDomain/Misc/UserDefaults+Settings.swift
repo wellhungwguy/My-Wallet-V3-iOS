@@ -13,7 +13,6 @@ extension UserDefaults {
         case legacyEncryptedPinPassword = "encryptedPINPassword"
         case hasEndedFirstSession
         case pinKey
-        case symbolLocal
         case passwordPartHash
         case biometryEnabled
         case cloudBackupEnabled
@@ -23,17 +22,5 @@ extension UserDefaults {
         case password
         case secureChannelDeviceKey
         case secureChannelBrowserIdentities
-    }
-}
-
-extension CacheSuite {
-    func migrateLegacyKeysIfNeeded() {
-        migrateBool(fromKey: "touchIDEnabled", toKey: UserDefaults.Keys.biometryEnabled.rawValue)
-    }
-
-    private func migrateBool(fromKey: String, toKey: String) {
-        guard let value = object(forKey: fromKey) as? Bool else { return }
-        set(value, forKey: toKey)
-        removeObject(forKey: fromKey)
     }
 }

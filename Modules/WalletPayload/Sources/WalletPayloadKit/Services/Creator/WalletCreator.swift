@@ -17,7 +17,6 @@ public enum WalletCreateError: LocalizedError, Equatable {
     case mnemonicFailure(MnemonicProviderError)
     case encodingError(WalletEncodingError)
     case networkError(NetworkError)
-    case legacyError(LegacyWalletCreationError)
     case usedAccountsFinderError(UsedAccountsFinderError)
 }
 

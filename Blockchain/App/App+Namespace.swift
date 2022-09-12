@@ -32,7 +32,6 @@ let app: AppProtocol = App(
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.polygon.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.all.tokens.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
