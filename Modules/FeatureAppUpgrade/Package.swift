@@ -57,7 +57,10 @@ let package = Package(
             name: "FeatureAppUpgradeUITests",
             dependencies: [
                 .target(name: "FeatureAppUpgradeUI"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                .product(name: "ToolKit", package: "Tool")
             ],
             exclude: ["__Snapshots__"]
         )

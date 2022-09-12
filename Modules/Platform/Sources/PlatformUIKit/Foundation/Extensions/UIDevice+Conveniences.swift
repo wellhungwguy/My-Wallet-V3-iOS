@@ -126,6 +126,16 @@ extension UIDevice {
         case "iPhone14,5":
             return "iPhone 13"
 
+        // iPhone 14 Line
+        case "iPhone14,7":
+            return "iPhone 14"
+        case "iPhone14,8":
+            return "iPhone 14 Plus"
+        case "iPhone15,2":
+            return "iPhone 14 Pro"
+        case "iPhone15,3":
+            return "iPhone 14 Pro Max"
+
         // iPad Air Line
         case "iPad4,1", "iPad4,2", "iPad4,3":
             return "iPad Air"
