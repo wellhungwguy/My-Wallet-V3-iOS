@@ -139,8 +139,7 @@ let package = Package(
                 .product(name: "TestKit", package: "Test")
             ],
             exclude: [
-                "_New_KYC/Limits/__Snapshots__",
-                "_New_KYC/EmailVerification/__Snapshots__"
+                "_New_KYC/Limits/__Snapshots__"
             ]
         )
     ]

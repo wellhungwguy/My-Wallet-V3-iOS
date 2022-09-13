@@ -1,11 +1,13 @@
 import BlockchainNamespace
 import Combine
+import Extensions
 import Foundation
 
 public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observer {
 
     unowned let app: AppProtocol
     let notificationCenter: NotificationCenter
+    let scheduler: AnySchedulerOf<DispatchQueue>
 
     let apiKey: String
     let appId: String
@@ -18,6 +20,7 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
     public init(
         app: AppProtocol,
         notificationCenter: NotificationCenter = .default,
+        scheduler: AnySchedulerOf<DispatchQueue> = .main,
         apiKey: String,
         appId: String,
         open: @escaping (URL) -> Void,
@@ -26,6 +29,7 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
     ) {
         self.app = app
         self.notificationCenter = notificationCenter
+        self.scheduler = scheduler
         self.apiKey = apiKey
         self.appId = appId
         self.open = open
@@ -47,10 +51,12 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
                     .first()
                     .eraseToAnyPublisher()
             }
+            .receive(on: scheduler)
             .sink { [weak self] id, email in self?.login(id: id, email: email) }
             .store(in: &bag)
 
         app.on(blockchain.session.event.did.sign.out)
+            .receive(on: scheduler)
             .sink { [weak self] _ in self?.logout() }
             .store(in: &bag)
 
@@ -61,11 +67,13 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observ
                     .first()
                     .eraseToAnyPublisher()
             }
+            .receive(on: scheduler)
             .sink { [weak self] isEnabled in self?.present(isEnabled) }
             .store(in: &bag)
 
         app.publisher(for: blockchain.app.configuration.customer.support.url, as: URL.self)
             .compactMap(\.value)
+            .receive(on: scheduler)
             .sink { [weak self] url in self?.url = url }
             .store(in: &bag)
 
