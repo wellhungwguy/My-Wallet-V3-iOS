@@ -238,7 +238,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .withLatestFrom(qrCodeMetadata.map { $0?.title })
+            .withLatestFrom(qrCodeMetadata.compactMap(\.wrapped).map(\.title))
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 
