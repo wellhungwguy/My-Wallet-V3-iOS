@@ -5,8 +5,6 @@ import Combine
 import HDWalletKit
 import MoneyKit
 import XCTest
-
-// swiftlint:disable line_length
 class GetWalletKeyPairsTests: XCTestCase {
 
     func test_unspentOutput_derivation_path() throws {

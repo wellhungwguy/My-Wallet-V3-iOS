@@ -42,10 +42,8 @@ struct TestEnvironment {
             password: password
         )
 
-        // swiftlint:disable:next line_length
         static let metadataNodeXPriv = "xprv9usvuXHXKk2VR4igogrz9JXxyCEKhauoy4JbHT5TM8HTebb4RUTEtBqwXx1tQApuwYHT1oBM5CLdYTYvqxD8m7P98JC3LcHKRgPMhXpgaHH"
 
-        // swiftlint:disable:next line_length
         static let sharedMetadataNodeXPriv = "xprv9usvuXHbudCrLssoaHAHt2ReANFuQpEaEV6775CkarJtbYZWdQrC3a6Y6Y3L8JyNNdBhVYrR69EDniTFjUyKJdHEpr25eFoUMieKUr87ZgR"
 
         static let metadataNodes: RemoteMetadataNodes = {
@@ -66,11 +64,9 @@ struct TestEnvironment {
             secondPasswordNode: secondPasswordNode
         )
 
-        // swiftlint:disable:next line_length
         static let masterKeyXPrv = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
 
         static let masterKey: MasterKey = {
-            // swiftlint:disable force_try
             let privateKey = try! PrivateKey
                 .bitcoinKeyFromXPriv(
                     xpriv: masterKeyXPrv

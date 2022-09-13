@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import SwiftExtensions
 
 extension Publisher where Failure == Never {
 
@@ -35,7 +36,6 @@ extension Publisher where Failure == Never {
         }
     }
 
-    // swiftlint:disable large_tuple
     public func sink<Root, T, U, V>(
         to handler: @escaping (Root) -> (T, U, V) -> Void,
         on root: Root
@@ -130,11 +130,12 @@ extension Publisher where Output: ResultProtocol {
     public func flatMap<P>(
         maxPublishers: Subscribers.Demand = .unlimited,
         _ transform: @escaping (Output.Success) throws -> P
-    ) -> Publishers.FlatMap<AnyPublisher<P.Output, P.Failure>, Self> where
-P: Publisher,
-    P.Output: ResultProtocol,
-    P.Output.Failure: ExpressibleByError,
-    P.Failure == Never {
+    ) -> Publishers.FlatMap<AnyPublisher<P.Output, P.Failure>, Self>
+    where P: Publisher,
+          P.Output: ResultProtocol,
+          P.Output.Failure: ExpressibleByError,
+          P.Failure == Never
+    {
         flatMap(maxPublishers: maxPublishers) { output in
             do {
                 switch output.result {
@@ -363,5 +364,12 @@ extension Publisher {
     /// synonym for `map` using a CasePath
     public func map<T>(_ action: CasePath<T, Output>) -> Publishers.Map<Self, T> {
         map { output in action.embed(output) }
+    }
+}
+
+extension Publisher where Output == Never {
+
+    public func setOutputType<NewOutput>(to _: NewOutput.Type) -> AnyPublisher<NewOutput, Failure> {
+        map(absurd).eraseToAnyPublisher()
     }
 }

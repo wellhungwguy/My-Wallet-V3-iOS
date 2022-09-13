@@ -6,9 +6,7 @@ import Foundation
 
 // swiftlint:disable force_try
 
-// swiftlint:disable:next duplicate_imports
 @_exported import struct ToolKit.Identity
-// swiftlint:disable:next duplicate_imports
 @_exported import protocol ToolKit.NewTypeString
 
 public class OpenBankingClient {

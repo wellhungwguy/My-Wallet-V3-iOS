@@ -3,8 +3,6 @@
 import MoneyKit
 import XCTest
 
-// swiftlint:disable type_body_length
-
 class CryptoFormatterTests: XCTestCase {
 
     private var englishLocale: Locale!

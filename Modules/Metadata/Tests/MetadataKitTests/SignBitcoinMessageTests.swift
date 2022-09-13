@@ -10,7 +10,6 @@ final class SignBitcoinMessageTests: XCTestCase {
 
         let environment = TestEnvironment()
 
-        // swiftlint:disable line_length
         let expectedSignedMessage = "IL0qb9G5GkC19oYNPNjbMtC7lZlGpC/RMnf3htVkgvZSE/JfaFhwspJ1tZOBqHZMjNWOcf/DaQomztmGrZUzkjc="
 
         let message: [UInt8] =

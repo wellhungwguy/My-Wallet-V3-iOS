@@ -211,7 +211,7 @@ class ValidationTextField: NibBasedView {
         if let block = validationBlock {
             validity = block(textField.text)
         } else {
-            if textField.text?.count == 0 || textField.text == nil {
+            if textField.text?.isEmpty == true || textField.text == nil {
                 validity = optionalField ? .valid : .invalid(nil)
             } else {
                 validity = .valid
@@ -294,7 +294,7 @@ extension ValidationTextField: UITextFieldDelegate {
             return
         }
 
-        if textField.text?.count == 0 || textField.text == nil {
+        if textField.text?.isEmpty == true || textField.text == nil {
             validity = optionalField ? .valid : .invalid(nil)
         } else {
             validity = .valid

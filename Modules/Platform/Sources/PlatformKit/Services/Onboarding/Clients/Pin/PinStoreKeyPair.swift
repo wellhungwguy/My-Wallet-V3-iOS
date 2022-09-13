@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CommonCryptoKit
+import Extensions
 
 public struct PinStoreKeyPairError: Error {
     let localizedDescription: String
@@ -30,6 +31,8 @@ extension PinStoreKeyPair {
         return PinStoreKeyPair(key: key.hexValue, value: value.hexValue)
     }
 }
+
+// swiftlint:disable empty_count
 
 extension Data {
 

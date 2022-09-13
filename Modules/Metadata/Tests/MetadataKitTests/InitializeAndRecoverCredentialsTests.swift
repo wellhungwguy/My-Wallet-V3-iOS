@@ -38,7 +38,6 @@ class InitializeAndRecoverCredentialsTests: XCTestCase {
 
         let expectedAddress = "1EfF3b4GusL5YkKji9HxqAhDBRRvEFSZiP"
 
-        // swiftlint:disable:next line_length
         let expectedMetadataNodeXPriv = "xprv9uvPCc4bEjZEaAAxnva4d9gnUGPssAVsT8DfnGuLVdtD9TeQfFtfySYD7P1cBAUZSNXnT52zxxmpx4rs2pzCJxu64gpwzUdu33HEzzjbHty"
         let expectedMetadataNode = try PrivateKey
             .bitcoinKeyFromXPriv(

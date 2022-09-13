@@ -42,7 +42,7 @@ public struct AssetModel: Hashable {
         displayCode = Self.displayCode(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
         name = Self.name(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
         precision = assetResponse.precision
-        var products = assetResponse.products.compactMap(AssetModelProduct.init)
+        let products = assetResponse.products.compactMap(AssetModelProduct.init)
         self.products = products.unique
         logoPngUrl = URL(string: assetResponse.type.logoPngUrl ?? "")
         spotColor = assetResponse.type.spotColor
@@ -142,8 +142,6 @@ extension AssetModel {
     public var cryptoCurrency: CryptoCurrency? {
         CryptoCurrency(assetModel: self)
     }
-
-    // swiftlint:disable line_length
 
     public static let bitcoin = AssetModel(
         code: "BTC",

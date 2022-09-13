@@ -4,8 +4,6 @@
 import PlatformKit
 import XCTest
 
-// swiftlint:disable line_length
-// swiftlint:disable:next type_name
 final class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
     var sut: BitcoinChainExternalAssetAddressFactory<BitcoinToken>!
 

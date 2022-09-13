@@ -35,13 +35,16 @@ struct ClaimBenefitsView: View {
     }
 
     private var closeButton: some View {
-        Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            Icon.closeCirclev2
-                .frame(width: 24, height: 24)
-                .accentColor(.semantic.muted)
-        }
+        Button(
+            action: {
+                presentationMode.wrappedValue.dismiss()
+            },
+            label: {
+                Icon.closeCirclev2
+                    .frame(width: 24, height: 24)
+                    .accentColor(.semantic.muted)
+            }
+        )
     }
 
     private var benefitsHeader: some View {

@@ -32,7 +32,6 @@ public enum NabuAuthenticationExecutorError: Error {
     case communicatorError(NetworkError)
 }
 
-// swiftlint:disable type_body_length
 struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
 
     private struct Token {
@@ -119,7 +118,6 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                 -> (sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken) in
                 (sessionToken: sessionToken, offlineToken: offlineToken)
             }
-            // swiftlint:disable:next line_length
             .catch { _ -> AnyPublisher<(sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken), NabuAuthenticationExecutorError> in
                 fetchTokens()
                     .map { token -> (sessionToken: NabuSessionToken?, offlineToken: NabuOfflineToken) in

@@ -41,16 +41,9 @@ typealias FeeFromPendingTransaction =
 func nativeSignTransaction(
     candidate: NativeBitcoinTransactionCandidate,
     signingService: BitcoinChainTransactionSigningServiceAPI
-) -> AnyPublisher<NativeEngineTransaction, Error> {
+) -> AnyPublisher<NativeSignedBitcoinTransaction, Error> {
     signingService.sign(candidate: candidate)
         .eraseError()
-        .map { signedTransaction in
-            NativeEngineTransaction(
-                encodedMsg: signedTransaction.encodedMsg,
-                msgSize: signedTransaction.msgSize,
-                txHash: signedTransaction.txHash
-            )
-        }
         .eraseToAnyPublisher()
 }
 

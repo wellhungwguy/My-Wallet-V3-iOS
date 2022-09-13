@@ -90,7 +90,6 @@ public let passwordRequiredReducer = Reducer<
     PasswordRequiredState,
     PasswordRequiredAction,
     PasswordRequiredEnvironment
-        // swiftlint:disable closure_body_length
 > { state, action, environment in
 
     switch action {

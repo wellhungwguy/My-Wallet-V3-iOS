@@ -168,7 +168,6 @@ final class KYCRouter: KYCRouterAPI {
         start(tier: tier, parentFlow: parentFlow, from: nil)
     }
 
-    // swiftlint:disable function_body_length
     func start(
         tier: KYC.Tier,
         parentFlow: KYCParentFlow,

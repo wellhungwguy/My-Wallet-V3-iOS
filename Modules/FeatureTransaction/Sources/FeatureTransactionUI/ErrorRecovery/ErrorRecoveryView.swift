@@ -75,31 +75,32 @@ struct ErrorRecoveryView: View {
         WithViewStore(store) { viewStore in
             BottomSheetModal(
                 title: viewStore.title,
-                onClose: { viewStore.send(.closeTapped) }
-            ) {
-                VStack(alignment: .leading, spacing: Spacing.padding2) {
-                    RichText(viewStore.message)
-                        .typography(.paragraph1)
-                    ForEach(viewStore.callouts, id: \.title) { callout in
-                        CalloutCard(
-                            leading: {
-                                callout.image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            },
-                            title: callout.title,
-                            message: callout.message,
-                            control: Control(
-                                title: callout.callToAction,
-                                action: {
-                                    viewStore.send(.calloutTapped(callout))
-                                }
+                onClose: { viewStore.send(.closeTapped) },
+                content: {
+                    VStack(alignment: .leading, spacing: Spacing.padding2) {
+                        RichText(viewStore.message)
+                            .typography(.paragraph1)
+                        ForEach(viewStore.callouts, id: \.title) { callout in
+                            CalloutCard(
+                                leading: {
+                                    callout.image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                },
+                                title: callout.title,
+                                message: callout.message,
+                                control: Control(
+                                    title: callout.callToAction,
+                                    action: {
+                                        viewStore.send(.calloutTapped(callout))
+                                    }
+                                )
                             )
-                        )
+                        }
                     }
+                    .fixedSize(horizontal: false, vertical: true)
                 }
-                .fixedSize(horizontal: false, vertical: true)
-            }
+            )
         }
     }
 }

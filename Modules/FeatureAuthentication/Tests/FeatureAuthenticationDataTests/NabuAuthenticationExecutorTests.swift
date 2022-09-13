@@ -12,7 +12,6 @@ import XCTest
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 
-// swiftlint:disable type_body_length
 final class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!

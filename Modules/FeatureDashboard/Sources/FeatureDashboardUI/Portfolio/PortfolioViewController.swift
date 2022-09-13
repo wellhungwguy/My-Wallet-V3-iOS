@@ -18,7 +18,6 @@ import ToolKit
 import UIComponentsKit
 
 /// A view controller that displays the dashboard
-// swiftlint:disable type_body_length
 final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewController {
 
     // MARK: - Private Types

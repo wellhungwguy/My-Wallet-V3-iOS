@@ -5,8 +5,6 @@ import Combine
 import WalletCore
 import XCTest
 
-// swiftlint:disable line_length
-
 final class GetAccountKeysTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!

@@ -111,8 +111,6 @@ public struct CoinAdapterView: View {
     }
 }
 
-// swiftlint:disable line_length
-
 public final class CoinViewObserver: Session.Observer {
 
     let app: AppProtocol
@@ -292,21 +290,21 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ in
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ async in
         kycRouter.start(tier: .tier2, parentFlow: .coin)
     }
 
-    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ in
+    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ async in
         self.topViewController.topMostViewController?.dismiss(animated: true) {
             self.app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
         }
     }
 
-    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { @MainActor [application] event in
+    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { [application] event async throws in
         try application.open(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
     }
 
-    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { @MainActor [defaults] _ in
+    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { [defaults] _ in
         defaults.removeObject(forKey: blockchain.ux.asset.account.explainer(\.id))
     }
 

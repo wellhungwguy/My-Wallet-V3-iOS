@@ -10,7 +10,6 @@ import RxSwift
 import SwiftUI
 import UIKit
 
-// swiftlint:disable:next type_body_length
 final class EnterAmountViewController: BaseScreenViewController,
     EnterAmountViewControllable,
     EnterAmountPagePresentable

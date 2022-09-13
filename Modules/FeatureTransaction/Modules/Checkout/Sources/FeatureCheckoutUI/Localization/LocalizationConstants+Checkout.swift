@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-// swiftlint:disable line_length
-
 import Localization
 
 extension LocalizationConstants {

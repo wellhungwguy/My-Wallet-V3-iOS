@@ -33,10 +33,6 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             exact: "0.39.1"
         ),
-        .package(
-            url: "https://github.com/kean/Nuke.git",
-            from: "11.0.0"
-        ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
         .package(path: "../Network"),
@@ -79,7 +75,6 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureNFTDomain"),
                 .target(name: "FeatureNFTData"),
-                .product(name: "Nuke", package: "Nuke"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Localization", package: "Localization"),

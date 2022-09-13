@@ -6,8 +6,6 @@ import ToolKit
 import ToolKitMock
 import XCTest
 
-// swiftlint:disable type_body_length
-
 class CachedValueNewTests: XCTestCase {
 
     // MARK: - Private Properties

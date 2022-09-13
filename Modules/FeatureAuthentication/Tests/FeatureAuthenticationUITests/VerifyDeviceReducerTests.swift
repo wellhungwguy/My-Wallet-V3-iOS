@@ -137,7 +137,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
     // MARK: - Magic Link Decoding
 
     func test_base64_decode_simple() {
-        // swiftlint:disable line_length
         let base64 = "eyJ3YWxsZXQiOnsiZ3VpZCI6Ijc3OTg4Y2E4LWVlNjQtNDA0NC1hMjc5LWU4MTNlZTM4NjhmOSIsImVtYWlsIjoicGF2ZWxAYmxvY2tjaGFpbi5jb20ifX0"
         let walletInfo = WalletInfo(
             wallet: WalletInfo.Wallet(
@@ -149,7 +148,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_base64_decode_plus_symbol() {
-        // swiftlint:disable line_length
         let base64 = "eyJ3YWxsZXQiOnsiZ3VpZCI6Ijc3OTg4Y2E4LWVlNjQtNDA0NC1hMjc5LWU4MTNlZTM4NjhmOSIsImVtYWlsIjoicGF2ZWwrdGVzdEBibG9ja2NoYWluLmNvbSJ9fQ"
         let walletInfo = WalletInfo(
             wallet: WalletInfo.Wallet(
@@ -161,7 +159,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_base64_decode_cyrillic_symbol() {
-        // swiftlint:disable line_length
         let base64 = "eyJ3YWxsZXQiOnsiZ3VpZCI6Ijc3OTg4Y2E4LWVlNjQtNDA0NC1hMjc5LWU4MTNlZTM4NjhmOSIsImVtYWlsIjoi0L_QsNCy0LXQu0DQsdC70L7QutGH0LXQudC9LtGA0YQifX0"
         let walletInfo = WalletInfo(
             wallet: WalletInfo.Wallet(
@@ -173,7 +170,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_base64_decode_korean_symbol() {
-        // swiftlint:disable line_length
         let base64 = "eyJ3YWxsZXQiOnsiZ3VpZCI6Ijc3OTg4Y2E4LWVlNjQtNDA0NC1hMjc5LWU4MTNlZTM4NjhmOSIsImVtYWlsIjoi7YyM67KoQOu4lOuhneyytOyduC5rciJ9fQ"
         let walletInfo = WalletInfo(
             wallet: WalletInfo.Wallet(

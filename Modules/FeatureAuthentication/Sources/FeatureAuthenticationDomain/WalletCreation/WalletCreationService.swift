@@ -48,7 +48,6 @@ public struct WalletCreationService {
 
 extension WalletCreationService {
 
-    // swiftlint:disable line_length
     public static func live(
         walletCreator: WalletCreatorAPI,
         nabuRepository: NabuRepositoryAPI,

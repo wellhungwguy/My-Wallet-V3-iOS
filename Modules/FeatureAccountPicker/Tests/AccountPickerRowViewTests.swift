@@ -13,7 +13,6 @@ import SnapshotTesting
 import SwiftUI
 import XCTest
 
-// swiftlint:disable type_body_length
 class AccountPickerRowViewTests: XCTestCase {
 
     var isShowingMultiBadge = false

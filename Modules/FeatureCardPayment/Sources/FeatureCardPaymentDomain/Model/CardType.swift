@@ -17,10 +17,8 @@ public enum CardType: String {
 
     public static func determineType(from number: String) -> CardType {
         let type = CardType.all.first(where: { type in
-            for prefix in type.prefixes {
-                if number.hasPrefix(prefix) {
-                    return true
-                }
+            for prefix in type.prefixes where number.hasPrefix(prefix) {
+                return true
             }
             return false
         })

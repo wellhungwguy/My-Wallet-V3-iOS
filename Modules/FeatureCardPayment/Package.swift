@@ -64,11 +64,10 @@ let package = Package(
             name: "FeatureCardPaymentData",
             dependencies: [
                 .target(name: "FeatureCardPaymentDomain"),
+                .target(name: "FeatureCardPaymentDependencies"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Errors", package: "Errors"),
-                .product(name: "Frames", package: "frames-ios"),
-                .product(name: "Stripe", package: "stripe-ios"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "MoneyKit", package: "Money")
             ]
@@ -86,6 +85,14 @@ let package = Package(
                 .product(name: "Frames", package: "frames-ios"),
                 .product(name: "Stripe", package: "stripe-ios")
             ]
+        ),
+        .target(
+            name: "FeatureCardPaymentDependencies",
+            dependencies: [
+                .product(name: "Frames", package: "frames-ios"),
+                .product(name: "Stripe", package: "stripe-ios")
+            ],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
         )
     ]
 )

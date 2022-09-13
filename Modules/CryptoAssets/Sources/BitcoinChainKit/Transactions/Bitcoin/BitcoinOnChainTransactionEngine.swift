@@ -11,8 +11,6 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-// swiftlint:disable file_length
-
 // MARK: - Type
 
 private enum BitcoinEngineError: Error {
@@ -221,16 +219,23 @@ extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
 
     func doPrepareBitPayTransaction(
         pendingTransaction: PendingTransaction
-    ) -> Single<EngineTransaction> {
+    ) -> Single<BitPayClientEngineTransaction> {
         nativeDoPrepareTransactionPublisher(
             pendingTransaction: pendingTransaction
         )
+        .map { signedTransaction in
+            BitPayClientEngineTransaction(
+                encodedMsg: signedTransaction.encodedMsg,
+                msgSize: signedTransaction.msgSize,
+                txHash: signedTransaction.txHash
+            )
+        }
         .asSingle()
     }
 
     private func nativeDoPrepareTransactionPublisher(
         pendingTransaction: PendingTransaction
-    ) -> AnyPublisher<EngineTransaction, Error> {
+    ) -> AnyPublisher<NativeSignedBitcoinTransaction, Error> {
         let engineState = pendingTransaction.engineState.value
         let btcState = engineState[.btc] as? BTCOnChainTxEngineState<Token>
 
@@ -246,7 +251,6 @@ extension BitcoinOnChainTransactionEngine: BitPayClientEngine {
             candidate: transactionCandidate,
             signingService: nativeBitcoinEnvironment.signingService
         )
-        .map { $0 as EngineTransaction }
         .eraseToAnyPublisher()
     }
 
@@ -407,7 +411,6 @@ extension BitcoinOnChainTransactionEngine {
 
 extension BitcoinOnChainTransactionEngine {
 
-    // swiftlint:disable:next function_body_length
     private func nativeUpdate(
         amount: MoneyValue,
         pendingTransaction: PendingTransaction

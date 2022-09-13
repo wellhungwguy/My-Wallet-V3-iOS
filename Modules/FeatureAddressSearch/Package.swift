@@ -39,8 +39,7 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../Tool"),
-        .package(path: "../Money"),
-        .package(path: "../UIKitExtensions")
+        .package(path: "../Money")
     ],
     targets: [
         .target(
@@ -82,8 +81,7 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "MoneyKit", package: "Money"),
-                .product(name: "ErrorsUI", package: "Errors"),
-                .product(name: "UIKitExtensions", package: "UIKitExtensions")
+                .product(name: "ErrorsUI", package: "Errors")
             ]
         ),
         .target(

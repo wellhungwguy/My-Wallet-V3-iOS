@@ -77,7 +77,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
     override func apply(model: KYCPageModel) {
         guard case .phone(let user) = model else { return }
 
-        guard let mobile = user.mobile, phoneNumber.count == 0 else { return }
+        guard let mobile = user.mobile, phoneNumber.isEmpty else { return }
         phoneNumber = mobile.phone
     }
 

@@ -58,7 +58,6 @@ public enum DerivationType: String, Decodable, CaseIterable {
     }
 }
 
-#warning("Consolidate to use one DerivationType enum")
 public func derivationType(from type: WalletPayloadKit.DerivationType) -> BitcoinChainKit.DerivationType {
     switch type {
     case .legacy:

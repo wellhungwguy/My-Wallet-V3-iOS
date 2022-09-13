@@ -130,7 +130,6 @@ class PBKDF2Tests: XCTestCase {
                 ],
                 iterations: 2048,
                 keySizeBytes: 64,
-                // swiftlint:disable line_length
                 expectedHex: "da91295d22b9fa6afe23d9567db5607d96d7df2c57eb2c13454de81f4eba1cab65dc07cd98a50a8e1e4195ed2679a287ee54878477fff5e8c17e1323cd68f6a1"
             )
         ]

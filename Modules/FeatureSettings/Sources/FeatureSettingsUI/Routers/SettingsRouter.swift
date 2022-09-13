@@ -53,7 +53,6 @@ public protocol KYCRouterAPI {
     func presentLimitsOverview(from presenter: UIViewController)
 }
 
-// swiftlint:disable type_body_length
 final class SettingsRouter: SettingsRouterAPI {
     private let app: AppProtocol = resolve()
     typealias AnalyticsEvent = AnalyticsEvents.Settings

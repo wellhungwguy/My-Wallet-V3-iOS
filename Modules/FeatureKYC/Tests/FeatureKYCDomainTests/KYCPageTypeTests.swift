@@ -4,7 +4,6 @@ import FeatureKYCDomain
 @testable import PlatformKit
 import XCTest
 
-// swiftlint:disable:next type_body_length
 class KYCPageTypeTests: XCTestCase {
 
     /// A `KYC.UserTiers` where the user has been verified for tier1

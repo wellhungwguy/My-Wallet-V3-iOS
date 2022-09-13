@@ -12,7 +12,6 @@ import XCTest
 
 private typealias L10n = LocalizationConstants.NewKYC
 
-// swiftlint:disable:next type_body_length
 final class EmailVerificationReducerTests: XCTestCase {
 
     fileprivate struct RecordedInvocations {

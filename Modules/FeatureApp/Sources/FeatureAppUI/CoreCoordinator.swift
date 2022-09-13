@@ -23,7 +23,6 @@ import ToolKit
 import UIKit
 import WalletPayloadKit
 
-// swiftlint:disable file_length
 // swiftformat:disable indent
 
 public struct CoreAppState: Equatable {

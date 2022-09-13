@@ -17,6 +17,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
     private var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
+        super.setUp()
         mockFeatureFlagsService = MockFeatureFlagsService()
         mockFeatureFlagsService.enable(.cardSuccessRate)
             .subscribe()

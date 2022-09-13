@@ -252,7 +252,7 @@ let cardOrderingReducer: Reducer<
             switch addressResult {
             case .saved(let address):
                 state.address = address
-            case let .abandoned:
+            case .abandoned:
                 break
             }
             return .none

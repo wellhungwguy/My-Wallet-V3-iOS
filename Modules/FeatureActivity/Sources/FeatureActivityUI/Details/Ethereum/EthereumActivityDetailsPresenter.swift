@@ -167,6 +167,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .store(in: &cancellables)
     }
 
+    // swiftlint:disable function_body_length
     func bindAll(event: TransactionalActivityItemEvent) {
         itemRelay
             .compactMap { $0?.amounts.isGas }

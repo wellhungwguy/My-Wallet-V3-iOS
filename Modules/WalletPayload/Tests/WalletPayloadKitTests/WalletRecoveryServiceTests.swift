@@ -139,7 +139,6 @@ class WalletRecoveryServiceTests: XCTestCase {
         )
 
         let expectation = expectation(description: "wallet holding")
-        // swiftlint:disable:next line_length
         let validMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 
         let expectedContext = WalletFetchedContext(

@@ -8,6 +8,7 @@ import DelegatedSelfCustodyData
 @_exported import DIKit
 import ERC20DataKit
 import EthereumDataKit
+import Extensions
 import FeatureActivityData
 import FeatureAddressSearchData
 import FeatureAddressSearchDomain
@@ -35,7 +36,6 @@ import MetadataKit
 import PlatformDataKit
 import ToolKit
 import UIKit
-import UIKitExtensions
 import WalletPayloadDataKit
 import WalletPayloadKit
 
@@ -158,7 +158,6 @@ func defineDependencies() {
         DependencyContainer.delegatedSelfCustodyData
         DependencyContainer.blockchainActivity
         DependencyContainer.blockchainDelegatedSelfCustody
-        DependencyContainer.uiKitExtensions
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

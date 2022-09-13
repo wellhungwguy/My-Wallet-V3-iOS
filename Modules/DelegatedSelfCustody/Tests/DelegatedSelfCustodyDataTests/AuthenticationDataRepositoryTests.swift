@@ -19,6 +19,7 @@ final class AuthenticationDataRepositoryTests: XCTestCase {
     var subject: AuthenticationDataRepository!
 
     override func setUp() {
+        super.setUp()
         let guid = GuidServiceMock()
         guid.result = .success(TestData.guid)
         let sharedKey = SharedKeyServiceMock()

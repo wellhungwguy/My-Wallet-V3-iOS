@@ -296,7 +296,6 @@ extension Color {
     private typealias Native = NSColor
     #endif
 
-    // swiftlint:disable:next large_tuple
     private var hsba: (hue: Double, saturation: Double, brightness: Double, alpha: Double) {
         var (h, s, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         #if canImport(UIKit)
@@ -309,7 +308,6 @@ extension Color {
         return (h.d, s.d, b.d, a.d)
     }
 
-    // swiftlint:disable:next large_tuple
     private var rgba: (red: Double, green: Double, blue: Double, alpha: Double) {
         var (r, g, b, a): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         #if canImport(UIKit)

@@ -62,7 +62,7 @@ let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, actio
                         .interestTransfer,
                         target: interestAccount as BlockchainAccount
                     )
-                    .map { [account] accounts in
+                    .map { accounts in
                         accounts.contains(where: { $0.currencyType == interestAccount.currencyType })
                     }
                     .replaceError(with: false)

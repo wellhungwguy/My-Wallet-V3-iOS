@@ -298,7 +298,6 @@ extension BalanceRow where Graph == EmptyView {
     }
 }
 
-// swiftlint:disable closure_body_length
 struct BalanceRow_Previews: PreviewProvider {
 
     static var previews: some View {

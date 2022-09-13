@@ -215,7 +215,6 @@ public let welcomeReducer = Reducer.combine(
         WelcomeState,
         WelcomeAction,
         WelcomeEnvironment
-            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
         case .route(let route):

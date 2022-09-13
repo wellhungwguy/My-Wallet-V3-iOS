@@ -243,7 +243,6 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
         uiViewController.navigationBackButtonColor = navigationBackButtonColor
     }
 
-    // swiftlint:disable line_length
     final class NavigationConfiguratorViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
 
         var navigationBackButtonColor: Color {

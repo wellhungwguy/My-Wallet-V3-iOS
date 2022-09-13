@@ -75,7 +75,6 @@ class WalletTests: XCTestCase {
         }
     }
 
-    // swiftlint:disable line_length
     func test_can_get_seedHex_from_mnemonic() {
         // given a valid mnemonic
         let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"

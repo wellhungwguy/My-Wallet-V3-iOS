@@ -15,7 +15,10 @@ fi
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 echo "Running Carthage"
-sh ./scripts/carthage-bootstrap.sh
+for i in 1 2 3; do 
+  sh scripts/carthage-bootstrap.sh && break || sleep 2
+  echo "Retry running Carthage"
+done
 
 echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh

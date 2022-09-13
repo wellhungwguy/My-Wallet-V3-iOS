@@ -128,7 +128,8 @@ extension View {
 
     @ViewBuilder
     public func navigationRoute<Route: NavigationRoute, EnvironmentObject: ObservableObject>(
-        _ route: Route.Type = Route.self, in store: Store<Route.State, Route.Action>,
+        _ route: Route.Type = Route.self,
+        in store: Store<Route.State, Route.Action>,
         environmentObject: EnvironmentObject?
     ) -> some View {
         modifier(NavigationRouteViewModifier<Route, EnvironmentObject>(store, environmentObject))

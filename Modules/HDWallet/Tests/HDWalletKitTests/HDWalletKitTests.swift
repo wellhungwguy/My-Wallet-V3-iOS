@@ -8,6 +8,8 @@ class HDWalletKitTests: XCTestCase {
 
     func test_hd_wallet() throws {
 
+        XCTSkip()
+
         //        // Test Mnemonic
         //
         //        let allWords = [
@@ -32,7 +34,6 @@ class HDWalletKitTests: XCTestCase {
         //        let mnemonic = try Mnemonic(words: words, passphrase: passphrase)
         //
         //        let seed = mnemonic.seed!
-        //        // swiftlint:disable line_length
         //        let expectedSeed = "c55257c360c07c72029aebc1b53c05ed0362ada38ead3e3e9efa3708e53495531f09a6987599d18264c1e1c92f2cf141630c7a3c4ab7c81b2f001698e7463b04"
         //
         //        XCTAssertEqual(expectedSeed, seed.description)
@@ -42,9 +43,7 @@ class HDWalletKitTests: XCTestCase {
         //        let privateKey = try HDPrivateKey(seed: seed, network: .main(Bitcoin.self))
         //
         //        XCTAssertEqual(privateKey.publicKey, HDPublicKey("02f632717d78bf73e74aa8461e2e782532abae4eed5110241025afb59ebfd3d2fd")!)
-        //        // swiftlint:disable line_length
         //        XCTAssertEqual(privateKey.xpub, "xpub661MyMwAqRbcGB88KaFbLGiYAat55APKhtWg4uYMkXAmfuSTbq2QYsn9sKJCj1YqZPafsboef4h4YbXXhNhPwMbkHTpkf3zLhx7HvFw1NDy")
-        //        // swiftlint:disable line_length
         //        XCTAssertEqual(privateKey.xpriv, "xprv9s21ZrQH143K3h3fDYiay8mocZ3afhfULfb5GX8kCBdno77K4HiA15Tg23wpbeF1pLfs1c5SPmYHrEpTuuRhxMwvKDwqdKiGJS9XFKzUsAF")
         //
         //        let keychain = HDKeychain(privateKey: privateKey)
@@ -58,9 +57,7 @@ class HDWalletKitTests: XCTestCase {
         //        let childKey: HDPrivateKey = try wallet.privateKey(at: childKeyPath)
         //
         //        XCTAssertEqual(childKey.publicKey, HDPublicKey("0331e9b0c6b7f3798bb1b5a6b90c5e2e27c2906cbfd063a3c97b6031ee062ef745")!)
-        //        // swiftlint:disable line_length
         //        XCTAssertEqual(childKey.xpub, "xpub6D3Cj1d8RgE6BRaEyYiRsJ8T17QA6Vq8F4P8f13BvDQTfgiBVT5iSdeSJ2QLSRijq2PMBXRSgduEUq11mYggQz6vUEe7Ga9e86urZjkrmeR")
-        //        // swiftlint:disable line_length
         //        XCTAssertEqual(childKey.xpriv, "xprv9z3rKW6EbJfnxwVmsXBRWABiT5Zfh37GsqTXrcdaMssUntP2wumTtqKxSkZsytaxQZknwAhb3U8UR5cc3cxoMxdo4871tPPCTmeqckJyrWL")
     }
 }

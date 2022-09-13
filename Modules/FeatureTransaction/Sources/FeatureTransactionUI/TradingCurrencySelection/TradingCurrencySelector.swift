@@ -50,49 +50,47 @@ struct TradingCurrencySelector: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            ModalContainer(onClose: { viewStore.send(.close) }) {
-                VStack(spacing: Spacing.padding3) {
-                    Icon.globe
-                        .accentColor(.semantic.primary)
-                        .frame(width: 32, height: 32)
-
-                    VStack(spacing: Spacing.baseline) {
-                        Text(LocalizedStrings.screenTitle)
-                            .typography(.title2)
-
-                        Text(
-                            LocalizedStrings.screenSubtitle(
-                                displayCurrency: viewStore.displayCurrency.name
-                            )
-                        )
-                        .typography(.paragraph1)
-                    }
-                    .padding(.horizontal, Spacing.padding3)
-
-                    ScrollView {
-                        LazyVStack {
-                            ForEach(viewStore.currencies, id: \.code) { currency in
-                                PrimaryDivider()
-                                PrimaryRow(
-                                    title: currency.name,
-                                    subtitle: currency.displayCode,
-                                    action: {
-                                        viewStore.send(.didSelect(currency))
-                                    }
+            ModalContainer(
+                onClose: { viewStore.send(.close) },
+                content: {
+                    VStack(spacing: Spacing.padding3) {
+                        Icon.globe
+                            .accentColor(.semantic.primary)
+                            .frame(width: 32, height: 32)
+                        VStack(spacing: Spacing.baseline) {
+                            Text(LocalizedStrings.screenTitle)
+                                .typography(.title2)
+                            Text(
+                                LocalizedStrings.screenSubtitle(
+                                    displayCurrency: viewStore.displayCurrency.name
                                 )
+                            )
+                            .typography(.paragraph1)
+                        }
+                        .padding(.horizontal, Spacing.padding3)
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(viewStore.currencies, id: \.code) { currency in
+                                    PrimaryDivider()
+                                    PrimaryRow(
+                                        title: currency.name,
+                                        subtitle: currency.displayCode,
+                                        action: {
+                                            viewStore.send(.didSelect(currency))
+                                        }
+                                    )
+                                }
                             }
                         }
+                        Text(LocalizedStrings.disclaimer)
+                            .typography(.micro)
+                            .foregroundColor(.semantic.body)
+                            .padding(.horizontal, Spacing.padding3)
+                        Spacer()
                     }
-
-                    Text(LocalizedStrings.disclaimer)
-                        .typography(.micro)
-                        .foregroundColor(.semantic.body)
-                        .padding(.horizontal, Spacing.padding3)
-
-                    Spacer()
+                    .multilineTextAlignment(.center)
                 }
-                .multilineTextAlignment(.center)
-            }
+            )
         }
     }
 }

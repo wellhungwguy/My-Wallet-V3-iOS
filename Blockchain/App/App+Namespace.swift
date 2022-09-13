@@ -17,8 +17,6 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
-// swiftlint:disable line_length
-
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
