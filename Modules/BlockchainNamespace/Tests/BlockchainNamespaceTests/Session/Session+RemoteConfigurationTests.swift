@@ -312,7 +312,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         XCTAssertEqual(announcement.message, "Message 2")
     }
 
-    func x_test_concurrency() async throws {
+    func test_concurrency() async throws {
         let limit = 100
 
         DispatchQueue.concurrentPerform(iterations: limit) { i in

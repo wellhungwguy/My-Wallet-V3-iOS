@@ -24,14 +24,9 @@ extension Session {
 
         private var _fetched: PassthroughSubject<[String: Any?], Never> = .init()
         private var _decoded: CurrentValueSubject<[String: Any?], Never> = .init([:])
-        private var _overrideSubject: PassthroughSubject<[String: Any?], Never> = .init()
 
-        private var _override: [String: Any?] = [:] {
-            willSet { _overrideSubject.send(newValue) }
-        }
-        private var override: [String: Any?] {
-           lock.withLock { _override }
-        }
+        private var _overrideSubject: PassthroughSubject<[String: Any?], Never> = .init()
+        private var _override: [String: Any?] = [:]
 
         private var fetch: ((AppProtocol, Bool) -> Void)?
         private var bag: Set<AnyCancellable> = []
@@ -55,13 +50,16 @@ extension Session {
             self.session = session
             let backoff = ExponentialBackoff()
             fetch = { [unowned self] app, isStale in
+
                 let cached = preferences.object(
                     forKey: blockchain.session.configuration(\.id)
                 ) as? [String: Any] ?? [:]
 
+                _override = cached.mapKeys { important + $0 }
+
                 var configuration: [String: Any?] = defaultValue.dictionary.mapKeys { key in
                     key.idToFirebaseConfigurationKeyDefault()
-                } + cached.mapKeys { important + $0 }
+                }
 
                 let expiration: TimeInterval
                 if isStale {
@@ -108,7 +106,8 @@ extension Session {
 
             _fetched
                 .flatMap(experiments.decode)
-                .sink { [unowned self] output in
+                .combineLatest(_overrideSubject.prepend(lock.withLock { _override }))
+                .sink { [unowned self] output, override in
                     if !isSynchronized { _isSynchronized.send(true) }
                     _decoded.send(output + override)
                 }
@@ -149,19 +148,22 @@ extension Session {
         }
 
         public func override(_ event: Tag.Event, with value: Any) {
-            lock.withLock {
-                var o = _override
-                o[key(event).idToFirebaseConfigurationKeyImportant()] = value
-                _override = o
-            }
+            lock.withLock { _override[key(event).idToFirebaseConfigurationKeyImportant()] = value }
+            notify()
         }
 
         public func clear() {
             lock.withLock { _override.removeAll() }
+            notify()
         }
 
         public func clear(_ event: Tag.Event) {
             lock.withLock { _override.removeValue(forKey: key(event).idToFirebaseConfigurationKeyImportant()) }
+            notify()
+        }
+
+        private func notify() {
+            _overrideSubject.send(lock.withLock { _override })
         }
 
         public func get(_ event: Tag.Event) throws -> Any? {
@@ -190,7 +192,7 @@ extension Session {
         public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
             let publisher = _decoded.map { [unowned self, key] configuration -> FetchResult in
                 let key = key(event)
-                switch (configuration + override)[firstOf: key.firebaseConfigurationKeys] {
+                switch (configuration + lock.withLock { _override })[firstOf: key.firebaseConfigurationKeys] {
                 case let value?:
                     return .value(value as Any, key.metadata(.remoteConfiguration))
                 case nil:
@@ -494,7 +496,8 @@ extension Session.RemoteConfiguration {
                                     guard let (id, nabu) = experiment.firstAndOnly else {
                                         throw "Expected 1 experiment, got \(experiment.keys.count)"
                                     }
-                                    return try (k, nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'")
+                                    let any = try nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'"
+                                    return (k, any.thing)
                                 } catch {
                                     if let defaultValue = v[Compute.CodingKey.default] {
                                         return (k, defaultValue)
