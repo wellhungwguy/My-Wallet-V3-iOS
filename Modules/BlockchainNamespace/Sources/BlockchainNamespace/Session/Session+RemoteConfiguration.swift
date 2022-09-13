@@ -477,7 +477,8 @@ extension Session.RemoteConfiguration {
                                     guard let (id, nabu) = experiment.firstAndOnly else {
                                         throw "Expected 1 experiment, got \(experiment.keys.count)"
                                     }
-                                    return try (k, nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'")
+                                    let any = try nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'"
+                                    return (k, any.thing)
                                 } catch {
                                     if let defaultValue = v[Compute.CodingKey.default] {
                                         return (k, defaultValue)
