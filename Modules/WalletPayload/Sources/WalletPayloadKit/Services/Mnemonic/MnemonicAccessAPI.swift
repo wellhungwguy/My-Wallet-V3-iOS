@@ -41,6 +41,7 @@ final class MnemonicAccessService: NativeMnemonicAccessAPI {
 
     var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         walletHolder.walletStatePublisher
+            .first()
             .flatMap { state -> AnyPublisher<NativeWallet, MnemonicAccessError> in
                 guard let wallet = state?.wallet else {
                     return .failure(.generic)
