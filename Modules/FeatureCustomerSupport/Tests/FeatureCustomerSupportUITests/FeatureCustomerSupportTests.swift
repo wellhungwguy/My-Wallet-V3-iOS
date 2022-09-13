@@ -14,6 +14,7 @@ final class FeatureCustomerSupportTests: XCTestCase {
         app = App.test
         sut = CustomerSupportObserver(
             app: app,
+            scheduler: .immediate,
             apiKey: "api-key",
             appId: "app-id",
             open: { self.url = $0 },

@@ -193,8 +193,7 @@ let package = Package(
                 .product(name: "AnalyticsKitMock", package: "Analytics"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 .product(name: "TestKit", package: "Test")
-            ],
-            exclude: ["__Snapshots__"]
+            ]
         )
     ]
 )
