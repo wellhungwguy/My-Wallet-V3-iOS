@@ -361,7 +361,8 @@ extension App {
             remoteConfiguration: Session.RemoteConfiguration(
                 remote: Mock.RemoteConfiguration(),
                 session: urlSession,
-                preferences: preferences
+                preferences: preferences,
+                scheduler: DispatchQueue.test.eraseToAnyScheduler()
             )
         )
     }

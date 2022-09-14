@@ -58,10 +58,11 @@ final class PaymentMethodLinkingSelector: PaymentMethodLinkingSelectorAPI {
         filter: @escaping (PaymentMethodType) -> Bool,
         completion: @escaping (PaymentMethodLinkingSelectionResult) -> Void
     ) {
-        precondition(
+        assert(
             addMethodsRouter == nil,
             "You're trying to present \(type(of: self)) when an instance is already in use."
         )
+        guard addMethodsRouter == nil else { return }
         let builder = AddNewPaymentMethodBuilder(paymentMethodService: selectPaymentMethodService)
         listener = AccountLinkerListener()
         listener.publisher

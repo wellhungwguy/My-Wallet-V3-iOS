@@ -10,9 +10,13 @@ final class SessionRemoteConfigurationTests: XCTestCase {
     var preferences: Mock.UserDefaults!
     var app: AppProtocol!
     var session: ImmediateURLSession!
+    var scheduler: TestSchedulerOf<DispatchQueue>!
 
     override func setUp() {
         super.setUp()
+
+        scheduler = DispatchQueue.test
+
         preferences = Mock.UserDefaults()
         preferences.set(
             [
@@ -78,7 +82,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                     ]
                 ),
                 session: session,
-                preferences: preferences
+                preferences: preferences,
+                scheduler: scheduler.eraseToAnyScheduler()
             )
         )
     }
@@ -180,6 +185,7 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                 remote: Mock.RemoteConfiguration(),
                 session: URLSession.test,
                 preferences: Mock.Preferences(),
+                scheduler: scheduler.eraseToAnyScheduler(),
                 default: [
                     blockchain.app.configuration.apple.pay.is.enabled: true
                 ]
@@ -247,6 +253,8 @@ final class SessionRemoteConfigurationTests: XCTestCase {
 
             XCTAssertTrue(isEnabled)
 
+            await scheduler.advance(by: .seconds(1))
+
             let preference = preferences.dictionary(
                 forKey: blockchain.session.configuration(\.id)
             )?[blockchain.app.configuration.manual.login.is.enabled(\.id)]
@@ -302,5 +310,24 @@ final class SessionRemoteConfigurationTests: XCTestCase {
         .await()
         .get()
         XCTAssertEqual(announcement.message, "Message 2")
+    }
+
+    func test_concurrency() async throws {
+        let limit = 100
+
+        DispatchQueue.concurrentPerform(iterations: limit) { i in
+            app.remoteConfiguration.override(blockchain.db.collection[String(i)], with: i)
+        }
+
+        let results = try await (0..<limit).map { i in
+            app.remoteConfiguration.publisher(for: blockchain.db.collection[String(i)]).decode(Int.self).compactMap(\.value)
+        }
+        .combineLatest()
+        .await()
+
+        for i in 0..<limit {
+            try XCTAssertEqual(app.remoteConfiguration.get(blockchain.db.collection[String(i)]), i)
+        }
+        XCTAssertNotNil(results)
     }
 }
