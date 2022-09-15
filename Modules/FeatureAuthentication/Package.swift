@@ -48,7 +48,6 @@ let package = Package(
         .package(path: "../Analytics"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
@@ -62,7 +61,6 @@ let package = Package(
         .target(
             name: "FeatureAuthenticationDomain",
             dependencies: [
-                .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "Errors", package: "Errors"),

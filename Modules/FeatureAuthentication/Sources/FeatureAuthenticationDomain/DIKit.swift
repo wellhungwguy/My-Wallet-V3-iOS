@@ -22,7 +22,7 @@ extension DependencyContainer {
 
         single { PasswordValidator() as PasswordValidatorAPI }
 
-        single { SeedPhraseValidator() as SeedPhraseValidatorAPI }
+        single { SeedPhraseValidator(words: Set(WalletPayloadKit.WordList.defaultWords)) as SeedPhraseValidatorAPI }
 
         single { SharedKeyParsingService() }
 

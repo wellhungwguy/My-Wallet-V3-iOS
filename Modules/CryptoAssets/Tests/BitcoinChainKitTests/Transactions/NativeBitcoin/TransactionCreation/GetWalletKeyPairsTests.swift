@@ -1,35 +1,64 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinChainKit
-import Combine
-import HDWalletKit
 import MoneyKit
+import WalletCore
 import XCTest
-class GetWalletKeyPairsTests: XCTestCase {
+
+final class GetWalletKeyPairsTests: XCTestCase {
+
+    func test_getWalletKeyPairs() throws {
+        let account = BitcoinChainAccount(index: 0, coin: .bitcoin)
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+        let xpub44 = "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj"
+        let xpub84 = "xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V"
+        let accountKeyContext = getAccountKeyContext(
+            for: account,
+            mnemonic: Mnemonic(words: mnemonic)
+        )
+        let result = getWalletKeyPairs(
+            unspentOutputs: [
+                UnspentOutput.createP2PKH(m: xpub44, path: "M/0/0"),
+                UnspentOutput.createP2WPKH(m: xpub84, path: "M/1/0")
+            ],
+            accountKeyContext: accountKeyContext
+        )
+
+        let expected: [WalletKeyPair] = [
+            WalletKeyPair(
+                xpriv: "xprv9xpXFhFpqdQK3TmytPBqXtGSwS3DLjojFhTGht8gwAAii8py5X6pxeBnQ6ehJiyJ6nDjWGJfZ95WxByFXVkDxHXrqu53WCRGypk2ttuqncb",
+                privateKeyData: Data(hex: "e284129cc0922579a535bbf4d1a3b25773090d28c909bc0fed73b5e0222cc372"),
+                xpub: XPub(
+                    address: xpub44,
+                    derivationType: .legacy
+                )
+            ),
+            WalletKeyPair(
+                xpriv: "xprv9ybY78BftS5UGANki6oSifuQEjkpyAC8ZmBvBNTshQnCBcxnefjHS7buPMkkqhcRzmoGZ5bokx7GuyDAiktd5HemohAU4wV1ZPMDRmLpBMm",
+                privateKeyData: Data(hex: "3277578a56b721e4c9f071f1e24aa0f94c4ff72e7967fea03b134f605f07c8fd"),
+                xpub: XPub(
+                    address: xpub84,
+                    derivationType: .bech32
+                )
+            )
+        ]
+
+        XCTAssertEqual(result, expected)
+    }
 
     func test_unspentOutput_derivation_path() throws {
 
-        let unspentOutput = UnspentOutput(
-            confirmations: 895,
-            hash: "76bfad4cc0d1cbe454c1be0af7f8be2c8b1ca74f23d2a35306997e763b2f2273",
-            hashBigEndian: "73222f3b767e990653a3d2234fa71c8b2cbef8f70abec154e4cbd1c04cadbf76",
-            outputIndex: 0,
-            script: "76a9141aedb27afebe4e4a2a943138ed436c35fe03f2ff88ac",
-            transactionIndex: 4178099786226233,
-            value: CryptoValue.create(minor: 5461495, currency: .bitcoinCash),
-            xpub: UnspentOutput.XPub(
-                m: "xpub6CLiRbHDgYwfFn19HnG3Jd6gr2eVWuiT8boBDnznqdVZtHNqG9nHFjQK4tgvRedu4isk8mYy2qNiUUarm5ifwBSHy7iFNsNwokpMZtdwPqG",
-                path: "M/0/0"
-            )
-        )
-
-        let expectedPathComponents: [HDWalletKit.DerivationComponent] = [
-            .normal(0),
-            .normal(0)
+        let testCases: [(String, [WalletCore.DerivationPath.Index])] = [
+            ("M/0/0", [.init(0, hardened: false), .init(0, hardened: false)]),
+            ("M/0/8", [.init(0, hardened: false), .init(8, hardened: false)]),
+            ("0/0", [.init(0, hardened: false), .init(0, hardened: false)]),
+            ("0/8", [.init(0, hardened: false), .init(8, hardened: false)])
         ]
 
-        let keyPath = try derivationPath(for: unspentOutput).get()
-
-        XCTAssertEqual(keyPath.components, expectedPathComponents)
+        for (path, expected) in testCases {
+            let utxo = UnspentOutput.createP2WPKH(path: path)
+            let result = try derivationPathComponents(for: utxo).get()
+            XCTAssertEqual(result, expected)
+        }
     }
 }

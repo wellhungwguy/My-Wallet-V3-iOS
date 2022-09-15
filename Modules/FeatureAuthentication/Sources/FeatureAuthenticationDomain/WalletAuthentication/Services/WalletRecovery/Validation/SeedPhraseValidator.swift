@@ -2,7 +2,6 @@
 
 import Combine
 import Foundation
-import HDWalletKit
 
 public protocol SeedPhraseValidatorAPI {
     func validate(phrase: String) -> AnyPublisher<MnemonicValidationScore, Never>
@@ -22,7 +21,7 @@ public final class SeedPhraseValidator: SeedPhraseValidatorAPI {
 
     // MARK: - Setup
 
-    public init(words: Set<String> = Set(WordList.default.words)) {
+    public init(words: Set<String>) {
         self.words = words
     }
 

@@ -5,7 +5,6 @@ import ComposableArchitecture
 @testable import FeatureAuthenticationDomain
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
-import HDWalletKit
 import ToolKit
 @testable import WalletPayloadKit
 import XCTest
@@ -35,7 +34,7 @@ final class SeedPhraseReducerTests: XCTestCase {
             reducer: seedPhraseReducer,
             environment: SeedPhraseEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
-                validator: SeedPhraseValidator(words: Set(WordList.default.words)),
+                validator: SeedPhraseValidator(words: Set(WordList.defaultWords)),
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),
@@ -130,7 +129,7 @@ final class SeedPhraseReducerTests: XCTestCase {
             reducer: seedPhraseReducer,
             environment: SeedPhraseEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
-                validator: SeedPhraseValidator(words: Set(WordList.default.words)),
+                validator: SeedPhraseValidator(words: Set(WordList.defaultWords)),
                 passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder(),

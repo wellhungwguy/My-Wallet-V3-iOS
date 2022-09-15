@@ -39,7 +39,6 @@ let package = Package(
         .package(path: "../Errors"),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../ComposableArchitectureExtensions"),
-        .package(path: "../CryptoAssets"),
         .package(path: "../Tool")
     ],
     targets: [

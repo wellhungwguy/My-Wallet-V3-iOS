@@ -260,8 +260,6 @@ packages:
     path: Modules/FeatureWalletConnect
   FraudIntelligence:
     path: Modules/FraudIntelligence
-  HDWallet:
-    path: Modules/HDWallet
   Keychain:
     path: Modules/Keychain
   Localization:
@@ -435,8 +433,6 @@ targets:
         product: ERC20DataKit
       - package: CryptoAssets
         product: StellarKit
-      - package: HDWallet
-        product: HDWalletKit
       - package: Keychain
         product: KeychainKit
       - package: Localization

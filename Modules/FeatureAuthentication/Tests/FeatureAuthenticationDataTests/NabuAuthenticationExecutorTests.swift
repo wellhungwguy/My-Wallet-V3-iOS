@@ -297,7 +297,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         )
     }
 
-    // swiftlint:disable function_body_length
     func testExpiredTokenAndSecondSuccessfulAuthentication() throws {
 
         // Arrange
@@ -407,16 +406,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
                         )
                     )
                 } else {
-                    let httpResponse = HTTPURLResponse(
-                        url: URL(string: "https://www.blockchain.com")!,
-                        statusCode: 401,
-                        httpVersion: nil,
-                        headerFields: nil
-                    )!
-                    let serverErrorResponse = ServerErrorResponse(
-                        response: httpResponse,
-                        payload: nil
-                    )
                     return AnyPublisher.failure(
                         .unknown
                     )

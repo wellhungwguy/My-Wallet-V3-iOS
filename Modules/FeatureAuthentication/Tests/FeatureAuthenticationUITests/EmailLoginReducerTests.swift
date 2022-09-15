@@ -73,25 +73,23 @@ final class EmailLoginReducerTests: XCTestCase {
 
     func test_send_device_verification_email_success() {
         let validEmail = "valid@example.com"
-        testStore.assert(
-            .send(.didChangeEmailAddress(validEmail)) { state in
-                state.emailAddress = validEmail
-                state.isEmailValid = true
-            },
-            .send(.sendDeviceVerificationEmail) { state in
-                state.isLoading = true
-                state.verifyDeviceState?.sendEmailButtonIsLoading = true
-            },
-            .do { self.mockMainQueue.advance() },
-            .receive(.didSendDeviceVerificationEmail(.success(.noValue))) { state in
-                state.isLoading = false
-                state.verifyDeviceState?.sendEmailButtonIsLoading = false
-            },
-            .receive(.navigate(to: .verifyDevice)) { state in
-                state.verifyDeviceState = .init(emailAddress: validEmail)
-                state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
-            }
-        )
+        testStore.send(.didChangeEmailAddress(validEmail)) { state in
+            state.emailAddress = validEmail
+            state.isEmailValid = true
+        }
+        testStore.send(.sendDeviceVerificationEmail) { state in
+            state.isLoading = true
+            state.verifyDeviceState?.sendEmailButtonIsLoading = true
+        }
+        mockMainQueue.advance()
+        testStore.receive(.didSendDeviceVerificationEmail(.success(.noValue))) { state in
+            state.isLoading = false
+            state.verifyDeviceState?.sendEmailButtonIsLoading = false
+        }
+        testStore.receive(.navigate(to: .verifyDevice)) { state in
+            state.verifyDeviceState = .init(emailAddress: validEmail)
+            state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
+        }
     }
 
     func test_send_device_verification_email_failure_network_error() {

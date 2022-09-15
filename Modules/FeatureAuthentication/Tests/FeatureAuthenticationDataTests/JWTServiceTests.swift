@@ -47,12 +47,6 @@ final class JWTServiceTests: XCTestCase {
 
         // Arrange
         jwtRepository.expectedResult = .success("jwt-token")
-
-        let offlineToken = NabuOfflineToken(
-            userId: "user-id",
-            token: "offline-token"
-        )
-
         let guidSetPublisher = credentialsRepo.set(guid: "guid")
         let sharedKeySetPublisher = credentialsRepo.set(sharedKey: "shared-key")
         XCTAssertPublisherCompletion([guidSetPublisher, sharedKeySetPublisher])
@@ -65,13 +59,6 @@ final class JWTServiceTests: XCTestCase {
 
         // Arrange
         jwtRepository.expectedResult = .success("jwt-token")
-
-        let offlineToken = NabuOfflineToken(
-            userId: "user-id",
-            token: "offline-token",
-            created: nil
-        )
-
         let sharedKeySetPublisher = credentialsRepo.set(sharedKey: "shared-key")
         XCTAssertPublisherCompletion(sharedKeySetPublisher)
 
