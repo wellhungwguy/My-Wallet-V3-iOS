@@ -213,11 +213,9 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var buy = app.on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { @MainActor [unowned self] event in
-        do {
-            try await transactionsRouter.presentTransactionFlow(
-                to: .buy(cryptoAccount(for: .buy, from: event))
-            )
-        }
+        try await transactionsRouter.presentTransactionFlow(
+            to: .buy(cryptoAccount(for: .buy, from: event))
+        )
     }
 
     lazy var sell = app.on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { @MainActor [unowned self] event in
@@ -377,12 +375,6 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            receiveAddressPublisher: {
-                account
-                    .receiveAddress
-                    .map(\.address)
-                    .eraseToAnyPublisher()
-            },
             actionsPublisher: {
                 account.actions
                     .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }
@@ -463,7 +455,7 @@ extension FeatureCoinDomain.KYCStatus {
 extension TransactionsRouterAPI {
 
     @discardableResult
-    func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
+    @MainActor func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
         try? await presentTransactionFlow(to: action).stream().next()
     }
 }
