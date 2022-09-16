@@ -465,7 +465,7 @@ extension FeatureCoinDomain.KYCStatus {
 extension TransactionsRouterAPI {
 
     @discardableResult
-    func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
+    @MainActor func presentTransactionFlow(to action: TransactionFlowAction) async -> TransactionFlowResult? {
         try? await presentTransactionFlow(to: action).stream().next()
     }
 }
