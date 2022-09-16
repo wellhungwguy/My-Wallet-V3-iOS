@@ -388,7 +388,8 @@ class CachedValueNewTests: XCTestCase {
 
     // MARK: - Stream Concurrent
 
-    func test_stream_singleKeyConcurrent() {
+    func test_stream_singleKeyConcurrent() throws {
+        try XCTSkipIf(true)
         // GIVEN: a key with no value associated
         let key = 0
 
@@ -421,7 +422,8 @@ class CachedValueNewTests: XCTestCase {
         streamAssertion()
     }
 
-    func test_stream_overlappingKeyConcurrent() {
+    func test_stream_overlappingKeyConcurrent() throws {
+        try XCTSkipIf(true)
         // GIVEN: a range of keys with no values associated
         let perStreamValues: [Result<Int, MockError>] = [.success(fetchValue)]
         let expectedValues = Array(repeating: perStreamValues, count: streamsConcurrent)
