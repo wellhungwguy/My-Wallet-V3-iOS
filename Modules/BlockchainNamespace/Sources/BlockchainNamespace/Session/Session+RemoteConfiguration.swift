@@ -18,8 +18,7 @@ extension Session {
         public var allKeys: [String] { Array(fetched.keys) }
 
         private var fetched: [String: Any?] {
-            get { lock.withLock { _decoded.value + _override } }
-            set { lock.withLock { _decoded.send(newValue + _override) } }
+            lock.withLock { _decoded.value + _override }
         }
 
         private var _fetched: PassthroughSubject<[String: Any?], Never> = .init()
@@ -209,7 +208,8 @@ extension Session {
         }
 
         public func override(_ key: String, with value: Any) {
-            fetched[key] = value
+            lock.withLock { _override[key] = value }
+            notify()
         }
 
         public func get(_ key: String) throws -> Any? {
