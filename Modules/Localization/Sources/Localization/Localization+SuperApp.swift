@@ -36,8 +36,8 @@ extension LocalizationConstants.AppMode {
     )
 
     public static let tradingAccount = NSLocalizedString(
-        "Trading Account",
-        comment: "Trading Account"
+        "Accounts",
+        comment: "Accounts"
     )
 }
 
