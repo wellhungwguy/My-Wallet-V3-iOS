@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import Errors
 import PlatformKit
-import RxSwift
 
 final class PersonalDetailsService {
 
@@ -12,10 +13,7 @@ final class PersonalDetailsService {
         self.client = client
     }
 
-    func update(firstName: String?, lastName: String?, birthday: Date?) -> Completable {
+    func update(firstName: String?, lastName: String?, birthday: Date?) -> AnyPublisher<Void, NabuNetworkError> {
         client.updatePersonalDetails(firstName: firstName, lastName: lastName, birthday: birthday)
-            .asObservable()
-            .ignoreElements()
-            .asCompletable()
     }
 }

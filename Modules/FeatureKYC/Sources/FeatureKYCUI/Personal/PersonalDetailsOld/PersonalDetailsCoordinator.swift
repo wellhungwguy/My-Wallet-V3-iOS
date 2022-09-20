@@ -41,15 +41,15 @@ extension PersonalDetailsCoordinator: PersonalDetailsDelegate {
                 lastName: input.lastName,
                 birthday: input.birthday
             )
+            .asObservable()
             .observe(on: MainScheduler.instance)
             .do(onSubscribe: onSubscribe)
             .subscribe(
-                onCompleted: {
-                    onDispose()
-                    completion()
-                },
                 onError: { _ in
                     onDispose()
+                }, onCompleted: {
+                    onDispose()
+                    completion()
                 }
             )
             .disposed(by: disposeBag)

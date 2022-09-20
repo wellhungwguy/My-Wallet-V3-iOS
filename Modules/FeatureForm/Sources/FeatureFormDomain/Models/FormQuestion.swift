@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 public struct Form: Codable, Equatable {
 
     public struct Header: Codable, Equatable {
@@ -21,7 +23,12 @@ public struct Form: Codable, Equatable {
     public var isEmpty: Bool { nodes.isEmpty }
     public var isNotEmpty: Bool { !isEmpty }
 
-    public init(header: Form.Header? = nil, context: String? = nil, nodes: [FormQuestion], blocking: Bool = true) {
+    public init(
+        header: Form.Header? = nil,
+        context: String? = nil,
+        nodes: [FormQuestion],
+        blocking: Bool = true
+    ) {
         self.header = header
         self.context = context
         self.nodes = nodes
@@ -78,17 +85,51 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
             FormAnswer(
                 id: id,
                 type: type.answer,
-                text: text,
+                text: nil,
                 children: children,
                 input: input,
                 hint: hint,
                 regex: regex,
-                instructions: instructions,
-                checked: nil
+                checked: nil,
+                instructions: instructions
             )
         }
         set {
             input = newValue.input
         }
+    }
+}
+
+extension Array where Element == FormQuestion {
+
+    enum FormError: Error {
+        case answerNotFound(FormAnswer.ID)
+        case unsupportedType(String)
+        case unableToDecodeValue
+    }
+
+    public func answer<T>(id: FormAnswer.ID) throws -> T? {
+        let candidates = compactMap { question -> FormAnswer? in
+            question.children.first(where: { $0.id == id })
+        }
+        guard candidates.count == 1, let answer = candidates.first else {
+            throw FormError.answerNotFound(id)
+        }
+
+        let value: T?
+        switch T.self {
+        case is String.Type:
+            value = answer.input as? T
+        case is Date.Type:
+            guard let input = answer.input, let timeInterval = TimeInterval(input) else {
+                return nil
+            }
+            value = Date(timeIntervalSince1970: timeInterval) as? T
+        case is Bool.Type:
+            value = answer.checked as? T
+        default:
+            throw FormError.unsupportedType(String(describing: T.self))
+        }
+        return value
     }
 }

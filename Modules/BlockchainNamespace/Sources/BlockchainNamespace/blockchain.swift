@@ -107,6 +107,7 @@ public extension I_blockchain_app_configuration {
 	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
+	var `profile`: L_blockchain_app_configuration_profile { .init("\(__).profile") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `referral`: L_blockchain_app_configuration_referral { .init("\(__).referral") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
@@ -644,6 +645,31 @@ public final class L_blockchain_app_configuration_prefill_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_prefill_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_profile: L, I_blockchain_app_configuration_profile {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile: I {}
+public extension I_blockchain_app_configuration_profile {
+	var `kyc`: L_blockchain_app_configuration_profile_kyc { .init("\(__).kyc") }
+}
+public final class L_blockchain_app_configuration_profile_kyc: L, I_blockchain_app_configuration_profile_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc: I {}
+public extension I_blockchain_app_configuration_profile_kyc {
+	var `is`: L_blockchain_app_configuration_profile_kyc_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_profile_kyc_is: L, I_blockchain_app_configuration_profile_kyc_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc_is: I {}
+public extension I_blockchain_app_configuration_profile_kyc_is {
+	var `enabled`: L_blockchain_app_configuration_profile_kyc_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_profile_kyc_is_enabled: L, I_blockchain_app_configuration_profile_kyc_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_pubkey: L, I_blockchain_app_configuration_pubkey {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey", comment: "") }
 }

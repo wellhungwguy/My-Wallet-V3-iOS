@@ -33,6 +33,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.polygon.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.all.tokens.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.profile.kyc.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
