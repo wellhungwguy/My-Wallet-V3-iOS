@@ -8,6 +8,7 @@ import Errors
 import FeatureAccountPickerUI
 import FeatureWithdrawalLocksUI
 import Foundation
+import Localization
 import PlatformUIKit
 import RxCocoa
 import RxSwift

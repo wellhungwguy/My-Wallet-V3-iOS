@@ -2,9 +2,9 @@
 
 import PlatformKit
 
-public struct EthereumKeyPair: KeyPair, Equatable {
-    public var accountID: String
-    public var privateKey: EthereumPrivateKey
+public struct EthereumKeyPair: Equatable {
+    public let accountID: String
+    public let privateKey: EthereumPrivateKey
 
     public init(accountID: String, privateKey: EthereumPrivateKey) {
         self.accountID = accountID

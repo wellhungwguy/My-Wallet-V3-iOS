@@ -38,7 +38,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumFeeServiceAPI
     private let gasEstimateService: GasEstimateServiceAPI
-    private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
+    private let keyPairProvider: EthereumKeyPairProvider
     private let network: EVMNetwork
     private let priceService: PriceServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
@@ -63,7 +63,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
         gasEstimateService: GasEstimateServiceAPI = resolve(),
-        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
+        keyPairProvider: EthereumKeyPairProvider = resolve(),
         priceService: PriceServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         transactionSigningService: EthereumTransactionSigningServiceAPI = resolve(),
@@ -224,28 +224,24 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
         switch walletConnectTarget.method {
         case .sign:
-            return Single
-                .zip(
-                    transactionPublisher.asSingle(),
-                    keyPairProvider.keyPair(with: nil)
-                )
-                .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionEncoded> in
+            return transactionPublisher.zip(keyPairProvider.keyPair)
+                .flatMap { [transactionSigningService] transaction, keyPair in
                     transactionSigningService.sign(
                         transaction: transaction,
                         keyPair: keyPair
                     )
-                    .asSingle()
+                    .eraseError()
                 }
                 .map(\.rawTransaction)
                 .map { rawTransaction -> TransactionResult in
                     .signed(rawTx: rawTransaction)
                 }
+                .asSingle()
         case .send:
             return transactionPublisher
                 .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
-                        secondPassword: nil,
                         network: network
                     )
                 }

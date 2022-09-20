@@ -139,7 +139,6 @@ extension Result {
         _ a: Result<A, Failure>,
         _ b: Result<B, Failure>,
         _ c: Result<C, Failure>
-        // swiftlint:disable:next large_tuple
     ) -> Result<(Success, A, B, C), Failure> {
         zip(a, b)
             .zip(c)
@@ -151,7 +150,6 @@ extension Result {
         _ b: Result<B, Failure>,
         _ c: Result<C, Failure>,
         _ d: Result<D, Failure>
-        // swiftlint:disable:next large_tuple
     ) -> Result<(Success, A, B, C, D), Failure> {
         zip(a, b, c)
             .zip(d)

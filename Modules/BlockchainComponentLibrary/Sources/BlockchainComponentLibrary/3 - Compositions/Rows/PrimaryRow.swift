@@ -405,7 +405,6 @@ extension VerticalAlignment {
     static let customRowVerticalAlignment = VerticalAlignment(CustomRowVerticalAlignment.self)
 }
 
-// swiftlint:disable line_length
 struct PrimaryRow_Previews: PreviewProvider {
 
     static var previews: some View {

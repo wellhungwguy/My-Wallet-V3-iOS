@@ -302,7 +302,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 self.ethereumTransactionDispatcher
                     .send(
                         transaction: candidate,
-                        secondPassword: nil,
                         network: self.network
                     )
                     .asSingle()

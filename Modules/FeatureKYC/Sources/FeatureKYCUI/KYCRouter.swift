@@ -78,7 +78,6 @@ final class KYCRouter: KYCRouterAPI {
 
     private let pageFactory = KYCPageViewFactory()
 
-    private let appSettings: AppSettingsAPI
     private let loadingViewPresenter: LoadingViewPresenting
 
     private let app: AppProtocol
@@ -132,7 +131,6 @@ final class KYCRouter: KYCRouterAPI {
         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
         webViewServiceAPI: WebViewServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
-        appSettings: AppSettingsAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
@@ -151,7 +149,6 @@ final class KYCRouter: KYCRouterAPI {
         self.nabuUserService = nabuUserService
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
-        self.appSettings = appSettings
         self.kycSettings = kycSettings
         self.loadingViewPresenter = loadingViewPresenter
         self.networkAdapter = networkAdapter
@@ -171,7 +168,6 @@ final class KYCRouter: KYCRouterAPI {
         start(tier: tier, parentFlow: parentFlow, from: nil)
     }
 
-    // swiftlint:disable function_body_length
     func start(
         tier: KYC.Tier,
         parentFlow: KYCParentFlow,
@@ -240,52 +236,57 @@ final class KYCRouter: KYCRouterAPI {
             .observe(on: MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
             .subscribe(onNext: { [weak self] user, tiersTuple in
-                let (tiersResponse, isSDDEligible, isSDDVerified) = tiersTuple
-                self?.pager = KYCPager(tier: tier, tiersResponse: tiersResponse)
-                Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
-                guard let strongSelf = self else {
-                    return
+                self?.isNewProfileEnabled { isNewProfileEnabled in
+                    let (tiersResponse, isSDDEligible, isSDDVerified) = tiersTuple
+                    self?.pager = KYCPager(isNewProfile: isNewProfileEnabled, tier: tier, tiersResponse: tiersResponse)
+                    Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    strongSelf.userTiersResponse = tiersResponse
+                    strongSelf.user = user
+
+                    // SDD Eligible users can buy but we only need to check for SDD during the buy flow.
+                    // This is to avoid breaking Tier 2 upgrade paths (e.g., from Settings)
+                    let shouldUseSDDFlags = tier < .tier2 && parentFlow == .simpleBuy
+                    let shouldCheckForSDDEligibility = shouldUseSDDFlags ? isSDDEligible : false
+                    let shouldCheckForSDDVerification = shouldUseSDDFlags ? isSDDVerified : false
+
+                    let startingPage = KYCPageType.startingPage(
+                        forUser: user,
+                        requiredTier: tier,
+                        tiersResponse: tiersResponse,
+                        isSDDEligible: shouldCheckForSDDEligibility,
+                        isSDDVerified: shouldCheckForSDDVerification,
+                        hasQuestions: strongSelf.hasQuestions,
+                        isNewProfile: isNewProfileEnabled
+                    )
+
+                    if startingPage == .finish {
+                        return strongSelf.finish()
+                    }
+
+                    if startingPage != .accountStatus {
+                        /// If the starting page is accountStatus, they do not have any additional
+                        /// pages to view, so we don't want to set `isCompletingKyc` to `true`.
+                        strongSelf.kycSettings.isCompletingKyc = true
+                    }
+
+                    strongSelf.initializeNavigationStack(
+                        viewController,
+                        user: user,
+                        tier: tier,
+                        isSDDEligible: shouldCheckForSDDEligibility,
+                        isSDDVerified: shouldCheckForSDDVerification,
+                        isNewProfile: isNewProfileEnabled
+                    )
+                    strongSelf.restoreToMostRecentPageIfNeeded(
+                        tier: tier,
+                        isSDDEligible: isSDDEligible,
+                        isSDDVerified: shouldCheckForSDDVerification,
+                        isNewProfile: isNewProfileEnabled
+                    )
                 }
-                strongSelf.userTiersResponse = tiersResponse
-                strongSelf.user = user
-
-                // SDD Eligible users can buy but we only need to check for SDD during the buy flow.
-                // This is to avoid breaking Tier 2 upgrade paths (e.g., from Settings)
-                let shouldUseSDDFlags = tier < .tier2 && parentFlow == .simpleBuy
-                let shouldCheckForSDDEligibility = shouldUseSDDFlags ? isSDDEligible : false
-                let shouldCheckForSDDVerification = shouldUseSDDFlags ? isSDDVerified : false
-
-                let startingPage = KYCPageType.startingPage(
-                    forUser: user,
-                    requiredTier: tier,
-                    tiersResponse: tiersResponse,
-                    isSDDEligible: shouldCheckForSDDEligibility,
-                    isSDDVerified: shouldCheckForSDDVerification,
-                    hasQuestions: strongSelf.hasQuestions
-                )
-
-                if startingPage == .finish {
-                    return strongSelf.finish()
-                }
-
-                if startingPage != .accountStatus {
-                    /// If the starting page is accountStatus, they do not have any additional
-                    /// pages to view, so we don't want to set `isCompletingKyc` to `true`.
-                    strongSelf.kycSettings.isCompletingKyc = true
-                }
-
-                strongSelf.initializeNavigationStack(
-                    viewController,
-                    user: user,
-                    tier: tier,
-                    isSDDEligible: shouldCheckForSDDEligibility,
-                    isSDDVerified: shouldCheckForSDDVerification
-                )
-                strongSelf.restoreToMostRecentPageIfNeeded(
-                    tier: tier,
-                    isSDDEligible: isSDDEligible,
-                    isSDDVerified: shouldCheckForSDDVerification
-                )
             }, onError: { [alertPresenter, errorRecorder] error in
                 Logger.shared.error("Failed to get user: \(String(describing: error))")
                 errorRecorder.error(error)
@@ -415,18 +416,6 @@ final class KYCRouter: KYCRouterAPI {
         }
     }
 
-    private func isNewAddressSearchEnabled(onComplete: @escaping (Bool) -> Void) {
-        Task(priority: .userInitiated) { @MainActor in
-            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
-                for: blockchain.app.configuration.addresssearch.kyc.is.enabled,
-                as: Bool.self
-            )
-                .await()
-                .value
-            onComplete(isNewAddressSearchEnabled ?? false)
-        }
-    }
-
     private func presentAddressSearchFlow() {
         guard let countryCode = country?.code ?? user?.address?.countryCode else { return }
         addressSearchFlowPresenter
@@ -495,7 +484,12 @@ final class KYCRouter: KYCRouterAPI {
     // MARK: View Restoration
 
     /// Restores the user to the most recent page if they dropped off mid-flow while KYC'ing
-    private func restoreToMostRecentPageIfNeeded(tier: KYC.Tier, isSDDEligible: Bool, isSDDVerified: Bool) {
+    private func restoreToMostRecentPageIfNeeded(
+        tier: KYC.Tier,
+        isSDDEligible: Bool,
+        isSDDVerified: Bool,
+        isNewProfile: Bool
+    ) {
         guard let currentUser = user else {
             return
         }
@@ -509,7 +503,8 @@ final class KYCRouter: KYCRouterAPI {
             tiersResponse: response,
             isSDDEligible: isSDDEligible,
             isSDDVerified: isSDDVerified,
-            hasQuestions: hasQuestions
+            hasQuestions: hasQuestions,
+            isNewProfile: isNewProfile
         )
 
         if startingPage == .finish {
@@ -519,7 +514,7 @@ final class KYCRouter: KYCRouterAPI {
         if startingPage == .accountStatus {
             /// The `tier` on KYCPager cannot be `tier1` if the user's `startingPage` is `.accountStatus`.
             /// If their `startingPage` is `.accountStatus`, they're done.
-            pager = KYCPager(tier: .tier2, tiersResponse: response)
+            pager = KYCPager(isNewProfile: isNewProfile, tier: .tier2, tiersResponse: response)
         }
 
         guard let endPageForLastUsedTier = KYCPageType.pageType(
@@ -539,7 +534,8 @@ final class KYCRouter: KYCRouterAPI {
                 forTier: tier,
                 user: user,
                 country: country,
-                tiersResponse: response
+                tiersResponse: response,
+                isNewProfile: isNewProfile
             ) else { return }
 
             currentPage = nextPage
@@ -571,6 +567,7 @@ final class KYCRouter: KYCRouterAPI {
              .country,
              .states,
              .profile,
+             .profileNew,
              .address,
              .accountUsageForm,
              .sddVerificationCheck,
@@ -589,7 +586,8 @@ final class KYCRouter: KYCRouterAPI {
         user: NabuUser,
         tier: KYC.Tier,
         isSDDEligible: Bool,
-        isSDDVerified: Bool
+        isSDDVerified: Bool,
+        isNewProfile: Bool
     ) {
         guard let response = userTiersResponse else { return }
         let startingPage = KYCPageType.startingPage(
@@ -598,7 +596,8 @@ final class KYCRouter: KYCRouterAPI {
             tiersResponse: response,
             isSDDEligible: isSDDEligible,
             isSDDVerified: isSDDVerified,
-            hasQuestions: hasQuestions
+            hasQuestions: hasQuestions,
+            isNewProfile: isNewProfile
         )
         if startingPage == .finish {
             return
@@ -711,7 +710,7 @@ final class KYCRouter: KYCRouterAPI {
         case .enterEmail:
             guard let current = user else { return }
             delegate?.apply(model: .email(current))
-        case .profile:
+        case .profile, .profileNew:
             guard let current = user else { return }
             delegate?.apply(model: .personalDetails(current))
         case .address:
@@ -834,5 +833,31 @@ extension KYCPageType {
         guard tiersResponse.canCompleteTier2 == false else { return .verifyIdentity }
 
         return nil
+    }
+}
+
+extension KYCRouter {
+    private func isNewAddressSearchEnabled(onComplete: @escaping (Bool) -> Void) {
+        Task(priority: .userInitiated) { @MainActor in
+            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
+                for: blockchain.app.configuration.addresssearch.kyc.is.enabled,
+                as: Bool.self
+            )
+                .await()
+                .value
+            onComplete(isNewAddressSearchEnabled ?? false)
+        }
+    }
+
+    private func isNewProfileEnabled(onComplete: @escaping (Bool) -> Void) {
+        Task(priority: .userInitiated) { @MainActor in
+            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
+                for: blockchain.app.configuration.profile.kyc.is.enabled,
+                as: Bool.self
+            )
+                .await()
+                .value
+            onComplete(isNewAddressSearchEnabled ?? false)
+        }
     }
 }

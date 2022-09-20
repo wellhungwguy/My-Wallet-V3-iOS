@@ -41,7 +41,7 @@ final class ChangePasswordScreenPresenter {
     // MARK: - Injected Properties
 
     private let interactor: ChangePasswordScreenInteractor
-    private let alertPresenter: AlertViewPresenter
+    private let alertPresenter: AlertViewPresenterAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let coordinator: AuthenticationCoordinating
 
@@ -55,7 +55,7 @@ final class ChangePasswordScreenPresenter {
     // MARK: - Setup
 
     init(
-        alertPresenter: AlertViewPresenter = .shared,
+        alertPresenter: AlertViewPresenterAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         previousAPI: RoutingPreviousStateEmitterAPI,
         interactor: ChangePasswordScreenInteractor,

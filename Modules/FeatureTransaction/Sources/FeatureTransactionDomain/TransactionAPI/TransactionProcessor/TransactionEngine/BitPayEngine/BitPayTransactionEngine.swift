@@ -183,7 +183,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     // MARK: - Private Functions
 
-    private func doExecuteTransaction(invoiceId: String, transaction: EngineTransaction) -> Single<String> {
+    private func doExecuteTransaction(invoiceId: String, transaction: BitPayClientEngineTransaction) -> Single<String> {
         bitpayRepository
             .verifySignedTransaction(
                 invoiceId: invoiceId,

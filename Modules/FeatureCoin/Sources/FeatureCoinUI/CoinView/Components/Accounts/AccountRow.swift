@@ -34,8 +34,8 @@ struct AccountRow: View {
         BalanceRow(
             leadingTitle: account.name,
             leadingDescription: account.accountType.subtitle.interpolating(interestRate.or(0)),
-            trailingTitle: account.fiat.displayString,
-            trailingDescription: account.crypto.displayString,
+            trailingTitle: account.fiat?.displayString,
+            trailingDescription: account.crypto?.displayString,
             trailingDescriptionColor: .semantic.muted,
             action: {
                 if actionEnabled {
@@ -101,7 +101,6 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .privateKey,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -119,7 +118,6 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .trading,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -137,7 +135,6 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .interest,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)
@@ -155,7 +152,6 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         accountType: .exchange,
                         cryptoCurrency: .bitcoin,
                         fiatCurrency: .USD,
-                        receiveAddress: "aaaaa",
                         actions: [],
                         crypto: .one(currency: .bitcoin),
                         fiat: .one(currency: .USD)

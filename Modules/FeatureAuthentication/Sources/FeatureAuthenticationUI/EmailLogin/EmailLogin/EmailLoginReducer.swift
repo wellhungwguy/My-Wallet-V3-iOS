@@ -160,7 +160,6 @@ let emailLoginReducer = Reducer.combine(
         EmailLoginState,
         EmailLoginAction,
         EmailLoginEnvironment
-            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
 

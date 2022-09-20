@@ -107,7 +107,7 @@ struct EIP681URIParser {
         switch components.path {
         case "transfer":
             return buildTransfer(for: components)
-        case "", nil:
+        case "":
             return buildSend(for: components)
         default:
             return .send(amount: nil, gasLimit: nil, gasPrice: nil)

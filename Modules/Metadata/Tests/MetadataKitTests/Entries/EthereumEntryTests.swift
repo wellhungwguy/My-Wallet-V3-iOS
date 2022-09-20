@@ -3,7 +3,6 @@
 @testable import MetadataKit
 import XCTest
 
-// swiftlint:disable line_length
 final class EthereumEntryTests: XCTestCase {
 
     func test_entry_can_be_decoded() throws {

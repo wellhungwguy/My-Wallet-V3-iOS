@@ -283,6 +283,44 @@ extension LocalizationConstants {
 
         enum Steps {
 
+            enum PersonalInfo {
+
+                static let title = NSLocalizedString(
+                    "Complete Your Profile",
+                    comment: "KYC Step - Personal Info Questions - Screen Title"
+                )
+
+                static let message = NSLocalizedString(
+                    "Blockchain.com is required by law to collect this information.",
+                    comment: "KYC Step - Personal Info Questions - Screen Message"
+                )
+
+                static let submitActionTitle = NSLocalizedString(
+                    "Next",
+                    comment: "KYC Step - Personal Info Questions - Submit Action Title"
+                )
+
+                static let firstNameQuestionTitle = NSLocalizedString(
+                    "Legal First Name",
+                    comment: "KYC Step - Personal Info Questions - First Name Question"
+                )
+
+                static let lastNameQuestionTitle = NSLocalizedString(
+                    "Legal Last Name",
+                    comment: "KYC Step - Personal Info Questions - Last Name Question"
+                )
+
+                static let dateOfBirthQuestionTitle = NSLocalizedString(
+                    "Date of Birth",
+                    comment: "KYC Step - Personal Info Questions - Date of Birth Question"
+                )
+
+                static let dateOfBirthAnswerHint = NSLocalizedString(
+                    "You must be 18 years of age or older to buy & sell crypto.",
+                    comment: "KYC Step - Personal Info Questions - Date of Birth Question Hint"
+                )
+            }
+
             enum AccountUsage {
 
                 static let title = NSLocalizedString(

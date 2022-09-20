@@ -13,6 +13,7 @@ public enum KYCPageType: Int {
     case country
     case states
     case profile
+    case profileNew
     case address
     case tier1ForcedTier2
     case enterPhone
@@ -47,7 +48,7 @@ extension KYCPageType {
             return blockchain.ux.kyc.type.state.country
         case .states:
             return blockchain.ux.kyc.type.state.states
-        case .profile:
+        case .profile, .profileNew:
             return blockchain.ux.kyc.type.state.profile
         case .address:
             return blockchain.ux.kyc.type.state.address

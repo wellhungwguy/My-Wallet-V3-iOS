@@ -297,7 +297,6 @@ final class TransactionModel {
             .modifyTransactionConfirmation(confirmation)
             .subscribe(
                 onError: { error in
-                    // swiftlint:disable:next line_length
                     Logger.shared.error("!TRANSACTION!> Unable to modify transaction confirmation: \(String(describing: error))")
                 }
             )

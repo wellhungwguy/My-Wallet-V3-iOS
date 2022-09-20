@@ -9,7 +9,9 @@ import WalletCore
 public struct UnspentOutput: Equatable {
 
     public struct XPub: Equatable {
+        /// An xpub.
         public let m: String
+        /// A derivation path in the format "M/X/Y", relative to the xpub `m`.
         public let path: String
 
         public init(m: String, path: String) {

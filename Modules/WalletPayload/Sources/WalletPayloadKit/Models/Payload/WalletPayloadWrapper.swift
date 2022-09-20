@@ -27,11 +27,6 @@ public struct WalletPayloadWrapper: Equatable {
     public let pbkdf2IterationCount: UInt32
     public let version: Int
     public let payload: String
-
-    /// Returns `self` as string (JS requirements)
-    public var stringRepresentation: String? {
-        try? encodeToString(encoding: .utf8)
-    }
 }
 
 // MARK: - Codable

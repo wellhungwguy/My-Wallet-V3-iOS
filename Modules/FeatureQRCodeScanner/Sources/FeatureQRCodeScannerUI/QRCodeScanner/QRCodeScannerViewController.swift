@@ -21,7 +21,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         guard isViewLoaded else {
             fatalError("viewFrame should only be accessed after the view is loaded.")
         }
-        guard let window = UIApplication.shared.keyWindow else {
+        guard let window = UIApplication.shared.firstKeyWindow else {
             fatalError("Trying to get key window before it was set!")
         }
         return window.coordinateSpace

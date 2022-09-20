@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import FeatureKYCDomain
 import PlatformKit
 import PlatformUIKit
@@ -76,7 +77,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
     override func apply(model: KYCPageModel) {
         guard case .phone(let user) = model else { return }
 
-        guard let mobile = user.mobile, phoneNumber.count == 0 else { return }
+        guard let mobile = user.mobile, phoneNumber.isEmpty else { return }
         phoneNumber = mobile.phone
     }
 
@@ -114,7 +115,8 @@ extension KYCConfirmPhoneNumberController: KYCConfirmPhoneNumberView {
     }
 
     func showError(message: String) {
-        AlertViewPresenter.shared.standardError(message: message, in: self)
+        let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+        alertPresenter.standardError(message: message, in: self)
     }
 
     func showLoadingView(with text: String) {

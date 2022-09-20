@@ -11,65 +11,17 @@ public struct WalletRecoveryService {
 }
 
 extension WalletRecoveryService {
-    public static func live(
-        walletManager: WalletManagerAPI,
-        walletRecovery: WalletRecoveryServiceAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
-    ) -> Self {
+    public static func live(walletRecovery: WalletRecoveryServiceAPI) -> Self {
         Self(
-            recoverFromMetadata: { [walletManager, walletRecovery, nativeWalletEnabled, legacyRecover] mnemonic in
-                nativeWalletEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<Either<EmptyValue, WalletFetchedContext>, WalletError> in
-                        guard isEnabled else {
-                            return legacyRecover(mnemonic, walletManager)
-                                .map(Either.left)
-                                .eraseToAnyPublisher()
-                        }
-                        return walletRecovery.recover(from: mnemonic)
-                            .map { value in .right(value) }
-                            .eraseToAnyPublisher()
-                    }
+            recoverFromMetadata: { [walletRecovery] mnemonic in
+                walletRecovery.recover(from: mnemonic)
+                    .map { value in .right(value) }
                     .eraseToAnyPublisher()
             }
         )
     }
 
     public static var noop: Self {
-        Self(
-            recoverFromMetadata: { _ in .empty() }
-        )
+        Self(recoverFromMetadata: { _ in .empty() })
     }
-}
-
-private func legacyRecover(
-    mnemonic: String,
-    walletManager: WalletManagerAPI
-) -> AnyPublisher<EmptyValue, WalletError> {
-    walletManager.loadWalletJS()
-    walletManager.recoverFromMetadata(
-        seedPhrase: mnemonic
-    )
-    return listenForRecoveryEvents(walletManager: walletManager)
-}
-
-private func listenForRecoveryEvents(
-    walletManager: WalletManagerAPI
-) -> AnyPublisher<EmptyValue, WalletError> {
-    let recovered = walletManager.walletRecovered
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .map { _ in EmptyValue.noValue }
-        .eraseToAnyPublisher()
-
-    // always fail upon receiving an event from `walletRecoveryFailed`
-    let recoveryFailed = walletManager.walletRecoveryFailed
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .flatMap { _ -> AnyPublisher<EmptyValue, WalletError> in
-            .failure(.recovery(.failedToRecoverWallet))
-        }
-        .eraseToAnyPublisher()
-
-    return Publishers.Merge(recovered, recoveryFailed)
-        .mapError { _ in WalletError.recovery(.failedToRecoverWallet) }
-        .map { _ in .noValue }
-        .eraseToAnyPublisher()
 }

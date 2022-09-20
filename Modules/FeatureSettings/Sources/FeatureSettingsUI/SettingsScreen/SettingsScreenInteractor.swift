@@ -37,7 +37,7 @@ public final class SettingsScreenInteractor {
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
     let appSettings: BlockchainSettings.App
-    let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
+    let recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding
     let authenticationCoordinator: AuthenticationCoordinating
 
     // MARK: - Private Properties
@@ -53,11 +53,11 @@ public final class SettingsScreenInteractor {
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
-        wallet: WalletRecoveryVerifing,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
         authenticationCoordinator: AuthenticationCoordinating,
         cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
-        referralAdapter: ReferralAdapterAPI = resolve()
+        referralAdapter: ReferralAdapterAPI = resolve(),
+        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
@@ -94,13 +94,13 @@ public final class SettingsScreenInteractor {
 
         biometryProviding = BiometryProvider(settings: settingsAuthenticating)
         self.settingsAuthenticating = settingsAuthenticating
-        recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
+        self.recoveryPhraseStatusProvider = recoveryPhraseStatusProvider
         self.credentialsStore = credentialsStore
         self.authenticationCoordinator = authenticationCoordinator
     }
 
     func refresh() {
-        recoveryPhraseStatusProviding.fetchTriggerSubject.send(())
+        recoveryPhraseStatusProvider.fetchTriggerSubject.send(())
         tiersProviding.fetchTriggerRelay.accept(())
         settingsService.fetch(force: true)
             .subscribe()

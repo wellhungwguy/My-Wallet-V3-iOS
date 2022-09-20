@@ -121,6 +121,7 @@ extension KYCEnterEmailController: EmailVerificationInterface {
     }
 
     func showError(message: String) {
-        AlertViewPresenter.shared.standardError(message: message, in: self)
+        let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+        alertPresenter.standardError(message: message, in: self)
     }
 }

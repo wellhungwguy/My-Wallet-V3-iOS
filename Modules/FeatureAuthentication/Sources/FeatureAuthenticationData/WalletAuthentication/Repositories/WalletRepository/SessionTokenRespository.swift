@@ -8,58 +8,36 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
 
     let sessionToken: AnyPublisher<String?, Never>
 
-    // This is set to the older WalletRepository API, soon to be removed
-    private let walletRepository: WalletRepositoryAPI
     private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
-        walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepoAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        walletRepo: WalletRepoAPI
     ) {
-        self.walletRepository = walletRepository
         self.walletRepo = walletRepo
-        self.nativeWalletEnabled = nativeWalletEnabled
 
-        sessionToken = nativeWalletEnabled()
-            .flatMap { isEnabled -> AnyPublisher<String?, Never> in
-                guard isEnabled else {
-                    return walletRepository.sessionToken
-                }
-                return walletRepo.get()
-                    .map(\.credentials.sessionToken)
-                    .map { key in key.isEmpty ? nil : key }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        sessionToken = Deferred { [walletRepo] in
+            walletRepo.get()
+                .map(\.credentials.sessionToken)
+                .map { key in key.isEmpty ? nil : key }
+        }
+        .eraseToAnyPublisher()
     }
 
     func set(sessionToken: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(sessionToken: sessionToken)
-                }
-                return walletRepo.set(keyPath: \.credentials.sessionToken, value: sessionToken)
-                    .get()
-                    .mapToVoid()
-            }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        Deferred { [walletRepo] in
+            walletRepo.set(keyPath: \.credentials.sessionToken, value: sessionToken)
+                .get()
+                .mapToVoid()
+        }
+        .eraseToAnyPublisher()
     }
 
     func cleanSessionToken() -> AnyPublisher<Void, Never> {
-        nativeWalletFlagEnabled()
-            .flatMap { [walletRepository, walletRepo] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.cleanSessionToken()
-                }
-                return walletRepo.set(keyPath: \.credentials.sessionToken, value: "")
-                    .get()
-                    .mapToVoid()
-            }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        Deferred { [walletRepo] in
+            walletRepo.set(keyPath: \.credentials.sessionToken, value: "")
+                .get()
+                .mapToVoid()
+        }
+        .eraseToAnyPublisher()
     }
 }

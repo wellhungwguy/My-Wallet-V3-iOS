@@ -3,11 +3,11 @@
 import Combine
 import WalletPayloadKit
 
-public final class LoginService: LoginServiceAPI {
+final class LoginService: LoginServiceAPI {
 
     // MARK: - Properties
 
-    public let authenticator: AnyPublisher<WalletAuthenticatorType, Never>
+    let authenticator: AnyPublisher<WalletAuthenticatorType, Never>
 
     private let payloadService: WalletPayloadServiceAPI
     private let twoFAPayloadService: TwoFAWalletServiceAPI
@@ -19,7 +19,7 @@ public final class LoginService: LoginServiceAPI {
 
     // MARK: - Setup
 
-    public init(
+    init(
         payloadService: WalletPayloadServiceAPI,
         twoFAPayloadService: TwoFAWalletServiceAPI,
         repository: GuidRepositoryAPI
@@ -34,7 +34,7 @@ public final class LoginService: LoginServiceAPI {
 
     // MARK: - API
 
-    public func login(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
+    func login(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
         guidRepository
             .set(guid: walletIdentifier)
             .first()
@@ -56,7 +56,7 @@ public final class LoginService: LoginServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func login(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
+    func login(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
         twoFAPayloadService
             .send(code: code)
             .mapError(LoginServiceError.twoFAWalletServiceError)

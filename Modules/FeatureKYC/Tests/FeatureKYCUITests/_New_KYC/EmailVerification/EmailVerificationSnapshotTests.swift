@@ -10,8 +10,6 @@ import SwiftUI
 import TestKit
 import XCTest
 
-// swiftlint:disable type_body_length
-
 final class EmailVerificationSnapshotTests: XCTestCase {
 
     private var environment: EmailVerificationEnvironment!

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureAuthenticationDomain
 import RxSwift
 import ToolKit
 import WalletPayloadKit
@@ -29,8 +30,9 @@ final class CredentialsStore: CredentialsStoreAPI {
 
     // MARK: Private Properties
 
-    private let appSettings: AppSettingsAPI
     private let appSettingsAuthenticating: AppSettingsAuthenticating
+    private let sharedKeyRepository: SharedKeyRepositoryAPI
+    private let guidRepository: GuidRepositoryAPI
     private let store: UbiquitousKeyValueStore
     private let cryptoService: WalletCryptoServiceAPI
     private let disposeBag = DisposeBag()
@@ -38,13 +40,15 @@ final class CredentialsStore: CredentialsStoreAPI {
     // MARK: Init
 
     init(
-        appSettings: AppSettingsAPI = resolve(),
         appSettingsAuthenticating: AppSettingsAuthenticating = resolve(),
+        sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
+        guidRepository: GuidRepositoryAPI = resolve(),
         store: UbiquitousKeyValueStore = NSUbiquitousKeyValueStore.default,
         cryptoService: WalletCryptoServiceAPI = resolve()
     ) {
-        self.appSettings = appSettings
         self.appSettingsAuthenticating = appSettingsAuthenticating
+        self.guidRepository = guidRepository
+        self.sharedKeyRepository = sharedKeyRepository
         self.store = store
         self.cryptoService = cryptoService
     }
@@ -63,8 +67,8 @@ final class CredentialsStore: CredentialsStoreAPI {
             .zip(
                 appSettingsAuthenticating.pinKey,
                 appSettingsAuthenticating.encryptedPinPassword,
-                appSettings.guid,
-                appSettings.sharedKey,
+                guidRepository.guid.asSingle(),
+                sharedKeyRepository.sharedKey.asSingle(),
                 pinData,
                 walletData
             ) { (pinKey: $0, encryptedPinPassword: $1, guid: $2, sharedKey: $3, pinData: $4, walletData: $5) }

@@ -95,7 +95,6 @@ final class RootViewController: UIHostingController<RootView> {
     @Inject var walletConnectRouter: WalletConnectRouterAPI
 
     var pinRouter: PinRouter?
-    weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
     lazy var bottomSheetPresenter = BottomSheetPresenting()
 }
@@ -175,12 +174,6 @@ extension RootViewController {
 
         viewStore.publisher
             .reloadAfterMultiAddressResponse
-            .filter { $0 }
-            .sink(to: My.reload, on: self)
-            .store(in: &bag)
-
-        viewStore.publisher
-            .reloadAfterSymbolChanged
             .filter { $0 }
             .sink(to: My.reload, on: self)
             .store(in: &bag)

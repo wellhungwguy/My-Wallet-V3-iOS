@@ -53,7 +53,6 @@ let unlockTradingReducer = Reducer<
 
 // MARK: - Analytics
 
-// swiftlint:disable:next line_length
 extension Reducer where State == UnlockTradingState, Action == UnlockTradingAction, Environment == UnlockTradingEnvironment {
 
     func analytics() -> Self {

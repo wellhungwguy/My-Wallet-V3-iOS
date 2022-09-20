@@ -23,6 +23,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
 
     // MARK: - Proviate
 
+    private let alertPresenter: AlertViewPresenterAPI
     private let interactor: BiometrySwitchViewInteractor
     private let disposeBag = DisposeBag()
 
@@ -30,8 +31,10 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
         provider: BiometryProviding,
         settingsAuthenticating: AppSettingsAuthenticating,
         authenticationCoordinator: AuthenticationCoordinating,
+        alertPresenter: AlertViewPresenterAPI = DIKit.resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI = resolve()
     ) {
+        self.alertPresenter = alertPresenter
         interactor = BiometrySwitchViewInteractor(
             provider: provider,
             authenticationCoordinator: authenticationCoordinator,
@@ -76,7 +79,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     }
 
     func toggleBiometry(_ biometryType: Biometry.BiometryType, biometryStatus: Biometry.Status, isOn: Bool) -> Observable<Bool> {
-        Observable.create { observable -> Disposable in
+        Observable.create { [alertPresenter] observable -> Disposable in
             guard isOn else {
                 observable.onNext(false)
                 return Disposables.create()
@@ -90,12 +93,12 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                         observable.onNext(false)
                     }
                 )
-                AlertViewPresenter.shared
-                    .standardNotify(
-                        title: LocalizationConstants.Errors.error,
-                        message: String(describing: error),
-                        actions: [accept]
-                    )
+                let content = AlertViewContent(
+                    title: LocalizationConstants.Errors.error,
+                    message: String(describing: error),
+                    actions: [accept]
+                )
+                alertPresenter.notify(content: content, in: nil)
                 return Disposables.create()
             }
 
@@ -115,12 +118,12 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                     observable.onNext(true)
                 }
             )
-            AlertViewPresenter.shared
-                .standardNotify(
-                    title: name,
-                    message: biometryWarning,
-                    actions: [cancel, accept]
-                )
+            let content = AlertViewContent(
+                title: name,
+                message: biometryWarning,
+                actions: [cancel, accept]
+            )
+            alertPresenter.notify(content: content, in: nil)
             return Disposables.create()
         }
     }

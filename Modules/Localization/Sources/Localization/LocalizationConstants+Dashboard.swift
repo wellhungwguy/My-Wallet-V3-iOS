@@ -30,6 +30,10 @@ extension LocalizationConstants.Dashboard.Portfolio {
         "Total Balance",
         comment: "Dashboard: total balance component - title"
     )
+    public static let balance = NSLocalizedString(
+        "Balance",
+        comment: "Dashboard: balance component - title"
+    )
     public enum EmptyState {
         public static let title = NSLocalizedString(
             "Welcome to Blockchain.com!",

@@ -11,7 +11,7 @@ extension URLRequest {
             command.append(commandLineArgument: "-X \(httpMethod)")
         }
 
-        if let httpBody = httpBody, httpBody.count > 0 {
+        if let httpBody = httpBody, httpBody.isNotEmpty {
             let bodyString = [("\\", "\\\\"), ("`", "\\`"), ("\"", "\\\""), ("$", "\\$")].reduce(String(data: httpBody, encoding: .utf8)) {
                 $0?.replacingOccurrences(of: $1.0, with: $1.1)
             }!
@@ -22,7 +22,7 @@ extension URLRequest {
             command.append(commandLineArgument: "--compressed")
         }
 
-        if let url = url, let cookies = HTTPCookieStorage.shared.cookies(for: url), cookies.count > 0 {
+        if let url = url, let cookies = HTTPCookieStorage.shared.cookies(for: url), cookies.isNotEmpty {
             command.append(
                 commandLineArgument: "--cookie \"\(cookies.map { "\($0.name)=\($0.value);" }.joined())\""
             )

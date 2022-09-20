@@ -3,7 +3,6 @@
 import BlockchainComponentLibrary
 import SwiftUI
 
-// swiftlint:disable closure_body_length
 struct BalanceRowExamplesView: View {
 
     var body: some View {

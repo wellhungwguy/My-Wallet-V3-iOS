@@ -1,5 +1,7 @@
 import Foundation
 
+// swiftlint:disable line_length
+
 public struct Empty: Codable, Equatable, Hashable {
     public init() {}
 }

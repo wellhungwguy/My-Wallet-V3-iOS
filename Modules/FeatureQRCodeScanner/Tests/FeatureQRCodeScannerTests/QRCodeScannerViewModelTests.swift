@@ -2,6 +2,8 @@
 
 import XCTest
 
+// swiftlint:disable all
+
 final class QRCodeScannerViewModelTests: XCTestCase {
 
     // var subject: QRCodeScannerViewModel!

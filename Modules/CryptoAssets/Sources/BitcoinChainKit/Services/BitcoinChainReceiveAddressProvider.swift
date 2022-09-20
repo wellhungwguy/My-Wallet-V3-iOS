@@ -46,46 +46,51 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
     }
 
     func receiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error> {
-        let account = BitcoinChainAccount(index: Int32(accountIndex), coin: Token.coin)
-        let transactionContext = getTransactionContextProvider(
-            walletMnemonicProvider: mnemonicProvider,
-            fetchUnspentOutputsFor: unspentOutputRepository.unspentOutputs(for:),
-            fetchMultiAddressFor: fetchMultiAddressFor
-        )
-        return getTransactionContext(
-            for: account,
-            transactionContextFor: transactionContext
-        )
-        .subscribe(on: operationQueue)
-        .receive(on: operationQueue)
-        .map { context -> ReceiveAddressContext in
-            receiveAddressContext(
-                for: context.multiAddressItems,
-                coin: Token.coin,
-                context: context.accountKeyContext
-            )
-        }
-        .map(\.receiveAddress)
-        .eraseError()
-        .eraseToAnyPublisher()
+        AnyPublisher<Void, Error>
+            .just(())
+            .receive(on: operationQueue)
+            .flatMap { [mnemonicProvider, unspentOutputRepository, fetchMultiAddressFor] _ in
+                getTransactionContext(
+                    for: BitcoinChainAccount(index: Int32(accountIndex), coin: Token.coin),
+                    transactionContextFor: getTransactionContextProvider(
+                        walletMnemonicProvider: mnemonicProvider,
+                        fetchUnspentOutputsFor: unspentOutputRepository.unspentOutputs(for:),
+                        fetchMultiAddressFor: fetchMultiAddressFor
+                    )
+                )
+            }
+            .receive(on: operationQueue)
+            .map { context -> ReceiveAddressContext in
+                receiveAddressContext(
+                    for: context.multiAddressItems,
+                    coin: Token.coin,
+                    context: context.accountKeyContext
+                )
+            }
+            .map(\.receiveAddress)
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     func receiveAddressProvider(_ accountIndex: UInt32, receiveIndex: UInt32) -> AnyPublisher<String, Error> {
-        let account = BitcoinChainAccount(index: Int32(accountIndex), coin: Token.coin)
-        return getAccountKeys(
-            for: account,
-            walletMnemonicProvider: mnemonicProvider
-        )
-        .subscribe(on: operationQueue)
-        .receive(on: operationQueue)
-        .map { accountKeyContext -> String in
-            deriveReceiveAddress(
-                context: accountKeyContext,
-                coin: Token.coin,
-                receiveIndex: receiveIndex
-            )
-        }
-        .eraseToAnyPublisher()
+        AnyPublisher<Void, Error>
+            .just(())
+            .receive(on: operationQueue)
+            .flatMap { [mnemonicProvider] in
+                getAccountKeys(
+                    for: BitcoinChainAccount(index: Int32(accountIndex), coin: Token.coin),
+                    walletMnemonicProvider: mnemonicProvider
+                )
+            }
+            .receive(on: operationQueue)
+            .map { accountKeyContext -> String in
+                deriveReceiveAddress(
+                    context: accountKeyContext,
+                    coin: Token.coin,
+                    receiveIndex: receiveIndex
+                )
+            }
+            .eraseToAnyPublisher()
     }
 
     func firstReceiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error> {

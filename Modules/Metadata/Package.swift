@@ -49,9 +49,14 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "_MetadataHDWalletKit",
+            dependencies: [.product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit")],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
+        .target(
             name: "MetadataKit",
             dependencies: [
-                .product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit"),
+                .target(name: "_MetadataHDWalletKit"),
                 .product(name: "CryptoSwift", package: "CryptoSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit"),
@@ -64,7 +69,6 @@ let package = Package(
             dependencies: [
                 "MetadataKit",
                 "MetadataDataKit",
-                .product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "DIKit", package: "DIKit"),

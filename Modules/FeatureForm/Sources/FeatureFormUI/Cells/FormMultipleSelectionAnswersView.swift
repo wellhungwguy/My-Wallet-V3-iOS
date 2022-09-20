@@ -7,6 +7,7 @@ import SwiftUI
 struct FormMultipleSelectionAnswersView: View {
 
     @Binding var answers: [FormAnswer]
+    @Binding var showAnswersState: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -19,10 +20,12 @@ struct FormMultipleSelectionAnswersView: View {
     @ViewBuilder
     private func view(for answer: Binding<FormAnswer>) -> some View {
         switch answer.wrappedValue.type {
+        case .date:
+            FormDateAnswerView(answer: answer, showAnswerState: $showAnswersState)
         case .selection:
-            FormMultipleSelectionAnswerView(answer: answer)
+            FormMultipleSelectionAnswerView(answer: answer, showAnswerState: $showAnswersState)
         case .openEnded:
-            FormOpenEndedAnswerView(answer: answer)
+            FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
         default:
             Text(answer.wrappedValue.type.value)
                 .typography(.paragraph1)
@@ -55,17 +58,29 @@ struct FormMultipleSelectionAnswersView_Previews: PreviewProvider {
                     hint: nil,
                     regex: nil,
                     checked: nil
+                ),
+                FormAnswer(
+                    id: "a3",
+                    type: .date,
+                    text: "Answer 3",
+                    children: nil,
+                    input: nil,
+                    hint: nil,
+                    regex: nil,
+                    checked: nil
                 )
-            ]
+            ],
+            showAnswersState: false
         )
     }
 
     struct PreviewHelper: View {
 
         @State var answers: [FormAnswer]
+        @State var showAnswersState: Bool
 
         var body: some View {
-            FormMultipleSelectionAnswersView(answers: $answers)
+            FormMultipleSelectionAnswersView(answers: $answers, showAnswersState: $showAnswersState)
         }
     }
 }

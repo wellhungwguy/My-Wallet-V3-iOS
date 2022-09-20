@@ -12,6 +12,7 @@ class BlockchainLinksHandlerTests: XCTestCase {
     var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
+        super.setUp()
         cancellables = []
         sut = BlockchainLinksHandler(
             validHosts: BlockchainLinks.validLinks,

@@ -29,7 +29,7 @@ final class PulseBlockchainNamespaceEventLogger: Session.Observer {
     }
 
     func start() {
-        subscription = app.on(blockchain.ux.type.analytics.event) { @MainActor [pulse] event in
+        subscription = app.on(blockchain.ux.type.analytics.event) { @MainActor [pulse] event async in
             pulse.storeMessage(
                 label: "namespace",
                 level: .info,
@@ -68,7 +68,7 @@ final class PulseNetworkDebugLogger: NetworkDebugLogger {
         session: URLSession?
     ) {
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        LoggerStore.default.storeRequest(
+        LoggerStore.shared.storeRequest(
             request,
             response: response,
             error: error,

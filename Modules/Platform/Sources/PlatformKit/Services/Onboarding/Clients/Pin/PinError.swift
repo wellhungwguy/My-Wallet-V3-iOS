@@ -54,6 +54,8 @@ public enum PinError: Error {
     // Error in decryption
     case decryptedPasswordWithZeroLength
 
+    case encryptedPinPasswordFailed(Error)
+
     /// Converts any type of error into a presentable pin error
     public static func map(from error: Error) -> PinError {
         if let error = error as? PinError {

@@ -104,10 +104,10 @@ public extension I_blockchain_app_configuration {
 	var `kyc`: L_blockchain_app_configuration_kyc { .init("\(__).kyc") }
 	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
-	var `native`: L_blockchain_app_configuration_native { .init("\(__).native") }
 	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `polygon`: L_blockchain_app_configuration_polygon { .init("\(__).polygon") }
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
+	var `profile`: L_blockchain_app_configuration_profile { .init("\(__).profile") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
 	var `referral`: L_blockchain_app_configuration_referral { .init("\(__).referral") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
@@ -513,38 +513,6 @@ public final class L_blockchain_app_configuration_manual_login_is_enabled: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.manual.login.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_manual_login_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
-public final class L_blockchain_app_configuration_native: L, I_blockchain_app_configuration_native {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native: I {}
-public extension I_blockchain_app_configuration_native {
-	var `wallet`: L_blockchain_app_configuration_native_wallet { .init("\(__).wallet") }
-}
-public final class L_blockchain_app_configuration_native_wallet: L, I_blockchain_app_configuration_native_wallet {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_wallet: I {}
-public extension I_blockchain_app_configuration_native_wallet {
-	var `payload`: L_blockchain_app_configuration_native_wallet_payload { .init("\(__).payload") }
-}
-public final class L_blockchain_app_configuration_native_wallet_payload: L, I_blockchain_app_configuration_native_wallet_payload {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet.payload", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_wallet_payload: I {}
-public extension I_blockchain_app_configuration_native_wallet_payload {
-	var `is`: L_blockchain_app_configuration_native_wallet_payload_is { .init("\(__).is") }
-}
-public final class L_blockchain_app_configuration_native_wallet_payload_is: L, I_blockchain_app_configuration_native_wallet_payload_is {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet.payload.is", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_wallet_payload_is: I {}
-public extension I_blockchain_app_configuration_native_wallet_payload_is {
-	var `enabled`: L_blockchain_app_configuration_native_wallet_payload_is_enabled { .init("\(__).enabled") }
-}
-public final class L_blockchain_app_configuration_native_wallet_payload_is_enabled: L, I_blockchain_app_configuration_native_wallet_payload_is_enabled {
-	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.native.wallet.payload.is.enabled", comment: "") }
-}
-public protocol I_blockchain_app_configuration_native_wallet_payload_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_performance: L, I_blockchain_app_configuration_performance {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.performance", comment: "") }
 }
@@ -677,6 +645,31 @@ public final class L_blockchain_app_configuration_prefill_is_enabled: L, I_block
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.prefill.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_prefill_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_profile: L, I_blockchain_app_configuration_profile {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile: I {}
+public extension I_blockchain_app_configuration_profile {
+	var `kyc`: L_blockchain_app_configuration_profile_kyc { .init("\(__).kyc") }
+}
+public final class L_blockchain_app_configuration_profile_kyc: L, I_blockchain_app_configuration_profile_kyc {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc: I {}
+public extension I_blockchain_app_configuration_profile_kyc {
+	var `is`: L_blockchain_app_configuration_profile_kyc_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_profile_kyc_is: L, I_blockchain_app_configuration_profile_kyc_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc_is: I {}
+public extension I_blockchain_app_configuration_profile_kyc_is {
+	var `enabled`: L_blockchain_app_configuration_profile_kyc_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_profile_kyc_is_enabled: L, I_blockchain_app_configuration_profile_kyc_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.profile.kyc.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_profile_kyc_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_pubkey: L, I_blockchain_app_configuration_pubkey {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey", comment: "") }
 }

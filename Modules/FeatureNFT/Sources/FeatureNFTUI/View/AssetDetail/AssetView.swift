@@ -47,7 +47,7 @@ final class AssetView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        imageView.source = url
+        imageView.request = .init(url: url)
     }
 
     func addParallaxToView(view: UIView, amount: Float) {

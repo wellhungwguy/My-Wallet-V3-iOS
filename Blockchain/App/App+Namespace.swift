@@ -17,8 +17,6 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
-// swiftlint:disable line_length
-
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
@@ -32,10 +30,10 @@ let app: AppProtocol = App(
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
             blockchain.app.configuration.polygon.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.all.tokens.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.profile.kyc.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,

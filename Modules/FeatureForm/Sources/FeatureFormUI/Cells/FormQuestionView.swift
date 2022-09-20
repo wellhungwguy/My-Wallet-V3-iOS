@@ -7,24 +7,23 @@ import SwiftUI
 struct FormQuestionView: View {
 
     @Binding var question: FormQuestion
+    @Binding var showAnswersState: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding2) {
-            if question.type != .openEnded {
-                VStack(alignment: .leading, spacing: Spacing.textSpacing) {
-                    Text(question.text)
-                        .typography(.paragraph2)
-                        .foregroundColor(.semantic.title)
-
-                    if let instructions = question.instructions {
-                        Text(instructions)
-                            .typography(.caption1)
-                            .foregroundColor(.semantic.body)
-                    }
-                }
+            VStack(alignment: .leading, spacing: Spacing.textSpacing) {
+                Text(question.text)
+                    .typography(.paragraph2)
+                    .foregroundColor(.semantic.title)
             }
 
             makeAnswersView()
+
+            if let instructions = question.instructions {
+                Text(instructions)
+                    .typography(.caption1)
+                    .foregroundColor(.semantic.body)
+            }
         }
     }
 
@@ -32,17 +31,33 @@ struct FormQuestionView: View {
     private func makeAnswersView() -> some View {
         switch question.type {
         case .multipleSelection:
-            FormMultipleSelectionAnswersView(answers: $question.children)
+            FormMultipleSelectionAnswersView(
+                answers: $question.children,
+                showAnswersState: $showAnswersState
+            )
 
         case .singleSelection where question.isDropdown == true:
-            FormSingleSelectionDropdownAnswersView(answers: $question.children)
+            FormSingleSelectionDropdownAnswersView(
+                answers: $question.children,
+                showAnswerState: $showAnswersState
+            )
 
         case .singleSelection:
-            FormSingleSelectionAnswersView(answers: $question.children)
+            FormSingleSelectionAnswersView(
+                answers: $question.children,
+                showAnswersState: $showAnswersState
+            )
+
+        case .openEnded where question.children.isNotEmpty:
+            FormSingleSelectionAnswersView(
+                answers: $question.children,
+                showAnswersState: $showAnswersState
+            )
 
         case .openEnded:
             FormSingleSelectionAnswersView(
-                answers: $question.own.transform(get: { [$0] }, set: { $0[0] })
+                answers: $question.own.transform(get: { [$0] }, set: { $0[0] }),
+                showAnswersState: $showAnswersState
             )
         }
     }
@@ -53,9 +68,10 @@ struct FormQuestionView_Previews: PreviewProvider {
     struct PreviewHelper: View {
 
         @State var question: FormQuestion
+        @State var showAnswersState: Bool
 
         var body: some View {
-            FormQuestionView(question: $question)
+            FormQuestionView(question: $question, showAnswersState: $showAnswersState)
         }
     }
 
@@ -89,7 +105,8 @@ struct FormQuestionView_Previews: PreviewProvider {
                         checked: false
                     )
                 ]
-            )
+            ),
+            showAnswersState: false
         )
     }
 }

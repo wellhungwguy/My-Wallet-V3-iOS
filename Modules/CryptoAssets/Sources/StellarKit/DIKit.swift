@@ -34,10 +34,8 @@ extension DependencyContainer {
 
         single { () -> StellarWalletAccountRepositoryAPI in
             StellarWalletAccountRepository(
-                bridge: DIKit.resolve(),
                 metadataEntryService: DIKit.resolve(),
-                mnemonicAccessAPI: DIKit.resolve(),
-                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+                mnemonicAccessAPI: DIKit.resolve()
             )
         }
 

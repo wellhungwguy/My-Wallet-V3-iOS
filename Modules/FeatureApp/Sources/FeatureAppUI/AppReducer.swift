@@ -105,24 +105,23 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     featureFlagsService: env.featureFlagsService,
                     fiatCurrencySettingsService: env.fiatCurrencySettingsService,
                     forgetWalletService: env.forgetWalletService,
+                    legacyGuidRepository: env.legacyGuidRepository,
+                    legacySharedKeyRepository: env.legacySharedKeyRepository,
                     loadingViewPresenter: env.loadingViewPresenter,
                     mainQueue: env.mainQueue,
                     mobileAuthSyncService: env.mobileAuthSyncService,
                     nabuUserService: env.nabuUserService,
-                    nativeWalletFlagEnabled: { nativeWalletFlagEnabled() },
                     observabilityService: env.observabilityService,
                     performanceTracing: env.performanceTracing,
                     pushNotificationsRepository: env.pushNotificationsRepository,
+                    reactiveWallet: env.reactiveWallet,
                     remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
                     resetPasswordService: env.resetPasswordService,
-                    secondPasswordPrompter: env.secondPasswordPrompter,
                     sharedContainer: env.sharedContainer,
                     siftService: env.siftService,
-                    walletManager: env.walletManager,
                     walletPayloadService: env.walletPayloadService,
                     walletService: env.walletService,
                     walletStateProvider: env.walletStateProvider,
-                    walletUpgradeService: env.walletUpgradeService,
                     recaptchaService: env.recaptchaService
                 )
             }
@@ -130,7 +129,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
     appReducerCore
 )
 
-// swiftlint:disable closure_body_length
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching):
@@ -148,18 +146,9 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         }
 
         return .merge(
-            nativeWalletFlagEnabled()
-                .flatMap { isEnabled -> Effect<AppAction, Never> in
-                    guard isEnabled else {
-                        if environment.walletManager.walletIsInitialized() {
-                            environment.walletManager.close()
-                        }
-                        return .none
-                    }
-                    environment.walletStateProvider.releaseState()
-                    return .none
-                }
-                .fireAndForget(),
+            .fireAndForget {
+                environment.walletStateProvider.releaseState()
+            },
             .fireAndForget {
                 environment.urlSession.reset {
                     Logger.shared.debug("URLSession reset completed.")
@@ -198,18 +187,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         return .none
     case .core(.start):
         return .merge(
-            environment.app
-                .publisher(for: blockchain.app.configuration.native.wallet.payload.is.enabled, as: Bool.self)
-                .prefix(1)
-                .replaceError(with: false)
-                .receive(on: environment.mainQueue)
-                .eraseToEffect()
-                .map { isEnabled in
-                    guard isEnabled else {
-                        return .none
-                    }
-                    return .walletPersistence(.begin)
-                },
+            Effect(value: .walletPersistence(.begin)),
             Effect(value: .core(.onboarding(.start)))
         )
     case .walletPersistence(.begin):

@@ -1,47 +1,24 @@
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
 
-Modules/Analytics/ @mburda-bc
-Modules/BlockchainComponentLibrary/ @mburda-bc @oliveratkinson-bc
+Modules/BlockchainComponentLibrary/ @oliveratkinson-bc
 Modules/BlockchainNamespace/ @oliveratkinson-bc
-Modules/CommonCrypto/ @jackpooleybc
+Modules/CommonCrypto/ @paulo-bc @dchatzieleftheriou-bc
 Modules/ComposableArchitectureExtensions/ @oliveratkinson-bc
-Modules/CryptoAssets/BitcoinCashKit/ @paulo-bc @jackpooleybc
-Modules/CryptoAssets/BitcoinChainKit/ @paulo-bc @jackpooleybc
-Modules/CryptoAssets/BitcoinKit/ @paulo-bc @jackpooleybc
-Modules/CryptoAssets/BitcoinKitMock/ @paulo-bc @jackpooleybc
-Modules/CryptoAssets/ERC20DataKit/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/ERC20DataKitMock/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/ERC20Kit/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/ERC20KitMock/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/EthereumKit/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/EthereumKitMock/ @jackpooleybc @paulo-bc
-Modules/CryptoAssets/StellarKit/ @thisisalexmcgregor
-Modules/CryptoAssets/StellarKitMock/ @thisisalexmcgregor
-Modules/FeatureAccountPicker/ @mburda-bc
+Modules/CryptoAssets/ @paulo-bc
 Modules/FeatureActivity/ @thisisalexmcgregor @oliveratkinson-bc
 Modules/FeatureApp/ @dchatzieleftheriou-bc
-Modules/FeatureAuthentication/ @grayson-bc @dchatzieleftheriou-bc
+Modules/FeatureAuthentication/ @dchatzieleftheriou-bc
 Modules/FeatureCardPayment/ @crucheton-bc
 Modules/FeatureCardIssuing/ @crucheton-bc
 Modules/FeatureDashboard/ @paulo-bc @dchatzieleftheriou-bc
 Modules/FeatureDebug/ @dchatzieleftheriou-bc
 Modules/FeatureInterest/ @thisisalexmcgregor
-Modules/FeatureKYC/ @gtranchedone-bc
-Modules/FeatureOnboarding/ @gtranchedone-bc
-Modules/FeatureSettings/ @thisisalexmcgregor @mburda-bc @dchatzieleftheriou-bc
-Modules/FeatureTour/ @gtranchedone-bc
-Modules/FeatureTransaction/ @thisisalexmcgregor @mburda-bc @oliveratkinson-bc
-Modules/HDWallet/ @jackpooleybc
+Modules/FeatureSettings/ @thisisalexmcgregor @dchatzieleftheriou-bc
+Modules/FeatureTransaction/ @thisisalexmcgregor @oliveratkinson-bc
 Modules/Keychain/ @dchatzieleftheriou-bc
-Modules/Metadata/ @jackpooleybc
-Modules/Network/ @jackpooleybc
-Modules/NetworkErrors/ @jackpooleybc
+Modules/Metadata/ @dchatzieleftheriou-bc
 Modules/FeatureOpenBanking/ @oliveratkinson-bc
-Modules/Platform/ @paulo-bc @thisisalexmcgregor @dchatzieleftheriou-bc @jackpooleybc
+Modules/Platform/ @paulo-bc @thisisalexmcgregor @dchatzieleftheriou-bc
 Modules/RemoteNotifications/ @paulo-bc
-Modules/RxAnalytics/ @mburda-bc
-Modules/RxTool/ @jackpooleybc
-Modules/Test/ @gtranchedone-bc @paulo-bc
-Modules/Tool/ @jackpooleybc
-Modules/UIComponents/ @gtranchedone-bc @oliveratkinson-bc
-Modules/WalletPayload/ @jackpooleybc @dchatzieleftheriou-bc
+Modules/UIComponents/ @oliveratkinson-bc
+Modules/WalletPayload/ @dchatzieleftheriou-bc

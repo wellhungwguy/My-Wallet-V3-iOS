@@ -66,13 +66,13 @@ let package = Package(
             name: "BitcoinCashKit",
             dependencies: [
                 .target(name: "BitcoinChainKit"),
+                .target(name: "_BitcoinSDK"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "YenomBitcoinKit", package: "YenomBitcoinKit")
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
@@ -144,15 +144,25 @@ let package = Package(
         .target(
             name: "StellarKit",
             dependencies: [
+                .target(name: "_StellarSDK"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "FeatureCryptoDomainDomain", package: "FeatureCryptoDomain"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "stellarsdk", package: "stellar-ios-mac-sdk"),
                 .product(name: "ToolKit", package: "Tool")
             ]
+        ),
+        .target(
+            name: "_StellarSDK",
+            dependencies: [.product(name: "stellarsdk", package: "stellar-ios-mac-sdk")],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
+        ),
+        .target(
+            name: "_BitcoinSDK",
+            dependencies: [.product(name: "YenomBitcoinKit", package: "YenomBitcoinKit")],
+            swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
         ),
         .target(
             name: "BitcoinChainKitMock",

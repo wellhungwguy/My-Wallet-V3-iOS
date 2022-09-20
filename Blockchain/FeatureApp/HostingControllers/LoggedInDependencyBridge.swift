@@ -188,7 +188,6 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) { wrapped.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: isOriginDeposit) }
     func switchTabToSwap() { wrapped.switchTabToSwap() }
     func logout() { wrapped.logout() }
-    func handleAccountsAndAddresses() { wrapped.handleAccountsAndAddresses() }
     func handleSupport() { wrapped.handleSupport() }
     func handleSecureChannel() { wrapped.handleSecureChannel() }
     func logoutAndForgetWallet() { wrapped.logoutAndForgetWallet() }
@@ -226,7 +225,6 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {}
     func switchTabToSwap() {}
     func logout() {}
-    func handleAccountsAndAddresses() {}
     func handleSupport() {}
     func handleSecureChannel() {}
     func logoutAndForgetWallet() {}

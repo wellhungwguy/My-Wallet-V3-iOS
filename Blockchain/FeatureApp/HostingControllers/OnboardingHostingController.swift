@@ -7,6 +7,7 @@ import DIKit
 import FeatureAppUI
 import FeatureAppUpgradeUI
 import FeatureAuthenticationUI
+import Localization
 import PlatformUIKit
 import SwiftUI
 import ToolKit
@@ -103,18 +104,6 @@ final class OnboardingHostingController: UIViewController {
             .store(in: &cancellables)
 
         store
-            .scope(state: \.walletUpgradeState, action: Onboarding.Action.walletUpgrade)
-            .ifLet(then: { [weak self] _ in
-                guard let self = self else { return }
-                let walletUpgradeController = self.setupWalletUpgrade {
-                    self.viewStore.send(.walletUpgrade(.completed))
-                }
-                self.transitionFromCurrentController(to: walletUpgradeController)
-                self.currentController = walletUpgradeController
-            })
-            .store(in: &cancellables)
-
-        store
             .scope(state: \.appUpgradeState, action: Onboarding.Action.appUpgrade)
             .ifLet(then: { [weak self] store in
                 guard let self = self else { return }
@@ -161,15 +150,6 @@ final class OnboardingHostingController: UIViewController {
         }
     }
 
-    // MARK: Wallet Upgrade
-
-    // Provides the view controller that displays the wallet upgrade
-    private func setupWalletUpgrade(completion: @escaping () -> Void) -> WalletUpgradeViewController {
-        let interactor = WalletUpgradeInteractor(completion: completion)
-        let presenter = WalletUpgradePresenter(interactor: interactor)
-        return WalletUpgradeViewController(presenter: presenter)
-    }
-
     // MARK: Alerts
 
     private func showAlert(type: Onboarding.Alert) {
@@ -180,22 +160,6 @@ final class OnboardingHostingController: UIViewController {
                 message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
             )
             alertViewPresenter.notify(content: content, in: self)
-        case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
-            handleFailedToLoadWalletAlert()
-        case .walletAuthentication(let error) where error.code == .noInternet:
-            let content = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.noInternetConnection
-            )
-            alertViewPresenter.notify(content: content, in: self)
-        case .walletAuthentication(let error):
-            if let description = error.description {
-                let content = AlertViewContent(
-                    title: LocalizationConstants.Errors.error,
-                    message: description
-                )
-                alertViewPresenter.notify(content: content, in: self)
-            }
         case .walletCreation(let error):
             let content = AlertViewContent(
                 title: LocalizationConstants.Errors.error,
@@ -209,47 +173,6 @@ final class OnboardingHostingController: UIViewController {
             )
             alertViewPresenter.notify(content: content, in: self)
         }
-    }
-}
-
-extension OnboardingHostingController {
-    // TODO: We should revisit this
-    private func handleFailedToLoadWalletAlert() {
-        let alertController = UIAlertController(
-            title: LocalizationConstants.Authentication.failedToLoadWallet,
-            message: LocalizationConstants.Authentication.failedToLoadWalletDetail,
-            preferredStyle: .alert
-        )
-        alertController.addAction(
-            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { [weak self] _ in
-
-                let forgetWalletAlert = UIAlertController(
-                    title: LocalizationConstants.Errors.warning,
-                    message: LocalizationConstants.Authentication.forgetWalletDetail,
-                    preferredStyle: .alert
-                )
-                forgetWalletAlert.addAction(
-                    UIAlertAction(title: LocalizationConstants.cancel, style: .cancel) { [weak self] _ in
-                        self?.handleFailedToLoadWalletAlert()
-                    }
-                )
-                forgetWalletAlert.addAction(
-                    UIAlertAction(
-                        title: LocalizationConstants.Authentication.forgetWallet,
-                        style: .default
-                    ) { [weak self] _ in
-                        self?.viewStore.send(.forgetWallet)
-                    }
-                )
-                self?.present(forgetWalletAlert, animated: true)
-            }
-        )
-        alertController.addAction(
-            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { _ in
-                UIApplication.shared.suspendApp()
-            }
-        )
-        present(alertController, animated: true)
     }
 }
 

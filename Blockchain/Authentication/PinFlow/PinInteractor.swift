@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -29,9 +31,7 @@ final class PinInteractor: PinInteracting {
     var hasLogoutAttempted = false
 
     private let pinClient: PinClientAPI
-    private let maintenanceService: MaintenanceServicing
     private let passwordRepository: PasswordRepositoryAPI
-    private let wallet: WalletProtocol
     private let appSettings: AppSettingsAuthenticating
     private let recorder: ErrorRecording
     private let cacheSuite: CacheSuite
@@ -44,12 +44,9 @@ final class PinInteractor: PinInteracting {
     init(
         passwordRepository: PasswordRepositoryAPI = resolve(),
         pinClient: PinClientAPI = PinClient(),
-        maintenanceService: MaintenanceServicing = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet,
         appSettings: AppSettingsAuthenticating = resolve(),
         recorder: Recording = CrashlyticsRecorder(),
         cacheSuite: CacheSuite = resolve(),
-        walletRepository: WalletRepositoryAPI = resolve(),
         walletCryptoService: WalletCryptoServiceAPI = resolve()
     ) {
         loginService = PinLoginService(
@@ -58,8 +55,6 @@ final class PinInteractor: PinInteracting {
         )
         self.passwordRepository = passwordRepository
         self.pinClient = pinClient
-        self.maintenanceService = maintenanceService
-        self.wallet = wallet
         self.appSettings = appSettings
         self.recorder = recorder
         self.cacheSuite = cacheSuite
@@ -68,26 +63,12 @@ final class PinInteractor: PinInteracting {
 
     // MARK: - API
 
-    // TODO: Re-enable this once we have isolated the source of the crash
-    //    func serverStatus() -> Observable<ServerIncidents> {
-    //        maintenanceService.serverStatus
-    //            .filter { $0.hasActiveMajorIncident }
-    //            .asObservable()
-    //            .catch { [weak self] (error) -> Observable<ServerIncidents> in
-    //                self?.recorder.error(error)
-    //                return .empty()
-    //            }
-    //    }
-
     /// Creates a pin code in the remote pin store
     /// - Parameter payload: the pin payload
     /// - Returns: Completable indicating completion
     func create(using payload: PinPayload) -> Completable {
-        maintenanceService.serverUnderMaintenanceMessage
-            .flatMap(weak: self) { (self, message) -> Single<PinStoreResponse> in
-                if let message = message { throw PinError.serverMaintenance(message: message) }
-                return self.pinClient.create(pinPayload: payload).asSingle()
-            }
+        pinClient.create(pinPayload: payload)
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, response) in
                 self.handleCreatePinResponse(response: response, payload: payload)
             }
@@ -104,11 +85,8 @@ final class PinInteractor: PinInteracting {
     /// - Parameter payload: the pin payload
     /// - Returns: Single warpping the pin decryption key
     func validate(using payload: PinPayload) -> Single<String> {
-        maintenanceService.serverUnderMaintenanceMessage
-            .flatMap(weak: self) { (self, message) -> Single<PinStoreResponse> in
-                if let message = message { throw PinError.serverMaintenance(message: message) }
-                return self.pinClient.validate(pinPayload: payload).asSingle()
-            }
+        pinClient.validate(pinPayload: payload)
+            .asSingle()
             .do(
                 onSuccess: { [weak self] response in
                     guard let self = self else { return }
@@ -172,20 +150,18 @@ final class PinInteractor: PinInteracting {
 
     private func handleCreatePinResponse(response: PinStoreResponse, payload: PinPayload) -> Completable {
         passwordRepository.password
-            .asObservable()
-            .take(1)
-            .asSingle()
-            .flatMap { [weak self] password -> Single<(pin: String, password: String)> in
+            .setFailureType(to: PinError.self)
+            .flatMap { [weak self] password -> AnyPublisher<(pin: String, password: String), PinError> in
                 // Wallet must have password at the stage
                 guard let password = password else {
                     let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
                     self?.recorder.error(error)
-                    return .error(error)
+                    return .failure(error)
                 }
 
                 guard response.error == nil else {
                     self?.recorder.error(PinError.serverError(""))
-                    return .error(PinError.serverError(response.error!))
+                    return .failure(PinError.serverError(response.error!))
                 }
 
                 guard response.isSuccessful else {
@@ -195,7 +171,7 @@ final class PinInteractor: PinInteracting {
                     )
                     let error = PinError.serverError(message)
                     self?.recorder.error(error)
-                    return .error(error)
+                    return .failure(error)
                 }
 
                 guard let pinValue = payload.pinValue,
@@ -204,24 +180,22 @@ final class PinInteractor: PinInteracting {
                 else {
                     let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
                     self?.recorder.error(error)
-                    return .error(error)
+                    return .failure(error)
                 }
                 return .just((pin: pinValue, password: password))
             }
-            .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
-                self.walletCryptoService
+            .flatMap { [walletCryptoService] data -> AnyPublisher<(encryptedPinPassword: String, password: String), PinError> in
+                walletCryptoService
                     .encrypt(
                         pair: KeyDataPair(key: data.pin, data: data.password),
                         pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin
                     )
                     .map { (encryptedPinPassword: $0, password: data.password) }
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
+                    .mapError(PinError.encryptedPinPasswordFailed)
+                    .eraseToAnyPublisher()
             }
+            .asSingle()
             .flatMapCompletable(weak: self) { (self, data) -> Completable in
-                // Once the pin has been created successfully, the wallet is not longer marked as new.
-                self.wallet.isNew = false
                 // Update the cache
                 self.appSettings.set(encryptedPinPassword: data.encryptedPinPassword)
                 self.appSettings.set(pinKey: payload.pinKey)

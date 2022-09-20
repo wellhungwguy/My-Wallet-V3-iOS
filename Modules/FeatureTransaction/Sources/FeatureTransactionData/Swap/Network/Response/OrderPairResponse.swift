@@ -28,11 +28,9 @@ struct OrderPairResponse: RawRepresentable {
 
     init?(rawValue: String) {
         var components: [String] = []
-        for value in ["-", "_"] {
-            if rawValue.contains(value) {
-                components = rawValue.components(separatedBy: value)
-                break
-            }
+        for value in ["-", "_"] where rawValue.contains(value) {
+            components = rawValue.components(separatedBy: value)
+            break
         }
         guard let source = components.first else { return nil }
         guard let destination = components.last else { return nil }
@@ -50,11 +48,9 @@ struct OrderPairResponse: RawRepresentable {
 
     init(string: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) throws {
         var components: [String] = []
-        for value in ["-", "_"] {
-            if string.contains(value) {
-                components = string.components(separatedBy: value)
-                break
-            }
+        for value in ["-", "_"] where string.contains(value) {
+            components = string.components(separatedBy: value)
+            break
         }
 
         guard let source = components.first else {

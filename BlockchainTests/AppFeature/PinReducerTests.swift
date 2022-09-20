@@ -36,7 +36,6 @@ class PinReducerTests: XCTestCase {
             initialState: PinCore.State(),
             reducer: pinReducer,
             environment: PinCore.Environment(
-                appSettings: settingsApp,
                 alertPresenter: MockAlertViewPresenter()
             )
         )

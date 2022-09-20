@@ -41,7 +41,6 @@ final class PricesInterpolator {
 
 extension OrderPriceTier {
 
-    // swiftlint:disable:next large_tuple
     fileprivate var data: (volume: BigInt, price: BigInt, margin: (price: BigInt, ())) {
         (
             volume: volume.bigInt,

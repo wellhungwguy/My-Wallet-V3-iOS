@@ -22,7 +22,7 @@ extension DependencyContainer {
 
         single { PasswordValidator() as PasswordValidatorAPI }
 
-        single { SeedPhraseValidator() as SeedPhraseValidatorAPI }
+        single { SeedPhraseValidator(words: Set(WalletPayloadKit.WordList.defaultWords)) as SeedPhraseValidatorAPI }
 
         single { SharedKeyParsingService() }
 
@@ -32,16 +32,9 @@ extension DependencyContainer {
 
         single { NabuAuthenticationErrorBroadcaster() }
 
-        factory { () -> WalletRepositoryAPI in
-            let walletRepositoryProvider: WalletRepositoryProvider = DIKit.resolve()
-            return walletRepositoryProvider.repository as WalletRepositoryAPI
-        }
-
         factory { () -> WalletRecoveryService in
             WalletRecoveryService.live(
-                walletManager: DIKit.resolve(),
-                walletRecovery: DIKit.resolve(),
-                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+                walletRecovery: DIKit.resolve()
             )
         }
 
@@ -49,20 +42,16 @@ extension DependencyContainer {
             let app: AppProtocol = DIKit.resolve()
             let settingsClient: UpdateSettingsClientAPI = DIKit.resolve()
             return WalletCreationService.live(
-                walletManager: DIKit.resolve(),
                 walletCreator: DIKit.resolve(),
                 nabuRepository: DIKit.resolve(),
-                updateCurrencyService: provideUpdateCurrencyForWallets(app: app, client: settingsClient),
-                nativeWalletCreationEnabled: { nativeWalletCreationFlagEnabled() }
+                updateCurrencyService: provideUpdateCurrencyForWallets(app: app, client: settingsClient)
             )
         }
 
         factory { () -> WalletFetcherService in
             WalletFetcherService.live(
-                walletManager: DIKit.resolve(),
                 accountRecoveryService: DIKit.resolve(),
-                walletFetcher: DIKit.resolve(),
-                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+                walletFetcher: DIKit.resolve()
             )
         }
 
@@ -79,7 +68,74 @@ extension DependencyContainer {
         factory { () -> NabuAuthenticationExecutorProvider in
             { () -> NabuAuthenticationExecutorAPI in
                 DIKit.resolve()
-            } as NabuAuthenticationExecutorProvider
+            }
+        }
+
+        factory { () -> TwoFAWalletServiceAPI in
+            TwoFAWalletService(
+                repository: DIKit.resolve(),
+                walletRepo: DIKit.resolve()
+            )
+        }
+
+        factory { () -> WalletPayloadServiceAPI in
+            WalletPayloadService(
+                repository: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                credentialsRepository: DIKit.resolve()
+            )
+        }
+
+        factory { () -> LoginServiceAPI in
+            LoginService(
+                payloadService: DIKit.resolve(),
+                twoFAPayloadService: DIKit.resolve(),
+                repository: DIKit.resolve()
+            )
+        }
+
+        factory { () -> AutoWalletPairingServiceAPI in
+            AutoWalletPairingService(
+                walletPayloadService: DIKit.resolve(),
+                walletPairingRepository: DIKit.resolve(),
+                walletCryptoService: DIKit.resolve(),
+                parsingService: DIKit.resolve()
+            )
+        }
+
+        factory { () -> GuidServiceAPI in
+            GuidService(
+                sessionTokenRepository: DIKit.resolve(),
+                guidRepository: DIKit.resolve()
+            )
+        }
+
+        factory { () -> SessionTokenServiceAPI in
+            SessionTokenService(
+                sessionRepository: DIKit.resolve()
+            )
+        }
+
+        factory { () -> SMSServiceAPI in
+            SMSService(
+                smsRepository: DIKit.resolve(),
+                credentialsRepository: DIKit.resolve(),
+                sessionTokenRepository: DIKit.resolve()
+            )
+        }
+
+        factory { () -> EmailAuthorizationServiceAPI in
+            EmailAuthorizationService(
+                guidService: DIKit.resolve()
+            )
+        }
+
+        factory { () -> DeviceVerificationServiceAPI in
+            DeviceVerificationService(
+                deviceVerificationRepository: DIKit.resolve(),
+                sessionTokenRepository: DIKit.resolve(),
+                recaptchaService: DIKit.resolve()
+            )
         }
     }
 }

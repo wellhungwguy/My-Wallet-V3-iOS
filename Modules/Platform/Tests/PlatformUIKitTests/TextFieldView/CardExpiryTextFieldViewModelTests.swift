@@ -13,6 +13,7 @@ final class CardExpiryTextFieldViewModelTests: XCTestCase {
     private var viewModel: CardExpiryTextFieldViewModel!
 
     override func setUp() {
+        super.setUp()
         viewModel = CardExpiryTextFieldViewModel(
             messageRecorder: MockMessageRecorder()
         )

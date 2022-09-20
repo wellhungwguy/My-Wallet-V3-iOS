@@ -2,7 +2,6 @@
 
 import Combine
 import Errors
-import HDWalletKit
 import MoneyKit
 import ToolKit
 import WalletCore
@@ -59,47 +58,39 @@ public struct WalletCoreKeyPair {
 private func walletCoreKeyPair(
     for unspentOutput: UnspentOutput,
     context: AccountKeyContext
-) -> Result<WalletCoreKeyPair, Error> {
-    derivationPath(for: unspentOutput)
-        .map(\.walletCoreComponents)
+) -> Result<WalletCoreKeyPair, GetWalletKeysError> {
+    derivationPathComponents(for: unspentOutput)
         .map { childKeyPath -> WalletCoreKeyPair in
-            let unspentOutputIsSegWit = unspentOutput.isSegwit
             let derivation = context.derivations.all
                 .first(where: { derivation in
-                    derivation.type.isSegwit == unspentOutputIsSegWit
+                    derivation.xpub == unspentOutput.xpub.m
                 })!
-            let key = derivation.childKey(with: childKeyPath)
-            let xpriv = derivation.xpriv
-            let xpub = derivation.xpub
             return WalletCoreKeyPair(
-                privateKey: key,
-                xpriv: xpriv,
-                xpub: xpub
+                privateKey: derivation.childKey(with: childKeyPath),
+                xpriv: derivation.xpriv,
+                xpub: derivation.xpub
             )
         }
 }
 
-func derivationPath(
+enum GetWalletKeysError: Error {
+    case failedToReadDerivationPath
+}
+
+func derivationPathComponents(
     for unspentOutput: UnspentOutput
-) -> Result<HDWalletKit.HDKeyPath, Error> {
-    HDKeyPath.from(string: unspentOutput.xpub.path)
-        .eraseError()
+) -> Result<[WalletCore.DerivationPath.Index], GetWalletKeysError> {
+    .success(unspentOutput.xpub.walletCoreComponents)
 }
 
-extension DerivationComponent {
-
-    fileprivate var walletCoreDerivationComponent: WalletCore.DerivationPath.Index {
-        switch self {
-        case .normal(let index):
-            return .init(index, hardened: false)
-        case .hardened(let index):
-            return .init(index, hardened: true)
-        }
-    }
-}
-
-extension HDKeyPath {
-    var walletCoreComponents: [WalletCore.DerivationPath.Index] {
-        components.map(\.walletCoreDerivationComponent)
+extension UnspentOutput.XPub {
+    fileprivate var walletCoreComponents: [WalletCore.DerivationPath.Index] {
+        path
+            .removing(prefix: "M/")
+            .components(separatedBy: "/")
+            .compactMap(UInt32.init)
+            .map { intValue in
+                WalletCore.DerivationPath.Index(intValue, hardened: false)
+            }
     }
 }

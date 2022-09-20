@@ -6,7 +6,7 @@ import Errors
 import Foundation
 import ToolKit
 
-public final class DeviceVerificationService: DeviceVerificationServiceAPI {
+final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - Properties
 
@@ -18,14 +18,14 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - Setup
 
-    public init(
+    init(
         pollingQueue: DispatchQueue = DispatchQueue(
             label: "com.blockchain.DeviceVerificationPolling",
             qos: .background
         ),
-        deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
-        sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
-        recaptchaService: GoogleRecaptchaServiceAPI = resolve(),
+        deviceVerificationRepository: DeviceVerificationRepositoryAPI,
+        sessionTokenRepository: SessionTokenRepositoryAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
         self.pollingQueue = pollingQueue
@@ -37,7 +37,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - AuthenticationServiceAPI
 
-    public func sendDeviceVerificationEmail(
+    func sendDeviceVerificationEmail(
         to emailAddress: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         recaptchaService
@@ -63,7 +63,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+    func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         sessionTokenRepository
             .sessionToken
             .flatMap { token -> AnyPublisher<String, DeviceVerificationServiceError> in
@@ -80,7 +80,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func handleLoginRequestDeeplink(
+    func handleLoginRequestDeeplink(
         url deeplink: URL
     ) -> AnyPublisher<WalletInfo, WalletInfoError> {
         extractWalletInfoFromDeeplink(url: deeplink)
@@ -125,7 +125,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func pollForWalletInfo()
+    func pollForWalletInfo()
         -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError>
     {
         sessionTokenRepository
@@ -157,7 +157,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func authorizeVerifyDevice(
+    func authorizeVerifyDevice(
         from sessionToken: String,
         payload: String,
         confirmDevice: Bool?

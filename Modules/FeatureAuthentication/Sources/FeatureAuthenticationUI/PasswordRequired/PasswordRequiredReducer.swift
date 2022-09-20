@@ -65,7 +65,6 @@ public struct PasswordRequiredEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let externalAppOpener: ExternalAppOpener
     let walletPayloadService: WalletPayloadServiceAPI
-    let walletManager: WalletManagerAPI
     let pushNotificationsRepository: PushNotificationsRepositoryAPI
     let mobileAuthSyncService: MobileAuthSyncServiceAPI
     let forgetWalletService: ForgetWalletService
@@ -74,7 +73,6 @@ public struct PasswordRequiredEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         externalAppOpener: ExternalAppOpener,
         walletPayloadService: WalletPayloadServiceAPI,
-        walletManager: WalletManagerAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         forgetWalletService: ForgetWalletService
@@ -82,7 +80,6 @@ public struct PasswordRequiredEnvironment {
         self.mainQueue = mainQueue
         self.externalAppOpener = externalAppOpener
         self.walletPayloadService = walletPayloadService
-        self.walletManager = walletManager
         self.pushNotificationsRepository = pushNotificationsRepository
         self.mobileAuthSyncService = mobileAuthSyncService
         self.forgetWalletService = forgetWalletService
@@ -93,7 +90,6 @@ public let passwordRequiredReducer = Reducer<
     PasswordRequiredState,
     PasswordRequiredAction,
     PasswordRequiredEnvironment
-        // swiftlint:disable closure_body_length
 > { state, action, environment in
 
     switch action {
@@ -149,7 +145,6 @@ public let passwordRequiredReducer = Reducer<
         )
         return .none
     case .forgetWallet:
-        environment.walletManager.forgetWallet()
         return .merge(
             environment.forgetWalletService
                 .forget()

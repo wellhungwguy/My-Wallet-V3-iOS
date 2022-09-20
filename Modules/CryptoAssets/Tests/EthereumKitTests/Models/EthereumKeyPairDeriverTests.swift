@@ -6,11 +6,11 @@ import XCTest
 
 final class EthereumKeyPairDeriverTests: XCTestCase {
 
-    var subject: AnyEthereumKeyPairDeriver!
+    var subject: EthereumKeyPairDeriver!
 
     override func setUp() {
         super.setUp()
-        subject = AnyEthereumKeyPairDeriver(deriver: EthereumKeyPairDeriver())
+        subject = EthereumKeyPairDeriver()
     }
 
     override func tearDown() {

@@ -27,11 +27,9 @@ public struct OrderPair: RawRepresentable {
 
     public init?(rawValue: String) {
         var components: [String] = []
-        for value in ["-", "_"] {
-            if rawValue.contains(value) {
-                components = rawValue.components(separatedBy: value)
-                break
-            }
+        for value in ["-", "_"] where rawValue.contains(value) {
+            components = rawValue.components(separatedBy: value)
+            break
         }
         guard let source = components.first else { return nil }
         guard let destination = components.last else { return nil }

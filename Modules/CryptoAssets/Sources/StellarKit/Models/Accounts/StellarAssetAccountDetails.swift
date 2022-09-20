@@ -4,14 +4,14 @@ import MoneyKit
 import PlatformKit
 import stellarsdk
 
-public struct StellarAccountDetails: Equatable {
-    public let account: StellarAssetAccount
-    public let balance: CryptoValue
-    public let actionableBalance: CryptoValue
+struct StellarAccountDetails: Equatable {
+    let account: StellarAssetAccount
+    let balance: CryptoValue
+    let actionableBalance: CryptoValue
 }
 
 extension StellarAccountDetails {
-    public static func unfunded(accountID: String) -> StellarAccountDetails {
+    static func unfunded(accountID: String) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountID,
             name: CryptoCurrency.stellar.defaultWalletName,

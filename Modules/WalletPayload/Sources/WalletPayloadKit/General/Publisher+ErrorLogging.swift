@@ -16,12 +16,19 @@ extension Publisher {
             guard case .failure(let error) = completion else {
                 return
             }
-            #if DEBUG
-            fatalError("[Error]: \(String(describing: error))")
-            #else
+            if isDebug {
+                fatalError("[Error]: \(String(describing: error))")
+            }
             tracer.logError(error: error, properties: nil)
-            #endif
         })
         .eraseToAnyPublisher()
     }
+}
+
+private var isDebug: Bool {
+    var isDebug = false
+#if DEBUG
+    isDebug = true
+#endif
+    return isDebug
 }

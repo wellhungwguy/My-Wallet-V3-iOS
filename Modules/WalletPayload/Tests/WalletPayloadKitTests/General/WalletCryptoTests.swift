@@ -14,7 +14,6 @@ class WalletCryptoTests: XCTestCase {
     }
 
     func test_decrypt_value_using_second_password() throws {
-        // swiftlint:disable:next line_length
         let encryptedSeedHex = "YSxSY3q6gfjrmVoRg8GbJU9gyqFFQxitGEmxBKbmE40av+Daa/WIBQf2yguYlrEKPd5O2fgrJVmw9Otf2iVH5w=="
         let secPassword = "secret"
         let decryptedSeedHex = try decryptValue(

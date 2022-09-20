@@ -6,7 +6,6 @@ import Foundation
 import TestKit
 import XCTest
 
-// swiftlint:disable line_length
 class AccountDecodingTests: XCTestCase {
 
     let jsonV3 = Fixtures.loadJSONData(filename: "hdaccount.v3", in: .module)!
@@ -97,5 +96,3 @@ class AccountDecodingTests: XCTestCase {
         )
     }
 }
-
-// swiftlint:enable line_length

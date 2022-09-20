@@ -12,8 +12,6 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-// swiftlint:disable file_length
-
 enum TransitionType: Equatable {
     case push
     case modal
@@ -151,7 +149,6 @@ public protocol TransactionFlowListener: AnyObject {
     func dismissTransactionFlow()
 }
 
-// swiftlint:disable type_body_length
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
     TransactionFlowInteractable,
     AccountPickerListener,
@@ -1000,21 +997,21 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .showEnterAmount)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .returnToPreviousStep)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ async throws in
             guard let transactionModel = self?.transactionModel else { return }
             let state = try await transactionModel.state.await()
             guard state.step != .linkBankViaWire else { return }
@@ -1024,7 +1021,7 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .resetFlow)
         }

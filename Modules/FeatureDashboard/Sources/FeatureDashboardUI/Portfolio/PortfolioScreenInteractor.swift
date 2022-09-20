@@ -128,8 +128,6 @@ public final class PortfolioScreenInteractor {
 
     func refresh() {
         reactiveWallet.waitUntilInitializedFirst
-            .asObservable()
-            .take(1)
             .asSingle()
             .subscribe(onSuccess: { [weak self] _ in
                 self?.refreshAfterReactiveWallet()

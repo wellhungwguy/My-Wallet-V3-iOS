@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct WalletKeyPair {
+public struct WalletKeyPair: Equatable {
 
     /// The wallet private key
     public let xpriv: String

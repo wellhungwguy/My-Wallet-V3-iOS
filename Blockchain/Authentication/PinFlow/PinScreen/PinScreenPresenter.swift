@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import LocalAuthentication
 import Localization
@@ -15,25 +16,12 @@ private enum PinScreenPresenterError: Error {
     case absentPinValueWhenAuthenticateUsingBiometrics
 }
 
-// TODO: Dimitris - Move this to correct place
-public struct ServerStatusViewModel {
-    public let title: String?
-    public let textViewModel: InteractableTextViewModel
-
-    public init(title: String?, textViewModel: InteractableTextViewModel) {
-        self.title = title
-        self.textViewModel = textViewModel
-    }
-}
-
 /// Presenter for PIN screen
 final class PinScreenPresenter {
 
     // MARK: - Types
 
-    typealias Settings = AppSettingsAPI &
-        AppSettingsAuthenticating &
-        CloudBackupConfiguring
+    typealias Settings = AppSettingsAuthenticating & CloudBackupConfiguring
 
     // MARK: - Properties
 
@@ -113,22 +101,6 @@ final class PinScreenPresenter {
             .observe(on: MainScheduler.instance)
     }
 
-    var serverStatusRelay = PublishRelay<ServerStatusViewModel>()
-    var serverStatus: Driver<ServerStatusViewModel> {
-        serverStatusRelay
-            .asDriver(onErrorDriveWith: .empty())
-    }
-
-    var learnMoreServerStatusTap: Signal<URL> {
-        serverStatusRelay
-            .map(\.textViewModel)
-            .flatMap(\.tap)
-            .map(\.url)
-            .asSignal(onErrorSignalWith: .empty())
-    }
-
-    let serverStatusTitle = LocalizationConstants.ServerStatus.mainTitle
-
     private let digitPadIsEnabledRelay = BehaviorRelay<Bool>(value: true)
     var digitPadIsEnabled: Observable<Bool> {
         digitPadIsEnabledRelay
@@ -156,6 +128,9 @@ final class PinScreenPresenter {
     private let biometryProvider: BiometryProviding
     private let credentialsStore: CredentialsStoreAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let legacyGuidRepository: LegacyGuidRepositoryAPI
+    private let legacySharedKeyRepository: LegacySharedKeyRepositoryAPI
+    private let reachability: Reachability
 
     // MARK: - View Models
 
@@ -176,11 +151,14 @@ final class PinScreenPresenter {
         interactor: PinInteracting = PinInteractor(),
         biometryProvider: BiometryProviding = BiometryProvider(),
         appSettings: Settings = BlockchainSettings.App.shared,
+        legacyGuidRepository: LegacyGuidRepositoryAPI = resolve(),
+        legacySharedKeyRepository: LegacySharedKeyRepositoryAPI = resolve(),
         recorder: Recording = CrashlyticsRecorder(),
         credentialsStore: CredentialsStoreAPI = resolve(),
         backwardRouting: PinRouting.RoutingType.Backward? = nil,
         forwardRouting: @escaping PinRouting.RoutingType.Forward,
         performEffect: @escaping PinRouting.RoutingType.Effect,
+        reachability: Reachability = .init(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.useCase = useCase
@@ -194,6 +172,9 @@ final class PinScreenPresenter {
         self.credentialsStore = credentialsStore
         self.performEffect = performEffect
         self.analyticsRecorder = analyticsRecorder
+        self.legacyGuidRepository = legacyGuidRepository
+        self.legacySharedKeyRepository = legacySharedKeyRepository
+        self.reachability = reachability
 
         verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
 
@@ -311,34 +292,9 @@ final class PinScreenPresenter {
             .map { $0 == 0 }
             .bindAndCatch(to: digitPadIsEnabledRelay)
             .disposed(by: disposeBag)
-
-        learnMoreServerStatusTap
-            .emit(weak: self) { (self, url) in
-                self.performEffect(.openLink(url: url))
-            }
-            .disposed(by: disposeBag)
     }
 
-    func viewDidLoad() {
-
-        // TODO: Re-enable this once we have isolated the source of the crash
-//        interactor.serverStatus()
-//            .map { incident -> ServerStatusViewModel in
-//                ServerStatusViewModel(
-//                    title: nil,
-//                    textViewModel: .init(
-//                        inputs: [
-//                            .text(string: LocalizationConstants.ServerStatus.majorOutageSubtitle),
-//                            .url(string: LocalizationConstants.ServerStatus.learnMore, url: incident.page.url)
-//                        ],
-//                        textStyle: .init(color: .white, font: UIFont.main(.medium, 16)),
-//                        linkStyle: .init(color: .white, font: UIFont.main(.bold, 16))
-//                    )
-//                )
-//            }
-//            .bind(to: serverStatusRelay)
-//            .disposed(by: disposeBag)
-    }
+    func viewDidLoad() {}
 }
 
 // MARK: - Navigation
@@ -587,8 +543,8 @@ extension PinScreenPresenter {
                 .do(
                     onSuccess: { [weak self] data in
                         // Restore everything to settings so the app can progress normally
-                        self?.appSettings.set(guid: data.guid)
-                        self?.appSettings.set(sharedKey: data.sharedKey)
+                        self?.legacyGuidRepository.directSet(guid: data.guid)
+                        self?.legacySharedKeyRepository.directSet(sharedKey: data.sharedKey)
                     }
                 )
                 .asCompletable()
@@ -598,7 +554,11 @@ extension PinScreenPresenter {
     }
 
     private var shouldBackupCredentials: Bool {
-        appSettings.isPairedWithWallet && appSettings.cloudBackupEnabled
+        legacyGuidRepository.directGuid != nil
+            && legacySharedKeyRepository.directSharedKey != nil
+            && appSettings.pinKey != nil
+            && appSettings.encryptedPinPassword != nil
+            && appSettings.cloudBackupEnabled
     }
 
     /// Invoked during Second Pin Validation.
@@ -633,7 +593,7 @@ extension PinScreenPresenter {
     /// Validates if the pin is correct, by generating payload (i.e. pin code and pin key combination)
     /// - Returns: Single wrapping the pin decryption key
     private func verify() -> Single<String> {
-        guard Reachability.hasInternetConnection() else {
+        guard reachability.hasInternetConnection else {
             let reset = { [weak self] () -> Void in
                 self?.reset()
             }

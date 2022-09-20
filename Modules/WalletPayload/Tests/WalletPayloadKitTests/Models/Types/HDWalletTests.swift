@@ -8,7 +8,6 @@ import TestKit
 import ToolKit
 import XCTest
 
-// swiftlint:disable line_length
 class HDWalletTests: XCTestCase {
 
     func test_can_create_an_hd_wallet_from_mnemonic() {

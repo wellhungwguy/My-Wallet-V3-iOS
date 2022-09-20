@@ -6,32 +6,20 @@ import WalletPayloadKit
 
 final class LanguageRepository: LanguageRepositoryAPI {
 
-    // This is set to the older WalletRepository API, soon to be removed
-    private let walletRepository: WalletRepositoryAPI
     private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
-        walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepoAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        walletRepo: WalletRepoAPI
     ) {
-        self.walletRepository = walletRepository
         self.walletRepo = walletRepo
-        self.nativeWalletEnabled = nativeWalletEnabled
     }
 
     func set(language: String) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepository, walletRepo] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(language: language)
-                }
-                return walletRepo.set(keyPath: \.properties.language, value: language)
-                    .get()
-                    .mapToVoid()
-                    .mapError()
-            }
-            .eraseToAnyPublisher()
+        Deferred { [walletRepo] in
+            walletRepo.set(keyPath: \.properties.language, value: language)
+                .get()
+                .mapToVoid()
+        }
+        .eraseToAnyPublisher()
     }
 }

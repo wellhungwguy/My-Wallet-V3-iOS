@@ -6,7 +6,6 @@ import ToolKit
 import WalletPayloadKit
 
 extension WalletCreationService {
-    // swiftlint:disable line_length
     public static func mock() -> Self {
         WalletCreationService(
             createWallet: { _, _, _, _ -> AnyPublisher<WalletCreatedContext, WalletCreationServiceError> in

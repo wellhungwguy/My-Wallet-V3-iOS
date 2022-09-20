@@ -91,7 +91,6 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
     private let parsingSubject = CurrentValueSubject<Bool, Never>(false)
     private var cancellables = [AnyCancellable]()
 
-    // swiftlint:disable function_body_length
     init(
         types: [QRCodeScannerType],
         additionalParsingOptions: QRCodeScannerParsingOptions = .strict,

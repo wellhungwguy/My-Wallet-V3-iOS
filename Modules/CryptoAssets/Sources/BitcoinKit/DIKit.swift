@@ -19,12 +19,7 @@ extension DependencyContainer {
         single { BitcoinWalletAccountRepository() }
 
         factory { () -> BitcoinTxNotesStrategyAPI in
-            let walletTxNoteStrategy = TxNotesServiceProvider.provideWalletTxNoteStrategy()
-            return BitcoinTxNotesStrategy(
-                bridge: DIKit.resolve(),
-                service: walletTxNoteStrategy,
-                nativeWalletFeatureFlagEnabled: { nativeWalletFlagEnabled() }
-            )
+            TxNotesServiceProvider.provideWalletTxNoteStrategy()
         }
 
         factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }

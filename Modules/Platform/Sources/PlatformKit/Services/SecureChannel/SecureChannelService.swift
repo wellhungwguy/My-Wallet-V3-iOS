@@ -68,8 +68,10 @@ final class SecureChannelService: SecureChannelAPI {
 
     private let browserIdentityService: BrowserIdentityService
     private let secureChannelNetwork: SecureChannelClientAPI
-    private let walletRepository: WalletRepositoryAPI
     private let messageService: SecureChannelMessageService
+    private let guidRepository: GuidRepositoryAPI
+    private let sharedKeyRepository: SharedKeyRepositoryAPI
+    private let passwordRepository: PasswordRepositoryAPI
 
     // MARK: Init
 
@@ -77,12 +79,16 @@ final class SecureChannelService: SecureChannelAPI {
         browserIdentityService: BrowserIdentityService = resolve(),
         messageService: SecureChannelMessageService = resolve(),
         secureChannelNetwork: SecureChannelClientAPI = resolve(),
-        walletRepository: WalletRepositoryAPI = resolve()
+        guidRepository: GuidRepositoryAPI = resolve(),
+        sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
+        passwordRepository: PasswordRepositoryAPI = resolve()
     ) {
         self.browserIdentityService = browserIdentityService
         self.messageService = messageService
         self.secureChannelNetwork = secureChannelNetwork
-        self.walletRepository = walletRepository
+        self.guidRepository = guidRepository
+        self.sharedKeyRepository = sharedKeyRepository
+        self.passwordRepository = passwordRepository
     }
 
     // MARK: - SecureChannelAPI
@@ -128,9 +134,9 @@ final class SecureChannelService: SecureChannelAPI {
 
     func isReadyForSecureChannel() -> Single<Bool> {
         Single.zip(
-            walletRepository.hasGuid.asSingle(),
-            walletRepository.hasSharedKey.asSingle(),
-            walletRepository.hasPassword.asSingle()
+            guidRepository.hasGuid.asSingle(),
+            sharedKeyRepository.hasSharedKey.asSingle(),
+            passwordRepository.hasPassword.asSingle()
         )
         .map { hasGuid, hasSharedKey, hasPassword in
             hasGuid && hasSharedKey && hasPassword
@@ -233,7 +239,7 @@ final class SecureChannelService: SecureChannelAPI {
             .addBrowserIdentity(identity: browserIdentity)
             .single
             .flatMap(weak: self) { (self, _) -> Single<String?> in
-                self.walletRepository.guid.asSingle()
+                self.guidRepository.guid.asSingle()
             }
             .map { guid -> SecureChannel.PairingHandshake in
                 guard let guid = guid else {
@@ -253,9 +259,9 @@ final class SecureChannelService: SecureChannelAPI {
 
     private func sendLoginMessage(channelId: String, pubKeyHash: String) -> Completable {
         Single.zip(
-            walletRepository.guid.asSingle(),
-            walletRepository.sharedKey.asSingle(),
-            walletRepository.password.asSingle()
+            guidRepository.guid.asSingle(),
+            sharedKeyRepository.sharedKey.asSingle(),
+            passwordRepository.password.asSingle()
         )
         .map { guid, sharedKey, password -> (guid: String, sharedKey: String, password: String) in
             guard let guid = guid else {

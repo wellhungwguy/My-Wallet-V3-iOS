@@ -236,7 +236,7 @@ extension PinRouter {
                 controller.value?.add(child: navigationController)
             case .background:
                 // Sets view controller as rootViewController of the window
-                guard let keyWindow = UIApplication.shared.keyWindow else {
+                guard let keyWindow = UIApplication.shared.firstKeyWindow else {
                     fatalError("keyWindow not found")
                 }
                 keyWindow.setRootViewController(navigationController)

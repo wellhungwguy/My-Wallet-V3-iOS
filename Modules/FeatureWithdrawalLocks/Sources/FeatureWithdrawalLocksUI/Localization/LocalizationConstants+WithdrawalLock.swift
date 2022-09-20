@@ -13,8 +13,6 @@ extension LocalizationConstants {
             "%@ On Hold",
             comment: "Withdrawal Locks: On Hold Title with the amount"
         )
-
-        // swiftlint:disable line_length
         static let holdingPeriodDescription = NSLocalizedString(
             "Newly added funds are subject to a holding period. You can transfer between your Trading, Rewards, and Exchange accounts in the meantime.",
             comment: "Withdrawal Locks: Holding period description"

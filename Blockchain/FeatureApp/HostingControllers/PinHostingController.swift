@@ -74,7 +74,6 @@ final class PinHostingController: UIViewController {
         let flow = PinRouting.Flow.createPin(from: .attachedOn(controller: boxedParent))
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
             guard let self = self else { return }
-//            self.alertPresenter.showMobileNoticeIfNeeded()
             self.viewStore.send(.pinCreated)
         }
         pinRouter?.execute()

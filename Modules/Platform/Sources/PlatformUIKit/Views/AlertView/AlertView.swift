@@ -3,8 +3,6 @@
 import Foundation
 import UIKit
 
-// swiftlint:disable type_body_length
-
 public class AlertView: UIView {
 
     // MARK: Private Static Properties
@@ -188,9 +186,9 @@ public class AlertView: UIView {
             imageView.tintColor = imageTintColor
         }
 
-        confirmButton.isHidden = model.actions.first(where: { $0.style == .confirm($0.title ?? "") }) == nil
+        confirmButton.isHidden = !model.actions.contains(where: { $0.style == .confirm($0.title ?? "") })
 
-        defaultButton.isHidden = model.actions.first(where: { $0.style == .default($0.title ?? "") }) == nil
+        defaultButton.isHidden = !model.actions.contains(where: { $0.style == .default($0.title ?? "") })
 
         if defaultButton.isHidden {
             defaultButtonHeightConstraint.constant = 0.0

@@ -19,7 +19,6 @@ class MnemonicProviderTests: XCTestCase {
     func test_provides_correct_mnemonic() {
         let expectation = expectation(description: "provides a correct mnemonic")
 
-        // swiftlint:disable:next line_length
         let expectedMnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         let dispatchQueue = DispatchQueue(label: "mnemonic.provider.temp.op.queue")
         provideMnemonic(strength: .normal, queue: dispatchQueue) { bytes in

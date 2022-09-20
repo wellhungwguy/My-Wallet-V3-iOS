@@ -14,18 +14,3 @@ public struct WalletCreation: Equatable {
         self.password = password
     }
 }
-
-/// An enum to be used for wallet creation errors
-public enum LegacyWalletCreationError: LocalizedError, Equatable {
-    case message(String?)
-    case unknownError(String?)
-
-    public var errorDescription: String? {
-        switch self {
-        case .message(let string):
-            return string
-        case .unknownError(let string):
-            return string
-        }
-    }
-}

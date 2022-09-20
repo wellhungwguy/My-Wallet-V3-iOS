@@ -8,53 +8,46 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
 
     let sharedKey: AnyPublisher<String?, Never>
 
-    // This is set to the older WalletRepository API, soon to be removed
-    private let walletRepository: WalletRepositoryAPI
+    private let legacySharedKeyRepository: LegacySharedKeyRepositoryAPI
     private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
-        walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepoAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        legacySharedKeyRepository: LegacySharedKeyRepositoryAPI,
+        walletRepo: WalletRepoAPI
     ) {
-        self.walletRepository = walletRepository
+        self.legacySharedKeyRepository = legacySharedKeyRepository
         self.walletRepo = walletRepo
-        self.nativeWalletEnabled = nativeWalletEnabled
 
-        sharedKey = nativeWalletEnabled()
-            .flatMap { isEnabled -> AnyPublisher<String?, Never> in
-                guard isEnabled else {
-                    return walletRepository.sharedKey
-                }
-                return walletRepo
-                    .get()
-                    .map(\.credentials.sharedKey)
-                    .flatMap { key -> AnyPublisher<String?, Never> in
-                        guard !key.isEmpty else {
-                            return walletRepository.sharedKey
-                                .flatMap { legacyRepoKey -> AnyPublisher<String?, Never> in
-                                    guard let legacyRepoKey = legacyRepoKey else {
-                                        return .just(nil)
-                                    }
-                                    walletRepo.set(keyPath: \.credentials.sharedKey, value: legacyRepoKey)
-                                    return .just(legacyRepoKey)
+        sharedKey = Deferred { [walletRepo, legacySharedKeyRepository] in
+            walletRepo
+                .get()
+                .map(\.credentials.sharedKey)
+                .flatMap { key -> AnyPublisher<String?, Never> in
+                    guard !key.isEmpty else {
+                        return legacySharedKeyRepository.sharedKey
+                            .flatMap { legacyRepoKey -> AnyPublisher<String?, Never> in
+                                guard let legacyRepoKey = legacyRepoKey else {
+                                    return .just(nil)
                                 }
-                                .eraseToAnyPublisher()
-                        }
-                        return .just(key)
+                                walletRepo.set(keyPath: \.credentials.sharedKey, value: legacyRepoKey)
+                                return .just(legacyRepoKey)
+                            }
+                            .eraseToAnyPublisher()
                     }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+                    return .just(key)
+                }
+        }
+        .eraseToAnyPublisher()
     }
 
     func set(sharedKey: String) -> AnyPublisher<Void, Never> {
-        walletRepository.set(sharedKey: sharedKey)
-            .zip(
-                walletRepo.set(keyPath: \.credentials.sharedKey, value: sharedKey).get()
-            )
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        Deferred { [legacySharedKeyRepository, walletRepo] in
+            legacySharedKeyRepository.set(sharedKey: sharedKey)
+                .zip(
+                    walletRepo.set(keyPath: \.credentials.sharedKey, value: sharedKey).get()
+                )
+                .mapToVoid()
+        }
+        .eraseToAnyPublisher()
     }
 }

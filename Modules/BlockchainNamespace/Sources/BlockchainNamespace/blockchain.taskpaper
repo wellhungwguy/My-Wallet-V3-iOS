@@ -116,13 +116,6 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
-			native:
-				wallet:
-					payload:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
@@ -155,6 +148,12 @@ blockchain:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+			profile:
+				kyc:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			pubkey:
 				service:
 					auth:

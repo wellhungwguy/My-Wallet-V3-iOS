@@ -115,6 +115,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
     // MARK: - Setup
 
+    // swiftlint:disable function_body_length
     public init(
         fiatCurrencyClosure: @escaping () -> Observable<FiatCurrency>,
         cryptoCurrencyService: CryptoCurrencyServiceAPI,

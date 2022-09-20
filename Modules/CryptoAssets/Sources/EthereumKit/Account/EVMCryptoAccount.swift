@@ -130,7 +130,6 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
             .eraseToAnyPublisher()
     }
 
-    private let bridge: EthereumWalletBridgeAPI
     private let ethereumBalanceRepository: EthereumBalanceRepositoryAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let hdAccountIndex: Int
@@ -148,7 +147,6 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         activityRepository: HistoricalTransactionsRepositoryAPI = resolve(),
         evmActivityRepository: EVMActivityRepositoryAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        bridge: EthereumWalletBridgeAPI = resolve(),
         ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
@@ -165,7 +163,6 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         self.evmActivityRepository = evmActivityRepository
         self.swapTransactionsService = swapTransactionsService
         self.ethereumBalanceRepository = ethereumBalanceRepository
-        self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
         self.featureFlagsService = featureFlagsService
         self.nonceRepository = nonceRepository
@@ -211,7 +208,8 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func updateLabel(_ newLabel: String) -> Completable {
-        bridge.update(accountIndex: hdAccountIndex, label: newLabel)
+        // TODO: @native-wallet allow ETH accounts to be renamed.
+        .empty()
     }
 
     func invalidateAccountBalance() {

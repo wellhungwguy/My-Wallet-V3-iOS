@@ -15,14 +15,10 @@ final class StellarAsset: CryptoAsset {
     let asset: CryptoCurrency = .stellar
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        Just(())
-            .receive(on: DispatchQueue.main)
-            .flatMap { [accountRepository] _ -> AnyPublisher<StellarWalletAccount, CryptoAssetError> in
-                accountRepository.initializeMetadataMaybe()
-                    .mapError { _ in CryptoAssetError.noDefaultAccount }
-                    .eraseToAnyPublisher()
-            }
-            .first()
+        accountRepository
+            .defaultAccount
+            .setFailureType(to: CryptoAssetError.self)
+            .onNil(CryptoAssetError.noDefaultAccount)
             .map { account -> SingleAccount in
                 StellarCryptoAccount(
                     publicKey: account.publicKey,
@@ -30,7 +26,6 @@ final class StellarAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()
     }
 
@@ -73,17 +68,20 @@ final class StellarAsset: CryptoAsset {
         self.addressFactory = addressFactory
     }
 
-    // MARK: - Public methods
+    // MARK: - Methods
 
     func initialize() -> AnyPublisher<Void, AssetError> {
-        cryptoAssetRepository
-            .nonCustodialGroup
-            .compactMap { $0 }
-            .map(\.accounts)
-            .flatMap { [upgradeLegacyLabels] accounts in
-                upgradeLegacyLabels(accounts)
+        accountRepository.initializeMetadata()
+            .flatMap { [cryptoAssetRepository, upgradeLegacyLabels] _ in
+                cryptoAssetRepository
+                    .nonCustodialGroup
+                    .compactMap { $0 }
+                    .map(\.accounts)
+                    .flatMap { [upgradeLegacyLabels] accounts in
+                        upgradeLegacyLabels(accounts)
+                    }
             }
-            .mapError()
+            .mapError { _ in .initialisationFailed }
             .eraseToAnyPublisher()
     }
 

@@ -41,13 +41,9 @@ public enum LoggedIn {
         case didShowPostSignUpOnboardingFlow
         case showPostSignInOnboardingFlow
         case didShowPostSignInOnboardingFlow
-        // symbol change actions, used by old address screen
-        case symbolChanged
-        case symbolChangedHandled
     }
 
     public struct State: Equatable {
-        public var reloadAfterSymbolChanged: Bool = false
         public var reloadAfterMultiAddressResponse: Bool = false
         public var displaySendCryptoScreen: Bool = false
         public var displayPostSignUpOnboardingFlow: Bool = false
@@ -67,9 +63,9 @@ public enum LoggedIn {
         var mainQueue: AnySchedulerOf<DispatchQueue>
         var nabuUserService: NabuUserServiceAPI
         var performanceTracing: PerformanceTracingServiceAPI
+        var reactiveWallet: ReactiveWalletAPI
         var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
         var remoteNotificationTokenSender: RemoteNotificationTokenSending
-        var walletManager: WalletManagerAPI
     }
 
     public enum WalletAction: Equatable {
@@ -92,40 +88,6 @@ let loggedInReducer = Reducer<
             .fireAndForget {
                 environment.app.post(event: blockchain.ux.user.event.signed.in)
             },
-            .run { subscriber in
-                environment.appSettings.onSymbolLocalChanged = { _ in
-                    subscriber.send(.symbolChanged)
-                }
-                return AnyCancellable {
-                    environment.appSettings.onSymbolLocalChanged = nil
-                }
-            }
-            .cancellable(id: LoggedInIdentifier()),
-            environment.walletManager.walletDidGetAccountInfoAndExchangeRates
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .cancellable(id: LoggedInIdentifier())
-                .map { _ in LoggedIn.Action.wallet(.accountInfoAndExchangeRates) },
-            environment.walletManager.walletBackupFailed
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .cancellable(id: LoggedInIdentifier())
-                .map { _ in LoggedIn.Action.wallet(.handleWalletBackup) },
-            environment.walletManager.walletBackupSuccess
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .cancellable(id: LoggedInIdentifier())
-                .map { _ in LoggedIn.Action.wallet(.handleWalletBackup) },
-            environment.walletManager.walletFailedToGetHistory
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .cancellable(id: LoggedInIdentifier())
-                .map { result in
-                    guard case .success(let error) = result else {
-                        return .none
-                    }
-                    return LoggedIn.Action.wallet(.handleFailToLoadHistory(error))
-                },
             environment.exchangeRepository
                 .syncDepositAddressesIfLinked()
                 .receive(on: environment.mainQueue)
@@ -205,7 +167,6 @@ let loggedInReducer = Reducer<
         state.reloadAfterMultiAddressResponse = false
         return .none
     case .wallet(.handleWalletBackup):
-        environment.walletManager.walletGetHistoryForAllAssets()
         return .none
     case .wallet(.handleFailToLoadHistory(let error)):
         // the logic heres follow what was on the legacy AppCoordinator
@@ -223,12 +184,6 @@ let loggedInReducer = Reducer<
             title: LocalizationConstants.Errors.error,
             message: LocalizationConstants.Errors.balancesGeneric
         )
-        return .none
-    case .symbolChanged:
-        state.reloadAfterSymbolChanged = true
-        return Effect(value: .symbolChangedHandled)
-    case .symbolChangedHandled:
-        state.reloadAfterSymbolChanged = false
         return .none
     case .none:
         return .none

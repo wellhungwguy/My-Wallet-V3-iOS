@@ -392,7 +392,6 @@ extension BuyTransactionEngine {
             .eraseToAnyPublisher()
     }
 
-    // swiftlint:disable line_length
     private func transactionLimits(
         for paymentMethod: PaymentMethod,
         inputCurrency: CurrencyType

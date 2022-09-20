@@ -37,7 +37,6 @@ public enum CredentialsRoute: NavigationRoute {
     }
 }
 
-// swiftlint:disable type_body_length
 public struct CredentialsView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.EmailLogin
@@ -105,7 +104,6 @@ public struct CredentialsView: View {
         viewStore = ViewStore(store)
     }
 
-    // swiftlint:disable closure_body_length
     public var body: some View {
         VStack(alignment: .leading) {
             emailOrWalletIdentifierView()

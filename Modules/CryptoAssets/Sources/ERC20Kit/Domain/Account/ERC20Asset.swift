@@ -21,7 +21,7 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Private properties
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        walletAccountBridge.defaultAccount(erc20Token: erc20Token)
+        walletAccountRepository.defaultAccount(erc20Token: erc20Token)
     }
 
     // MARK: - Private properties
@@ -30,8 +30,8 @@ final class ERC20Asset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [walletAccountBridge, erc20Token] in
-            walletAccountBridge.defaultAccount(erc20Token: erc20Token)
+        defaultAccountProvider: { [walletAccountRepository, erc20Token] in
+            walletAccountRepository.defaultAccount(erc20Token: erc20Token)
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory
@@ -41,14 +41,14 @@ final class ERC20Asset: CryptoAsset {
     private let erc20Token: AssetModel
     private let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let walletAccountBridge: EthereumWalletAccountRepositoryAPI
+    private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
 
     init(
         erc20Token: AssetModel,
-        walletAccountBridge: EthereumWalletAccountRepositoryAPI = resolve(),
+        walletAccountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
@@ -60,7 +60,7 @@ final class ERC20Asset: CryptoAsset {
             enabledCurrenciesService: enabledCurrenciesService
         )
         self.erc20Token = erc20Token
-        self.walletAccountBridge = walletAccountBridge
+        self.walletAccountRepository = walletAccountRepository
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
         self.kycTiersService = kycTiersService
@@ -69,9 +69,7 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Asset
 
     func initialize() -> AnyPublisher<Void, AssetError> {
-        Just(())
-            .mapError(to: AssetError.self)
-            .eraseToAnyPublisher()
+        .just(())
     }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {

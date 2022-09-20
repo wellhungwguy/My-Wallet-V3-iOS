@@ -134,7 +134,6 @@ extension Alert where TopView == EmptyView {
 struct Alert_Previews: PreviewProvider {
 
     static var previews: some View {
-        // swiftlint:disable line_length
         Group {
             Alert(
                 topView: {

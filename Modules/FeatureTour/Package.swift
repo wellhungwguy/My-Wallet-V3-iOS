@@ -29,7 +29,6 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(url: "https://github.com/kean/Nuke.git", from: "11.0.0"),
         .package(url: "https://github.com/dchatzieleftheriou-bc/DIKit.git", branch: "safe-property-wrappers-locks"),
         .package(path: "../Localization"),
         .package(path: "../Platform"),
@@ -60,7 +59,6 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "NukeUI", package: "Nuke"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions")
             ],
             path: "UI"

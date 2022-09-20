@@ -111,11 +111,6 @@ extension DependencyContainer {
             CustodialAddressService(client: DIKit.resolve())
         }
 
-        factory { () -> MaintenanceServicing in
-            let service: WalletOptionsAPI = DIKit.resolve()
-            return service
-        }
-
         factory { CredentialsStore() as CredentialsStoreAPI }
 
         factory { NSUbiquitousKeyValueStore.default as UbiquitousKeyValueStore }

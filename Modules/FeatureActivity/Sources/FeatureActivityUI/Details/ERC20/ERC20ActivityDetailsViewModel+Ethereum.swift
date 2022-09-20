@@ -13,7 +13,6 @@ extension ERC20ActivityDetailsViewModel {
     init(details: EthereumActivityItemEventDetails, price: FiatValue?, feePrice: FiatValue?) {
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
-            // swiftlint:disable line_length
             title: "\(details.confirmation.confirmations) \(LocalizedString.of) \(details.confirmation.requiredConfirmations) \(LocalizedString.confirmations)",
             factor: details.confirmation.factor,
             statusBadge: details.confirmation.status.statusBadge

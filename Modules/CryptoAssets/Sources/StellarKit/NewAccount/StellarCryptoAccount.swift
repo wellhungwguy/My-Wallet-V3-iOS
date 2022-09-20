@@ -94,7 +94,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let publicKey: String
     private let hdAccountIndex: Int
-    private let bridge: StellarWalletBridgeAPI
     private let accountDetailsService: StellarAccountDetailsRepositoryAPI
     private let priceService: PriceServiceAPI
     private let operationsService: StellarHistoricalTransactionServiceAPI
@@ -104,7 +103,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         publicKey: String,
         label: String? = nil,
         hdAccountIndex: Int,
-        bridge: StellarWalletBridgeAPI = resolve(),
         operationsService: StellarHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         accountDetailsService: StellarAccountDetailsRepositoryAPI = resolve(),
@@ -113,7 +111,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     ) {
         let asset = CryptoCurrency.stellar
         self.asset = asset
-        self.bridge = bridge
         self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex
         self.label = label ?? asset.defaultWalletName
@@ -149,7 +146,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func updateLabel(_ newLabel: String) -> Completable {
-        bridge.update(accountIndex: hdAccountIndex, label: newLabel)
+        // TODO: @native-wallet allow XLM accounts to be renamed.
+        .empty()
     }
 
     func balancePair(

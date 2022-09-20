@@ -2,6 +2,8 @@
 
 import Foundation
 
+// swiftlint:disable line_length
+
 extension LocalizationConstants {
     public enum AppMode {}
 }
@@ -34,8 +36,8 @@ extension LocalizationConstants.AppMode {
     )
 
     public static let tradingAccount = NSLocalizedString(
-        "Trading Account",
-        comment: "Trading Account"
+        "Accounts",
+        comment: "Accounts"
     )
 }
 

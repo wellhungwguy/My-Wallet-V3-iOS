@@ -20,8 +20,6 @@ import WalletPayloadKit
 /// Used for canceling publishers
 enum WalletCancelations {
     struct FetchId: Hashable {}
-    struct DecryptId: Hashable {}
-    struct AuthenticationId: Hashable {}
     struct InitializationId: Hashable {}
     struct UpgradeId: Hashable {}
     struct CreateId: Hashable {}
@@ -57,16 +55,14 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                     // and we need to cancel those operation - (remove after JS removal)
                     return .concatenate(
                         .cancel(id: WalletCancelations.FetchId()),
-                        .cancel(id: WalletCancelations.AuthenticationId()),
-                        .cancel(id: WalletCancelations.DecryptId()),
                         Effect(value: .wallet(.walletBootstrap(context))),
                         Effect(value: .wallet(.walletSetup))
                     )
 
                 case .wallet(.walletBootstrap(let context)):
                     // set `guid/sharedKey` (need to refactor this after JS removal)
-                    environment.blockchainSettings.set(guid: context.guid)
-                    environment.blockchainSettings.set(sharedKey: context.sharedKey)
+                    environment.legacyGuidRepository.directSet(guid: context.guid)
+                    environment.legacySharedKeyRepository.directSet(sharedKey: context.sharedKey)
                     // `passwordPartHash` is set after Pin creation
                     clearPinIfNeeded(
                         for: context.passwordPartHash,

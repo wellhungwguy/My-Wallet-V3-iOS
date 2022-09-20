@@ -11,7 +11,6 @@ import ToolKitMock
 import UIKit
 import XCTest
 
-// swiftlint:disable:next type_body_length
 final class PaymentMethodLinkingRouterTests: XCTestCase {
 
     private var router: PaymentMethodLinkingRouter!
@@ -486,12 +485,10 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
     }
 }
 
-// swiftlint:disable:next line_length
 final class MockPaymentMethodsLinker: PaymentMethodLinkingSelectorAPI, BankAccountLinkerAPI, BankWireLinkerAPI, CardLinkerAPI {
 
     struct RecordedInvocations {
 
-        // swiftlint:disable:next large_tuple
         var presentAccountLinkingFlow: [
             (
                 presenter: UIViewController,

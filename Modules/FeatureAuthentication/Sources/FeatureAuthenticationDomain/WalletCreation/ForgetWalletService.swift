@@ -15,14 +15,7 @@ extension ForgetWalletService {
     ) -> ForgetWalletService {
         ForgetWalletService(
             forget: { () -> AnyPublisher<Void, ForgetWalletError> in
-                nativeWalletFlagEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<Void, ForgetWalletError> in
-                        guard isEnabled else {
-                            return .just(())
-                        }
-                        return forgetWallet.forget()
-                    }
-                    .eraseToAnyPublisher()
+                forgetWallet.forget()
             }
         )
     }

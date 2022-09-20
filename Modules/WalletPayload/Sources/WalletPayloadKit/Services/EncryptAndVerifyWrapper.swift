@@ -4,7 +4,6 @@ import Combine
 import Foundation
 import Localization
 import ToolKit
-import WalletCore
 
 public enum EncryptAndVerifyError: LocalizedError, Equatable {
     case expectedEncodedPayload

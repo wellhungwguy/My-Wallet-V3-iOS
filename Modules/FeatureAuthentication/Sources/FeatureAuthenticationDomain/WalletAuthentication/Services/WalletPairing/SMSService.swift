@@ -21,7 +21,7 @@ public protocol SMSServiceAPI: AnyObject {
     func request() -> AnyPublisher<Void, SMSServiceError>
 }
 
-public final class SMSService: SMSServiceAPI {
+final class SMSService: SMSServiceAPI {
 
     // MARK: - Properties
 
@@ -29,7 +29,7 @@ public final class SMSService: SMSServiceAPI {
     private let credentialsRepository: CredentialsRepositoryAPI
     private let sessionTokenRepository: SessionTokenRepositoryAPI
 
-    public init(
+    init(
         smsRepository: SMSRepositoryAPI,
         credentialsRepository: CredentialsRepositoryAPI,
         sessionTokenRepository: SessionTokenRepositoryAPI
@@ -41,7 +41,7 @@ public final class SMSService: SMSServiceAPI {
 
     // MARK: - API
 
-    public func request() -> AnyPublisher<Void, SMSServiceError> {
+    func request() -> AnyPublisher<Void, SMSServiceError> {
         credentialsRepository
             .guid
             .zip(sessionTokenRepository.sessionToken) {

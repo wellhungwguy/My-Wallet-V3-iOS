@@ -43,9 +43,6 @@ public enum WelcomeAction: Equatable, NavigationAction {
     case informForWalletInitialization
     case informWalletFetched(WalletFetchedContext)
 
-    case triggerAuthenticate // needed for legacy wallet flow
-    case triggerCancelAuthenticate // needed for legacy wallet flow
-
     // MARK: - Utils
 
     case none
@@ -91,7 +88,6 @@ public struct WelcomeEnvironment {
     let accountRecoveryService: AccountRecoveryServiceAPI
     let recaptchaService: GoogleRecaptchaServiceAPI
     let checkReferralClient: CheckReferralClientAPI
-    let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     public init(
         app: AppProtocol,
@@ -109,8 +105,7 @@ public struct WelcomeEnvironment {
         walletCreationService: WalletCreationService = DIKit.resolve(),
         walletFetcherService: WalletFetcherService = DIKit.resolve(),
         accountRecoveryService: AccountRecoveryServiceAPI = DIKit.resolve(),
-        checkReferralClient: CheckReferralClientAPI = DIKit.resolve(),
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        checkReferralClient: CheckReferralClientAPI = DIKit.resolve()
     ) {
         self.app = app
         self.mainQueue = mainQueue
@@ -127,7 +122,6 @@ public struct WelcomeEnvironment {
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
         self.checkReferralClient = checkReferralClient
-        self.nativeWalletEnabled = nativeWalletEnabled
         self.recaptchaService = recaptchaService
     }
 }
@@ -221,7 +215,6 @@ public let welcomeReducer = Reducer.combine(
         WelcomeState,
         WelcomeAction,
         WelcomeEnvironment
-            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
         case .route(let route):
@@ -283,7 +276,7 @@ public let welcomeReducer = Reducer.combine(
             return .none
 
         case .createWallet(.triggerAuthenticate):
-            return Effect(value: .triggerAuthenticate)
+            return .none
 
         case .createWallet(.informWalletFetched(let context)):
             return Effect(value: .informWalletFetched(context))
@@ -322,10 +315,10 @@ public let welcomeReducer = Reducer.combine(
             return .none
 
         case .restoreWallet(.triggerAuthenticate):
-            return Effect(value: .triggerAuthenticate)
+            return .none
 
         case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.triggerAuthenticate)))):
-            return Effect(value: .triggerAuthenticate)
+            return .none
 
         case .restoreWallet(.restored(.success(.right(let context)))),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success(.right(let context))))))):
@@ -336,19 +329,12 @@ public let welcomeReducer = Reducer.combine(
 
         case .restoreWallet(.restored(.success(.left(.noValue)))),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.success(.left(.noValue))))))):
-            return environment.nativeWalletEnabled()
-                .eraseToEffect()
-                .map { isEnabled -> WelcomeAction in
-                    guard isEnabled else {
-                        return .none
-                    }
-                    return .informForWalletInitialization
-                }
+            return Effect(value: .informForWalletInitialization)
         case .restoreWallet(.restored(.failure)),
              .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restored(.failure))))):
-            return Effect(value: .triggerCancelAuthenticate)
+            return .none
         case .createWallet(.accountCreation(.failure)):
-            return Effect(value: .triggerCancelAuthenticate)
+            return .none
 
         case .informSecondPasswordDetected:
             switch state.route?.route {
@@ -362,9 +348,7 @@ public let welcomeReducer = Reducer.combine(
                 return .none
             }
 
-        case .triggerAuthenticate,
-             .triggerCancelAuthenticate,
-             .informForWalletInitialization,
+        case .informForWalletInitialization,
              .informWalletFetched:
             // handled in core coordinator
             return .none

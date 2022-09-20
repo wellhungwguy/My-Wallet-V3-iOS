@@ -42,9 +42,6 @@ public struct PendingTransaction: Equatable {
         }
     }
 
-    /// store/cache the feature flag
-    public var nativeBitcoinTransactionEnabled: Bool
-
     // this struct has become too big for Swift to handle :(
     private var _limits: Reference<TransactionLimits?>
 
@@ -55,8 +52,7 @@ public struct PendingTransaction: Equatable {
         feeForFullAvailable: MoneyValue,
         feeSelection: FeeSelection,
         selectedFiatCurrency: FiatCurrency,
-        limits: TransactionLimits? = nil,
-        nativeBitcoinTransactionEnabled: Bool = false
+        limits: TransactionLimits? = nil
     ) {
         self.amount = amount
         self.available = available
@@ -65,7 +61,6 @@ public struct PendingTransaction: Equatable {
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
         _limits = Reference(limits)
-        self.nativeBitcoinTransactionEnabled = nativeBitcoinTransactionEnabled
     }
 
     public func update(validationState: TransactionValidationState) -> PendingTransaction {

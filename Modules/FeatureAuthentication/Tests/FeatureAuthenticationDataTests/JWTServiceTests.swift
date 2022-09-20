@@ -4,6 +4,9 @@ import Combine
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
 import TestKit
+@testable import WalletPayloadDataKit
+@testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 import XCTest
 
 @testable import FeatureAuthenticationMock
@@ -12,22 +15,30 @@ final class JWTServiceTests: XCTestCase {
 
     private var subject: JWTService!
     private var jwtRepository: JWTRepositoryMock!
-    private var walletRepository: MockWalletRepository!
+    private var credentialsRepo: CredentialsRepository!
 
     override func setUp() {
         super.setUp()
 
         jwtRepository = JWTRepositoryMock()
-        walletRepository = MockWalletRepository()
+        let walletRepo = WalletRepo(initialState: .empty)
+        let mockGuidRepo = GuidRepository(
+            legacyGuidRepository: MockLegacyGuidRepository(),
+            walletRepo: walletRepo
+        )
+        let mockSharedKeyRepo = SharedKeyRepository(
+            legacySharedKeyRepository: MockLegacySharedKeyRepository(),
+            walletRepo: walletRepo
+        )
+        credentialsRepo = CredentialsRepository(guidRepository: mockGuidRepo, sharedKeyRepository: mockSharedKeyRepo)
         subject = JWTService(
             jwtRepository: jwtRepository,
-            credentialsRepository: walletRepository
+            credentialsRepository: credentialsRepo
         )
     }
 
     override func tearDown() {
         jwtRepository = nil
-        walletRepository = nil
         subject = nil
         super.tearDown()
     }
@@ -36,17 +47,9 @@ final class JWTServiceTests: XCTestCase {
 
         // Arrange
         jwtRepository.expectedResult = .success("jwt-token")
-
-        let offlineToken = NabuOfflineToken(
-            userId: "user-id",
-            token: "offline-token"
-        )
-
-        let offlineTokenSetPublisher = walletRepository.set(offlineToken: offlineToken)
-        let guidSetPublisher = walletRepository.set(guid: "guid")
-        let sharedKeySetPublisher = walletRepository.set(sharedKey: "shared-key")
+        let guidSetPublisher = credentialsRepo.set(guid: "guid")
+        let sharedKeySetPublisher = credentialsRepo.set(sharedKey: "shared-key")
         XCTAssertPublisherCompletion([guidSetPublisher, sharedKeySetPublisher])
-        XCTAssertPublisherCompletion(offlineTokenSetPublisher)
 
         // Act
         XCTAssertPublisherValues(subject.token, "jwt-token", timeout: 5.0)
@@ -56,16 +59,7 @@ final class JWTServiceTests: XCTestCase {
 
         // Arrange
         jwtRepository.expectedResult = .success("jwt-token")
-
-        let offlineToken = NabuOfflineToken(
-            userId: "user-id",
-            token: "offline-token",
-            created: nil
-        )
-
-        let offlineTokenSetPublisher = walletRepository.set(offlineToken: offlineToken)
-        let sharedKeySetPublisher = walletRepository.set(sharedKey: "shared-key")
-        XCTAssertPublisherCompletion(offlineTokenSetPublisher)
+        let sharedKeySetPublisher = credentialsRepo.set(sharedKey: "shared-key")
         XCTAssertPublisherCompletion(sharedKeySetPublisher)
 
         // Act

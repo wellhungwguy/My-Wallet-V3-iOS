@@ -7,6 +7,7 @@ import SwiftUI
 struct FormSingleSelectionAnswersView: View {
 
     @Binding var answers: [FormAnswer]
+    @Binding var showAnswersState: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -20,7 +21,7 @@ struct FormSingleSelectionAnswersView: View {
     private func view(for answer: Binding<FormAnswer>) -> some View {
         switch answer.wrappedValue.type {
         case .selection:
-            FormSingleSelectionAnswerView(answer: answer)
+            FormSingleSelectionAnswerView(answer: answer, showAnswerState: $showAnswersState)
                 .onChange(of: answer.wrappedValue) { newValue in
                     guard newValue.checked == true else {
                         return
@@ -30,8 +31,9 @@ struct FormSingleSelectionAnswersView: View {
                     }
                 }
         case .openEnded:
-            FormOpenEndedAnswerView(answer: answer)
-
+            FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
+        case .date:
+            FormDateAnswerView(answer: answer, showAnswerState: $showAnswersState)
         default:
             Text(answer.wrappedValue.type.value)
                 .typography(.paragraph1)
@@ -65,16 +67,18 @@ struct FormSingleSelectionAnswersView_Previews: PreviewProvider {
                     regex: nil,
                     checked: nil
                 )
-            ]
+            ],
+            showAnswersState: false
         )
     }
 
     struct PreviewHelper: View {
 
         @State var answers: [FormAnswer]
+        @State var showAnswersState: Bool
 
         var body: some View {
-            FormSingleSelectionAnswersView(answers: $answers)
+            FormSingleSelectionAnswersView(answers: $answers, showAnswersState: $showAnswersState)
         }
     }
 }

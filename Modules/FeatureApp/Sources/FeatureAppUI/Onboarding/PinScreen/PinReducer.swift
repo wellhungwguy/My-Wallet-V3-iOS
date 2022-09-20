@@ -40,7 +40,6 @@ public enum PinCore {
     }
 
     public struct Environment {
-        let appSettings: AppSettingsAPI
         let alertPresenter: AlertViewPresenterAPI
     }
 }

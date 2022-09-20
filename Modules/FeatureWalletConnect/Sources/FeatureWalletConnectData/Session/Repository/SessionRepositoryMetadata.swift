@@ -9,18 +9,12 @@ import WalletPayloadKit
 
 final class SessionRepositoryMetadata: SessionRepositoryAPI {
 
-    private let walletConnectMetadata: WalletConnectMetadataAPI
     private let walletConnectFetcher: WalletConnectFetcherAPI
-    private let nativeWalletFlag: () -> AnyPublisher<Bool, Never>
 
     init(
-        walletConnectMetadata: WalletConnectMetadataAPI = resolve(),
-        walletConnectFetcher: WalletConnectFetcherAPI = resolve(),
-        nativeWalletFlag: @escaping () -> AnyPublisher<Bool, Never>
+        walletConnectFetcher: WalletConnectFetcherAPI
     ) {
-        self.walletConnectMetadata = walletConnectMetadata
         self.walletConnectFetcher = walletConnectFetcher
-        self.nativeWalletFlag = nativeWalletFlag
     }
 
     func contains(session: WalletConnectSession) -> AnyPublisher<Bool, Never> {
@@ -76,37 +70,19 @@ final class SessionRepositoryMetadata: SessionRepositoryAPI {
     }
 
     private func loadSessions() -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> {
-        nativeWalletFlag()
-            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled
-                -> AnyPublisher<[WalletConnectSession], WalletConnectMetadataError> in
-                guard isEnabled else {
-                    return walletConnectMetadata.v1Sessions
-                }
-                return walletConnectFetcher.fetchSessions()
-                    .mapError { _ in WalletConnectMetadataError.unavailable }
-                    .compactMap { wrapper in
-                        wrapper.retrieveSessions(version: .v1)
-                    }
-                    .eraseToAnyPublisher()
+        walletConnectFetcher.fetchSessions()
+            .mapError { _ in WalletConnectMetadataError.unavailable }
+            .compactMap { wrapper in
+                wrapper.retrieveSessions(version: .v1)
             }
             .eraseToAnyPublisher()
     }
 
     private func store(sessions: [WalletConnectSession]) -> AnyPublisher<Void, Never> {
-        nativeWalletFlag()
-            .flatMap { [walletConnectMetadata, walletConnectFetcher] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletConnectMetadata
-                        .update(v1Sessions: sessions)
-                        .replaceError(with: ())
-                        .eraseToAnyPublisher()
-                }
-                return walletConnectFetcher
-                    .update(v1Sessions: sessions)
-                    .replaceError(with: ())
-                    .mapToVoid()
-                    .eraseToAnyPublisher()
-            }
+        walletConnectFetcher
+            .update(v1Sessions: sessions)
+            .replaceError(with: ())
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

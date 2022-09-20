@@ -6,7 +6,6 @@ import ToolKit
 import XCTest
 
 // swiftlint:disable type_body_length
-// swiftlint:disable file_length
 
 extension Optional: Comparable where Wrapped: Comparable {
 

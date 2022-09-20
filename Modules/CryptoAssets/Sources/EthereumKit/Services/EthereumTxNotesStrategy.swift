@@ -11,40 +11,24 @@ public protocol EthereumTxNotesStrategyAPI: TxNoteUpdateProvideStrategyAPI {}
 final class EthereumTxNotesStrategy: EthereumTxNotesStrategyAPI {
 
     private let repository: EthereumWalletRepositoryAPI
-    private let bridge: EthereumWalletBridgeAPI
     private let updater: WalletMetadataEntryServiceAPI
-    private let nativeWalletFeatureEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         repository: EthereumWalletRepositoryAPI,
-        bridge: EthereumWalletBridgeAPI,
-        updater: WalletMetadataEntryServiceAPI,
-        nativeWalletFeatureEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() }
+        updater: WalletMetadataEntryServiceAPI
     ) {
         self.repository = repository
-        self.bridge = bridge
         self.updater = updater
-        self.nativeWalletFeatureEnabled = nativeWalletFeatureEnabled
     }
 
     func note(
         txHash: String
     ) -> AnyPublisher<String?, TxNotesError> {
-        nativeWalletFeatureEnabled()
-            .flatMap { [bridge, repository] isEnabled -> AnyPublisher<String?, TxNotesError> in
-                guard isEnabled else {
-                    return bridge.note(for: txHash)
-                        .asPublisher()
-                        .mapError { _ in TxNotesError.unableToRetrieveNote }
-                        .eraseToAnyPublisher()
-                }
-                return repository.ethereumEntry
-                    .mapError { _ in TxNotesError.unableToRetrieveNote }
-                    .compactMap { $0 }
-                    .map { entry in
-                        entry.ethereum?.transactionNotes[txHash]
-                    }
-                    .eraseToAnyPublisher()
+        repository.ethereumEntry
+            .mapError { _ in TxNotesError.unableToRetrieveNote }
+            .compactMap { $0 }
+            .map { entry in
+                entry.ethereum?.transactionNotes[txHash]
             }
             .eraseToAnyPublisher()
     }
@@ -53,29 +37,18 @@ final class EthereumTxNotesStrategy: EthereumTxNotesStrategyAPI {
         txHash: String,
         note: String?
     ) -> AnyPublisher<EmptyValue, TxNotesError> {
-        nativeWalletFeatureEnabled()
-            .flatMap { [repository, updater, bridge] isEnabled -> AnyPublisher<EmptyValue, TxNotesError> in
-                guard isEnabled else {
-                    return bridge.updateNote(for: txHash, note: note)
-                        .asPublisher()
-                        .mapError { _ in TxNotesError.unabledToSave }
-                        .map { _ in .noValue }
-                        .eraseToAnyPublisher()
-                }
-                return repository.ethereumEntry
-                    .mapError { _ in TxNotesError.unableToRetrieveNote }
-                    .compactMap { $0 }
-                    .flatMap { entry -> AnyPublisher<EthereumEntryPayload, TxNotesError> in
-                        updateEthereumEntryPayload(txHash: txHash, note: note)(entry)
-                            .publisher
-                            .eraseToAnyPublisher()
-                    }
-                    .flatMap { updatedEntry -> AnyPublisher<EmptyValue, TxNotesError> in
-                        updater.save(node: updatedEntry)
-                            .first()
-                            .mapError { _ in TxNotesError.unabledToSave }
-                            .eraseToAnyPublisher()
-                    }
+        repository.ethereumEntry
+            .mapError { _ in TxNotesError.unableToRetrieveNote }
+            .compactMap { $0 }
+            .flatMap { entry -> AnyPublisher<EthereumEntryPayload, TxNotesError> in
+                updateEthereumEntryPayload(txHash: txHash, note: note)(entry)
+                    .publisher
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { [updater] updatedEntry -> AnyPublisher<EmptyValue, TxNotesError> in
+                updater.save(node: updatedEntry)
+                    .first()
+                    .mapError { _ in TxNotesError.unabledToSave }
                     .eraseToAnyPublisher()
             }
             .handleEvents(

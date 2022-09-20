@@ -83,10 +83,6 @@ public enum AppFeature: Int, CaseIterable {
     /// New tour view from `FeatureTour`
     case newOnboardingTour
 
-    // MARK: - Native Wallet
-
-    case nativeWalletCreation
-
     // MARK: - Card Issuing
 
     case cardIssuing
@@ -146,8 +142,6 @@ extension AppFeature {
             return "ios_ff_hot_wallet_custodial"
         case .applePay:
             return "ios_ff_apple_pay"
-        case .nativeWalletCreation:
-            return "ios_ff_native_wallet_creation"
         case .cardIssuing:
             return "ios_ff_card_issuing"
         case .cardSuccessRate:
@@ -212,8 +206,6 @@ extension AppFeature {
             return false
         case .applePay:
             return false
-        case .nativeWalletCreation:
-            return true
         case .cardIssuing:
             return false
         case .sendToDomainsAnnouncement:

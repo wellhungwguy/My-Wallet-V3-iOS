@@ -27,7 +27,7 @@ extension KYC.UserTiers {
         // TODO: Update with correct copy + Localization
         let locked: BadgeAsset.State.BadgeItem.Interaction = .loaded(next: .locked)
 
-        guard tiers.count > 0 else { return locked }
+        guard tiers.isNotEmpty else { return locked }
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else { return locked }
         guard let tier2 = tiers.filter({ $0.tier == .tier2 }).first else { return locked }
 

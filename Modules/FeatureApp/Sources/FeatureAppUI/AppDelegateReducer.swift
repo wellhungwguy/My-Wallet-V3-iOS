@@ -98,7 +98,6 @@ public struct AppDelegateState: Equatable {
 }
 
 /// The reducer of the app delegate that describes the effects for each action.
-// swiftlint:disable closure_body_length
 let appDelegateReducer = Reducer<
     AppDelegateState, AppDelegateAction, AppDelegateEnvironment
 > { state, action, environment in

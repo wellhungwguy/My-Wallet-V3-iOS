@@ -6,7 +6,6 @@ import Errors
 @testable import MetadataKit
 import XCTest
 
-// swiftlint:disable line_length
 final class GenerateNodesTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!
@@ -40,7 +39,6 @@ final class GenerateNodesTests: XCTestCase {
 
         let expectedAddress = "12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU"
 
-        // swiftlint:disable:next line_length
         let expectedMetadataNodeXPriv = "xprv9uvPCc4bEjZEaAAxnva4d9gnUGPssAVsT8DfnGuLVdtD9TeQfFtfySYD7P1cBAUZSNXnT52zxxmpx4rs2pzCJxu64gpwzUdu33HEzzjbHty"
         let expectedMetadataNode = try PrivateKey
             .bitcoinKeyFromXPriv(

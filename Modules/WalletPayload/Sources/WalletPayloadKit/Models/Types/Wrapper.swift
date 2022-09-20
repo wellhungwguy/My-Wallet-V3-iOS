@@ -2,7 +2,6 @@
 
 import Foundation
 import ToolKit
-import WalletCore
 
 public struct Wrapper: Equatable {
     public let pbkdf2Iterations: UInt32

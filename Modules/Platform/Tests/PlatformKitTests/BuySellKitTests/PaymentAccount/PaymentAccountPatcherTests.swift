@@ -7,6 +7,7 @@ class PaymentAccountPatcherTests: XCTestCase {
     var sut: PaymentAccountPatcher!
 
     override func setUp() {
+        super.setUp()
         sut = PaymentAccountPatcher()
     }
 

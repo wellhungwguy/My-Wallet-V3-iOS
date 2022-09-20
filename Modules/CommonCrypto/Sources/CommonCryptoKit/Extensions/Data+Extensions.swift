@@ -10,7 +10,7 @@ extension NSData {
 
 extension Data {
     public var hexValue: String {
-        map { String(format: "%02x", $0) }.reduce("", +)
+        map { String(format: "%02x", $0) }.reduce(into: "") { $0.append($1) }
     }
 
     public init(hexValue hex: String) {

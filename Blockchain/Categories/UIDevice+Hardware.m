@@ -8,6 +8,14 @@
 
 #import "UIDevice+Hardware.h"
 
+#define UNSAFE_CHECK_PATH_CYDIA @"/Applications/Cydia.app"
+#define UNSAFE_CHECK_PATH_MOBILE_SUBSTRATE @"/Library/MobileSubstrate/MobileSubstrate.dylib"
+#define UNSAFE_CHECK_PATH_BIN_BASH @"/bin/bash"
+#define UNSAFE_CHECK_PATH_USR_SBIN_SSHD @"/usr/sbin/sshd"
+#define UNSAFE_CHECK_PATH_ETC_APT @"/etc/apt"
+#define UNSAFE_CHECK_PATH_WRITE_TEST @"/private/test.txt"
+#define UNSAFE_CHECK_CYDIA_URL @"cydia://package/com.example.package"
+
 @implementation UIDevice (Hardware)
 
 - (BOOL)isUnsafe

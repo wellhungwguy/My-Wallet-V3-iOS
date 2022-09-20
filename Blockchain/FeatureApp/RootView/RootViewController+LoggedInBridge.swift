@@ -5,6 +5,7 @@ import FeatureAppUI
 import FeatureInterestUI
 import FeatureOnboardingUI
 import FeatureTransactionUI
+import Localization
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -338,11 +339,11 @@ extension RootViewController: LoggedInBridge {
     private func showLegacySupportAlert() {
         alert(
             .init(
-                title: String(format: LocalizationConstants.openArg, Constants.Url.blockchainSupport),
+                title: String(format: LocalizationConstants.openArg, Constants.Support.url),
                 message: LocalizationConstants.youWillBeLeavingTheApp,
                 actions: [
                     UIAlertAction(title: LocalizationConstants.continueString, style: .default) { _ in
-                        guard let url = URL(string: Constants.Url.blockchainSupport) else { return }
+                        guard let url = URL(string: Constants.Support.url) else { return }
                         UIApplication.shared.open(url)
                     },
                     UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
@@ -369,9 +370,7 @@ extension RootViewController: LoggedInBridge {
         viewStore.send(.enter(into: .account, context: .none))
     }
 
-    func reload() {
-        accountsAndAddressesNavigationController?.reload()
-    }
+    func reload() {}
 
     func presentKYCIfNeeded() {
         dismiss(animated: true) { [self] in
@@ -463,19 +462,6 @@ extension RootViewController: LoggedInBridge {
     func logoutAndForgetWallet() {
         viewStore.send(.dismiss())
         global.send(.deleteWallet)
-    }
-
-    func handleAccountsAndAddresses() {
-        let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
-        let viewController = storyboard.instantiateViewController(
-            withIdentifier: "AccountsAndAddressesNavigationController"
-        ) as! AccountsAndAddressesNavigationController
-        viewController.modalPresentationStyle = .fullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        viewController.navigationBar.tintColor = .lightGray
-        viewController.reload()
-        (topMostViewController ?? self).present(viewController, animated: true)
-        accountsAndAddressesNavigationController = viewController
     }
 
     func handleSecureChannel() {

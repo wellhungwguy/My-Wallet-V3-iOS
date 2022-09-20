@@ -13,10 +13,6 @@ public protocol SessionTokenServiceAPI: AnyObject {
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError>
 }
 
-public func sessionTokenServiceFactory(sessionRepository: SessionTokenRepositoryAPI) -> SessionTokenServiceAPI {
-    SessionTokenService(sessionRepository: sessionRepository)
-}
-
 final class SessionTokenService: SessionTokenServiceAPI {
 
     // MARK: - Injected
