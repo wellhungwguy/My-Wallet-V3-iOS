@@ -132,7 +132,6 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
                     stateService.withdrawRelay.accept(())
                 case .swap:
                     stateService.swapRelay.accept(())
-                    analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .currencyPage))
                 default:
                     break
                 }

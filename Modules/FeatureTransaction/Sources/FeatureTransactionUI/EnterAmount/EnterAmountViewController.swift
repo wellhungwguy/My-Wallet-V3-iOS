@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import ComposableArchitecture
+import DIKit
 import FeatureWithdrawalLocksUI
 import Localization
 import PlatformKit
@@ -14,6 +16,8 @@ final class EnterAmountViewController: BaseScreenViewController,
     EnterAmountViewControllable,
     EnterAmountPagePresentable
 {
+
+    let app: AppProtocol
 
     // MARK: - Auxiliary Views
 
@@ -77,6 +81,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     // MARK: - Lifecycle
 
     init(
+        app: AppProtocol = DIKit.resolve(),
         displayBundle: DisplayBundle,
         devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
         digitPadViewModel: DigitPadViewModel,
@@ -84,6 +89,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         recoverFromInputError: @escaping () -> Void,
         amountViewProvider: AmountViewable
     ) {
+        self.app = app
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
         amountViewable = amountViewProvider
@@ -205,6 +211,11 @@ final class EnterAmountViewController: BaseScreenViewController,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         continueButtonView.viewModel.isEnabledRelay.accept(false)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        app.post(event: blockchain.ux.transaction.enter.amount)
     }
 
     func connect(
@@ -358,10 +369,12 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func navigationBarLeadingButtonPressed() {
         backTriggered.onNext(())
+        app.post(event: blockchain.ux.transaction.enter.amount.article.plain.navigation.bar.button.back)
     }
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+        app.post(event: blockchain.ux.transaction.enter.amount.article.plain.navigation.bar.button.close)
     }
 
     // MARK: - Withdrawal Locks

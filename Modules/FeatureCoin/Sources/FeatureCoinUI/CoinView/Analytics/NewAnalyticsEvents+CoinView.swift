@@ -16,10 +16,7 @@ extension AnalyticsEvents.New {
         case chartDisengaged(currency: String, timeInterval: String, origin: Origin = .coinView)
         case chartTimeIntervalSelected(currency: String, timeInterval: String, origin: Origin = .coinView)
 
-        case buySellClicked(type: TransactionType, origin: Origin = .coinView)
         case buyReceiveClicked(currency: String, type: TransactionType, origin: Origin = .coinView)
-
-        case sendReceiveClicked(currency: String, type: TransactionType, origin: Origin = .coinView)
 
         case explainerViewed(currency: String, accountType: AccountType, origin: Origin = .coinView)
         case explainerAccepted(currency: String, accountType: AccountType, origin: Origin = .coinView)

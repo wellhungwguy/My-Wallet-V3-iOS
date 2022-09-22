@@ -9,16 +9,8 @@ extension AnalyticsEvents.New {
     public enum Send: AnalyticsEvent {
         public var type: AnalyticsEventType { .nabu }
 
-        case sendReceiveClicked(
-            origin: Origin = .navigation,
-            type: Type
-        )
         case sendReceiveViewed(type: Type)
-        case sendAmountMaxClicked(
-            currency: String,
-            fromAccountType: FromAccountType,
-            toAccountType: ToAccountType
-        )
+
         case sendFeeRateSelected(
             currency: String,
             feeRate: FeeRate,

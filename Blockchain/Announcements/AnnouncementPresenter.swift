@@ -636,8 +636,6 @@ extension AnnouncementPresenter {
 extension AnnouncementPresenter {
     private func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
         walletOperating.handleBuyCrypto(currency: currency)
-        analyticsRecorder.record(
-            event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)
-        )
+        app.post(event: blockchain.ux.home.dashboard.announcement["buy"].button.tap)
     }
 }

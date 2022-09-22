@@ -121,7 +121,6 @@ public final class CoinViewObserver: Session.Observer {
     let application: URLOpener
     let topViewController: TopMostViewControllerProviding
     let exchangeProvider: ExchangeProviding
-    let accountsRouter: () -> AccountsRouting
 
     public init(
         app: AppProtocol,
@@ -131,8 +130,7 @@ public final class CoinViewObserver: Session.Observer {
         defaults: UserDefaults = .standard,
         application: URLOpener = resolve(),
         topViewController: TopMostViewControllerProviding = resolve(),
-        exchangeProvider: ExchangeProviding = resolve(),
-        accountsRouter: @escaping () -> AccountsRouting = { resolve() }
+        exchangeProvider: ExchangeProviding = resolve()
     ) {
         self.app = app
         self.transactionsRouter = transactionsRouter
@@ -142,7 +140,6 @@ public final class CoinViewObserver: Session.Observer {
         self.application = application
         self.topViewController = topViewController
         self.exchangeProvider = exchangeProvider
-        self.accountsRouter = accountsRouter
     }
 
     var observers: [BlockchainEventSubscription] {

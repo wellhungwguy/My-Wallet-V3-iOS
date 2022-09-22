@@ -83,7 +83,6 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             guard let cryptoAccount = account as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount: \(account)")
             }
-            self?.analyticsHook.onFromAccountSelected(cryptoAccount, action: .send)
             self?.routeToSend(sourceAccount: cryptoAccount)
         }
         let sendAccountPickerRouter = builder.build(

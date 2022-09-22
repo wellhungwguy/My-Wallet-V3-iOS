@@ -37,9 +37,6 @@ public final class DeepLinkCoordinator: Session.Observer {
 
     private var bag: Set<AnyCancellable> = []
 
-    // We can't resolve those at initialization
-    private let accountsRouter: () -> AccountsRouting
-
     init(
         app: AppProtocol,
         coincore: CoincoreAPI,
@@ -50,10 +47,8 @@ public final class DeepLinkCoordinator: Session.Observer {
         transactionsRouter: TransactionsRouterAPI,
         analyticsRecording: AnalyticsEventRecorderAPI,
         walletConnectService: @escaping () -> WalletConnectServiceAPI,
-        onboardingRouter: OnboardingRouterAPI,
-        accountsRouter: @escaping () -> AccountsRouting
+        onboardingRouter: OnboardingRouterAPI
     ) {
-        self.accountsRouter = accountsRouter
         self.app = app
         self.coincore = coincore
         self.exchangeProvider = exchangeProvider

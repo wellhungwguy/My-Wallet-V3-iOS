@@ -8,29 +8,7 @@ extension AnalyticsEvents.New {
 
         public var type: AnalyticsEventType { .nabu }
 
-        case buySellClicked(
-            type: Type,
-            origin: Origin
-        )
-        case buySellViewed(type: Type)
         case buyPaymentMethodSelected(paymentType: PaymentType)
-        case buyAmountMaxClicked(
-            amountCurrency: String?,
-            inputCurrency: String,
-            outputCurrency: String
-        )
-        case buyAmountMinClicked(
-            amountCurrency: String?,
-            inputCurrency: String,
-            outputCurrency: String
-        )
-        case buyAmountEntered(
-            inputAmount: Double,
-            inputCurrency: String,
-            maxCardLimit: Double?,
-            outputCurrency: String
-        )
-
         case linkBankClicked(origin: LinkBank.Origin)
 
         public enum PaymentType: String, StringRawRepresentable {
@@ -60,23 +38,6 @@ extension AnalyticsEvents.New {
             public enum Origin: String, StringRawRepresentable {
                 case buy = "BUY"
             }
-        }
-
-        public enum `Type`: String, StringRawRepresentable {
-            case buy = "BUY"
-            case sell = "SELL"
-        }
-
-        public enum Origin: String, StringRawRepresentable {
-            case buyWidget = "BUY_WIDGET"
-            case dashboardPromo = "DASHBOARD_PROMO"
-            case navigation = "NAVIGATION"
-            case pendingOrder = "PENDING_ORDER"
-            case priceChart = "PRICE_CHART"
-            case saving = "SAVINGS"
-            case send = "SEND"
-            case transationDetails = "TRANSACTION_DETAILS"
-            case welcome = "WELCOME"
         }
     }
 }
