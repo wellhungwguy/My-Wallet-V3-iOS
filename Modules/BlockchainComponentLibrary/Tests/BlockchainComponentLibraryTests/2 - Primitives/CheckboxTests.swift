@@ -7,6 +7,11 @@ import XCTest
 
 final class CheckboxTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             Checkbox_Previews.previews
@@ -18,8 +23,7 @@ final class CheckboxTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

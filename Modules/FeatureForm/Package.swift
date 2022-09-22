@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -18,9 +18,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../Tool")

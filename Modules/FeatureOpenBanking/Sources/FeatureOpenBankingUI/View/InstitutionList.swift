@@ -1,11 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainComponentLibrary
-import ComposableArchitecture
-import ComposableNavigation
+import BlockchainUI
 import FeatureOpenBankingDomain
 import SwiftUI
-import ToolKit
 import UIComponentsKit
 
 // swiftlint:disable:next type_name

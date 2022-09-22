@@ -2,10 +2,7 @@
 
 import XCTest
 
-import BlockchainNamespace
-import CasePaths
-import Combine
-import CombineSchedulers
+import Blockchain
 import FeatureOpenBankingData
 @testable import FeatureOpenBankingDomain
 import FeatureOpenBankingTestFixture

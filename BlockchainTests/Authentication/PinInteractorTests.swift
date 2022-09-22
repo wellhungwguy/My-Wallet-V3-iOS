@@ -8,7 +8,7 @@ import ToolKit
 import WalletPayloadKit
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import FeatureAuthenticationData
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKitMock

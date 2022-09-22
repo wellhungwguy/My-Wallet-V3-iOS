@@ -13,7 +13,10 @@ final class LineGraphTests: XCTestCase {
     )
     .map { sin($0) + 1 }
 
-    let record = false
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
 
     func test_sliding_averages_performance() throws {
         try XCTSkipIf(true) // Disable performance testing on CI
@@ -42,8 +45,7 @@ final class LineGraphTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -63,8 +65,7 @@ final class LineGraphTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -85,8 +86,7 @@ final class LineGraphTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -107,8 +107,7 @@ final class LineGraphTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -127,8 +126,7 @@ final class LineGraphTests: XCTestCase {
             matching: view,
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -147,8 +145,7 @@ final class LineGraphTests: XCTestCase {
             matching: view,
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -167,8 +164,7 @@ final class LineGraphTests: XCTestCase {
             matching: view,
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light))
-            ],
-            record: record
+            ]
         )
     }
 }

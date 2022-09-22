@@ -24,7 +24,7 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
     public func presentSearchAddressFlow(
         prefill: Address?,
         config: AddressSearchFeatureConfig
-    ) -> AnyPublisher<Address?, Never> {
+    ) -> AnyPublisher<AddressResult, Never> {
         Deferred {
             Future { [weak self] promise in
 
@@ -55,9 +55,9 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
     }
 
     public func presentEditAddressFlow(
-        isPresentedWithSearchView: Bool,
+        isPresentedFromSearchView: Bool,
         config: AddressSearchFeatureConfig.AddressEditScreenConfig
-    ) -> AnyPublisher<Address?, Never> {
+    ) -> AnyPublisher<AddressResult, Never> {
         Deferred {
             Future { [weak self] promise in
 
@@ -69,15 +69,15 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
                     config: config,
                     addressService: self.addressService,
                     addressSearchService: resolve(),
-                    onComplete: { address in
+                    onComplete: { addressResult in
                         presenter?.dismiss(animated: true) {
-                            promise(.success(address))
+                            promise(.success(addressResult))
                         }
                     }
                 )
                 let view = AddressModificationView(
                     store: .init(
-                        initialState: .init(isPresentedWithSearchView: isPresentedWithSearchView),
+                        initialState: .init(isPresentedFromSearchView: isPresentedFromSearchView),
                         reducer: addressModificationReducer,
                         environment: env
                     )

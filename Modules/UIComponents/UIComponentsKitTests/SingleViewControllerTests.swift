@@ -7,6 +7,11 @@ import XCTest
 
 final class SingleChildViewControllerTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSingle() {
         let controller = UIViewController()
         controller.view.backgroundColor = .green
@@ -20,11 +25,11 @@ final class SingleChildViewControllerTests: XCTestCase {
             )
         ]
 
-        assertSnapshot(matching: container, as: .image, record: false)
+        assertSnapshot(matching: container, as: .image)
 
         controller.title = "Updated"
         controller.tabBarItem = UITabBarItem(title: "Updated", image: nil, selectedImage: nil)
 
-        assertSnapshot(matching: container, as: .image, record: false)
+        assertSnapshot(matching: container, as: .image)
     }
 }

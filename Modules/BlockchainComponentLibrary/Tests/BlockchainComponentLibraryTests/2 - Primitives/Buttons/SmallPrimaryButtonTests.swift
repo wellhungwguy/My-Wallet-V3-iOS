@@ -7,6 +7,11 @@ import XCTest
 
 final class SmallPrimaryButtonTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             SmallPrimaryButton_Previews.previews
@@ -20,8 +25,7 @@ final class SmallPrimaryButtonTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainNamespace
-import CombineSchedulers
+import Blockchain
 @testable import FeatureOpenBankingData
 import FirebaseProtocol
 @testable import NetworkKit

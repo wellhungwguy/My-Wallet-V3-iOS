@@ -259,7 +259,7 @@ extension TransactionAction {
                 newStep = .selectTarget
             }
             return oldState
-                .update(keyPath: \.availableTargets, value: targets as! [TransactionTarget])
+                .update(keyPath: \.availableTargets, value: targets.filter(TransactionTarget.self))
                 .update(keyPath: \.step, value: newStep)
                 .update(keyPath: \.isGoingBack, value: false)
                 .withUpdatedBackstack(oldState: oldState)

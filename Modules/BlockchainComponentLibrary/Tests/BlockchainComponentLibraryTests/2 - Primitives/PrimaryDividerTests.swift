@@ -5,6 +5,12 @@ import SnapshotTesting
 import XCTest
 
 final class PrimaryDividerTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testPrimaryDivider() {
         let view = PrimaryDivider_Previews.previews
             .fixedSize()
@@ -14,8 +20,7 @@ final class PrimaryDividerTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

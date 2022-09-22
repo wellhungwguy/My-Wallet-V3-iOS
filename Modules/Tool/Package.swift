@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -22,12 +22,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "DIKit",
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
-            name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.3.0"
         ),

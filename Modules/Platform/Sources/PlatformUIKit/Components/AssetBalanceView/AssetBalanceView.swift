@@ -80,12 +80,12 @@ public final class AssetBalanceView: ThreeLabelStackView {
 
         fiatLabelShimmeringView = ShimmeringView(
             in: self,
-            anchorView: fiatBalanceLabel,
+            anchorView: cryptoBalanceLabel,
             size: estimatedFiatLabelSize
         )
         cryptoLabelShimmeringView = ShimmeringView(
             in: self,
-            anchorView: cryptoBalanceLabel,
+            anchorView: fiatBalanceLabel,
             size: estimatedCryptoLabelSize
         )
     }
@@ -95,12 +95,12 @@ public final class AssetBalanceView: ThreeLabelStackView {
         guard cryptoLabelShimmeringView != nil else { return }
         guard fiatLabelShimmeringView.isShimmering, cryptoLabelShimmeringView.isShimmering else { return }
 
-        fiatBalanceLabel.alpha = 0
         cryptoBalanceLabel.alpha = 0
+        fiatBalanceLabel.alpha = 0
 
         let animation = { [weak self] in
-            self?.fiatBalanceLabel.alpha = 1
             self?.cryptoBalanceLabel.alpha = 1
+            self?.fiatBalanceLabel.alpha = 1
             self?.fiatLabelShimmeringView.stop()
             self?.cryptoLabelShimmeringView.stop()
         }
@@ -121,8 +121,8 @@ public final class AssetBalanceView: ThreeLabelStackView {
     }
 
     private func startShimmering() {
-        guard fiatBalanceLabel.content.isEmpty else { return }
         guard cryptoBalanceLabel.content.isEmpty else { return }
+        guard fiatBalanceLabel.content.isEmpty else { return }
         fiatLabelShimmeringView.start()
         cryptoLabelShimmeringView.start()
     }

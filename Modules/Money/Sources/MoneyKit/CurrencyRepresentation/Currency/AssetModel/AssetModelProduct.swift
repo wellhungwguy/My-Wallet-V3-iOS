@@ -13,12 +13,10 @@ public enum AssetModelProduct: String, Hashable, CaseIterable {
 
     case custodialWalletBalance = "CustodialWalletBalance"
 
-    case dynamicSelfCustody = "DynamicSelfCustody"
-
     /// Whether the current `AssetModelProduct` causes its owner currency to be enabled in the wallet app.
     fileprivate var enablesCurrency: Bool {
         switch self {
-        case .custodialWalletBalance, .dynamicSelfCustody:
+        case .custodialWalletBalance:
             return true
         default:
             return false

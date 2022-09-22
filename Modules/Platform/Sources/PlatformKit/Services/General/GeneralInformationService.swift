@@ -1,13 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
-import RxSwift
-import RxToolKit
+import Combine
 import ToolKit
 
 public protocol GeneralInformationServiceAPI {
 
-    var countries: Single<[CountryData]> { get }
+    var countries: AnyPublisher<[CountryData], Error> { get }
 }
 
 final class GeneralInformationService: GeneralInformationServiceAPI {
@@ -15,30 +13,34 @@ final class GeneralInformationService: GeneralInformationServiceAPI {
     // MARK: - Exposed
 
     /// Provides the countries fetched from remote
-    var countries: Single<[CountryData]> {
-        countriesCachedValue.valueSingle
+    var countries: AnyPublisher<[CountryData], Error> {
+        cachedValue.get(key: "")
     }
 
     private let client: GeneralInformationClientAPI
-    private let countriesCachedValue: CachedValue<[CountryData]>
+    private let cachedValue: CachedValueNew<
+        String,
+        [CountryData],
+        Error
+    >
 
-    init(client: GeneralInformationClientAPI = resolve()) {
+    init(client: GeneralInformationClientAPI) {
         self.client = client
 
-        countriesCachedValue = CachedValue(
-            configuration: .periodic(
-                seconds: 60 * 60,
-                schedulerIdentifier: "GeneralInformationService"
-            )
-        )
-
-        countriesCachedValue
-            .setFetch(weak: self) { (self) in
-                self.client.countries
-                    .asSingle()
-                    .map {
-                        $0.sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
+        let cache: AnyCache<String, [CountryData]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60 * 60)
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { _ in
+                client.countries
+                    .map { countries in
+                        countries
+                            .sorted(by: { lhs, rhs in lhs.name.lowercased() < rhs.name.lowercased() })
                     }
+                    .eraseError()
             }
+        )
     }
 }

@@ -26,7 +26,7 @@ class KYCCountrySelectionPresenterTests: XCTestCase {
 
     func testSelectedSupportedKycCountry() {
         view.didCallContinueKycFlow = expectation(description: "Continue KYC flow when user selects valid KYC country.")
-        let country = CountryData(code: "TEST", name: "Test Country", regions: [], scopes: ["KYC"], states: [])
+        let country = CountryData(code: "TEST", name: "Test Country", scopes: ["KYC"], states: [])
         presenter.selected(country: country)
         waitForExpectations(timeout: 0.1)
     }
@@ -37,7 +37,7 @@ class KYCCountrySelectionPresenterTests: XCTestCase {
             KYC flow continues when user selects a country with states even if the country is not available for KYC
             """
         )
-        let country = CountryData(code: "TEST", name: "Test Country", regions: [], scopes: [], states: ["CA"])
+        let country = CountryData(code: "TEST", name: "Test Country", scopes: [], states: ["CA"])
         presenter.selected(country: country)
         waitForExpectations(timeout: 0.1)
     }

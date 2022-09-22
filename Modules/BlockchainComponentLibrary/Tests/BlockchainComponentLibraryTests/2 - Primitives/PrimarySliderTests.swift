@@ -5,11 +5,17 @@ import SnapshotTesting
 import XCTest
 
 final class PrimarySliderTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSlider() {
         let view = PrimarySlider_Previews.previews
             .frame(width: 375)
             .fixedSize()
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }

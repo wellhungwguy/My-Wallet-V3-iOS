@@ -51,6 +51,7 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
         // WHEN: The user taps on the Next button in either part of the UI
         testStore.send(.nextStepButtonTapped) {
             $0.validatingInput = true
+            $0.isGoingToNextStep = true
         }
         // THEN: The form is validated
         mainScheduler.advance() // let the validation complete
@@ -68,6 +69,7 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
         // WHEN: The user taps on the Next button in either part of the UI
         testStore.send(.nextStepButtonTapped) {
             $0.validatingInput = true
+            $0.isGoingToNextStep = true
         }
         // THEN: The form is validated
         mainScheduler.advance() // let the validation complete
@@ -100,6 +102,7 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
         // WHEN: The user taps on the Next button in either part of the UI
         testStore.send(.nextStepButtonTapped) {
             $0.validatingInput = true
+            $0.isGoingToNextStep = true
         }
         // THEN: The form is validated
         mainScheduler.advance() // let the validation complete

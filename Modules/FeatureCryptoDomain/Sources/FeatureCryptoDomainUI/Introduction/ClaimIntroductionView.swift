@@ -58,7 +58,7 @@ let claimIntroductionReducer = Reducer.combine(
     searchCryptoDomainReducer
         .optional()
         .pullback(
-            state: \.searchState,
+            state: \ClaimIntroductionState.searchState,
             action: /ClaimIntroductionAction.searchAction,
             environment: {
                 SearchCryptoDomainEnvironment(
@@ -127,9 +127,9 @@ public final class ClaimIntroductionHostingController: UIViewController {
         self.orderDomainRepository = orderDomainRepository
         self.userInfoProvider = userInfoProvider
         store = .init(
-            initialState: .init(),
+            initialState: ClaimIntroductionState(),
             reducer: claimIntroductionReducer,
-            environment: .init(
+            environment: ClaimIntroductionEnvironment(
                 mainQueue: mainQueue,
                 analyticsRecorder: analyticsRecorder,
                 externalAppOpener: externalAppOpener,
@@ -284,7 +284,7 @@ struct ClaimIntroductionView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: claimIntroductionReducer,
-                environment: .init(
+                environment: ClaimIntroductionEnvironment(
                     mainQueue: .main,
                     analyticsRecorder: NoOpAnalyticsRecorder(),
                     externalAppOpener: ToLogAppOpener(),

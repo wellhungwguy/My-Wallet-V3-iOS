@@ -22,7 +22,7 @@ final class ContextProvider: ContextProviderAPI {
     }
 
     let defaultTraits: [String: String] = [
-        "device": "App-iOS"
+        "device": "APP-iOS"
     ]
 
     var context: Context {

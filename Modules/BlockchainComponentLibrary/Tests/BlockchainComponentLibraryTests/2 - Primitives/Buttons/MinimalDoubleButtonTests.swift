@@ -6,6 +6,12 @@ import SwiftUI
 import XCTest
 
 final class MinimalDoubleButtonTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: 5) {
             MinimalDoubleButton_Previews.previews
@@ -19,8 +25,7 @@ final class MinimalDoubleButtonTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

@@ -96,16 +96,16 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
     welcomeReducer
         .optional()
         .pullback(
-            state: \.welcomeState,
+            state: \Onboarding.State.welcomeState,
             action: /Onboarding.Action.welcomeScreen,
-            environment: {
+            environment: { (env: Onboarding.Environment) in
                 WelcomeEnvironment(
-                    app: $0.app,
-                    mainQueue: $0.mainQueue,
-                    deviceVerificationService: $0.deviceVerificationService,
-                    featureFlagsService: $0.featureFlagsService,
-                    recaptchaService: $0.recaptchaService,
-                    buildVersionProvider: $0.buildVersionProvider,
+                    app: env.app,
+                    mainQueue: env.mainQueue,
+                    deviceVerificationService: env.deviceVerificationService,
+                    featureFlagsService: env.featureFlagsService,
+                    recaptchaService: env.recaptchaService,
+                    buildVersionProvider: env.buildVersionProvider,
                     nativeWalletEnabled: { nativeWalletFlagEnabled() }
                 )
             }
@@ -113,57 +113,61 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
     pinReducer
         .optional()
         .pullback(
-            state: \.pinState,
+            state: \Onboarding.State.pinState,
             action: /Onboarding.Action.pin,
-            environment: {
+            environment: { (env: Onboarding.Environment) in
                 PinCore.Environment(
-                    appSettings: $0.appSettings,
-                    alertPresenter: $0.alertPresenter
+                    appSettings: env.appSettings,
+                    alertPresenter: env.alertPresenter
                 )
             }
         ),
     passwordRequiredReducer
         .optional()
         .pullback(
-            state: \.passwordRequiredState,
+            state: \Onboarding.State.passwordRequiredState,
             action: /Onboarding.Action.passwordScreen,
-            environment: {
+            environment: { (env: Onboarding.Environment) in
                 PasswordRequiredEnvironment(
-                    mainQueue: $0.mainQueue,
-                    externalAppOpener: $0.externalAppOpener,
-                    walletPayloadService: $0.walletPayloadService,
-                    walletManager: $0.walletManager,
-                    pushNotificationsRepository: $0.pushNotificationsRepository,
-                    mobileAuthSyncService: $0.mobileAuthSyncService,
-                    forgetWalletService: $0.forgetWalletService
+                    mainQueue: env.mainQueue,
+                    externalAppOpener: env.externalAppOpener,
+                    walletPayloadService: env.walletPayloadService,
+                    walletManager: env.walletManager,
+                    pushNotificationsRepository: env.pushNotificationsRepository,
+                    mobileAuthSyncService: env.mobileAuthSyncService,
+                    forgetWalletService: env.forgetWalletService
                 )
             }
         ),
     walletUpgradeReducer
         .optional()
         .pullback(
-            state: \.walletUpgradeState,
+            state: \Onboarding.State.walletUpgradeState,
             action: /Onboarding.Action.walletUpgrade,
-            environment: { _ in
+            environment: { (_: Onboarding.Environment) in
                 WalletUpgrade.Environment()
             }
         ),
     appUpgradeReducer
         .optional()
         .pullback(
-            state: \.appUpgradeState,
+            state: \Onboarding.State.appUpgradeState,
             action: /Onboarding.Action.appUpgrade,
-            environment: { _ in
+            environment: { (_: Onboarding.Environment) in
                 ()
             }
         ),
     // swiftlint:disable closure_body_length
-    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
+    Reducer<
+        Onboarding.State,
+        Onboarding.Action,
+        Onboarding.Environment
+    > { state, action, environment in
         switch action {
         case .showAppUpgrade(let appUpgradeState):
             state.appUpgradeState = appUpgradeState
             return .none
-        case .appUpgrade(.skip):
+        case .appUpgrade(AppUpgradeAction.skip):
             return Effect(value: .proceedToFlow)
         case .start:
             return environment.appUpgradeState()
@@ -189,16 +193,16 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             }
             return .none
 
-        case .welcomeScreen(.navigate(to: .createWallet)),
-             .welcomeScreen(.enter(into: .createWallet)):
+        case .welcomeScreen(WelcomeAction.navigate(to: WelcomeRoute.createWallet)),
+             .welcomeScreen(WelcomeAction.enter(into: WelcomeRoute.createWallet)):
             state.walletCreationContext = .new
             return .none
 
-        case .welcomeScreen(.enter(into: .emailLogin)):
+        case .welcomeScreen(WelcomeAction.enter(into: WelcomeRoute.emailLogin)):
             state.walletCreationContext = .existing
             return .none
 
-        case .welcomeScreen(.enter(into: .restoreWallet)):
+        case .welcomeScreen(WelcomeAction.enter(into: WelcomeRoute.restoreWallet)):
             state.walletCreationContext = .recovery
             return .none
         case .welcomeScreen(.requestedToRestoreWallet(let walletRecovery)):

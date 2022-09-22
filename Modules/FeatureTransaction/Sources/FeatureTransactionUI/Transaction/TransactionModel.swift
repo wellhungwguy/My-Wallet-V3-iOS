@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
@@ -202,7 +203,13 @@ final class TransactionModel {
             process(action: .showCheckout)
             return nil
         case .orderCancelled:
-            return nil
+            interactor.resetProcessor()
+            return initializeTransaction(
+                sourceAccount: previousState.source!,
+                transactionTarget: previousState.destination!,
+                amount: previousState.amount,
+                action: previousState.action
+            )
         case .resetFlow:
             interactor.reset()
             return nil

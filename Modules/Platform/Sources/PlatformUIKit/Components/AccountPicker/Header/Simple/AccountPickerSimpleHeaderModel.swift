@@ -3,9 +3,13 @@
 import Foundation
 
 public struct AccountPickerSimpleHeaderModel: Equatable {
-    static let defaultHeight: CGFloat = 64
+
+    var height: CGFloat {
+        searchable ? 104 : 64
+    }
 
     public let subtitle: String
+    public let searchable: Bool
 
     var subtitleLabel: LabelContent {
         LabelContent(
@@ -15,7 +19,11 @@ public struct AccountPickerSimpleHeaderModel: Equatable {
         )
     }
 
-    public init(subtitle: String) {
+    public init(
+        subtitle: String,
+        searchable: Bool = false
+    ) {
         self.subtitle = subtitle
+        self.searchable = searchable
     }
 }

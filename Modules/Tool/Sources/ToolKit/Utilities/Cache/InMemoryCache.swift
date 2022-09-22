@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Extensions
 import Foundation
 
 /// An in-memory cache implementation.
@@ -23,8 +24,6 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
     private let cacheItems = Atomic<[Key: CacheItem]>([:])
 
     private let refreshControl: CacheRefreshControl
-
-    private let queue = DispatchQueue(label: "com.blockchain.in-memory-cache.queue")
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -68,7 +67,6 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
             .map { $0[key] }
             .removeDuplicates()
             .map(toCacheValue)
-            .subscribe(on: queue)
             .share()
             .eraseToAnyPublisher()
     }

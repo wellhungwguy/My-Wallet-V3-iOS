@@ -9,5 +9,5 @@ extension DependencyContainer {
 
     // MARK: - FeatureAddressSearch Module
 
-    public static var featureAddressSearchUI = module { }
+    public static var featureAddressSearchUI = module {}
 }

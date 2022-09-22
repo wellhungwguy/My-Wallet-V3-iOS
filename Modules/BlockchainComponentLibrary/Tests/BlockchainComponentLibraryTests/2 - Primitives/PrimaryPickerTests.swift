@@ -5,6 +5,12 @@ import SnapshotTesting
 import XCTest
 
 final class PrimaryPickerTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testPicker() {
         let view = PrimaryPicker_Previews.previews
             .frame(width: 375)
@@ -15,8 +21,7 @@ final class PrimaryPickerTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

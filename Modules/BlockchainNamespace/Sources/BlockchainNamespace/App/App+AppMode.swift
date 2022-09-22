@@ -6,7 +6,7 @@ import Foundation
 public enum AppMode: String, Decodable, Equatable {
     case defi
     case trading
-    case both
+    case legacy
 }
 
 extension AppProtocol {
@@ -19,7 +19,7 @@ extension AppProtocol {
                     return publisher(for: blockchain.app.mode, as: AppMode.self)
                         .replaceError(with: .trading)
                 } else {
-                    return Just(.both).eraseToAnyPublisher()
+                    return Just(.legacy).eraseToAnyPublisher()
                 }
             }
             .eraseToAnyPublisher()
@@ -29,7 +29,7 @@ extension AppProtocol {
         if remoteConfiguration.yes(if: blockchain.app.configuration.app.superapp.is.enabled) {
             return (try? state.get(blockchain.app.mode, as: AppMode.self)) ?? .trading
         } else {
-            return .both
+            return .legacy
         }
     }
 }

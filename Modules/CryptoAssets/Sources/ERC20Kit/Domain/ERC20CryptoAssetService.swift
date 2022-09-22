@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import EthereumKit
 import MoneyKit
@@ -30,15 +31,18 @@ public protocol ERC20CryptoAssetServiceAPI {
 final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
 
     private let accountsRepository: ERC20BalancesRepositoryAPI
-    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let app: AppProtocol
     private let coincore: CoincoreAPI
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     init(
         accountsRepository: ERC20BalancesRepositoryAPI,
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
-        coincore: CoincoreAPI
+        app: AppProtocol,
+        coincore: CoincoreAPI,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         self.accountsRepository = accountsRepository
+        self.app = app
         self.coincore = coincore
         self.enabledCurrenciesService = enabledCurrenciesService
     }
@@ -70,9 +74,15 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
         }
         .flatMap(\.defaultAccount)
         .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
-        .flatMap { account -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
-            account
-                .isFunded
+        .flatMap { [app] account -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
+            app
+                .publisher(
+                    for: blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled,
+                    as: Bool.self
+                )
+                .flatMap { result -> AnyPublisher<Bool, Error> in
+                    result.value == true ? .just(true) : account.isFunded
+                }
                 .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
                 .flatMap { isFunded -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
                     guard isFunded else {

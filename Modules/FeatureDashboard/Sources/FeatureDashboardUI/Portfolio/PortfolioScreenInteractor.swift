@@ -87,7 +87,16 @@ public final class PortfolioScreenInteractor {
                             }
                             return group
                                 .balance
-                                .map(\.hasPositiveDisplayableBalance)
+                                .flatMap { [weak self] moneyValue -> AnyPublisher<Bool, Error> in
+                                    let appMode = self?.app.currentMode
+                                    if appMode == .defi,
+                                        case .crypto(let currency) = group.currencyType,
+                                        currency.isCoin
+                                    {
+                                        return .just(true)
+                                    }
+                                    return .just(moneyValue.hasPositiveDisplayableBalance)
+                                }
                                 .eraseError()
                         }
                         .map { hasPositiveDisplayableBalance -> CurrencyBalance in

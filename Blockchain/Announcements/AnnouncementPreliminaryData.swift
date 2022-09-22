@@ -18,13 +18,6 @@ struct AnnouncementPreliminaryData {
         let balance: MoneyValue
     }
 
-    struct SimpleBuy {
-        let hasLinkedBanks: Bool
-        let isAvailable: Bool
-        let isEligible: Bool
-        let pendingOrderDetails: [OrderDetails]
-    }
-
     // MARK: Properties
 
     /// User is able to claim free Blockchain.com domain.
@@ -45,11 +38,6 @@ struct AnnouncementPreliminaryData {
     /// User Simplified Due Diligence Eligibility
     let isSDDEligible: Bool
 
-    let country: CountryData?
-
-    /// The authentication type (2FA / standard)
-    let authenticatorType: WalletAuthenticatorType
-
     var isKycSupported: Bool {
         country?.isKycSupported ?? false
     }
@@ -58,10 +46,8 @@ struct AnnouncementPreliminaryData {
         authenticatorType != .standard
     }
 
-    let simpleBuy: SimpleBuy
-
     var hasIncompleteBuyFlow: Bool {
-        simpleBuyEventCache[.hasShownBuyScreen] && simpleBuy.isAvailable
+        simpleBuyEventCache[.hasShownBuyScreen] && simpleBuyIsAvailable
     }
 
     /// Whether the user has a wallet balance in any account.
@@ -69,33 +55,44 @@ struct AnnouncementPreliminaryData {
 
     let majorProductBlocked: ProductIneligibility?
 
+    let cowboysPromotionIsEnabled: Bool
+
+    let isRecoveryPhraseVerified: Bool
+
+    private let country: CountryData?
+    private let simpleBuyIsAvailable: Bool
     private let simpleBuyEventCache: EventCache
+    private let authenticatorType: WalletAuthenticatorType
 
     init(
         assetRename: AssetRename?,
         authenticatorType: WalletAuthenticatorType,
         claimFreeDomainEligible: Bool,
         countries: [CountryData],
-        majorProductBlocked: ProductIneligibility?,
+        cowboysPromotionIsEnabled: Bool,
         hasAnyWalletBalance: Bool,
+        isRecoveryPhraseVerified: Bool,
         isSDDEligible: Bool,
+        majorProductBlocked: ProductIneligibility?,
         newAsset: CryptoCurrency?,
-        simpleBuy: SimpleBuy,
         simpleBuyEventCache: EventCache = resolve(),
+        simpleBuyIsAvailable: Bool,
         tiers: KYC.UserTiers,
         user: NabuUser
     ) {
+        country = countries.first { $0.code == user.address?.countryCode }
         self.assetRename = assetRename
         self.authenticatorType = authenticatorType
         self.claimFreeDomainEligible = claimFreeDomainEligible
+        self.cowboysPromotionIsEnabled = cowboysPromotionIsEnabled
         self.hasAnyWalletBalance = hasAnyWalletBalance
+        self.isRecoveryPhraseVerified = isRecoveryPhraseVerified
         self.isSDDEligible = isSDDEligible
         self.majorProductBlocked = majorProductBlocked
         self.newAsset = newAsset
-        self.simpleBuy = simpleBuy
         self.simpleBuyEventCache = simpleBuyEventCache
+        self.simpleBuyIsAvailable = simpleBuyIsAvailable
         self.tiers = tiers
         self.user = user
-        country = countries.first { $0.code == user.address?.countryCode }
     }
 }

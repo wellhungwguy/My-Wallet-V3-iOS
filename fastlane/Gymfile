@@ -1,7 +1,7 @@
 archive_path "output/Blockchain.xcarchive"
 clean true
 export_method "ad-hoc"
-include_bitcode true
+include_bitcode false
 include_symbols true
 output_directory "output"
 scheme "Blockchain"

@@ -35,11 +35,16 @@ protocol KYCRouterDelegate: AnyObject {
     func apply(model: KYCPageModel)
 }
 
+public enum UserAddressSearchResult {
+    case abandoned
+    case saved
+}
+
 public protocol AddressSearchFlowPresenterAPI {
     func openSearchAddressFlow(
         country: String,
         state: String?
-    ) -> AnyPublisher<UserAddress?, Never>
+    ) -> AnyPublisher<UserAddressSearchResult, Never>
 }
 
 // swiftlint:disable type_body_length
@@ -424,20 +429,21 @@ final class KYCRouter: KYCRouterAPI {
 
     private func presentAddressSearchFlow() {
         guard let countryCode = country?.code ?? user?.address?.countryCode else { return }
-        self.addressSearchFlowPresenter
+        addressSearchFlowPresenter
             .openSearchAddressFlow(
                 country: countryCode,
                 state: user?.address?.state
             )
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] address in
-                guard let address = address, address.hasAllRequiredInformation else {
+            .sink(receiveValue: { [weak self] addressResult in
+                switch addressResult {
+                case .saved:
+                    self?.handle(event: .nextPageFromPageType(.address, nil))
+                case .abandoned:
                     self?.stop()
-                    return
                 }
-                self?.handle(event: .nextPageFromPageType(.address, nil))
             })
-            .store(in: &self.bag)
+            .store(in: &bag)
     }
 
     func presentInformationController(_ controller: KYCInformationController) {
@@ -740,7 +746,7 @@ final class KYCRouter: KYCRouterAPI {
             guard let rootViewController = rootViewController else {
                 return
             }
-            self.navController = presentInNavigationController(viewController, in: rootViewController)
+            navController = presentInNavigationController(viewController, in: rootViewController)
         }
     }
 
@@ -753,7 +759,7 @@ final class KYCRouter: KYCRouterAPI {
             guard let rootViewController = rootViewController else {
                 return
             }
-            self.navController = presentInNavigationController(viewController, in: rootViewController)
+            navController = presentInNavigationController(viewController, in: rootViewController)
         }
     }
 
@@ -828,14 +834,5 @@ extension KYCPageType {
         guard tiersResponse.canCompleteTier2 == false else { return .verifyIdentity }
 
         return nil
-    }
-}
-
-extension UserAddress {
-    fileprivate var hasAllRequiredInformation: Bool {
-        lineOne.isNotNilOrEmpty
-        && city.isNotNilOrEmpty
-        && postalCode.isNotNilOrEmpty
-        && countryCode.isNotEmpty
     }
 }

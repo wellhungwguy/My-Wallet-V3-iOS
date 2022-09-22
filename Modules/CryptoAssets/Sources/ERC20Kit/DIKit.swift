@@ -23,8 +23,9 @@ extension DependencyContainer {
         factory {
             ERC20CryptoAssetService(
                 accountsRepository: DIKit.resolve(),
-                enabledCurrenciesService: DIKit.resolve(),
-                coincore: DIKit.resolve()
+                app: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                enabledCurrenciesService: DIKit.resolve()
             ) as ERC20CryptoAssetServiceAPI
         }
     }

@@ -4,7 +4,7 @@ import Foundation
 
 public struct AddressSearchResult: Codable, Equatable {
 
-    enum AddressType: String {
+    public enum AddressType: String {
         case address = "Address"
     }
 

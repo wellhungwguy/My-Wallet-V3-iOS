@@ -7,6 +7,11 @@ import XCTest
 
 final class CalloutCardTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testCalloutCard() {
         let view = VStack(spacing: Spacing.baseline) {
             CalloutCard_Previews.previews
@@ -20,8 +25,7 @@ final class CalloutCardTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

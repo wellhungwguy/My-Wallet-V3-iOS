@@ -482,13 +482,6 @@ extension Reducer where
                 CreateAccountStepTwoEnvironment
             > { state, action, environment in
                 switch action {
-                case .onWillDisappear:
-                    if case .importWallet = state.context {
-                        environment.analyticsRecorder.record(
-                            event: .importWalletCancelled
-                        )
-                    }
-                    return .none
                 case .createButtonTapped:
                     if case .importWallet = state.context {
                         environment.analyticsRecorder.record(

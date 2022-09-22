@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -17,9 +17,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "DIKit",
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(path: "../Observability"),
         .package(path: "../Localization"),
@@ -92,7 +91,8 @@ let package = Package(
                 .copy("Fixtures/wallet.v4-secpass.json"),
                 .copy("Fixtures/hdwallet.v3.json"),
                 .copy("Fixtures/hdwallet.v4.json"),
-                .copy("Fixtures/hdwallet.unknown.json")
+                .copy("Fixtures/hdwallet.unknown.json"),
+                .copy("Fixtures/hdaccount.v4.missingCache.json")
             ]
         )
     ]

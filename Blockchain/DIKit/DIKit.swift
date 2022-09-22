@@ -56,6 +56,7 @@ import RemoteNotificationsKit
 import RxToolKit
 import StellarKit
 import ToolKit
+import UIKit
 import WalletPayloadKit
 
 // MARK: - Settings Dependencies
@@ -229,12 +230,6 @@ extension DependencyContainer {
                 as CashIdentityVerificationAnnouncementRouting
         }
 
-        factory { () -> InterestIdentityVerificationAnnouncementRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveInterestIdentityVerificationAnnouncementRouting()
-                as InterestIdentityVerificationAnnouncementRouting
-        }
-
         factory { () -> SettingsStarterAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveSettingsStarter() as SettingsStarterAPI
@@ -356,11 +351,6 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> RxFeatureFetching in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
         factory {
             PolygonSupport(app: DIKit.resolve()) as MoneyKit.PolygonSupport
         }
@@ -477,6 +467,7 @@ extension DependencyContainer {
 
         factory { UIApplication.shared as ExternalAppOpener }
         factory { UIApplication.shared as URLOpener }
+        factory { UIApplication.shared as OpenURLProtocol }
 
         // MARK: KYC Module
 
@@ -886,3 +877,5 @@ extension DependencyContainer {
         }
     }
 }
+
+extension UIApplication: OpenURLProtocol {}

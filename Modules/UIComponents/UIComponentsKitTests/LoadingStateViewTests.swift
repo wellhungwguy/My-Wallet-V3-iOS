@@ -6,8 +6,13 @@ import XCTest
 
 final class LoadingStateViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testLoadingStateView() {
         let view = LoadingStateView(title: "Loading...")
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 }

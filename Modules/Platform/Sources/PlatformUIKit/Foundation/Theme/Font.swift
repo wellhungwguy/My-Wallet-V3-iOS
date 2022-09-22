@@ -2,7 +2,6 @@
 
 import Foundation
 
-@available(*, deprecated, message: "Supplanted by UIFont.main.* for verbosity reasons. Please do not use.")
 public struct Font {
 
     // MARK: Private

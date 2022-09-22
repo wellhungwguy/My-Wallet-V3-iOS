@@ -15,6 +15,7 @@ public final class UnfairLock {
         lock.deallocate()
     }
 
+    @discardableResult
     @inlinable
     @inline(__always)
     public func withLock<Result>(body: () throws -> Result) rethrows -> Result {

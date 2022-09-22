@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version: 5.6
 
 import PackageDescription
 
@@ -21,17 +21,14 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            .exact("0.38.3")
+            exact: "0.39.1"
         ),
         .package(
-            name: "DIKit",
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            .branch("safe-property-wrappers")
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
-            name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "6.5.0"
         ),

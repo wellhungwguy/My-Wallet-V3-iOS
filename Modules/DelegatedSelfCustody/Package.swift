@@ -18,8 +18,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",

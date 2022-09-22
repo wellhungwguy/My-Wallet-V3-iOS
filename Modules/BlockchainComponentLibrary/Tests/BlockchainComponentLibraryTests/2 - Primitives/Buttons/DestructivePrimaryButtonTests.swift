@@ -4,6 +4,12 @@ import SwiftUI
 import XCTest
 
 final class DestructivePrimaryButtonTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: 5) {
             DestructivePrimaryButton_Previews.previews

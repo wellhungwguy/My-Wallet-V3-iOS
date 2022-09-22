@@ -85,15 +85,30 @@ extension LocalizationConstants.Activity.Details {
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
 
     public enum Title {
-        public static let buy = NSLocalizedString("Bought", comment: "Bought")
-        public static let sell = NSLocalizedString("Sold", comment: "Sold")
+        public static let buy = NSLocalizedString("Buy", comment: "Buy")
+        public static let buying = NSLocalizedString("Buying", comment: "Buying")
+        public static let bought = NSLocalizedString("Bought", comment: "Bought")
+
+        public static let sell = NSLocalizedString("Sell", comment: "Sold")
+        public static let selling = NSLocalizedString("Selling", comment: "Selling")
+        public static let sold = NSLocalizedString("Sold", comment: "Sold")
+
+        public static let swap = NSLocalizedString("Swap", comment: "Swap")
+        public static let swapping = NSLocalizedString("Swapping", comment: "Swapping")
+        public static let swaped = NSLocalizedString("Swapped", comment: "Swapped")
+
+        public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+        public static let depositing = NSLocalizedString("Depositing", comment: "Depositing")
+        public static let deposited = NSLocalizedString("Deposited", comment: "Deposited")
+
+        public static let withdrawal = NSLocalizedString("Withdrawal", comment: "Withdrawal")
+        public static let withdrawing = NSLocalizedString("Withdrawing", comment: "Withdrawing")
+        public static let withdrawn = NSLocalizedString("Withdrawn", comment: "Withdrawn")
+
         public static let gas = NSLocalizedString("Gas", comment: "'Gas' title")
         public static let receive = NSLocalizedString("Received", comment: "Received")
         public static let send = NSLocalizedString("Sent", comment: "Sent")
-        public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
-        public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
-        public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
-        public static let withdrawal = NSLocalizedString("Withdrawal", comment: "Withdrawal")
+
         public static let rewardsEarned = NSLocalizedString("Rewards Earned", comment: "Rewards Earned")
         public static let added = NSLocalizedString("Added", comment: "Added")
     }

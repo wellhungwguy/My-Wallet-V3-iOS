@@ -12,6 +12,11 @@ import XCTest
 
 final class CoinViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
 //    func test_CoinView_goldUser() {
 //        try? XCTSkipIf(true)
 //        let coinView = PrimaryNavigationView {
@@ -41,7 +46,7 @@ final class CoinViewTests: XCTestCase {
 //        }
 //        .frame(width: 375, height: 1100)
 //
-//        assertSnapshot(matching: coinView, as: .image, record: false)
+//        assertSnapshot(matching: coinView, as: .image)
 //    }
 //
 //    func test_CoinView_silverUser() {
@@ -73,7 +78,7 @@ final class CoinViewTests: XCTestCase {
 //        }
 //        .frame(width: 375, height: 1100)
 //
-//        assertSnapshot(matching: coinView, as: .image, record: false)
+//        assertSnapshot(matching: coinView, as: .image)
 //    }
 
 //    func test_CoinView_UnverifiedUser() {
@@ -102,7 +107,7 @@ final class CoinViewTests: XCTestCase {
 //        }
 //        .frame(width: 375, height: 1100)
 //
-//        assertSnapshot(matching: coinView, as: .image, record: false)
+//        assertSnapshot(matching: coinView, as: .image)
 //    }
 
     func test_CoinView_Error() {
@@ -127,7 +132,7 @@ final class CoinViewTests: XCTestCase {
         }
         .frame(width: 375, height: 650)
 
-        assertSnapshot(matching: coinView, as: .image, record: false)
+        assertSnapshot(matching: coinView, as: .image)
     }
 
     func test_CoinView_Loading() {
@@ -146,7 +151,7 @@ final class CoinViewTests: XCTestCase {
         }
         .frame(width: 375, height: 600)
 
-        assertSnapshot(matching: coinView, as: .image, record: false)
+        assertSnapshot(matching: coinView, as: .image)
     }
 
 //    func test_CoinView_notTradable() {
@@ -172,6 +177,6 @@ final class CoinViewTests: XCTestCase {
 //        }
 //        .frame(width: 375, height: 900)
 //
-//        assertSnapshot(matching: coinView, as: .image, record: false)
+//        assertSnapshot(matching: coinView, as: .image)
 //    }
 }

@@ -6,6 +6,12 @@ import SwiftUI
 import XCTest
 
 final class TypographyTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = Typography_Previews.previews.fixedSize()
 
@@ -14,8 +20,7 @@ final class TypographyTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -26,6 +31,6 @@ final class TypographyTests: XCTestCase {
         }
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }

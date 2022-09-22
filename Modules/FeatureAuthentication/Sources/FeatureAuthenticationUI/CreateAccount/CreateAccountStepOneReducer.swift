@@ -27,7 +27,7 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.countriesPickerTitle,
                     subtitle: LocalizedStrings.countriesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
                 ) {
                     CountryPickerView(selectedItem: viewStore.binding(\.$country))
                 }
@@ -38,7 +38,7 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.statesPickerTitle,
                     subtitle: LocalizedStrings.statesPickerSubtitle,
-                    onClose: viewStore.send(.set(\.$selectedAddressSegmentPicker, nil))
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
                 ) {
                     StatePickerView(selectedItem: viewStore.binding(\.$countryState))
                 }
@@ -113,6 +113,7 @@ public struct CreateAccountStepOneState: Equatable, NavigationState {
 
     public var isCreatingWallet = false
     public var referralFieldEnabled = false
+    public var isGoingToNextStep = false
 
     var isNextStepButtonDisabled: Bool {
         validatingInput || inputValidationState.isInvalid || isCreatingWallet || referralCodeValidationState.isInvalid
@@ -155,6 +156,7 @@ public enum CreateAccountStepOneAction: Equatable, NavigationAction, BindableAct
     case didUpdateReferralValidation(CreateAccountStepOneState.InputValidationState)
     case validateReferralCode
     case onWillDisappear
+    case accountCreationCancelled
     case route(RouteIntent<CreateAccountStepOneRoute>?)
     case accountRecoveryFailed(WalletRecoveryError)
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
@@ -277,6 +279,7 @@ let createAccountStepOneReducer = Reducer.combine(
                 .eraseToEffect()
 
         case .nextStepButtonTapped:
+            state.isGoingToNextStep = true
             state.validatingInput = true
             state.selectedInputField = nil
 
@@ -323,7 +326,12 @@ let createAccountStepOneReducer = Reducer.combine(
             return .none
 
         case .onWillDisappear:
-            return .none
+            if !state.isGoingToNextStep {
+                return Effect(value: .accountCreationCancelled)
+            } else {
+                state.isGoingToNextStep = false
+                return .none
+            }
 
         case .route(let route):
             guard let routeValue = route?.route else {
@@ -421,10 +429,14 @@ let createAccountStepOneReducer = Reducer.combine(
 
         case .walletFetched:
             return .none
+
+        case .accountCreationCancelled:
+            return .none
         }
     }
 )
 .binding()
+.analytics()
 
 extension CreateAccountStepOneEnvironment {
 
@@ -474,5 +486,36 @@ extension CreateAccountStepOneEnvironment {
             app?.post(value: code, of: blockchain.user.creation.referral.code)
         }
         return .none
+    }
+}
+
+// MARK: - Private
+
+extension Reducer where
+    Action == CreateAccountStepOneAction,
+    State == CreateAccountStepOneState,
+    Environment == CreateAccountStepOneEnvironment
+{
+    /// Helper function for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                CreateAccountStepOneState,
+                CreateAccountStepOneAction,
+                CreateAccountStepOneEnvironment
+            > { state, action, environment in
+                switch action {
+                case .accountCreationCancelled:
+                    if case .importWallet = state.context {
+                        environment.analyticsRecorder.record(
+                            event: .importWalletCancelled
+                        )
+                    }
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }

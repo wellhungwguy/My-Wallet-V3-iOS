@@ -5,6 +5,12 @@ import SnapshotTesting
 import XCTest
 
 final class RichTextTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testRichText() {
         let view = RichText_Previews.previews
             .frame(width: 640)
@@ -15,8 +21,7 @@ final class RichTextTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

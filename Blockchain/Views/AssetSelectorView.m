@@ -2,7 +2,7 @@
 
 #import "AssetSelectorView.h"
 #import "UIView+ChangeFrameAttribute.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 @interface AssetSelectorView () <UITableViewDataSource, UITableViewDelegate, AssetTypeCellDelegate>
 

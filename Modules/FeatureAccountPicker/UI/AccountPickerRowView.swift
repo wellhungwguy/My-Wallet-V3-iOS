@@ -222,7 +222,7 @@ private struct PaymentMethodRow: View {
             .task {
                 do {
                     isCardsSuccessRateEnabled = try await app.get(blockchain.app.configuration.card.success.rate.is.enabled)
-                } catch let error {
+                } catch {
                     app.post(error: error)
                 }
             }

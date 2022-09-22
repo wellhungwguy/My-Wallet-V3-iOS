@@ -35,7 +35,7 @@ extension Session.State {
 
         private let shared = Tag.Context.genericIndex
         private var user: String? {
-            store[blockchain.user.id.key()] as? String
+            sync { store[blockchain.user.id.key()] } as? String
         }
 
         init(preferences: Preferences) {
@@ -53,18 +53,18 @@ extension Session.State {
     public struct Function: Hashable {
 
         public let id: UUID = UUID()
-        public let call: () throws -> Any
+        public let call: () throws -> Any?
 
-        public init(_ call: @escaping () -> Any) {
-            self.call = call
+        public init<T>(_ call: @escaping () -> T) {
+            self.call = call as () throws -> Any?
         }
 
-        public init(_ call: @escaping () throws -> Any) {
-            self.call = call
+        public init<T>(_ call: @escaping () throws -> T) {
+            self.call = call as () throws -> Any?
         }
 
         @discardableResult
-        public func callAsFunction() throws -> Any {
+        public func callAsFunction() throws -> Any? {
             try call()
         }
 

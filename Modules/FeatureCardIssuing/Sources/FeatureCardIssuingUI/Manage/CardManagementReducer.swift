@@ -41,7 +41,7 @@ enum CardManagementAction: Equatable, BindableAction {
     case fetchRecentTransactionsResponse(Result<[Card.Transaction], NabuNetworkError>)
     case setTransactionDetailsVisible(Bool)
     case editAddress
-    case editAddressComplete(Result<Card.Address?, Never>)
+    case editAddressComplete(Result<CardAddressSearchResult, Never>)
     case binding(BindingAction<CardManagementState>)
 }
 
@@ -322,10 +322,10 @@ let cardManagementReducer: Reducer<
             return .none
         case .editAddress:
             return env.addressSearchRouter
-                .openEditAddressFlow(isPresentedWithSearchView: false)
+                .openEditAddressFlow(isPresentedFromSearchView: false)
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardManagementAction.editAddressComplete)
-        case .editAddressComplete(.success(let address)):
+        case .editAddressComplete(.success):
             return .none
         case .binding(\.$isLocked):
             guard let card = state.card else { return .none }

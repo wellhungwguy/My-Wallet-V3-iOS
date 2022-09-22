@@ -8,6 +8,11 @@ import XCTest
 
 final class LimitedFeaturesListViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func test_header_contents_for_tier_0() throws {
         let view = LimitedFeaturesListHeader(kycTier: .tier0, action: {})
             .frame(width: 320)
@@ -18,8 +23,7 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -33,8 +37,7 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -48,8 +51,7 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -63,8 +65,7 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -90,8 +91,7 @@ final class LimitedFeaturesListViewTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

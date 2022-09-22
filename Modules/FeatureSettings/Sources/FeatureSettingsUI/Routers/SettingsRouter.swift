@@ -429,6 +429,11 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showUserDeletionScreen() {
+        analyticsRecording.record(
+            event: AnalyticsEvents.New.Settings.deleteAccountClicked(
+                origin: AnalyticsEvents.New.Settings.Origin.settings.rawValue
+            )
+        )
         let presenter = topViewController
         let logoutAndForgetWallet = { [weak self] in
             presenter.dismiss(animated: true) {
@@ -445,6 +450,7 @@ final class SettingsRouter: SettingsRouterAPI {
             environment: .init(
                 mainQueue: .main,
                 userDeletionRepository: resolve(),
+                analyticsRecorder: resolve(),
                 dismissFlow: dismissFlow,
                 logoutAndForgetWallet: logoutAndForgetWallet
             )

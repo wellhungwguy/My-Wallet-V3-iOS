@@ -18,14 +18,10 @@ final class EmailVerificationSnapshotTests: XCTestCase {
     private var rootStore: Store<EmailVerificationState, EmailVerificationAction>!
     private var mockEmailVerificationService: MockEmailVerificationService!
 
-    enum Config {
-        static let recordingSnapshots: Bool = false
-    }
-
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        isRecording = Config.recordingSnapshots
+        isRecording = false
 
         mockEmailVerificationService = MockEmailVerificationService()
         environment = EmailVerificationEnvironment(

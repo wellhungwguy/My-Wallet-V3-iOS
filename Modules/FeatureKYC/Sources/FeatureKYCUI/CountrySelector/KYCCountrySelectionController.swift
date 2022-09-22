@@ -59,6 +59,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
     private func fetchListOfCountries() {
         generalInformationService
             .countries
+            .asSingle()
             .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] countries in
                 self?.countriesMap.setAllItems(countries)

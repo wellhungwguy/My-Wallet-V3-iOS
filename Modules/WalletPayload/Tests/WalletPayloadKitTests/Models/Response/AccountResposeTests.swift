@@ -15,6 +15,8 @@ class AccountTests: XCTestCase {
     let brokenJsonV3 = Fixtures.loadJSONData(filename: "hdaccount.v3.broken", in: .module)!
     let brokenJsonV4 = Fixtures.loadJSONData(filename: "hdaccount.v4.broken", in: .module)!
 
+    let jsonV4MissingCache = Fixtures.loadJSONData(filename: "hdaccount.v4.missingCache", in: .module)!
+
     func test_version3_account_can_be_decoded() throws {
         let accountVersion3 = try JSONDecoder().decode(AccountWrapper.Version3.self, from: jsonV3)
 
@@ -171,6 +173,31 @@ class AccountTests: XCTestCase {
         let decoded = try JSONDecoder().decode(AccountWrapper.Version4.self, from: encoded)
 
         XCTAssertEqual(decoded, accountVersion4)
+    }
+
+    func test_it_can_be_decoded_with_missing_derivation_cache() throws {
+        let accountVersion4 = try JSONDecoder().decode(AccountWrapper.Version4.self, from: jsonV4MissingCache)
+
+        XCTAssertEqual(accountVersion4.label, "BTC Private Key Wallet")
+        // this should default to `false` for broken accounts
+        XCTAssertFalse(accountVersion4.archived)
+        XCTAssertEqual(accountVersion4.defaultDerivation, "bech32")
+
+        XCTAssertFalse(accountVersion4.derivations.isEmpty)
+        XCTAssertEqual(accountVersion4.derivations.count, 1)
+
+        let addressLabel = AddressLabelResponse(index: 0, label: "labeled_address")
+        let addressCache = AddressCacheResponse.empty
+        let expectedDerivation = DerivationResponse(
+            type: .legacy,
+            purpose: DerivationResponse.Format.legacy.purpose,
+            xpriv: "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
+            xpub: "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
+            addressLabels: [addressLabel],
+            cache: addressCache
+        )
+
+        XCTAssertEqual(accountVersion4.derivations, [expectedDerivation])
     }
 }
 

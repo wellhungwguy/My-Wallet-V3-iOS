@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Foundation
 
 /// Composable State for Prefetching
 public struct PrefetchingState: Equatable {

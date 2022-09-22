@@ -7,12 +7,17 @@ import XCTest
 
 final class AlertCardTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             AlertCard_Previews.previews
         }
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
     }
 }

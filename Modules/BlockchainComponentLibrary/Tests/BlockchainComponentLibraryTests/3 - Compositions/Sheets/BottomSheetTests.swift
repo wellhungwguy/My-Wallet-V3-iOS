@@ -7,6 +7,11 @@ import XCTest
 
 final class BottomSheetTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testBottomSheet() {
 
         let view = BottomSheetView {
@@ -29,8 +34,7 @@ final class BottomSheetTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

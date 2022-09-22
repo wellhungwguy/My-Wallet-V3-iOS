@@ -7,6 +7,11 @@ import XCTest
 
 final class SpacingTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testGridSixIPhoneX() {
         let grid = Grid(containerWidth: 375, columns: 6)
         XCTAssertEqual(grid.gutter, 8)
@@ -54,7 +59,7 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 
     func testPadding() {
@@ -62,7 +67,7 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 
     func testBorderRadii() {
@@ -70,6 +75,6 @@ final class SpacingTests: XCTestCase {
             .fixedSize()
             .background(Color.gray.opacity(0.1))
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }

@@ -15,7 +15,7 @@ extension View {
         priority: TaskPriority = .userInitiated,
         _ action: @escaping () async -> Void
     ) -> some View {
-        task(id: 0, priority: priority, action)
+        task(id: #function, priority: priority, action)
     }
 
     /// Adds a task to perform when this view appears or when a specified value changes.
@@ -51,7 +51,8 @@ private struct TaskModifier<Value: Equatable>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onChange(of: id) { _ in run() }
+            .preference(key: TaskIDPreferenceKey<Value>.self, value: id)
+            .onPreferenceChange(TaskIDPreferenceKey<Value>.self) { _ in run() }
             .onAppear { run() }
             .onDisappear { task = nil }
     }
@@ -60,5 +61,12 @@ private struct TaskModifier<Value: Equatable>: ViewModifier {
         task = Task(priority: priority) {
             await action()
         }
+    }
+}
+
+private struct TaskIDPreferenceKey<Value: Equatable>: PreferenceKey {
+    static var defaultValue: Value { fatalError("No Default") }
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value = nextValue()
     }
 }

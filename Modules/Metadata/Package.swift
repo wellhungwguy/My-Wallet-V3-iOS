@@ -27,11 +27,11 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
-            exact: "0.7.2"
+            from: "0.7.3"
         ),
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",

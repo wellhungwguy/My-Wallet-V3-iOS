@@ -7,6 +7,11 @@ import XCTest
 
 final class LargeAnnouncementCardTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             LargeAnnouncementCard_Previews.previews
@@ -14,6 +19,6 @@ final class LargeAnnouncementCardTests: XCTestCase {
         .frame(width: 375)
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
     }
 }

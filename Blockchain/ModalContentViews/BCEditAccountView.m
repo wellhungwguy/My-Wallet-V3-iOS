@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "BCEditAccountView.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 @implementation BCEditAccountView
 

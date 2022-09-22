@@ -3,6 +3,7 @@
 @_exported import Errors
 @_exported import Extensions
 @_exported import KeychainKit
+@_exported import Localization
 @_exported import MoneyKit
 
 infix operator &&=: AssignmentPrecedence

@@ -88,6 +88,10 @@ extension Money {
         amount.isZero
     }
 
+    public var isNotZero: Bool {
+        !amount.isZero
+    }
+
     public var isPositive: Bool {
         amount > 0
     }

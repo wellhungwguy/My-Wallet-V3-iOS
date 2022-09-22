@@ -1,13 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import Combine
-import ComposableArchitecture
-import Errors
-import ErrorsUI
+import BlockchainUI
 import FeatureOpenBankingDomain
 import SwiftUI
-import ToolKit
 import UIComponentsKit
 
 // swiftlint:disable type_name
@@ -100,7 +96,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                         return .waitingForConsent
                     case .success(let output):
                         return .finalise(output)
-                    case .failure(let error):
+                    case .fail(let error):
                         return BankAction.failure(error)
                     }
                 }

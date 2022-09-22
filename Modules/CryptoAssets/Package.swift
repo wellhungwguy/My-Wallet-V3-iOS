@@ -31,8 +31,8 @@ let package = Package(
             from: "5.3.0"
         ),
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
             url: "https://github.com/ReactiveX/RxSwift.git",

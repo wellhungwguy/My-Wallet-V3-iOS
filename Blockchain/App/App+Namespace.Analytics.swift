@@ -37,7 +37,7 @@ final class AppAnalyticsTraitRepository: Session.Observer, TraitRepositoryAPI {
             .sink(to: My.fetched(experiments:additional:), on: self)
 
         firebase = app.publisher(for: blockchain.ux.type.analytics.configuration.firebase.user.traits, as: [String: Value?].self)
-            .compactMap { $0.value?.compactMapValues(\.wrapped).filter({ $1.condition.or(.yes).check() }) }
+            .compactMap { $0.value?.compactMapValues(\.wrapped).filter { $1.condition.or(.yes).check() } }
             .flatMap { [app] config -> AnyPublisher<(String, String), Never> in
                 config.map { name, property -> AnyPublisher<(String, String), Never> in
                     switch property.value {
@@ -197,7 +197,9 @@ struct Condition: Decodable, Equatable {
 }
 
 extension Condition {
+
     static var yes: Condition { Condition(if: nil, unless: nil) }
+
     func check() -> Bool {
         (`if` ?? []).allSatisfy(isYes) && (unless ?? []).none(isYes)
     }

@@ -7,6 +7,11 @@ import XCTest
 
 final class SearchBarTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSearchBar() {
         let view = VStack(spacing: Spacing.padding()) {
             SearchBar_Previews.previews
@@ -18,8 +23,7 @@ final class SearchBarTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

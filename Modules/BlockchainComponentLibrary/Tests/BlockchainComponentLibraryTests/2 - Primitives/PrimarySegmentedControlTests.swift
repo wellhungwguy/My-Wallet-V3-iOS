@@ -7,6 +7,11 @@ import XCTest
 
 final class PrimarySegmentedControlTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
             PrimarySegmentedControl_Previews.previews
@@ -18,8 +23,7 @@ final class PrimarySegmentedControlTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -30,6 +34,6 @@ final class PrimarySegmentedControlTests: XCTestCase {
         .environment(\.layoutDirection, .rightToLeft)
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image, record: false)
+        assertSnapshot(matching: view, as: .image)
     }
 }

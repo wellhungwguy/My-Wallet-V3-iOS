@@ -6,6 +6,11 @@ import XCTest
 
 final class EmptyStateViewTests: XCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testEmptyStateView() {
         let view = EmptyStateView(
             title: "You Have No Activity",
@@ -13,6 +18,6 @@ final class EmptyStateViewTests: XCTestCase {
             image: ImageAsset.emptyActivity.image
         )
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 }

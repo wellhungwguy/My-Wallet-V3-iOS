@@ -162,10 +162,8 @@ open class BaseScreenViewController: UIViewController {
         super.viewWillAppear(animated)
         if automaticallyApplyNavigationBarStyle {
             setBackground(by: barStyle)
-            if !barStyle.ignoresStatusBar {
-                UIApplication.shared.statusBarStyle = determineStatusBarStyle()
-            }
             currentNavigationItem?.setHidesBackButton(true, animated: false)
+            setNeedsStatusBarAppearanceUpdate()
         }
     }
 

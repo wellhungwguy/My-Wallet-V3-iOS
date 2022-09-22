@@ -34,7 +34,7 @@ public struct Address: Hashable {
         self.line1 = line1
         self.line2 = line2
         self.city = city
-        self.postCode = postCode?.components(separatedBy: "-").first
+        self.postCode = postCode
         self.country = country
 
         if let state = state,

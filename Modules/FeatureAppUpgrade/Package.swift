@@ -29,7 +29,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.0"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.38.3"
+            exact: "0.39.1"
         ),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0"),
         .package(path: "../BlockchainComponentLibrary"),
@@ -57,7 +57,10 @@ let package = Package(
             name: "FeatureAppUpgradeUITests",
             dependencies: [
                 .target(name: "FeatureAppUpgradeUI"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                .product(name: "ToolKit", package: "Tool")
             ],
             exclude: ["__Snapshots__"]
         )

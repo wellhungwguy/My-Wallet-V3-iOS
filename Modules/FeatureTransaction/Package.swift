@@ -39,7 +39,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.38.3"
+            exact: "0.39.1"
         ),
         .package(
             url: "https://github.com/apple/swift-algorithms.git",
@@ -50,8 +50,8 @@ let package = Package(
             from: "5.3.0"
         ),
         .package(
-            url: "https://github.com/jackpooleybc/DIKit.git",
-            branch: "safe-property-wrappers"
+            url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
+            branch: "safe-property-wrappers-locks"
         ),
         .package(
             url: "https://github.com/ReactiveX/RxSwift.git",
@@ -78,6 +78,7 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
+        .package(path: "Modules/Checkout"),
         .package(path: "Modules/BIND")
     ],
     targets: [
@@ -128,6 +129,7 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "FeatureCheckoutUI", package: "Checkout"),
                 .product(name: "BINDWithdrawUI", package: "BIND"),
                 .product(name: "BINDWithdrawDomain", package: "BIND")
             ]

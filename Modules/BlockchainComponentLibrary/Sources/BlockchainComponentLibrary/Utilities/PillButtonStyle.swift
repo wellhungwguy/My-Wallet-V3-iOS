@@ -71,7 +71,7 @@ public struct PillButtonStyle: ButtonStyle {
             if isLoading {
                 ProgressView()
                     .progressViewStyle(
-                        IndeterminateProgressViewStyle(
+                        BlockchainCircularProgressViewStyle(
                             stroke: colorCombination.progressViewRail,
                             background: colorCombination.progressViewTrack
                         )

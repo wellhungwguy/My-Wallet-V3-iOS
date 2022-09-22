@@ -130,8 +130,9 @@ final class TransactionInteractor {
         action: AssetAction,
         transactionTarget: TransactionTarget?
     ) -> Single<[SingleAccount]> {
+
         let allEligibleCryptoAccounts: Single<[CryptoAccount]> =
-            coincore.allAccounts(filter: .all)
+            coincore.allAccounts(filter: app.currentMode.sourceAccountFilter)
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(
@@ -271,6 +272,10 @@ final class TransactionInteractor {
         transactionProcessor?.reset()
     }
 
+    func resetProcessor() {
+        transactionProcessor?.reset()
+    }
+
     var transactionExchangeRates: Observable<TransactionExchangeRates> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
@@ -363,12 +368,23 @@ final class TransactionInteractor {
             .asSingle()
         let tradingPairs = availablePairsService.availableTradingPairs
         let isEligible = swapEligibilityService.isEligible
-        return Single.zip(transactionTargets, tradingPairs, isEligible)
-            .map { (accounts: [SingleAccount], pairs: [OrderPair], isEligible: Bool) -> [SingleAccount] in
+        let appMode = app.modePublisher().asSingle()
+        return Single.zip(transactionTargets, tradingPairs, isEligible, appMode)
+            .map { (accounts: [SingleAccount], pairs: [OrderPair], isEligible: Bool, appMode: AppMode) -> [SingleAccount] in
                 accounts
                     .filter { $0 is CryptoAccount }
                     .filter { pairs.contains(source: sourceAccount.currencyType, destination: $0.currencyType) }
-                    .filter { isEligible || $0 is NonCustodialAccount }
+                    .filter {
+                        if appMode == .trading {
+                            return isEligible && ($0 is NonCustodialAccount == false)
+                        }
+
+                        if appMode == .defi {
+                            return isEligible || $0 is NonCustodialAccount
+                        }
+
+                        return isEligible || $0 is NonCustodialAccount
+                    }
             }
     }
 }
@@ -383,6 +399,19 @@ extension CryptoAccount {
     fileprivate func isAvailableToSwapFrom(tradingPairs: [OrderPair]) -> Bool {
         tradingPairs.contains { pair in
             pair.sourceCurrencyType == asset
+        }
+    }
+}
+
+extension AppMode {
+    fileprivate var sourceAccountFilter: AssetFilter {
+        switch self {
+        case .legacy:
+            return .all
+        case .trading:
+            return .custodial
+        case .defi:
+            return .nonCustodial
         }
     }
 }

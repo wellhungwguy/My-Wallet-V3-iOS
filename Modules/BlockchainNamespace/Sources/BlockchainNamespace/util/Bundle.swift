@@ -1,4 +1,4 @@
-import Algorithms
+import Extensions
 import class Foundation.Bundle
 
 private class BundleFinder {}

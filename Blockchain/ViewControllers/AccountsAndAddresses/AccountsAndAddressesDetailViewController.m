@@ -4,7 +4,7 @@
 #import "AccountsAndAddressesDetailViewController.h"
 #import "BCEditAccountView.h"
 #import "BCEditAddressView.h"
-#import "Blockchain-Swift.h"
+#import "BlockchainApp-Swift.h"
 
 const int numberOfSectionsAccountUnarchived = 2;
 const int numberOfSectionsAddressUnarchived = 1; // 2 if watch only

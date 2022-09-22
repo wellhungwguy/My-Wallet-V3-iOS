@@ -35,7 +35,6 @@ protocol LoggedInReloadAPI: AnyObject {
 protocol LoggedInBridge: DrawerRouting,
     TabSwapping,
     CashIdentityVerificationAnnouncementRouting,
-    InterestIdentityVerificationAnnouncementRouting,
     AppCoordinating,
     WalletOperationsRouting,
     BackupFlowStarterAPI,
@@ -66,8 +65,6 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveTabSwapping() -> TabSwapping
     /// Provides `CashIdentityVerificationAnnouncementRouting` methods
     func resolveCashIdentityVerificationAnnouncementRouting() -> CashIdentityVerificationAnnouncementRouting
-    /// Provides `InterestIdentityVerificationAnnouncementRouting` methods
-    func resolveInterestIdentityVerificationAnnouncementRouting() -> InterestIdentityVerificationAnnouncementRouting
     /// Provides `AppCoordinating` methods
     func resolveAppCoordinating() -> AppCoordinating
     /// Provides `WalletOperationsRouting` methods
@@ -114,10 +111,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveCashIdentityVerificationAnnouncementRouting() -> CashIdentityVerificationAnnouncementRouting {
         resolve() as CashIdentityVerificationAnnouncementRouting
-    }
-
-    func resolveInterestIdentityVerificationAnnouncementRouting() -> InterestIdentityVerificationAnnouncementRouting {
-        resolve() as InterestIdentityVerificationAnnouncementRouting
     }
 
     func resolveAppCoordinating() -> AppCoordinating {
@@ -179,7 +172,6 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToReceive() { wrapped.switchTabToReceive() }
     func switchToActivity() { wrapped.switchToActivity() }
     func switchToActivity(for currencyType: CurrencyType) { wrapped.switchToActivity() }
-    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) { wrapped.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerfied) }
     func startBackupFlow() { wrapped.startBackupFlow() }
     func showSettingsView() { wrapped.showSettingsView() }
     func reload() { wrapped.reload() }
@@ -218,7 +210,6 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func switchTabToReceive() {}
     func switchToActivity() {}
     func switchToActivity(for currencyType: CurrencyType) {}
-    func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {}
     func startBackupFlow() {}
     func showSettingsView() {}
     func reload() {}

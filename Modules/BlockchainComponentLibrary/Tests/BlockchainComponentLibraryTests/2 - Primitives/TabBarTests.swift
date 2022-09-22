@@ -15,14 +15,18 @@ final class TabBarTests: XCTestCase {
         activeTabIdentifier: TabBar_Previews.ExchangePreviewContainer.Tab.home
     )
 
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
+
     func testWallet_iPhone8() {
         assertSnapshots(
             matching: wallet,
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 
@@ -32,8 +36,7 @@ final class TabBarTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: false
+            ]
         )
     }
 }

@@ -48,6 +48,11 @@ extension LocalizationConstants {
             "Not Now",
             comment: "Not now button title"
         )
+
+        static let cancelButtonTitle = NSLocalizedString(
+            "Cancel",
+            comment: "Cancel button title"
+        )
     }
 
     enum MajorProductBlocked {

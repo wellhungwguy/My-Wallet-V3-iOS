@@ -8,7 +8,6 @@ import TestKit
 import ToolKit
 import XCTest
 
-// swiftlint:disable line_length
 class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
@@ -45,7 +44,8 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
         let sut = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: queue
         )
 
         let expectation = expectation(description: "provides correct first index")
@@ -97,7 +97,8 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
         let sut = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: queue
         )
 
         let expectation = expectation(description: "provides correct first index")
@@ -138,7 +139,8 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
         let sut = BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: queue
         )
 
         let expectation = expectation(description: "provides correct first index")
@@ -190,7 +192,8 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
         let sut = BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
             mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor,
-            unspentOutputRepository: mockUnspentOutputRepo
+            unspentOutputRepository: mockUnspentOutputRepo,
+            operationQueue: queue
         )
 
         let expectation = expectation(description: "provides correct address")

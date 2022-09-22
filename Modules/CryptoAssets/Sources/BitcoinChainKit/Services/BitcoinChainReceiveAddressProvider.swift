@@ -31,14 +31,18 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
     private let fetchMultiAddressFor: FetchMultiAddressFor
     private let unspentOutputRepository: UnspentOutputRepositoryAPI
 
+    private let operationQueue: DispatchQueue
+
     init(
         mnemonicProvider: @escaping WalletMnemonicProvider,
         fetchMultiAddressFor: @escaping FetchMultiAddressFor,
-        unspentOutputRepository: UnspentOutputRepositoryAPI
+        unspentOutputRepository: UnspentOutputRepositoryAPI,
+        operationQueue: DispatchQueue
     ) {
         self.mnemonicProvider = mnemonicProvider
         self.fetchMultiAddressFor = fetchMultiAddressFor
         self.unspentOutputRepository = unspentOutputRepository
+        self.operationQueue = operationQueue
     }
 
     func receiveAddressProvider(_ accountIndex: UInt32) -> AnyPublisher<String, Error> {
@@ -52,6 +56,8 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
             for: account,
             transactionContextFor: transactionContext
         )
+        .subscribe(on: operationQueue)
+        .receive(on: operationQueue)
         .map { context -> ReceiveAddressContext in
             receiveAddressContext(
                 for: context.multiAddressItems,
@@ -70,6 +76,8 @@ final class BitcoinChainReceiveAddressProvider<Token: BitcoinChainToken>: Bitcoi
             for: account,
             walletMnemonicProvider: mnemonicProvider
         )
+        .subscribe(on: operationQueue)
+        .receive(on: operationQueue)
         .map { accountKeyContext -> String in
             deriveReceiveAddress(
                 context: accountKeyContext,

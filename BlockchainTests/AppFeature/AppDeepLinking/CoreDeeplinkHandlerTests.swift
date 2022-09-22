@@ -4,7 +4,7 @@ import Combine
 import PlatformKit
 import XCTest
 
-@testable import Blockchain
+@testable import BlockchainApp
 @testable import FeatureAppUI
 
 final class CoreDeeplinkHandlerTests: XCTestCase {

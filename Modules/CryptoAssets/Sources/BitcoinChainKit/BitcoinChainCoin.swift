@@ -5,6 +5,10 @@ import MoneyKit
 import PlatformKit
 import WalletCore
 
+public enum BitcoinChain {
+    static let chainQueue: String = "chain.queue"
+}
+
 public enum BitcoinChainCoin: String {
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"

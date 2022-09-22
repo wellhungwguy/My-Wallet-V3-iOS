@@ -7,7 +7,10 @@ import XCTest
 
 final class AppUpgradeViewSnapshotTests: XCTestCase {
 
-    let record = false
+    override func setUp() {
+        super.setUp()
+        isRecording = false
+    }
 
     func testUnsupportedOS() {
         let view = view(state: .unsupportedOS)
@@ -16,8 +19,7 @@ final class AppUpgradeViewSnapshotTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -28,8 +30,7 @@ final class AppUpgradeViewSnapshotTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -40,8 +41,7 @@ final class AppUpgradeViewSnapshotTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -52,8 +52,7 @@ final class AppUpgradeViewSnapshotTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
@@ -64,8 +63,7 @@ final class AppUpgradeViewSnapshotTests: XCTestCase {
             as: [
                 .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-            ],
-            record: record
+            ]
         )
     }
 
