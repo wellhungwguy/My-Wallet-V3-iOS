@@ -223,8 +223,9 @@ let addressModificationReducer = Reducer<
         return Effect(value: .complete(.abandoned))
 
     case .complete(let addressResult):
-        env.onComplete?(addressResult)
-        return .none
+        return .fireAndForget {
+            env.onComplete?(addressResult)
+        }
 
     case .binding:
         return .none

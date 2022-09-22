@@ -188,8 +188,9 @@ let addressSearchReducer = Reducer.combine(
             return Effect(value: .complete(.abandoned))
 
         case .complete(let addressResult):
-            env.onComplete(addressResult)
-            return .none
+            return .fireAndForget {
+                env.onComplete(addressResult)
+            }
 
         case .searchAddresses(let searchText, let containerId, let country):
             guard let searchText = searchText, searchText.isNotEmpty,
