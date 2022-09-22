@@ -55,13 +55,23 @@ extension DependencyContainer {
 
         // MARK: - Explorer
 
-        single(tag: DIKitContext.explorer) { RequestBuilder(config: Network.Config.explorerConfig) }
+        single(tag: DIKitContext.explorer) {
+            RequestBuilder(
+                config: Network.Config.explorerConfig,
+                resolveHeaders: DIKit.resolve(tag: HTTPHeaderTag)
+            )
+        }
 
         single(tag: DIKitContext.explorer) { NetworkAdapter() as NetworkAdapterAPI }
 
         // MARK: - Wallet
 
-        single(tag: DIKitContext.wallet) { RequestBuilder(config: Network.Config.walletConfig) }
+        single(tag: DIKitContext.wallet) {
+            RequestBuilder(
+                config: Network.Config.walletConfig,
+                resolveHeaders: DIKit.resolve(tag: HTTPHeaderTag)
+            )
+        }
 
         single(tag: DIKitContext.wallet) { NetworkAdapter() as NetworkAdapterAPI }
 
@@ -70,6 +80,7 @@ extension DependencyContainer {
         single(tag: DIKitContext.retail) {
             RequestBuilder(
                 config: Network.Config.retailConfig,
+                resolveHeaders: DIKit.resolve(tag: HTTPHeaderTag),
                 queryParameters: DIKit.resolve()
             )
         }

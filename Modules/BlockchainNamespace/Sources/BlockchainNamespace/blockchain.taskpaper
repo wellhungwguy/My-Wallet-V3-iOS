@@ -1,4 +1,12 @@
 blockchain:
+	api:
+		nabu:
+			gateway:
+				generate:
+					session:
+						headers:
+						+ blockchain.db.type.map
+						+ blockchain.session.state.value
 	app:
 		configuration:
 			SSL:

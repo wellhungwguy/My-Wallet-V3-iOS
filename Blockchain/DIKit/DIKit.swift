@@ -677,6 +677,16 @@ extension DependencyContainer {
             )
         }
 
+        factory(tag: NetworkKit.HTTPHeaderTag) { () -> () -> HTTPHeaders in
+            let app: AppProtocol = DIKit.resolve()
+            return {
+                app.state.result(for: BlockchainNamespace.blockchain.api.nabu.gateway.generate.session.headers)
+                    .decode(HTTPHeaders.self)
+                    .value
+                    .or([:])
+            }
+        }
+
         factory { () -> LegacySharedKeyRepositoryAPI in
             LegacySharedKeyRepository(
                 keychainItemWrapper: DIKit.resolve()

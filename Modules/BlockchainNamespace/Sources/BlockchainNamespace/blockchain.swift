@@ -53,6 +53,7 @@ public final class L_blockchain: L, I_blockchain {
 }
 public protocol I_blockchain: I {}
 public extension I_blockchain {
+	var `api`: L_blockchain_api { .init("\(__).api") }
 	var `app`: L_blockchain_app { .init("\(__).app") }
 	var `db`: L_blockchain_db { .init("\(__).db") }
 	var `nabu`: L_blockchain_nabu { .init("\(__).nabu") }
@@ -63,6 +64,45 @@ public extension I_blockchain {
 	var `user`: L_blockchain_user { .init("\(__).user") }
 	var `ux`: L_blockchain_ux { .init("\(__).ux") }
 }
+public final class L_blockchain_api: L, I_blockchain_api {
+	public override class var localized: String { NSLocalizedString("blockchain.api", comment: "") }
+}
+public protocol I_blockchain_api: I {}
+public extension I_blockchain_api {
+	var `nabu`: L_blockchain_api_nabu { .init("\(__).nabu") }
+}
+public final class L_blockchain_api_nabu: L, I_blockchain_api_nabu {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu", comment: "") }
+}
+public protocol I_blockchain_api_nabu: I {}
+public extension I_blockchain_api_nabu {
+	var `gateway`: L_blockchain_api_nabu_gateway { .init("\(__).gateway") }
+}
+public final class L_blockchain_api_nabu_gateway: L, I_blockchain_api_nabu_gateway {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway: I {}
+public extension I_blockchain_api_nabu_gateway {
+	var `generate`: L_blockchain_api_nabu_gateway_generate { .init("\(__).generate") }
+}
+public final class L_blockchain_api_nabu_gateway_generate: L, I_blockchain_api_nabu_gateway_generate {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_generate: I {}
+public extension I_blockchain_api_nabu_gateway_generate {
+	var `session`: L_blockchain_api_nabu_gateway_generate_session { .init("\(__).session") }
+}
+public final class L_blockchain_api_nabu_gateway_generate_session: L, I_blockchain_api_nabu_gateway_generate_session {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_generate_session: I {}
+public extension I_blockchain_api_nabu_gateway_generate_session {
+	var `headers`: L_blockchain_api_nabu_gateway_generate_session_headers { .init("\(__).headers") }
+}
+public final class L_blockchain_api_nabu_gateway_generate_session_headers: L, I_blockchain_api_nabu_gateway_generate_session_headers {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session.headers", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_generate_session_headers: I_blockchain_db_type_map, I_blockchain_session_state_value {}
 public final class L_blockchain_app: L, I_blockchain_app {
 	public override class var localized: String { NSLocalizedString("blockchain.app", comment: "") }
 }

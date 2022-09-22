@@ -5,7 +5,6 @@ import DIKit
 import Foundation
 
 public typealias HTTPHeaders = [String: String]
-private var sessionId = UUID()
 
 public struct NetworkRequest {
 
@@ -91,7 +90,6 @@ public struct NetworkRequest {
     private var defaultHeaders: HTTPHeaders {
         [
             HttpHeaderField.requestId: requestId.uuidString,
-            HttpHeaderField.sessionId: sessionId.uuidString,
             HttpHeaderField.acceptLanguage: Set(acceptLanguage).sorted(like: acceptLanguage).qualityEncoded()
         ]
     }

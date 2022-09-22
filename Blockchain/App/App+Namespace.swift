@@ -73,6 +73,7 @@ extension AppProtocol {
         observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(SuperAppIntroObserver(app: self))
+        observers.insert(GenerateSession(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
