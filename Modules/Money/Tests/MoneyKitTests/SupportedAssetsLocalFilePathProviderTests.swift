@@ -26,12 +26,12 @@ final class SupportedAssetsFilePathProviderTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: localFile.relativePath))
     }
 
-    func testLocalPolygonERC20FileIsPresent() {
-        guard let localFile = sut.localPolygonERC20Assets else {
+    func testLocalOtherERC20FileIsPresent() {
+        guard let localFile = sut.localOtherERC20Assets else {
             XCTFail("Missing local file.")
             return
         }
-        XCTAssertTrue(localFile.absoluteString.contains("local-currencies-polygon-erc20.json"))
+        XCTAssertTrue(localFile.absoluteString.contains("local-currencies-other-erc20.json"))
         XCTAssertTrue(FileManager.default.fileExists(atPath: localFile.relativePath))
     }
 

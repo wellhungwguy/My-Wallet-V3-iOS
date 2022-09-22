@@ -62,6 +62,34 @@ extension DependencyContainer {
             ) as CryptoAsset
         }
 
+        factory(tag: CryptoCurrency.avax) {
+            EVMAsset(
+                network: .avalanceCChain,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .avalanceCChain
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
+        factory(tag: CryptoCurrency.bnb) {
+            EVMAsset(
+                network: .binanceSmartChain,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .binanceSmartChain
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
         // MARK: Other
 
         factory { () -> EthereumTxNotesStrategyAPI in

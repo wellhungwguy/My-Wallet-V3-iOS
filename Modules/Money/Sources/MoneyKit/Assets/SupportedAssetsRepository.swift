@@ -5,7 +5,7 @@ import ToolKit
 
 protocol SupportedAssetsRepositoryAPI {
     var ethereumERC20Assets: SupportedAssets { get }
-    var polygonERC20Assets: SupportedAssets { get }
+    var otherERC20Assets: SupportedAssets { get }
     var custodialAssets: SupportedAssets { get }
 }
 
@@ -14,7 +14,7 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
     var ethereumERC20Assets: SupportedAssets {
         switch localService.ethereumERC20Assets {
         case .success(let response):
-            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
+            return SupportedAssets(response: response, sanitizeEVMAssets: sanitizeEVMAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
@@ -23,13 +23,13 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
         }
     }
 
-    var polygonERC20Assets: SupportedAssets {
-        switch localService.polygonERC20Assets {
+    var otherERC20Assets: SupportedAssets {
+        switch localService.otherERC20Assets {
         case .success(let response):
-            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
+            return SupportedAssets(response: response, sanitizeEVMAssets: sanitizeEVMAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
-                fatalError("Can' load local Polygon ERC20 assets. \(error.localizedDescription)")
+                fatalError("Can' load local Other ERC20 assets. \(error.localizedDescription)")
             }
             return SupportedAssets.empty
         }
@@ -38,7 +38,7 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
     var custodialAssets: SupportedAssets {
         switch localService.custodialAssets {
         case .success(let response):
-            return SupportedAssets(response: response, sanitizePolygonAssets: sanitizePolygonAssets)
+            return SupportedAssets(response: response, sanitizeEVMAssets: sanitizeEVMAssets)
         case .failure(let error):
             if BuildFlag.isInternal {
                 fatalError("Can' load local custodial assets. \(error.localizedDescription)")
@@ -48,16 +48,16 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
     }
 
     private let localService: SupportedAssetsServiceAPI
-    private let polygonSupport: PolygonSupport
-    private var sanitizePolygonAssets: Bool {
-        polygonSupport.sanitizeTokenNamesEnabled
+    private let evmSupport: EVMSupport
+    private var sanitizeEVMAssets: Bool {
+        evmSupport.sanitizeTokenNamesEnabled
     }
 
     init(
         localService: SupportedAssetsServiceAPI,
-        polygonSupport: PolygonSupport
+        evmSupport: EVMSupport
     ) {
         self.localService = localService
-        self.polygonSupport = polygonSupport
+        self.evmSupport = evmSupport
     }
 }

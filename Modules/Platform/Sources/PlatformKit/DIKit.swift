@@ -30,10 +30,6 @@ extension DependencyContainer {
 
         factory { KYCClient() as KYCClientAPI }
 
-        factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
-
-        factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
-
         factory { SendEmailNotificationClient() as SendEmailNotificationClientAPI }
 
         // MARK: Exchange

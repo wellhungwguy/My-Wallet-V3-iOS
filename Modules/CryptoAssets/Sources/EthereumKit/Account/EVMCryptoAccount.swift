@@ -88,7 +88,9 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
                 }
                 .replaceError(with: [])
                 .eraseToAnyPublisher()
-        case .polygon:
+        case .avalanceCChain,
+             .binanceSmartChain,
+             .polygon:
             // Use EVM repository
             return evmActivityRepository
                 .transactions(cryptoCurrency: asset, address: publicKey)

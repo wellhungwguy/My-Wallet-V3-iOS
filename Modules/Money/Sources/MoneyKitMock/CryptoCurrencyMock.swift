@@ -29,7 +29,7 @@ extension AssetModel {
                 )
             ),
             sortIndex: sortIndex,
-            sanitizePolygonAssets: false
+            sanitizeEVMAssets: true
         )!
     }
 
@@ -58,7 +58,7 @@ extension AssetModel {
                 )
             ),
             sortIndex: sortIndex,
-            sanitizePolygonAssets: false
+            sanitizeEVMAssets: true
         )!
     }
 }

@@ -75,7 +75,9 @@ final class ERC20BalancesRepository: ERC20BalancesRepositoryAPI {
                     .map(mapper.toDomain)
                     .mapError(ERC20TokenAccountsError.network)
                     .eraseToAnyPublisher()
-                case .polygon:
+                case .avalanceCChain,
+                     .binanceSmartChain,
+                     .polygon:
                     return Deferred {
                         client.evmTokensBalances(for: key.address, network: key.network)
                     }

@@ -3,13 +3,12 @@
 import Combine
 import DIKit
 import Foundation
-import MoneyKit
 import ToolKit
 
 public protocol SupportedAssetsRemoteServiceAPI {
     func refreshCustodialAssetsCache() -> AnyPublisher<Void, Never>
     func refreshEthereumERC20AssetsCache() -> AnyPublisher<Void, Never>
-    func refreshPolygonERC20AssetsCache() -> AnyPublisher<Void, Never>
+    func refreshOtherERC20AssetsCache() -> AnyPublisher<Void, Never>
 }
 
 final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
@@ -67,14 +66,14 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func refreshPolygonERC20AssetsCache() -> AnyPublisher<Void, Never> {
-        client.polygonERC20Assets
+    func refreshOtherERC20AssetsCache() -> AnyPublisher<Void, Never> {
+        client.otherERC20Assets
             .eraseError()
             .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
                 fileIO
                     .write(
                         response,
-                        to: filePathProvider.remotePolygonERC20Assets!,
+                        to: filePathProvider.remoteOtherERC20Assets!,
                         encodedUsing: jsonDecoder
                     )
                     .eraseError()

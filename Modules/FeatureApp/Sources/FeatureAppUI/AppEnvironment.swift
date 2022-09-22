@@ -13,6 +13,7 @@ import FeatureCardPaymentDomain
 import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
+import MoneyKit
 import NetworkKit
 import ObservabilityKit
 import PlatformKit

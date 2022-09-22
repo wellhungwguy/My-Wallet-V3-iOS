@@ -37,14 +37,14 @@ public struct AssetModel: Hashable {
     /// - Parameters:
     ///   - assetResponse: A supported SupportedAssetsResponse.Asset object.
     ///   - sortIndex:     A sorting index.
-    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int, sanitizePolygonAssets: Bool) {
+    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int, sanitizeEVMAssets: Bool) {
         code = assetResponse.symbol
-        displayCode = Self.displayCode(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
-        name = Self.name(assetResponse, sanitizePolygonAssets: sanitizePolygonAssets)
+        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
+        name = Self.name(assetResponse, sanitizeEVMAssets: sanitizeEVMAssets)
         precision = assetResponse.precision
         let products = assetResponse.products.compactMap(AssetModelProduct.init)
         self.products = products.unique
-        logoPngUrl = URL(string: assetResponse.type.logoPngUrl ?? "")
+        logoPngUrl = assetResponse.type.logoPngUrl.flatMap(URL.init)
         spotColor = assetResponse.type.spotColor
 
         guard let assetModelType = assetResponse.type.assetModelType else {
@@ -109,31 +109,23 @@ public struct AssetModel: Hashable {
 
     static func name(
         _ response: SupportedAssetsResponse.Asset,
-        sanitizePolygonAssets: Bool
+        sanitizeEVMAssets: Bool
     ) -> String {
-        let polygonSuffix = " - Polygon"
         let name = response.name
-        guard sanitizePolygonAssets else {
+        guard sanitizeEVMAssets else {
             return name
         }
-        guard response.type.parentChain == "MATIC" else {
+        guard let network = response.type.parentChain.flatMap(AssetModelType.ERC20ParentChain.init) else {
             return name
         }
-        guard !name.hasSuffix(polygonSuffix) else {
+        guard network != .ethereum else {
             return name
         }
-        return name + polygonSuffix
-    }
-
-    static func displayCode(
-        _ response: SupportedAssetsResponse.Asset,
-        sanitizePolygonAssets: Bool
-    ) -> String {
-        let displaySymbol = response.displaySymbol ?? response.symbol
-        guard sanitizePolygonAssets, response.type.parentChain == "MATIC" else {
-            return displaySymbol
+        let evmAssetNameSuffix = " - \(network.name)"
+        guard !name.hasSuffix(evmAssetNameSuffix) else {
+            return name
         }
-        return String(displaySymbol.dropSuffix(".MATIC"))
+        return name + evmAssetNameSuffix
     }
 }
 
@@ -149,7 +141,7 @@ extension AssetModel {
         kind: .coin(minimumOnChainConfirmations: 2),
         name: "Bitcoin",
         precision: 8,
-        products: AssetModelProduct.allCases,
+        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey],
         logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/bitcoin/info/logo.png"),
         spotColor: "FF9B22",
         sortIndex: 1
@@ -161,7 +153,7 @@ extension AssetModel {
         kind: .coin(minimumOnChainConfirmations: 3),
         name: "Bitcoin Cash",
         precision: 8,
-        products: AssetModelProduct.allCases,
+        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey],
         logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/bitcoincash/info/logo.png"),
         spotColor: "8DC351",
         sortIndex: 3
@@ -173,7 +165,7 @@ extension AssetModel {
         kind: .coin(minimumOnChainConfirmations: 30),
         name: "Ethereum",
         precision: 18,
-        products: AssetModelProduct.allCases,
+        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey],
         logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/ethereum/info/logo.png"),
         spotColor: "473BCB",
         sortIndex: 2
@@ -185,7 +177,7 @@ extension AssetModel {
         kind: .coin(minimumOnChainConfirmations: 3),
         name: "Stellar",
         precision: 7,
-        products: AssetModelProduct.allCases,
+        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey],
         logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/stellar/info/logo.png"),
         spotColor: "000000",
         sortIndex: 4
@@ -201,6 +193,30 @@ extension AssetModel {
         logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png",
         spotColor: nil,
         sortIndex: 5
+    )
+
+    public static let bnb = AssetModel(
+        code: "BNB",
+        displayCode: "BNB",
+        kind: .coin(minimumOnChainConfirmations: 30),
+        name: "Binance Smart Chain",
+        precision: 18,
+        products: [.privateKey],
+        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png",
+        spotColor: nil,
+        sortIndex: 6
+    )
+
+    public static let avax = AssetModel(
+        code: "AVAX",
+        displayCode: "AVAX",
+        kind: .coin(minimumOnChainConfirmations: 30),
+        name: "Avalanche C-Chain",
+        precision: 18,
+        products: [.privateKey],
+        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/info/logo.png",
+        spotColor: nil,
+        sortIndex: 7
     )
 }
 

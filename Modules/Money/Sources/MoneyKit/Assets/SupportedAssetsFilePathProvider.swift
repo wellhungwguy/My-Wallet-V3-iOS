@@ -4,27 +4,27 @@ import DIKit
 import Foundation
 
 public protocol SupportedAssetsFilePathProviderAPI {
-    var remoteEthereumERC20Assets: URL? { get }
-    var localEthereumERC20Assets: URL? { get }
-    var remotePolygonERC20Assets: URL? { get }
-    var localPolygonERC20Assets: URL? { get }
-    var remoteCustodialAssets: URL? { get }
     var localCustodialAssets: URL? { get }
+    var remoteCustodialAssets: URL? { get }
+    var localEthereumERC20Assets: URL? { get }
+    var remoteEthereumERC20Assets: URL? { get }
+    var localOtherERC20Assets: URL? { get }
+    var remoteOtherERC20Assets: URL? { get }
 }
 
 final class SupportedAssetsFilePathProvider: SupportedAssetsFilePathProviderAPI {
 
     private enum FileName {
         enum Local {
-            static var ethereumERC20: String { "local-currencies-ethereum-erc20.json" }
-            static var polygonERC20: String { "local-currencies-polygon-erc20.json" }
             static var custodial: String { "local-currencies-custodial.json" }
+            static var ethereumERC20: String { "local-currencies-ethereum-erc20.json" }
+            static var otherERC20: String { "local-currencies-other-erc20.json" }
         }
 
         enum Remote {
-            static var ethereumERC20: String { "remote-currencies-erc20.json" }
-            static var polygonERC20: String { "remote-currencies-polygon-erc20.json" }
             static var custodial: String { "remote-currencies-custodial.json" }
+            static var ethereumERC20: String { "remote-currencies-erc20.json" }
+            static var otherERC20: String { "remote-currencies-other-erc20.json" }
         }
     }
 
@@ -38,8 +38,8 @@ final class SupportedAssetsFilePathProvider: SupportedAssetsFilePathProviderAPI 
         Bundle.module.url(forResource: FileName.Local.ethereumERC20, withExtension: nil)
     }
 
-    var localPolygonERC20Assets: URL? {
-        Bundle.module.url(forResource: FileName.Local.polygonERC20, withExtension: nil)
+    var localOtherERC20Assets: URL? {
+        Bundle.module.url(forResource: FileName.Local.otherERC20, withExtension: nil)
     }
 
     var localCustodialAssets: URL? {
@@ -53,11 +53,11 @@ final class SupportedAssetsFilePathProvider: SupportedAssetsFilePathProviderAPI 
         return documentsDirectory.appendingPathComponent(FileName.Remote.ethereumERC20)
     }
 
-    var remotePolygonERC20Assets: URL? {
+    var remoteOtherERC20Assets: URL? {
         guard let documentsDirectory = documentsDirectory else {
             return nil
         }
-        return documentsDirectory.appendingPathComponent(FileName.Remote.polygonERC20)
+        return documentsDirectory.appendingPathComponent(FileName.Remote.otherERC20)
     }
 
     var remoteCustodialAssets: URL? {

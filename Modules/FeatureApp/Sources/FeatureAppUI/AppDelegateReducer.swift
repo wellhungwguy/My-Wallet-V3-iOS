@@ -7,6 +7,7 @@ import DIKit
 import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
+import MoneyKit
 import NetworkKit
 import ObservabilityKit
 import PlatformKit
@@ -118,7 +119,7 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
-                .refreshPolygonERC20AssetsCache()
+                .refreshOtherERC20AssetsCache()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),

@@ -77,6 +77,49 @@ blockchain:
 				assets:
 				+ blockchain.db.array
 				+ blockchain.session.configuration.value
+			evm:
+				avax:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+				bnb:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+				name:
+					sanitize:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+				polygon:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
 			firebase:
 				project:
 					id:
@@ -119,30 +162,6 @@ blockchain:
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
-			polygon:
-				all:
-					tokens:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
-				is:
-					enabled:
-					+ blockchain.db.type.boolean
-					+ blockchain.session.configuration.value
-				name:
-					sanitize:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
-				tokens:
-					always:
-						fetch:
-							is:
-								enabled:
-								+ blockchain.db.type.boolean
-								+ blockchain.session.configuration.value
 			prefill:
 				is:
 					enabled:

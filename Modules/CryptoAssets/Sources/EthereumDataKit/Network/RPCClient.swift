@@ -14,20 +14,6 @@ protocol LatestBlockClientAPI {
 
 final class RPCClient: LatestBlockClientAPI {
 
-    private enum Endpoint {
-        private static let ethereumNode: [String] = ["eth", "nodes", "rpc"]
-        private static let polygonNode: [String] = ["matic-bor", "nodes", "rpc"]
-
-        static func nodePath(for network: EVMNetwork) -> [String] {
-            switch network {
-            case .ethereum:
-                return ethereumNode
-            case .polygon:
-                return polygonNode
-            }
-        }
-    }
-
     // MARK: - Private Properties
 
     private let networkAdapter: NetworkAdapterAPI
@@ -77,10 +63,26 @@ final class RPCClient: LatestBlockClientAPI {
             return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
         }
         return requestBuilder.post(
-            path: Endpoint.nodePath(for: network),
+            path: network.nodePath,
             body: data
         )
         .flatMap { .success($0) }
         ?? .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
+    }
+}
+
+extension EVMNetwork {
+
+    fileprivate var nodePath: String {
+        switch self {
+        case .avalanceCChain:
+            return "/avax/nodes/rpc/ext/bc/C/rpc"
+        case .binanceSmartChain:
+            return "/bnb/nodes/rpc"
+        case .ethereum:
+            return "/eth/nodes/rpc"
+        case .polygon:
+            return "/matic-bor/nodes/rpc"
+        }
     }
 }

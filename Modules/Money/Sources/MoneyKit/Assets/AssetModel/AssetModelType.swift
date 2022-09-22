@@ -3,12 +3,18 @@
 /// A type of an `AssetModel`.
 public enum AssetModelType: Hashable {
 
-    public enum ERC20ParentChain: String {
+    public enum ERC20ParentChain: String, CaseIterable {
+        case avax = "AVAX"
+        case bnb = "BNB"
         case ethereum = "ETH"
         case polygon = "MATIC"
 
         public var name: String {
             switch self {
+            case .avax:
+                return "Avalanche C-Chain"
+            case .bnb:
+                return "Binance Smart Chain"
             case .ethereum:
                 return "Ethereum"
             case .polygon:

@@ -46,7 +46,9 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
                             )
                         }
                         .eraseToAnyPublisher()
-                case .polygon:
+                case .avalanceCChain,
+                     .binanceSmartChain,
+                     .polygon:
                     return evmClient
                         .evmActivity(
                             address: key.address,

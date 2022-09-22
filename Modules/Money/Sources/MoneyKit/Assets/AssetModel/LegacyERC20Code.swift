@@ -4,17 +4,13 @@ import Foundation
 
 /// An enumeration of Coin codes that the App supports non-custodial.
 public enum NonCustodialCoinCode: String, CaseIterable {
+    case avax = "AVAX"
+    case bnb = "BNB"
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"
     case ethereum = "ETH"
-    case stellar = "XLM"
     case polygon = "MATIC.MATIC"
-}
-
-/// Our MVP will allow only these ERC20 tokens on Polygon.
-public enum PolygonERC20CodeAllowList: String, CaseIterable {
-    case usdt = "USDT.MATIC"
-    case usdc = "USDC.MATIC"
+    case stellar = "XLM"
 }
 
 /// An enumeration of the hardcoded ERC20 assets.

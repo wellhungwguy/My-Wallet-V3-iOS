@@ -15,49 +15,103 @@ public struct EthereumTransactionFee {
 
     // MARK: Static Methods
 
-    static func `default`(network: EVMNetwork) -> EthereumTransactionFee {
+    private static let defaultGasLimit: BigUInt = 21000
+    private static let defaultGasLimitContract: BigUInt = 75000
+
+    private static func defaultRegularFee(network: EVMNetwork) -> CryptoValue {
+        let gwei: BigInt
         switch network {
+        case .avalanceCChain:
+            gwei = 25
+        case .binanceSmartChain:
+            gwei = 5
         case .ethereum:
-            return EthereumTransactionFee(
-                regular: 50,
-                priority: 100,
-                gasLimit: 21000,
-                gasLimitContract: 75000,
-                network: .ethereum
-            )
+            gwei = 50
         case .polygon:
-            return EthereumTransactionFee(
-                regular: 30,
-                priority: 40,
-                gasLimit: 21000,
-                gasLimitContract: 75000,
-                network: .polygon
-            )
+            gwei = 40
         }
+        return .ether(gwei: gwei, network: network)
+    }
+
+    private static func defaultPriorityFee(network: EVMNetwork) -> CryptoValue {
+        let gwei: BigInt
+        switch network {
+        case .avalanceCChain:
+            gwei = 30
+        case .binanceSmartChain:
+            gwei = 7
+        case .ethereum:
+            gwei = 100
+        case .polygon:
+            gwei = 50
+        }
+        return .ether(gwei: gwei, network: network)
+    }
+
+    static func `default`(network: EVMNetwork) -> EthereumTransactionFee {
+        EthereumTransactionFee(
+            regular: Self.defaultRegularFee(network: network),
+            priority: Self.defaultRegularFee(network: network),
+            gasLimit: Self.defaultGasLimit,
+            gasLimitContract: Self.defaultGasLimitContract,
+            network: network
+        )
     }
 
     // MARK: Private Properties
 
     private let regular: CryptoValue
     private let priority: CryptoValue
-    private let gasLimit: Int
-    private let gasLimitContract: Int
+    private let gasLimit: BigUInt
+    private let gasLimitContract: BigUInt
     private let network: EVMNetwork
 
     // MARK: Init
 
     init(
-        regular: Int,
-        priority: Int,
+        regular: CryptoValue,
+        priority: CryptoValue,
+        gasLimit: BigUInt,
+        gasLimitContract: BigUInt,
+        network: EVMNetwork
+    ) {
+        self.regular = regular
+        self.priority = priority
+        self.gasLimit = gasLimit
+        self.gasLimitContract = gasLimitContract
+        self.network = network
+    }
+
+    init(
+        regularGwei: Int,
+        priorityGwei: Int,
         gasLimit: Int,
         gasLimitContract: Int,
         network: EVMNetwork
     ) {
-        self.regular = .ether(gwei: BigInt(regular), network: network)
-        self.priority = .ether(gwei: BigInt(priority), network: network)
-        self.gasLimit = gasLimit
-        self.gasLimitContract = gasLimitContract
-        self.network = network
+        self.init(
+            regular: .ether(gwei: BigInt(regularGwei), network: network),
+            priority: .ether(gwei: BigInt(priorityGwei), network: network),
+            gasLimit: BigUInt(gasLimit),
+            gasLimitContract: BigUInt(gasLimitContract),
+            network: network
+        )
+    }
+
+    init(
+        regularMinor: String,
+        priorityMinor: String,
+        gasLimit: String,
+        gasLimitContract: String,
+        network: EVMNetwork
+    ) {
+        self.init(
+            regular: .create(minor: regularMinor, currency: network.cryptoCurrency) ?? Self.defaultRegularFee(network: network),
+            priority: .create(minor: priorityMinor, currency: network.cryptoCurrency) ?? Self.defaultPriorityFee(network: network),
+            gasLimit: BigUInt(gasLimit) ?? Self.defaultGasLimit,
+            gasLimitContract: BigUInt(gasLimitContract) ?? Self.defaultGasLimitContract,
+            network: network
+        )
     }
 
     // MARK: Private Methods
@@ -72,16 +126,15 @@ public struct EthereumTransactionFee {
     }
 
     public func gasLimit(
-        extraGasLimit: BigUInt = 0,
+        extraGasLimit: BigUInt,
         isContract: Bool
     ) -> BigUInt {
-        BigUInt(isContract ? gasLimitContract : gasLimit)
-            + extraGasLimit
+        (isContract ? gasLimitContract : gasLimit) + extraGasLimit
     }
 
     public func absoluteFee(
         with feeLevel: FeeLevel,
-        extraGasLimit: BigUInt = 0,
+        extraGasLimit: BigUInt,
         isContract: Bool
     ) -> CryptoValue {
         let price = gasPrice(feeLevel: feeLevel)

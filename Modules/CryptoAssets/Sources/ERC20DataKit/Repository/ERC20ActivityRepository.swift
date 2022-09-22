@@ -56,7 +56,9 @@ final class ERC20ActivityRepository: ERC20ActivityRepositoryAPI {
                             }
                         }
                         .eraseToAnyPublisher()
-                case .polygon:
+                case .avalanceCChain,
+                     .binanceSmartChain,
+                     .polygon:
                     fatalError("Shouldn't use ERC20ActivityRepository for polygon.")
                 }
             }

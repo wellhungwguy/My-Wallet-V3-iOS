@@ -42,9 +42,17 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .bitcoinCash,
             .stellar
         ]
-        if polygonSupport.isEnabled {
-            base.append(.polygon)
-        }
+
+        let evms: [CryptoCurrency] = AssetModelType
+            .ERC20ParentChain
+            .allCases
+            .filter { $0 != .ethereum }
+            .filter { evmSupport.isEnabled(network: $0) }
+            .map(\.cryptoCurrency)
+            .sorted()
+
+        base.append(contentsOf: evms)
+
         return base
     }
 
@@ -63,18 +71,14 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .compactMap(\.cryptoCurrency)
     }
 
-    private var polygonERC20Currencies: [CryptoCurrency] {
-        guard polygonSupport.isEnabled else {
-            return []
-        }
-        let allowList = PolygonERC20CodeAllowList.allCases.map(\.rawValue)
-        let isAllTokensEnabled = polygonSupport.isAllTokensEnabled
-        return repository.polygonERC20Assets
+    private var otherERC20Currencies: [CryptoCurrency] {
+        repository.otherERC20Assets
             .currencies
-            .filter { model in
-                isAllTokensEnabled || allowList.contains(model.code)
-            }
             .filter(\.kind.isERC20)
+            .filter { model in
+                model.kind.erc20ParentChain
+                    .flatMap(evmSupport.isEnabled(network:)) ?? false
+            }
             .compactMap(\.cryptoCurrency)
     }
 
@@ -82,7 +86,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         nonCustodialCryptoCurrencies
             + custodialCurrencies
             + ethereumERC20Currencies
-            + polygonERC20Currencies
+            + otherERC20Currencies
     )
     .unique
     .sorted()
@@ -93,22 +97,38 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     private let allEnabledCryptoCurrenciesLock = NSLock()
     private let allEnabledCurrenciesLock = NSLock()
 
-    private let polygonSupport: PolygonSupport
+    private let evmSupport: EVMSupport
     private let repository: SupportedAssetsRepositoryAPI
 
     // MARK: Init
 
     init(
-        polygonSupport: PolygonSupport,
+        evmSupport: EVMSupport,
         repository: SupportedAssetsRepositoryAPI
     ) {
-        self.polygonSupport = polygonSupport
+        self.evmSupport = evmSupport
         self.repository = repository
     }
 }
 
-public protocol PolygonSupport: AnyObject {
-    var isEnabled: Bool { get }
-    var isAllTokensEnabled: Bool { get }
+public protocol EVMSupport: AnyObject {
+
     var sanitizeTokenNamesEnabled: Bool { get }
+
+    func isEnabled(network: AssetModelType.ERC20ParentChain) -> Bool
+}
+
+extension AssetModelType.ERC20ParentChain {
+    fileprivate var cryptoCurrency: CryptoCurrency {
+        switch self {
+        case .avax:
+            return .avax
+        case .bnb:
+            return .bnb
+        case .ethereum:
+            return .ethereum
+        case .polygon:
+            return .polygon
+        }
+    }
 }

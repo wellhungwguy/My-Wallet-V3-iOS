@@ -271,7 +271,7 @@ extension DependencyContainer {
         }
 
         factory {
-            PolygonSupport(app: DIKit.resolve()) as MoneyKit.PolygonSupport
+            EVMSupport(app: DIKit.resolve()) as MoneyKit.EVMSupport
         }
 
         // MARK: - UserInformationServiceProvider
