@@ -96,6 +96,8 @@ extension Tag.Reference {
 
     public init(id: String, in language: Language) throws {
 
+        guard id.hasPrefix(blockchain(\.id)) else { throw "Not a valid blockchain namespace identfier" }
+
         var tag = blockchain[]
         var indices: [Tag: String] = [:]
 

@@ -18,7 +18,8 @@ extension Session {
         public var allKeys: [String] { Array(fetched.keys) }
 
         private var fetched: [String: Any?] {
-            lock.withLock { _decoded.value + _override }
+            get { lock.withLock { _decoded.value + _override } }
+            set { lock.withLock { _decoded.send(newValue + _override) } }
         }
 
         private var _fetched: PassthroughSubject<[String: Any?], Never> = .init()

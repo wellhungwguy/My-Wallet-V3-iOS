@@ -41,7 +41,7 @@ struct DerivationResponse: Equatable, Codable {
         xpriv = try container.decode(String.self, forKey: .xpriv)
         xpub = try container.decode(String.self, forKey: .xpub)
         addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
-        cache = try container.decode(AddressCacheResponse.self, forKey: .cache)
+        cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
     }
 
     init(

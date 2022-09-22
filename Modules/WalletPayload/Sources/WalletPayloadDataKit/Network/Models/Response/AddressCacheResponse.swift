@@ -6,6 +6,8 @@ import WalletPayloadKit
 struct AddressCacheResponse: Equatable, Codable {
     let receiveAccount: String
     let changeAccount: String
+
+    static let empty = AddressCacheResponse(receiveAccount: "", changeAccount: "")
 }
 
 extension WalletPayloadKit.AddressCache {

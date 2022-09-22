@@ -152,13 +152,13 @@ extension AccountGroup {
             .zip()
             .tryMap { (balancePairs: [[MoneyValuePair]]) in
                 try balancePairs.flatMap { $0 }
-                .reduce(
-                    .zero(
-                        baseCurrency: currencyType,
-                        quoteCurrency: fiatCurrency.currencyType
-                    ),
-                    +
-                )
+                    .reduce(
+                        .zero(
+                            baseCurrency: currencyType,
+                            quoteCurrency: fiatCurrency.currencyType
+                        ),
+                        +
+                    )
             }
             .eraseToAnyPublisher()
     }

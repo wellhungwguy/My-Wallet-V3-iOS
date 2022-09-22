@@ -91,7 +91,8 @@ let package = Package(
                 .copy("Fixtures/wallet.v4-secpass.json"),
                 .copy("Fixtures/hdwallet.v3.json"),
                 .copy("Fixtures/hdwallet.v4.json"),
-                .copy("Fixtures/hdwallet.unknown.json")
+                .copy("Fixtures/hdwallet.unknown.json"),
+                .copy("Fixtures/hdaccount.v4.missingCache.json")
             ]
         )
     ]
