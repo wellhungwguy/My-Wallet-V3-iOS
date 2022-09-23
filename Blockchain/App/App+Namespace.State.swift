@@ -50,11 +50,11 @@ final class ApplicationStateObserver: Session.Observer {
             .sink { [app] mode in
                 app.state.transaction { state in
                     switch mode {
-                    case .legacy:
-                        state.clear(blockchain.app.is.mode.DeFi)
+                    case .universal:
+                        state.clear(blockchain.app.is.mode.pkw)
                         state.clear(blockchain.app.is.mode.trading)
                     default:
-                        state.set(blockchain.app.is.mode.DeFi, to: mode == .defi)
+                        state.set(blockchain.app.is.mode.pkw, to: mode == .pkw)
                         state.set(blockchain.app.is.mode.trading, to: mode == .trading)
                     }
                 }

@@ -65,7 +65,7 @@ final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

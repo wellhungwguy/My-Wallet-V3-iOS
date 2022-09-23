@@ -337,7 +337,7 @@ public final class CoinViewObserver: Session.Observer {
         } else {
             let appMode = app.currentMode
             switch appMode {
-            case .legacy:
+            case .universal:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
                 )
@@ -353,7 +353,7 @@ public final class CoinViewObserver: Session.Observer {
                             .error(message: "\(event) has no valid accounts for \(String(describing: action))")
                     )
 
-            case .defi:
+            case .pkw:
                 return try(accounts.first(where: { account in account is NonCustodialAccount }))
                     .or(
                         throw: blockchain.ux.asset.error[]

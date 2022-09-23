@@ -79,7 +79,7 @@ public struct AppModeSwitcherView: View {
             }
 
             PrimaryRow(
-                title: AppMode.defi.displayName,
+                title: AppMode.pkw.displayName,
                 caption: nil,
                 subtitle: defiSubtitleString,
                 description: defiDescriptionString,
@@ -90,7 +90,7 @@ public struct AppModeSwitcherView: View {
                         .frame(width: 24, height: 24)
                 },
                 trailing: {
-                    if viewStore.currentAppMode == .defi {
+                    if viewStore.currentAppMode == .pkw {
                         checkMarkIcon
                     } else {
                         chevronIcon

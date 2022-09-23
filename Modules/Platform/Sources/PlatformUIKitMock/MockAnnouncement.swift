@@ -21,7 +21,7 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
         fatalError("\(#function) was not implemented")
     }
 
-    var associatedAppModes: [AppMode] = [.legacy, .trading]
+    var associatedAppModes: [AppMode] = [.universal, .trading]
 
     var shouldShow: Bool {
         !isDismissed

@@ -1423,13 +1423,13 @@ public final class L_blockchain_app_is_mode: L, I_blockchain_app_is_mode {
 }
 public protocol I_blockchain_app_is_mode: I {}
 public extension I_blockchain_app_is_mode {
-	var `DeFi`: L_blockchain_app_is_mode_DeFi { .init("\(__).DeFi") }
+	var `pkw`: L_blockchain_app_is_mode_pkw { .init("\(__).pkw") }
 	var `trading`: L_blockchain_app_is_mode_trading { .init("\(__).trading") }
 }
-public final class L_blockchain_app_is_mode_DeFi: L, I_blockchain_app_is_mode_DeFi {
-	public override class var localized: String { NSLocalizedString("blockchain.app.is.mode.DeFi", comment: "") }
+public final class L_blockchain_app_is_mode_pkw: L, I_blockchain_app_is_mode_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.is.mode.pkw", comment: "") }
 }
-public protocol I_blockchain_app_is_mode_DeFi: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
+public protocol I_blockchain_app_is_mode_pkw: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
 public final class L_blockchain_app_is_mode_trading: L, I_blockchain_app_is_mode_trading {
 	public override class var localized: String { NSLocalizedString("blockchain.app.is.mode.trading", comment: "") }
 }

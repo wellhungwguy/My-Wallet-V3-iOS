@@ -95,7 +95,7 @@ final class PortfolioBalanceChangeProvider {
                     .eraseError()
             }
             .tryMap { currentBalance, previousBalance in
-                guard appMode != .defi else {
+                guard appMode != .pkw else {
                     return  PortfolioBalanceChange(
                         balance: currentBalance,
                         changePercentage: nil,

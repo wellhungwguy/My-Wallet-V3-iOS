@@ -89,7 +89,7 @@ public final class PortfolioScreenInteractor {
                                 .balance
                                 .flatMap { [weak self] moneyValue -> AnyPublisher<Bool, Error> in
                                     let appMode = self?.app.currentMode
-                                    if appMode == .defi,
+                                    if appMode == .pkw,
                                         case .crypto(let currency) = group.currencyType,
                                         currency.isCoin
                                     {

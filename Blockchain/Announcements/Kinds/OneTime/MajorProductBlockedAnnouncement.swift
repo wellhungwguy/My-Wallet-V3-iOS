@@ -55,7 +55,7 @@ final class MajorProductBlockedAnnouncement: OneTimeAnnouncement, ActionableAnno
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

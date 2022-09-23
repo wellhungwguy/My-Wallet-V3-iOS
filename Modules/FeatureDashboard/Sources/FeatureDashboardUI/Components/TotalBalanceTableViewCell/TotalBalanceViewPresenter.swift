@@ -42,7 +42,7 @@ final class TotalBalanceViewPresenter {
             descriptors: .balance
         )
 
-        let titleString = app.currentMode == .legacy
+        let titleString = app.currentMode == .universal
             ? LocalizationConstants.Dashboard.Portfolio.totalBalance
             : LocalizationConstants.Dashboard.Portfolio.balance
 

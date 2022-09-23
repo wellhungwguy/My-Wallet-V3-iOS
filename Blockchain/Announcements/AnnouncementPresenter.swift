@@ -138,7 +138,7 @@ final class AnnouncementPresenter {
         let announcementsMetadata = featureFetcher
             .fetch(for: .announcements, as: AnnouncementsMetadata.self)
             .asSingle()
-        let delaySeconds = app.currentMode == .defi ? 0 : 10
+        let delaySeconds = app.currentMode == .pkw ? 0 : 10
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
             .asSingle()
             .delaySubscription(.seconds(delaySeconds), scheduler: MainScheduler.asyncInstance)

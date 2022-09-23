@@ -24,7 +24,7 @@ public struct CoinViewState: Equatable {
     var appMode: AppMode?
 
     var swapButton: ButtonAction? {
-        guard appMode != .legacy else {
+        guard appMode != .universal else {
             return nil
         }
         let swapDisabled = !accounts.hasPositiveBalanceForSelling
@@ -37,7 +37,7 @@ public struct CoinViewState: Equatable {
     @BindableState public var explainer: Account.Snapshot?
 
     var actions: [ButtonAction] {
-        appMode == .legacy ? defaultCoinActions() : superAppCoinActions()
+        appMode == .universal ? defaultCoinActions() : superAppCoinActions()
     }
 
     private func defaultCoinActions() -> [ButtonAction] {
@@ -74,7 +74,7 @@ public struct CoinViewState: Equatable {
             return [send]
         }
 
-        guard appMode != .defi else {
+        guard appMode != .pkw else {
             return [receive, send]
         }
 

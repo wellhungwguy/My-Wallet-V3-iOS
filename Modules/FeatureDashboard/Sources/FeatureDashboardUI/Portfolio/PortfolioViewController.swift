@@ -218,9 +218,9 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
                 // if the user has completed onboarding, nothing to show
                 var isTradingMode: Bool {
                     switch currentMode {
-                    case .trading, .legacy:
+                    case .trading, .universal:
                         return true
-                    case .defi:
+                    case .pkw:
                         return false
                     }
                 }

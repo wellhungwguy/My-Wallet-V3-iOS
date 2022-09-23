@@ -79,7 +79,7 @@ final class PortfolioScreenPresenter {
                         appMode: app.currentMode
                     )
                 }
-                .map(app.currentMode == .defi ? PortfolioCellType.defiCrypto : PortfolioCellType.crypto)
+                .map(app.currentMode == .pkw ? PortfolioCellType.defiCrypto : PortfolioCellType.crypto)
                 .forEach { items.append($0) }
             return addingAnnouncement(items: items)
         }

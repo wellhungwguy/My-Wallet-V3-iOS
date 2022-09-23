@@ -188,11 +188,11 @@ struct FeatureSuperAppIntroView_Previews: PreviewProvider {
 extension AppMode {
     public var displayName: String {
         switch self {
-        case .defi:
+        case .pkw:
             return LocalizationConstants.AppMode.privateKeyWallet
         case .trading:
             return LocalizationConstants.AppMode.tradingAccount
-        case .legacy:
+        case .universal:
             return ""
         }
     }

@@ -55,7 +55,7 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement, ActionableAnnoun
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

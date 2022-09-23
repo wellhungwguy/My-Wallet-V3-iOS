@@ -379,7 +379,7 @@ final class TransactionInteractor {
                             return isEligible && ($0 is NonCustodialAccount == false)
                         }
 
-                        if appMode == .defi {
+                        if appMode == .pkw {
                             return isEligible || $0 is NonCustodialAccount
                         }
 
@@ -406,11 +406,11 @@ extension CryptoAccount {
 extension AppMode {
     fileprivate var sourceAccountFilter: AssetFilter {
         switch self {
-        case .legacy:
+        case .universal:
             return .all
         case .trading:
             return .custodial
-        case .defi:
+        case .pkw:
             return .nonCustodial
         }
     }

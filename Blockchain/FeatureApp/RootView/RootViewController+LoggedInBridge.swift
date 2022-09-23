@@ -231,7 +231,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleBuyCrypto(currency: CryptoCurrency) {
-        guard app.currentMode != .defi else {
+        guard app.currentMode != .pkw else {
             showBuyCryptoOpenTradingAccount()
             return
         }

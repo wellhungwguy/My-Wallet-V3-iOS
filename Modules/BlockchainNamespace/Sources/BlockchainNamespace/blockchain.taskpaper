@@ -343,7 +343,7 @@ blockchain:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.state.shared.value
 			mode:
-				DeFi:
+				pkw:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.state.value
 				trading:
