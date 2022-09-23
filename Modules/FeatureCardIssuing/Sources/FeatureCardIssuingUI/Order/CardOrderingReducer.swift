@@ -36,7 +36,7 @@ enum CardOrderingAction: Equatable, BindableAction {
     case close(CardOrderingResult)
     case displayEligibleCountryList
     case displayEligibleStateList
-    case selectProduct(Int)
+    case selectProduct(Product)
     case editAddress
     case editAddressComplete(Result<CardAddressSearchResult, Never>)
     case binding(BindingAction<CardOrderingState>)
@@ -75,7 +75,6 @@ struct CardOrderingState: Equatable {
     @BindableState var isAddressConfirmationVisible = false
     @BindableState var isProductSelectionVisible = false
     @BindableState var isProductDetailsVisible = false
-    @BindableState var selectedProductIndex: Int = 0
     @BindableState var acceptLegalVisible = false
 
     @BindableState var ssn: String = ""
@@ -207,7 +206,6 @@ let cardOrderingReducer: Reducer<
                 .catchToEffect(CardOrderingAction.productsResponse)
         case .productsResponse(.success(let products)):
             state.products = products
-            state.selectedProductIndex = 0
             state.selectedProduct = products[safe: 0]
             return .none
         case .productsResponse(.failure(let error)):
@@ -221,9 +219,8 @@ let cardOrderingReducer: Reducer<
             return .none
         case .displayEligibleCountryList:
             return .none
-        case .selectProduct(let index):
-            state.selectedProductIndex = index
-            state.selectedProduct = state.products[safe: index]
+        case .selectProduct(let product):
+            state.selectedProduct = product
             return .none
         case .fetchAddress:
             state.updatingAddress = true

@@ -21,10 +21,7 @@ struct ProductSelectionView: View {
         WithViewStore(store) { viewStore in
             VStack(spacing: Spacing.padding3) {
                 if !viewStore.state.products.isEmpty {
-                    TabView(selection: viewStore.binding(
-                        get: \.selectedProductIndex,
-                        send: CardOrderingAction.selectProduct(_:)
-                    )) {
+                    TabView {
                         ForEach(viewStore.state.products) { product in
                             ProductView(
                                 product: product,
@@ -32,6 +29,9 @@ struct ProductSelectionView: View {
                                     viewStore.send(.binding(.set(\.$isProductDetailsVisible, true)))
                                 }
                             )
+                            .onAppear {
+                                viewStore.send(.selectProduct(product))
+                            }
                         }
                     }
                     .tabViewStyle(PageTabViewStyle())
