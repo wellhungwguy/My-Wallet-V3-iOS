@@ -32,6 +32,11 @@ extension Color {
             dark: .palette.dark200
         )
 
+        public static let text = Color(
+            light: .palette.grey600,
+            dark: .palette.dark200
+        )
+
         public static let overlay = Color(
             light: .palette.overlay600,
             dark: .palette.overlay600

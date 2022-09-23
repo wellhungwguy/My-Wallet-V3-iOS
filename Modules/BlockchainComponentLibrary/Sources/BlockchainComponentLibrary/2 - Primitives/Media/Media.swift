@@ -142,14 +142,6 @@ public enum MediaResizingMode: String, Codable {
     case aspectFit = "aspect_fit"
     case aspectFill = "aspect_fill"
     case center
-    case top
-    case bottom
-    case left
-    case right
-    case topLeft = "top_left"
-    case topRight = "top_right"
-    case bottomLeft = "bottom_left"
-    case bottomRight = "bottom_right"
 }
 
 extension MediaResizingMode {
@@ -160,14 +152,6 @@ extension MediaResizingMode {
         case .aspectFit: return .aspectFit
         case .aspectFill: return .aspectFill
         case .center: return .center
-        case .top: return .top
-        case .bottom: return .bottom
-        case .left: return .left
-        case .right: return .right
-        case .topLeft: return .topLeft
-        case .topRight: return .topRight
-        case .bottomLeft: return .bottomLeft
-        case .bottomRight: return .bottomRight
         }
     }
 }

@@ -11,37 +11,74 @@ final class IconsTests: XCTestCase {
         isRecording = false
     }
 
-//    func testIcons() {
-//        let view = Icon_Previews.previews
-//
-//        assertSnapshots(
-//            matching: view,
-//            as: [
-//                .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-//                .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-//            ]
-//        )
-//    }
+    func testIcons() {
+
+        let view = VStack {
+            ForEach(Icon.allIcons.prefix(5), id: \.self) { icon in
+                HStack {
+                    Spacer()
+                    icon.micro()
+                    Spacer()
+                    icon.small()
+                    Spacer()
+                    icon.medium()
+                    Spacer()
+                    icon.large()
+                    Spacer()
+                }
+                .padding()
+                HStack {
+                    Spacer()
+                    icon.circle().micro()
+                    Spacer()
+                    icon.circle().small()
+                    Spacer()
+                    icon.circle().medium()
+                    Spacer()
+                    icon.circle().large()
+                    Spacer()
+                }
+                .padding()
+            }
+        }
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(traits: UITraitCollection(userInterfaceStyle: .dark))
+            ]
+        )
+
+        let all = VStack {
+            ForEach(Icon.allIcons.chunks(ofCount: 5), id: \.self) { icons in
+                HStack {
+                    ForEach(icons, id: \.self) { icon in
+                        icon.small()
+                    }
+                }
+            }
+        }
+
+        assertSnapshots(
+            matching: all,
+            as: [
+                .image(traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(traits: UITraitCollection(userInterfaceStyle: .dark))
+            ]
+        )
+    }
 
     func testScaling() {
-        let view = Icon.send.frame(width: 200, height: 200)
-
-        assertSnapshot(matching: view, as: .image)
-
-        let smaller = Icon.send.frame(width: 10, height: 10)
-
-        assertSnapshot(matching: smaller, as: .image)
+        assertSnapshot(matching: Icon.send.large(), as: .image)
+        assertSnapshot(matching: Icon.send.micro(), as: .image)
     }
 
-    func testColoring() {
-        let view = Icon.send.accentColor(.green)
-
-        assertSnapshot(matching: view, as: .image)
+    func testColor() {
+        assertSnapshot(matching: Icon.send.color(.semantic.success).medium(), as: .image)
     }
 
-//    func testCircle() {
-//        let view = Icon.walletSwap.circle().frame(width: 32, height: 32)
-//
-//        assertSnapshot(matching: view, as: .image)
-//    }
+    func testCircle() {
+        assertSnapshot(matching: Icon.walletSwap.circle().medium(), as: .image)
+    }
 }
