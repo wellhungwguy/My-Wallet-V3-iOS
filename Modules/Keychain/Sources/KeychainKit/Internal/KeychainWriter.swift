@@ -50,20 +50,20 @@ final class KeychainWriter: KeychainWriterAPI {
         for key: String
     ) -> Result<Void, KeychainWriterError> {
 
-        var keychainQuery = queryProvider.query()
-        keychainQuery[kSecAttrAccount as String] = key
-        keychainQuery[kSecValueData as String] = value
+        let keychainQuery = queryProvider.writeQuery(key: key, data: value)
 
         var status = coreWriter(keychainQuery as CFDictionary)
 
         if status == errSecDuplicateItem {
-            let attributesToUpdate = [
-                kSecValueData: value
-            ] as CFDictionary
+            let updateQuery = queryProvider.commonQuery(key: key, data: nil)
+            let attributesToUpdate: [String: Any] = [
+                kSecAttrAccessible as String: queryProvider.permission.queryValue,
+                kSecValueData as String: value
+            ]
 
             status = coreUpdater(
-                keychainQuery as CFDictionary,
-                attributesToUpdate
+                updateQuery as CFDictionary,
+                attributesToUpdate as CFDictionary
             )
         }
 
@@ -81,7 +81,7 @@ final class KeychainWriter: KeychainWriterAPI {
     func remove(
         for key: String
     ) -> Result<Void, KeychainWriterError> {
-        let keychainQuery = queryProvider.query()
+        let keychainQuery = queryProvider.commonQuery(key: key, data: nil)
 
         let status = coreRemover(keychainQuery as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
