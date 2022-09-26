@@ -13,7 +13,7 @@ public final class AllAccountsGroup: AccountGroup {
     public let accounts: [SingleAccount]
     public let identifier: AnyHashable = "AllAccountsGroup"
     public var label: String {
-        if accounts.filter({ $0.accountType == .nonCustodial}).isNotEmpty {
+        if accounts.filter({ $0.accountType == .nonCustodial }).isNotEmpty {
             return LocalizedString.allWallets
         }
         return LocalizedString.allAccounts

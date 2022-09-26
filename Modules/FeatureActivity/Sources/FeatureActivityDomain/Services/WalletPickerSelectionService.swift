@@ -28,9 +28,9 @@ final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
         defaultValue = app
             .modePublisher()
             .asObservable()
-            .flatMapLatest({ appMode in
-                return coincore.allAccounts(filter: appMode.filter).asObservable().share(replay: 1)
-            })
+            .flatMapLatest { appMode in
+                coincore.allAccounts(filter: appMode.filter).asObservable().share(replay: 1)
+            }
 
         selectedDataRelay = BehaviorRelay(value: nil)
         sharedStream = selectedDataRelay

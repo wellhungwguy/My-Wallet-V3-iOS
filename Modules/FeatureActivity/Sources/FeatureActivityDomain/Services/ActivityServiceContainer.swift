@@ -17,7 +17,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     let app: AppProtocol
 
     private let disposeBag = DisposeBag()
-    private lazy var setup: Void =  {
+    private lazy var setup: Void = {
         selectionService
             .selectedData
             .bind { [weak self] selection in
@@ -27,12 +27,10 @@ final class ActivityServiceContainer: ActivityServiceContaining {
 
         app.modePublisher()
             .asObservable()
-            .bind {[weak self] _ in
-                print("refresh")
+            .bind { [weak self] _ in
                 self?.selectionService.refresh()
             }
             .disposed(by: disposeBag)
-
     }()
 
     init(
