@@ -5,16 +5,17 @@ import Foundation
 public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
     let itemClass: KeychainItemClass = .genericPassword
     let service: String
-    let permission: KeychainPermission
     let accessGroup: String?
     let synchronizable: Bool
+
+    public let permission: KeychainPermission
 
     public init(
         service: String
     ) {
         self.service = service
         accessGroup = nil
-        permission = .afterFirstUnlock
+        permission = .whenUnlocked
         synchronizable = false
     }
 
@@ -24,7 +25,7 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
     ) {
         self.service = service
         self.accessGroup = accessGroup
-        permission = .afterFirstUnlock
+        permission = .whenUnlocked
         synchronizable = false
     }
 
@@ -42,11 +43,18 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
 
     // MARK: - KeychainQuery
 
-    public func query() -> [String: Any] {
+    public func commonQuery(key: String?, data: Data?) -> [String: Any] {
         var query = [String: Any]()
         query[kSecClass as String] = itemClass.queryValue
         query[kSecAttrService as String] = service
-        query[kSecAttrAccessible as String] = permission.queryValue
+
+        if let key {
+            query[kSecAttrAccount as String] = key
+        }
+
+        if let data {
+            query[kSecValueData as String] = data
+        }
 
         if synchronizable {
             query[kSecAttrSynchronizable as String] = kCFBooleanTrue
@@ -58,6 +66,19 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
         }
         #endif
 
+        return query
+    }
+
+    public func writeQuery(key: String, data: Data) -> [String: Any] {
+        var query = commonQuery(key: key, data: data)
+        query[kSecAttrAccessible as String] = permission.queryValue
+        return query
+    }
+
+    public func readOneQuery(key: String) -> [String: Any] {
+        var query = commonQuery(key: key, data: nil)
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        query[kSecReturnData as String] = kCFBooleanTrue
         return query
     }
 }
