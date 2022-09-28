@@ -85,6 +85,8 @@ public enum LocalizationConstants {
         comment: "Learn more button"
     )
 
+    public static let availableTo = NSLocalizedString("Available to", comment: "Available to")
+
     public enum Errors {
         public static let genericError = NSLocalizedString(
             "An error occurred. Please try again.",

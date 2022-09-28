@@ -6,6 +6,7 @@ import RxCocoa
 import RxSwift
 import SwiftUI
 
+/// Used for selecting a payment method in `Buy`
 final class AccountAuxiliaryViewPresenter {
 
     // MARK: - Public Properites

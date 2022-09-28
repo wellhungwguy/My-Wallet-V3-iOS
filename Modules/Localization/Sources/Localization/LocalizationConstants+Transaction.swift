@@ -115,10 +115,21 @@ extension LocalizationConstants {
             }
         }
 
+        public enum AvailableBalance {}
+
         public enum TradingCurrency {}
 
         public enum Error {}
     }
+}
+
+extension LocalizationConstants.Transaction.AvailableBalance {
+    public static let availableTo = NSLocalizedString("Available to", comment: "Available to")
+    public static let description = NSLocalizedString("Your available balance is your total available minus estimated network fees.", comment: "Your available balance is your total available minus estimated network fees.")
+    public static let total = NSLocalizedString("Total", comment: "Total")
+    public static let estimated = NSLocalizedString("Est.", comment: "Abbreviation for Estimated")
+    public static let fees = NSLocalizedString("Fees", comment: "Fees")
+    public static let okay = NSLocalizedString("Okay", comment: "Okay")
 }
 
 extension LocalizationConstants.Transaction.Notices {

@@ -1010,14 +1010,14 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ async in
+        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .showEnterAmount)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ async in
+        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .returnToPreviousStep)
         }
@@ -1034,7 +1034,7 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
+        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .resetFlow)
         }

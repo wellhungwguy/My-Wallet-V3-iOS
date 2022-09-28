@@ -3,7 +3,6 @@
 import ComposableArchitecture
 import FeatureInterestDomain
 import MoneyKit
-
 import PlatformKit
 
 struct InterestAccountDetailsState: Equatable {

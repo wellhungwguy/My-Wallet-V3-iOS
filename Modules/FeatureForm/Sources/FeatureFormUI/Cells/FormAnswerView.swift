@@ -260,6 +260,7 @@ extension FormAnswer {
             return .semantic.error
         }
     }
+
     fileprivate var inputState: InputState {
         switch isValid {
         case true:

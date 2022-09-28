@@ -257,8 +257,15 @@ extension TransactionState {
         }
     }
 
+    /// For `Buy`, the `asset` is fiat. This is because the `source` account
+    /// for `Buy` is a `PaymentMethodAccount`. This is why we want to use the
+    /// same currency as `originalValue` to do the below comparison or it will always
+    /// return `zero` of the source accounts currencyType.
+    /// Many of the callers of this function inject values that are not always set until the TxEngine
+    /// has calculated the limits/amount/min/max etc.
+    /// Other transaction types do not run into this problem.
     private func normalizedValue(for originalValue: MoneyValue?) -> MoneyValue {
-        let zero: MoneyValue = .zero(currency: asset)
+        let zero: MoneyValue = .zero(currency: originalValue?.currency ?? asset)
         let value = originalValue ?? zero
         return (try? value >= zero) == true ? value : zero
     }
@@ -274,6 +281,13 @@ extension TransactionState {
             fatalError("Source should have been set at this point. Asset Action: \(action), Step: \(step)")
         }
         return sourceAccount.currencyType
+    }
+
+    var feeAmount: MoneyValue {
+        guard let pendingTx = pendingTransaction else {
+            return .zero(currency: asset)
+        }
+        return pendingTx.feeAmount
     }
 
     /// The fees associated with the transaction

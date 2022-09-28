@@ -10,6 +10,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import SwiftUI
+import UIComponentsKit
 import UIKit
 
 final class EnterAmountViewController: BaseScreenViewController,
@@ -389,6 +390,29 @@ final class EnterAmountViewController: BaseScreenViewController,
         )
         let rootView = WithdrawalLocksInfoView(store: store)
         let viewController = UIHostingController(rootView: rootView)
+        viewController.transitioningDelegate = bottomSheetPresenting
+        viewController.modalPresentationStyle = .custom
+        present(viewController, animated: true, completion: nil)
+    }
+
+    // MARK: Available Balance View
+
+    func presentAvailableBalanceDetailView(_ availableBalanceDetails: AvailableBalanceDetails) {
+        let store = Store<AvailableBalanceDetailViewState, AvailableBalanceDetailViewAction>(
+            initialState: .init(),
+            reducer: availableBalanceDetailViewReducer,
+            environment: AvailableBalanceDetailViewEnvironment(
+                app: app,
+                balancePublisher: availableBalanceDetails.balance,
+                availableBalancePublisher: availableBalanceDetails.availableBalance,
+                feesPublisher: availableBalanceDetails.fee,
+                closeAction: { [weak self] in
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            )
+        )
+        let rootView = AvailableBalanceDetailView(store: store)
+        let viewController = SelfSizingHostingController(rootView: rootView)
         viewController.transitioningDelegate = bottomSheetPresenting
         viewController.modalPresentationStyle = .custom
         present(viewController, animated: true, completion: nil)

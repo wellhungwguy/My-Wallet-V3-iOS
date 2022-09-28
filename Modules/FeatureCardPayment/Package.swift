@@ -35,7 +35,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/stripe/stripe-ios",
-            from: "22.0.0"
+            from: "22.8.0"
         ),
         .package(
             url: "https://github.com/checkout/frames-ios.git",

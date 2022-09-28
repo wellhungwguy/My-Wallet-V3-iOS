@@ -4,6 +4,7 @@ import AnalyticsKit
 import BlockchainNamespace
 import DIKit
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -57,6 +58,31 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let amountViewable: AmountViewable
         let amountViewInteracting: AmountViewInteracting
         let amountViewPresenting: AmountViewPresenting
+        let isQuickfillEnabled = app
+            .remoteConfiguration
+            .yes(if: blockchain.app.configuration.transaction.quickfill.is.enabled)
+
+        let state = transactionModel
+            .state
+            .publisher
+
+        let source = state.compactMap(\.source)
+        let maxLimitPublisher = source.flatMap { [fiatCurrencyService] account -> AnyPublisher<MoneyValue, Error> in
+            if let account = account as? PaymentMethodAccount {
+                return .just(account.paymentMethodType.topLimit)
+            }
+            return fiatCurrencyService
+                .tradingCurrencyPublisher
+                .flatMap { fiatCurrency in
+                    account
+                        .fiatBalance(fiatCurrency: fiatCurrency)
+                }
+                .eraseToAnyPublisher()
+        }
+        .compactMap(\.fiatValue)
+        .ignoreFailure(setFailureType: Never.self)
+        .eraseToAnyPublisher()
+
         switch action {
         case .sell:
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
@@ -71,6 +97,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 },
                 cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                app: app,
                 defaultCryptoCurrency: crypto,
                 initialActiveInput: .fiat
             )
@@ -80,10 +107,15 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
                 inputTypeToggleVisibility: .visible,
-                app: app
+                app: app,
+                maxLimitPublisher: maxLimitPublisher
             )
 
-            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+            amountViewable = AmountTranslationView(
+                presenter: amountViewPresenting as! AmountTranslationPresenter,
+                app: app,
+                prefillButtonsEnabled: isQuickfillEnabled
+            )
         case .swap,
              .send,
              .interestWithdraw,
@@ -97,6 +129,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 },
                 cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                app: app,
                 defaultCryptoCurrency: crypto,
                 initialActiveInput: .fiat
             )
@@ -106,10 +139,15 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
                 inputTypeToggleVisibility: .visible,
-                app: app
+                app: app,
+                maxLimitPublisher: maxLimitPublisher
             )
 
-            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+            amountViewable = AmountTranslationView(
+                presenter: amountViewPresenting as! AmountTranslationPresenter,
+                app: app,
+                prefillButtonsEnabled: isQuickfillEnabled
+            )
 
         case .deposit,
              .withdraw:
@@ -134,15 +172,11 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 },
                 cryptoCurrencyService: EnterAmountCryptoCurrencyProvider(transactionModel: transactionModel),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                app: app,
                 defaultCryptoCurrency: cryptoAccount.asset,
                 initialActiveInput: .fiat
             )
 
-            let maxLimitPublisher = transactionModel.state.publisher
-                .compactMap { $0.source as? PaymentMethodAccount }
-                .compactMap(\.paymentMethodType.topLimit.fiatValue)
-                .ignoreFailure(setFailureType: Never.self)
-                .eraseToAnyPublisher()
             amountViewPresenting = AmountTranslationPresenter(
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
@@ -151,11 +185,10 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 app: app,
                 maxLimitPublisher: maxLimitPublisher
             )
-            let ref = blockchain.app.configuration.prefill.is.enabled
-            let isEnabled = try? app.remoteConfiguration.get(ref) as? Bool
             amountViewable = AmountTranslationView(
                 presenter: amountViewPresenting as! AmountTranslationPresenter,
-                prefillButtonsEnabled: isEnabled ?? false
+                app: app,
+                prefillButtonsEnabled: isQuickfillEnabled
             )
         default:
             unimplemented()

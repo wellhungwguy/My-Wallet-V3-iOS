@@ -285,11 +285,11 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ async in
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ in
         kycRouter.start(tier: .tier2, parentFlow: .coin)
     }
 
-    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ async in
+    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ in
         self.topViewController.topMostViewController?.dismiss(animated: true) {
             self.app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
         }
