@@ -140,7 +140,7 @@ private func loadPayload(
             return walletLogic
                 .initialize(with: password, payload: walletPayload, decryptedWallet: data)
         }
-        .logErrorOrCrash(tracer: tracer)
+        .logError(tracer: tracer)
         .receive(on: queue)
         .flatMap { walletState -> AnyPublisher<NativeWallet, WalletError> in
             guard let wallet = walletState.wallet else {

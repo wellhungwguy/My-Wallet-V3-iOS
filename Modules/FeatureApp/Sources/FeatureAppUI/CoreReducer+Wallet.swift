@@ -104,6 +104,31 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                         value: .onboarding(.informSecondPasswordDetected)
                     )
 
+                case .wallet(.walletFetched(.failure(.decryption(.decryptionError)))) where state.onboarding?.pinState != nil:
+                    // we need to handle this change since a decryption error might happen when password has changed
+                    if let pinState = state.onboarding?.pinState, pinState.requiresPinAuthentication {
+                        // hide loader if any
+                        environment.loadingViewPresenter.hide()
+
+                        let buttons: CoreAlertAction.Buttons = .init(
+                            primary: .destructive(
+                                TextState(verbatim: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.logOutButtonTitle),
+                                action: .send(.onboarding(.pin(.logout)))
+                            ),
+                            secondary: nil
+                        )
+                        let alertAction = CoreAlertAction.show(
+                            title: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.passwordRequiredTitle,
+                            message: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.passwordRequiredMessage,
+                            buttons: buttons
+                        )
+                        return .merge(
+                            Effect(value: .alert(alertAction)),
+                            .cancel(id: WalletCancelations.FetchId())
+                        )
+                    }
+                    return .none
+
                 case .wallet(.walletFetched(.failure(let error))):
                     // hide loader if any
                     environment.loadingViewPresenter.hide()

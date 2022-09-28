@@ -158,7 +158,7 @@ final class WalletCreator: WalletCreatorAPI {
                 siteKey
             )
         }
-        .logErrorOrCrash(tracer: tracer)
+        .logError(tracer: tracer)
         .eraseToAnyPublisher()
     }
 
@@ -214,7 +214,7 @@ final class WalletCreator: WalletCreatorAPI {
                     ""
                 )
             }
-            .logErrorOrCrash(tracer: tracer)
+            .logError(tracer: tracer)
             .eraseToAnyPublisher()
     }
 

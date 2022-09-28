@@ -23,6 +23,23 @@ extension LocalizationConstants.WalletPayloadKit {
         )
     }
 
+    public enum PasswordChangeAlert {
+        public static let passwordRequiredTitle = NSLocalizedString(
+            "Password required",
+            comment: "Password required"
+        )
+
+        public static let passwordRequiredMessage = NSLocalizedString(
+            "Error decrypting wallet. Tap 'Log Out' to re-enter your password.",
+            comment: "Error decrypting wallet. Tap 'Log Out' to re-enter your password."
+        )
+
+        public static let logOutButtonTitle = NSLocalizedString(
+            "Log Out",
+            comment: "Log Out"
+        )
+    }
+
     // MARK: WalletInitializationError
 
     public enum WalletInitializationConstants {
