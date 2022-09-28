@@ -39,8 +39,8 @@ struct ActivityRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: Spacing.padding2) {
             icon
+                .color(.semantic.muted)
                 .frame(width: 20, height: 20, alignment: .center)
-                .accentColor(.semantic.muted)
             VStack(alignment: .leading, spacing: 5) {
                 HStack(alignment: .center) {
                     Text(merchant)

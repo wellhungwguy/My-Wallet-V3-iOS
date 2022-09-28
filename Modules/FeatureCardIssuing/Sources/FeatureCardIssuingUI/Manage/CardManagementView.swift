@@ -210,7 +210,7 @@ struct CardManagementView: View {
                     subtitle: L10n.TopUp.AddFunds.caption,
                     leading: {
                         Icon.plus
-                            .accentColor(.semantic.primary)
+                            .color(.semantic.primary)
                             .frame(maxHeight: 24.pt)
                     },
                     action: {
@@ -223,7 +223,7 @@ struct CardManagementView: View {
                     subtitle: L10n.TopUp.Swap.caption,
                     leading: {
                         Icon.plus
-                            .accentColor(.semantic.primary)
+                            .color(.semantic.primary)
                             .frame(maxHeight: 24.pt)
                     },
                     action: {
@@ -273,10 +273,10 @@ struct AccountRow: View {
                 subtitle: L10n.Button.ChoosePaymentMethod.caption,
                 leading: {
                     Icon.questionCircle
-                        .frame(width: 24)
-                        .accentColor(
+                        .color(
                             .semantic.muted
                         )
+                        .frame(width: 24)
                 },
                 trailing: { chevronRight },
                 action: action
@@ -286,10 +286,10 @@ struct AccountRow: View {
 
     @ViewBuilder var chevronRight: some View {
         Icon.chevronRight
-            .frame(width: 18, height: 18)
-            .accentColor(
+            .color(
                 .semantic.muted
             )
+            .frame(width: 18, height: 18)
             .flipsForRightToLeftLayoutDirection(true)
     }
 }

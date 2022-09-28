@@ -35,8 +35,8 @@ struct BalanceRowExamplesView: View {
                     )
                 ) {
                     Icon.trade
+                        .color(.semantic.warning)
                         .fixedSize()
-                        .accentColor(.semantic.warning)
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
                 BalanceRow(
@@ -59,8 +59,8 @@ struct BalanceRowExamplesView: View {
                     )
                 ) {
                     Icon.trade
+                        .color(.semantic.primary)
                         .fixedSize()
-                        .accentColor(.semantic.primary)
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
                 BalanceRow(
@@ -80,8 +80,8 @@ struct BalanceRowExamplesView: View {
                     )
                 ) {
                     Icon.trade
+                        .color(.semantic.warning)
                         .fixedSize()
-                        .accentColor(.semantic.warning)
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
                 BalanceRow(
@@ -99,8 +99,8 @@ struct BalanceRowExamplesView: View {
                     )
                 ) {
                     Icon.moneyUSD
+                        .color(.semantic.warning)
                         .fixedSize()
-                        .accentColor(.semantic.warning)
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
                 BalanceRow(
@@ -120,8 +120,8 @@ struct BalanceRowExamplesView: View {
                     ),
                     leading: {
                         Icon.trade
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     },
                     graph: {
                         graph
@@ -144,8 +144,8 @@ struct BalanceRowExamplesView: View {
                     ),
                     leading: {
                         Icon.trade
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     },
                     graph: {
                         graph
@@ -169,8 +169,8 @@ struct BalanceRowExamplesView: View {
                     )
                 ) {
                     Icon.trade
+                        .color(.semantic.warning)
                         .fixedSize()
-                        .accentColor(.semantic.warning)
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
             }

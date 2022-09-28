@@ -33,8 +33,8 @@ struct PersonalInfoView: View {
                         viewStore.send(.close)
                     } label: {
                         Icon.chevronLeft
+                            .color(.semantic.primary)
                             .frame(width: 16, height: 16)
-                            .accentColor(.semantic.primary)
                     }
                 },
                 trailing: {
@@ -59,7 +59,7 @@ struct PersonalInfoView: View {
 
     var headerIcon: some View {
         Icon.user
-            .accentColor(.semantic.primary)
+            .color(.semantic.primary)
             .frame(width: 32.pt, height: 32.pt)
     }
 }

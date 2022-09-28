@@ -198,7 +198,7 @@ struct BottomSheetView_PreviewContentView: View {
                             Icon.allIcons
                                 .randomElement()!
                                 .circle()
-                                .accentColor(.semantic.primary)
+                                .color(.semantic.primary)
                                 .frame(maxHeight: 24.pt)
                         },
                         action: {}

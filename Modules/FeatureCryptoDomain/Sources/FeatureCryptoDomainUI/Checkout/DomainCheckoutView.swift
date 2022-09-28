@@ -58,8 +58,8 @@ struct DomainCheckoutView: View {
                 VStack(spacing: Spacing.padding3) {
                     Spacer()
                     Icon.cart
+                        .color(.semantic.primary)
                         .frame(width: 54, height: 54)
-                        .accentColor(.semantic.primary)
                         .accessibility(identifier: Accessibility.emptyStateIcon)
                     Text(LocalizedString.emptyTitle)
                         .typography(.title3)
@@ -94,8 +94,8 @@ struct DomainCheckoutView: View {
                                     },
                                     label: {
                                         Icon.delete
+                                            .color(.semantic.muted)
                                             .frame(width: 24, height: 24)
-                                            .accentColor(.semantic.muted)
                                     }
                                 )
                             }

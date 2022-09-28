@@ -57,7 +57,7 @@ public struct AnnouncementCard<Leading: View, Background: View>: View {
                     label: {
                         Icon.closev2
                             .circle(backgroundColor: .palette.grey800)
-                            .accentColor(.palette.grey400)
+                            .color(.palette.grey400)
                             .frame(width: 24)
                     }
                 )
@@ -137,7 +137,7 @@ struct AnnouncementCard_Previews: PreviewProvider {
                 onCloseTapped: {},
                 leading: {
                     Icon.wallet
-                        .accentColor(.semantic.gold)
+                        .color(.semantic.gold)
                 }
             )
             .previewLayout(.sizeThatFits)
@@ -148,7 +148,7 @@ struct AnnouncementCard_Previews: PreviewProvider {
                 onCloseTapped: {},
                 leading: {
                     Icon.wallet
-                        .accentColor(.semantic.gold)
+                        .color(.semantic.gold)
                 }
             )
             .previewLayout(.sizeThatFits)

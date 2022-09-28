@@ -34,7 +34,7 @@ struct AccountSheet: View {
         VStack(spacing: 0) {
             HStack {
                 account.accountType.icon
-                    .accentColor(account.color)
+                    .color(account.color)
                     .frame(maxHeight: 24.pt)
                 Text(account.name)
                     .typography(.body2)
@@ -70,7 +70,7 @@ struct AccountSheet: View {
                         subtitle: action.description.interpolating(account.cryptoCurrency.displayCode),
                         leading: {
                             action.icon.circle()
-                                .accentColor(account.color)
+                                .color(account.color)
                                 .frame(maxHeight: 24.pt)
                         },
                         action: {

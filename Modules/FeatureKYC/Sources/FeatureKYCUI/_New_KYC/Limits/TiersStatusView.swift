@@ -113,8 +113,8 @@ struct TierStatusCell: View {
             Spacer()
             if userTier.state == .none || userTier.state == .pending {
                 Icon.chevronRight
+                    .color(.semantic.muted)
                     .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
             }
         }
         .padding(Spacing.padding3)

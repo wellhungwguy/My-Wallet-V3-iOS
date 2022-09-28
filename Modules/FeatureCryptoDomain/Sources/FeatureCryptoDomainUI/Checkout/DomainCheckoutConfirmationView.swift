@@ -35,8 +35,8 @@ struct DomainCheckoutConfirmationView: View {
         VStack(spacing: Spacing.padding3) {
             Spacer()
             Icon.globe
+                .color(.semantic.primary)
                 .frame(width: 54, height: 54)
-                .accentColor(.semantic.primary)
                 .accessibility(identifier: Accessibility.icon)
             Text(String(format: title, domain.domainName))
                 .typography(.title3)

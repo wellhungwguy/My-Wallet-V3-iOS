@@ -100,9 +100,9 @@ public struct TableRow<Title: View, Byline: View, Leading: View, Trailing: View,
             }
             if tableRowChevron, !(trailing is Toggle<EmptyView>) {
                 Icon.chevronRight
+                    .color(.semantic.muted)
                     .micro()
                     .padding(.leading)
-                    .accentColor(.semantic.muted)
             }
         }
         .padding([.leading, .trailing], 16.pt)

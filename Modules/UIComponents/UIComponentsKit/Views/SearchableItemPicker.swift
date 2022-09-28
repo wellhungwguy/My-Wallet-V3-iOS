@@ -123,8 +123,8 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
             trailing: {
                 if item == selectedItem {
                     Icon.checkCircle
+                        .color(.semantic.success)
                         .frame(width: 16, height: 16)
-                        .accentColor(.semantic.success)
                 } else {
                     EmptyView()
                 }

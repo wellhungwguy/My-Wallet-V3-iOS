@@ -159,7 +159,8 @@ public struct ErrorView<Fallback: View>: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                Icon.copy.frame(width: 16.pt, height: 16.pt)
+                Icon.copy
+                    .frame(width: 16.pt, height: 16.pt)
                     .accentColor(.semantic.light)
             }
             .typography(.micro)

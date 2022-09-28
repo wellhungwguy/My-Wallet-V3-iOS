@@ -63,7 +63,7 @@ struct OrderProcessingView: View {
             ZStack(alignment: .topTrailing) {
                 Icon
                     .creditcard
-                    .accentColor(.WalletSemantic.primary)
+                    .color(.WalletSemantic.primary)
                     .frame(width: 60, height: 60)
                 ZStack {
                     Circle()
@@ -71,8 +71,8 @@ struct OrderProcessingView: View {
                         .frame(width: 28, height: 28)
                     Icon
                         .checkCircle
+                        .color(.WalletSemantic.success)
                         .frame(width: 20, height: 20)
-                        .accentColor(.WalletSemantic.success)
                 }
                 .padding(.top, -4)
                 .padding(.trailing, -8)

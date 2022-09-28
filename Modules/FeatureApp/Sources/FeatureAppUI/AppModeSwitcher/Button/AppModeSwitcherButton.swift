@@ -21,12 +21,12 @@ public struct AppModeSwitcherButton: View {
             if appMode == .pkw {
                 Icon
                     .wallet
-                    .accentColor(.semantic.defi)
+                    .color(.semantic.defi)
                     .frame(width: 20, height: 20)
             } else {
                 Icon
                     .portfolio
-                    .accentColor(.semantic.primary)
+                    .color(.semantic.primary)
                     .frame(width: 20, height: 20)
             }
 
@@ -36,7 +36,7 @@ public struct AppModeSwitcherButton: View {
 
             Icon
                 .chevronDown
-                .accentColor(.semantic.muted)
+                .color(.semantic.muted)
                 .frame(width: 16, height: 16)
         }
         .padding(.horizontal, Spacing.padding1)

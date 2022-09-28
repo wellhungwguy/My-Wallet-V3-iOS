@@ -17,8 +17,8 @@ struct RemoveDomainActionView: View {
     var body: some View {
         VStack(alignment: .center, spacing: Spacing.padding2) {
             Icon.delete
+                .color(.semantic.primary)
                 .frame(width: 54, height: 54)
-                .accentColor(.semantic.primary)
                 .accessibility(identifier: Accessibility.removeIcon)
             Text(String(format: LocalizedString.removeTitle, domain?.domainName ?? ""))
                 .typography(.title3)

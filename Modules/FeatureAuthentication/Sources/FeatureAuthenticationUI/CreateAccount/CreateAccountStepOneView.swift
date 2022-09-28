@@ -70,8 +70,8 @@ private struct CreateAccountHeader: View {
     var body: some View {
         VStack(spacing: Spacing.padding3) {
             Icon.globe
+                .color(.semantic.primary)
                 .frame(width: 32, height: 32)
-                .accentColor(.semantic.primary)
             VStack(spacing: Spacing.baseline) {
                 Text(LocalizedString.headerTitle)
                     .typography(.title2)
@@ -98,7 +98,7 @@ private struct CreateAccountForm: View {
     private var countryAndStatePickers: some View {
         VStack(alignment: .leading, spacing: Spacing.baseline) {
             let accessory = Icon.chevronDown
-                .accentColor(.semantic.muted)
+                .color(.semantic.muted)
                 .frame(width: 12, height: 12)
 
             Text(LocalizedString.TextFieldTitle.country)

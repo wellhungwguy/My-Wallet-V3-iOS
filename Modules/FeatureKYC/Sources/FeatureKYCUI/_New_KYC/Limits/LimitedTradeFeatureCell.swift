@@ -13,8 +13,8 @@ struct LimitedTradeFeatureCell: View {
     var body: some View {
         HStack(spacing: Spacing.padding2) {
             feature.icon
+                .color(.semantic.body)
                 .frame(width: 24, height: 24)
-                .accentColor(.semantic.body)
 
             VStack(alignment: .leading, spacing: Spacing.textSpacing) {
                 Text(feature.title)

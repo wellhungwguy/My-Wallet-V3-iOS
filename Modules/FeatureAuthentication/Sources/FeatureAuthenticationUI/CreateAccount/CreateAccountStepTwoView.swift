@@ -70,8 +70,8 @@ private struct CreateAccountHeader: View {
     var body: some View {
         VStack(spacing: Spacing.padding3) {
             Icon.globe
+                .color(.semantic.primary)
                 .frame(width: 32, height: 32)
-                .accentColor(.semantic.primary)
             VStack(spacing: Spacing.baseline) {
                 Text(LocalizedString.headerTitle)
                     .typography(.title2)

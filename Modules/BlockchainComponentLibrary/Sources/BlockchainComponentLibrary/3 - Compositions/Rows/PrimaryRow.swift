@@ -384,13 +384,13 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
 public struct ChevronRight: View {
     public var body: some View {
         Icon.chevronRight
-            .fixedSize()
-            .accentColor(
+            .color(
                 Color(
                     light: .palette.grey400,
                     dark: .palette.grey400
                 )
             )
+            .fixedSize()
             .flipsForRightToLeftLayoutDirection(true)
     }
 }
@@ -480,8 +480,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     subtitle: "Step 1",
                     leading: {
                         Icon.wallet
+                            .color(.semantic.dark)
                             .fixedSize()
-                            .accentColor(.semantic.dark)
                     },
                     action: {
                         selection = 6
@@ -493,8 +493,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     tags: [TagView(text: "Approved", variant: .success)],
                     leading: {
                         Icon.apple
+                            .color(.semantic.orangeBG)
                             .fixedSize()
-                            .accentColor(.semantic.orangeBG)
                     },
                     action: {
                         selection = 7
@@ -505,8 +505,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     subtitle: "BTC -> ETH",
                     leading: {
                         Icon.trade
+                            .color(.semantic.success)
                             .fixedSize()
-                            .accentColor(.semantic.success)
                     },
                     action: {
                         selection = 8
@@ -522,8 +522,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     ],
                     leading: {
                         Icon.bank
+                            .color(.semantic.primary)
                             .fixedSize()
-                            .accentColor(.semantic.primary)
                     },
                     action: {
                         selection = 9
@@ -533,8 +533,8 @@ struct PrimaryRow_Previews: PreviewProvider {
                     title: "Features and Limits",
                     leading: {
                         Icon.blockchain
+                            .color(.semantic.primary)
                             .fixedSize()
-                            .accentColor(.semantic.primary)
                     },
                     action: {
                         selection = 10

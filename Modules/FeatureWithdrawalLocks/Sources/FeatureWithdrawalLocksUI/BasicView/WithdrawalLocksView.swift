@@ -109,7 +109,7 @@ public struct WithdrawalLocksView: View {
                             Text(LocalizationIds.onHoldTitle)
                             if viewStore.state.withdrawalLocks?.items.isEmpty == false {
                                 Icon.questionCircle
-                                    .accentColor(.semantic.muted)
+                                    .color(.semantic.muted)
                                     .frame(height: 14)
                             }
                             Spacer()

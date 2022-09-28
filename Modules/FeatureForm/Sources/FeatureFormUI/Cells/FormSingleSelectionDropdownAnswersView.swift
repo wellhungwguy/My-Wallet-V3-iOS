@@ -21,8 +21,8 @@ struct FormSingleSelectionDropdownAnswersView: View {
                 Spacer()
 
                 Icon.chevronDown
+                    .color(.semantic.muted)
                     .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
             }
             .padding(.vertical, Spacing.padding2)
             .padding(.horizontal, Spacing.padding3)
@@ -84,8 +84,8 @@ private struct FormDropdownAnswerSelectionView: View {
 
             if isSelected {
                 Icon.checkCircle
+                    .color(.semantic.primary)
                     .frame(width: 16, height: 16)
-                    .accentColor(.semantic.primary)
             }
         }
         .padding(Spacing.padding2)

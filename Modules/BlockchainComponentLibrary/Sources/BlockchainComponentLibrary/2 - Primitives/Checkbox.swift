@@ -53,7 +53,7 @@ private struct CheckboxToggleStyle: ToggleStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         Icon.check
-            .accentColor(
+            .color(
                 configuration.isOn ? .semantic.background : .clear
             )
             .frame(width: 24, height: 24)

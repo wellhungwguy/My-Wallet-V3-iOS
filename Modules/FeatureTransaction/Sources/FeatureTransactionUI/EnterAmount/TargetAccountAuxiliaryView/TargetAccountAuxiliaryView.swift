@@ -57,7 +57,7 @@ struct TargetAccountAuxiliaryView: View {
                                 .frame(width: 32.pt)
 
                             Icon.plus.circle()
-                                .accentColor(viewStore.color)
+                                .color(viewStore.color)
                                 .frame(width: 24.pt)
                         }
 
@@ -68,7 +68,7 @@ struct TargetAccountAuxiliaryView: View {
                         if viewStore.enabled {
                             Spacer()
                             Icon.chevronDown
-                                .accentColor(.semantic.dark)
+                                .color(.semantic.dark)
                                 .frame(width: 24.pt)
                         }
                     }

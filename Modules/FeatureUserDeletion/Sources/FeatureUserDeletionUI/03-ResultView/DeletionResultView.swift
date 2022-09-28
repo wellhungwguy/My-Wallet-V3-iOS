@@ -54,7 +54,7 @@ public struct DeletionResultView: View {
                         .frame(width: 24)
 
                     Icon.information
-                        .accentColor(.semantic.warning)
+                        .color(.semantic.warning)
                         .frame(width: 24, height: 24)
 
                     Text(LocalizedString.failure.reason)

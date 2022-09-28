@@ -154,10 +154,10 @@ struct CardManagementDetailsView: View {
 
     @ViewBuilder var chevronRight: some View {
         Icon.chevronRight
-            .frame(width: 18, height: 18)
-            .accentColor(
+            .color(
                 .semantic.muted
             )
+            .frame(width: 18, height: 18)
             .flipsForRightToLeftLayoutDirection(true)
     }
 }

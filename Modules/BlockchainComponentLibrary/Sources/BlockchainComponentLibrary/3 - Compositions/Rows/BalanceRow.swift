@@ -31,7 +31,7 @@ import SwiftUI
 /// ) {
 ///     Icon.trade
 ///         .fixedSize()
-///         .accentColor(.semantic.primary)
+///         .color(.semantic.primary)
 /// }
 ///
 /// ```
@@ -341,8 +341,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         )
                     ) {
                         Icon.trade
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     }
 
                     BalanceRow(
@@ -365,8 +365,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         )
                     ) {
                         Icon.trade
+                            .color(.semantic.primary)
                             .fixedSize()
-                            .accentColor(.semantic.primary)
                     }
 
                     BalanceRow(
@@ -386,8 +386,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         )
                     ) {
                         Icon.trade
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     }
 
                     BalanceRow(
@@ -405,8 +405,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         )
                     ) {
                         Icon.moneyUSD
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     }
 
                     BalanceRow(
@@ -426,8 +426,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         ),
                         leading: {
                             Icon.trade
+                                .color(.semantic.warning)
                                 .fixedSize()
-                                .accentColor(.semantic.warning)
                         },
                         graph: {
                             graph
@@ -450,8 +450,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         ),
                         leading: {
                             Icon.trade
+                                .color(.semantic.warning)
                                 .fixedSize()
-                                .accentColor(.semantic.warning)
                         },
                         graph: {
                             graph
@@ -475,8 +475,8 @@ struct BalanceRow_Previews: PreviewProvider {
                         )
                     ) {
                         Icon.trade
+                            .color(.semantic.warning)
                             .fixedSize()
-                            .accentColor(.semantic.warning)
                     }
                 }
                 .previewLayout(.sizeThatFits)

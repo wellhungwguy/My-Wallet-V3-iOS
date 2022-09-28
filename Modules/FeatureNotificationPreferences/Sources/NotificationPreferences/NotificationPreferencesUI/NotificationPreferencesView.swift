@@ -72,8 +72,8 @@ extension FeatureNotificationPreferencesView {
                             title: notificationPreference.title,
                             subtitle: notificationPreference.subtitle,
                             trailing: { Icon.chevronRight
+                                .color(.semantic.muted)
                                 .frame(width: 24, height: 24)
-                                .accentColor(.semantic.muted)
                             },
                             action: {
                                 viewStore.send(.onPreferenceSelected(notificationPreference))

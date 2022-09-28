@@ -15,11 +15,11 @@ struct IconsExamplesView: View {
                 ForEach(Icon.allIcons, id: \.name) { icon in
                     VStack {
                         icon
-                            .accentColor(.semantic.muted)
+                            .color(.semantic.muted)
                             .frame(width: 24)
 
                         icon.circle()
-                            .accentColor(.semantic.muted)
+                            .color(.semantic.muted)
                             .frame(width: 32)
 
                         Text(icon.name)

@@ -82,8 +82,8 @@ struct PrimaryRowExamplesView: View {
                             subtitle: "Step 1",
                             leading: {
                                 Icon.wallet
+                                    .color(.semantic.dark)
                                     .fixedSize()
-                                    .accentColor(.semantic.dark)
                             },
                             action: {
                                 selection = 6
@@ -96,8 +96,8 @@ struct PrimaryRowExamplesView: View {
                             tags: [TagView(text: "Approved", variant: .success)],
                             leading: {
                                 Icon.apple
+                                    .color(.semantic.orangeBG)
                                     .fixedSize()
-                                    .accentColor(.semantic.orangeBG)
                             },
                             action: {
                                 selection = 7
@@ -112,8 +112,8 @@ struct PrimaryRowExamplesView: View {
                             subtitle: "BTC -> ETH",
                             leading: {
                                 Icon.trade
+                                    .color(.semantic.success)
                                     .fixedSize()
-                                    .accentColor(.semantic.success)
                             },
                             action: {
                                 selection = 8
@@ -130,8 +130,8 @@ struct PrimaryRowExamplesView: View {
                             ],
                             leading: {
                                 Icon.bank
+                                    .color(.semantic.primary)
                                     .fixedSize()
-                                    .accentColor(.semantic.primary)
                             },
                             action: {
                                 selection = 9
@@ -142,8 +142,8 @@ struct PrimaryRowExamplesView: View {
                             title: "Features and Limits",
                             leading: {
                                 Icon.blockchain
+                                    .color(.semantic.primary)
                                     .fixedSize()
-                                    .accentColor(.semantic.primary)
                             },
                             action: {
                                 selection = 10

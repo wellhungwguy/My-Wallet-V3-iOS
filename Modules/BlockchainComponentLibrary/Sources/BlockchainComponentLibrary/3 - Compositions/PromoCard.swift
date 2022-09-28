@@ -46,7 +46,7 @@ public struct PromoCard: View {
                             dark: .palette.blue600
                         )
                     )
-                    .accentColor(
+                    .color(
                         Color(
                             light: .palette.blue600,
                             dark: .palette.blue000
@@ -64,7 +64,7 @@ public struct PromoCard: View {
                                     dark: .palette.grey800
                                 )
                             )
-                            .accentColor(.palette.grey400)
+                            .color(.palette.grey400)
                             .frame(width: 24)
                     }
                 )

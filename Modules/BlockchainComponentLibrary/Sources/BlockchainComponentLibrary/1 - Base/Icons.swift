@@ -10,14 +10,14 @@ import UIKit
 /// An icon asset view from the Component Library
 ///
 /// See extension below for supported icons.
-/// Note that coloring the icon is done via `.accentColor(...)` instead of `.foregroundColor(...)`
+/// Note that coloring the icon is done via `.color(...)` instead of `.foregroundColor(...)`
 /// Apply a fixed width or height to size the icon.
 ///
 /// # Usage:
 ///
 /// ```
 /// Icon.activity
-///     .accentColor(.green)
+///     .color(.green)
 ///     .frame(width: 20)
 /// ```
 ///
@@ -519,11 +519,11 @@ struct Icon_Previews: PreviewProvider {
             ForEach(Icon.allIcons, id: \.name) { icon in
                 VStack {
                     icon
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 24)
 
                     icon.circle()
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 32)
 
                     Text(icon.name)
