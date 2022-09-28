@@ -63,6 +63,11 @@ extension LocalizationConstants {
             comment: "All Wallets"
         )
 
+        public static let allAccounts = NSLocalizedString(
+            "All Accounts",
+            comment: "All Wallets"
+        )
+
         public static let myWallets = NSLocalizedString(
             "%@ Wallets",
             comment: "Must contain %@. Used for naming account groups e.g. Ethereum Wallets"

@@ -12,7 +12,13 @@ public final class AllAccountsGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
     public let identifier: AnyHashable = "AllAccountsGroup"
-    public let label: String = LocalizedString.allWallets
+    public var label: String {
+        if accounts.filter({ $0.accountType == .nonCustodial }).isNotEmpty {
+            return LocalizedString.allWallets
+        }
+        return LocalizedString.allAccounts
+    }
+
     let actions: AvailableActions = [.viewActivity]
 
     public var accountType: AccountType = .group
