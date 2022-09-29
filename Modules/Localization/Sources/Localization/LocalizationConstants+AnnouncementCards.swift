@@ -274,5 +274,20 @@ extension LocalizationConstants {
                 comment: "Claim free domain annoucement card button"
             )
         }
+
+        public enum ClaimFreeDomainKYC {
+            public static let title = NSLocalizedString(
+                "Your free domain is waiting for you",
+                comment: "Claim free domain KYC annoucement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Verify your identity to claim your free .blockchain domain. Use your domain to receive crypto and much more.",
+                comment: "Claim free domain KYC annoucement card description"
+            )
+            public static let button = NSLocalizedString(
+                "Verify Now",
+                comment: "Claim free domain KYC annoucement card button"
+            )
+        }
     }
 }

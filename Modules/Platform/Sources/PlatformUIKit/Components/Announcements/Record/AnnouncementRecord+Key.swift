@@ -13,6 +13,7 @@ extension AnnouncementRecord {
         case backupFunds
         case buyBitcoin
         case claimFreeCryptoDomain
+        case claimFreeCryptoDomainKYC
         case majorProductBlocked
         case newAsset(code: String)
         case resubmitDocuments
@@ -41,6 +42,8 @@ extension AnnouncementRecord {
                 key = "cache-buy-btc"
             case .claimFreeCryptoDomain:
                 key = "claim-free-crypto-domain"
+            case .claimFreeCryptoDomainKYC:
+                key = "claim-free-crypto-domain-kyc"
             case .majorProductBlocked:
                 key = "cache-major-product-blocked"
             case .newAsset(let code):
