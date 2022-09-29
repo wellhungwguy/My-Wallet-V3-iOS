@@ -206,13 +206,13 @@ struct BlockchainAccountSnapshot: Comparable {
         (
             lhs.isSelectedAsset ? 1 : 0,
             lhs.count,
-            lhs.balance.amount,
+            lhs.balance.minorAmount,
             lhs.account.currencyType == .bitcoin ? 1 : 0,
             lhs.volume24h
         ) < (
             rhs.isSelectedAsset ? 1 : 0,
             rhs.count,
-            rhs.balance.amount,
+            rhs.balance.minorAmount,
             rhs.account.currencyType == .bitcoin ? 1 : 0,
             rhs.volume24h
         )
@@ -254,17 +254,20 @@ extension Collection where Element == BlockchainAccount {
             ) else {
                 throw BlockchainAccountSnapshotError.noTradingCurrency
             }
-            let prices = try await priceRepository.prices(
+
+            let usdPrices = try await priceRepository.prices(
                 of: map(\.currencyType),
                 in: FiatCurrency.USD,
                 at: .oneDay
             )
             .stream()
             .next()
+
             var accounts = [BlockchainAccountSnapshot]()
             for account in self {
+                let currencyCode = account.currencyType.code
                 let count: Int? = try? await app.get(
-                    blockchain.ux.transaction.source.target[account.currencyType.code].count.of.completed
+                    blockchain.ux.transaction.source.target[currencyCode].count.of.completed
                 )
                 let currentId: String? = try? await app.get(
                     blockchain.ux.transaction.source.target.id
@@ -272,15 +275,19 @@ extension Collection where Element == BlockchainAccount {
                 let balance = try? await account.fiatBalance(fiatCurrency: currency)
                     .stream()
                     .next()
+                let volume24h: BigInt? = usdPrices["\(currencyCode)-USD"].flatMap { quote in
+                    quote.moneyValue.minorAmount * BigInt(quote.volume24h.or(.zero))
+                }
+                let isSelectedAsset: Bool? = currentId.flatMap { currentId in
+                    currentId.caseInsensitiveCompare(currencyCode) == .orderedSame
+                }
                 accounts.append(
                     BlockchainAccountSnapshot(
                         account: account,
                         balance: balance?.fiatValue ?? .zero(currency: currency),
                         count: count ?? 0,
-                        isSelectedAsset: currentId?.lowercased() == account.currencyType.code.lowercased(),
-                        volume24h: prices["\(account.currencyType.code)-USD"].flatMap { quote in
-                            quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
-                        } ?? .zero
+                        isSelectedAsset: isSelectedAsset ?? false,
+                        volume24h: volume24h ?? .zero
                     )
                 )
             }

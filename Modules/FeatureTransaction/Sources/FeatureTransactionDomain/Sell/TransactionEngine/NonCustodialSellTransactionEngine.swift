@@ -244,7 +244,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                     .update(amount: amount, pendingTransaction: pendingTransaction)
                     .do(onSuccess: { [weak self] pendingTransaction in
                         guard let self = self else { throw ToolKitError.nullReference(Self.self) }
-                        self.quotesEngine.update(amount: pendingTransaction.amount.amount)
+                        self.quotesEngine.update(amount: pendingTransaction.amount.minorAmount)
                     })
                     .map { [weak self] pendingTransaction -> PendingTransaction in
                         guard let self = self else { throw ToolKitError.nullReference(Self.self) }
@@ -288,7 +288,10 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
             .quotePublisher
             .asSingle()
             .map { [targetAsset, sourceAccount, target] pricedQuote -> (PendingTransaction, PricedQuote) in
-                let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
+                let resultValue = FiatValue.create(
+                    minor: pricedQuote.price,
+                    currency: targetAsset
+                ).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
                 let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
                 let sellFiatFeeValue: MoneyValue = pendingTransaction.feeAmount.convert(using: resultValue)

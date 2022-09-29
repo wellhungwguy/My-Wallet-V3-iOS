@@ -52,7 +52,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .send,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -60,7 +60,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .receive,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -68,7 +68,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .swap,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -81,7 +81,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .buyWithCard,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),

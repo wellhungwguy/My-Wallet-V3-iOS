@@ -36,7 +36,7 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
             let values = try decoder.container(keyedBy: CodingKeys.self)
             spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
-            amount = CryptoValue(amount: BigInt(satoshis), currency: .bitcoinCash)
+            amount = CryptoValue.create(minor: BigInt(satoshis), currency: .bitcoinCash)
             address = try values.decode(String.self, forKey: .address)
             let xpub = try values.decodeIfPresent(Xpub.self, forKey: .xpub)
             change = xpub != nil
@@ -108,7 +108,7 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
         createdAt = try values.decode(Date.self, forKey: .time)
         inputs = try values.decode([Input].self, forKey: .inputs)
         let feeValue = try values.decode(Int.self, forKey: .fee)
-        fee = CryptoValue(amount: BigInt(feeValue), currency: .bitcoinCash)
+        fee = CryptoValue.create(minor: BigInt(feeValue), currency: .bitcoinCash)
         outputs = try values.decode([Output].self, forKey: .outputs)
 
         guard let destinationOutput = outputs.first else {

@@ -18,7 +18,7 @@ public enum CryptoPrecision: String {
     func maxFractionDigits(for currency: CryptoCurrency) -> Int {
         switch self {
         case .long:
-            return currency.precision
+            return currency.storePrecision
         case .short:
             return currency.displayPrecision
         }

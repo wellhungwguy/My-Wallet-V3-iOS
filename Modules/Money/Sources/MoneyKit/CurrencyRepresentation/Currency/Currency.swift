@@ -29,6 +29,12 @@ public protocol Currency {
     /// The currency precision.
     var precision: Int { get }
 
+    /// The precison to be used when storing values in memory.
+    /// Used when doing mathematical operations.
+    var storePrecision: Int { get }
+
+    var storeExtraPrecision: Int { get }
+
     /// The currency display precision (shorter than or equal to `precision`).
     var displayPrecision: Int { get }
 
@@ -43,6 +49,10 @@ public protocol Currency {
 }
 
 extension Currency {
+
+    public var storePrecision: Int {
+        precision + storeExtraPrecision
+    }
 
     public var isFiatCurrency: Bool {
         self is FiatCurrency
@@ -147,6 +157,15 @@ extension CurrencyType: Currency {
             return cryptoCurrency.precision
         case .fiat(let fiatCurrency):
             return fiatCurrency.precision
+        }
+    }
+
+    public var storeExtraPrecision: Int {
+        switch self {
+        case .crypto(let cryptoCurrency):
+            return cryptoCurrency.storeExtraPrecision
+        case .fiat(let fiatCurrency):
+            return fiatCurrency.storeExtraPrecision
         }
     }
 

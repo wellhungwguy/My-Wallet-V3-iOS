@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
+
 /// A pair of base-quote money values. Read about [Currency pairs](https://en.wikipedia.org/wiki/Currency_pair) for more information.
 public struct MoneyValuePair: Equatable {
 
@@ -113,22 +115,6 @@ public struct MoneyValuePair: Equatable {
             quote: quote.value(before: percentageChange)
         )
     }
-}
-
-extension MoneyValuePair: CustomDebugStringConvertible {
-
-    public var debugDescription: String {
-        """
-        MoneyValuePair: \
-        base \(base.displayString), \
-        quote \(quote.displayString)
-        """
-    }
-}
-
-import BigInt
-
-extension MoneyValuePair {
 
     /// Returns a new `MoneyValuePair` instance intended to get the FX quote from an existing quote.
     /// This means that given a FX quote like 3 BTC = 150,000 USD, this will return a new quote => 1 BTC  = 150,000 / 3 BTC.
@@ -139,12 +125,12 @@ extension MoneyValuePair {
             return MoneyValuePair.zero(baseCurrency: base.currency, quoteCurrency: quote.currency)
         }
 
-        let basePercisionMultiplier = BigInt(10).power(base.precision)
-        let convertedAmount = (quote.amount * basePercisionMultiplier) / base.amount
+        let basePrecisionMultiplier = BigInt(10).power(base.storePrecision)
+        let convertedAmount = (quote.storeAmount * basePrecisionMultiplier) / base.storeAmount
 
         return MoneyValuePair(
             base: .one(currency: base.currency),
-            quote: MoneyValue(amount: convertedAmount, currency: quote.currency)
+            quote: MoneyValue(storeAmount: convertedAmount, currency: quote.currency)
         )
     }
 
@@ -157,17 +143,14 @@ extension MoneyValuePair {
             return MoneyValuePair.zero(baseCurrency: quote.currency, quoteCurrency: base.currency)
         }
 
-        let quotePercisionMultiplier = BigInt(10).power(quote.precision)
-        let convertedAmount = (base.amount * quotePercisionMultiplier) / quote.amount
+        let quotePrecisionMultiplier = BigInt(10).power(quote.storePrecision)
+        let convertedAmount = (base.storeAmount * quotePrecisionMultiplier) / quote.storeAmount
 
         return MoneyValuePair(
             base: .one(currency: quote.currencyType),
-            quote: MoneyValue(amount: convertedAmount, currency: base.currency)
+            quote: MoneyValue(storeAmount: convertedAmount, currency: base.currency)
         )
     }
-}
-
-extension MoneyValuePair {
 
     /// Returns the inversed money value pair.
     ///
@@ -187,5 +170,16 @@ extension MoneyValuePair {
             .convert(usingInverse: quote, currency: base.currency)
 
         return MoneyValuePair(base: newBase, quote: newQuote)
+    }
+}
+
+extension MoneyValuePair: CustomDebugStringConvertible {
+
+    public var debugDescription: String {
+        """
+        MoneyValuePair: \
+        base \(base.displayString), \
+        quote \(quote.displayString)
+        """
     }
 }

@@ -21,7 +21,7 @@ public struct UnspentOutput: Equatable {
     }
 
     public var magnitude: BigUInt {
-        value.amount.magnitude
+        value.minorAmount.magnitude
     }
 
     public let confirmations: UInt

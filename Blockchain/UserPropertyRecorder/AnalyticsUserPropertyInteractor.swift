@@ -167,7 +167,7 @@ final class AnalyticsUserPropertyInteractor {
             StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))
         )
         recorder.record(
-            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0))
+            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.minorAmount ?? 0))
         )
     }
 

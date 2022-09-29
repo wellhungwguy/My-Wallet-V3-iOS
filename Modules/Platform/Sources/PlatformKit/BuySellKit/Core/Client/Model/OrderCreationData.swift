@@ -162,7 +162,7 @@ public enum OrderPayload {
             case .sell:
                 input = Input(
                     symbol: cryptoValue.code,
-                    amount: "\(cryptoValue.amount)"
+                    amount: cryptoValue.minorString
                 )
                 output = Output(symbol: fiatCurrency.code)
                 pair = "\(input.symbol)-\(output.symbol)"

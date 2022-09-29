@@ -208,9 +208,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
             guard try await app.get(previous.did.error) else { return }
 
-            let money = try await MoneyValue(
-                amount: app.get(previous.input.amount),
-                currency: CurrencyType(code: app.get(previous.input.currency.code))
+            let minorAmount: BigInt = try await app.get(previous.input.amount)
+            let currencyCode: String = try await app.get(previous.input.currency.code)
+            let currencyType = try CurrencyType(code: currencyCode)
+            let money = MoneyValue.create(
+                minor: minorAmount,
+                currency: currencyType
             )
             await MainActor.run {
                 amountViewInteractor.set(amount: money)

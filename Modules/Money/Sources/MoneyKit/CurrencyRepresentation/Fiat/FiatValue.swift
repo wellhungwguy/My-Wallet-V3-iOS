@@ -6,7 +6,7 @@ import Foundation
 /// A fiat money value.
 public struct FiatValue: Fiat, Hashable {
 
-    public let amount: BigInt
+    public let storeAmount: BigInt
 
     public let currency: FiatCurrency
 
@@ -15,8 +15,8 @@ public struct FiatValue: Fiat, Hashable {
     /// - Parameters:
     ///   - amount:   An amount in minor units.
     ///   - currency: A fiat currency.
-    public init(amount: BigInt, currency: FiatCurrency) {
-        self.amount = amount
+    public init(storeAmount: BigInt, currency: FiatCurrency) {
+        self.storeAmount = storeAmount
         self.currency = currency
     }
 }

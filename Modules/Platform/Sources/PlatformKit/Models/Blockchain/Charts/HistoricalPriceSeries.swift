@@ -33,12 +33,13 @@ public struct HistoricalPriceSeries {
     ///   - prices:   An array of quoted prices.
     public init(currency: CryptoCurrency, prices: [PriceQuoteAtTime]) {
         if let first = prices.first, let last = prices.last {
-            let fiatChange = last.moneyValue.amount - first.moneyValue.amount
+            let firstMinorAmount = first.moneyValue.minorAmount
+            let fiatChange = last.moneyValue.minorAmount - firstMinorAmount
             let delta: Decimal
-            if first.moneyValue.isZero {
+            if firstMinorAmount.isZero {
                 delta = .zero
             } else {
-                delta = fiatChange.decimalDivision(by: first.moneyValue.amount)
+                delta = fiatChange.decimalDivision(by: firstMinorAmount)
             }
             self.init(
                 currency: currency,

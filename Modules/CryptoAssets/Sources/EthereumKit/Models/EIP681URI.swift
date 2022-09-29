@@ -137,7 +137,7 @@ extension EIP681URIParser.Method {
                 amount: amount
                     .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
-                        CryptoValue(amount: amount, currency: cryptoCurrency)
+                        CryptoValue.create(minor: amount, currency: cryptoCurrency)
                     },
                 gasLimit: gasLimit.flatMap { BigUInt($0) },
                 gasPrice: gasPrice.flatMap { BigUInt($0) }
@@ -151,7 +151,7 @@ extension EIP681URIParser.Method {
                 amount: amount
                     .flatMap(BigInt.init(scientificNotation:))
                     .flatMap { amount in
-                        CryptoValue(amount: amount, currency: cryptoCurrency)
+                        CryptoValue.create(minor: amount, currency: cryptoCurrency)
                     }
             )
         }

@@ -16,7 +16,7 @@ public protocol MoneyImplementing: Money {
     /// - Parameters:
     ///   - amount:   An amount in minor units.
     ///   - currency: A currency.
-    init(amount: BigInt, currency: MoneyCurrency)
+    init(storeAmount: BigInt, currency: MoneyCurrency)
 }
 
 extension MoneyImplementing {
@@ -36,7 +36,7 @@ extension MoneyImplementing {
     ///
     /// - Parameter currency: A currency.
     public static func one(currency: MoneyCurrency) -> Self {
-        create(major: 1, currency: currency)
+        create(majorBigInt: 1, currency: currency)
     }
 
     // MARK: - Major value
@@ -73,6 +73,28 @@ extension MoneyImplementing {
         return create(minor: minorDecimal, currency: currency)
     }
 
+    /// Creates a money.
+    ///
+    /// - Parameters:
+    ///   - value:    An amount in major units.
+    ///   - currency: A currency.
+    public static func create(major value: Double, currency: MoneyCurrency) -> Self {
+        let minorDouble: Double = value * pow(10, currency.precision).doubleValue
+        return create(minorDouble: minorDouble, currency: currency)
+    }
+
+    /// Creates a money.
+    ///
+    /// Note that this method parameter is called majorBigInt so it doesn't clash with the String option, due to BigInt being String representable.
+    ///
+    /// - Parameters:
+    ///   - majorBigInt:    An amount in major units.
+    ///   - currency: A currency.
+    public static func create(majorBigInt value: BigInt, currency: MoneyCurrency) -> Self {
+        let minor: BigInt = value * BigInt(10).power(currency.precision)
+        return create(minor: minor, currency: currency)
+    }
+
     // MARK: - Minor value
 
     /// Creates a money.
@@ -83,10 +105,22 @@ extension MoneyImplementing {
     ///
     /// - Returns: A money, or `nil` if `value` is invalid.
     public static func create(minor value: String, currency: MoneyCurrency) -> Self? {
-        guard let amount = BigInt(value) else {
+        guard let value = BigInt(value) else {
             return nil
         }
-        return Self(amount: amount, currency: currency)
+        let storeAmount: BigInt = value * BigInt(10).power(currency.storeExtraPrecision)
+        return Self(storeAmount: storeAmount, currency: currency)
+    }
+
+    /// Creates a money.
+    ///
+    /// - Parameters:
+    ///   - value:    An amount in minor units. Any fractional digits will be trimmed.
+    ///   - currency: A currency.
+    public static func create(minorDouble value: Double, currency: MoneyCurrency) -> Self {
+        let storeAmountDouble: Double = value * pow(10, currency.storeExtraPrecision).doubleValue
+        let storeAmount = BigInt(storeAmountDouble)
+        return Self(storeAmount: storeAmount, currency: currency)
     }
 
     /// Creates a money.
@@ -95,8 +129,9 @@ extension MoneyImplementing {
     ///   - value:    An amount in minor units. Any fractional digits will be trimmed.
     ///   - currency: A currency.
     public static func create(minor value: Decimal, currency: MoneyCurrency) -> Self {
-        let amount = BigInt(decimalLiteral: value)
-        return Self(amount: amount, currency: currency)
+        let storeAmountDecimal: Decimal = value * pow(10, currency.storeExtraPrecision)
+        let storeAmountBigInt = BigInt(decimalLiteral: storeAmountDecimal)
+        return Self(storeAmount: storeAmountBigInt, currency: currency)
     }
 
     /// Creates a money.
@@ -105,7 +140,7 @@ extension MoneyImplementing {
     ///   - value:    An amount in minor units.
     ///   - currency: A currency.
     public static func create(minor value: Int, currency: MoneyCurrency) -> Self {
-        Self(amount: BigInt(value), currency: currency)
+        create(minor: BigInt(value), currency: currency)
     }
 
     /// Creates a money.
@@ -114,7 +149,8 @@ extension MoneyImplementing {
     ///   - value:    An amount in minor units.
     ///   - currency: A currency.
     public static func create(minor value: BigInt, currency: MoneyCurrency) -> Self {
-        Self(amount: value, currency: currency)
+        let storeAmount: BigInt = value * BigInt(10).power(currency.storeExtraPrecision)
+        return Self(storeAmount: storeAmount, currency: currency)
     }
 
     // MARK: - Private methods

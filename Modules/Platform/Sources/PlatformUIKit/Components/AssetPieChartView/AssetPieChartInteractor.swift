@@ -63,9 +63,10 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                     .asObservable()
 
                 return Observable.combineLatest(cryptoStreams + [fiatStream])
-                    .map { pairs -> AssetPieChart.State.Interaction in
-                        let total = try pairs.map(\.quote)
-                            .reduce(.zero(currency: fiatCurrency), +)
+                    .map { (pairs: [MoneyValuePair]) -> AssetPieChart.State.Interaction in
+                        let total: MoneyValue = try pairs.map(\.quote)
+                            .reduce(MoneyValue.zero(currency: fiatCurrency), +)
+
                         guard total.isPositive else {
                             return .loaded(next: [])
                         }
@@ -73,7 +74,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                         let states = pairs.map { pair in
                             AssetPieChart.Value.Interaction(
                                 asset: pair.base.currency,
-                                percentage: pair.quote.amount.decimalDivision(by: total.amount)
+                                percentage: (try? pair.quote.percentage(in: total)) ?? 0
                             )
                         }
                         return .loaded(next: states)

@@ -19,8 +19,8 @@ final class PrefillButtonsReducerTests: XCTestCase {
         PrefillButtonsAction,
         PrefillButtonsEnvironment
     >!
-    private let lastPurchase = FiatValue(amount: 900, currency: .USD)
-    private let maxLimit = FiatValue(amount: 120000, currency: .USD)
+    private let lastPurchase = FiatValue.create(minor: 900, currency: .USD)
+    private let maxLimit = FiatValue.create(minor: 120000, currency: .USD)
 
     private let baseValueQuickfillConfigurations: [QuickfillConfiguration] = [
         .init(multiplier: 2.0, rounding: 10),
@@ -41,36 +41,36 @@ final class PrefillButtonsReducerTests: XCTestCase {
 
     func test_swap_stateValues() {
         let state = PrefillButtonsState(
-            previousTxAmount: FiatValue(amount: 6565, currency: .USD),
+            previousTxAmount: FiatValue.create(minor: 6565, currency: .USD),
             action: .swap,
             maxLimit: maxLimit,
             configurations: balanceQuickfillConfigurations
         )
-        XCTAssertEqual(state.previousTxAmount, FiatValue(amount: 6565, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[0], FiatValue(amount: 30000, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[1], FiatValue(amount: 60000, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[2], FiatValue(amount: 90000, currency: .USD))
+        XCTAssertEqual(state.previousTxAmount, FiatValue.create(minor: 6565, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[0], FiatValue.create(minor: 30000, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[1], FiatValue.create(minor: 60000, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[2], FiatValue.create(minor: 90000, currency: .USD))
     }
 
     func test_buy_stateValues() {
         let state = PrefillButtonsState(
-            previousTxAmount: FiatValue(amount: 6565, currency: .USD),
+            previousTxAmount: FiatValue.create(minor: 6565, currency: .USD),
             action: .buy,
             maxLimit: maxLimit,
             configurations: baseValueQuickfillConfigurations
         )
-        XCTAssertEqual(state.previousTxAmount, FiatValue(amount: 6565, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[0], FiatValue(amount: 14000, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[1], FiatValue(amount: 30000, currency: .USD))
-        XCTAssertEqual(state.suggestedValues[2], FiatValue(amount: 60000, currency: .USD))
+        XCTAssertEqual(state.previousTxAmount, FiatValue.create(minor: 6565, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[0], FiatValue.create(minor: 14000, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[1], FiatValue.create(minor: 30000, currency: .USD))
+        XCTAssertEqual(state.suggestedValues[2], FiatValue.create(minor: 60000, currency: .USD))
     }
 
     func test_buy_stateValues_overMaxLimit() {
         let state = PrefillButtonsState(
-            previousTxAmount: FiatValue(amount: 110000, currency: .USD),
+            previousTxAmount: FiatValue.create(minor: 110000, currency: .USD),
             maxLimit: maxLimit
         )
-        XCTAssertEqual(state.previousTxAmount, FiatValue(amount: 110000, currency: .USD))
+        XCTAssertEqual(state.previousTxAmount, FiatValue.create(minor: 110000, currency: .USD))
         XCTAssertTrue(state.suggestedValues.isEmpty)
     }
 
@@ -87,7 +87,7 @@ final class PrefillButtonsReducerTests: XCTestCase {
             )
         )
         testStore.send(.onAppear)
-        let expected = FiatValue(amount: 1000, currency: .USD)
+        let expected = FiatValue.create(minor: 1000, currency: .USD)
         testStore.receive(.updatePreviousTxAmount(expected)) { state in
             state.previousTxAmount = expected
         }
@@ -107,12 +107,12 @@ final class PrefillButtonsReducerTests: XCTestCase {
                 maxLimitPublisher: .just(maxLimit),
                 onValueSelected: { value in
                     XCTAssertEqual(value.currency, .USD)
-                    XCTAssertEqual(value.amount, BigInt(123))
+                    XCTAssertEqual(value.minorAmount, BigInt(123))
                     e.fulfill()
                 }
             )
         )
-        testStore.send(.select(.init(amount: 123, currency: .USD)))
+        testStore.send(.select(FiatValue.create(minor: 123, currency: .USD)))
         waitForExpectations(timeout: 1)
     }
 }

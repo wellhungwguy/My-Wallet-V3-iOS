@@ -370,8 +370,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 (
                     gasLimit,
                     gasPrice,
-                    CryptoValue(
-                        amount: BigInt(gasLimit * gasPrice),
+                    CryptoValue.create(
+                        minor: BigInt(gasLimit * gasPrice),
                         currency: network.cryptoCurrency
                     )
                 )
@@ -472,7 +472,7 @@ extension EthereumSendTransactionTarget {
         let zeroMoneyValue: MoneyValue = .zero(currency: network.cryptoCurrency)
         let amount: MoneyValue = transaction.value
             .flatMap { BigInt($0.withoutHex, radix: 16) }
-            .flatMap { MoneyValue(amount: $0, currency: .crypto(network.cryptoCurrency)) }
+            .flatMap { MoneyValue.create(minor: $0, currency: .crypto(network.cryptoCurrency)) }
             ?? zeroMoneyValue
         return PendingTransaction(
             amount: amount,

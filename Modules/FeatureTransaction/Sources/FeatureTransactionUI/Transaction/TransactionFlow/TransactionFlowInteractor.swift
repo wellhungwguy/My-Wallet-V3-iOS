@@ -854,11 +854,11 @@ extension TransactionFlowInteractor {
                     case .showCheckout:
                         guard let value = tx.pendingTransaction?.amount else { break }
 
-                        let amount = try value.amount.json()
+                        let minorAmount = try value.minorAmount.json()
                         let previous = blockchain.ux.transaction.source.target.previous
 
                         state.clear(previous.did.error)
-                        state.set(previous.input.amount, to: amount)
+                        state.set(previous.input.amount, to: minorAmount)
                         state.set(previous.input.currency.code, to: value.currency.code)
 
                         if intent == .buy, let source = tx.source {

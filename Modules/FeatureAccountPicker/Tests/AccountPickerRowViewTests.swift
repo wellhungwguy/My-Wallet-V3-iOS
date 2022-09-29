@@ -77,17 +77,17 @@ class AccountPickerRowViewTests: XCTestCase {
             FundData(
                 balance: .init(
                     currency: .fiat(.GBP),
-                    available: .init(amount: 2500000, currency: .fiat(.GBP)),
-                    withdrawable: .init(amount: 2500000, currency: .fiat(.GBP)),
+                    available: .create(majorBigInt: 25000, currency: .fiat(.GBP)),
+                    withdrawable: .create(majorBigInt: 25000, currency: .fiat(.GBP)),
                     pending: .zero(currency: .GBP)
                 ),
-                max: .init(amount: 100000000, currency: .GBP)
+                max: .create(majorBigInt: 1000000, currency: .GBP)
             )
         ),
         paymentMethod: .init(
             type: .funds(.fiat(.GBP)),
-            max: .init(amount: 1000000, currency: .GBP),
-            min: .init(amount: 500, currency: .GBP),
+            max: .create(majorBigInt: 10000, currency: .GBP),
+            min: .create(majorBigInt: 5, currency: .GBP),
             isEligible: true,
             isVisible: true
         ),
@@ -105,8 +105,8 @@ class AccountPickerRowViewTests: XCTestCase {
         ),
         paymentMethod: .init(
             type: .card([.visa]),
-            max: .init(amount: 120000, currency: .USD),
-            min: .init(amount: 500, currency: .USD),
+            max: .create(majorBigInt: 1200, currency: .USD),
+            min: .create(majorBigInt: 5, currency: .USD),
             isEligible: true,
             isVisible: true
         ),

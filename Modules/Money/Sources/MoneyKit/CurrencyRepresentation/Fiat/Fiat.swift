@@ -26,18 +26,43 @@ extension Fiat {
     ///   - format                    A format.
     ///   - locale:        A locale.
     public func toDisplayString(includeSymbol: Bool, format: NumberFormatter.CurrencyFormat, locale: Locale) -> String {
+        let currencyPrecision = currency.precision
+        let displayMajorValue = displayMajorValue
+        let oneMinor = Decimal(1) / pow(10, currencyPrecision)
+        let valueLessThanOneMinor = displayMajorValue > 0 && (displayMajorValue < oneMinor)
+        let exponentLessThanOne = displayMajorValue.exponent < 0
+
         let maxFractionDigits: Int
-        switch format {
-        case .fullLength:
-            maxFractionDigits = currency.precision
-        case .shortened where displayMajorValue.exponent < 0:
-            // Has a fractional part only when the exponent is negative.
-            maxFractionDigits = currency.precision
-        case .shortened:
+        switch (format, valueLessThanOneMinor, exponentLessThanOne) {
+        case (.fullLength, false, _):
+            maxFractionDigits = currencyPrecision
+        case (.fullLength, true, _):
+            maxFractionDigits = min(Int(displayMajorValue.exponent.magnitude), currency.storePrecision)
+        case (.shortened, _, true):
+            maxFractionDigits = currencyPrecision
+        case (.shortened, _, false):
             maxFractionDigits = 0
         }
 
-        return FiatFormatterProvider.shared
+        let result = Self._toDisplayString(
+            locale: locale,
+            includeSymbol: includeSymbol,
+            currency: currency,
+            maxFractionDigits: maxFractionDigits,
+            displayMajorValue: displayMajorValue
+        )
+
+        return result
+    }
+
+    private static func _toDisplayString(
+        locale: Locale,
+        includeSymbol: Bool,
+        currency: FiatCurrency,
+        maxFractionDigits: Int,
+        displayMajorValue: Decimal
+    ) -> String {
+        FiatFormatterProvider.shared
             .formatter(locale: locale, fiatCurrency: currency, maxFractionDigits: maxFractionDigits)
             .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }

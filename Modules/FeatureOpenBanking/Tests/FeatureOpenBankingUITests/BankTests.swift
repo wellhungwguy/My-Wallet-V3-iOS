@@ -63,7 +63,7 @@ final class BankLinkTests: OpenBankingTestCase {
 
         scheduler.advance(by: .seconds(1))
 
-        store.send(.failure(.timeout)) { [self] state in
+        store.send(.failure(.timeout)) { state in
             state.ui = .pending()
             state.showActions = true
         }

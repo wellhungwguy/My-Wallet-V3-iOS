@@ -16,7 +16,7 @@ class TradingAccountBalanceTests: XCTestCase {
                 withdrawable: "0"
             )
         )
-        XCTAssertEqual(bitcoin.available.amount, 0, "CryptoCurrency.bitcoin available should be 0")
+        XCTAssertEqual(bitcoin.available.minorAmount, 0, "CryptoCurrency.bitcoin available should be 0")
         let ethereum = CustodialAccountBalance(
             currency: .crypto(.ethereum),
             response: .init(
@@ -27,6 +27,6 @@ class TradingAccountBalanceTests: XCTestCase {
                 withdrawable: "0"
             )
         )
-        XCTAssertEqual(ethereum.available.amount, 100, "CryptoCurrency.ethereum available should be 100")
+        XCTAssertEqual(ethereum.available.minorAmount, 100, "CryptoCurrency.ethereum available should be 100")
     }
 }

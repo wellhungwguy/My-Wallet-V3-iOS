@@ -105,7 +105,7 @@ extension DustMixing {
 extension UnspentOutput {
     fileprivate var unspentTransaction: UnspentTransaction {
         UnspentTransaction(
-            output: TransactionOutput(value: UInt64(value.amount), lockingScript: Data(hex: script)),
+            output: TransactionOutput(value: UInt64(value.minorAmount), lockingScript: Data(hex: script)),
             outpoint: TransactionOutPoint(hash: Data(hex: hash), index: UInt32(outputIndex))
         )
     }

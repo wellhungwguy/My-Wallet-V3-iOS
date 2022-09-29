@@ -114,7 +114,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             .displayCurrency
             .map { fiatCurrency -> PendingTransaction in
                 .init(
-                    amount: MoneyValue(amount: 1, currency: .crypto(.ethereum)),
+                    amount: MoneyValue.create(minor: 1, currency: .crypto(.ethereum)),
                     available: .zero(currency: .ethereum),
                     feeAmount: .zero(currency: .ethereum),
                     feeForFullAvailable: .zero(currency: .ethereum),

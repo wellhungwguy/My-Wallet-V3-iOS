@@ -84,29 +84,29 @@ extension SwapCheckout {
         from: Target(
             name: "Private Key Wallet",
             isPrivateKey: true,
-            cryptoValue: .init(amount: 12315135, currency: .bitcoin),
-            fee: .init(amount: 1351312, currency: .bitcoin),
+            cryptoValue: .create(minor: 12315135, currency: .bitcoin),
+            fee: .create(minor: 1351312, currency: .bitcoin),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         to: Target(
             name: "Private Key Wallet",
             isPrivateKey: true,
-            cryptoValue: .init(amount: 1221412442357135135, currency: .ethereum),
-            fee: .init(amount: 12321422414515, currency: .ethereum),
+            cryptoValue: .create(minor: 1221412442357135135, currency: .ethereum),
+            fee: .create(minor: 12321422414515, currency: .ethereum),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 10000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 10000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         quoteExpiration: Date().addingTimeInterval(60)
@@ -116,29 +116,29 @@ extension SwapCheckout {
         from: Target(
             name: "Private Key Wallet",
             isPrivateKey: true,
-            cryptoValue: .init(amount: 12315135, currency: .bitcoin),
-            fee: .init(amount: 1351312, currency: .bitcoin),
+            cryptoValue: .create(minor: 12315135, currency: .bitcoin),
+            fee: .create(minor: 1351312, currency: .bitcoin),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         to: Target(
             name: "Trading Wallet",
             isPrivateKey: false,
-            cryptoValue: .init(amount: 1221412442357135135, currency: .ethereum),
-            fee: .init(amount: 12321422414515, currency: .ethereum),
+            cryptoValue: .create(minor: 1221412442357135135, currency: .ethereum),
+            fee: .create(minor: 12321422414515, currency: .ethereum),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 10000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 10000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         quoteExpiration: Date().addingTimeInterval(60)
@@ -148,29 +148,29 @@ extension SwapCheckout {
         from: Target(
             name: "Trading Wallet",
             isPrivateKey: false,
-            cryptoValue: .init(amount: 12315135, currency: .bitcoin),
-            fee: .init(amount: 1351312, currency: .bitcoin),
+            cryptoValue: .create(minor: 12315135, currency: .bitcoin),
+            fee: .create(minor: 1351312, currency: .bitcoin),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .bitcoin),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         to: Target(
             name: "Trading Wallet",
             isPrivateKey: false,
-            cryptoValue: .init(amount: 1221412442357135135, currency: .ethereum),
-            fee: .init(amount: 12321422414515, currency: .ethereum),
+            cryptoValue: .create(minor: 1221412442357135135, currency: .ethereum),
+            fee: .create(minor: 12321422414515, currency: .ethereum),
             exchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 10000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 10000000000, currency: .USD).moneyValue
             ),
             feeExchangeRateToFiat: MoneyValuePair(
                 base: .one(currency: .ethereum),
-                quote: FiatValue(amount: 20000000000, currency: .USD).moneyValue
+                quote: FiatValue.create(minor: 20000000000, currency: .USD).moneyValue
             )
         ),
         quoteExpiration: Date().addingTimeInterval(60)

@@ -110,10 +110,10 @@ final class BitcoinChainTransactionBuildingService: BitcoinChainTransactionBuild
                 >
                 in
 
-                let feePerByte = BigUInt(feePerByte.amount)
+                let feePerByte = BigUInt(feePerByte.minorAmount)
 
                 let inputs = CoinSelectionInputs(
-                    target: .init(value: BigUInt(amount.amount), scriptType: targetScriptType),
+                    target: .init(value: BigUInt(amount.minorAmount), scriptType: targetScriptType),
                     feePerByte: feePerByte,
                     unspentOutputs: unspentOutputs,
                     sortingStrategy: AscentDrawSortingStrategy(),
@@ -133,20 +133,20 @@ final class BitcoinChainTransactionBuildingService: BitcoinChainTransactionBuild
                 return select.zip(selectAll)
                     .map { selectedOutputs, allOutputs
                         -> NativeBitcoinTransactionCandidate in
-                        let available = CryptoValue(
-                            amount: BigInt(allOutputs?.amount ?? 0),
+                        let available = CryptoValue.create(
+                            minor: BigInt(allOutputs?.amount ?? 0),
                             currency: currency
                         )
-                        let feeForMaxAvailable = CryptoValue(
-                            amount: BigInt(allOutputs?.absoluteFee ?? 0),
+                        let feeForMaxAvailable = CryptoValue.create(
+                            minor: BigInt(allOutputs?.absoluteFee ?? 0),
                             currency: currency
                         )
-                        let fees = CryptoValue(
-                            amount: BigInt(selectedOutputs?.absoluteFee ?? 0),
+                        let fees = CryptoValue.create(
+                            minor: BigInt(selectedOutputs?.absoluteFee ?? 0),
                             currency: currency
                         )
-                        let change = CryptoValue(
-                            amount: BigInt(selectedOutputs?.change ?? 0),
+                        let change = CryptoValue.create(
+                            minor: BigInt(selectedOutputs?.change ?? 0),
                             currency: currency
                         )
                         let candidate = NativeBitcoinTransactionCandidate(

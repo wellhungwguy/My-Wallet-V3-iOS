@@ -281,7 +281,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                     .update(amount: amount, pendingTransaction: pendingTransaction)
                     .do(onSuccess: { [weak self] pendingTransaction in
                         guard let self = self else { throw ToolKitError.nullReference(Self.self) }
-                        self.quotesEngine.update(amount: pendingTransaction.amount.amount)
+                        self.quotesEngine.update(amount: pendingTransaction.amount.minorAmount)
                     })
                     .map { [weak self] pendingTransaction -> PendingTransaction in
                         guard let self = self else { throw ToolKitError.nullReference(Self.self) }

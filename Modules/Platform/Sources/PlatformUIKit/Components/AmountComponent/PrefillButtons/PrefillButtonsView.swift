@@ -48,13 +48,17 @@ public struct PrefillButtonsState: Equatable {
         guard let baseValue = previousTxAmount, let maxLimit = maxLimit else {
             return nil
         }
-        let value = FiatValue(
-            amount: baseValue.amount * by,
+        let multiplier = FiatValue.create(
+            majorBigInt: by,
             currency: baseValue.currency
         )
-        return (try? value < maxLimit) == true
-            ? value
-            : nil
+        guard let result = try? baseValue * multiplier else {
+            return nil
+        }
+        guard let isLessThanMaxLimit = try? result < maxLimit else {
+            return nil
+        }
+        return isLessThanMaxLimit ? result : nil
     }
 
     public init(
@@ -308,12 +312,12 @@ public let prefillButtonsReducer = Reducer<
 }
 
 extension FiatValue {
-    var rounded: FiatValue {
+
+    /// Round fiat values up in 10 major increments.
+    fileprivate var rounded: FiatValue {
         let multiplier = pow(10, Double(displayPrecision + 1))
-        return FiatValue(
-            amount: BigInt(multiplier) * BigInt(ceil(Double(amount) / multiplier)),
-            currency: currency
-        )
+        let minorDouble = multiplier * ceil(Double(minorAmount) / multiplier)
+        return FiatValue.create(minorDouble: minorDouble, currency: currency)
     }
 }
 
@@ -338,7 +342,7 @@ public struct PrefillButtonsView: View {
                         HStack {
                             Spacer()
                                 .frame(width: Spacing.outer)
-                            ForEach(viewStore.suggestedValues, id: \.amount) { suggestedValue in
+                            ForEach(viewStore.suggestedValues, id: \.minorAmount) { suggestedValue in
                                 SmallMinimalButton(
                                     title: suggestedValue.toDisplayString(
                                         includeSymbol: true,
@@ -390,8 +394,8 @@ struct PrefillButtonsView_Previews: PreviewProvider {
         PrefillButtonsView(
             store: Store<PrefillButtonsState, PrefillButtonsAction>(
                 initialState: PrefillButtonsState(
-                    previousTxAmount: FiatValue(amount: 900, currency: .USD),
-                    maxLimit: FiatValue(amount: 120000, currency: .USD)
+                    previousTxAmount: FiatValue.create(majorBigInt: 9, currency: .USD),
+                    maxLimit: FiatValue.create(majorBigInt: 1200, currency: .USD)
                 ),
                 reducer: prefillButtonsReducer,
                 environment: .preview

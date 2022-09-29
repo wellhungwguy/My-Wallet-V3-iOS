@@ -139,10 +139,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         return amount.combineLatest(currency, tradingCurrency)
             .map { amount, currency, tradingCurrency in
                 if let amount = amount, let currency = currency {
-                    return FiatValue(amount: amount, currency: currency)
+                    return FiatValue.create(minor: amount, currency: currency)
                 } else {
                     // If there's no previous purchase default to 50.00 of trading currency
-                    return FiatValue(amount: 5000, currency: tradingCurrency)
+                    return FiatValue.create(majorBigInt: 50, currency: tradingCurrency)
                 }
             }
             .eraseToAnyPublisher()

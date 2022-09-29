@@ -250,7 +250,7 @@ class CoinSelectionTests: XCTestCase {
 private func unspents(_ values: [Int]) -> [UnspentOutput] {
     values.compactMap { value in
         let absolute = abs(value)
-        let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .bitcoin)
+        let cryptoValue = CryptoValue.create(minor: absolute, currency: .bitcoin)
         return UnspentOutput.createP2PKH(with: cryptoValue)
     }
 }

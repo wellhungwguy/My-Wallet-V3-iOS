@@ -12,17 +12,17 @@ final class MoneyValueConvertTests: XCTestCase {
     }
 
     func testConvertingALGOIntoBTCUsingBTCExchangeRate() {
-        let exchangeRate = CryptoValue(
-            amount: 400,
+        let exchangeRate = CryptoValue.create(
+            minor: 400,
             currency: .bitcoin
         )
-        let value = CryptoValue(
-            amount: 10000,
+        let value = CryptoValue.create(
+            minor: 10000,
             currency: mockCoin6Precision
         )
 
-        let expected = CryptoValue(
-            amount: 4,
+        let expected = CryptoValue.create(
+            minor: 4,
             currency: .bitcoin
         )
         let result = value.convert(using: exchangeRate)

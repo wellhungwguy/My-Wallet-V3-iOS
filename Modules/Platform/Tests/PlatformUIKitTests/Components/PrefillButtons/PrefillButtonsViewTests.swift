@@ -15,7 +15,7 @@ final class PrefillButtonsViewTests: XCTestCase {
         .init(multiplier: 0.5, rounding: [1, 10, 25, 100, 500, 1000]),
         .init(multiplier: 0.75, rounding: [1, 10, 25, 100, 500, 1000])
     ].map { .balance($0) }
-    private let maxLimit = FiatValue(amount: 120000, currency: .USD)
+    private let maxLimit = FiatValue.create(minor: 120000, currency: .USD)
 
     override func setUp() {
         super.setUp()
@@ -26,7 +26,7 @@ final class PrefillButtonsViewTests: XCTestCase {
         let prefillButtonsView = PrefillButtonsView(
             store: Store<PrefillButtonsState, PrefillButtonsAction>(
                 initialState: PrefillButtonsState(
-                    previousTxAmount: FiatValue(amount: 6565, currency: .USD),
+                    previousTxAmount: FiatValue.create(minor: 6565, currency: .USD),
                     action: .swap,
                     maxLimit: maxLimit,
                     configurations: balanceQuickfillConfigurations

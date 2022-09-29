@@ -61,7 +61,7 @@ final class BitcoinTransactionSigningService: BitcoinChainTransactionSigningServ
                     $0.outPoint.index = UInt32(utxo.outputIndex)
                     $0.outPoint.sequence = UInt32.max
                     $0.script = Data(hex: utxo.script)
-                    $0.amount = Int64(utxo.value.amount)
+                    $0.amount = Int64(utxo.value.minorAmount)
                 }
             }
 
@@ -70,16 +70,16 @@ final class BitcoinTransactionSigningService: BitcoinChainTransactionSigningServ
             return .failure(.signingError(error))
         }
 
-        let amount = Int64(candidate.amount.amount)
+        let amount = Int64(candidate.amount.minorAmount)
 
-        let fee: Int64 = Int64(candidate.fees.amount)
+        let fee: Int64 = Int64(candidate.fees.minorAmount)
 
         guard fee > 0 else {
             let error = BitcoinTransactionSigningServiceError.zeroFee
             return .failure(.signingError(error))
         }
 
-        let change = Int64(candidate.change.amount)
+        let change = Int64(candidate.change.minorAmount)
 
         guard change >= 0 else {
             let error = BitcoinTransactionSigningServiceError.invalidChangeAmount(change)
@@ -114,7 +114,7 @@ final class BitcoinTransactionSigningService: BitcoinChainTransactionSigningServ
             return .failure(.signingError(error))
         }
 
-        guard candidate.fees.amount == fee else {
+        guard candidate.fees.minorAmount == fee else {
             fatalError(
                 "Candidate fees should always be in sync with the signed transaction"
             )

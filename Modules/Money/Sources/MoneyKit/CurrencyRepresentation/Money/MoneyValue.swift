@@ -27,12 +27,12 @@ public struct MoneyValue: Money, Hashable {
         }
     }
 
-    public var amount: BigInt {
+    public var storeAmount: BigInt {
         switch _value {
         case .crypto(let cryptoValue):
-            return cryptoValue.amount
+            return cryptoValue.storeAmount
         case .fiat(let fiatValue):
-            return fiatValue.amount
+            return fiatValue.storeAmount
         }
     }
 
@@ -101,12 +101,12 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameters:
     ///   - amount:   An amount in minor units.
     ///   - currency: A currency.
-    public init(amount: BigInt, currency: CurrencyType) {
+    public init(storeAmount: BigInt, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
-            _value = .crypto(CryptoValue(amount: amount, currency: cryptoCurrency))
+            _value = .crypto(CryptoValue(storeAmount: storeAmount, currency: cryptoCurrency))
         case .fiat(let fiatCurrency):
-            _value = .fiat(FiatValue(amount: amount, currency: fiatCurrency))
+            _value = .fiat(FiatValue(storeAmount: storeAmount, currency: fiatCurrency))
         }
     }
 
@@ -131,6 +131,7 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameters:
     ///   - includeSymbol: Whether the symbol should be included.
     public func toSimpleString(includeSymbol: Bool, fullPrecision: Bool = true) -> String {
+        let displayMajorValue = displayMajorValue
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.groupingSeparator = ""
@@ -223,8 +224,8 @@ extension MoneyValue {
 
     /// Used for analytics purposes only, for other things use `displayString` instead.
     public var displayMajorValue: Decimal {
-        amount.toDecimalMajor(
-            baseDecimalPlaces: currencyType.precision,
+        storeAmount.toDecimalMajor(
+            baseDecimalPlaces: currencyType.storePrecision,
             roundingDecimalPlaces: currencyType.precision
         )
     }

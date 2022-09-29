@@ -29,7 +29,7 @@ struct CustodialTransferFeesResponse: Decodable {
             guard let amount = BigInt(value.minorValue) else {
                 return
             }
-            result[currency] = MoneyValue(amount: amount, currency: currency)
+            result[currency] = MoneyValue.create(minor: amount, currency: currency)
         }
         self.fees = fees.reduce(into: [CurrencyType: MoneyValue]()) { result, value in
             guard let currency = try? CurrencyType(code: value.symbol) else {
@@ -38,7 +38,7 @@ struct CustodialTransferFeesResponse: Decodable {
             guard let amount = BigInt(value.minorValue) else {
                 return
             }
-            result[currency] = MoneyValue(amount: amount, currency: currency)
+            result[currency] = MoneyValue.create(minor: amount, currency: currency)
         }
     }
 }

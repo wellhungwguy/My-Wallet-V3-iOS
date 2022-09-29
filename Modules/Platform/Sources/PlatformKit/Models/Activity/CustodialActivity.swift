@@ -81,8 +81,12 @@ extension CustodialActivityEvent.Fiat {
             return nil
         }
         let date: Date = item.insertedAtDate
+        let fiatValue = FiatValue.create(
+            minor: item.amountMinor,
+            currency: fiatCurrency
+        )
         self.init(
-            amount: FiatValue(amount: BigInt(item.amountMinor) ?? 0, currency: fiatCurrency),
+            amount: fiatValue ?? .zero(currency: fiatCurrency),
             identifier: item.id,
             date: date,
             type: eventType,
@@ -109,12 +113,12 @@ extension CustodialActivityEvent.Crypto {
             return nil
         }
         let date: Date = item.insertedAtDate
-        let amount = CryptoValue(
-            amount: BigInt(item.amountMinor) ?? 0,
+        let amount = CryptoValue.create(
+            minor: BigInt(item.amountMinor) ?? 0,
             currency: cryptoCurrency
         )
         let feeMinor: BigInt = item.feeMinor.flatMap { BigInt($0) } ?? 0
-        let fee = CryptoValue(amount: feeMinor, currency: cryptoCurrency)
+        let fee = CryptoValue.create(minor: feeMinor, currency: cryptoCurrency)
         self.init(
             amount: amount,
             identifier: item.id,

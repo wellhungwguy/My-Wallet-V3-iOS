@@ -122,7 +122,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             pendingTransaction.update(amount: normalized, available: balance)
         }
         .do(onSuccess: { [weak self] transaction in
-            self?.quotesEngine.update(amount: transaction.amount.amount)
+            self?.quotesEngine.update(amount: transaction.amount.minorAmount)
         })
         .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
             self.clearConfirmations(pendingTransaction: pendingTransaction)
@@ -138,7 +138,10 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
             .asSingle()
             .map { [targetAsset] pricedQuote -> (PendingTransaction, PricedQuote) in
                 let sellSourceValue = pendingTransaction.amount
-                let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
+                let resultValue = FiatValue.create(
+                    minor: pricedQuote.price,
+                    currency: targetAsset
+                ).moneyValue
                 let baseValue = MoneyValue.one(currency: sellSourceValue.currency)
                 let sellDestinationValue: MoneyValue = sellSourceValue.convert(using: resultValue)
 

@@ -32,15 +32,15 @@ public struct Portfolio: Codable {
     public let balanceChange: BalanceChange
     let fiatCurrency: FiatCurrency
     public var balanceFiatValue: FiatValue {
-        FiatValue(
-            amount: balanceChange.balance,
+        .create(
+            minor: balanceChange.balance,
             currency: fiatCurrency
         )
     }
 
     public var changeFiatValue: FiatValue {
-        FiatValue(
-            amount: balanceChange.change,
+        .create(
+            minor: balanceChange.change,
             currency: fiatCurrency
         )
     }
