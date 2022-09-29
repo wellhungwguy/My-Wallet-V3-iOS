@@ -18,7 +18,32 @@ public struct AvailableBalanceDetailViewState: Equatable {
 
     struct Data: Equatable, Hashable, Identifiable {
         let title: String
-        let content: String
+        let content: Content
+
+        enum Content: Equatable, Hashable {
+            case text(String)
+            case badge(String)
+
+            var displayString: String {
+                switch self {
+                case .text(let value):
+                    return value
+                case .badge(let value):
+                    return value
+                }
+            }
+
+            static func == (lhs: Content, rhs: Content) -> Bool {
+                switch (lhs, rhs) {
+                case (.text(let left), .text(let right)):
+                    return left == right
+                case (.badge(let left), .badge(let right)):
+                    return left == right
+                default:
+                    return false
+                }
+            }
+        }
 
         var id: String { "\(title).\(content)" }
     }
@@ -60,9 +85,9 @@ public let availableBalanceDetailViewReducer = Reducer<
     case .updateAvailableBalanceDetails(let balance, let available, let fees, let action):
         state.title = "\(LocalizedIds.availableTo) \(action.name)"
         state.data = [
-            .init(title: LocalizedIds.total, content: balance.displayString),
-            .init(title: "\(LocalizedIds.estimated) \(LocalizedIds.fees.lowercased())", content: "~\(fees.displayString)"),
-            .init(title: "\(LocalizedIds.availableTo) \(action.name)", content: available.displayString)
+            .init(title: LocalizedIds.total, content: .text(balance.displayString)),
+            .init(title: "\(LocalizedIds.estimated) \(LocalizedIds.fees.lowercased())", content: fees.isPositive ? .text(fees.displayString) : .badge("Free")),
+            .init(title: "\(LocalizedIds.availableTo) \(action.name)", content: .text(available.displayString))
         ]
         return .none
     case .okayButtonTapped,
@@ -162,9 +187,14 @@ struct AvailableBalanceDetailView: View {
                         Text(data.title)
                             .typography(.body1)
                         Spacer()
-                        Text(data.content)
-                            .typography(.body1)
-                            .multilineTextAlignment(.trailing)
+                        if case .text(let value) = data.content {
+                            Text(value)
+                                .typography(.body1)
+                                .multilineTextAlignment(.trailing)
+                        }
+                        if case .badge(let value) = data.content {
+                            BadgeView(title: value, style: .success)
+                        }
                     }
                     .padding([.leading, .trailing], 24.pt)
                     .padding([.top, .bottom], 16.pt)

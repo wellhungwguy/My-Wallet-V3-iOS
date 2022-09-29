@@ -130,6 +130,7 @@ extension LocalizationConstants.Transaction.AvailableBalance {
     public static let estimated = NSLocalizedString("Est.", comment: "Abbreviation for Estimated")
     public static let fees = NSLocalizedString("Fees", comment: "Fees")
     public static let okay = NSLocalizedString("Okay", comment: "Okay")
+    public static let free = NSLocalizedString("Free", comment: "Free")
 }
 
 extension LocalizationConstants.Transaction.Notices {
