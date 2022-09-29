@@ -321,6 +321,52 @@ extension LocalizationConstants {
                 )
             }
 
+            enum IdentityVerification {
+
+                static let title = NSLocalizedString(
+                    "Verify Your Identity",
+                    comment: "KYC Step - Identity Verification - Verify Identity Title"
+                )
+
+                enum WeNeedToConfirmYourIdentity {
+                    static let title = NSLocalizedString(
+                        "We need to confirm your identity.",
+                        comment: "KYC Step - Identity Verification - We Need To Confirm Your Identity title"
+                    )
+                    static let description = NSLocalizedString(
+                        // swiftlint:disable:next line_length
+                        "We need to confirm your identity with a government issued ID and selfie. Before proceeding, make sure you have one of the following forms of ID handy and your camera is turned on.",
+                        comment: "KYC Step - Identity Verification - We Need To Confirm Your Identity description"
+                    )
+                }
+
+                enum StartVerificationButton {
+                    static let title = NSLocalizedString(
+                        "Start Verification",
+                        comment: "KYC Step - Identity Verification - Start Verification button title"
+                    )
+                }
+
+                enum DocumentTypes {
+                    static let passport = NSLocalizedString(
+                        "Valid Passport",
+                        comment: "KYC Step - Identity Verification - Passport Document Type"
+                    )
+                    static let driversLicense = NSLocalizedString(
+                        "Driver's License",
+                        comment: "KYC Step - Identity Verification - Driver's License"
+                    )
+                    static let nationalIdentityCard = NSLocalizedString(
+                        "National ID Card",
+                        comment: "KYC Step - Identity Verification - National ID Card"
+                    )
+                    static let residencePermit = NSLocalizedString(
+                        "Residence Card",
+                        comment: "KYC Step - Identity Verification - Residence Card"
+                    )
+                }
+            }
+
             enum AccountUsage {
 
                 static let title = NSLocalizedString(

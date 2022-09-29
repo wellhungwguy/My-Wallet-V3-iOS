@@ -84,7 +84,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     private func dependenciesSetup() {
         let interactor = KYCVerifyIdentityInteractor()
-        let identityPresenter = KYCVerifyIdentityPresenter(interactor: interactor, loadingView: self)
+        let identityPresenter = KYCVerifyIdentityPresenter(interactor: interactor)
         identityPresenter.cameraPromptingDelegate = self
         identityPresenter.microphonePromptingDelegate = self
         presenter = identityPresenter
@@ -111,15 +111,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     }
 }
 
-extension KYCResubmitIdentityController: PlatformUIKit.LoadingView {
-
-    func showLoadingIndicator() {
-        resubmitButton.isLoading = true
-    }
-
-    func hideLoadingIndicator() {
-        resubmitButton.isLoading = false
-    }
+extension KYCResubmitIdentityController {
 
     func showErrorMessage(_ message: String) {
         let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()

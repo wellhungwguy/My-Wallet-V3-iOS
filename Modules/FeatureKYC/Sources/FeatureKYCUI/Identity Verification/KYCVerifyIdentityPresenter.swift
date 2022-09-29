@@ -5,9 +5,7 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 
-protocol KYCVerifyIdentityView: AnyObject {
-    func showDocumentTypes(_ types: [KYCDocumentType])
-}
+protocol KYCVerifyIdentityView: AnyObject {}
 
 protocol KYCVerifyIdentityDelegate: AnyObject {
     func submitVerification(
@@ -22,34 +20,12 @@ protocol KYCVerifyIdentityDelegate: AnyObject {
 
 class KYCVerifyIdentityPresenter {
     private let interactor: KYCVerifyIdentityInteractor
-    private weak var loadingView: PlatformUIKit.LoadingView?
-
-    // TODO: Separate and use in a different presenter specifically made
-    // for the KYCVerifyIdentityViewController.
     weak var identityView: KYCVerifyIdentityView?
 
     init(
-        interactor: KYCVerifyIdentityInteractor,
-        loadingView: PlatformUIKit.LoadingView
+        interactor: KYCVerifyIdentityInteractor
     ) {
         self.interactor = interactor
-        self.loadingView = loadingView
-    }
-
-    func presentDocumentTypeOptions(_ countryCode: String) {
-        loadingView?.showLoadingIndicator()
-        interactor.supportedDocumentTypes(
-            countryCode: countryCode,
-            onSuccess: { [weak self] documentTypes in
-                self?.loadingView?.hideLoadingIndicator()
-                self?.identityView?.showDocumentTypes(documentTypes)
-            },
-            onError: { [weak self] error in
-                Logger.shared.error("Error: \(String(describing: error))")
-                self?.loadingView?.hideLoadingIndicator()
-                self?.loadingView?.showErrorMessage(LocalizationConstants.Errors.genericError)
-            }
-        )
     }
 
     // MARK: - CameraPrompting & MicrophonePrompting
