@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import Foundation
+import PassKit
 
 public protocol CardRepositoryAPI {
 
@@ -29,6 +30,14 @@ public protocol CardRepositoryAPI {
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
+
+    /// get request parameters to add card to Apple Wallet
+    func tokenise(
+        card: Card,
+        with certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data
+    ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError>
 }
 
 public protocol UserInfoProviderAPI {

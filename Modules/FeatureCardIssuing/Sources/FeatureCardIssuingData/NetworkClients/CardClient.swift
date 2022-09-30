@@ -19,6 +19,8 @@ public final class CardClient: CardClientAPI {
         case eligibleAccounts = "eligible-accounts"
         case lock
         case unlock
+        case digitalWallets = "digital-wallets"
+        case applePay = "apple-pay"
     }
 
     // MARK: - Properties
@@ -165,6 +167,18 @@ public final class CardClient: CardClientAPI {
 
         return networkAdapter
             .perform(request: request, responseType: Card.self)
+            .eraseToAnyPublisher()
+    }
+
+    func tokenise(cardId: String, with parameters: TokeniseCardParameters) -> AnyPublisher<TokeniseCardResponse, NabuNetworkError> {
+        let request = requestBuilder.post(
+            path: [Path.cards.rawValue, cardId, Path.digitalWallets.rawValue, Path.applePay.rawValue],
+            body: try? parameters.encode(),
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: TokeniseCardResponse.self)
             .eraseToAnyPublisher()
     }
 }

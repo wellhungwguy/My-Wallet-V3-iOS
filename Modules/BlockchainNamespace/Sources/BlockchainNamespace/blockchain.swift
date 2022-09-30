@@ -316,6 +316,7 @@ public final class L_blockchain_app_configuration_card_issuing: L, I_blockchain_
 public protocol I_blockchain_app_configuration_card_issuing: I {}
 public extension I_blockchain_app_configuration_card_issuing {
 	var `is`: L_blockchain_app_configuration_card_issuing_is { .init("\(__).is") }
+	var `tokenise`: L_blockchain_app_configuration_card_issuing_tokenise { .init("\(__).tokenise") }
 }
 public final class L_blockchain_app_configuration_card_issuing_is: L, I_blockchain_app_configuration_card_issuing_is {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.is", comment: "") }
@@ -328,6 +329,76 @@ public final class L_blockchain_app_configuration_card_issuing_is_enabled: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_card_issuing_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_card_issuing_tokenise: L, I_blockchain_app_configuration_card_issuing_tokenise {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise {
+	var `base64`: L_blockchain_app_configuration_card_issuing_tokenise_base64 { .init("\(__).base64") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64: L, I_blockchain_app_configuration_card_issuing_tokenise_base64 {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64 {
+	var `activationData`: L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData { .init("\(__).activationData") }
+	var `encryptedPassData`: L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData { .init("\(__).encryptedPassData") }
+	var `ephemeralPublicKey`: L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey { .init("\(__).ephemeralPublicKey") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.activationData", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData {
+	var `is`: L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.activationData.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is {
+	var `enabled`: L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is_enabled: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.activationData.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_activationData_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData {
+	var `is`: L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is {
+	var `enabled`: L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is_enabled: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_encryptedPassData_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey {
+	var `is`: L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is: I {}
+public extension I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is {
+	var `enabled`: L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is_enabled: L, I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_card_issuing_tokenise_base64_ephemeralPublicKey_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_card_success: L, I_blockchain_app_configuration_card_success {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.card.success", comment: "") }
 }

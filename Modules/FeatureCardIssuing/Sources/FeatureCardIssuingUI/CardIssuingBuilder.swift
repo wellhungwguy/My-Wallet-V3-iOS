@@ -36,6 +36,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     private let addressService: ResidentialAddressServiceAPI
     private let transactionService: TransactionServiceAPI
     private let supportRouter: SupportRouterAPI
+    private let userInfoProvider: UserInfoProviderAPI
     private let topUpRouter: TopUpRouterAPI
     private let addressSearchRouter: AddressSearchRouterAPI
 
@@ -47,6 +48,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         addressService: ResidentialAddressServiceAPI,
         transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
+        userInfoProvider: UserInfoProviderAPI,
         topUpRouter: TopUpRouterAPI,
         addressSearchRouter: AddressSearchRouterAPI
     ) {
@@ -57,6 +59,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         self.addressService = addressService
         self.transactionService = transactionService
         self.supportRouter = supportRouter
+        self.userInfoProvider = userInfoProvider
         self.topUpRouter = topUpRouter
         self.addressSearchRouter = addressSearchRouter
     }
@@ -120,6 +123,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             productsService: productService,
             transactionService: transactionService,
             supportRouter: supportRouter,
+            userInfoProvider: userInfoProvider,
             topUpRouter: topUpRouter,
             addressSearchRouter: addressSearchRouter,
             notificationCenter: NotificationCenter.default,
@@ -127,7 +131,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         )
 
         let store = Store<CardManagementState, CardManagementAction>(
-            initialState: .init(),
+            initialState: .init(tokenisationCoordinator: PassTokenisationCoordinator(service: cardService)),
             reducer: cardManagementReducer,
             environment: env
         )

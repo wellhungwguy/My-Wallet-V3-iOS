@@ -300,7 +300,7 @@ struct CardManagement_Previews: PreviewProvider {
         NavigationView {
             CardManagementView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(tokenisationCoordinator: .init(service: MockServices())),
                     reducer: cardManagementReducer,
                     environment: .preview
                 )

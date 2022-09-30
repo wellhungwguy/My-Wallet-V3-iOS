@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import Foundation
+import PassKit
 
 public protocol CardServiceAPI {
 
@@ -29,4 +30,11 @@ public protocol CardServiceAPI {
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
+
+    func tokenise(
+        card: Card,
+        with certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data
+    ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError>
 }

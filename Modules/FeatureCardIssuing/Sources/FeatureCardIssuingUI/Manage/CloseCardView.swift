@@ -82,7 +82,7 @@ struct CloseCard_Previews: PreviewProvider {
             .bottomSheet(isPresented: .constant(true)) {
                 CloseCardView(
                     store: Store(
-                        initialState: .init(),
+                        initialState: .init(tokenisationCoordinator: .init(service: MockServices())),
                         reducer: cardManagementReducer,
                         environment: .preview
                     )
