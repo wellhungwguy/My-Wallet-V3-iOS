@@ -15,10 +15,9 @@ struct BalanceResponse: Decodable {
         }
 
         let account: Account
-        let amount: CurrencyAmount
+        let amount: CurrencyAmount?
         let price: Decimal?
         let ticker: String
-        let unconfirmed: CurrencyAmount
     }
 
     struct SubscriptionEntry: Decodable {
