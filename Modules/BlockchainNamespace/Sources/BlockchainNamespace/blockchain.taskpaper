@@ -250,6 +250,8 @@ blockchain:
 			transaction:
 			+ blockchain.db.collection
 				quickfill:
+					amount:
+					+ blockchain.db.type.string
 					configuration:
 					+ blockchain.db.array
 					+ blockchain.session.configuration.value
@@ -257,6 +259,8 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					type:
+					+ blockchain.db.type.string
 				should:
 					prefill:
 						with:

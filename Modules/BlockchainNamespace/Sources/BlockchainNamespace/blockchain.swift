@@ -1081,9 +1081,15 @@ public final class L_blockchain_app_configuration_transaction_quickfill: L, I_bl
 }
 public protocol I_blockchain_app_configuration_transaction_quickfill: I {}
 public extension I_blockchain_app_configuration_transaction_quickfill {
+	var `amount`: L_blockchain_app_configuration_transaction_quickfill_amount { .init("\(__).amount") }
 	var `configuration`: L_blockchain_app_configuration_transaction_quickfill_configuration { .init("\(__).configuration") }
 	var `is`: L_blockchain_app_configuration_transaction_quickfill_is { .init("\(__).is") }
+	var `type`: L_blockchain_app_configuration_transaction_quickfill_type { .init("\(__).type") }
 }
+public final class L_blockchain_app_configuration_transaction_quickfill_amount: L, I_blockchain_app_configuration_transaction_quickfill_amount {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.quickfill.amount", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_quickfill_amount: I_blockchain_db_type_string {}
 public final class L_blockchain_app_configuration_transaction_quickfill_configuration: L, I_blockchain_app_configuration_transaction_quickfill_configuration {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.quickfill.configuration", comment: "") }
 }
@@ -1099,6 +1105,10 @@ public final class L_blockchain_app_configuration_transaction_quickfill_is_enabl
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.quickfill.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_transaction_quickfill_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_transaction_quickfill_type: L, I_blockchain_app_configuration_transaction_quickfill_type {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.quickfill.type", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_quickfill_type: I_blockchain_db_type_string {}
 public final class L_blockchain_app_configuration_transaction_should: L, I_blockchain_app_configuration_transaction_should {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.should", comment: "") }
 }
