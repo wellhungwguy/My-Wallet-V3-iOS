@@ -126,7 +126,7 @@ public struct AvailableBalanceDetailViewEnvironment {
 
     static var preview: Self {
         AvailableBalanceDetailViewEnvironment(
-            app: App.test,
+            app: App.preview,
             balancePublisher: .empty(),
             availableBalancePublisher: .empty(),
             feesPublisher: .empty()

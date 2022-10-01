@@ -7,7 +7,6 @@ import RxSwift
 import ToolKit
 
 public final class SingleAmountInteractor: AmountViewInteracting {
-
     // MARK: - Properties
 
     public let effect: Observable<AmountInteractorEffect> = .just(.none)
@@ -88,6 +87,13 @@ public final class SingleAmountInteractor: AmountViewInteracting {
 
     public func set(auxiliaryViewEnabled: Bool) {
         auxiliaryViewEnabledRelay.accept(auxiliaryViewEnabled)
+    }
+
+    // There is no available balance view for the deposit flow so this will never publish anything
+    // It is here to satisfy the protocol
+    private let availableBalanceViewSelectedRelay = PublishRelay<AvailableBalanceDetails>()
+    public var availableBalanceViewSelected: Observable<AvailableBalanceDetails> {
+        availableBalanceViewSelectedRelay.asObservable()
     }
 }
 

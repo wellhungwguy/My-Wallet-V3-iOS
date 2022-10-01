@@ -109,7 +109,7 @@ public struct PrefillButtonsEnvironment {
 
     static var preview: Self {
         PrefillButtonsEnvironment(
-            app: App.test,
+            app: App.preview,
             lastPurchasePublisher: .empty(),
             maxLimitPublisher: .empty(),
             onValueSelected: { _, _  in }
