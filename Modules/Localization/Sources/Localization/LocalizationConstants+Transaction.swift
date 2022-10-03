@@ -1003,6 +1003,60 @@ extension LocalizationConstants.Transaction.Sell.Completion.Failure {
 
 extension LocalizationConstants.Transaction.Confirmation.Error {
     public static let title = NSLocalizedString("Error", comment: "Error")
+
+    public enum RequiresUpdate {
+        public static let title = NSLocalizedString(
+            "Oops! Something went wrong",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "Please relink your bank account to ensure faster settlement.",
+            comment: ""
+        )
+
+        public static let relinkBankActionTitle = NSLocalizedString(
+            "Relink Bank Account",
+            comment: ""
+        )
+    }
+
+    public enum InsufficientFunds {
+        public static let title = NSLocalizedString(
+            "Insufficient Funds",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "The latest balance we fetched indicates you do not have enough funds in your bank account to make this transaction. Please check and try again.",
+            comment: ""
+        )
+    }
+
+    public enum StaleBalance {
+        public static let title = NSLocalizedString(
+            "Stale Balance",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "We could not obtain an updated balance for your bank account. Please try again.",
+            comment: ""
+        )
+    }
+
+    public enum GenericOops {
+        public static let title = NSLocalizedString(
+            "Oops! Something went wrong.",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "We could not complete your transaction. Please try again or choose a different payment method.",
+            comment: ""
+        )
+    }
+
     public static let insufficientFunds = NSLocalizedString(
         "You have insufficient funds in this account to process this transaction",
         comment: ""

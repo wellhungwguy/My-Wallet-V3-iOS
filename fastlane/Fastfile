@@ -1,6 +1,6 @@
 opt_out_usage
 
-DERIVED_DATA_PATH = "~/Library/Developer/Xcode/DerivedData"
+DERIVED_DATA_PATH = "$BITRISE_SOURCE_DIR/DerivedData"
 
 default_platform(:ios)
 platform :ios do

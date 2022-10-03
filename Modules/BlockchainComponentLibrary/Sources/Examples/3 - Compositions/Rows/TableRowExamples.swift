@@ -72,7 +72,8 @@ struct TableRowExamplesView: View {
                 TableRow(
                     leading: { icon },
                     title: "Left Title",
-                    byline: "Left Byline")
+                    byline: "Left Byline"
+                )
                 TableRow(
                     leading: { icon },
                     title: "Left Title",
@@ -86,7 +87,8 @@ struct TableRowExamplesView: View {
                 TableRow(
                     leading: { icon },
                     title: "Left Title",
-                    trailingTitle: "Right Title")
+                    trailingTitle: "Right Title"
+                )
                 TableRow(
                     leading: { icon },
                     title: "Left Title",
@@ -123,7 +125,8 @@ struct TableRowExamplesView: View {
                 )
                 TableRow(
                     leading: { media },
-                    title: "Left Title")
+                    title: "Left Title"
+                )
                 TableRow(
                     leading: { media },
                     title: "Left Title",
@@ -161,7 +164,7 @@ struct TableRowExamplesView: View {
         .apply { view in
             if #available(iOS 15.0, *) {
                 view.alert("(?)", isPresented: $alert) {
-                    Button("OK", role: .cancel) { }
+                    Button("OK", role: .cancel) {}
                 }
             }
         }

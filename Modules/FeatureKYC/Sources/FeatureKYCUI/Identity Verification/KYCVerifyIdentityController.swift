@@ -106,11 +106,11 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     // MARK: - Lifecycle Methods
 
     func startVerification() {
-        self.analyticsRecorder.record(event: Events.preVerificationCTAClicked)
-        self.analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVerifyIdStartButtonClick)
-        switch self.currentProvider {
+        analyticsRecorder.record(event: Events.preVerificationCTAClicked)
+        analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVerifyIdStartButtonClick)
+        switch currentProvider {
         case .veriff:
-            self.presenter.didTapNext()
+            presenter.didTapNext()
         }
     }
 

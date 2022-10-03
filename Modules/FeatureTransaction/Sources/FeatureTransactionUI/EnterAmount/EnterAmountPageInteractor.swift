@@ -702,7 +702,8 @@ extension TransactionState {
              .pendingOrdersLimitReached,
              .unknownError,
              .nabuError,
-             .fatalError:
+             .fatalError,
+             .sourceRequiresUpdate:
             return .invalidInput(.none)
         }
     }

@@ -155,7 +155,9 @@ public final class OpenBanking {
                             return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                         }
                     }
-                    .map((/Action.waitingForConsent).appending(path: /Output.deposited))
+                    .map(
+                        (/Action.waitingForConsent).appending(path: /Output.deposited)
+                    )
                     .catch(Action.failure)
             }
             .catch(Action.failure)

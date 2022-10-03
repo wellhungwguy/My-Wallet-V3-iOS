@@ -44,6 +44,7 @@ enum TransactionErrorState: Equatable, Error {
     case optionInvalid
     case pendingOrdersLimitReached
     case transactionInFlight
+    case sourceRequiresUpdate(String)
     case fatalError(FatalTransactionError)
 }
 

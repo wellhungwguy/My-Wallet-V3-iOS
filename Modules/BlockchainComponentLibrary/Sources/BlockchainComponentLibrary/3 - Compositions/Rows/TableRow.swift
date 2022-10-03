@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Oliver Atkinson on 22/09/2022.
 //
@@ -467,7 +467,7 @@ struct TableRow_Previews: PreviewProvider {
                 title: "Left Title",
                 inlineTitleButton: IconButton(
                     icon: .question.circle().micro(),
-                    action: { }
+                    action: {}
                 ),
                 byline: "Left Byline"
             )
@@ -490,7 +490,8 @@ struct TableRow_Previews: PreviewProvider {
             TableRow(
                 leading: { Icon.placeholder.small() },
                 title: "Left Title",
-                byline: "Left Byline")
+                byline: "Left Byline"
+            )
             TableRow(
                 leading: { Icon.placeholder.small() },
                 title: "Left Title",
@@ -511,7 +512,7 @@ struct TableRow_Previews: PreviewProvider {
                 title: "Left Title",
                 inlineTitleButton: IconButton(
                     icon: .question.circle().micro(),
-                    action: { }
+                    action: {}
                 ),
                 byline: "Left Byline"
             )

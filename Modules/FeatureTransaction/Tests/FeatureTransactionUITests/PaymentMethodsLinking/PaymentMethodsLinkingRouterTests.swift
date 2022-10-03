@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import BlockchainNamespace
 import FeatureCardPaymentDomain
 @testable import FeatureTransactionUI
 import MoneyKit
@@ -16,12 +17,15 @@ final class PaymentMethodLinkingRouterTests: XCTestCase {
     private var router: PaymentMethodLinkingRouter!
     private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var mockPaymentMethodsLinker: MockPaymentMethodsLinker!
+    private var mockApp: AppProtocol!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        mockApp = App.test
         mockFeatureFlagsService = MockFeatureFlagsService()
         mockPaymentMethodsLinker = MockPaymentMethodsLinker()
         router = PaymentMethodLinkingRouter(
+            app: mockApp,
             featureFlagsService: mockFeatureFlagsService,
             paymentMethodsLinker: mockPaymentMethodsLinker,
             bankAccountLinker: mockPaymentMethodsLinker,

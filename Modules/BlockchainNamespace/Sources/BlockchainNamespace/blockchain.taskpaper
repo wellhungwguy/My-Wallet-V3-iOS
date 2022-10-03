@@ -308,6 +308,8 @@ blockchain:
 				post:
 					sign:
 						up:
+			plaid:
+				oauth_token:
 			qr:
 			referral:
 			send:
@@ -1392,6 +1394,36 @@ blockchain:
 							authorised:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.state.value
+				plaid:
+					event:
+						finished:
+						+ blockchain.ux.type.action
+						receive:
+							OAuth:
+								token:
+								+ blockchain.db.type.string
+							link:
+								token:
+								+ blockchain.db.type.string
+							success:
+								id:
+								+ blockchain.db.type.string
+								token:
+								+ blockchain.db.type.string
+						update:
+							account_id:
+							+ blockchain.db.type.string
+							finished:
+					is:
+						available:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+						linking:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
 		prices:
 		+ blockchain.ux.type.story
 		referral:
@@ -1423,6 +1455,12 @@ blockchain:
 							enter:
 								amount:
 				reset:
+				select:
+					payment:
+						method:
+						+ blockchain.ux.type.action
+							id:
+							+ blockchain.db.type.string
 				show:
 					wire:
 						transfer:

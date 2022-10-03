@@ -145,6 +145,12 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             return .none
         }
 
+        if environment.app.state.yes(
+            if: blockchain.ux.payment.method.plaid.is.linking
+        ) {
+            return .none
+        }
+
         return .merge(
             .fireAndForget {
                 environment.walletStateProvider.releaseState()

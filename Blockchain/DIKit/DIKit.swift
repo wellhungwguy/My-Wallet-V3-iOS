@@ -32,6 +32,9 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeaturePlaidData
+import FeaturePlaidDomain
+import FeaturePlaidUI
 import FeatureProductsData
 import FeatureProductsDomain
 import FeatureReferralData
@@ -473,6 +476,18 @@ extension DependencyContainer {
                 network: adapter.network
             )
             return OpenBanking(app: DIKit.resolve(), banking: client)
+        }
+
+        // MARK: FeaturePlaid
+
+        factory { () -> PlaidRepositoryAPI in
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let client = PlaidClient(
+                networkAdapter: adapter,
+                requestBuilder: builder
+            )
+            return PlaidRepository(client: client)
         }
 
         // MARK: Coin View

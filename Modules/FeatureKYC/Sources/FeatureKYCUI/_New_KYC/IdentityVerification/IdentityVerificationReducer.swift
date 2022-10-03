@@ -38,7 +38,7 @@ enum IdentityVerification {
             switch result {
             case .success(let documents):
                 state.documentTypes = documents
-                    .sorted { $0.order <  $1.order }
+                    .sorted { $0.order < $1.order }
             case .failure(let error):
                 Logger.shared.error("\(error)")
                 environment.analyticsRecorder.record(

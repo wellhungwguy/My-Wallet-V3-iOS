@@ -1,16 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Errors
 import MoneyKit
 import ToolKit
-
-@available(*, deprecated, message: "This should not be used when new quote model becomes stable")
-struct OldQuoteResponse: Decodable {
-    let time: String
-    let rate: String
-    let rateWithoutFee: String
-    let fee: String
-}
 
 struct QuoteResponse: Decodable {
     struct FeeDetails: Decodable {
@@ -21,16 +14,6 @@ struct QuoteResponse: Decodable {
         let feeWithoutPromo: String
         let fee: String
         let feeFlags: [FeeFlag]
-    }
-
-    struct SettlementDetails: Decodable {
-        enum AvailabilityType: String, Decodable {
-            case instant = "INSTANT"
-            case regular = "REGULAR"
-            case unavailable = "UNAVAILABLE"
-        }
-
-        let availability: AvailabilityType
     }
 
     let quoteId: String
@@ -46,6 +29,25 @@ struct QuoteResponse: Decodable {
     let feeDetails: FeeDetails
     let settlementDetails: SettlementDetails
     let sampleDepositAddress: String?
+}
+
+public struct SettlementDetails: Decodable {
+    public enum AvailabilityType: String, Decodable {
+        case instant = "INSTANT"
+        case regular = "REGULAR"
+        case unavailable = "UNAVAILABLE"
+    }
+
+    public enum ReasonType: String, Decodable {
+        case requiresUpdate = "REQUIRES_UPDATE"
+        case insufficientBalance = "INSUFFICIENT_BALANCE"
+        case staleBalance = "STALE_BALANCE"
+        case generic = "GENERIC"
+    }
+
+    public let availability: AvailabilityType
+    public let reason: ReasonType?
+    public let ux: UX.Dialog?
 }
 
 public struct Quote {
@@ -68,6 +70,7 @@ public struct Quote {
     public let rate: MoneyValue
     public let estimatedDestinationAmount: MoneyValue
     public let estimatedSourceAmount: MoneyValue
+    public let settlementDetails: SettlementDetails
 
     private let dateFormatter = DateFormatter.sessionDateFormat
 
@@ -80,6 +83,7 @@ public struct Quote {
         response: QuoteResponse
     ) throws {
         quoteId = response.quoteId
+        settlementDetails = response.settlementDetails
 
         // formatting dates
         guard let quoteCreatedDate = dateFormatter.date(from: response.quoteCreatedAt),

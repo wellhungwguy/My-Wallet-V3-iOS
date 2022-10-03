@@ -5,6 +5,7 @@ import Combine
 import DIKit
 import Errors
 import FeatureOpenBankingDomain
+import FeaturePlaidDomain
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -36,6 +37,8 @@ final class BuyTransactionEngine: TransactionEngine {
     private let transactionLimitsService: TransactionLimitsServiceAPI
     // Used to fetch the user KYC status and adjust limits for Tier 0 and Tier 1 users to let them enter a transaction irrespective of limits
     private let kycTiersService: KYCTiersServiceAPI
+    // Used to fetch account statuses via settlement API
+    private let plaidRepository: PlaidRepositoryAPI
 
     // Used as a workaround to show the correct total fee to the user during checkout.
     // This won't be needed anymore once we migrate the quotes API to v2
@@ -50,7 +53,8 @@ final class BuyTransactionEngine: TransactionEngine {
         orderConfirmationService: OrderConfirmationServiceAPI = resolve(),
         orderCancellationService: OrderCancellationServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        plaidRepository: PlaidRepositoryAPI = resolve()
     ) {
         self.app = app
         self.currencyConversionService = currencyConversionService
@@ -61,6 +65,7 @@ final class BuyTransactionEngine: TransactionEngine {
         self.orderCancellationService = orderCancellationService
         self.transactionLimitsService = transactionLimitsService
         self.kycTiersService = kycTiersService
+        self.plaidRepository = plaidRepository
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -124,12 +129,42 @@ final class BuyTransactionEngine: TransactionEngine {
             .observe(on: MainScheduler.asyncInstance)
     }
 
+    private func validateSourceBankAccountStatus(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        guard let sourceAccount = sourceAccount as? PlatformKit.LinkedBankAccount else {
+            return .error(TransactionValidationFailure(state: .optionInvalid))
+        }
+        guard app.state.yes(if: blockchain.ux.payment.method.plaid.is.available) else {
+            return .just(pendingTransaction)
+        }
+        let accountId = sourceAccount.accountId
+        return plaidRepository
+            .getSettlementInfo(
+                accountId: accountId,
+                amount: pendingTransaction.amount.minorString
+            )
+            .asSingle()
+            .flatMap { info in
+                if let ux = info.error {
+                    return .error(UX.Error(nabu: ux))
+                }
+                if let ux = info.settlement.reason?.uxError(accountId) {
+                    return .error(ux)
+                }
+                return .just(pendingTransaction)
+            }
+    }
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateIfSourceAccountIsBlocked(pendingTransaction)
             .flatMap(weak: self) { (self, pendingTransaction) in
-                self.validateAmount(pendingTransaction: pendingTransaction)
-                    .updateTxValiditySingle(pendingTransaction: pendingTransaction)
+                self.validateSourceBankAccountStatus(pendingTransaction: pendingTransaction)
             }
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                self.validateAmount(pendingTransaction: pendingTransaction)
+            }
+            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
             .observe(on: MainScheduler.asyncInstance)
     }
 

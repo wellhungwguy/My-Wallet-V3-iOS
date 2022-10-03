@@ -63,6 +63,8 @@ extension TransactionErrorState {
             text = Localization.fatalErrorShort
         case .nabuError:
             text = Localization.nextworkErrorShort
+        case .sourceRequiresUpdate:
+            text = ""
         }
         return text
     }
@@ -153,6 +155,8 @@ extension TransactionErrorState {
         case .transactionInFlight:
             text = Localization.transactionInFlight
         case .unknownError:
+            text = nil
+        case .sourceRequiresUpdate:
             text = nil
         }
         return text
