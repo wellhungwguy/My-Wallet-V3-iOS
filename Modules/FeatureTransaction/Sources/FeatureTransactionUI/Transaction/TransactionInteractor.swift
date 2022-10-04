@@ -220,7 +220,7 @@ final class TransactionInteractor {
                 .map { $0 }
         case .sell:
             return
-                coincore.allAccounts(filter: .all)
+                coincore.allAccounts(filter: .allExcludingExchange)
                 .map(\.accounts)
                 .map {
                     $0.compactMap { account in
@@ -407,7 +407,7 @@ extension AppMode {
     fileprivate var sourceAccountFilter: AssetFilter {
         switch self {
         case .universal:
-            return .all
+            return .allExcludingExchange
         case .trading:
             return .custodial
         case .pkw:

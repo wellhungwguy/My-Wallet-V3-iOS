@@ -251,7 +251,7 @@ let rootViewReducer = Reducer<
 
         let totalsPublishers = Publishers.CombineLatest3(
             environment
-                .fetchTotalBalance(filter: .all),
+                .fetchTotalBalance(filter: .allExcludingExchange),
             environment
                 .fetchTotalBalance(filter: .nonCustodial),
             environment

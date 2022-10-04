@@ -71,7 +71,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         currencyType: CurrencyType
     ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .map(\.accounts)
             .map { $0.filter { $0.currencyType == currencyType } }
             .eraseError()
@@ -86,7 +86,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         target: BlockchainAccount
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .map(\.accounts)
             .eraseError()
             .flatMapFilter(action: assetAction)
@@ -99,7 +99,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         _ currency: CurrencyType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .map { $0.accounts.filter { $0.currencyType == currency } }
             .mapError(BlockchainAccountRepositoryError.coinCoreError)
             .eraseToAnyPublisher()
@@ -109,7 +109,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         _ accountType: SingleAccountType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .map(\.accounts)
             .map { accounts in
                 accounts.filter { account in
@@ -136,7 +136,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         switch currency {
         case .fiat:
             return coincore.fiatAsset
-                .accountGroup(filter: .all)
+                .accountGroup(filter: .allExcludingExchange)
                 .compactMap { $0 }
                 .map(\.accounts)
                 .map { accounts in
@@ -199,7 +199,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
 
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .asSingle()
             .map { $0.accounts.filter { $0.currencyType == currency } }
             .catchAndReturn([])
@@ -207,7 +207,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
 
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
-            .allAccounts(filter: .all)
+            .allAccounts(filter: .allExcludingExchange)
             .asSingle()
             .map(\.accounts)
             .map { accounts in
@@ -232,7 +232,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
         switch currency {
         case .fiat:
             return coincore.fiatAsset
-                .accountGroup(filter: .all)
+                .accountGroup(filter: .allExcludingExchange)
                 .compactMap { $0 }
                 .map(\.accounts)
                 .map { accounts in

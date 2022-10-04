@@ -196,7 +196,7 @@ extension Publisher where Output == AccountGroup, Failure == Error {
 extension CoincoreAPI {
     public func cryptoAccounts(
         supporting action: AssetAction? = nil,
-        filter: AssetFilter = .all
+        filter: AssetFilter = .allExcludingExchange
     ) -> AnyPublisher<[CryptoAccount], Error> {
         allAssets
             .map { asset in
@@ -216,7 +216,7 @@ extension CoincoreAPI {
     public func cryptoAccounts(
         for cryptoCurrency: CryptoCurrency,
         supporting action: AssetAction? = nil,
-        filter: AssetFilter = .all
+        filter: AssetFilter = .allExcludingExchange
     ) -> AnyPublisher<[CryptoAccount], Error> {
         let asset = self[cryptoCurrency]
         return asset.accountGroup(filter: filter)
@@ -253,13 +253,13 @@ extension CoincoreAPI {
         let accountsPublisher: AnyPublisher<[SingleAccount], Error>
         switch assetType {
         case .all:
-            accountsPublisher = allAccounts(filter: .all)
+            accountsPublisher = allAccounts(filter: .allExcludingExchange)
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()
         case .fiat:
             accountsPublisher = fiatAsset
-                .accountGroup(filter: .all)
+                .accountGroup(filter: .allExcludingExchange)
                 .compactMap { $0 }
                 .map(\.accounts)
                 .eraseError()
@@ -278,13 +278,13 @@ extension CoincoreAPI {
         let accountsPublisher: AnyPublisher<[SingleAccount], Error>
         switch assetType {
         case .all:
-            accountsPublisher = allAccounts(filter: .all)
+            accountsPublisher = allAccounts(filter: .allExcludingExchange)
                 .map(\.accounts)
                 .eraseError()
                 .eraseToAnyPublisher()
         case .fiat:
             accountsPublisher = fiatAsset
-                .accountGroup(filter: .all)
+                .accountGroup(filter: .allExcludingExchange)
                 .compactMap { $0 }
                 .map(\.accounts)
                 .eraseError()
