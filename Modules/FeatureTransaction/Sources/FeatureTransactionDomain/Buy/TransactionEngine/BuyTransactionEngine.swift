@@ -132,13 +132,13 @@ final class BuyTransactionEngine: TransactionEngine {
     private func validateSourceBankAccountStatus(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        guard let sourceAccount = sourceAccount as? PlatformKit.LinkedBankAccount else {
+        guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
         }
         guard app.state.yes(if: blockchain.ux.payment.method.plaid.is.available) else {
             return .just(pendingTransaction)
         }
-        let accountId = sourceAccount.accountId
+        let accountId: String = sourceAccount.paymentMethodType.id
         return plaidRepository
             .getSettlementInfo(
                 accountId: accountId,
