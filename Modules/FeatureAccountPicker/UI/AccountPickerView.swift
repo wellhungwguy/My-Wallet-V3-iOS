@@ -20,6 +20,7 @@ public struct AccountPickerView<
     @ViewBuilder let iconView: (AnyHashable) -> IconView
     @ViewBuilder let multiBadgeView: (AnyHashable) -> MultiBadgeView
     @ViewBuilder let withdrawalLocksView: () -> WithdrawalLocksView
+    @ObservedObject var viewStore: ViewStore<AccountPickerState, AccountPickerAction>
 
     // MARK: - Private properties
 
@@ -35,6 +36,7 @@ public struct AccountPickerView<
         @ViewBuilder withdrawalLocksView: @escaping () -> WithdrawalLocksView
     ) {
         self.store = store
+        viewStore = ViewStore(store)
         self.badgeView = badgeView
         self.iconView = iconView
         self.multiBadgeView = multiBadgeView
@@ -104,6 +106,7 @@ public struct AccountPickerView<
     struct HeaderScope: Equatable {
         var header: AccountPickerState.HeaderState
         var selected: AnyHashable?
+        var toggled: AnyHashable?
     }
 
     @ViewBuilder func contentView(
@@ -117,7 +120,11 @@ public struct AccountPickerView<
                         get: { viewStore.header.searchText },
                         set: { viewStore.send(.search($0)) }
                     ),
-                    isSearching: $isSearching
+                    isSearching: $isSearching,
+                    toggleIsOn: Binding<Bool>(
+                        get: { viewStore.header.toggleIsOn },
+                        set: { viewStore.send(.onToggleSwitch($0)) }
+                    )
                 )
                 .onChange(of: viewStore.selected) { _ in
                     isSearching = false
@@ -148,6 +155,12 @@ public struct AccountPickerView<
                                 .onAppear {
                                     ViewStore(store)
                                         .send(.prefetching(.onAppear(index: index)))
+                                }
+                                .onChange(of: self.viewStore.header.toggleIsOn) { _ in
+                                    let indices = Set(viewStore.content.indices)
+                                    ViewStore(store)
+                                        .send(.prefetching(.requeue(indices: indices))
+                                    )
                                 }
                             }
                         }
@@ -247,7 +260,7 @@ struct AccountPickerView_Previews: PreviewProvider {
             subtitle: "Choose a Wallet to send cypto from.",
             image: ImageAsset.iconSend.image,
             tableTitle: "Select a Wallet",
-            searchable: false
+            searchable: true
         ),
         searchText: nil
     )
@@ -274,7 +287,8 @@ struct AccountPickerView_Previews: PreviewProvider {
                     sections: { Just(Array(accountPickerRowList)).eraseToAnyPublisher() },
                     updateSingleAccounts: { _ in .just([:]) },
                     updateAccountGroups: { _ in .just([:]) },
-                    header: { Just(header.headerStyle).setFailureType(to: Error.self).eraseToAnyPublisher() }
+                    header: { Just(header.headerStyle).setFailureType(to: Error.self).eraseToAnyPublisher() },
+                    onSwitchChanged: { _ in }
                 )
             ),
             badgeView: { _ in EmptyView() },

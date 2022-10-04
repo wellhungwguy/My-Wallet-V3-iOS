@@ -7,7 +7,9 @@ public enum HeaderStyle: Equatable {
     case none
     case simple(
         subtitle: String,
-        searchable: Bool
+        searchable: Bool,
+        switchable: Bool,
+        switchTitle: String?
     )
     case normal(
         title: String,

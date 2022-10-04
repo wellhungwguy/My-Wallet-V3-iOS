@@ -25,6 +25,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
     // MARK: - Private Properties
 
     private let searchRelay: PublishRelay<String?> = .init()
+    private let accountFilterRelay: PublishRelay<AccountType?> = .init()
+
     private let accountProvider: AccountPickerAccountProviding
     private let didSelect: AccountPickerDidSelect?
     private let disposeBag = DisposeBag()
@@ -32,6 +34,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
     private let app: AppProtocol
     private let priceRepository: PriceRepositoryAPI
+    private let initialAccountTypeFilter: AccountType?
 
     // MARK: - Init
 
@@ -40,11 +43,13 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
         accountProvider: AccountPickerAccountProviding,
         listener: AccountPickerListenerBridge,
         app: AppProtocol = resolve(),
-        priceRepository: PriceRepositoryAPI = resolve(tag: DIKitPriceContext.volume)
+        priceRepository: PriceRepositoryAPI = resolve(tag: DIKitPriceContext.volume),
+        initialAccountTypeFilter: AccountType?
     ) {
         self.app = app
         self.priceRepository = priceRepository
         self.accountProvider = accountProvider
+        self.initialAccountTypeFilter = initialAccountTypeFilter
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -76,20 +81,31 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             .distinctUntilChanged()
             .debounce(.milliseconds(350), scheduler: MainScheduler.asyncInstance)
 
+        let accountFilterObservable = accountFilterRelay.asObservable()
+            .startWith(initialAccountTypeFilter)
+            .distinctUntilChanged()
+
         let interactorState: Driver<State> = Observable
             .combineLatest(
                 accountProvider.accounts.flatMap { [app, priceRepository] accounts in
                     accounts.snapshot(app: app, priceRepository: priceRepository).asObservable()
                 },
-                searchObservable
+                searchObservable,
+                accountFilterObservable
             )
-            .map { [button] accounts, searchString -> State in
+            .map { [button] accounts, searchString, accountFilter -> State in
                 let isFiltering = searchString
                     .flatMap { !$0.isEmpty } ?? false
 
                 var interactors = accounts
                     .filter { snapshot in
                         snapshot.account.currencyType.matchSearch(searchString)
+                    }
+                    .filter { snapshot in
+                        guard let filter = accountFilter else {
+                            return true
+                        }
+                        return snapshot.account.accountType == filter
                     }
                     .sorted(by: >)
                     .map(\.account)
@@ -128,6 +144,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             listener?.didTapClose()
         case .filter(let string):
             searchRelay.accept(string)
+        case .accountFilter(let filter):
+            accountFilterRelay.accept(filter)
         case .button:
             listener?.didSelectActionButton()
         case .ux(let ux):
@@ -151,6 +169,7 @@ extension AccountPickerInteractor {
         case closed
         case ux(UX.Dialog)
         case filter(String?)
+        case accountFilter(AccountType?)
         case button
         case none
     }

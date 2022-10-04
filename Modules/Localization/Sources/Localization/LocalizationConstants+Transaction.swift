@@ -618,6 +618,10 @@ extension LocalizationConstants.Transaction.Swap {
         "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
         comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
     )
+    public static let tradingAccountsSwitchTitle = NSLocalizedString(
+        "Show Trading Accounts",
+        comment: "Show Trading Accounts"
+    )
 }
 
 // MARK: - Interest Withdraw

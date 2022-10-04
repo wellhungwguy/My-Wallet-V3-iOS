@@ -773,7 +773,10 @@ extension TransactionFlowRouter {
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(
+                subtitle: subtitle,
+                searchable: isSearchEnabled
+            )),
             buttonViewModel: button
         )
     }
@@ -795,12 +798,24 @@ extension TransactionFlowRouter {
         )
         let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
         let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let switchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.switch.pkw.is.enabled)
+
         let isSearchEnabled = action == .swap && searchable
+        let isSwitchEnabled = action == .swap && app.currentMode == .pkw && switchable
+        let switchTitle = isSwitchEnabled ? Localization.Swap.tradingAccountsSwitchTitle : nil
+        let initialAccountTypeFilter: AccountType? = app.currentMode == .pkw ? .nonCustodial : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
-            buttonViewModel: button
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(
+                subtitle: subtitle,
+                searchable: isSearchEnabled,
+                switchable: isSwitchEnabled,
+                switchTitle: switchTitle
+            )
+            ),
+            buttonViewModel: button,
+            initialAccountTypeFilter: initialAccountTypeFilter
         )
     }
 }

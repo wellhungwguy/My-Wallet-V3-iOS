@@ -38,6 +38,7 @@ extension AccountPickerState {
     struct HeaderState: Equatable {
         var headerStyle: HeaderStyle
         var searchText: String?
+        var toggleIsOn: Bool = false
     }
 }
 

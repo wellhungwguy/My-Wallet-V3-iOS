@@ -15,11 +15,13 @@ public struct AccountPickerHeaderModel: Equatable {
     public let tableTitle: String?
     public let title: String
     public let searchable: Bool
+    public let switchable: Bool
+    public let switchTitle: String?
 
     // MARK: Properties
 
     var height: CGFloat {
-        searchable ? 184 : 144
+        searchable || switchable ? 184 : 144
     }
 
     var titleLabel: LabelContent {
@@ -55,6 +57,8 @@ public struct AccountPickerHeaderModel: Equatable {
     public init(
         imageContent: ImageViewContent,
         searchable: Bool = false,
+        switchable: Bool = false,
+        switchTitle: String? = nil,
         subtitle: String,
         tableTitle: String? = LocalizedString.selectAWallet,
         title: String
@@ -64,5 +68,7 @@ public struct AccountPickerHeaderModel: Equatable {
         self.subtitle = subtitle
         self.tableTitle = tableTitle
         self.title = title
+        self.switchable = switchable
+        self.switchTitle = switchTitle
     }
 }

@@ -123,7 +123,8 @@ class AccountPickerViewTests: XCTestCase {
                     sections: { .just([]).eraseToAnyPublisher() },
                     updateSingleAccounts: { _ in .just([:]) },
                     updateAccountGroups: { _ in .just([:]) },
-                    header: { [unowned self] in .just(header).eraseToAnyPublisher() }
+                    header: { [unowned self] in .just(header).eraseToAnyPublisher() },
+                    onSwitchChanged: { _ in }
                 )
             ),
             badgeView: { _ in EmptyView() },

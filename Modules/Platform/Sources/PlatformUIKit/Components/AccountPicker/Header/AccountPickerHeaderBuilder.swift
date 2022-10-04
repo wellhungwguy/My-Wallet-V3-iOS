@@ -19,9 +19,9 @@ public struct AccountPickerHeaderBuilder {
         case .none:
             return false
         case .simple(let model):
-            return model.searchable
+            return model.searchable || model.switchable
         case .default(let model):
-            return model.searchable
+            return model.searchable || model.switchable
         }
     }
 

@@ -1027,6 +1027,7 @@ public final class L_blockchain_app_configuration_swap: L, I_blockchain_app_conf
 public protocol I_blockchain_app_configuration_swap: I {}
 public extension I_blockchain_app_configuration_swap {
 	var `search`: L_blockchain_app_configuration_swap_search { .init("\(__).search") }
+	var `switch`: L_blockchain_app_configuration_swap_switch { .init("\(__).switch") }
 }
 public final class L_blockchain_app_configuration_swap_search: L, I_blockchain_app_configuration_swap_search {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.search", comment: "") }
@@ -1046,6 +1047,31 @@ public final class L_blockchain_app_configuration_swap_search_is_enabled: L, I_b
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.search.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_swap_search_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_swap_switch: L, I_blockchain_app_configuration_swap_switch {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.switch", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_switch: I {}
+public extension I_blockchain_app_configuration_swap_switch {
+	var `pkw`: L_blockchain_app_configuration_swap_switch_pkw { .init("\(__).pkw") }
+}
+public final class L_blockchain_app_configuration_swap_switch_pkw: L, I_blockchain_app_configuration_swap_switch_pkw {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.switch.pkw", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_switch_pkw: I {}
+public extension I_blockchain_app_configuration_swap_switch_pkw {
+	var `is`: L_blockchain_app_configuration_swap_switch_pkw_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_swap_switch_pkw_is: L, I_blockchain_app_configuration_swap_switch_pkw_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.switch.pkw.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_switch_pkw_is: I {}
+public extension I_blockchain_app_configuration_swap_switch_pkw_is {
+	var `enabled`: L_blockchain_app_configuration_swap_switch_pkw_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_swap_switch_pkw_is_enabled: L, I_blockchain_app_configuration_swap_switch_pkw_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.swap.switch.pkw.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_swap_switch_pkw_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_tabs: L, I_blockchain_app_configuration_tabs {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.tabs", comment: "") }
 }
