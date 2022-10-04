@@ -5246,6 +5246,7 @@ public protocol I_blockchain_ux_payment_method_plaid_event: I {}
 public extension I_blockchain_ux_payment_method_plaid_event {
 	var `finished`: L_blockchain_ux_payment_method_plaid_event_finished { .init("\(__).finished") }
 	var `receive`: L_blockchain_ux_payment_method_plaid_event_receive { .init("\(__).receive") }
+	var `reload`: L_blockchain_ux_payment_method_plaid_event_reload { .init("\(__).reload") }
 	var `update`: L_blockchain_ux_payment_method_plaid_event_update { .init("\(__).update") }
 }
 public final class L_blockchain_ux_payment_method_plaid_event_finished: L, I_blockchain_ux_payment_method_plaid_event_finished {
@@ -5299,22 +5300,28 @@ public final class L_blockchain_ux_payment_method_plaid_event_receive_success_to
 	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.receive.success.token", comment: "") }
 }
 public protocol I_blockchain_ux_payment_method_plaid_event_receive_success_token: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_payment_method_plaid_event_reload: L, I_blockchain_ux_payment_method_plaid_event_reload {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.reload", comment: "") }
+}
+public protocol I_blockchain_ux_payment_method_plaid_event_reload: I {}
+public extension I_blockchain_ux_payment_method_plaid_event_reload {
+	var `linked_banks`: L_blockchain_ux_payment_method_plaid_event_reload_linked__banks { .init("\(__).linked_banks") }
+}
+public final class L_blockchain_ux_payment_method_plaid_event_reload_linked__banks: L, I_blockchain_ux_payment_method_plaid_event_reload_linked__banks {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.reload.linked_banks", comment: "") }
+}
+public protocol I_blockchain_ux_payment_method_plaid_event_reload_linked__banks: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_payment_method_plaid_event_update: L, I_blockchain_ux_payment_method_plaid_event_update {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.update", comment: "") }
 }
 public protocol I_blockchain_ux_payment_method_plaid_event_update: I {}
 public extension I_blockchain_ux_payment_method_plaid_event_update {
 	var `account_id`: L_blockchain_ux_payment_method_plaid_event_update_account__id { .init("\(__).account_id") }
-	var `finished`: L_blockchain_ux_payment_method_plaid_event_update_finished { .init("\(__).finished") }
 }
 public final class L_blockchain_ux_payment_method_plaid_event_update_account__id: L, I_blockchain_ux_payment_method_plaid_event_update_account__id {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.update.account_id", comment: "") }
 }
 public protocol I_blockchain_ux_payment_method_plaid_event_update_account__id: I_blockchain_db_type_string {}
-public final class L_blockchain_ux_payment_method_plaid_event_update_finished: L, I_blockchain_ux_payment_method_plaid_event_update_finished {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.event.update.finished", comment: "") }
-}
-public protocol I_blockchain_ux_payment_method_plaid_event_update_finished: I {}
 public final class L_blockchain_ux_payment_method_plaid_is: L, I_blockchain_ux_payment_method_plaid_is {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.payment.method.plaid.is", comment: "") }
 }

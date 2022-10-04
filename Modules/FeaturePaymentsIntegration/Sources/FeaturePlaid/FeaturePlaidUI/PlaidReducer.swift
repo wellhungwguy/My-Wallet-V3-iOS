@@ -75,8 +75,8 @@ extension PlaidModule {
                                 )
                             )
                         } catch {
-                            // This should not happen
-                            return .finishedWithError(nil)
+                            // User dismissed the flow
+                            return .finished(success: false)
                         }
                     }
 
@@ -112,6 +112,9 @@ extension PlaidModule {
                 return .merge(
                     .fireAndForget {
                         // Update the transaction source
+                        environment.app.post(
+                            event: blockchain.ux.payment.method.plaid.event.reload.linked_banks
+                        )
                         environment.app.post(
                             event: blockchain.ux.transaction.action.select.payment.method,
                             context: [

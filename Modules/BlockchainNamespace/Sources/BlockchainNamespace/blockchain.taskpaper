@@ -1410,10 +1410,12 @@ blockchain:
 								+ blockchain.db.type.string
 								token:
 								+ blockchain.db.type.string
+						reload:
+							linked_banks:
+							+ blockchain.ux.type.action
 						update:
 							account_id:
 							+ blockchain.db.type.string
-							finished:
 					is:
 						available:
 						+ blockchain.db.type.boolean

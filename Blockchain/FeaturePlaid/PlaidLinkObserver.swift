@@ -3,6 +3,7 @@ import Combine
 import DIKit
 import FeaturePlaidUI
 import LinkKit
+import PlatformKit
 import SwiftUI
 import UIComponentsKit
 import UIKit
@@ -22,14 +23,20 @@ public final class PlaidLinkObserver: Session.Observer {
     unowned let app: AppProtocol
     private var handler: LinkKit.Handler?
     private let topViewController: TopMostViewControllerProviding
+    private let linkedBankService: LinkedBanksServiceAPI
+    private let beneficiariesService: BeneficiariesServiceAPI
 
     private var cancellables: Set<AnyCancellable> = []
 
     public init(
         app: AppProtocol,
+        linkedBankService: LinkedBanksServiceAPI = DIKit.resolve(),
+        beneficiariesService: BeneficiariesServiceAPI = DIKit.resolve(),
         topViewController: TopMostViewControllerProviding = DIKit.resolve()
     ) {
         self.app = app
+        self.linkedBankService = linkedBankService
+        self.beneficiariesService = beneficiariesService
         self.topViewController = topViewController
     }
 
@@ -37,7 +44,8 @@ public final class PlaidLinkObserver: Session.Observer {
         [
             linkTokenReiceived,
             oauthTokenReceived,
-            accountRequiresUpdateReceived
+            accountRequiresUpdateReceived,
+            reloadLinkedBanksReceived
         ]
     }
 
@@ -60,22 +68,33 @@ public final class PlaidLinkObserver: Session.Observer {
     }
 
     private lazy var linkTokenReiceived = app.on(
-            blockchain.ux.payment.method.plaid.event.receive.link.token
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(to: PlaidLinkObserver.presentLinkToken(_:), on: self)
+        blockchain.ux.payment.method.plaid.event.receive.link.token
+    )
+    .receive(on: DispatchQueue.main)
+    .sink(to: PlaidLinkObserver.presentLinkToken(_:), on: self)
 
     private lazy var oauthTokenReceived = app.on(
-            blockchain.ux.payment.method.plaid.event.receive.OAuth.token
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(to: PlaidLinkObserver.handlePlaidOauthToken(_:), on: self)
+        blockchain.ux.payment.method.plaid.event.receive.OAuth.token
+    )
+    .receive(on: DispatchQueue.main)
+    .sink(to: PlaidLinkObserver.handlePlaidOauthToken(_:), on: self)
 
     private lazy var accountRequiresUpdateReceived = app.on(
-            blockchain.ux.payment.method.plaid.event.update.account_id
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(to: PlaidLinkObserver.presentUpdateFlow(_:), on: self)
+        blockchain.ux.payment.method.plaid.event.update.account_id
+    )
+    .receive(on: DispatchQueue.main)
+    .sink(to: PlaidLinkObserver.presentUpdateFlow(_:), on: self)
+
+    private lazy var reloadLinkedBanksReceived = app.on(
+        blockchain.ux.payment.method.plaid.event.reload.linked_banks
+    )
+    .receive(on: DispatchQueue.main)
+    .sink(to: PlaidLinkObserver.reloadLinkedBanks, on: self)
+
+    func reloadLinkedBanks() {
+        linkedBankService.invalidate()
+        beneficiariesService.invalidate()
+    }
 
     func presentLinkToken(_ event: Session.Event) {
         guard let token = try? event.context.decode(
