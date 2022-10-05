@@ -2,20 +2,22 @@
 
 import BlockchainNamespace
 import Combine
+import XCTest
+
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
 @testable import FeatureAuthenticationMock
 @testable import NetworkKit
 @testable import ToolKitMock
-import XCTest
+@testable import WalletPayloadDataKit
+@testable import WalletPayloadKit
 
-// swiftlint:disable type_body_length
 final class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
     private var store: NabuTokenRepositoryAPI!
     private var errorBroadcaster: MockUserAlreadyRestoredHandler!
-    private var walletRepository: MockWalletRepository!
+    private var walletRepo: WalletRepo!
     private var nabuOfflineTokenRepo: MockNabuOfflineTokenRepository!
     private var nabuRepository: MockNabuRepository!
     private var nabuUserEmailProvider: NabuUserEmailProvider = { .just("abcd@abcd.com") }
@@ -24,6 +26,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
     private var siftService: MockSiftService!
     private var checkAuthenticated: CheckAuthenticated = { _ in .just(true) }
     private var subject: NabuAuthenticationExecutorAPI!
+    private var credentialsRepository: CredentialsRepository!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -32,7 +35,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         store = NabuTokenRepository()
         errorBroadcaster = MockUserAlreadyRestoredHandler()
         nabuRepository = MockNabuRepository()
-        walletRepository = MockWalletRepository()
+        walletRepo = WalletRepo(initialState: .empty)
         nabuOfflineTokenRepo = MockNabuOfflineTokenRepository()
         deviceInfo = MockDeviceInfo(
             systemVersion: "1.2.3",
@@ -41,6 +44,16 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         )
         jwtService = JWTServiceMock()
         siftService = MockSiftService()
+        credentialsRepository = CredentialsRepository(
+            guidRepository: GuidRepository(
+                legacyGuidRepository: MockLegacyGuidRepository(),
+                walletRepo: walletRepo
+            ),
+            sharedKeyRepository: SharedKeyRepository(
+                legacySharedKeyRepository: MockLegacySharedKeyRepository(),
+                walletRepo: walletRepo
+            )
+        )
         subject = NabuAuthenticationExecutor(
             app: App.test,
             store: store,
@@ -50,7 +63,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             siftService: siftService,
             checkAuthenticated: checkAuthenticated,
             jwtService: jwtService,
-            credentialsRepository: walletRepository,
+            credentialsRepository: credentialsRepository,
             nabuOfflineTokenRepository: nabuOfflineTokenRepo,
             deviceInfo: deviceInfo
         )
@@ -63,14 +76,13 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         store = nil
         siftService = nil
         jwtService = nil
-        walletRepository = nil
+        walletRepo = nil
         deviceInfo = nil
         subject = nil
 
         try super.tearDownWithError()
     }
 
-    // swiftlint:disable function_body_length
     func testSuccessfulAuthenticationWhenUserIsAlreadyCreated() throws {
 
         // Arrange
@@ -82,23 +94,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         )
 
         jwtService.expectedResult = .success("jwt-token")
-
-        let offlineTokenResponseSetExpectation = expectation(
-            description: "The offline token was set successfully"
-        )
-        walletRepository
-            .set(
-                offlineToken: offlineToken
-            )
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    offlineTokenResponseSetExpectation.fulfill()
-                case .failure(let error):
-                    XCTFail("Failed to set the offlineToken error: \(error)")
-                }
-            }, receiveValue: { _ in })
-            .store(in: &cancellables)
 
         nabuRepository.expectedOfflineToken = .success(offlineToken)
         nabuRepository.expectedSessionToken = .success(
@@ -114,10 +109,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
-        walletRepository
-            .set(
-                guid: "guid"
-            )
+        walletRepo.set(keyPath: \.credentials.guid, value: "guid")
+            .get()
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -131,10 +124,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
-        walletRepository
-            .set(
-                sharedKey: "shared-key"
-            )
+        walletRepo.set(keyPath: \.credentials.sharedKey, value: "sharedKey")
+            .get()
             .sink(receiveCompletion: { completion in
                 switch completion {
                 case .finished:
@@ -147,7 +138,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
 
         wait(
             for: [
-                offlineTokenResponseSetExpectation,
                 guidSetExpectation,
                 sharedKeySetExpectation
             ],
@@ -204,7 +194,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         )
     }
 
-    // swiftlint:disable function_body_length
     func testSuccessfulAuthenticationWhenUserIsNotCreated() throws {
 
         // Arrange
@@ -230,10 +219,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
-        walletRepository
-            .set(
-                guid: "guid"
-            )
+        walletRepo.set(keyPath: \.credentials.guid, value: "guid")
+            .get()
             .sink(receiveCompletion: { completion in
                 guard case .finished = completion else {
                     XCTFail("failed to set the guid")
@@ -246,10 +233,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
-        walletRepository
-            .set(
-                sharedKey: "shared-key"
-            )
+        walletRepo.set(keyPath: \.credentials.sharedKey, value: "sharedKey")
+            .get()
             .sink(receiveCompletion: { completion in
                 guard case .finished = completion else {
                     XCTFail("failed to set the shared key")
@@ -312,7 +297,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         )
     }
 
-    // swiftlint:disable function_body_length
     func testExpiredTokenAndSecondSuccessfulAuthentication() throws {
 
         // Arrange
@@ -361,29 +345,11 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
 
         wait(for: [expiredAuthTokenStoredExpectation], timeout: 5, enforceOrder: true)
 
-        let offlineTokenResponseSetExpectation = expectation(
-            description: "The offline token was set successfully"
-        )
-        walletRepository
-            .set(
-                offlineToken: offlineToken
-            )
-            .sink(receiveCompletion: { completion in
-                guard case .finished = completion else {
-                    XCTFail("failed to set the guid")
-                    return
-                }
-                offlineTokenResponseSetExpectation.fulfill()
-            }, receiveValue: { _ in })
-            .store(in: &cancellables)
-
         let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
-        walletRepository
-            .set(
-                guid: "guid"
-            )
+        walletRepo.set(keyPath: \.credentials.guid, value: "guid")
+            .get()
             .sink(receiveCompletion: { completion in
                 guard case .finished = completion else {
                     XCTFail("failed to set the guid")
@@ -396,10 +362,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
         let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
-        walletRepository
-            .set(
-                sharedKey: "shared-key"
-            )
+        walletRepo.set(keyPath: \.credentials.sharedKey, value: "sharedKey")
+            .get()
             .sink(receiveCompletion: { completion in
                 guard case .finished = completion else {
                     XCTFail("failed to set the shared key")
@@ -411,7 +375,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
 
         wait(
             for: [
-                offlineTokenResponseSetExpectation,
                 guidSetExpectation,
                 sharedKeySetExpectation
             ],
@@ -443,16 +406,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
                         )
                     )
                 } else {
-                    let httpResponse = HTTPURLResponse(
-                        url: URL(string: "https://www.blockchain.com")!,
-                        statusCode: 401,
-                        httpVersion: nil,
-                        headerFields: nil
-                    )!
-                    let serverErrorResponse = ServerErrorResponse(
-                        response: httpResponse,
-                        payload: nil
-                    )
                     return AnyPublisher.failure(
                         .unknown
                     )
@@ -498,8 +451,6 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             token: "offline-token"
         )
         nabuOfflineTokenRepo.expectedOfflineToken = .success(offlineToken)
-        walletRepository.expectedGuid = "guid"
-        walletRepository.expectedSharedKey = "shared-key"
         jwtService.expectedResult = .success("jwt-token")
 
         let mockHttpResponse = HTTPURLResponse(
@@ -525,6 +476,8 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
             )
         )
         nabuRepository.expectedSessionToken = .failure(mockNetworkError)
+        walletRepo.set(keyPath: \.credentials.guid, value: "guid")
+        walletRepo.set(keyPath: \.credentials.sharedKey, value: "sharedKey")
 
         // Act (409 server error response)
         subject

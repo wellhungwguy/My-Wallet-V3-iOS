@@ -76,19 +76,3 @@ extension UIWindow {
         }
     }
 }
-
-extension UIViewController {
-
-    /// Returns the top-most visibly presented UIViewController in this UIViewController's hierarchy
-    @objc
-    public var topMostViewController: UIViewController? {
-        switch self {
-        case is UIAlertController:
-            return presentedViewController?.topMostViewController
-        case is UINavigationController:
-            return presentedViewController?.topMostViewController ?? self
-        default:
-            return presentedViewController?.topMostViewController ?? self
-        }
-    }
-}

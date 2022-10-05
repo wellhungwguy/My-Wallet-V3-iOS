@@ -28,14 +28,9 @@ public final class CoinViewAnalyticsObserver: Session.Observer {
         }
     }
 
-    lazy var events = [
-        asset,
-        assetDismiss,
+    lazy var events: [BlockchainEventSubscription] = [
         chart,
-        buy,
-        sell,
         receive,
-        send,
         explainer,
         website,
         chartInterval,
@@ -45,24 +40,6 @@ public final class CoinViewAnalyticsObserver: Session.Observer {
         watchlistAdd,
         watchlistRemove
     ]
-
-    lazy var asset = app.on(blockchain.ux.asset) { [analytics, app] event in
-        let currency = try event.reference.context.decode(blockchain.ux.asset.id) as String
-        try analytics.record(
-            event: .coinViewOpen(
-                currency: currency,
-                origin: app.state.get(blockchain.ux.asset[currency].select.origin) as String
-            )
-        )
-    }
-
-    lazy var assetDismiss = app.on(blockchain.ux.asset.event.did.dismiss) { [analytics] event in
-        try analytics.record(
-            event: .coinViewClosed(
-                currency: event.reference.context.decode(blockchain.ux.asset.id) as String
-            )
-        )
-    }
 
     lazy var chart = app.on(
         blockchain.ux.asset.chart.selected,
@@ -92,32 +69,11 @@ public final class CoinViewAnalyticsObserver: Session.Observer {
         )
     }
 
-    lazy var buy = app.on(blockchain.ux.asset.buy) { [analytics] _ in
-        analytics.record(
-            event: .buySellClicked(type: .buy)
-        )
-    }
-
-    lazy var sell = app.on(blockchain.ux.asset.sell) { [analytics] _ in
-        analytics.record(
-            event: .buySellClicked(type: .sell)
-        )
-    }
-
     lazy var receive = app.on(blockchain.ux.asset.receive) { [analytics] event in
         try analytics.record(
             event: .buyReceiveClicked(
                 currency: event.reference.context.decode(blockchain.ux.asset.id) as String,
                 type: .receive
-            )
-        )
-    }
-
-    lazy var send = app.on(blockchain.ux.asset.send) { [analytics] event in
-        try analytics.record(
-            event: .sendReceiveClicked(
-                currency: event.reference.context.decode(blockchain.ux.asset.id) as String,
-                type: .send
             )
         )
     }

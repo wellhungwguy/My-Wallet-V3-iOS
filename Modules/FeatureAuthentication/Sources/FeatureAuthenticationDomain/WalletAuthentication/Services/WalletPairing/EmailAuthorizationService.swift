@@ -34,7 +34,7 @@ public protocol EmailAuthorizationServiceAPI {
     func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError>
 }
 
-public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
+final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
 
     private let lock = NSRecursiveLock()
     private var _isActive = false
@@ -57,18 +57,18 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
 
     // MARK: - Setup
 
-    public init(guidService: GuidServiceAPI) {
+    init(guidService: GuidServiceAPI) {
         self.guidService = guidService
     }
 
     /// Cancels the authorization by sending interrupt to stop polling
-    public func cancel() {
+    func cancel() {
         isActive = false
     }
 
     // MARK: - Accessors
 
-    public func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError> {
+    func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError> {
         guidService
             .guid
             .mapToVoid()

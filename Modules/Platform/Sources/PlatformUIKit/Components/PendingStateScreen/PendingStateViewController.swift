@@ -247,7 +247,7 @@ public final class PendingStateViewUXErrorController: BaseScreenViewController {
             blockchain.ux.transaction.action.add.card,
             blockchain.ux.transaction.action.go.back.to.enter.amount
         ) { [weak self] _ in
-            self?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+            self?.navigationControllerAPI?.dismiss(animated: true, completion: nil)
         }
         .start()
     }

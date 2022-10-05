@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import FeatureCryptoDomainDomain
+import Localization
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -59,7 +60,7 @@ final class ClaimFreeCryptoDomainAnnouncement: PersistentAnnouncement, Actionabl
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

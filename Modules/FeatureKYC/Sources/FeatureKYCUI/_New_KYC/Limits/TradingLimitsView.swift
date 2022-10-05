@@ -151,7 +151,7 @@ struct TradingLimitsView: View {
     var body: some View {
         let canUpgradeTier = viewStore.userTiers?.canCompleteTier2 == true
         let pageTitle = canUpgradeTier ? LocalizedStrings.upgradePageTitle : LocalizedStrings.pageTitle
-        ModalContainer(title: pageTitle, onClose: { viewStore.send(.close) }) {
+        ModalContainer(title: pageTitle, onClose: { viewStore.send(.close) }, content: {
             VStack {
                 if viewStore.loading {
                     VStack {
@@ -203,7 +203,7 @@ struct TradingLimitsView: View {
             .onAppear {
                 viewStore.send(.fetchLimits)
             }
-        }
+        })
     }
 }
 

@@ -13,6 +13,7 @@ import FeatureCardPaymentDomain
 import FeatureDebugUI
 import FeatureOpenBankingDomain
 import FeatureSettingsDomain
+import MoneyKit
 import NetworkKit
 import ObservabilityKit
 import PlatformKit
@@ -49,6 +50,8 @@ public struct AppEnvironment {
     var featureFlagsService: FeatureFlagsServiceAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var forgetWalletService: ForgetWalletService
+    var legacyGuidRepository: LegacyGuidRepositoryAPI
+    var legacySharedKeyRepository: LegacySharedKeyRepositoryAPI
     var loadingViewPresenter: LoadingViewPresenting
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
@@ -57,19 +60,17 @@ public struct AppEnvironment {
     var openBanking: OpenBanking
     var performanceTracing: PerformanceTracingServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
+    var reactiveWallet: ReactiveWalletAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var resetPasswordService: ResetPasswordServiceAPI
-    var secondPasswordPrompter: SecondPasswordPromptable
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var urlSession: URLSession
-    var walletManager: WalletManagerAPI
     var walletPayloadService: WalletPayloadServiceAPI
     var walletRepoPersistence: WalletRepoPersistenceAPI
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
-    var walletUpgradeService: WalletUpgradeServicing
     var recaptchaService: GoogleRecaptchaServiceAPI
 
     public init(
@@ -100,6 +101,8 @@ public struct AppEnvironment {
         featureFlagsService: FeatureFlagsServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
         forgetWalletService: ForgetWalletService,
+        legacyGuidRepository: LegacyGuidRepositoryAPI,
+        legacySharedKeyRepository: LegacySharedKeyRepositoryAPI,
         loadingViewPresenter: LoadingViewPresenting,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
@@ -108,19 +111,17 @@ public struct AppEnvironment {
         openBanking: OpenBanking,
         performanceTracing: PerformanceTracingServiceAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
+        reactiveWallet: ReactiveWalletAPI,
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
         resetPasswordService: ResetPasswordServiceAPI,
-        secondPasswordPrompter: SecondPasswordPromptable,
         sharedContainer: SharedContainerUserDefaults,
         siftService: FeatureAuthenticationDomain.SiftServiceAPI,
         supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
         urlSession: URLSession,
-        walletManager: WalletManagerAPI,
         walletPayloadService: WalletPayloadServiceAPI,
         walletRepoPersistence: WalletRepoPersistenceAPI,
         walletService: WalletService,
         walletStateProvider: WalletStateProvider,
-        walletUpgradeService: WalletUpgradeServicing,
         recaptchaService: GoogleRecaptchaServiceAPI
     ) {
         self.accountRecoveryService = accountRecoveryService
@@ -150,6 +151,8 @@ public struct AppEnvironment {
         self.featureFlagsService = featureFlagsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.forgetWalletService = forgetWalletService
+        self.legacyGuidRepository = legacyGuidRepository
+        self.legacySharedKeyRepository = legacySharedKeyRepository
         self.loadingViewPresenter = loadingViewPresenter
         self.mainQueue = mainQueue
         self.mobileAuthSyncService = mobileAuthSyncService
@@ -158,19 +161,17 @@ public struct AppEnvironment {
         self.openBanking = openBanking
         self.performanceTracing = performanceTracing
         self.pushNotificationsRepository = pushNotificationsRepository
+        self.reactiveWallet = reactiveWallet
         self.remoteNotificationServiceContainer = remoteNotificationServiceContainer
         self.resetPasswordService = resetPasswordService
-        self.secondPasswordPrompter = secondPasswordPrompter
         self.sharedContainer = sharedContainer
         self.siftService = siftService
         self.supportedAssetsRemoteService = supportedAssetsRemoteService
         self.urlSession = urlSession
-        self.walletManager = walletManager
         self.walletPayloadService = walletPayloadService
         self.walletRepoPersistence = walletRepoPersistence
         self.walletService = walletService
         self.walletStateProvider = walletStateProvider
-        self.walletUpgradeService = walletUpgradeService
         self.recaptchaService = recaptchaService
     }
 }

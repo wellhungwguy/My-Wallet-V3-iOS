@@ -40,8 +40,6 @@ extension URLSession: URLSessionProtocol {
 
 extension URLSessionDataTask: URLSessionDataTaskProtocol {}
 
-#if DEBUG
-
 extension URLSessionProtocol {
 
     public static var test: ImmediateURLSession {
@@ -144,5 +142,3 @@ public class MockURLProtocol: URLProtocol {
 
     override public func stopLoading() {}
 }
-
-#endif

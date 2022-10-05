@@ -68,7 +68,7 @@ extension UIImageView {
             }
         case .url(let url):
             image = nil
-            NukeExtensions.loadImage(with: url, into: self)
+            _ = NukeExtensions.loadImage(with: url, into: self)
         case nil:
             image = nil
         }

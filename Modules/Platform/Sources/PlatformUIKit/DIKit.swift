@@ -10,12 +10,7 @@ extension DependencyContainer {
 
         // MARK: - AlertViewPresenterAPI
 
-        single { AlertViewPresenter() }
-
-        factory { () -> AlertViewPresenterAPI in
-            let presenter: AlertViewPresenter = DIKit.resolve()
-            return presenter as AlertViewPresenterAPI
-        }
+        single { AlertViewPresenter() as AlertViewPresenterAPI }
 
         // MARK: - LoadingViewPresenting
 

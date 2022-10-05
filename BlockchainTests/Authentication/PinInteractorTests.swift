@@ -21,14 +21,6 @@ class PinInteractorTests: XCTestCase {
         case validation
     }
 
-    var maintenanceService: MaintenanceServicing {
-        WalletServiceMock()
-    }
-
-    var wallet: WalletProtocol {
-        MockWalletData(initialized: true, delegate: nil)
-    }
-
     var appSettings: MockBlockchainSettingsApp {
         MockBlockchainSettingsApp()
     }
@@ -36,15 +28,11 @@ class PinInteractorTests: XCTestCase {
     var mockChangePasswordService: MockChangePasswordService!
 
     var passwordRepository: PasswordRepository {
-        let walletRepository = MockWalletRepository()
-        walletRepository.expectedPassword = "blockchain"
         let walletRepo = WalletRepo(initialState: .empty)
         walletRepo.set(keyPath: \.credentials.password, value: "blockchain")
         return PasswordRepository(
-            walletRepository: walletRepository,
             walletRepo: walletRepo,
-            changePasswordService: mockChangePasswordService,
-            nativeWalletEnabled: { .just(false) }
+            changePasswordService: mockChangePasswordService
         )
     }
 
@@ -68,8 +56,6 @@ class PinInteractorTests: XCTestCase {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .success),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -85,61 +71,12 @@ class PinInteractorTests: XCTestCase {
         }
     }
 
-    // MARK: - Maintenance Error
-
-    func testMaintenanceWhileValidating() throws {
-        try testMaintenanceError(for: .validation)
-    }
-
-    func testMaintenanceWhileCreating() throws {
-        try testMaintenanceError(for: .creation)
-    }
-
-    // Maintenance error is returned in the relevant case
-    private func testMaintenanceError(for opeation: Operation) throws {
-        let expectedMessage = "server under maintenance"
-        let maintenanceService = WalletServiceMock()
-        maintenanceService.underlyingServerUnderMaintenanceMessage = expectedMessage
-        let interactor = PinInteractor(
-            passwordRepository: passwordRepository,
-            pinClient: MockPinClient(statusCode: .success),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
-            appSettings: appSettings
-        )
-        let payload = PinPayload(
-            pinCode: "1234",
-            keyPair: try .generateNewKeyPair(),
-            persistsLocally: false
-        )
-
-        do {
-            switch opeation {
-            case .creation:
-                _ = try interactor.create(using: payload).toBlocking().first()
-            case .validation:
-                _ = try interactor.validate(using: payload).toBlocking().first()
-            }
-            XCTAssert(false)
-        } catch {
-            let error = error as! PinError
-            switch error {
-            case .serverMaintenance(message: let message) where message == expectedMessage:
-                XCTAssert(true)
-            default:
-                XCTAssert(false)
-            }
-        }
-    }
-
     // MARK: - Invalid Numerical Value
 
     func testInvalidPinValidation() throws {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: nil, error: "Invalid Numerical Value"),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -164,8 +101,6 @@ class PinInteractorTests: XCTestCase {
                 statusCode: .incorrect,
                 remaining: 0
             ),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -185,8 +120,6 @@ class PinInteractorTests: XCTestCase {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .deleted),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -211,8 +144,6 @@ class PinInteractorTests: XCTestCase {
                 statusCode: .backoff,
                 remaining: 10
             ),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -232,8 +163,6 @@ class PinInteractorTests: XCTestCase {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: nil),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(
@@ -254,8 +183,6 @@ class PinInteractorTests: XCTestCase {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: MockPinClient(statusCode: .success),
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: settings
         )
         let payload = PinPayload(
@@ -275,8 +202,6 @@ class PinInteractorTests: XCTestCase {
         let interactor = PinInteractor(
             passwordRepository: passwordRepository,
             pinClient: pinClient,
-            maintenanceService: maintenanceService,
-            wallet: wallet,
             appSettings: appSettings
         )
         let payload = PinPayload(

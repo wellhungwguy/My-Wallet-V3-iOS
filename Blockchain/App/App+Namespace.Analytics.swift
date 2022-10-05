@@ -177,7 +177,7 @@ final class AppAnalyticsObserver: Session.Observer {
                             case .left(let ref):
                                 return try event.reference.context[ref]
                                     ?? event.context[ref]
-                                    ?? app.state.get(ref)
+                                    ?? app.state.get(ref.in(app))
                             case .right(let any):
                                 return any.thing
                             }

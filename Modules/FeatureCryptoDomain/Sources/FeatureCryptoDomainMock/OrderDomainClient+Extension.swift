@@ -17,9 +17,7 @@ extension OrderDomainClient {
                 host: "api.staging.blockchain.info",
                 components: ["nabu-gateway"]
             ),
-            headers: [
-                "Authorization": "Bearer Token"
-            ]
+            headers: ["Authorization": "Bearer Token"]
         )
     )
 
@@ -41,9 +39,7 @@ extension OrderDomainClient {
                         host: "api.staging.blockchain.info",
                         components: ["nabu-gateway"]
                     ),
-                    headers: [
-                        "Authorization": "Bearer Token"
-                    ]
+                    headers: ["Authorization": "Bearer Token"]
                 )
             ),
             communicator

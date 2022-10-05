@@ -10,7 +10,7 @@ extension DependencyContainer {
 
         single { () -> EnabledCurrenciesServiceAPI in
             EnabledCurrenciesService(
-                polygonSupport: DIKit.resolve(),
+                evmSupport: DIKit.resolve(),
                 repository: DIKit.resolve()
             )
         }
@@ -22,8 +22,12 @@ extension DependencyContainer {
         factory { () -> SupportedAssetsRepositoryAPI in
             SupportedAssetsRepository(
                 localService: DIKit.resolve(),
-                polygonSupport: DIKit.resolve()
+                evmSupport: DIKit.resolve()
             )
         }
+
+        factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
+
+        factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
     }
 }

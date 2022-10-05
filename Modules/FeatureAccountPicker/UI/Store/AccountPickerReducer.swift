@@ -10,7 +10,6 @@ private struct UpdateAccountIds: Hashable {
     let identities: Set<AnyHashable>
 }
 
-// swiftlint:disable closure_body_length
 let accountPickerReducer = Reducer<
     AccountPickerState,
     AccountPickerAction,
@@ -194,4 +193,3 @@ let accountPickerReducer = Reducer<
         environment: { PrefetchingEnvironment(mainQueue: $0.mainQueue) }
     )
 )
-// swiftlint:enable closure_body_length

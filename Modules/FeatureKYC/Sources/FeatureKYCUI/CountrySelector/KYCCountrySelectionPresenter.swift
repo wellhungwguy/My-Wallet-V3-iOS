@@ -47,7 +47,7 @@ class KYCCountrySelectionPresenter {
         // There are 3 scenarios once a user picks a country:
 
         // 1. if the country is supported by our native KYC OR if the country has states, proceed
-        if country.isKycSupported || country.states.count != 0 {
+        if country.isKycSupported || country.states.isNotEmpty {
             Logger.shared.info("Selected country is supported by our native KYC.")
             view?.continueKycFlow(country: country)
             return

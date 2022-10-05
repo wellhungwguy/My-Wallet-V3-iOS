@@ -3,10 +3,10 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import Extensions
 import FeatureAddressSearchDomain
 import Foundation
 import SwiftUI
-import UIKitExtensions
 
 public final class AddressSearchRouter: AddressSearchRouterAPI {
 

@@ -17,13 +17,15 @@ extension DependencyContainer {
             ActivityServiceContainer(
                 exchangeProviding: DIKit.resolve(),
                 fiatCurrency: DIKit.resolve(),
-                selectionService: DIKit.resolve()
+                selectionService: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 
         factory { () -> WalletPickerSelectionServiceAPI in
             WalletPickerSelectionService(
-                coincore: DIKit.resolve()
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
             )
         }
 

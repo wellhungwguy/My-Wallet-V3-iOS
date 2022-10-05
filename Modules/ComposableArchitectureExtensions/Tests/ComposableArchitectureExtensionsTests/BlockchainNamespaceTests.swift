@@ -3,8 +3,6 @@ import ComposableArchitectureExtensions
 import FirebaseProtocol
 import XCTest
 
-// swiftlint:disable line_length
-
 final class BlockchainNamespaceTests: XCTestCase {
 
     var app: AppProtocol!
@@ -34,14 +32,14 @@ final class BlockchainNamespaceTests: XCTestCase {
             .observation(
                 .event(blockchain.db.type.string[].reference, context: [
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                    blockchain.ux.type.analytics.event.source.line[]: 32
+                    blockchain.ux.type.analytics.event.source.line[]: 30
                 ])
             )
         ) { state in
             state.event = blockchain.db.type.string[].reference
             state.context = [
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                blockchain.ux.type.analytics.event.source.line[]: 32
+                blockchain.ux.type.analytics.event.source.line[]: 30
             ]
         }
 
@@ -50,14 +48,14 @@ final class BlockchainNamespaceTests: XCTestCase {
             .observation(
                 .event(blockchain.db.type.boolean[].reference, context: [
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                    blockchain.ux.type.analytics.event.source.line[]: 48
+                    blockchain.ux.type.analytics.event.source.line[]: 46
                 ])
             )
         ) { state in
             state.event = blockchain.db.type.boolean[].reference
             state.context = [
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                blockchain.ux.type.analytics.event.source.line[]: 48
+                blockchain.ux.type.analytics.event.source.line[]: 46
             ]
         }
 
@@ -67,7 +65,7 @@ final class BlockchainNamespaceTests: XCTestCase {
                 .event(blockchain.db.type.integer[].reference, context: [
                     blockchain.db.type.string[]: "context",
                     blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                    blockchain.ux.type.analytics.event.source.line[]: 64
+                    blockchain.ux.type.analytics.event.source.line[]: 62
                 ])
             )
         ) { state in
@@ -75,7 +73,7 @@ final class BlockchainNamespaceTests: XCTestCase {
             state.context = [
                 blockchain.db.type.string[]: "context",
                 blockchain.ux.type.analytics.event.source.file[]: "ComposableArchitectureExtensionsTests/BlockchainNamespaceTests.swift",
-                blockchain.ux.type.analytics.event.source.line[]: 64
+                blockchain.ux.type.analytics.event.source.line[]: 62
             ]
         }
 

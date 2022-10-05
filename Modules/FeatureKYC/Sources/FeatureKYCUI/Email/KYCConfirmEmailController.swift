@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -63,7 +64,6 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
         validationTextFieldEmail.text = email
         validationTextFieldEmail.isEnabled = false
         validationTextFieldEmail.accessibilityIdentifier = "kyc.email_field"
-        // swiftlint:disable line_length
         let attributedTitle = NSMutableAttributedString(string: LocalizationConstants.KYC.didntGetTheEmail + " " + LocalizationConstants.KYC.sendAgain)
         attributedTitle.addForegroundColor(buttonDidntGetEmail.buttonTitleColor, to: LocalizationConstants.KYC.didntGetTheEmail)
         attributedTitle.addForegroundColor(#colorLiteral(red: 0.06274509804, green: 0.6784313725, blue: 0.8941176471, alpha: 1), to: LocalizationConstants.KYC.sendAgain)
@@ -128,7 +128,8 @@ extension KYCConfirmEmailController: EmailConfirmationInterface {
     }
 
     func showError(message: String) {
-        AlertViewPresenter.shared.standardError(message: message, in: self)
+        let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+        alertPresenter.standardError(message: message, in: self)
     }
 
     func hideLoadingView() {

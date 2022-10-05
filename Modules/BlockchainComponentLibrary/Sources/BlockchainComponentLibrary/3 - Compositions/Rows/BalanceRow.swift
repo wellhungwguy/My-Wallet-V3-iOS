@@ -49,8 +49,8 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     private let leadingSubtitle: String?
     private let leadingDescription: String
     private let graph: Graph?
-    private let trailingTitle: String
-    private let trailingDescription: String
+    private let trailingTitle: String?
+    private let trailingDescription: String?
     private let trailingDescriptionColor: Color
     private let inlineTagView: TagView?
     private let tags: [TagView]
@@ -81,8 +81,8 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         leadingTitle: String,
         leadingSubtitle: String? = nil,
         leadingDescription: String,
-        trailingTitle: String,
-        trailingDescription: String,
+        trailingTitle: String?,
+        trailingDescription: String?,
         trailingDescriptionColor: Color? = nil,
         inlineTagView: TagView? = nil,
         tags: [TagView] = [],
@@ -162,21 +162,29 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 
     @ViewBuilder private var trailingTitleView: some View {
-        if graph is EmptyView {
-            Text(trailingTitle)
-                .typography(.body2)
-                .foregroundColor(.semantic.title)
+        if let trailingTitle = trailingTitle {
+            if graph is EmptyView {
+                Text(trailingTitle)
+                    .typography(.body2)
+                    .foregroundColor(.semantic.title)
+            } else {
+                Text(trailingTitle)
+                    .typography(.paragraph2)
+                    .foregroundColor(.semantic.title)
+            }
         } else {
-            Text(trailingTitle)
-                .typography(.paragraph2)
-                .foregroundColor(.semantic.title)
+            Text("......").redacted(reason: .placeholder)
         }
     }
 
     @ViewBuilder private var trailingDescriptionView: some View {
-        Text(trailingDescription)
-            .typography(.paragraph1)
-            .foregroundColor(trailingDescriptionColor)
+        if let trailingDescription = trailingDescription {
+            Text(trailingDescription)
+                .typography(.paragraph1)
+                .foregroundColor(trailingDescriptionColor)
+        } else {
+            Text("......").redacted(reason: .placeholder)
+        }
     }
 
     @ViewBuilder private func mainContent() -> some View {
@@ -271,8 +279,8 @@ extension BalanceRow where Graph == EmptyView {
         leadingTitle: String,
         leadingSubtitle: String? = nil,
         leadingDescription: String,
-        trailingTitle: String,
-        trailingDescription: String,
+        trailingTitle: String?,
+        trailingDescription: String?,
         trailingDescriptionColor: Color? = nil,
         inlineTagView: TagView? = nil,
         tags: [TagView] = [],
@@ -298,7 +306,6 @@ extension BalanceRow where Graph == EmptyView {
     }
 }
 
-// swiftlint:disable closure_body_length
 struct BalanceRow_Previews: PreviewProvider {
 
     static var previews: some View {

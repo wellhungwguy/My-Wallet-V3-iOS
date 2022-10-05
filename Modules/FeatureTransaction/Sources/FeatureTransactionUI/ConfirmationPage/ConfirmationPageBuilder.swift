@@ -111,11 +111,15 @@ extension ConfirmationPageBuilder {
                 .navigationBarItems(
                     leading: IconButton(
                         icon: .chevronLeft,
-                        action: { transactionModel.process(action: .returnToPreviousStep) }
+                        action: { [app] in
+                            transactionModel.process(action: .returnToPreviousStep)
+                            app.post(event: blockchain.ux.transaction.checkout.article.plain.navigation.bar.button.back)
+                        }
                     )
                 )
                 .app(app)
         )
+        viewController.isModalInPresentation = true
 
         app.on(blockchain.ux.transaction.checkout.confirmed) { _ in
             transactionModel.process(action: .executeTransaction)

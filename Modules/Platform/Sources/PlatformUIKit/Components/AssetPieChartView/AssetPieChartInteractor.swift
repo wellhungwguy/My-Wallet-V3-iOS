@@ -40,7 +40,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 app.modePublisher().asObservable()
             )
             .flatMapLatest { [coincore] _, fiatCurrency, appMode -> Observable<AssetPieChart.State.Interaction> in
-                guard appMode != .defi else {
+                guard appMode != .pkw else {
                     return Observable.just(.loaded(next: []))
                 }
 

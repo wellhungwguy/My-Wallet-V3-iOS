@@ -9,7 +9,6 @@ import TestKit
 import ToolKit
 import XCTest
 
-// swiftlint:disable line_length
 class Version4WorkflowTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!

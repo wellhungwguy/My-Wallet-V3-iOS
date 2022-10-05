@@ -10,17 +10,6 @@ import Localization
 import MoneyKit
 
 public struct Account: Identifiable {
-    public struct ReceiveAddress {
-        var address: String
-        var memo: String?
-        var predefinedAmount: MoneyValue?
-
-        public init(address: String, memo: String? = nil, predefinedAmount: MoneyValue? = nil) {
-            self.address = address
-            self.memo = memo
-            self.predefinedAmount = predefinedAmount
-        }
-    }
 
     public enum AccountType: String, Codable {
         case privateKey
@@ -35,7 +24,6 @@ public struct Account: Identifiable {
     public let accountType: AccountType
     public let cryptoCurrency: CryptoCurrency
     public let fiatCurrency: FiatCurrency
-    public let receiveAddressPublisher: () -> AnyPublisher<String, Error>
     public let actionsPublisher: () -> AnyPublisher<OrderedSet<Account.Action>, Error>
     public let cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>
     public let fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
@@ -46,7 +34,6 @@ public struct Account: Identifiable {
         accountType: Account.AccountType,
         cryptoCurrency: CryptoCurrency,
         fiatCurrency: FiatCurrency,
-        receiveAddressPublisher: @escaping () -> AnyPublisher<String, Error>,
         actionsPublisher: @escaping () -> AnyPublisher<OrderedSet<Account.Action>, Error>,
         cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>,
         fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
@@ -56,7 +43,6 @@ public struct Account: Identifiable {
         self.accountType = accountType
         self.cryptoCurrency = cryptoCurrency
         self.fiatCurrency = fiatCurrency
-        self.receiveAddressPublisher = receiveAddressPublisher
         self.actionsPublisher = actionsPublisher
         self.cryptoBalancePublisher = cryptoBalancePublisher
         self.fiatBalancePublisher = fiatBalancePublisher
@@ -73,11 +59,10 @@ extension Account {
         public let accountType: AccountType
         public let cryptoCurrency: CryptoCurrency
         public let fiatCurrency: FiatCurrency
-        public let receiveAddress: String
 
         public let actions: OrderedSet<Account.Action>
-        public let crypto: MoneyValue
-        public let fiat: MoneyValue
+        public let crypto: MoneyValue?
+        public let fiat: MoneyValue?
 
         public init(
             id: AnyHashable,
@@ -85,16 +70,14 @@ extension Account {
             accountType: Account.AccountType,
             cryptoCurrency: CryptoCurrency,
             fiatCurrency: FiatCurrency,
-            receiveAddress: String,
             actions: OrderedSet<Account.Action>,
-            crypto: MoneyValue,
-            fiat: MoneyValue
+            crypto: MoneyValue?,
+            fiat: MoneyValue?
         ) {
             self.id = id
             self.name = name
             self.accountType = accountType
             self.cryptoCurrency = cryptoCurrency
-            self.receiveAddress = receiveAddress
             self.fiatCurrency = fiatCurrency
             self.actions = actions
             self.crypto = crypto
@@ -203,25 +186,35 @@ extension Collection where Element == Account {
             account.cryptoBalancePublisher
                 .combineLatest(
                     account.fiatBalancePublisher,
-                    account.actionsPublisher().replaceError(with: []),
-                    account.receiveAddressPublisher().replaceError(with: "")
+                    account.actionsPublisher().replaceError(with: []).prepend([])
                 )
-                .map { crypto, fiat, actions, receiveAddress in
+                .map { crypto, fiat, actions in
                     Account.Snapshot(
                         id: account.id,
                         name: account.name,
                         accountType: account.accountType,
                         cryptoCurrency: account.cryptoCurrency,
                         fiatCurrency: account.fiatCurrency,
-                        receiveAddress: receiveAddress,
                         actions: actions,
                         crypto: crypto,
                         fiat: fiat
                     )
                 }
+                .prepend(
+                    Account.Snapshot(
+                        id: account.id,
+                        name: account.name,
+                        accountType: account.accountType,
+                        cryptoCurrency: account.cryptoCurrency,
+                        fiatCurrency: account.fiatCurrency,
+                        actions: [],
+                        crypto: nil,
+                        fiat: nil
+                    )
+                )
                 .eraseToAnyPublisher()
         }
-        .zip()
+        .combineLatest()
         .eraseToAnyPublisher()
     }
 }
@@ -230,19 +223,19 @@ extension Collection where Element == Account.Snapshot {
 
     public var cryptoBalance: MoneyValue? {
         guard let currency = first?.cryptoCurrency else { return nil }
-        return try? map(\.crypto)
+        return try? compactMap(\.crypto)
             .reduce(MoneyValue.zero(currency: currency), +)
     }
 
     public var fiatBalance: MoneyValue? {
         guard let currency = first?.fiatCurrency else { return nil }
-        return try? map(\.fiat)
+        return try? compactMap(\.fiat)
             .reduce(MoneyValue.zero(currency: currency), +)
     }
 
     public var hasPositiveBalanceForSelling: Bool {
-        first(where: { account in account.accountType == .trading })?.fiat.isPositive
-            ?? first(where: { account in account.accountType == .privateKey })?.fiat.isPositive
+        first(where: { account in account.accountType == .trading })?.fiat?.isPositive
+            ?? first(where: { account in account.accountType == .privateKey })?.fiat?.isPositive
             ?? false
     }
 }
@@ -293,7 +286,6 @@ extension Account.Snapshot {
             accountType: accountType,
             cryptoCurrency: cryptoCurrency,
             fiatCurrency: fiatCurrency,
-            receiveAddress: receiveAddress,
             actions: actions,
             crypto: crypto,
             fiat: fiat

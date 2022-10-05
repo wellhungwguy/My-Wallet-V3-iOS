@@ -20,8 +20,6 @@ import WalletPayloadKit
 /// Used for canceling publishers
 enum WalletCancelations {
     struct FetchId: Hashable {}
-    struct DecryptId: Hashable {}
-    struct AuthenticationId: Hashable {}
     struct InitializationId: Hashable {}
     struct UpgradeId: Hashable {}
     struct CreateId: Hashable {}
@@ -57,16 +55,14 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                     // and we need to cancel those operation - (remove after JS removal)
                     return .concatenate(
                         .cancel(id: WalletCancelations.FetchId()),
-                        .cancel(id: WalletCancelations.AuthenticationId()),
-                        .cancel(id: WalletCancelations.DecryptId()),
                         Effect(value: .wallet(.walletBootstrap(context))),
                         Effect(value: .wallet(.walletSetup))
                     )
 
                 case .wallet(.walletBootstrap(let context)):
                     // set `guid/sharedKey` (need to refactor this after JS removal)
-                    environment.blockchainSettings.set(guid: context.guid)
-                    environment.blockchainSettings.set(sharedKey: context.sharedKey)
+                    environment.legacyGuidRepository.directSet(guid: context.guid)
+                    environment.legacySharedKeyRepository.directSet(sharedKey: context.sharedKey)
                     // `passwordPartHash` is set after Pin creation
                     clearPinIfNeeded(
                         for: context.passwordPartHash,
@@ -107,6 +103,31 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                     return Effect(
                         value: .onboarding(.informSecondPasswordDetected)
                     )
+
+                case .wallet(.walletFetched(.failure(.decryption(.decryptionError)))) where state.onboarding?.pinState != nil:
+                    // we need to handle this change since a decryption error might happen when password has changed
+                    if let pinState = state.onboarding?.pinState, pinState.requiresPinAuthentication {
+                        // hide loader if any
+                        environment.loadingViewPresenter.hide()
+
+                        let buttons: CoreAlertAction.Buttons = .init(
+                            primary: .destructive(
+                                TextState(verbatim: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.logOutButtonTitle),
+                                action: .send(.onboarding(.pin(.logout)))
+                            ),
+                            secondary: nil
+                        )
+                        let alertAction = CoreAlertAction.show(
+                            title: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.passwordRequiredTitle,
+                            message: LocalizationConstants.WalletPayloadKit.PasswordChangeAlert.passwordRequiredMessage,
+                            buttons: buttons
+                        )
+                        return .merge(
+                            Effect(value: .alert(alertAction)),
+                            .cancel(id: WalletCancelations.FetchId())
+                        )
+                    }
+                    return .none
 
                 case .wallet(.walletFetched(.failure(let error))):
                     // hide loader if any

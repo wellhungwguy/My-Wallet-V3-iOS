@@ -27,10 +27,11 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.countriesPickerTitle,
                     subtitle: LocalizedStrings.countriesPickerSubtitle,
-                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
-                ) {
-                    CountryPickerView(selectedItem: viewStore.binding(\.$country))
-                }
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) },
+                    content: {
+                        CountryPickerView(selectedItem: viewStore.binding(\.$country))
+                    }
+                )
             }
 
         case .statePicker:
@@ -38,10 +39,11 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                 ModalContainer(
                     title: LocalizedStrings.statesPickerTitle,
                     subtitle: LocalizedStrings.statesPickerSubtitle,
-                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) }
-                ) {
-                    StatePickerView(selectedItem: viewStore.binding(\.$countryState))
-                }
+                    onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) },
+                    content: {
+                        StatePickerView(selectedItem: viewStore.binding(\.$countryState))
+                    }
+                )
             }
 
         case .createWalletStepTwo:

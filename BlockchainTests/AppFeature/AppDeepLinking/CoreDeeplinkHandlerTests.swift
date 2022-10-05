@@ -16,6 +16,7 @@ final class CoreDeeplinkHandlerTests: XCTestCase {
     var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
+        super.setUp()
         cancellables = []
         isPinSetMock = false
         sut = CoreDeeplinkHandler(

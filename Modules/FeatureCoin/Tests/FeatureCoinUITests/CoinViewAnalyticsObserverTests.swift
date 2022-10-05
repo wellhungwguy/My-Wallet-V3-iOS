@@ -27,18 +27,6 @@ final class CoinViewAnalyticsObserverTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_open() {
-        app.post(
-            event: blockchain.ux.asset["BTC"]
-        )
-        XCTAssertTrue(analytics.session.isNotEmpty)
-    }
-
-    func test_close() {
-        app.post(event: blockchain.ux.asset["BTC"].event.did.dismiss)
-        XCTAssertTrue(analytics.session.isNotEmpty)
-    }
-
     func test_chart_selected() {
         app.post(
             event: blockchain.ux.asset["BTC"].chart.selected,
@@ -60,23 +48,8 @@ final class CoinViewAnalyticsObserverTests: XCTestCase {
         XCTAssertTrue(analytics.session.isNotEmpty)
     }
 
-    func test_buy() {
-        app.post(event: blockchain.ux.asset["BTC"].buy)
-        XCTAssertTrue(analytics.session.isNotEmpty)
-    }
-
-    func test_sell() {
-        app.post(event: blockchain.ux.asset["BTC"].sell)
-        XCTAssertTrue(analytics.session.isNotEmpty)
-    }
-
     func test_receive() {
         app.post(event: blockchain.ux.asset["BTC"].receive)
-        XCTAssertTrue(analytics.session.isNotEmpty)
-    }
-
-    func test_send() {
-        app.post(event: blockchain.ux.asset["BTC"].send)
         XCTAssertTrue(analytics.session.isNotEmpty)
     }
 

@@ -74,7 +74,7 @@ final class KYCExtraQuestionsObserver: Session.Observer {
         refresh = app.on(blockchain.session.event.did.sign.in, blockchain.ux.kyc.event.status.did.change)
             .replaceOutput(with: contexts.array)
             .flatMap(refresh(contexts:))
-            .sink { [app, defaultContext] forms in
+            .sink { [app] forms in
                 app.state.clear(blockchain.ux.kyc.extra.questions.form.id)
                 app.state.transaction { state in
                     for (context, form) in forms {

@@ -232,6 +232,7 @@ let seedPhraseReducer = Reducer.combine(
                 )
             }
         ),
+    // swiftlint:disable closure_body_length
     Reducer<
         SeedPhraseState,
         SeedPhraseAction,

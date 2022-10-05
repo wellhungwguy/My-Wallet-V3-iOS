@@ -7,12 +7,13 @@ import Errors
 import SwiftUI
 import ToolKit
 
+@MainActor
 public struct BINDWithdrawView: View {
 
     @EnvironmentObject private var service: BINDWithdrawService
     @ObservedObject private var search = DebounceTextFieldObserver(delay: .seconds(1))
 
-    @MainActor private let success: (BINDBeneficiary) -> Void
+    private let success: (BINDBeneficiary) -> Void
 
     public init(success: @escaping (BINDBeneficiary) -> Void) {
         self.success = success

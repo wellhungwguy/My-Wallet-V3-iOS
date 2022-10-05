@@ -30,10 +30,6 @@ extension DependencyContainer {
 
         factory { KYCClient() as KYCClientAPI }
 
-        factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
-
-        factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
-
         factory { SendEmailNotificationClient() as SendEmailNotificationClientAPI }
 
         // MARK: Exchange
@@ -109,11 +105,6 @@ extension DependencyContainer {
 
         factory { () -> CustodialAddressServiceAPI in
             CustodialAddressService(client: DIKit.resolve())
-        }
-
-        factory { () -> MaintenanceServicing in
-            let service: WalletOptionsAPI = DIKit.resolve()
-            return service
         }
 
         factory { CredentialsStore() as CredentialsStoreAPI }

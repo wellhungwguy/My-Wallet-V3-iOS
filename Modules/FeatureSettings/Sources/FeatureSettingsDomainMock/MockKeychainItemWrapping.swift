@@ -3,23 +3,17 @@
 import FeatureSettingsDomain
 import PlatformKit
 
-class MockKeychainItemWrapping: KeychainItemWrapping {
-    var pinFromKeychainValue: String?
+final class MockKeychainItemWrapping: KeychainItemWrapping {
+    var pinValue: String?
 
-    func pinFromKeychain() -> String? {
-        pinFromKeychainValue
+    func pin() -> String? {
+        pinValue
     }
 
-    var removePinFromKeychainCalled: Bool = false
+    var setPinCalled: (pin: String?, called: Bool) = (nil, false)
 
-    func removePinFromKeychain() {
-        removePinFromKeychainCalled = true
-    }
-
-    var setPINInKeychainCalled: (pin: String?, called: Bool) = (nil, false)
-
-    func setPINInKeychain(_ pin: String?) {
-        setPINInKeychainCalled = (pin, true)
+    func setPin(_ pin: String?) {
+        setPinCalled = (pin, true)
     }
 
     var guidValue: String?
@@ -28,16 +22,10 @@ class MockKeychainItemWrapping: KeychainItemWrapping {
         guidValue
     }
 
-    var removeGuidFromKeychainCalled: Bool = false
+    var setGuidCalled: (guid: String?, called: Bool) = (nil, false)
 
-    func removeGuidFromKeychain() {
-        removeGuidFromKeychainCalled = true
-    }
-
-    var setGuidInKeychainCalled: (guid: String?, called: Bool) = (nil, false)
-
-    func setGuidInKeychain(_ guid: String?) {
-        setGuidInKeychainCalled = (guid, true)
+    func setGuid(_ guid: String?) {
+        setGuidCalled = (guid, true)
     }
 
     var sharedKeyValue: String?
@@ -46,21 +34,9 @@ class MockKeychainItemWrapping: KeychainItemWrapping {
         sharedKeyValue
     }
 
-    var removeSharedKeyFromKeychainCalled: Bool = false
+    var setSharedKeyCalled: (sharedKey: String?, called: Bool) = (nil, false)
 
-    func removeSharedKeyFromKeychain() {
-        removeSharedKeyFromKeychainCalled = true
-    }
-
-    var setSharedKeyInKeychainCalled: (sharedKey: String?, called: Bool) = (nil, false)
-
-    func setSharedKeyInKeychain(_ sharedKey: String?) {
-        setSharedKeyInKeychainCalled = (sharedKey, true)
-    }
-
-    var removeAllSwipeAddressesCalled: Bool = false
-
-    func removeAllSwipeAddresses() {
-        removeAllSwipeAddressesCalled = true
+    func setSharedKey(_ sharedKey: String?) {
+        setSharedKeyCalled = (sharedKey, true)
     }
 }

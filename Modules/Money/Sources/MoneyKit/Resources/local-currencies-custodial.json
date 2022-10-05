@@ -1722,12 +1722,17 @@
       "name": "TRON",
       "type": {
         "name": "COIN",
-        "minimumOnChainConfirmations": 0,
+        "minimumOnChainConfirmations": 30,
         "logoPngUrl": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/info/logo.png",
         "websiteUrl": "https://tron.network/"
       },
       "precision": 6,
-      "products": []
+      "products": [
+        "CustodialWalletBalance",
+        "MercuryDeposits",
+        "MercuryWithdrawals",
+        "InterestBalance"
+      ]
     },
     {
       "symbol": "TUSD",
@@ -1847,6 +1852,22 @@
         "parentChain": "MATIC",
         "erc20Address": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
         "logoPngUrl": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/assets/0xc2132D05D31c914a87C6611C10748AEb04B58e8F/logo.png",
+        "websiteUrl": "https://tether.to",
+        "name": "ERC20"
+      },
+      "precision": 6,
+      "products": [
+        "PrivateKey"
+      ]
+    },
+    {
+      "symbol": "USDT.TRX",
+      "displaySymbol": "USDT",
+      "name": "Tether",
+      "type": {
+        "parentChain": "TRX",
+        "erc20Address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        "logoPngUrl": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/assets/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t/logo.png",
         "websiteUrl": "https://tether.to",
         "name": "ERC20"
       },

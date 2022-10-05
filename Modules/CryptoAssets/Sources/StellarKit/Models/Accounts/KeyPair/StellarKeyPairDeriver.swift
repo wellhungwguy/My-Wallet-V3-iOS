@@ -1,16 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-import RxSwift
 import stellarsdk
 
-public class StellarKeyPairDeriver: KeyPairDeriverAPI {
-    public typealias StellarWallet = stellarsdk.Wallet
+final class StellarKeyPairDeriver {
 
-    public func derive(input: StellarKeyDerivationInput) -> Result<StellarKeyPair, Error> {
+    func derive(input: StellarKeyDerivationInput) -> Result<StellarKeyPair, Error> {
         let keyPair: stellarsdk.KeyPair
         do {
-            keyPair = try StellarWallet.createKeyPair(
+            keyPair = try stellarsdk.Wallet.createKeyPair(
                 mnemonic: input.mnemonic,
                 passphrase: input.passphrase,
                 index: input.index

@@ -15,7 +15,6 @@ extension MetadataState {
         password: "P5E5LZjwmzsv4rZJhd8mVMdVhYfKUHUn"
     )
 
-    // swiftlint:disable:next line_length
     private static var metadataNodeXPriv = "xprv9usvuXHXKk2VR4igogrz9JXxyCEKhauoy4JbHT5TM8HTebb4RUTEtBqwXx1tQApuwYHT1oBM5CLdYTYvqxD8m7P98JC3LcHKRgPMhXpgaHH"
 
     private static var metadataNodes: RemoteMetadataNodes = {
@@ -31,10 +30,8 @@ extension MetadataState {
         )
     }()
 
-    // swiftlint:disable:next line_length
     private static var masterKeyXPrv = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
     private static var masterKey: MasterKey = {
-        // swiftlint:disable force_try
         let privateKey = try! PrivateKey
             .bitcoinKeyFromXPriv(
                 xpriv: masterKeyXPrv
@@ -44,7 +41,6 @@ extension MetadataState {
     }()
 
     private static var secondPasswordNode: SecondPasswordNode = {
-        // swiftlint:disable force_try
         let node = try! deriveSecondPasswordNode(
             credentials: credentials
         )

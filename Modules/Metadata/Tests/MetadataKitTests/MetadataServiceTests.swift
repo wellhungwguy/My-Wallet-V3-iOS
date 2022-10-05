@@ -7,8 +7,6 @@ import NetworkKit
 import TestKit
 import ToolKit
 import XCTest
-
-// swiftlint:disable line_length
 final class MetadataServiceTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!

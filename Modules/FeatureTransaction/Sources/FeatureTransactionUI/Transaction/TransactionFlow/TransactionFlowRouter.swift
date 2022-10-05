@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-// swiftlint:disable file_length
-
 import AnalyticsKit
 import BINDWithdrawUI
 import BlockchainComponentLibrary
@@ -20,8 +18,6 @@ import RIBs
 import SwiftUI
 import ToolKit
 import UIComponentsKit
-
-// swiftlint:disable file_length
 
 typealias CountryCode = String
 
@@ -556,17 +552,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         account: LinkedBankData
     ) {
 
-        let presentingViewController = viewController.uiviewController.topMostViewController
-            ?? viewController.uiviewController
-
-        guard let presenter = presentingViewController as? TransactionFlowViewControllable else {
-            fatalError(
-                """
-                Unable to present OpenBanking
-                expected TransactionFlowViewControllable but got \(type(of: presentingViewController))
-                """
-            )
-        }
+        let presenter = viewController
 
         let environment = OpenBankingEnvironment(
             app: resolve(),

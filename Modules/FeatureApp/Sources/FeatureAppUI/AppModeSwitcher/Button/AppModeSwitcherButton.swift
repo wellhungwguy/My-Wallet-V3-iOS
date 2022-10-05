@@ -18,7 +18,7 @@ public struct AppModeSwitcherButton: View {
 
     public var body: some View {
         HStack {
-            if appMode == .defi {
+            if appMode == .pkw {
                 Icon
                     .wallet
                     .accentColor(.semantic.defi)

@@ -7,6 +7,7 @@ import FeatureDashboardUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import Foundation
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs

@@ -1,4 +1,12 @@
 blockchain:
+	api:
+		nabu:
+			gateway:
+				generate:
+					session:
+						headers:
+						+ blockchain.db.type.map
+						+ blockchain.session.state.value
 	app:
 		configuration:
 			SSL:
@@ -77,6 +85,49 @@ blockchain:
 				assets:
 				+ blockchain.db.array
 				+ blockchain.session.configuration.value
+			evm:
+				avax:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+				bnb:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+				name:
+					sanitize:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+				polygon:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					tokens:
+						always:
+							fetch:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
 			firebase:
 				project:
 					id:
@@ -116,45 +167,20 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
-			native:
-				wallet:
-					payload:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
-			polygon:
-				all:
-					tokens:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
-				is:
-					enabled:
-					+ blockchain.db.type.boolean
-					+ blockchain.session.configuration.value
-				name:
-					sanitize:
-						is:
-							enabled:
-							+ blockchain.db.type.boolean
-							+ blockchain.session.configuration.value
-				tokens:
-					always:
-						fetch:
-							is:
-								enabled:
-								+ blockchain.db.type.boolean
-								+ blockchain.session.configuration.value
 			prefill:
 				is:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+			profile:
+				kyc:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			pubkey:
 				service:
 					auth:
@@ -316,6 +342,13 @@ blockchain:
 				background:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.state.shared.value
+			mode:
+				pkw:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
+				trading:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
 			ready:
 				for:
 					deep_link:
@@ -482,6 +515,16 @@ blockchain:
 						+ blockchain.type.key
 						value:
 						+ blockchain.db.type.any
+			observers:
+			+ blockchain.db.type.array.of.maps
+			+ blockchain.session.configuration.value
+				action:
+				+ blockchain.db.type.any
+				event:
+					context:
+					+ blockchain.db.type.map
+					tag:
+					+ blockchain.db.type.tag
 			preference:
 				value:
 				+ blockchain.session.state.value
@@ -570,6 +613,32 @@ blockchain:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.state.shared.value
 		type:
+			accessibility:
+				children:
+					are:
+						grouped:
+						+ blockchain.db.type.boolean
+						+ sky.db.type.boolean
+				hint:
+				+ blockchain.db.type.string
+				+ sky.db.type.string
+				is:
+					enabled:
+					+ blockchain.db.type.string
+					+ sky.db.type.boolean
+				label:
+				+ blockchain.db.type.string
+				+ sky.db.type.string
+				trait:
+				+ blockchain.db.type.enum
+				+ sky.db.type.enum
+					adjustable:
+					button:
+					header:
+					image:
+					link:
+					none:
+					static:
 			action:
 			+ blockchain.ux.type.analytics.action
 				then:
@@ -577,10 +646,83 @@ blockchain:
 					+ blockchain.db.type.boolean
 					emit:
 					+ blockchain.db.type.tag
+					enter:
+						into:
+						+ blockchain.db.type.tag
 					launch:
 						url:
 						+ blockchain.db.type.url
+					navigate:
+						to:
+						+ blockchain.db.type.tag
+					set:
+						session:
+							state:
+							+ blockchain.db.leaf
+							+ blockchain.db.type.array.of.maps
+								key:
+								+ blockchain.db.type.tag
+								value:
+								+ blockchain.db.type.any
+			angle:
+				degrees:
+				+ blockchain.db.type.number
+				radians:
+				+ blockchain.db.type.number
+				turns:
+				+ blockchain.db.type.number
+			article:
+				plain:
+				+ blockchain.ui.type.article.type
+					body:
+					footer:
+					header:
+				type:
+				+ blockchain.ui.type.state
+					navigation:
+					+ blockchain.ui.type.navigation
+			button:
+				alert:
+				+ blockchain.ui.type.control
+				icon:
+				+ blockchain.ui.type.control
+					media:
+					+ blockchain.ui.type.media
+				minimal:
+				+ blockchain.ui.type.control
+				primary:
+				+ blockchain.ui.type.control
+				secondary:
+				+ blockchain.ui.type.control
+			color:
+				hsb:
+					alpha:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					brightness:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					hue:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					saturation:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+				rgb:
+					alpha:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					blue:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					green:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
+					red:
+					+ blockchain.db.type.number
+					+ sky.db.type.number
 			control:
+			+ blockchain.ui.type.element
 			+ sky.db.field
 			+ sky.ui.type.element
 				analytics:
@@ -607,16 +749,103 @@ blockchain:
 					tap:
 					= select
 					value:
-						change:
+						changed:
 						+ blockchain.ui.type.action
 						decremented:
 						+ blockchain.ui.type.action
 						incremented:
 						+ blockchain.ui.type.action
-						initialise:
+						initialised:
 						+ blockchain.ui.type.action
+				select:
+				= event.select
+				tap:
+				= event.select
+				title:
+			element:
+				accessibility:
+				+ blockchain.ui.type.accessibility
+				lifecycle:
+					event:
+						did:
+							enter:
+							+ sky.ux.type.analytics.impression
+								state:
+								+ blockchain.ux.type.analytics.state
+								+ sky.ux.type.analytics.state
+							exit:
+							+ sky.ux.type.analytics.impression
+								state:
+								+ blockchain.ux.type.analytics.state
+								+ sky.ux.type.analytics.state
+							update:
+							+ sky.ux.type.analytics.impression
+								state:
+								+ blockchain.ux.type.analytics.state
+								+ sky.ux.type.analytics.state
+				style:
+				+ blockchain.ui.type.style
+			gradient:
+				linear:
+					angle:
+					+ blockchain.ui.type.angle
+					steps:
+					+ blockchain.db.type.array.of.maps
+						color:
+						+ blockchain.ui.type.color
+						fraction:
+						+ blockchain.db.type.number
+			input:
+			+ blockchain.ui.type.control
+				value:
+				+ blockchain.session.state.value
+			label:
+			+ blockchain.ui.type.element
+				text:
+				+ blockchain.db.type.string
+			media:
+			+ blockchain.ui.type.element
+				url:
+				+ blockchain.db.type.url
+			navigation:
+				bar:
+					button:
+						back:
+						+ blockchain.ui.type.button.icon
+						close:
+						+ blockchain.ui.type.button.icon
 			state:
+			+ blockchain.ui.type.element
 			+ blockchain.ux.type.analytics.state
+			story:
+				article:
+				+ blockchain.ui.type.article
+				tab:
+				+ blockchain.ui.type.tab
+			style:
+				background:
+				+ blockchain.ui.type.texture
+				display:
+				+ blockchain.db.type.boolean
+				foreground:
+				+ blockchain.ui.type.texture
+			tab:
+				bar:
+					item:
+						entry:
+						+ blockchain.ui.type.button.icon
+						story:
+						+ blockchain.db.type.tag
+					items:
+					+ blockchain.db.type.array.of.maps
+					+ blockchain.ui.type.tab.bar.item
+			texture:
+				color:
+				+ blockchain.ui.type.color
+				gradient:
+				+ blockchain.ui.type.gradient
+				media:
+				+ blockchain.ui.type.media
 	user:
 	+ blockchain.db.collection
 		account:
@@ -764,6 +993,16 @@ blockchain:
 				+ blockchain.ux.type.story
 					accept:
 					reset:
+				is:
+					private_key:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.value
+					rewards:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.value
+					trading:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.state.value
 				receive:
 				+ blockchain.ux.type.action
 				require:
@@ -912,6 +1151,17 @@ blockchain:
 				withdraw:
 				+ blockchain.ux.type.story
 		home:
+			dashboard:
+			+ blockchain.ux.type.story
+				announcement:
+				+ blockchain.db.collection
+				+ blockchain.ui.type.element
+					button:
+					+ blockchain.ui.type.button.primary
+					description:
+					+ blockchain.db.type.string
+					title:
+					+ blockchain.db.type.string
 			event:
 				did:
 					pull:
@@ -1187,15 +1437,48 @@ blockchain:
 											url:
 											+ blockchain.db.type.url
 											+ blockchain.session.configuration.value
+			details:
+				button:
+					copy:
+					+ blockchain.ui.type.button.secondary
+			enter:
+				amount:
+				+ blockchain.ux.type.story
+					button:
+						confirm:
+						+ blockchain.ui.type.button.primary
+						max:
+						+ blockchain.ui.type.button.secondary
+						min:
+						+ blockchain.ui.type.button.secondary
+					input:
+					+ blockchain.ui.type.input
+					output:
+					+ blockchain.ui.type.input
+					quick:
+						fill:
+						+ blockchain.ux.type.analytics.event
+							amount:
+							type:
+					swap:
+						input:
+						+ blockchain.ux.type.analytics.event
+							crypto:
+							+ blockchain.db.type.boolean
+							fiat:
+							+ blockchain.db.type.boolean
 			event:
-				checkout:
 				did:
 					error:
 					finish:
+					go:
+						back:
+					select:
+						source:
+						target:
 					start:
 				enter:
 					address:
-					amount:
 				execution:
 					status:
 					+ blockchain.db.type.enum
@@ -1237,13 +1520,36 @@ blockchain:
 							+ blockchain.session.configuration.value
 			source:
 			+ blockchain.db.collection
+				analytics:
+					type:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.value
+				is:
+					private:
+						key:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+				label:
+				+ blockchain.db.type.string
+				+ blockchain.session.state.value
 				target:
 				+ blockchain.db.collection
+					analytics:
+						type:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.value
 					count:
 						of:
 							completed:
 							+ blockchain.db.type.integer
 							+ blockchain.session.state.preference.value
+					is:
+						private:
+							key:
+							+ blockchain.session.state.value
+					label:
+					+ blockchain.db.type.string
+					+ blockchain.session.state.value
 					previous:
 						did:
 							error:
@@ -1290,12 +1596,9 @@ blockchain:
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:
+			+ blockchain.ui.type.story
 			+ blockchain.ux.type.analytics.state
 				entry:
-				event:
-					did:
-						dismiss:
-						+ blockchain.ux.type.analytics.event
 		user:
 			KYC:
 			+ blockchain.ux.type.story

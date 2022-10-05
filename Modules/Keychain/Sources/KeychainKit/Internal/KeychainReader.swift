@@ -31,10 +31,7 @@ final class KeychainReader: KeychainReaderAPI {
         for key: String
     ) -> Result<Data, KeychainReaderError> {
 
-        var keychainQuery = queryProvider.query()
-        // set the correct match limit and return type
-        keychainQuery[kSecMatchLimit as String] = kSecMatchLimitOne
-        keychainQuery[kSecReturnData as String] = kCFBooleanTrue
+        let keychainQuery = queryProvider.readOneQuery(key: key)
 
         let output = coreReader(
             keychainQuery as CFDictionary

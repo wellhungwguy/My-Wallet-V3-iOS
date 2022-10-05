@@ -17,20 +17,34 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
     // MARK: - CryptoFeeServiceAPI
 
     func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
-        let network = cryptoCurrency.assetModel.evmNetwork!
-        return client
-            .fees(cryptoCurrency: cryptoCurrency)
-            .map { response in
-                EthereumTransactionFee(
-                    regular: response.regular,
-                    priority: response.priority,
-                    gasLimit: response.gasLimit,
-                    gasLimitContract: response.gasLimitContract,
-                    network: network
+        guard let network = cryptoCurrency.assetModel.evmNetwork else {
+            let code = cryptoCurrency.code
+            let chain = cryptoCurrency.assetModel.kind.erc20ParentChain?.rawValue ?? ""
+            fatalError("Incompatible Asset: '\(code)', chain: '\(chain)'.")
+        }
+        let contractAddress = cryptoCurrency.assetModel.kind.erc20ContractAddress
+        switch network {
+        case .avalanceCChain,
+             .binanceSmartChain:
+            return client
+                .newFees(
+                    network: network,
+                    contractAddress: contractAddress
                 )
-            }
-            .replaceError(with: EthereumTransactionFee.default(network: network))
-            .eraseToAnyPublisher()
+                .map { EthereumTransactionFee(response: $0, network: network) }
+                .replaceError(with: EthereumTransactionFee.default(network: network))
+                .eraseToAnyPublisher()
+        case .ethereum,
+             .polygon:
+            return client
+                .fees(
+                    network: network,
+                    contractAddress: contractAddress
+                )
+                .map { EthereumTransactionFee(response: $0, network: network) }
+                .replaceError(with: EthereumTransactionFee.default(network: network))
+                .eraseToAnyPublisher()
+        }
     }
 
     // MARK: - Private Properties
@@ -41,5 +55,28 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
 
     init(client: TransactionFeeClientAPI = resolve()) {
         self.client = client
+    }
+}
+
+extension EthereumTransactionFee {
+
+    fileprivate init(response: NewTransactionFeeResponse, network: EVMNetwork) {
+        self.init(
+            regularMinor: response.normal,
+            priorityMinor: response.high,
+            gasLimit: response.gasLimit,
+            gasLimitContract: response.gasLimitContract,
+            network: network
+        )
+    }
+
+    fileprivate init(response: TransactionFeeResponse, network: EVMNetwork) {
+        self.init(
+            regularGwei: response.regular,
+            priorityGwei: response.priority,
+            gasLimit: response.gasLimit,
+            gasLimitContract: response.gasLimitContract,
+            network: network
+        )
     }
 }

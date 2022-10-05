@@ -44,11 +44,9 @@ public struct SwapActivityItemEvent: Decodable {
         init(string: String, values: KeyedDecodingContainer<CodingKeys>) throws {
 
             var components: [String] = []
-            for value in ["-", "_"] {
-                if string.contains(value) {
-                    components = string.components(separatedBy: value)
-                    break
-                }
+            for value in ["-", "_"] where string.contains(value) {
+                components = string.components(separatedBy: value)
+                break
             }
 
             let error = DecodingError.dataCorruptedError(

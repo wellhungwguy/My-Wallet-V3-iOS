@@ -209,7 +209,8 @@ extension Session {
         }
 
         public func override(_ key: String, with value: Any) {
-            fetched[key] = value
+            lock.withLock { _override[key] = value }
+            notify()
         }
 
         public func get(_ key: String) throws -> Any? {

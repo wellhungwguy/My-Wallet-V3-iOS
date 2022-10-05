@@ -12,8 +12,7 @@ final class EthereumKeyPairProviderTests: XCTestCase {
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
     var mnemonicAccess: MnemonicAccessMock!
-    var ethereumDeriver: EthereumKeyPairDeriverMock!
-    var deriver: AnyEthereumKeyPairDeriver!
+    var deriver: EthereumKeyPairDeriver!
     var subject: EthereumKeyPairProvider!
 
     override func setUp() {
@@ -22,8 +21,8 @@ final class EthereumKeyPairProviderTests: XCTestCase {
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
         mnemonicAccess = MnemonicAccessMock()
-        ethereumDeriver = EthereumKeyPairDeriverMock()
-        deriver = AnyEthereumKeyPairDeriver(deriver: ethereumDeriver)
+        mnemonicAccess.underlyingMnemonic = .just(MockEthereumWalletTestData.mnemonic)
+        deriver = EthereumKeyPairDeriver()
         subject = EthereumKeyPairProvider(
             mnemonicAccess: mnemonicAccess,
             deriver: deriver
@@ -33,7 +32,6 @@ final class EthereumKeyPairProviderTests: XCTestCase {
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
-        ethereumDeriver = nil
         deriver = nil
         subject = nil
         super.tearDown()

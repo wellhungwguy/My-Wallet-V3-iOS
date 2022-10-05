@@ -2,40 +2,33 @@
 
 @testable import EthereumKit
 import MoneyKit
-import PlatformKit
 import XCTest
 
-class EthereumTransactionFeeTests: XCTestCase {
+final class EthereumTransactionFeeTests: XCTestCase {
 
-    var sut: EthereumTransactionFee!
-
-    override func setUp() {
-        super.setUp()
-        sut = EthereumTransactionFee(
-            regular: 5,
-            priority: 7,
+    func testAbsoluteFeeInitGwei() {
+        let subject = EthereumTransactionFee(
+            regularGwei: 5,
+            priorityGwei: 7,
             gasLimit: 11,
             gasLimitContract: 13,
             network: .ethereum
         )
-    }
-
-    func testAbsoluteFee() {
         XCTAssertEqual(
-            sut.absoluteFee(with: .regular, isContract: false),
-            CryptoValue.create(minor: "55000000000", currency: .ethereum)
+            subject.absoluteFee(with: .regular, extraGasLimit: 3, isContract: false),
+            CryptoValue.create(minor: "70000000000", currency: .ethereum)
         )
         XCTAssertEqual(
-            sut.absoluteFee(with: .regular, isContract: true),
-            CryptoValue.create(minor: "65000000000", currency: .ethereum)
+            subject.absoluteFee(with: .regular, extraGasLimit: 3, isContract: true),
+            CryptoValue.create(minor: "80000000000", currency: .ethereum)
         )
         XCTAssertEqual(
-            sut.absoluteFee(with: .priority, isContract: false),
-            CryptoValue.create(minor: "77000000000", currency: .ethereum)
+            subject.absoluteFee(with: .priority, extraGasLimit: 3, isContract: false),
+            CryptoValue.create(minor: "98000000000", currency: .ethereum)
         )
         XCTAssertEqual(
-            sut.absoluteFee(with: .priority, isContract: true),
-            CryptoValue.create(minor: "91000000000", currency: .ethereum)
+            subject.absoluteFee(with: .priority, extraGasLimit: 3, isContract: true),
+            CryptoValue.create(minor: "112000000000", currency: .ethereum)
         )
     }
 }

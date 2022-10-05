@@ -13,7 +13,7 @@ extension AppModeSwitcherModule {
                 return .merge(
                     environment
                         .recoveryPhraseStatusProviding
-                        .isRecoveryPhraseVerifiedPublisher
+                        .isRecoveryPhraseVerified
                         .combineLatest(environment.app.publisher(for: blockchain.user.skipped.seed_phrase.backup, as: Bool.self)
                             .replaceError(with: false)
                         )
@@ -37,7 +37,7 @@ extension AppModeSwitcherModule {
 
                 return .merge(
                     .fireAndForget {
-                        environment.app.state.set(blockchain.app.mode, to: AppMode.defi.rawValue)
+                        environment.app.state.set(blockchain.app.mode, to: AppMode.pkw.rawValue)
                     },
                     Effect(value: .dismiss)
                 )
@@ -121,9 +121,16 @@ extension Reducer where
                         event: AnalyticsEvents.New.AppModeSwitcher.switchedToTrading
                     )
                     return .none
+
                 case .onDefiTapped:
                     environment.analyticsRecorder.record(
                         event: AnalyticsEvents.New.AppModeSwitcher.switchedToDefi
+                    )
+                    return .none
+
+                case .defiWalletIntro(.onEnableDefiTap):
+                    environment.analyticsRecorder.record(
+                        event: AnalyticsEvents.New.DefiWalletIntro.enableDefiClicked
                     )
                     return .none
                 default:

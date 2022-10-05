@@ -270,7 +270,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher.send(
                     transaction: candidate,
-                    secondPassword: nil,
                     network: network
                 )
                 .asSingle()

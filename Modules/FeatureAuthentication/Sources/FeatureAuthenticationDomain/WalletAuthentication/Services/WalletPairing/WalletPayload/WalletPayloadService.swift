@@ -5,112 +5,117 @@ import DIKit
 import ToolKit
 import WalletPayloadKit
 
-public final class WalletPayloadService: WalletPayloadServiceAPI {
-
-    // MARK: - Types
-
-    public typealias WalletRepositoryAPI = GuidRepositoryAPI &
-        SessionTokenRepositoryAPI &
-        SharedKeyRepositoryAPI &
-        LanguageRepositoryAPI &
-        SyncPubKeysRepositoryAPI &
-        AuthenticatorRepositoryAPI &
-        PayloadRepositoryAPI
+final class WalletPayloadService: WalletPayloadServiceAPI {
 
     // MARK: - Properties
 
     private let repository: WalletPayloadRepositoryAPI
-    private let walletRepository: WalletRepositoryAPI
     private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI>
-    private let oldImpl: WalletPayloadServiceOld
-    private let newImpl: WalletPayloadServiceNew
+    private let credentialsRepository: CredentialsRepositoryAPI
 
     // MARK: - Setup
 
-    public init(
+    init(
         repository: WalletPayloadRepositoryAPI,
-        walletRepository: WalletRepositoryAPI,
         walletRepo: WalletRepoAPI,
-        credentialsRepository: CredentialsRepositoryAPI,
-        nativeWalletEnabledUse: @escaping NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI>
+        credentialsRepository: CredentialsRepositoryAPI
     ) {
         self.repository = repository
-        self.walletRepository = walletRepository
         self.walletRepo = walletRepo
-        nativeWalletEnabledUseImpl = nativeWalletEnabledUse
-        oldImpl = WalletPayloadServiceOld(
-            repository: repository,
-            walletRepository: walletRepository
-        )
-        newImpl = WalletPayloadServiceNew(
-            repository: repository,
-            walletRepo: walletRepo,
-            credentialsRepository: credentialsRepository
-        )
+        self.credentialsRepository = credentialsRepository
     }
 
-    // MARK: - API
-
-    public func requestUsingSessionToken() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        nativeWalletEnabledUseImpl(
-            oldImpl,
-            newImpl
-        )
-        .flatMap { either -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-            either.fold(
-                left: { old in old.requestUsingSessionToken() },
-                right: { new in new.requestUsingSessionToken() }
-            )
-        }
-        .eraseToAnyPublisher()
+    func requestUsingSessionToken() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
+        let request = request(guid:sessionToken:)
+        return walletRepo
+            .credentials
+            .first()
+            .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), WalletPayloadServiceError> in
+                guard !credentials.guid.isEmpty else {
+                    return .failure(.missingCredentials(.guid))
+                }
+                guard !credentials.sessionToken.isEmpty else {
+                    return .failure(.missingCredentials(.sessionToken))
+                }
+                return .just((credentials.guid, credentials.sessionToken))
+            }
+            .flatMap { credentials -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
+                request(credentials.guid, credentials.sessionToken)
+            }
+            .eraseToAnyPublisher()
     }
 
-    public func requestUsingSharedKey() -> AnyPublisher<Void, WalletPayloadServiceError> {
-        nativeWalletEnabledUseImpl(
-            oldImpl,
-            newImpl
-        )
-        .flatMap { either -> AnyPublisher<Void, WalletPayloadServiceError> in
-            either.fold(
-                left: { old in old.requestUsingSharedKey() },
-                right: { new in new.requestUsingSharedKey() }
-            )
-        }
-        .eraseToAnyPublisher()
+    func requestUsingSharedKey() -> AnyPublisher<Void, WalletPayloadServiceError> {
+        let request = request(guid:sharedKey:)
+        return credentialsRepository
+            .credentials
+            .first()
+            .mapError(WalletPayloadServiceError.missingCredentials)
+            .flatMap { credentials -> AnyPublisher<Void, WalletPayloadServiceError> in
+                request(credentials.guid, credentials.sharedKey)
+            }
+            .eraseToAnyPublisher()
     }
 
-    public func request(
+    func request(
         guid: String,
         sharedKey: String
     ) -> AnyPublisher<Void, WalletPayloadServiceError> {
-        nativeWalletEnabledUseImpl(
-            oldImpl,
-            newImpl
-        )
-        .flatMap { either -> AnyPublisher<Void, WalletPayloadServiceError> in
-            either.fold(
-                left: { old in old.request(guid: guid, sharedKey: sharedKey) },
-                right: { new in new.request(guid: guid, sharedKey: sharedKey) }
-            )
-        }
-        .eraseToAnyPublisher()
+        let cacheWalletData = cacheWalletData(from:)
+        return repository
+            .payload(guid: guid, identifier: .sharedKey(sharedKey))
+            .flatMap { payload -> AnyPublisher<Void, WalletPayloadServiceError> in
+                cacheWalletData(payload)
+                    .mapToVoid()
+            }
+            .eraseToAnyPublisher()
     }
 
-    public func request(
+    func request(
         guid: String,
         sessionToken: String
     ) -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        nativeWalletEnabledUseImpl(
-            oldImpl,
-            newImpl
-        )
-        .flatMap { either -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-            either.fold(
-                left: { old in old.request(guid: guid, sessionToken: sessionToken) },
-                right: { new in new.request(guid: guid, sessionToken: sessionToken) }
-            )
+        let cacheWalletData = cacheWalletData(from:)
+        return repository
+            .payload(guid: guid, identifier: .sessionToken(sessionToken))
+            .flatMap { payload -> AnyPublisher<WalletPayload, WalletPayloadServiceError> in
+                cacheWalletData(payload)
+            }
+            .flatMap { payload -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
+                guard let type = WalletAuthenticatorType(rawValue: payload.authType) else {
+                    return .failure(.unsupported2FAType)
+                }
+                return .just(type)
+            }
+            .catch { error -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
+                switch error {
+                case .emailAuthorizationRequired:
+                    return .just(.email)
+                default:
+                    return .failure(error)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func cacheWalletData(
+        from payload: WalletPayload
+    ) -> AnyPublisher<WalletPayload, WalletPayloadServiceError> {
+        // cache essentials
+        walletRepo.set(keyPath: \.credentials.guid, value: payload.guid)
+        walletRepo.set(keyPath: \.properties.language, value: payload.language)
+        walletRepo.set(keyPath: \.properties.syncPubKeys, value: payload.shouldSyncPubKeys)
+        guard let authenticatorType = WalletAuthenticatorType(rawValue: payload.authType) else {
+            // fail on unkonwn auth type
+            return .failure(.unsupported2FAType)
         }
-        .eraseToAnyPublisher()
+        walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+        // payload might be missing when we haven't fully authenticated, eg 2FA required
+        // we still save `WalletPayload` and will update the inner wrapper on `TwoFAWalletService`
+        return walletRepo.set(keyPath: \.walletPayload, value: payload)
+            .get()
+            .mapError(to: WalletPayloadServiceError.self)
+            .map { _ in payload }
+            .eraseToAnyPublisher()
     }
 }

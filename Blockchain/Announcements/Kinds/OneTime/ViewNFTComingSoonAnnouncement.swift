@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -59,7 +60,7 @@ final class ViewNFTComingSoonAnnouncement: OneTimeAnnouncement, ActionableAnnoun
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

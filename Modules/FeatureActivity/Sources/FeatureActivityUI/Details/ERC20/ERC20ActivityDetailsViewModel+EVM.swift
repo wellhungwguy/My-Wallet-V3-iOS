@@ -11,7 +11,6 @@ import PlatformUIKit
 extension ERC20ActivityDetailsViewModel {
 
     init(details: EVMHistoricalTransaction, price: FiatValue?, feePrice: FiatValue?) {
-        // swiftlint:disable line_length
         let title = "\(details.confirmation.confirmations) \(LocalizedString.of) \(details.confirmation.requiredConfirmations) \(LocalizedString.confirmations)"
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,

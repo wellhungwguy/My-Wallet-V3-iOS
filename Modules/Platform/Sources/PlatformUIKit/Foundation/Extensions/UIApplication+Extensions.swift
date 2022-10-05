@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Foundation
 import Localization
 import ToolKit
@@ -56,7 +57,8 @@ extension UIApplication {
                 let message = String(
                     format: LocalizationConstants.Errors.cannotOpenURLArg, UIApplication.mailAppURLString
                 )
-                AlertViewPresenter.shared.standardError(message: message)
+                let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+                alertPresenter.standardError(message: message)
                 return
             }
         }

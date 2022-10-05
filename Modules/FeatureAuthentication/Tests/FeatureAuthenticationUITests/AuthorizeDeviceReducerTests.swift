@@ -48,19 +48,16 @@ final class AuthorizeDeviceReducerTests: XCTest {
     }
 
     func test_handle_authorization_should_set_result() {
-        testStore.assert(
-            .send(.handleAuthorization(true)),
-            .receive(.showAuthorizationResult(.success(.noValue))) { state in
-                state.authorizationResult = .success
-            },
-            .do { self.mockMainQueue.advance() }
-        )
-        testStore.assert(
-            .send(.handleAuthorization(false)),
-            .receive(.showAuthorizationResult(.failure(.requestDenied))) { state in
-                state.authorizationResult = .requestDenied
-            },
-            .do { self.mockMainQueue.advance() }
-        )
+        testStore.send(.handleAuthorization(true))
+        testStore.receive(.showAuthorizationResult(.success(.noValue))) { state in
+            state.authorizationResult = .success
+        }
+        mockMainQueue.advance()
+
+        testStore.send(.handleAuthorization(false))
+        testStore.receive(.showAuthorizationResult(.failure(.requestDenied))) { state in
+            state.authorizationResult = .requestDenied
+        }
+        mockMainQueue.advance()
     }
 }

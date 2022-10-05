@@ -48,6 +48,7 @@ extension UIDevice {
     }
 
     // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable:next function_body_length
     private func modelName(for machineName: String) -> String {
         switch machineName {
         // iPod Touch line

@@ -24,7 +24,6 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
     ApplePayClientAPI
 
 /// Simple-Buy network client
-// swiftlint:disable type_body_length
 final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - Types

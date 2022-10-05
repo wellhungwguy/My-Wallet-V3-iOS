@@ -22,9 +22,9 @@ public struct AssetFilter: OptionSet, Hashable {
 extension AppMode {
     public var filter: AssetFilter {
         switch self {
-        case .legacy:
+        case .universal:
             return .all
-        case .defi:
+        case .pkw:
             return .nonCustodial
         case .trading:
             return [.custodial, .interest]

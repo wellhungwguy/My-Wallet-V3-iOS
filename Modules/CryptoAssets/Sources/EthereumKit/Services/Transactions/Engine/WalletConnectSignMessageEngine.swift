@@ -44,13 +44,13 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
         transactionTarget as! EthereumSignMessageTarget
     }
 
-    private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
+    private let keyPairProvider: EthereumKeyPairProvider
     private let ethereumSigner: EthereumSignerAPI
     private let feeService: EthereumFeeServiceAPI
 
     init(
         ethereumSigner: EthereumSignerAPI = resolve(),
-        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
+        keyPairProvider: EthereumKeyPairProvider = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve()
@@ -158,7 +158,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction) -> Single<TransactionResult> {
         didExecute = true
         return keyPairProvider
-            .keyPair(with: nil)
+            .keyPair
+            .asSingle()
             .flatMap { [ethereumSigner, walletConnectTarget] ethereumKeyPair -> Single<Data> in
                 switch walletConnectTarget.message {
                 case .data(let data):

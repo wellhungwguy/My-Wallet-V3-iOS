@@ -25,7 +25,6 @@ public struct GraphView: View {
 
     @State private var animation = false
 
-    // swiftlint:disable closure_body_length
     public var body: some View {
         WithViewStore(store) { viewStore in
             VStack {

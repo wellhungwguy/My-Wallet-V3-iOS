@@ -82,7 +82,7 @@ final class WalletSync: WalletSyncAPI {
                 saveOperations(wrapper, password)
                     .eraseToAnyPublisher()
             }
-            .logErrorOrCrash(tracer: tracer)
+            .logError(tracer: tracer)
             .flatMap { [walletRepo] payload -> AnyPublisher<WalletCreationPayload, Never> in
                 walletRepo.set(keyPath: \.credentials.password, value: password)
                     .get()

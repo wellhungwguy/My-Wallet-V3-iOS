@@ -30,7 +30,8 @@ let package = Package(
             branch: "safe-property-wrappers-locks"
         ),
         .package(path: "../Tool"),
-        .package(path: "../Localization")
+        .package(path: "../Localization"),
+        .package(path: "../Network")
     ],
     targets: [
         .target(
@@ -38,13 +39,14 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "Localization", package: "Localization")
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "ToolKit", package: "Tool")
             ],
             resources: [
                 .copy("Resources/local-currencies-custodial.json"),
                 .copy("Resources/local-currencies-ethereum-erc20.json"),
-                .copy("Resources/local-currencies-polygon-erc20.json")
+                .copy("Resources/local-currencies-other-erc20.json")
             ]
         ),
         .target(

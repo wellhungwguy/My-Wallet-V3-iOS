@@ -23,7 +23,6 @@ final class OnboardingReducerTests: XCTestCase {
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockDeviceVerificationService: MockDeviceVerificationService!
     var mockWalletPayloadService: MockWalletPayloadService!
-    var mockWalletManager: WalletManager!
     var mockMobileAuthSyncService: MockMobileAuthSyncService!
     var mockPushNotificationsRepository: MockPushNotificationsRepository!
     var mockFeatureFlagsService: MockFeatureFlagsService!
@@ -31,6 +30,8 @@ final class OnboardingReducerTests: XCTestCase {
     var mockForgetWalletService: ForgetWalletService!
     var mockRecaptchaService: MockRecaptchaService!
     var mockQueue: TestSchedulerOf<DispatchQueue>!
+    var mockLegacyGuidRepository: MockLegacyGuidRepository!
+    var mockLegacySharedKeyRepository: MockLegacySharedKeyRepository!
     var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
@@ -43,11 +44,6 @@ final class OnboardingReducerTests: XCTestCase {
         mockDeviceVerificationService = MockDeviceVerificationService()
         mockFeatureFlagsService = MockFeatureFlagsService()
         mockWalletPayloadService = MockWalletPayloadService()
-        mockWalletManager = WalletManager(
-            wallet: MockWallet(),
-            appSettings: MockBlockchainSettingsApp(),
-            reactiveWallet: MockReactiveWallet()
-        )
         mockMobileAuthSyncService = MockMobileAuthSyncService()
         mockPushNotificationsRepository = MockPushNotificationsRepository()
         mockAlertPresenter = MockAlertViewPresenter()
@@ -55,6 +51,8 @@ final class OnboardingReducerTests: XCTestCase {
         mockQueue = DispatchQueue.test
         mockForgetWalletService = ForgetWalletService.mock(called: {})
         mockRecaptchaService = MockRecaptchaService()
+        mockLegacyGuidRepository = MockLegacyGuidRepository()
+        mockLegacySharedKeyRepository = MockLegacySharedKeyRepository()
 
         // disable the manual login
         app.remoteConfiguration.override(blockchain.app.configuration.manual.login.is.enabled[].reference, with: false)
@@ -68,7 +66,8 @@ final class OnboardingReducerTests: XCTestCase {
             alertPresenter: mockAlertPresenter,
             mainQueue: mockQueue.eraseToAnyScheduler(),
             deviceVerificationService: mockDeviceVerificationService,
-            walletManager: mockWalletManager,
+            legacyGuidRepository: mockLegacyGuidRepository,
+            legacySharedKeyRepository: mockLegacySharedKeyRepository,
             mobileAuthSyncService: mockMobileAuthSyncService,
             pushNotificationsRepository: mockPushNotificationsRepository,
             walletPayloadService: mockWalletPayloadService,
@@ -88,13 +87,14 @@ final class OnboardingReducerTests: XCTestCase {
         mockAlertPresenter = nil
         mockDeviceVerificationService = nil
         mockWalletPayloadService = nil
-        mockWalletManager = nil
         mockMobileAuthSyncService = nil
         mockPushNotificationsRepository = nil
         mockFeatureFlagsService = nil
         mockExternalAppOpener = nil
         mockRecaptchaService = nil
         mockQueue = nil
+        mockLegacyGuidRepository = nil
+        mockLegacySharedKeyRepository = nil
 
         try super.tearDownWithError()
     }
@@ -103,7 +103,6 @@ final class OnboardingReducerTests: XCTestCase {
         let state = Onboarding.State()
         XCTAssertNil(state.pinState)
         XCTAssertNil(state.appUpgradeState)
-        XCTAssertNil(state.walletUpgradeState)
         XCTAssertNil(state.passwordRequiredState)
         XCTAssertNil(state.welcomeState)
         XCTAssertNil(state.displayAlert)
@@ -120,8 +119,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.set(guid: "a-guid")
-        settingsApp.set(sharedKey: "a-sharedKey")
+        mockLegacyGuidRepository.directSet(guid: "a-guid")
+        mockLegacySharedKeyRepository.directSet(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = true
 
         // then
@@ -142,15 +141,15 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.set(guid: "a-guid")
-        settingsApp.set(sharedKey: "a-sharedKey")
+        mockLegacyGuidRepository.directSet(guid: "a-guid")
+        mockLegacySharedKeyRepository.directSet(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = false
 
         // then
         testStore.send(.start)
         testStore.receive(.proceedToFlow) { state in
             state.passwordRequiredState = .init(
-                walletIdentifier: self.settingsApp.guid ?? ""
+                walletIdentifier: self.mockLegacyGuidRepository.directGuid ?? ""
             )
         }
         testStore.receive(.passwordScreen(.start))
@@ -164,8 +163,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.set(pinKey: "a-pin-key")
-        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
+        mockLegacyGuidRepository.directSet(guid: "a-guid")
+        mockLegacySharedKeyRepository.directSet(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = true
 
         // then
@@ -186,15 +185,15 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.set(pinKey: "a-pin-key")
-        settingsApp.set(encryptedPinPassword: "a-encryptedPinPassword")
+        mockLegacyGuidRepository.directSet(guid: "a-guid")
+        mockLegacySharedKeyRepository.directSet(sharedKey: "a-sharedKey")
         settingsApp.isPinSet = false
 
         // then
         testStore.send(.start)
         testStore.receive(.proceedToFlow) { state in
             state.passwordRequiredState = .init(
-                walletIdentifier: self.settingsApp.guid ?? ""
+                walletIdentifier: self.mockLegacyGuidRepository.directGuid ?? ""
             )
         }
         testStore.receive(.passwordScreen(.start))
@@ -208,8 +207,8 @@ final class OnboardingReducerTests: XCTestCase {
         )
 
         // given
-        settingsApp.set(guid: nil)
-        settingsApp.set(sharedKey: nil)
+        mockLegacyGuidRepository.directSet(guid: nil)
+        mockLegacySharedKeyRepository.directSet(sharedKey: nil)
         settingsApp.set(pinKey: nil)
         settingsApp.set(encryptedPinPassword: nil)
 
@@ -272,7 +271,7 @@ final class OnboardingReducerTests: XCTestCase {
         testStore.send(.start)
         testStore.receive(.proceedToFlow) { state in
             state.passwordRequiredState = .init(
-                walletIdentifier: self.settingsApp.guid ?? ""
+                walletIdentifier: self.mockLegacyGuidRepository.directGuid ?? ""
             )
         }
 

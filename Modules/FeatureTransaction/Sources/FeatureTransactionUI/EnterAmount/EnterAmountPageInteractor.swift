@@ -154,8 +154,25 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .asObservable()
             }
             .subscribe(on: MainScheduler.asyncInstance)
-            .subscribe { [weak self] (amount: MoneyValue) in
+            .subscribe { [weak self, app] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
+
+                app.post(value: amount.minorString, of: blockchain.ux.transaction.enter.amount.input.value)
+                app.post(event: blockchain.ux.transaction.enter.amount.input.event.value.changed)
+
+                guard let state = self?.transactionModel.state else { return }
+
+                Task {
+                    let state = try await state.await()
+                    if let exchangeRates = state.exchangeRates {
+                        app.state.set(
+                            blockchain.ux.transaction.enter.amount.output.value,
+                            to: state.amount.convert(using: exchangeRates.sourceToDestinationTradingCurrencyRate).displayMajorValue.doubleValue
+                        )
+                    } else {
+                        app.state.clear(blockchain.ux.transaction.enter.amount.output.value)
+                    }
+                }
             }
             .disposeOnDeactivate(interactor: self)
 
@@ -381,8 +398,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .continueButtonTapped
             .asObservable()
             .withLatestFrom(transactionState)
-            .subscribe(onNext: { [transactionModel, analyticsHook] state in
-                analyticsHook.onEnterAmountContinue(with: state)
+            .subscribe(onNext: { [app, transactionModel] state in
+                app.post(event: blockchain.ux.transaction.enter.amount.button.confirm.tap)
                 switch state.action {
                 case .buy:
                     if state.userKYCStatus?.canPurchaseCrypto == true {

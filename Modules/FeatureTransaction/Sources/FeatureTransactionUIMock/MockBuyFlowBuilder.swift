@@ -5,8 +5,6 @@ import PlatformKit
 import RIBs
 import UIKit
 
-// swiftlint:disable large_tuple
-
 public final class MockBuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
 
     public struct RecordedInvocations {

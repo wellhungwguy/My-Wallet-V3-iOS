@@ -10,12 +10,7 @@ final class TotalBalanceViewPresenter {
 
     // MARK: - Properties
 
-    let titleContent = LabelContent(
-        text: LocalizationConstants.Dashboard.Portfolio.totalBalance,
-        font: .main(.medium, 16),
-        color: .mutedText,
-        accessibility: .id(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)
-    )
+    let titleContent: LabelContent
 
     // MARK: - Services
 
@@ -45,6 +40,17 @@ final class TotalBalanceViewPresenter {
         balancePresenter = AssetPriceViewPresenter(
             interactor: balanceInteractor,
             descriptors: .balance
+        )
+
+        let titleString = app.currentMode == .universal
+            ? LocalizationConstants.Dashboard.Portfolio.totalBalance
+            : LocalizationConstants.Dashboard.Portfolio.balance
+
+        titleContent = LabelContent(
+            text: titleString,
+            font: .main(.medium, 16),
+            color: .mutedText,
+            accessibility: .id(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)
         )
     }
 

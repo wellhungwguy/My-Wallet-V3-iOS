@@ -31,7 +31,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var isAppModeSwitcherPresented: Bool = false
 
     var appSwitcherEnabled: Bool {
-        appMode != .legacy
+        appMode != .universal
     }
 
     var appModeSwitcherState: AppModeSwitcherState?
@@ -219,7 +219,7 @@ let rootViewReducer = Reducer<
         let tabsPublisher = app
             .modePublisher()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
-                if appMode == .defi {
+                if appMode == .pkw {
                     return environment
                         .app
                         .publisher(for: blockchain.app.configuration.defi.tabs, as: OrderedSet<Tab>.self)
@@ -235,7 +235,7 @@ let rootViewReducer = Reducer<
             .modePublisher()
             .flatMap { appMode -> AnyPublisher<FetchResult.Value<FrequentActionData>, Never> in
                 switch appMode {
-                case .defi:
+                case .pkw:
                     return environment
                         .app
                         .publisher(for: blockchain.app.configuration.frequent.action.pkw, as: FrequentActionData.self)
@@ -243,7 +243,7 @@ let rootViewReducer = Reducer<
                 case .trading:
                     return environment.app.publisher(for: blockchain.app.configuration.frequent.action.trading, as: FrequentActionData.self)
 
-                case .legacy:
+                case .universal:
                     return environment.app.publisher(for: blockchain.app.configuration.frequent.action, as: FrequentActionData.self)
                 }
             }

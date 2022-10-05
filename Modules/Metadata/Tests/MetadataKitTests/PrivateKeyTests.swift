@@ -7,7 +7,6 @@ final class PrivateKeyTests: XCTestCase {
 
     func test_deriveKey() throws {
 
-        // swiftlint:disable line_length
         let expectedMetadataNode = try PrivateKey
             .bitcoinKeyFromXPriv(
                 xpriv: "xprv9uvPCc4bEjZEaAAxnva4d9gnUGPssAVsT8DfnGuLVdtD9TeQfFtfySYD7P1cBAUZSNXnT52zxxmpx4rs2pzCJxu64gpwzUdu33HEzzjbHty"

@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import Localization
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -64,7 +65,7 @@ final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

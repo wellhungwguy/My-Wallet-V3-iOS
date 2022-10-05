@@ -121,10 +121,19 @@ public let coinViewReducer = Reducer<
                 if let account = state.account {
                     state.account = state.accounts.first(where: { snapshot in snapshot.id == account.id })
                 }
+                let update = Effect<CoinViewAction, Never>.fireAndForget {
+                    environment.app.state.transaction { state in
+                        for account in accounts {
+                            state.set(blockchain.ux.asset.account[account.id].is.trading, to: account.accountType == .trading)
+                            state.set(blockchain.ux.asset.account[account.id].is.private_key, to: account.accountType == .privateKey)
+                            state.set(blockchain.ux.asset.account[account.id].is.rewards, to: account.accountType == .interest)
+                        }
+                    }
+                }
                 if accounts.contains(where: { $0.accountType == .interest }) {
-                    return Effect(value: .fetchInterestRate)
+                    return .merge(update, Effect(value: .fetchInterestRate))
                 } else {
-                    return .none
+                    return update
                 }
             case .failure:
                 state.error = .failedToLoad
@@ -173,7 +182,7 @@ public let coinViewReducer = Reducer<
                 .fireAndForget(environment.dismiss),
                 .fireAndForget { [state] in
                     environment.app.post(
-                        event: blockchain.ux.asset[state.currency.code].event.did.dismiss
+                        event: blockchain.ux.asset[state.currency.code].article.plain.navigation.bar.button.close
                     )
                 }
             )

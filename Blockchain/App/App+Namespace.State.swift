@@ -15,6 +15,7 @@ final class ApplicationStateObserver: Session.Observer {
     }
 
     var didEnterBackgroundNotification, willEnterForegroundNotification: AnyCancellable?
+    var bag: Set<AnyCancellable> = []
 
     func start() {
 
@@ -44,6 +45,21 @@ final class ApplicationStateObserver: Session.Observer {
 
         willEnterForegroundNotification = notificationCenter.publisher(for: UIApplication.willEnterForegroundNotification)
             .sink { [app] _ in app.state.set(blockchain.app.is.in.background, to: false) }
+
+        app.modePublisher()
+            .sink { [app] mode in
+                app.state.transaction { state in
+                    switch mode {
+                    case .universal:
+                        state.clear(blockchain.app.is.mode.pkw)
+                        state.clear(blockchain.app.is.mode.trading)
+                    default:
+                        state.set(blockchain.app.is.mode.pkw, to: mode == .pkw)
+                        state.set(blockchain.app.is.mode.trading, to: mode == .trading)
+                    }
+                }
+            }
+            .store(in: &bag)
     }
 
     func stop() {

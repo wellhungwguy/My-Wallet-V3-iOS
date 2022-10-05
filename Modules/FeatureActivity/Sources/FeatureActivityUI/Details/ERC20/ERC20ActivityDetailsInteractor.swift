@@ -45,7 +45,9 @@ final class ERC20ActivityDetailsInteractor {
         switch cryptoCurrency.assetModel.evmNetwork {
         case .ethereum:
             return ethereumTransaction(event: event)
-        case .polygon:
+        case .avalanceCChain,
+             .binanceSmartChain,
+             .polygon:
             return evmTransaction(event: event)
         case nil:
             fatalError("Currency \(cryptoCurrency.code) not supported.")

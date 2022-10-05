@@ -74,16 +74,16 @@ final class FraudIntelligenceTests: XCTestCase {
             }
         }
 
-        let flows: Tag.Context = [
-            blockchain.session.event.will.sign.in: "login",
-            blockchain.ux.transaction.event.did.start: "order"
+        let flows: [String: String] = [
+            blockchain.session.event.will.sign.in(\.id): "login",
+            blockchain.ux.transaction.event.did.start(\.id): "order"
         ]
 
         let flow = { [state = app.state] in
             try state.get(blockchain.app.fraud.sardine.current.flow) as String
         }
 
-        app.remoteConfiguration.override(blockchain.app.fraud.sardine.flow, with: flows.dictionary)
+        app.remoteConfiguration.override(blockchain.app.fraud.sardine.flow, with: flows)
         XCTAssertThrowsError(try flow())
         XCTAssertNil(Test.MobileIntelligence.options.flow)
 

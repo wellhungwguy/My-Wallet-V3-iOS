@@ -34,7 +34,9 @@ final class EthereumTransactionPushService: EthereumTransactionPushServiceAPI {
                 .map(\.txHash)
                 .mapError(EthereumTransactionPushError.networkError)
                 .eraseToAnyPublisher()
-        case .polygon:
+        case .avalanceCChain,
+             .binanceSmartChain,
+             .polygon:
             return client.evmPush(
                 transaction: transaction,
                 network: network

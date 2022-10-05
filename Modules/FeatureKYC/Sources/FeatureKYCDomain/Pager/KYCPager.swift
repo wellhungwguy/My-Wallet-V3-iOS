@@ -11,17 +11,20 @@ public final class KYCPager: KYCPagerAPI {
 
     private let app: AppProtocol
     private let nabuUserService: NabuUserServiceAPI
+    private let isNewProfile: Bool
     public private(set) var tier: KYC.Tier
     public private(set) var tiersResponse: KYC.UserTiers
 
     public init(
         app: AppProtocol = resolve(),
         nabuUserService: NabuUserServiceAPI = resolve(),
+        isNewProfile: Bool,
         tier: KYC.Tier,
         tiersResponse: KYC.UserTiers
     ) {
         self.app = app
         self.nabuUserService = nabuUserService
+        self.isNewProfile = isNewProfile
         self.tier = tier
         self.tiersResponse = tiersResponse
     }
@@ -60,7 +63,8 @@ public final class KYCPager: KYCPagerAPI {
                     forTier: strongSelf.tier,
                     user: user,
                     country: kycCountry,
-                    tiersResponse: strongSelf.tiersResponse
+                    tiersResponse: strongSelf.tiersResponse,
+                    isNewProfile: strongSelf.isNewProfile
                 ) else {
                     return strongSelf.nextPageFromNextTierMaybe()
                 }
@@ -112,7 +116,8 @@ extension KYCPageType {
         tiersResponse: KYC.UserTiers,
         isSDDEligible: Bool,
         isSDDVerified: Bool,
-        hasQuestions: Bool
+        hasQuestions: Bool,
+        isNewProfile: Bool
     ) -> KYCPageType {
         guard user.email.verified else {
             return .enterEmail
@@ -129,7 +134,7 @@ extension KYCPageType {
         }
 
         guard user.personalDetails.isComplete else {
-            return .profile
+            return isNewProfile ? .profileNew : .profile
         }
 
         guard user.address?.postalCode != nil else {
@@ -172,14 +177,26 @@ extension KYCPageType {
         forTier tier: KYC.Tier,
         user: NabuUser?,
         country: CountryData?,
-        tiersResponse: KYC.UserTiers
+        tiersResponse: KYC.UserTiers,
+        isNewProfile: Bool
     ) -> KYCPageType? {
         switch tier {
         case .tier0,
              .tier1:
-            return nextPageTier1(user: user, country: country, requiredTier: tier, tiersResponse: tiersResponse)
+            return nextPageTier1(
+                user: user,
+                country: country,
+                requiredTier: tier,
+                tiersResponse: tiersResponse,
+                isNewProfile: isNewProfile
+            )
         case .tier2:
-            return nextPageTier2(user: user, country: country, tiersResponse: tiersResponse)
+            return nextPageTier2(
+                user: user,
+                country: country,
+                tiersResponse: tiersResponse,
+                isNewProfile: isNewProfile
+            )
         }
     }
 
@@ -187,7 +204,8 @@ extension KYCPageType {
         user: NabuUser?,
         country: CountryData?,
         requiredTier: KYC.Tier,
-        tiersResponse: KYC.UserTiers
+        tiersResponse: KYC.UserTiers,
+        isNewProfile: Bool
     ) -> KYCPageType? {
         switch self {
         case .finish:
@@ -201,7 +219,8 @@ extension KYCPageType {
                     tiersResponse: tiersResponse,
                     isSDDEligible: true,
                     isSDDVerified: false,
-                    hasQuestions: false
+                    hasQuestions: false,
+                    isNewProfile: isNewProfile
                 )
             }
             return .enterEmail
@@ -214,7 +233,7 @@ extension KYCPageType {
             guard user?.personalDetails.isComplete == false else {
                 return .address
             }
-            return .profile
+            return isNewProfile ? .profileNew : .profile
         case .country:
             if let country = country, !country.states.isEmpty {
                 return .states
@@ -222,10 +241,10 @@ extension KYCPageType {
             if let user = user, user.personalDetails.isComplete {
                 return .address
             }
-            return .profile
+            return isNewProfile ? .profileNew : .profile
         case .states:
-            return .profile
-        case .profile:
+            return isNewProfile ? .profileNew : .profile
+        case .profile, .profileNew:
             return .address
         case .address:
             return .sddVerificationCheck
@@ -251,7 +270,12 @@ extension KYCPageType {
         }
     }
 
-    private func nextPageTier2(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
+    private func nextPageTier2(
+        user: NabuUser?,
+        country: CountryData?,
+        tiersResponse: KYC.UserTiers,
+        isNewProfile: Bool
+    ) -> KYCPageType? {
         switch self {
         case .tier1ForcedTier2:
             // Skip the enter phone step if the user already has verified their phone number
@@ -283,8 +307,15 @@ extension KYCPageType {
              .states,
              .address,
              .sddVerificationCheck,
-             .profile:
-            return nextPageTier1(user: user, country: country, requiredTier: .tier2, tiersResponse: tiersResponse)
+             .profile,
+             .profileNew:
+            return nextPageTier1(
+                user: user,
+                country: country,
+                requiredTier: .tier2,
+                tiersResponse: tiersResponse,
+                isNewProfile: isNewProfile
+            )
         }
     }
 }

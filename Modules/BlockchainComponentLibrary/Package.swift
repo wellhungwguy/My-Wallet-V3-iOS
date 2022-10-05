@@ -49,7 +49,9 @@ let package = Package(
             dependencies: [
                 .product(name: "Markdown", package: "swift-markdown"),
                 .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "Nuke", package: "Nuke"),
                 .product(name: "NukeUI", package: "Nuke"),
+                .product(name: "NukeExtensions", package: "Nuke"),
                 .product(name: "Extensions", package: "Extensions")
             ],
             resources: [

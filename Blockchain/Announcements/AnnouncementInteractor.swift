@@ -141,7 +141,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .eraseError()
             .eraseToAnyPublisher()
 
-        let isRecoveryPhraseVerified = recoveryPhraseStatusProvider.isRecoveryPhraseVerifiedPublisher
+        let isRecoveryPhraseVerified = recoveryPhraseStatusProvider.isRecoveryPhraseVerified
             .eraseError()
             .eraseToAnyPublisher()
 
@@ -209,7 +209,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let userService: NabuUserServiceAPI
     private let productsService: FeatureProductsDomain.ProductsServiceAPI
     private let recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding
-    private let wallet: WalletProtocol
     private let walletStateProvider: WalletStateProvider
 
     // MARK: - Setup
@@ -229,7 +228,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         userService: NabuUserServiceAPI = resolve(),
-        wallet: WalletProtocol = WalletManager.shared.wallet,
         walletStateProvider: WalletStateProvider = resolve()
     ) {
         self.beneficiariesService = beneficiariesService
@@ -246,19 +244,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.tiersService = tiersService
         self.userService = userService
-        self.wallet = wallet
         self.walletStateProvider = walletStateProvider
     }
 
     private func isWalletInitialized() -> AnyPublisher<Bool, Never> {
-        nativeWalletFlagEnabled()
-            .flatMap { [wallet, walletStateProvider] isEnabled -> AnyPublisher<Bool, Never> in
-                guard isEnabled else {
-                    return .just(wallet.isInitialized())
-                }
-                return walletStateProvider
-                    .isWalletInitializedPublisher()
-            }
-            .eraseToAnyPublisher()
+        walletStateProvider.isWalletInitializedPublisher()
     }
 }

@@ -15,6 +15,8 @@ public enum BitcoinCashWalletRepositoryError: Error {
 
 final class BitcoinCashWalletAccountRepository {
 
+    private struct Key: Hashable {}
+
     struct BCHAccounts: Equatable {
         let defaultAccount: BitcoinCashWalletAccount
         let accounts: [BitcoinCashWalletAccount]
@@ -27,18 +29,12 @@ final class BitcoinCashWalletAccountRepository {
 
     // MARK: - Properties
 
-    private struct Key: Hashable {}
-
     let defaultAccount: AnyPublisher<BitcoinCashWalletAccount, BitcoinCashWalletRepositoryError>
     let accounts: AnyPublisher<[BitcoinCashWalletAccount], BitcoinCashWalletRepositoryError>
-
     let activeAccounts: AnyPublisher<[BitcoinCashWalletAccount], BitcoinCashWalletRepositoryError>
-
     let bitcoinCashEntry: AnyPublisher<BitcoinCashEntry?, BitcoinCashWalletRepositoryError>
 
     private let bitcoinCashFetcher: BitcoinCashEntryFetcherAPI
-    private let bridge: BitcoinCashWalletBridgeAPI
-
     private let cachedValue: CachedValueNew<
         Key,
         BCHAccounts,
@@ -48,11 +44,8 @@ final class BitcoinCashWalletAccountRepository {
     // MARK: - Init
 
     init(
-        bridge: BitcoinCashWalletBridgeAPI = resolve(),
-        bitcoinCashFetcher: BitcoinCashEntryFetcherAPI = resolve(),
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() }
+        bitcoinCashFetcher: BitcoinCashEntryFetcherAPI = resolve()
     ) {
-        self.bridge = bridge
         self.bitcoinCashFetcher = bitcoinCashFetcher
 
         let cache: AnyCache<Key, BCHAccounts> = InMemoryCache(
@@ -60,34 +53,15 @@ final class BitcoinCashWalletAccountRepository {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        let fetch_old = { [bridge] () -> AnyPublisher<BCHAccounts, BitcoinCashWalletRepositoryError> in
-            bridge.defaultWallet.asPublisher()
-                .zip(bridge.wallets.asPublisher())
-                .map { BCHAccounts(defaultAccount: $0, accounts: $1, entry: nil) }
-                .mapError(BitcoinCashWalletRepositoryError.failedToFetchAccount)
-                .eraseToAnyPublisher()
-        }
-
-        let fetch_new = { [bitcoinCashFetcher] () -> AnyPublisher<BCHAccounts, BitcoinCashWalletRepositoryError> in
-            bitcoinCashFetcher.fetchOrCreateBitcoinCash()
-                .mapError { _ in .missingWallet }
-                .map { entry in
-                    let defaultAccount = bchWalletAccount(from: entry.defaultAccount)
-                    let accounts = entry.accounts.map(bchWalletAccount(from:))
-                    return BCHAccounts(defaultAccount: defaultAccount, accounts: accounts, entry: entry)
-                }
-                .eraseToAnyPublisher()
-        }
-
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [nativeWalletEnabled] _ in
-                nativeWalletEnabled()
-                    .flatMap { isEnabled -> AnyPublisher<BCHAccounts, BitcoinCashWalletRepositoryError> in
-                        guard isEnabled else {
-                            return fetch_old()
-                        }
-                        return fetch_new()
+            fetch: { [bitcoinCashFetcher] _ in
+                bitcoinCashFetcher.fetchOrCreateBitcoinCash()
+                    .mapError { _ in .missingWallet }
+                    .map { entry in
+                        let defaultAccount = bchWalletAccount(from: entry.defaultAccount)
+                        let accounts = entry.accounts.map(bchWalletAccount(from:))
+                        return BCHAccounts(defaultAccount: defaultAccount, accounts: accounts, entry: entry)
                     }
                     .eraseToAnyPublisher()
             }

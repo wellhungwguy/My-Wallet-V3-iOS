@@ -35,9 +35,10 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             }
             .store(in: &bag)
 
-        app.publisher(for: blockchain.app.fraud.sardine.flow, as: [Tag.Reference?: String].self)
-            .print()
-            .compactMap(\.value)
+        app.publisher(for: blockchain.app.fraud.sardine.flow, as: [String: String].self)
+            .compactMap { [language = app.language] data in
+                data.value?.compactMapKeys { try? Tag.Reference(id: $0, in: language) }
+            }
             .flatMap { [app] flows in
                 flows.compactMapKeys(\.self)
                     .map { tag, name in app.on(tag).replaceOutput(name) }
@@ -55,6 +56,13 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             }
             .sink { [app] _ in
                 app.post(event: blockchain.app.fraud.sardine.submit)
+            }
+            .store(in: &bag)
+
+        app.publisher(for: blockchain.api.nabu.gateway.generate.session.headers, as: [String: String].self)
+            .compactMap(\.value)
+            .sink { [app] headers in
+                app.state.set(blockchain.app.fraud.sardine.session, to: headers["X-Session-ID"])
             }
             .store(in: &bag)
 

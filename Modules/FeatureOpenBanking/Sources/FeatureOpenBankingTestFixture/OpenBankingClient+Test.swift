@@ -57,9 +57,7 @@ extension OpenBankingClient {
                         host: "api.blockchain.info",
                         components: ["nabu-gateway"]
                     ),
-                    headers: [
-                        "Authorization": "Bearer Token"
-                    ]
+                    headers: ["Authorization": "Bearer Token"]
                 ),
                 network: NetworkAdapter(
                     communicator: communicator

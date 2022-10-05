@@ -44,7 +44,6 @@ final class AnnouncementPresenter {
 
     private let app: AppProtocol
     private let featureFetcher: FeatureFetching
-    private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
     private let kycSettings: KYCSettingsAPI
     private let reactiveWallet: ReactiveWalletAPI
@@ -53,8 +52,6 @@ final class AnnouncementPresenter {
     private let webViewServiceAPI: WebViewServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let navigationRouter: NavigationRouterAPI
-    private let exchangeProviding: ExchangeProviding
-    private let accountsRouter: AccountsRouting
     private let viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI
 
     private let coincore: CoincoreAPI
@@ -73,12 +70,9 @@ final class AnnouncementPresenter {
     init(
         app: AppProtocol = DIKit.resolve(),
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
-        exchangeProviding: ExchangeProviding = DIKit.resolve(),
-        accountsRouter: AccountsRouting = DIKit.resolve(),
         interactor: AnnouncementInteracting = AnnouncementInteractor(),
         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
         featureFetcher: FeatureFetching = DIKit.resolve(),
-        cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
         tabSwapping: TabSwapping = DIKit.resolve(),
         walletOperating: WalletOperationsRouting = DIKit.resolve(),
         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
@@ -97,7 +91,6 @@ final class AnnouncementPresenter {
         self.viewWaitlistRegistration = viewWaitlistRegistration
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.kycRouter = kycRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
@@ -108,8 +101,6 @@ final class AnnouncementPresenter {
         self.backupFlowStarter = backupFlowStarter
         self.settingsStarter = settingsStarter
         self.navigationRouter = navigationRouter
-        self.exchangeProviding = exchangeProviding
-        self.accountsRouter = accountsRouter
         self.coincore = coincore
         self.nabuUserService = nabuUserService
 
@@ -147,7 +138,7 @@ final class AnnouncementPresenter {
         let announcementsMetadata = featureFetcher
             .fetch(for: .announcements, as: AnnouncementsMetadata.self)
             .asSingle()
-        let delaySeconds = app.currentMode == .defi ? 0 : 10
+        let delaySeconds = app.currentMode == .pkw ? 0 : 10
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
             .asSingle()
             .delaySubscription(.seconds(delaySeconds), scheduler: MainScheduler.asyncInstance)
@@ -645,8 +636,6 @@ extension AnnouncementPresenter {
 extension AnnouncementPresenter {
     private func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
         walletOperating.handleBuyCrypto(currency: currency)
-        analyticsRecorder.record(
-            event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)
-        )
+        app.post(event: blockchain.ux.home.dashboard.announcement["buy"].button.tap)
     }
 }

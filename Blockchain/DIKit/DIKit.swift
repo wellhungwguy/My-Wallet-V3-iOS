@@ -63,8 +63,6 @@ import WalletPayloadKit
 
 extension UIApplication: PlatformKit.AppStoreOpening {}
 
-extension Wallet: WalletRecoveryVerifing {}
-
 // MARK: - Dashboard Dependencies
 
 extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPropertyInteracting {}
@@ -72,10 +70,6 @@ extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPrope
 extension AnnouncementPresenter: FeatureDashboardUI.AnnouncementPresenting {}
 
 extension FeatureSettingsUI.BackupFundsRouter: FeatureDashboardUI.BackupRouterAPI {}
-
-// MARK: - AnalyticsKit Dependencies
-
-extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
 
 // MARK: - Blockchain Module
 
@@ -109,10 +103,6 @@ extension DependencyContainer {
 
         factory { ExchangeClient() as ExchangeClientAPI }
 
-        factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
-
-        single { TradeLimitsMetadataService() as TradeLimitsMetadataServiceAPI }
-
         factory { SiftService() }
 
         factory { () -> FeatureAuthenticationDomain.SiftServiceAPI in
@@ -124,29 +114,6 @@ extension DependencyContainer {
             let service: SiftService = DIKit.resolve()
             return service as PlatformKit.SiftServiceAPI
         }
-
-        single { SecondPasswordHelper() }
-
-        factory { () -> SecondPasswordHelperAPI in
-            let helper: SecondPasswordHelper = DIKit.resolve()
-            return helper as SecondPasswordHelperAPI
-        }
-
-        factory { () -> SecondPasswordPresenterHelper in
-            let helper: SecondPasswordHelper = DIKit.resolve()
-            return helper as SecondPasswordPresenterHelper
-        }
-
-        single { () -> SecondPasswordPromptable in
-            SecondPasswordPrompter(
-                secondPasswordStore: DIKit.resolve(),
-                secondPasswordPrompterHelper: DIKit.resolve(),
-                secondPasswordService: DIKit.resolve(),
-                nativeWalletEnabled: { nativeWalletFlagEnabled() }
-            )
-        }
-
-        single { SecondPasswordStore() as SecondPasswordStorable }
 
         single { () -> AppDeeplinkHandlerAPI in
             let appSettings: BlockchainSettings.App = DIKit.resolve()
@@ -245,10 +212,6 @@ extension DependencyContainer {
             return bridge.resolveLoggedInReload() as LoggedInReloadAPI
         }
 
-        factory { () -> ClearOnLogoutAPI in
-            EmptyClearOnLogout()
-        }
-
         factory { () -> QRCodeScannerRouting in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
@@ -264,52 +227,11 @@ extension DependencyContainer {
             return bridge.resolveSupportRouterAPI()
         }
 
-        // MARK: - WalletManager
-
-        single { WalletManager() }
-
-        factory { () -> WalletManagerAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return manager as WalletManagerAPI
-        }
-
-        factory { () -> LegacyMnemonicAccessAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet as LegacyMnemonicAccessAPI
-        }
-
-        factory { () -> WalletRepositoryProvider in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager as WalletRepositoryProvider
-        }
-
-        factory { () -> JSContextProviderAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager as JSContextProviderAPI
-        }
-
-        factory { () -> WalletRecoveryVerifing in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet as WalletRecoveryVerifing
-        }
-
-        factory { () -> WalletConnectMetadataAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet.walletConnect as WalletConnectMetadataAPI
-        }
-
         // MARK: - BlockchainSettings.App
 
         single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
 
-        factory { LegacyPasswordProvider() as LegacyPasswordProviding }
-
         single { BlockchainSettings.App() }
-
-        factory { () -> AppSettingsAPI in
-            let app: BlockchainSettings.App = DIKit.resolve()
-            return app as AppSettingsAPI
-        }
 
         factory { () -> AppSettingsAuthenticating in
             let app: BlockchainSettings.App = DIKit.resolve()
@@ -329,12 +251,9 @@ extension DependencyContainer {
         // MARK: - Settings
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
             let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
             return RecoveryPhraseVerifyingService(
-                wallet: manager.wallet,
-                verifyMnemonicBackupService: backupService,
-                nativeWalletEnabledFlag: { nativeWalletFlagEnabled() }
+                verifyMnemonicBackupService: backupService
             )
         }
 
@@ -352,7 +271,7 @@ extension DependencyContainer {
         }
 
         factory {
-            PolygonSupport(app: DIKit.resolve()) as MoneyKit.PolygonSupport
+            EVMSupport(app: DIKit.resolve()) as MoneyKit.EVMSupport
         }
 
         // MARK: - UserInformationServiceProvider
@@ -397,27 +316,6 @@ extension DependencyContainer {
 
         factory { BlockchainDataRepository() as DataRepositoryAPI }
 
-        // MARK: - Ethereum Wallet
-
-        factory { () -> EthereumWalletBridgeAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return manager.wallet.ethereum
-        }
-
-        factory { () -> EthereumWalletAccountBridgeAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return manager.wallet.ethereum
-        }
-
-        // MARK: - Stellar Wallet
-
-        factory { StellarWallet() as StellarWalletBridgeAPI }
-
-        factory { () -> BitcoinWalletBridgeAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet.bitcoin
-        }
-
         factory { () -> WalletMnemonicProvider in
             let mnemonicAccess: MnemonicAccessAPI = DIKit.resolve()
             return {
@@ -427,17 +325,6 @@ extension DependencyContainer {
                     .eraseToAnyPublisher()
             }
         }
-
-        factory { () -> BitcoinChainSendBridgeAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet.bitcoin
-        }
-
-        single { BitcoinCashWallet() as BitcoinCashWalletBridgeAPI }
-
-        // MARK: Wallet Upgrade
-
-        factory { WalletUpgrading() as WalletUpgradingAPI }
 
         // MARK: Remote Notifications
 
@@ -530,83 +417,6 @@ extension DependencyContainer {
 
         // MARK: FeatureAuthentication Module
 
-        factory { () -> AutoWalletPairingServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return AutoWalletPairingService(
-                walletPayloadService: DIKit.resolve(),
-                walletPairingRepository: DIKit.resolve(),
-                walletCryptoService: DIKit.resolve(),
-                parsingService: DIKit.resolve()
-            ) as AutoWalletPairingServiceAPI
-        }
-
-        factory { () -> CheckReferralClientAPI in
-            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
-            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
-            return CheckReferralClient(networkAdapter: adapter, requestBuilder: builder)
-        }
-
-        factory { () -> GuidServiceAPI in
-            GuidService(
-                sessionTokenRepository: DIKit.resolve(),
-                guidRepository: DIKit.resolve()
-            )
-        }
-
-        factory { () -> SessionTokenServiceAPI in
-            sessionTokenServiceFactory(
-                sessionRepository: DIKit.resolve()
-            )
-        }
-
-        factory { () -> SMSServiceAPI in
-            SMSService(
-                smsRepository: DIKit.resolve(),
-                credentialsRepository: DIKit.resolve(),
-                sessionTokenRepository: DIKit.resolve()
-            )
-        }
-
-        factory { () -> TwoFAWalletServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return TwoFAWalletService(
-                repository: DIKit.resolve(),
-                walletRepository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
-            )
-        }
-
-        factory { () -> WalletPayloadServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return WalletPayloadService(
-                repository: DIKit.resolve(),
-                walletRepository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                credentialsRepository: DIKit.resolve(),
-                nativeWalletEnabledUse: nativeWalletEnabledUseImpl
-            )
-        }
-
-        factory { () -> LoginServiceAPI in
-            LoginService(
-                payloadService: DIKit.resolve(),
-                twoFAPayloadService: DIKit.resolve(),
-                repository: DIKit.resolve()
-            )
-        }
-
-        factory { () -> EmailAuthorizationServiceAPI in
-            EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
-        }
-
-        factory { () -> DeviceVerificationServiceAPI in
-            let sessionTokenRepository: SessionTokenRepositoryAPI = DIKit.resolve()
-            return DeviceVerificationService(
-                sessionTokenRepository: sessionTokenRepository
-            ) as DeviceVerificationServiceAPI
-        }
-
         factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }
 
         factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
@@ -614,8 +424,9 @@ extension DependencyContainer {
         // MARK: Analytics
 
         single { () -> AnalyticsKit.GuidRepositoryAPI in
-            let guidRepository: BlockchainSettings.App = DIKit.resolve()
-            return guidRepository as AnalyticsKit.GuidRepositoryAPI
+            AnalyticsKitGuidRepository(
+                keychainItemWrapper: DIKit.resolve()
+            )
         }
 
         single { () -> AnalyticsEventRecorderAPI in
@@ -852,16 +663,6 @@ extension DependencyContainer {
 
         single { app }
 
-        factory { () -> NativeWalletFlagEnabled in
-            let app: AppProtocol = DIKit.resolve()
-            let flag: Tag.Event = BlockchainNamespace.blockchain.app.configuration.native.wallet.payload.is.enabled
-            return NativeWalletFlagEnabled(
-                app.publisher(for: flag, as: Bool.self)
-                    .prefix(1)
-                    .replaceError(with: false)
-            )
-        }
-
         single { () -> RequestBuilderQueryParameters in
             let app: AppProtocol = DIKit.resolve()
             return RequestBuilderQueryParameters(
@@ -875,6 +676,132 @@ extension DependencyContainer {
                 .replaceError(with: [])
             )
         }
+
+        factory(tag: NetworkKit.HTTPHeaderTag) { () -> () -> HTTPHeaders in
+            let app: AppProtocol = DIKit.resolve()
+            return {
+                app.state.result(for: BlockchainNamespace.blockchain.api.nabu.gateway.generate.session.headers)
+                    .decode(HTTPHeaders.self)
+                    .value
+                    .or([:])
+            }
+        }
+
+        factory { () -> LegacySharedKeyRepositoryAPI in
+            LegacySharedKeyRepository(
+                keychainItemWrapper: DIKit.resolve()
+            )
+        }
+
+        factory { () -> LegacyGuidRepositoryAPI in
+            LegacyGuidRepository(
+                keychainItemWrapper: DIKit.resolve()
+            )
+        }
+
+        factory { LegacyForgetWallet() as LegacyForgetWalletAPI }
+    }
+}
+
+struct LegacySharedKeyRepository: LegacySharedKeyRepositoryAPI {
+
+    private let keychainItemWrapper: KeychainItemWrapping
+
+    init(keychainItemWrapper: KeychainItemWrapping) {
+        self.keychainItemWrapper = keychainItemWrapper
+    }
+
+    var sharedKey: AnyPublisher<String?, Never> {
+        Deferred { [keychainItemWrapper] in
+            Future { promise in
+                promise(.success(keychainItemWrapper.sharedKey()))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    var directSharedKey: String? {
+        keychainItemWrapper.sharedKey()
+    }
+
+    func set(sharedKey: String?) -> AnyPublisher<Void, Never> {
+        Deferred { [keychainItemWrapper] in
+            Future { promise in
+                promise(.success(keychainItemWrapper.setSharedKey(sharedKey)))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func directSet(sharedKey: String?) {
+        keychainItemWrapper.setSharedKey(sharedKey)
+    }
+}
+
+struct AnalyticsKitGuidRepository: AnalyticsKit.GuidRepositoryAPI {
+
+    private let keychainItemWrapper: KeychainItemWrapping
+
+    init(keychainItemWrapper: KeychainItemWrapping) {
+        self.keychainItemWrapper = keychainItemWrapper
+    }
+
+    var guid: String? {
+        keychainItemWrapper.guid()
+    }
+}
+
+struct LegacyGuidRepository: LegacyGuidRepositoryAPI {
+
+    private let keychainItemWrapper: KeychainItemWrapping
+
+    init(keychainItemWrapper: KeychainItemWrapping) {
+        self.keychainItemWrapper = keychainItemWrapper
+    }
+
+    var guid: AnyPublisher<String?, Never> {
+        Deferred { [keychainItemWrapper] in
+            Future { promise in
+                promise(.success(keychainItemWrapper.guid()))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    var directGuid: String? {
+        keychainItemWrapper.guid()
+    }
+
+    func set(guid: String?) -> AnyPublisher<Void, Never> {
+        Deferred { [keychainItemWrapper] in
+            Future { promise in
+                promise(.success(keychainItemWrapper.setGuid(guid)))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func directSet(guid: String?) {
+        keychainItemWrapper.setGuid(guid)
+    }
+}
+
+struct LegacyForgetWallet: LegacyForgetWalletAPI {
+
+    private let appSettingsAuthenticating: AppSettingsAuthenticating = DIKit.resolve()
+    private let legacySharedKeyRepository: LegacySharedKeyRepositoryAPI = DIKit.resolve()
+    private let legacyGuidRepository: LegacyGuidRepositoryAPI = DIKit.resolve()
+
+    func forgetWallet() {
+        appSettingsAuthenticating.clearPin()
+
+        // Clear all cookies (important one is the server session id SID)
+        HTTPCookieStorage.shared.deleteAllCookies()
+
+        legacyGuidRepository.directSet(guid: nil)
+        legacySharedKeyRepository.directSet(sharedKey: nil)
+
+        appSettingsAuthenticating.set(biometryEnabled: false)
     }
 }
 

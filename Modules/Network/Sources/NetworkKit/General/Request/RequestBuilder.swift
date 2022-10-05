@@ -5,6 +5,8 @@ import DIKit
 import Foundation
 import ToolKit
 
+public let HTTPHeaderTag = "HTTPHeaderTag"
+
 public struct RequestBuilderQueryParameters {
 
     public var publisher: AnyPublisher<[URLQueryItem]?, Never>
@@ -30,15 +32,24 @@ public class RequestBuilder {
 
     private let networkConfig: Network.Config
     private let decoder: NetworkResponseDecoderAPI
-    private let headers: HTTPHeaders
+    private let headers: () -> HTTPHeaders
 
     private var queryParameters: [URLQueryItem]?
     private var subscription: AnyCancellable?
 
-    public init(
+    public convenience init(
         config: Network.Config = resolve(),
         decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
         headers: HTTPHeaders = [:],
+        queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
+    ) {
+        self.init(config: config, decoder: decoder, resolveHeaders: { headers }, queryParameters: queryParameters)
+    }
+
+    public init(
+        config: Network.Config = resolve(),
+        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
+        resolveHeaders headers: @escaping () -> HTTPHeaders,
         queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
     ) {
         networkConfig = config
@@ -248,7 +259,7 @@ public class RequestBuilder {
             endpoint: url,
             method: method,
             body: body,
-            headers: self.headers.merging(headers),
+            headers: self.headers().merging(headers),
             authenticated: authenticated,
             contentType: contentType,
             decoder: decoder ?? self.decoder,

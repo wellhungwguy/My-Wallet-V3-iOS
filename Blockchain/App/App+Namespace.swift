@@ -17,8 +17,6 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
-// swiftlint:disable line_length
-
 let app: AppProtocol = App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
@@ -32,10 +30,14 @@ let app: AppProtocol = App(
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.native.wallet.payload.is.enabled: false,
-            blockchain.app.configuration.polygon.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.polygon.all.tokens.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.avax.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.avax.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.bnb.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.bnb.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.polygon.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.evm.name.sanitize.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.profile.kyc.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
             blockchain.app.configuration.SSL.pinning.is.enabled: true,
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
@@ -71,6 +73,7 @@ extension AppProtocol {
         observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(SuperAppIntroObserver(app: self))
+        observers.insert(GenerateSession(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))

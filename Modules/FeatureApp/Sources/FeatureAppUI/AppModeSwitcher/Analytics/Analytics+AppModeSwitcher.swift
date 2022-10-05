@@ -9,4 +9,9 @@ extension AnalyticsEvents.New {
         case switchedToTrading
         var type: AnalyticsEventType { .nabu }
     }
+
+    enum DefiWalletIntro: AnalyticsEvent, Equatable {
+        case enableDefiClicked
+        var type: AnalyticsEventType { .nabu }
+    }
 }

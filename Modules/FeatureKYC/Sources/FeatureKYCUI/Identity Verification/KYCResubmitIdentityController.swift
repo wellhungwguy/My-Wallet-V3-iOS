@@ -122,7 +122,8 @@ extension KYCResubmitIdentityController: PlatformUIKit.LoadingView {
     }
 
     func showErrorMessage(_ message: String) {
-        AlertViewPresenter.shared.standardError(message: message)
+        let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+        alertPresenter.standardError(message: message)
     }
 }
 
@@ -152,7 +153,8 @@ extension KYCResubmitIdentityController: VeriffController {
             },
             onError: { error in
                 self.dismiss(animated: true, completion: {
-                    AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                    let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
+                    alertPresenter.standardError(message: LocalizationConstants.Errors.genericError)
                 })
                 Logger.shared.error("Failed to submit verification \(String(describing: error))")
             }

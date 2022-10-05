@@ -6,7 +6,6 @@ import UIKit
 public final class MockLoadingViewPresenter: LoadingViewPresenting {
 
     public struct RecordedInvocations {
-        // swiftlint:disable:next large_tuple
         public var show: [(style: LoadingViewPresenter.LoadingViewStyle, text: String?, superView: UIView?)] = []
         public var hide: [Void] = []
     }

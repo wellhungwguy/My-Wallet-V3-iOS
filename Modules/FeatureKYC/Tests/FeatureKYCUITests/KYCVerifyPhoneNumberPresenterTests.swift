@@ -28,6 +28,7 @@ class KYCVerifyPhoneNumberPresenterTests: XCTestCase {
 
     // TODO: Fix broken test
     func testSuccessfulVerification() {
+        XCTSkip()
 //        interactor.shouldSucceed = true
 //        view.didCallShowLoadingViewExpectation = expectation(description: "Loading view shown")
 //        view.didCallHideLoadingViewExpectation = expectation(description: "Loading view hidden")
@@ -38,6 +39,7 @@ class KYCVerifyPhoneNumberPresenterTests: XCTestCase {
 
     // TODO: Fix broken test
     func testFailedVerification() {
+        XCTSkip()
 //        interactor.shouldSucceed = false
 //        view.didCallShowLoadingViewExpectation = expectation(description: "Loading view shown")
 //        view.didCallHideLoadingViewExpectation = expectation(description: "Loading view hidden")
@@ -47,6 +49,7 @@ class KYCVerifyPhoneNumberPresenterTests: XCTestCase {
     }
 
     func testSuccessfulStartVerification() {
+        XCTSkip()
 //        interactor.shouldSucceed = true
 //        view.didCallShowLoadingViewExpectation = expectation(description: "Loading view shown")
 //        view.didCallHideLoadingViewExpectation = expectation(description: "Loading view hidden")
@@ -58,6 +61,7 @@ class KYCVerifyPhoneNumberPresenterTests: XCTestCase {
     }
 
     func testFailedStartVerification() {
+        XCTSkip()
 //        interactor.shouldSucceed = false
 //        view.didCallShowLoadingViewExpectation = expectation(description: "Loading view shown")
 //        view.didCallHideLoadingViewExpectation = expectation(description: "Loading view hidden")

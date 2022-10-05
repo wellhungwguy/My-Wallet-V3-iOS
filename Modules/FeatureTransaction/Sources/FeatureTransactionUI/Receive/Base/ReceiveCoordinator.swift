@@ -63,9 +63,6 @@ public class ReceiveCoordinator {
             .subscribe(onNext: { [weak self] action in
                 switch action {
                 case .presentReceiveScreen(let account):
-                    if let account = account as? CryptoAccount {
-                        self?.analyticsHook.onFromAccountSelected(account, action: .receive)
-                    }
                     self?.receiveRouter.presentReceiveScreen(for: account)
                 case .presentKYCScreen:
                     self?.receiveRouter.presentKYCScreen()

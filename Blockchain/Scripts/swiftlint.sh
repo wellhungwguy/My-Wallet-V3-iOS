@@ -12,7 +12,7 @@ if [[ ! -z "${IS_CI}" && "${IS_CI}" == true ]]; then
 fi
 
 if which swiftlint > /dev/null; then
-    swiftlint
+    swiftlint --quiet
 else
     echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
 fi

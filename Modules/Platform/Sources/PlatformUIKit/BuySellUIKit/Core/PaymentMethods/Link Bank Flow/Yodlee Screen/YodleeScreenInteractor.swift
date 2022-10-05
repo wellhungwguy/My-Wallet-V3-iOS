@@ -90,8 +90,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         super.init(presenter: presenter)
     }
 
-    // swiftlint:disable function_body_length
-    // swiftlint:disable line_length
     override func didBecomeActive() {
         super.didBecomeActive()
 

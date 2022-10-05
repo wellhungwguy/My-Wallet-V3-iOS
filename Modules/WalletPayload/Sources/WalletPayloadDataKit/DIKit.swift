@@ -107,7 +107,13 @@ extension DependencyContainer {
         }
 
         single(tag: DIKitWalletPayloadTags.repoTag) { () -> KeychainAccessAPI in
-            KeychainAccess(service: "com.blockchain.wallet-repo")
+            let queryProvider = GenericPasswordQuery(
+                service: "com.blockchain.wallet-repo",
+                accessGroup: nil,
+                permission: .whenUnlockedThisDeviceOnly,
+                synchronizable: false
+            )
+            return KeychainAccess(queryProvider: queryProvider)
         }
     }
 }

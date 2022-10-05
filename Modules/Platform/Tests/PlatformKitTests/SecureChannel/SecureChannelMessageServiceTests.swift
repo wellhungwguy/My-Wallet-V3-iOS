@@ -30,7 +30,7 @@ class SecureChannelMessageServiceTests: XCTestCase {
         )
         let response = try result.get()
         XCTAssertEqual(response.channelId, TestData.channelID)
-        XCTAssertEqual(response.success, true)
+        XCTAssertTrue(response.success)
         XCTAssertEqual(response.pubkey, "03acd773753c791ec5823f66e4a08fa34c530f26f24650d1ebda5b4c27d3d6e760")
 
         let channelKey = try ECDH.derive(priv: TestData.deviceKey, pub: TestData.publicKey).get()

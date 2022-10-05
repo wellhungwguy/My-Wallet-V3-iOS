@@ -7,43 +7,26 @@ import WalletPayloadKit
 final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
     let authenticatorType: AnyPublisher<WalletAuthenticatorType, Never>
 
-    // This is set to the older WalletRepository API, soon to be removed
-    private let walletRepository: WalletRepositoryAPI
     private let walletRepo: WalletRepoAPI
-    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
-        walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepoAPI,
-        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
+        walletRepo: WalletRepoAPI
     ) {
-        self.walletRepository = walletRepository
         self.walletRepo = walletRepo
-        self.nativeWalletEnabled = nativeWalletEnabled
 
-        authenticatorType = nativeWalletEnabled()
-            .flatMap { isEnabled -> AnyPublisher<WalletAuthenticatorType, Never> in
-                guard isEnabled else {
-                    return walletRepository.authenticatorType
-                }
-                return walletRepo.get()
-                    .map(\.properties.authenticatorType)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+        authenticatorType = Deferred { [walletRepo] in
+            walletRepo.get()
+                .map(\.properties.authenticatorType)
+        }
+        .eraseToAnyPublisher()
     }
 
     func set(authenticatorType: WalletAuthenticatorType) -> AnyPublisher<Void, Never> {
-        nativeWalletEnabled()
-            .flatMap { [walletRepo, walletRepository] isEnabled -> AnyPublisher<Void, Never> in
-                guard isEnabled else {
-                    return walletRepository.set(authenticatorType: authenticatorType)
-                }
-                return walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
-                    .get()
-                    .mapToVoid()
-            }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        Deferred { [walletRepo] in
+            walletRepo.set(keyPath: \.properties.authenticatorType, value: authenticatorType)
+                .get()
+                .mapToVoid()
+        }
+        .eraseToAnyPublisher()
     }
 }

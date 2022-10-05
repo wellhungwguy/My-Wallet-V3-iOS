@@ -238,7 +238,6 @@ let credentialsReducer = Reducer.combine(
         CredentialsState,
         CredentialsAction,
         CredentialsEnvironment
-            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
         case .binding(\.$supportSheetShown):

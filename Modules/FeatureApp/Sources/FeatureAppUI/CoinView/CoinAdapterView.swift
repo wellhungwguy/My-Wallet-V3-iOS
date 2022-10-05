@@ -111,8 +111,6 @@ public struct CoinAdapterView: View {
     }
 }
 
-// swiftlint:disable line_length
-
 public final class CoinViewObserver: Session.Observer {
 
     let app: AppProtocol
@@ -123,7 +121,6 @@ public final class CoinViewObserver: Session.Observer {
     let application: URLOpener
     let topViewController: TopMostViewControllerProviding
     let exchangeProvider: ExchangeProviding
-    let accountsRouter: () -> AccountsRouting
 
     public init(
         app: AppProtocol,
@@ -133,8 +130,7 @@ public final class CoinViewObserver: Session.Observer {
         defaults: UserDefaults = .standard,
         application: URLOpener = resolve(),
         topViewController: TopMostViewControllerProviding = resolve(),
-        exchangeProvider: ExchangeProviding = resolve(),
-        accountsRouter: @escaping () -> AccountsRouting = { resolve() }
+        exchangeProvider: ExchangeProviding = resolve()
     ) {
         self.app = app
         self.transactionsRouter = transactionsRouter
@@ -144,7 +140,6 @@ public final class CoinViewObserver: Session.Observer {
         self.application = application
         self.topViewController = topViewController
         self.exchangeProvider = exchangeProvider
-        self.accountsRouter = accountsRouter
     }
 
     var observers: [BlockchainEventSubscription] {
@@ -215,11 +210,9 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var buy = app.on(blockchain.ux.asset.buy, blockchain.ux.asset.account.buy) { @MainActor [unowned self] event in
-        do {
-            try await transactionsRouter.presentTransactionFlow(
-                to: .buy(cryptoAccount(for: .buy, from: event))
-            )
-        }
+        try await transactionsRouter.presentTransactionFlow(
+            to: .buy(cryptoAccount(for: .buy, from: event))
+        )
     }
 
     lazy var sell = app.on(blockchain.ux.asset.sell, blockchain.ux.asset.account.sell) { @MainActor [unowned self] event in
@@ -292,21 +285,21 @@ public final class CoinViewObserver: Session.Observer {
         )
     }
 
-    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ in
+    lazy var kyc = app.on(blockchain.ux.asset.account.require.KYC) { @MainActor [unowned self] _ async in
         kycRouter.start(tier: .tier2, parentFlow: .coin)
     }
 
-    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ in
+    lazy var activity = app.on(blockchain.ux.asset.account.activity) { @MainActor [unowned self] _ async in
         self.topViewController.topMostViewController?.dismiss(animated: true) {
             self.app.post(event: blockchain.ux.home.tab[blockchain.ux.user.activity].select)
         }
     }
 
-    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { @MainActor [application] event in
+    lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { [application] event async throws in
         try application.open(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
     }
 
-    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { @MainActor [defaults] _ in
+    lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { [defaults] _ in
         defaults.removeObject(forKey: blockchain.ux.asset.account.explainer(\.id))
     }
 
@@ -344,7 +337,7 @@ public final class CoinViewObserver: Session.Observer {
         } else {
             let appMode = app.currentMode
             switch appMode {
-            case .legacy:
+            case .universal:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
                 )
@@ -360,7 +353,7 @@ public final class CoinViewObserver: Session.Observer {
                             .error(message: "\(event) has no valid accounts for \(String(describing: action))")
                     )
 
-            case .defi:
+            case .pkw:
                 return try(accounts.first(where: { account in account is NonCustodialAccount }))
                     .or(
                         throw: blockchain.ux.asset.error[]
@@ -379,12 +372,6 @@ extension FeatureCoinDomain.Account {
             accountType: .init(account),
             cryptoCurrency: account.currencyType.cryptoCurrency!,
             fiatCurrency: fiatCurrency,
-            receiveAddressPublisher: {
-                account
-                    .receiveAddress
-                    .map(\.address)
-                    .eraseToAnyPublisher()
-            },
             actionsPublisher: {
                 account.actions
                     .map { actions in OrderedSet(actions.compactMap(Account.Action.init)) }

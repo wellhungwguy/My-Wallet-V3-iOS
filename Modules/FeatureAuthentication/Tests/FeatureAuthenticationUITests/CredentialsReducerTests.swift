@@ -12,7 +12,6 @@ import XCTest
 @testable import FeatureAuthenticationMock
 @testable import ToolKitMock
 
-// swiftlint:disable type_body_length
 final class CredentialsReducerTests: XCTestCase {
 
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -20,14 +21,17 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
     weak var router: ConfirmationPageRouting?
     weak var listener: ConfirmationPageListener?
 
+    private let app: AppProtocol
     private let transactionModel: TransactionModel
     private let webViewRouter: WebViewRouterAPI
 
     init(
+        app: AppProtocol = resolve(),
         presenter: ConfirmationPagePresentable,
         transactionModel: TransactionModel,
         webViewRouter: WebViewRouterAPI = resolve()
     ) {
+        self.app = app
         self.transactionModel = transactionModel
         self.webViewRouter = webViewRouter
         super.init(presenter: presenter)
@@ -46,8 +50,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
         presenter.continueButtonTapped
             .throttle(.seconds(5), latest: false)
             .asObservable()
-            .subscribe(onNext: { [transactionModel] in
+            .subscribe(onNext: { [app, transactionModel] in
                 transactionModel.process(action: .executeTransaction)
+                app.post(event: blockchain.ux.transaction.checkout.confirmed)
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -62,6 +67,7 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             listener?.closeFlow()
         case .back:
             listener?.checkoutDidTapBack()
+            app.post(event: blockchain.ux.transaction.checkout.article.plain.navigation.bar.button.back)
         case .updateMemo(let memo, let oldModel):
             let model = TransactionConfirmations.Memo(textMemo: memo, required: oldModel.required)
             transactionModel.process(action: .modifyTransactionConfirmation(model))

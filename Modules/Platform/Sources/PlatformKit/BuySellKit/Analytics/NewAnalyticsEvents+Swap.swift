@@ -8,45 +8,6 @@ extension AnalyticsEvents.New {
 
         public var type: AnalyticsEventType { .nabu }
 
-        case swapClicked(origin: Origin)
-        case swapViewed
-        case swapAmountEntered(
-            inputAmount: Double,
-            inputCurrency: String,
-            inputType: AccountType,
-            outputAmount: Double,
-            outputCurrency: String,
-            outputType: AccountType
-        )
-        case swapAmountMinClicked(
-            amountCurrency: String?,
-            inputCurrency: String,
-            inputType: AccountType,
-            outputCurrency: String,
-            outputType: AccountType
-        )
-        case swapAmountMaxClicked(
-            amountCurrency: String?,
-            inputCurrency: String,
-            inputType: AccountType,
-            outputCurrency: String,
-            outputType: AccountType
-        )
-        case swapFromSelected(
-            inputCurrency: String,
-            inputType: AccountType
-        )
-        case swapReceiveSelected(
-            outputCurrency: String,
-            outputType: AccountType
-        )
-        case swapAccountsSelected(
-            inputCurrency: String,
-            inputType: AccountType,
-            outputCurrency: String,
-            outputType: AccountType,
-            wasSuggested: Bool
-        )
         case swapRequested(
             exchangeRate: Double,
             inputAmount: Double,

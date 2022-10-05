@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureSettingsDomain
+import Localization
 import ObservabilityKit
 import PlatformKit
 import PlatformUIKit
@@ -15,12 +16,8 @@ import XCTest
 @testable import BlockchainApp
 @testable import FeatureAppUI
 
-// swiftlint:disable type_body_length
 final class LoggedInReducerTests: XCTestCase {
 
-    var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet! = MockWallet()
-    var mockReactiveWallet = MockReactiveWallet()
     var mockSettingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
@@ -34,6 +31,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
     var performanceTracingMock: PerformanceTracingServiceAPI!
+    var mockReactiveWallet: MockReactiveWallet!
 
     var testStore: TestStore<
         LoggedIn.State,
@@ -47,11 +45,6 @@ final class LoggedInReducerTests: XCTestCase {
         try super.setUpWithError()
 
         mockSettingsApp = MockBlockchainSettingsApp()
-        mockWalletManager = WalletManager(
-            wallet: mockWallet,
-            appSettings: mockSettingsApp,
-            reactiveWallet: mockReactiveWallet
-        )
         mockAlertPresenter = MockAlertViewPresenter()
         mockExchangeAccountRepository = MockExchangeAccountRepository()
         mockRemoteNotificationAuthorizer = MockRemoteNotificationAuthorizer(
@@ -69,6 +62,7 @@ final class LoggedInReducerTests: XCTestCase {
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockNabuUserService = MockNabuUserService()
         performanceTracingMock = PerformanceTracing.mock
+        mockReactiveWallet = MockReactiveWallet()
 
         testStore = TestStore(
             initialState: LoggedIn.State(),
@@ -85,9 +79,9 @@ final class LoggedInReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 nabuUserService: mockNabuUserService,
                 performanceTracing: performanceTracingMock,
+                reactiveWallet: mockReactiveWallet,
                 remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
-                remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
-                walletManager: mockWalletManager
+                remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender
             )
         )
     }
@@ -104,6 +98,7 @@ final class LoggedInReducerTests: XCTestCase {
         mockDeepLinkRouter = nil
         mockFeatureFlagsService = nil
         fiatCurrencySettingsServiceMock = nil
+        mockReactiveWallet = nil
 
         testStore = nil
 
@@ -114,7 +109,6 @@ final class LoggedInReducerTests: XCTestCase {
         let state = LoggedIn.State()
         XCTAssertNil(state.displayWalletAlertContent)
         XCTAssertFalse(state.reloadAfterMultiAddressResponse)
-        XCTAssertFalse(state.reloadAfterSymbolChanged)
     }
 
     func test_calling_start_on_reducer_should_post_login_notification() {
@@ -197,155 +191,6 @@ final class LoggedInReducerTests: XCTestCase {
         performSignOut(stageWillChangeToLoggedInState: false)
     }
 
-    func test_verify_start_action_observers_symbol_changes() {
-        performSignIn()
-
-        mockSettingsApp.symbolLocal = false
-        mockSettingsApp.symbolLocal = true
-
-        testStore.receive(.symbolChanged) { state in
-            state.reloadAfterSymbolChanged = true
-        }
-
-        testStore.receive(.symbolChangedHandled) { state in
-            state.reloadAfterSymbolChanged = false
-        }
-
-        performSignOut()
-    }
-
-    func test_verify_sending_wallet_accountInfoAndExchangeRates_updates_the_state() {
-        performSignIn()
-
-        testStore.send(.wallet(.accountInfoAndExchangeRates)) { state in
-            state.reloadAfterMultiAddressResponse = true
-        }
-
-        testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
-            state.reloadAfterMultiAddressResponse = false
-        }
-
-        performSignOut()
-    }
-
-    func test_verify_sending_wallet_handleWalletBackup() {
-        performSignIn()
-
-        testStore.send(.wallet(.handleWalletBackup))
-
-        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
-
-        performSignOut()
-    }
-
-    func test_verify_sending_wallet_handleFailToLoadHistory() {
-        performSignIn()
-
-        // when sending an non nil error
-        testStore.send(.wallet(.handleFailToLoadHistory(nil))) { state in
-            state.displayWalletAlertContent = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
-            )
-        }
-
-        // when sending an non nil error
-        let errorMessage = "this is an error message"
-        testStore.send(.wallet(.handleFailToLoadHistory(errorMessage))) { state in
-            state.displayWalletAlertContent = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.balancesGeneric
-            )
-        }
-
-        performSignOut()
-    }
-
-    func test_reducer_handles_walletDidGetAccountInfoAndExchangeRates() {
-        // given
-        performSignIn()
-
-        // when
-        mockWallet.delegate.walletDidGetAccountInfoAndExchangeRates?(mockWallet)
-
-        // then
-        testStore.receive(.wallet(.accountInfoAndExchangeRates)) { state in
-            state.reloadAfterMultiAddressResponse = true
-        }
-        testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
-            state.reloadAfterMultiAddressResponse = false
-        }
-
-        performSignOut()
-    }
-
-    func test_reducer_handles_walletBackupFailed() {
-        // given
-        performSignIn()
-
-        // when
-        mockWallet.delegate?.didBackupWallet?()
-
-        // then
-        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
-        testStore.receive(.wallet(.handleWalletBackup))
-
-        performSignOut()
-    }
-
-    func test_reducer_handles_walletBackupSuccess() {
-        // given
-        performSignIn()
-
-        // when
-        mockWallet.delegate?.didFailBackupWallet?()
-
-        // then
-        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
-        testStore.receive(.wallet(.handleWalletBackup))
-
-        performSignOut()
-    }
-
-    func test_reducer_handles_walletFailedToGetHistory_with_an_error_message() {
-        // given
-        performSignIn()
-
-        // when
-        let errorMessage = "an error message"
-        mockWallet.delegate?.didFailGetHistory?(errorMessage)
-
-        // then
-        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
-        testStore.receive(.wallet(.handleFailToLoadHistory(errorMessage))) { state in
-            state.displayWalletAlertContent = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.balancesGeneric
-            )
-        }
-
-        performSignOut()
-    }
-
-    func test_reducer_handles_walletFailedToGetHistory_with_an_empty_error_message() {
-        // given
-        performSignIn()
-
-        // when
-        let emptyErrorMessage = ""
-        mockWallet.delegate?.didFailGetHistory?(emptyErrorMessage)
-
-        // then
-        testStore.receive(.wallet(.handleFailToLoadHistory(emptyErrorMessage))) { state in
-            state.displayWalletAlertContent = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
-            )
-        }
-
-        performSignOut()
-    }
-
     // MARK: - Helpers
 
     private func performSignIn(file: StaticString = #file, line: UInt = #line) {
@@ -372,5 +217,3 @@ final class LoggedInReducerTests: XCTestCase {
         )
     }
 }
-
-// swiftlint:enable type_body_length

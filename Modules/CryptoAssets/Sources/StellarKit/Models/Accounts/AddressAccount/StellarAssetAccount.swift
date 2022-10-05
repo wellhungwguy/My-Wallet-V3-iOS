@@ -2,17 +2,17 @@
 
 import PlatformKit
 
-public struct StellarAssetAccount: Equatable {
+struct StellarAssetAccount: Equatable {
 
-    public let address: StellarAssetAddress
-    public let accountAddress: String
-    public let name: String
-    public let description: String
-    public let sequence: Int
-    public let subentryCount: UInt
-    public let walletIndex: Int
+    let address: StellarAssetAddress
+    let accountAddress: String
+    let name: String
+    let description: String
+    let sequence: Int
+    let subentryCount: UInt
+    let walletIndex: Int
 
-    public init(
+    init(
         accountAddress: String,
         name: String,
         description: String,

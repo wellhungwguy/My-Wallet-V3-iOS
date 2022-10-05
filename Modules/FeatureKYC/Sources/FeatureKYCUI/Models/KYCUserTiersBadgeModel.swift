@@ -14,7 +14,7 @@ struct KYCUserTiersBadgeModel {
         // Note that we are only accounting for `KYCTier1` and `KYCTier2`.
         // Currently we aren't supporting other tiers outside of that.
         // If we add additional types to `KYC.Tier` we'll want to update this.
-        guard tiers.count > 0 else { return nil }
+        guard tiers.isNotEmpty else { return nil }
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else { return nil }
         guard let tier2 = tiers.filter({ $0.tier == .tier2 }).first else { return nil }
         let locked = tier1.state == .none && tier2.state == .none

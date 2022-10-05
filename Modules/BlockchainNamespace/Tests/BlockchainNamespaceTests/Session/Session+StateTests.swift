@@ -105,7 +105,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertEqual(state.get(blockchain.session.state.preference.value), true)
+            try XCTAssertTrue(state.get(blockchain.session.state.preference.value))
             try XCTAssertEqual(
                 object[userId, "blockchain.session.state.preference.value"].unwrap() as? Bool,
                 true
@@ -130,7 +130,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
+            try XCTAssertTrue(state.get(blockchain.app.configuration.test.shared.preference))
             try XCTAssertEqual(
                 object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true
@@ -143,7 +143,7 @@ final class SessionStateTests: XCTestCase {
             let object = state.data.preferences.object(
                 forKey: "blockchain.session.state"
             )
-            try XCTAssertEqual(state.get(blockchain.app.configuration.test.shared.preference), true)
+            try XCTAssertTrue(state.get(blockchain.app.configuration.test.shared.preference))
             try XCTAssertEqual(
                 object["ø", "blockchain.app.configuration.test.shared.preference"].unwrap() as? Bool,
                 true

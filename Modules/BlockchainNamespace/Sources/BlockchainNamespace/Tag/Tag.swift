@@ -226,8 +226,7 @@ extension Tag {
     ) throws -> Tag where Descendant: Collection, Descendant.Element == Name {
         var result = self
         for name in descendant {
-            let tag = try result.child(named: name)
-            result = (try? tag.node.protonym.map { try Tag(id: $0, in: language) }) ?? tag
+            result = try result.child(named: name)
         }
         return result
     }
@@ -236,7 +235,7 @@ extension Tag {
         guard let child = children[name] else {
             throw error(message: "\(self) does not have a child '\(name)' - it has children: \(children)")
         }
-        return child
+        return child.protonym ?? child
     }
 }
 
@@ -368,7 +367,8 @@ extension Tag: Codable {
         let container = try decoder.singleValueContainer()
         let language = decoder.userInfo[.language] as? Language ?? Language.root.language
         let id = try container.decode(String.self)
-        try self.init(id: id, in: language)
+        let tag = try Self.init(id: id, in: language)
+        self = tag.protonym ?? tag
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -397,6 +397,10 @@ extension I_blockchain_db_collection where Self: L {
 
     public subscript(value: String) -> Tag.KeyTo<Self> {
         Tag.KeyTo(id: self, context: [id: value])
+    }
+
+    public subscript<Value>(value: Value) -> Tag.KeyTo<Self> where Value: Sendable, Value: Hashable & CustomStringConvertible {
+        Tag.KeyTo(id: self, context: [id: value.description])
     }
 
     public subscript(event: Tag.Event) -> Tag.KeyTo<Self> {

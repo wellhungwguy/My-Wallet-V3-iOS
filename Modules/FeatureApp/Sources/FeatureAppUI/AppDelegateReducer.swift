@@ -7,6 +7,7 @@ import DIKit
 import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
+import MoneyKit
 import NetworkKit
 import ObservabilityKit
 import PlatformKit
@@ -98,7 +99,6 @@ public struct AppDelegateState: Equatable {
 }
 
 /// The reducer of the app delegate that describes the effects for each action.
-// swiftlint:disable closure_body_length
 let appDelegateReducer = Reducer<
     AppDelegateState, AppDelegateAction, AppDelegateEnvironment
 > { state, action, environment in
@@ -119,7 +119,7 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
-                .refreshPolygonERC20AssetsCache()
+                .refreshOtherERC20AssetsCache()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),

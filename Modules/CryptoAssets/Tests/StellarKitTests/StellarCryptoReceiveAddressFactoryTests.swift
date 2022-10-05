@@ -17,6 +17,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
     override func tearDown() {
         sut = nil
         address = nil
+        super.tearDown()
     }
 
     func testInvalidAddress() throws {
@@ -43,7 +44,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
-        XCTAssertEqual(address.memo, nil)
+        XCTAssertNil(address.memo)
         XCTAssertEqual(address.label, StellarTestData.label)
     }
 
@@ -91,7 +92,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
-        XCTAssertEqual(address.memo, nil)
+        XCTAssertNil(address.memo)
         XCTAssertEqual(address.label, StellarTestData.label)
     }
 

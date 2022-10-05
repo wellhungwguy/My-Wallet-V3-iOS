@@ -4,11 +4,17 @@ import BigInt
 import MoneyKit
 
 public enum EVMNetwork: String, Hashable, CaseIterable, Encodable {
+    case avalanceCChain = "AVAX"
+    case binanceSmartChain = "BNB"
     case ethereum = "ETH"
     case polygon = "MATIC"
 
     public var name: String {
         switch self {
+        case .avalanceCChain:
+            return "Avalanche C-Chain"
+        case .binanceSmartChain:
+            return "Binance Smart Chain"
         case .ethereum:
             return "Ethereum"
         case .polygon:
@@ -22,6 +28,10 @@ public enum EVMNetwork: String, Hashable, CaseIterable, Encodable {
             return 1
         case .polygon:
             return 137
+        case .binanceSmartChain:
+            return 56
+        case .avalanceCChain:
+            return 43114
         }
     }
 
@@ -34,6 +44,10 @@ public enum EVMNetwork: String, Hashable, CaseIterable, Encodable {
 
     public var assetModel: AssetModel {
         switch self {
+        case .avalanceCChain:
+            return .avax
+        case .binanceSmartChain:
+            return .bnb
         case .ethereum:
             return .ethereum
         case .polygon:
@@ -43,6 +57,10 @@ public enum EVMNetwork: String, Hashable, CaseIterable, Encodable {
 
     public var cryptoCurrency: CryptoCurrency {
         switch self {
+        case .avalanceCChain:
+            return .avax
+        case .binanceSmartChain:
+            return .bnb
         case .ethereum:
             return .ethereum
         case .polygon:
@@ -55,6 +73,10 @@ extension AssetModel {
 
     public var evmNetwork: EVMNetwork? {
         switch self {
+        case .avax:
+            return .avalanceCChain
+        case .bnb:
+            return .binanceSmartChain
         case .ethereum:
             return .ethereum
         case .polygon:
@@ -83,6 +105,10 @@ extension AssetModelType.ERC20ParentChain {
 
     public var evmNetwork: EVMNetwork {
         switch self {
+        case .avax:
+            return .avalanceCChain
+        case .bnb:
+            return .binanceSmartChain
         case .ethereum:
             return .ethereum
         case .polygon:

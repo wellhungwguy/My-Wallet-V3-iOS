@@ -14,32 +14,32 @@ extension TimeInterval {
     }
 
     /// Represents minutes in seconds using the Gregorian calendar
-    public static func minutes(_ minutes: UInt) -> TimeInterval {
+    public static func minutes(_ minutes: Int) -> TimeInterval {
         TimeInterval(minutes) * duration(of: .minute)
     }
 
     /// Represents hours in s..dateIntervaeconds using the Gregorian calendar
-    public static func hours(_ hours: UInt) -> TimeInterval {
+    public static func hours(_ hours: Int) -> TimeInterval {
         TimeInterval(hours) * .duration(of: .hour)
     }
 
     /// Represents days in seconds using the Gregorian calendar
-    public static func days(_ hours: UInt) -> TimeInterval {
+    public static func days(_ hours: Int) -> TimeInterval {
         TimeInterval(hours) * .duration(of: .day)
     }
 
     /// Represents weeks in seconds using the Gregorian calendar
-    public static func weeks(_ weeks: UInt) -> TimeInterval {
+    public static func weeks(_ weeks: Int) -> TimeInterval {
         TimeInterval(weeks) * .duration(of: .weekOfMonth)
     }
 
     /// Represents a number of typical months in seconds using the Gregorian calendar
-    public static func months(_ months: UInt) -> TimeInterval {
+    public static func months(_ months: Int) -> TimeInterval {
         TimeInterval(months) * .duration(of: .month)
     }
 
     /// Represents a number of typical years in seconds using the Gregorian calendar
-    public static func years(_ years: UInt) -> TimeInterval {
+    public static func years(_ years: Int) -> TimeInterval {
         TimeInterval(years) * .duration(of: .year)
     }
 

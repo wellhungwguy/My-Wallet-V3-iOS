@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ToolKit
 
 public protocol RecoveryPhraseStatusProviding {
-    var isRecoveryPhraseVerified: Bool { get }
-    var isRecoveryPhraseVerifiedPublisher: AnyPublisher<Bool, Never> { get }
+    var isRecoveryPhraseVerifiedAtomic: Atomic<Bool> { get }
+    var isRecoveryPhraseVerified: AnyPublisher<Bool, Never> { get }
     var fetchTriggerSubject: PassthroughSubject<Void, Never> { get }
 }

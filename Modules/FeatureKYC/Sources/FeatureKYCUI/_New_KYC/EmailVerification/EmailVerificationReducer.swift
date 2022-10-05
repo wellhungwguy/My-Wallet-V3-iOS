@@ -119,8 +119,7 @@ let emailVerificationReducer = Reducer.combine(
             )
         }
     ),
-    Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> {
-        state, action, environment in
+    Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> { state, action, environment in
         struct TimerIdentifier: Hashable {}
         switch action {
         case .closeButtonTapped:

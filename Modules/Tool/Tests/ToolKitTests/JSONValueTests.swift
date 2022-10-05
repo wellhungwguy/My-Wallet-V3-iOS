@@ -6,10 +6,7 @@ import XCTest
 final class JSONValueTests: XCTestCase {
 
     func testEncodableSupport() throws {
-        guard let jsonData = jsonString.data(using: .utf8) else {
-            XCTFail()
-            return
-        }
+        let jsonData = Data(jsonString.utf8)
 
         // Test able to decode a JSONValue from the json data.
         let decodedFirstAttempt = try JSONDecoder().decode(JSONValue.self, from: jsonData)

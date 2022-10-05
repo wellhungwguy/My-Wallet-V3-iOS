@@ -56,7 +56,6 @@ public enum Constants {
                 "https://support.blockchain.com/hc/en-us/articles/209564506-Make-a-Wallet-Backup"
             }
 
-            // swiftlint:disable:next line_length
             public static let recoveryFailureSupport = "https://support.blockchain.com/hc/en-us/requests/new?ticket_form_id=360003112491"
             public static let learnMore = "https://support.blockchain.com/hc/en-us/articles/4404679303700"
             public static let contactSupport = "https://support.blockchain.com/hc/en-us"

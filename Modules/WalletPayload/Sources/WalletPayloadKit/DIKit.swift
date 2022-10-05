@@ -22,6 +22,7 @@ extension DependencyContainer {
 
         factory { () -> ForgetWalletAPI in
             ForgetWallet(
+                legacyForgetWallet: DIKit.resolve(),
                 walletRepo: DIKit.resolve(),
                 walletState: DIKit.resolve(),
                 walletPersistence: DIKit.resolve()
@@ -236,21 +237,13 @@ extension DependencyContainer {
         }
 
         single { () -> MnemonicAccessAPI in
-            MnemonicAccessProvider(
-                legacyProvider: DIKit.resolve(),
-                nativeProvider: DIKit.resolve(),
-                nativeWalletFeatureFlag: { nativeWalletFlagEnabled() }
+            MnemonicAccessService(
+                walletHolder: DIKit.resolve()
             )
         }
 
         factory { () -> MnemonicVerificationStatusProvider in
             provideMnemonicVerificationStatus(
-                walletHolder: DIKit.resolve()
-            )
-        }
-
-        factory { () -> NativeMnemonicAccessAPI in
-            MnemonicAccessService(
                 walletHolder: DIKit.resolve()
             )
         }
@@ -264,12 +257,6 @@ extension DependencyContainer {
         factory { PayloadCrypto() as PayloadCryptoAPI }
 
         factory { AESCryptor() as AESCryptorAPI }
-
-        // MARK: Wallet Upgrade
-
-        factory { WalletUpgradeService() as WalletUpgradeServicing }
-
-        factory { WalletUpgradeJSService() as WalletUpgradeJSServicing }
     }
     // swiftlint:enable closure_body_length
 }

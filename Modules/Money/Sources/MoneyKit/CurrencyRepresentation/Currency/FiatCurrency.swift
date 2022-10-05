@@ -1,8 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
-
 /**
  A fiat currency.
 

@@ -23,8 +23,14 @@ protocol TransactionPushClientAPI: AnyObject {
 protocol TransactionFeeClientAPI {
 
     func fees(
-        cryptoCurrency: CryptoCurrency
+        network: EVMNetwork,
+        contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError>
+
+    func newFees(
+        network: EVMNetwork,
+        contractAddress: String?
+    ) -> AnyPublisher<NewTransactionFeeResponse, NetworkError>
 }
 
 final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
@@ -36,6 +42,10 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
 
         static func fees(network: EVMNetwork) -> String {
             switch network {
+            case .avalanceCChain:
+                return "/currency/evm/fees/AVAX"
+            case .binanceSmartChain:
+                return "/currency/evm/fees/BNB"
             case .ethereum:
                 return "/mempool/fees/eth"
             case .polygon:
@@ -79,31 +89,26 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
     }
 
     func fees(
-        cryptoCurrency: CryptoCurrency
-    ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
-        fees(
-            contractAddress: cryptoCurrency.assetModel.kind.erc20ContractAddress,
-            network: network(from: cryptoCurrency)
-        )
-    }
-
-    private func network(from cryptoCurrency: CryptoCurrency) -> EVMNetwork {
-        guard let network = cryptoCurrency.assetModel.evmNetwork else {
-            let code = cryptoCurrency.code
-            let chain = cryptoCurrency.assetModel.kind.erc20ParentChain?.rawValue ?? ""
-            fatalError("Incompatible Asset: '\(code)', chain: '\(chain)'.")
-        }
-        return network
-    }
-
-    private func fees(
-        contractAddress: String?,
-        network: EVMNetwork
+        network: EVMNetwork,
+        contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         var parameters: [URLQueryItem] = []
         if let contractAddress = contractAddress {
             parameters.append(URLQueryItem(name: "contractAddress", value: contractAddress))
         }
+        let request = requestBuilder.get(
+            path: Endpoint.fees(network: network),
+            parameters: parameters
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func newFees(
+        network: EVMNetwork,
+        contractAddress: String?
+    ) -> AnyPublisher<NewTransactionFeeResponse, NetworkError> {
+        let parameters: [URLQueryItem] = contractAddress
+            .flatMap { [URLQueryItem(name: "identifier", value: $0)] } ?? []
         let request = requestBuilder.get(
             path: Endpoint.fees(network: network),
             parameters: parameters

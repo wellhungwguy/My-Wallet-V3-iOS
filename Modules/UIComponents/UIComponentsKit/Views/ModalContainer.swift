@@ -224,34 +224,38 @@ struct ModalContainer_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ModalContainer(
-                onClose: { print("Close") }
-            ) {
-                Color.red
-            }
+                onClose: { print("Close") },
+                content: {
+                    Color.red
+                }
+            )
 
             ModalContainer(
                 title: "My Modal",
-                onClose: { print("Close") }
-            ) {
-                Color.red
-            }
+                onClose: { print("Close") },
+                content: {
+                    Color.red
+                }
+            )
 
             ModalContainer(
                 title: "My Modal",
                 subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                onClose: { print("Close") }
-            ) {
-                Color.red
-            }
+                onClose: { print("Close") },
+                content: {
+                    Color.red
+                }
+            )
 
             ModalContainer(
                 title: "My Modal",
                 subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 headerStyle: .small,
-                onClose: { print("Close") }
-            ) {
-                Color.red
-            }
+                onClose: { print("Close") },
+                content: {
+                    Color.red
+                }
+            )
 
             ModalContainer(
                 title: "My Modal",

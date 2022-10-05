@@ -3,6 +3,7 @@
 import AnalyticsKit
 import BlockchainComponentLibrary
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -54,7 +55,7 @@ final class MajorProductBlockedAnnouncement: OneTimeAnnouncement, ActionableAnno
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.legacy]
+        [AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

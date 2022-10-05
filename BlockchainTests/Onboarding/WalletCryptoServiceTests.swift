@@ -23,7 +23,6 @@ class MockRecorder: Recording {
 
 class WalletCryptoServiceTests: XCTestCase {
 
-    var walletManager: WalletManager!
     var service: WalletCryptoServiceAPI!
 
     var cancellables = Set<AnyCancellable>()
@@ -36,10 +35,7 @@ class WalletCryptoServiceTests: XCTestCase {
             DependencyContainer.walletPayloadKit
             DependencyContainer.blockchain
         }
-        let walletManager: WalletManager = container.resolve()
-        _ = walletManager.fetchJSContext()
         let service: WalletCryptoServiceAPI = container.resolve()
-        self.walletManager = walletManager
         self.service = service
     }
 

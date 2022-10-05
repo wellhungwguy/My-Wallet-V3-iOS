@@ -139,4 +139,22 @@ final class TagBlockchainSchemaTests: XCTestCase {
             ]
         )
     }
+
+    func test_protonym() throws {
+
+        do {
+            let tag = blockchain.ux.transaction.enter.amount.button.confirm.tap[]
+            XCTAssertEqual(tag.id, "blockchain.ux.transaction.enter.amount.button.confirm.event.select")
+        }
+
+        do {
+            let tag = try AnyDecoder().decode(Tag.self, from: "blockchain.ux.transaction.enter.amount.button.confirm.tap")
+            XCTAssertEqual(tag.id, "blockchain.ux.transaction.enter.amount.button.confirm.event.select")
+        }
+
+        do {
+            let ref = try AnyDecoder().decode(Tag.Reference.self, from: "blockchain.ux.transaction.enter.amount.button.confirm.tap")
+            XCTAssertEqual(ref.tag.id, "blockchain.ux.transaction.enter.amount.button.confirm.event.select")
+        }
+    }
 }

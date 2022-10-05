@@ -52,7 +52,10 @@ public struct AccountListView: View {
                             blockchain.ux.asset.account: account
                         ]
                     )
-                    PrimaryDivider()
+
+                    if __accounts.last != account {
+                        PrimaryDivider()
+                    }
                 }
                 switch kycStatus {
                 case .none, .unverified, .inReview:

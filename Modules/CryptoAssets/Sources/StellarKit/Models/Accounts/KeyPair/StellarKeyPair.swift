@@ -2,15 +2,15 @@
 
 import PlatformKit
 
-public struct StellarKeyPair: KeyPair {
-    public var secret: String {
+struct StellarKeyPair {
+    var secret: String {
         privateKey.secret
     }
 
-    public var accountID: String
-    public var privateKey: StellarPrivateKey
+    let accountID: String
+    let privateKey: StellarPrivateKey
 
-    public init(accountID: String, secret: String) {
+    init(accountID: String, secret: String) {
         self.accountID = accountID
         privateKey = StellarPrivateKey(secret: secret)
     }

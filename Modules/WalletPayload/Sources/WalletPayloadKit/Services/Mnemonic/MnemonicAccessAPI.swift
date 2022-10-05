@@ -19,25 +19,11 @@ public protocol MnemonicAccessAPI {
     /// Returns a `AnyPublisher<Mnemonic, MnemonicAccessError>` emitting
     /// a Mnemonic if and only if the mnemonic is not double encrypted
     var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> { get }
-
-    /// Returns a `AnyPublisher<Mnemonic, MnemonicAccessError>` using optionally a second password
-    /// - Parameter secondPassword: An optional `String` value for a double encrypted wallet
-    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError>
-
-    /// Returns a `AnyPublisher<Mnemonic, MnemonicAccessError>` emitting a Mnemonic.
-    /// This will prompt the user to enter the second password if needed.
-    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> { get }
 }
-
-// MARK: "Proxies"
-
-public protocol NativeMnemonicAccessAPI: MnemonicAccessAPI {}
-
-public protocol LegacyMnemonicAccessAPI: MnemonicAccessAPI {}
 
 // MARK: - Implementation
 
-final class MnemonicAccessService: NativeMnemonicAccessAPI {
+final class MnemonicAccessService: MnemonicAccessAPI {
 
     var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         walletHolder.walletStatePublisher
@@ -57,25 +43,11 @@ final class MnemonicAccessService: NativeMnemonicAccessAPI {
             .eraseToAnyPublisher()
     }
 
-    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
-        mnemonic
-    }
-
     private let walletHolder: WalletHolderAPI
 
     init(
         walletHolder: WalletHolderAPI
     ) {
         self.walletHolder = walletHolder
-    }
-
-    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
-        guard let secondPassword = secondPassword else {
-            return mnemonic
-        }
-        guard secondPassword.isEmpty else {
-            fatalError("iOS doesn't support second password")
-        }
-        return mnemonic
     }
 }

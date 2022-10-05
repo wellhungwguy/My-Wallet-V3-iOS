@@ -55,8 +55,7 @@ final class WelcomeReducerTests: XCTestCase {
                 walletCreationService: .mock(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
                 accountRecoveryService: MockAccountRecoveryService(),
-                checkReferralClient: MockCheckReferralClient(),
-                nativeWalletEnabled: { .just(false) }
+                checkReferralClient: MockCheckReferralClient()
             )
         )
     }

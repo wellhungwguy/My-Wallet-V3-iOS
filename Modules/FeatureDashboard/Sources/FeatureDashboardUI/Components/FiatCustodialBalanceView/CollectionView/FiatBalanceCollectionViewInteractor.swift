@@ -129,7 +129,7 @@ extension FiatBalanceCollectionViewInteractor {
         app
             .modePublisher()
             .asObservable()
-            .map { $0 != .defi }
+            .map { $0 != .pkw }
             .catchAndReturn(false)
     }
 

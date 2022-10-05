@@ -8,7 +8,6 @@ extension AnalyticsEvents.New {
     public enum Receive: AnalyticsEvent {
         public var type: AnalyticsEventType { .nabu }
 
-        case receiveCurrencySelected(accountType: AccountType, currency: String)
         case receiveDetailsCopied(accountType: AccountType, currency: String)
         case receiveDomainReverseResolved
 

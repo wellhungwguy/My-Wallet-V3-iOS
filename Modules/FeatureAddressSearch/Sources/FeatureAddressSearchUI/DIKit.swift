@@ -3,7 +3,6 @@
 import DIKit
 import FeatureAddressSearchDomain
 import UIKit
-import UIKitExtensions
 
 extension DependencyContainer {
 

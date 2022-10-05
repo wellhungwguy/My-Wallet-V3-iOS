@@ -79,24 +79,27 @@ public struct AppModeSwitcherView: View {
             }
 
             PrimaryRow(
-                title: AppMode.defi.displayName,
+                title: AppMode.pkw.displayName,
                 caption: nil,
                 subtitle: defiSubtitleString,
-                description: defiDescriptionString
-            ) {
-                Icon
-                    .wallet
-                    .accentColor(.semantic.defi)
-                    .frame(width: 24, height: 24)
-            } trailing: {
-                if viewStore.currentAppMode == .defi {
-                    checkMarkIcon
-                } else {
-                    chevronIcon
+                description: defiDescriptionString,
+                leading: {
+                    Icon
+                        .wallet
+                        .accentColor(.semantic.defi)
+                        .frame(width: 24, height: 24)
+                },
+                trailing: {
+                    if viewStore.currentAppMode == .pkw {
+                        checkMarkIcon
+                    } else {
+                        chevronIcon
+                    }
+                },
+                action: {
+                    viewStore.send(.onDefiTapped)
                 }
-            } action: {
-                viewStore.send(.onDefiTapped)
-            }
+            )
         }
         .padding(.bottom, Spacing.padding6)
     }

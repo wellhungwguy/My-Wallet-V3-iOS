@@ -247,8 +247,7 @@ struct WelcomeView_Previews: PreviewProvider {
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     recaptchaService: NoOpGoogleRecatpchaService(),
-                    buildVersionProvider: { "Test version" },
-                    nativeWalletEnabled: { .just(false) }
+                    buildVersionProvider: { "Test version" }
                 )
             )
         )

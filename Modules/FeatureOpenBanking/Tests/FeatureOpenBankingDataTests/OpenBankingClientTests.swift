@@ -7,9 +7,6 @@ import FeatureOpenBankingTestFixture
 @testable import NetworkKit
 import TestKit
 
-// swiftlint:disable line_length
-// swiftlint:disable single_test_class
-
 final class OpenBankingTests: XCTestCase {
 
     var app: AppProtocol!

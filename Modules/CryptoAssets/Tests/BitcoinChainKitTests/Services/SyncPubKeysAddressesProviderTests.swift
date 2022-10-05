@@ -10,7 +10,6 @@ import TestKit
 import ToolKit
 import XCTest
 
-// swiftlint:disable line_length type_body_length function_body_length
 final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
     private static let timeout: TimeInterval = 10

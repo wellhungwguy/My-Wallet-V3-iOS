@@ -1,16 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import MoneyKit
-import PlatformKit
 
-public struct BitcoinCashAssetAddress: AssetAddress, Importable, Hashable {
+public struct BitcoinCashAssetAddress: Hashable {
 
-    public let isImported: Bool
     public let publicKey: String
     public let cryptoCurrency: CryptoCurrency = .bitcoinCash
 
-    public init(isImported: Bool = false, publicKey: String) {
-        self.isImported = isImported
+    public init(publicKey: String) {
         self.publicKey = publicKey
     }
 }

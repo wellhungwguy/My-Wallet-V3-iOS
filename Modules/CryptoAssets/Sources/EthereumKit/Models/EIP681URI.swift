@@ -51,10 +51,7 @@ public struct EIP681URI {
                 destination: address,
                 amount: nil
             )
-        } else if cryptoCurrency == .ethereum {
-            self.address = address
-            method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
-        } else if cryptoCurrency == .polygon {
+        } else if cryptoCurrency.isCoin, cryptoCurrency.assetModel.evmNetwork != nil {
             self.address = address
             method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
         } else {

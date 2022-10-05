@@ -29,8 +29,8 @@ let package = Package(
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.3.0"
         ),
-        .package(path: "../Test"),
-        .package(path: "../Extensions")
+        .package(path: "../Extensions"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(

@@ -36,10 +36,8 @@ public class AccountPickerEnvironment {
         closeButtonTapped: @escaping () -> Void,
         search: @escaping (String?) -> Void,
         sections: @escaping () -> AnyPublisher<[AccountPickerRow], Never>,
-        // swiftlint:disable line_length
         updateSingleAccounts: @escaping (Set<AnyHashable>) -> AnyPublisher<[AnyHashable: AccountPickerRow.SingleAccount.Balances], Error>,
         updateAccountGroups: @escaping (Set<AnyHashable>) -> AnyPublisher<[AnyHashable: AccountPickerRow.AccountGroup.Balances], Error>,
-        // swiftlint:enable line_length
         header: @escaping () -> AnyPublisher<HeaderStyle, Error>
     ) {
         self.mainQueue = mainQueue

@@ -239,6 +239,10 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
     }
 
+    private var isRecoveryPhraseVerified: Bool {
+        recoveryStatusProviding.isRecoveryPhraseVerifiedAtomic.value
+    }
+
     private func next() {
         let action: Action
         var state: State
@@ -249,14 +253,20 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             action = .next(state)
         case .introduction:
             cacheSuite.set(true, forKey: Constant.introScreenShown)
-            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawal : .backupAfterIntroduction
+            state = isRecoveryPhraseVerified ? .withdrawal : .backupAfterIntroduction
             action = .next(state)
         case .backupAfterIntroduction, .backup:
-            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawalAfterBackup : .end
+            state = isRecoveryPhraseVerified ? .withdrawalAfterBackup : .end
             action = .next(state)
         case .send:
-            state = hasShownCustodyIntroductionScreen ? .backup : .introduction
-            state = recoveryStatusProviding.isRecoveryPhraseVerified ? .withdrawal : state
+            switch (isRecoveryPhraseVerified, hasShownCustodyIntroductionScreen) {
+            case (false, false):
+                state = .introduction
+            case (false, true):
+                state = .backup
+            case (true, _):
+                state = .withdrawal
+            }
             action = .next(state)
         case .activity,
              .buy,

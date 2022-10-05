@@ -22,7 +22,7 @@ final class PricesScreenInteractor {
             enabledCurrenciesService
                 .allEnabledCryptoCurrencies
                 .filter { currency in
-                    if appMode == .defi {
+                    if appMode == .pkw {
                         return currency.supports(product: .privateKey)
                     }
 

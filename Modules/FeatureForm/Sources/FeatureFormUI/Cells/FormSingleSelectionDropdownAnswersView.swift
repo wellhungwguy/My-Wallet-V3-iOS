@@ -7,6 +7,7 @@ import SwiftUI
 struct FormSingleSelectionDropdownAnswersView: View {
 
     @Binding var answers: [FormAnswer]
+    @Binding var showAnswerState: Bool
     @State private var selectionPanelOpened: Bool = false
 
     var body: some View {
@@ -38,7 +39,7 @@ struct FormSingleSelectionDropdownAnswersView: View {
                selectedAnswer.children?.isEmpty == false
             {
                 if let index = answers.firstIndex(of: selectedAnswer) {
-                    FormRecursiveAnswerView(answer: $answers[index]) {
+                    FormRecursiveAnswerView(answer: $answers[index], showAnswerState: $showAnswerState) {
                         EmptyView()
                     }
                 }
@@ -75,7 +76,7 @@ private struct FormDropdownAnswerSelectionView: View {
     var body: some View {
         let isSelected = answer.checked == true
         HStack(spacing: Spacing.padding1) {
-            Text(answer.text)
+            Text(answer.text ?? "")
                 .typography(.paragraph2)
                 .multilineTextAlignment(.leading)
 
@@ -125,7 +126,8 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                     regex: nil,
                     checked: nil
                 )
-            ]
+            ],
+            showAnswerState: false
         )
 
         PreviewHelper(
@@ -161,16 +163,18 @@ struct FormSingleSelectionDropdownAnswersView_Previews: PreviewProvider {
                     regex: nil,
                     checked: nil
                 )
-            ]
+            ],
+            showAnswerState: false
         )
     }
 
     struct PreviewHelper: View {
 
         @State var answers: [FormAnswer]
+        @State var showAnswerState: Bool
 
         var body: some View {
-            FormSingleSelectionDropdownAnswersView(answers: $answers)
+            FormSingleSelectionDropdownAnswersView(answers: $answers, showAnswerState: $showAnswerState)
                 .padding()
         }
     }

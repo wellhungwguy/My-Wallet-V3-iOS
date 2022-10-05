@@ -68,7 +68,7 @@ final class PortfolioBalanceChangeProvider {
     private let disposeBag = DisposeBag()
     // MARK: - Setup
 
-    public init(
+    init(
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         app: AppProtocol = resolve()
@@ -95,7 +95,7 @@ final class PortfolioBalanceChangeProvider {
                     .eraseError()
             }
             .tryMap { currentBalance, previousBalance in
-                guard appMode != .defi else {
+                guard appMode != .pkw else {
                     return  PortfolioBalanceChange(
                         balance: currentBalance,
                         changePercentage: nil,

@@ -165,6 +165,17 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)
             .map(\.inverted)
+            .do(
+                onNext: { input in
+                    app.post(
+                        event: blockchain.ux.transaction.enter.amount.swap.input,
+                        context: [
+                            blockchain.ux.transaction.enter.amount.swap.input.crypto: input == .crypto,
+                            blockchain.ux.transaction.enter.amount.swap.input.fiat: input == .fiat
+                        ]
+                    )
+                }
+            )
             .bindAndCatch(to: interactor.activeInputRelay)
             .disposed(by: disposeBag)
 

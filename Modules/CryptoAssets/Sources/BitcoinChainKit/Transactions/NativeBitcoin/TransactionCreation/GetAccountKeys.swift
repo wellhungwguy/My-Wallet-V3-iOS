@@ -279,19 +279,22 @@ func getAccountKeys(
     walletMnemonicProvider: WalletMnemonicProvider
 ) -> AnyPublisher<AccountKeyContext, Error> {
     walletMnemonicProvider()
-        .map(\.words)
-        .flatMap { mnemonic -> AnyPublisher<WalletCore.HDWallet, Error> in
-            guard let wallet = WalletCore.HDWallet(mnemonic: mnemonic, passphrase: "") else {
-                fatalError("Invalid Mnemonic")
-            }
-            return .just(wallet)
-        }
-        .map { wallet -> AccountKeyContext in
-            AccountKeyContext(
-                wallet: wallet,
-                coin: account.coin.derivationCoinType,
-                accountIndex: UInt32(account.index)
-            )
+        .map { mnemonic in
+            getAccountKeyContext(for: account, mnemonic: mnemonic)
         }
         .eraseToAnyPublisher()
+}
+
+func getAccountKeyContext(
+    for account: BitcoinChainAccount,
+    mnemonic: Mnemonic
+) -> AccountKeyContext {
+    guard let wallet = WalletCore.HDWallet(mnemonic: mnemonic.words, passphrase: "") else {
+        fatalError("Invalid Mnemonic")
+    }
+    return AccountKeyContext(
+        wallet: wallet,
+        coin: account.coin.derivationCoinType,
+        accountIndex: UInt32(account.index)
+    )
 }

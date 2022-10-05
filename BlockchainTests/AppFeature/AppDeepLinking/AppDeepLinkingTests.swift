@@ -16,6 +16,7 @@ class AppDeepLinkingTests: XCTestCase {
     var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
+        super.setUp()
         cancellables = []
         mockDeeplinkHandler = MockURIHandler()
         mockBlockchainHandler = MockURIHandler()

@@ -4,7 +4,7 @@ import BigInt
 import MoneyKit
 import PlatformKit
 
-public struct StellarTransactionFee: TransactionFee, Decodable {
+struct StellarTransactionFee: TransactionFee, Decodable {
 
     enum CodingKeys: String, CodingKey {
         case regular
@@ -12,16 +12,16 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         case limits
     }
 
-    public static var cryptoType: HasPathComponent = CryptoCurrency.stellar
-    public static let `default` = StellarTransactionFee(
+    static let cryptoType: HasPathComponent = CryptoCurrency.stellar
+    static let `default` = StellarTransactionFee(
         regular: 100,
         priority: 10000
     )
 
-    public var regular: CryptoValue
-    public var priority: CryptoValue
+    let regular: CryptoValue
+    let priority: CryptoValue
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
@@ -29,7 +29,7 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         priority = CryptoValue(amount: BigInt(priorityFee), currency: .stellar)
     }
 
-    public init(regular: Int, priority: Int) {
+    init(regular: Int, priority: Int) {
         self.regular = CryptoValue(amount: BigInt(regular), currency: .stellar)
         self.priority = CryptoValue(amount: BigInt(priority), currency: .stellar)
     }

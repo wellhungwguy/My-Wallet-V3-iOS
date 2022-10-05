@@ -11,7 +11,7 @@ final class NativeWalletLogger: NativeWalletLoggerAPI {
 
     func log(message: String, metadata: [String: String]?) {
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        LoggerStore.default.storeMessage(
+        LoggerStore.shared.storeMessage(
             label: "wallet.native",
             level: .debug,
             message: message,

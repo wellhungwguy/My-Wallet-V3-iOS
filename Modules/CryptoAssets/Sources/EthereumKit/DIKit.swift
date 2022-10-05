@@ -62,12 +62,39 @@ extension DependencyContainer {
             ) as CryptoAsset
         }
 
+        factory(tag: CryptoCurrency.avax) {
+            EVMAsset(
+                network: .avalanceCChain,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .avalanceCChain
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
+        factory(tag: CryptoCurrency.bnb) {
+            EVMAsset(
+                network: .binanceSmartChain,
+                repository: DIKit.resolve(),
+                addressFactory: EthereumExternalAssetAddressFactory(
+                    enabledCurrenciesService: DIKit.resolve(),
+                    network: .binanceSmartChain
+                ),
+                errorRecorder: DIKit.resolve(),
+                exchangeAccountProvider: DIKit.resolve(),
+                kycTiersService: DIKit.resolve()
+            ) as CryptoAsset
+        }
+
         // MARK: Other
 
         factory { () -> EthereumTxNotesStrategyAPI in
             EthereumTxNotesStrategy(
                 repository: DIKit.resolve(),
-                bridge: DIKit.resolve(),
                 updater: DIKit.resolve()
             )
         }
@@ -113,30 +140,23 @@ extension DependencyContainer {
 
         factory { EthereumAccountService() as EthereumAccountServiceAPI }
 
-        factory { EthereumKeyPairProvider() }
+        factory { EthereumKeyPairDeriver() }
 
-        factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
+        factory {
+            EthereumKeyPairProvider(
+                mnemonicAccess: DIKit.resolve(),
+                deriver: DIKit.resolve()
+            )
+        }
 
         factory { EthereumSigner() as EthereumSignerAPI }
 
         factory { () -> EthereumTransactionDispatcherAPI in
-            let bridge: EthereumWalletBridgeAPI = DIKit.resolve()
-            return EthereumTransactionDispatcher(
+            EthereumTransactionDispatcher(
                 keyPairProvider: DIKit.resolve(),
                 transactionSendingService: DIKit.resolve(),
                 recordLastTransaction: { transaction in
-                    nativeWalletFlagEnabled()
-                        .flatMap { isEnabled
-                            -> AnyPublisher<EthereumTransactionPublished, Never> in
-                            guard isEnabled else {
-                                return bridge.recordLast(transaction: transaction)
-                                    .asPublisher()
-                                    .replaceError(with: transaction)
-                                    .eraseToAnyPublisher()
-                            }
-                            return .just(transaction)
-                        }
-                        .eraseToAnyPublisher()
+                    .just(transaction)
                 }
             )
         }
@@ -162,14 +182,5 @@ extension DependencyContainer {
         enum EthereumAccountService {
             static let isContractAddressCache = String(describing: Self.self)
         }
-    }
-}
-
-extension AnyKeyPairProvider where Pair == EthereumKeyPair {
-
-    fileprivate static func ethereum(
-        ethereumKeyPairProvider: EthereumKeyPairProvider = resolve()
-    ) -> AnyKeyPairProvider<Pair> {
-        AnyKeyPairProvider<Pair>(provider: ethereumKeyPairProvider)
     }
 }

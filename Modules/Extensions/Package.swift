@@ -41,7 +41,11 @@ let package = Package(
                 "AsyncExtensions",
                 "CombineExtensions",
                 "SwiftExtensions",
-                "SwiftUIExtensions"
+                "SwiftUIExtensions",
+                .target(
+                    name: "UIKitExtensions",
+                    condition: .when(platforms: [.iOS])
+                )
             ]
         ),
         .target(
@@ -65,6 +69,10 @@ let package = Package(
         ),
         .target(
             name: "SwiftUIExtensions",
+            dependencies: ["SwiftExtensions"]
+        ),
+        .target(
+            name: "UIKitExtensions",
             dependencies: ["SwiftExtensions"]
         ),
         .testTarget(

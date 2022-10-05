@@ -23,9 +23,6 @@ final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
     }
 
     func start(with cryptoAccount: CryptoAccount?, order: OrderDetails?, from presenter: UIViewController) {
-        analyticsRecorder.record(event:
-            AnalyticsEvents.New.SimpleBuy.buySellViewed(type: .buy)
-        )
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,

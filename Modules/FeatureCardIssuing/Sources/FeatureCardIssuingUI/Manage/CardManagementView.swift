@@ -39,7 +39,6 @@ struct CardManagementView: View {
     }
 
     @ViewBuilder var content: some View {
-        // swiftlint:disable closure_body_length
         WithViewStore(store) { viewStore in
             ScrollView {
                 LazyVStack {

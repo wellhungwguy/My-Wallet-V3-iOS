@@ -12,8 +12,6 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-// swiftlint:disable file_length
-
 enum TransitionType: Equatable {
     case push
     case modal
@@ -151,7 +149,6 @@ public protocol TransactionFlowListener: AnyObject {
     func dismissTransactionFlow()
 }
 
-// swiftlint:disable type_body_length
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
     TransactionFlowInteractable,
     AccountPickerListener,
@@ -315,15 +312,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     }
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
-                    if let selectedSource = state.source as? CryptoAccount,
-                       let target = target as? CryptoAccount
-                    {
-                        self?.analyticsHook.onReceiveAccountSelected(
-                            selectedSource,
-                            target: target,
-                            action: state.action
-                        )
-                    }
                 default:
                     break
                 }
@@ -343,7 +331,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         }
         // the top most view controller is at the root of the flow, so dismissing it means closing the flow itself.
         router?.closeFlow()
-        analyticsHook.onClose(action: action)
     }
 
     func enterAmountDidTapBack() {
@@ -353,7 +340,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     func closeFlow() {
         transactionModel.process(action: .resetFlow)
         router?.closeFlow()
-        analyticsHook.onClose(action: action)
     }
 
     func checkoutDidTapBack() {
@@ -361,7 +347,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectSourceAccount(account: BlockchainAccount) {
-        analyticsHook.onFromAccountSelected(account, action: action)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
 
@@ -381,7 +366,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     private func doCloseFlow() {
         router?.closeFlow()
-        analyticsHook.onClose(action: action)
     }
 
     private func handleStateChange(previousState: TransactionState?, newState: TransactionState) {
@@ -390,7 +374,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         } else {
             initialStep = newState.step == .initial
             showFlowStep(previousState: previousState, newState: newState)
-            analyticsHook.onStepChanged(newState)
         }
     }
 
@@ -843,6 +826,27 @@ extension TransactionFlowInteractor {
                     default:
                         break
                     }
+                    switch action {
+                    case .sourceAccountSelected(let source):
+                        state.set(blockchain.ux.transaction.source.id, to: source.currencyType.code)
+                    case .targetAccountSelected(let target):
+                        state.set(blockchain.ux.transaction.source.target.id, to: target.currencyType.code)
+                    default:
+                        break
+                    }
+                }
+                app.state.transaction { state in
+                    switch tx.step {
+                    case .initial:
+                        state.set(blockchain.ux.transaction.source.label, to: tx.source?.label)
+                        state.set(blockchain.ux.transaction.source.is.private.key, to: tx.source is NonCustodialAccount)
+                        state.set(blockchain.ux.transaction.source.analytics.type, to: tx.source is NonCustodialAccount ? "USERKEY" : "TRADING")
+                        state.set(blockchain.ux.transaction.source.target.label, to: tx.destination?.label)
+                        state.set(blockchain.ux.transaction.source.target.is.private.key, to: tx.destination is NonCustodialAccount)
+                        state.set(blockchain.ux.transaction.source.target.analytics.type, to: tx.destination is NonCustodialAccount ? "USERKEY" : "TRADING")
+                    default:
+                        break
+                    }
 
                     switch action {
                     case .fatalTransactionError:
@@ -861,9 +865,13 @@ extension TransactionFlowInteractor {
                             state.set(blockchain.ux.transaction.previous.payment.method.id, to: source.identifier)
                         }
                     case .sourceAccountSelected(let source):
-                        state.set(blockchain.ux.transaction.source.id, to: source.currencyType.code)
+                        state.set(blockchain.ux.transaction.source.label, to: source.label)
+                        state.set(blockchain.ux.transaction.source.is.private.key, to: source is NonCustodialAccount)
+                        state.set(blockchain.ux.transaction.source.analytics.type, to: tx.source is NonCustodialAccount ? "USERKEY" : "TRADING")
                     case .targetAccountSelected(let target):
-                        state.set(blockchain.ux.transaction.source.target.id, to: target.currencyType.code)
+                        state.set(blockchain.ux.transaction.source.target.label, to: target.label)
+                        state.set(blockchain.ux.transaction.source.target.is.private.key, to: target is NonCustodialAccount)
+                        state.set(blockchain.ux.transaction.source.target.analytics.type, to: tx.destination is NonCustodialAccount ? "USERKEY" : "TRADING")
                     case .executeTransaction:
                         state.set(
                             blockchain.ux.transaction.source.target.count.of.completed,
@@ -878,6 +886,12 @@ extension TransactionFlowInteractor {
                     app.post(value: tx.source?.identifier, of: blockchain.ux.transaction.event.validate.source)
                 case .validateTransactionAfterKYC:
                     app.post(event: blockchain.ux.transaction.event.validate.transaction)
+                case .sourceAccountSelected:
+                    app.post(event: blockchain.ux.transaction.event.did.select.source)
+                case .targetAccountSelected:
+                    app.post(event: blockchain.ux.transaction.event.did.select.target)
+                case .returnToPreviousStep:
+                    app.post(event: blockchain.ux.transaction.event.did.go.back)
                 default:
                     break
                 }
@@ -919,8 +933,6 @@ extension TransactionFlowInteractor {
                     }
                 case .inProgress:
                     app.post(event: blockchain.ux.transaction.event.in.progress)
-                case .enterAmount:
-                    app.post(event: blockchain.ux.transaction.event.enter.amount)
                 case .enterAddress:
                     app.post(event: blockchain.ux.transaction.event.enter.address)
                 case .linkABank:
@@ -929,8 +941,6 @@ extension TransactionFlowInteractor {
                     app.post(event: blockchain.ux.transaction.event.link.a.card)
                 case .linkPaymentMethod:
                     app.post(event: blockchain.ux.transaction.event.link.payment.method)
-                case .confirmDetail:
-                    app.post(event: blockchain.ux.transaction.event.checkout)
                 case .selectSource:
                     app.post(
                         event: blockchain.ux.transaction.event.select.source,
@@ -1000,21 +1010,21 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back.to.enter.amount) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .showEnterAmount)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.go.back) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .returnToPreviousStep)
         }
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.show.wire.transfer.instructions) { @MainActor [weak self] _ async throws in
             guard let transactionModel = self?.transactionModel else { return }
             let state = try await transactionModel.state.await()
             guard state.step != .linkBankViaWire else { return }
@@ -1024,7 +1034,7 @@ extension TransactionFlowInteractor {
         .subscribe()
         .store(in: &bag)
 
-        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ in
+        app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .resetFlow)
         }

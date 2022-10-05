@@ -66,6 +66,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let feePresenter: LineItemCellPresenting
     private let paymentMethodPresenter: LineItemCellPresenting
 
+    // swiftlint:disable function_body_length
     init(
         event: BuySellActivityItemEvent,
         interactor: BuySellActivityDetailsInteractor,

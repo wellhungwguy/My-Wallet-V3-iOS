@@ -4,23 +4,35 @@ import BlockchainComponentLibrary
 import FeatureFormDomain
 import SwiftUI
 
-public struct PrimaryForm: View {
+public enum PrimaryFormSubmitButtonMode {
+    case onlyEnabledWhenAllAnswersValid
+    case submitButtonAlwaysEnabled // open ended answers are validated and shown in red if not valid
+}
+
+public struct PrimaryForm<Header: View>: View {
 
     @Binding private var form: FeatureFormDomain.Form
+    @State private var showAnswersState: Bool = false
     private let submitActionTitle: String
     private let submitActionLoading: Bool
     private let submitAction: () -> Void
+    private let submitButtonMode: PrimaryFormSubmitButtonMode
+    private let headerIcon: () -> Header
 
     public init(
         form: Binding<FeatureFormDomain.Form>,
         submitActionTitle: String,
         submitActionLoading: Bool,
-        submitAction: @escaping () -> Void
+        submitAction: @escaping () -> Void,
+        submitButtonMode: PrimaryFormSubmitButtonMode = .onlyEnabledWhenAllAnswersValid,
+        @ViewBuilder headerIcon: @escaping () -> Header
     ) {
         _form = form
         self.submitActionTitle = submitActionTitle
         self.submitActionLoading = submitActionLoading
         self.submitAction = submitAction
+        self.submitButtonMode = submitButtonMode
+        self.headerIcon = headerIcon
     }
 
     public var body: some View {
@@ -28,32 +40,91 @@ public struct PrimaryForm: View {
             LazyVStack(spacing: Spacing.padding4) {
 
                 if let header = form.header {
-                    VStack {
-                        Icon.user
-                            .frame(width: 32.pt, height: 32.pt)
-                        Text(header.title)
-                            .typography(.title2)
-                        Text(header.description)
-                            .typography(.paragraph1)
+                    VStack(spacing: Spacing.padding3) {
+                        headerIcon()
+                        if let title = header.title, title.isNotEmpty {
+                            Text(title)
+                                .typography(.title2)
+                        }
+                        if let description = header.description, description.isNotEmpty {
+                            Text(description)
+                                .typography(.paragraph1)
+                        }
                     }
                     .multilineTextAlignment(.center)
                     .foregroundColor(.semantic.title)
                 }
 
                 ForEach($form.nodes) { question in
-                    FormQuestionView(question: question)
+                    FormQuestionView(question: question, showAnswersState: $showAnswersState)
                 }
 
+                let isSubmitButtonDisabled: Bool = {
+                    switch submitButtonMode {
+                    case .onlyEnabledWhenAllAnswersValid:
+                        return !form.nodes.isValidForm
+                    case .submitButtonAlwaysEnabled:
+                        return false
+                    }
+                }()
                 PrimaryButton(
                     title: submitActionTitle,
                     isLoading: submitActionLoading,
-                    action: submitAction
+                    action: {
+                        switch submitButtonMode {
+                        case .onlyEnabledWhenAllAnswersValid:
+                            submitAction()
+                        case .submitButtonAlwaysEnabled:
+                            showAnswersState = true
+                            if form.nodes.isValidForm {
+                                submitAction()
+                            }
+                        }
+                    }
                 )
-                .disabled(!form.nodes.isValidForm)
+                .disabled(isSubmitButtonDisabled)
             }
             .padding(Spacing.padding3)
             .background(Color.semantic.background)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                stopEditing()
+            }
         }
+    }
+}
+
+#if canImport(UIKit)
+extension View {
+
+    func stopEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+#else
+extension View {
+
+    func stopEditing() {
+        // out of luck
+    }
+}
+#endif
+
+extension PrimaryForm where Header == EmptyView {
+
+    public init(
+        form: Binding<FeatureFormDomain.Form>,
+        submitActionTitle: String,
+        submitActionLoading: Bool,
+        submitAction: @escaping () -> Void
+    ) {
+        self.init(
+            form: form,
+            submitActionTitle: submitActionTitle,
+            submitActionLoading: submitActionLoading,
+            submitAction: submitAction,
+            headerIcon: EmptyView.init
+        )
     }
 }
 
@@ -75,7 +146,8 @@ struct PrimaryForm_Previews: PreviewProvider {
                 form: $form,
                 submitActionTitle: "Next",
                 submitActionLoading: false,
-                submitAction: {}
+                submitAction: {},
+                headerIcon: {}
             )
         }
     }
