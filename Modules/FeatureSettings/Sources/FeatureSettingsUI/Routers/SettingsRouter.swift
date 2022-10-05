@@ -167,17 +167,13 @@ final class SettingsRouter: SettingsRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    func makeViewController() -> SettingsViewController {
+    func makeViewController() -> BaseScreenViewController {
         let interactor = SettingsScreenInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
         )
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         return SettingsViewController(presenter: presenter)
-    }
-
-    func presentSettings() {
-        navigationRouter.present(viewController: makeViewController(), using: .modalOverTopMost)
     }
 
     func dismiss() {
@@ -242,11 +238,6 @@ final class SettingsRouter: SettingsRouterAPI {
                     self?.showFiatTradingCurrencySelectionScreen(selectedCurrency: currency)
                 })
                 .disposed(by: disposeBag)
-        case .launchWebLogin:
-            let presenter = WebLoginScreenPresenter(service: WebLoginQRCodeService())
-            let viewController = WebLoginScreenViewController(presenter: presenter)
-            viewController.modalPresentationStyle = .overFullScreen
-            navigationRouter.present(viewController: viewController)
         case .promptGuidCopy:
             guidRepositoryAPI.guid.asSingle()
                 .map(weak: self) { _, value -> String in

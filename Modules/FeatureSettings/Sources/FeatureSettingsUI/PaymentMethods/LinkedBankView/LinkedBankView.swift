@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxSwift
 
 final class LinkedBankView: UIView {

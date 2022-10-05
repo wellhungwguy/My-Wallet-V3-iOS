@@ -1,14 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableNavigation
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-public final class BadgeTableViewCell: UITableViewCell {
+final class BadgeTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
-    public var presenter: BadgeCellPresenting! {
+    var presenter: BadgeCellPresenting! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -41,7 +42,7 @@ public final class BadgeTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    override public func awakeFromNib() {
+    override func awakeFromNib() {
         super.awakeFromNib()
         shimmer()
         titleLabel.textColor = .titleText
@@ -49,7 +50,7 @@ public final class BadgeTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

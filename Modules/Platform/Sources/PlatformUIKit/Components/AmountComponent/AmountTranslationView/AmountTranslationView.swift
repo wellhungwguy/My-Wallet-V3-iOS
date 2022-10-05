@@ -98,7 +98,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                         app: app,
                         lastPurchasePublisher: presenter.lastPurchasePublisher,
                         maxLimitPublisher: presenter.maxLimitPublisher,
-                        onValueSelected: { [app, presenter] (prefillMoneyValue, size) in
+                        onValueSelected: { [app, presenter] prefillMoneyValue, size in
                             app.post(
                                 event: blockchain.app.configuration.transaction.quickfill,
                                 context: [

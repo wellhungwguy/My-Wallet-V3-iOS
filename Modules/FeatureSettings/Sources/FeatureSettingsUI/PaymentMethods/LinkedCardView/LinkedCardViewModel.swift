@@ -2,6 +2,7 @@
 
 import FeatureCardPaymentDomain
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 
 final class LinkedCardViewModel {

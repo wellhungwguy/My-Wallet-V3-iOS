@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-public final class LinkedCardTableViewCell: UITableViewCell {
+final class LinkedCardTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
-    public var presenter: LinkedCardCellPresenter! {
+    var presenter: LinkedCardCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }

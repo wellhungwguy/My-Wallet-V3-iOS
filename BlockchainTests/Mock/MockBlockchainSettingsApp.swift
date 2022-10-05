@@ -4,8 +4,8 @@ import FeatureSettingsDomain
 import Foundation
 import PlatformKit
 
-final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
-    internal init(
+final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI, CloudBackupConfiguring {
+    init(
         biometryEnabled: Bool = false,
         browserIdentities: String? = nil,
         cloudBackupEnabled: Bool = true,

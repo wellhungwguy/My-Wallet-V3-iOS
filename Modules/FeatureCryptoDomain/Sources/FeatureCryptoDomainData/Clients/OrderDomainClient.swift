@@ -13,16 +13,6 @@ public protocol OrderDomainClientAPI {
 
 public final class OrderDomainClient: OrderDomainClientAPI {
 
-    // MARK: - Type
-
-    private enum Path {
-        static let order = [
-            "users",
-            "domain-campaigns",
-            "claim"
-        ]
-    }
-
     // MARK: - Properties
 
     private let networkAdapter: NetworkAdapterAPI
@@ -44,7 +34,7 @@ public final class OrderDomainClient: OrderDomainClientAPI {
         payload: PostOrderRequest
     ) -> AnyPublisher<PostOrderResponse, NabuNetworkError> {
         let request = requestBuilder.post(
-            path: Path.order,
+            path: "/users/domain-campaigns/claim",
             body: try? payload.encode(),
             authenticated: true
         )!

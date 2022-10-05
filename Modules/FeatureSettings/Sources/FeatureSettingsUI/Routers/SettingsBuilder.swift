@@ -6,17 +6,17 @@ import Localization
 import PlatformKit
 import UIKit
 
-public protocol SettingsBuilding: AnyObject {
+protocol SettingsBuilding: AnyObject {
     func removeCardPaymentMethodViewController(cardData: CardData) -> UIViewController
     func removeBankPaymentMethodViewController(beneficiary: Beneficiary) -> UIViewController
 }
 
-public final class SettingsBuilder: SettingsBuilding {
+final class SettingsBuilder: SettingsBuilding {
 
     private let cardDeletionService: PaymentMethodDeletionServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
 
-    public init(
+    init(
         cardDeletionService: PaymentMethodDeletionServiceAPI = resolve(),
         beneficiariesService: BeneficiariesServiceAPI = resolve()
     ) {
@@ -27,7 +27,7 @@ public final class SettingsBuilder: SettingsBuilding {
     /// Generate remove card payment method view controller
     /// - Parameter cardData: CC data
     /// - Returns: The view controller
-    public func removeCardPaymentMethodViewController(cardData: CardData) -> UIViewController {
+    func removeCardPaymentMethodViewController(cardData: CardData) -> UIViewController {
         let data = PaymentMethodRemovalData(cardData: cardData)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Card.remove,
@@ -39,7 +39,7 @@ public final class SettingsBuilder: SettingsBuilding {
     /// Generate remove bank payment method view controller
     /// - Parameter cardData: Bank data
     /// - Returns: The view controller
-    public func removeBankPaymentMethodViewController(beneficiary: Beneficiary) -> UIViewController {
+    func removeBankPaymentMethodViewController(beneficiary: Beneficiary) -> UIViewController {
         let data = PaymentMethodRemovalData(beneficiary: beneficiary)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Bank.remove,

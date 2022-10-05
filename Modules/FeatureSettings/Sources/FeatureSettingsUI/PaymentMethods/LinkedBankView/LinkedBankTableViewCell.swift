@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public final class LinkedBankTableViewCell: UITableViewCell {
+import PlatformUIKit
 
-    // MARK: - Public Properites
+final class LinkedBankTableViewCell: UITableViewCell {
 
-    public var viewModel: LinkedBankViewModelAPI! {
+    // MARK: - Properties
+
+    var viewModel: LinkedBankViewModelAPI! {
         didSet {
             linkedBankView.viewModel = viewModel
         }
@@ -16,7 +18,7 @@ public final class LinkedBankTableViewCell: UITableViewCell {
 
     // MARK: - Setup
 
-    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(linkedBankView)
         linkedBankView.fillSuperview()

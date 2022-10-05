@@ -122,45 +122,6 @@ extension LocalizationConstants.Settings {
         public static let action = NSLocalizedString("Update", comment: "Update")
     }
 
-    public enum WebLogin {
-        public enum Instruction {
-            public static let one = NSLocalizedString(
-                "Go to login.blockchain.com on your computer.",
-                comment: "Go to login.blockchain.com on your computer."
-            )
-            public static let two = NSLocalizedString(
-                "Select Login via mobile.",
-                comment: "Select Login via mobile."
-            )
-            public static let three = NSLocalizedString(
-                "Using your computer's camera, scan the QR code below.",
-                comment: "Using your computer's camera, scan the QR code below."
-            )
-        }
-
-        public enum ErrorAlert {
-            public static let title = NSLocalizedString(
-                "Oops!",
-                comment: "Generic error bottom sheet title"
-            )
-            public static let message = NSLocalizedString(
-                "Something went wrong. Please try again.",
-                comment: "Generic error bottom sheet message"
-            )
-        }
-
-        public static let title = NSLocalizedString(
-            "Login to Web Wallet",
-            comment: "Login to Web Wallet"
-        )
-        public static let notice = NSLocalizedString(
-            "Never share your mobile pairing QR code with anyone. Anyone who can view this QR code can withdraw funds.\nBlockchain.com will never ask to view or receive your mobile pairing QR code.",
-            comment: "Warning regarding QR code security."
-        )
-        public static let showQRCode = NSLocalizedString("Show QR Code", comment: "Show QR Code")
-        public static let hideQRCode = NSLocalizedString("Hide QR Code", comment: "Hide QR Code")
-    }
-
     public enum MobileCodeEntry {
         public static let title = NSLocalizedString(
             "Enter 5-character code",

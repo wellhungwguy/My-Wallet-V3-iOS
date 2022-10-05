@@ -129,20 +129,19 @@ enum SettingsSectionType: Int, Equatable {
         }
 
         enum CommonCellType: String {
-            case loginToWebWallet
-            case webLogin
+            case addresses
+            case cardIssuing
             case changePassword
             case changePIN
-            case rateUs
-            case termsOfService
-            case privacyPolicy
+            case contactSupport
             case cookiesPolicy
             case logout
-            case addresses
-            case contactSupport
-            case cardIssuing
             case notifications
+            case privacyPolicy
+            case rateUs
+            case termsOfService
             case userDeletion
+            case webLogin
         }
     }
 }

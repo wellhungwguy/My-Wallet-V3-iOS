@@ -1,10 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxSwift
 
 final class LinkedCardView: UIView {
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     var viewModel: LinkedCardViewModel! {
         willSet {

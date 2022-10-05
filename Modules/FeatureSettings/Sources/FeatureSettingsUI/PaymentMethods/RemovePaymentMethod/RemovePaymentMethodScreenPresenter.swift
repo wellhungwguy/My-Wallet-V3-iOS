@@ -13,7 +13,7 @@ final class RemovePaymentMethodScreenPresenter {
 
     typealias AccessibilityIDs = Accessibility.Identifier.Settings.RemovePaymentMethodScreen
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let badgeImageViewModel: BadgeImageViewModel
     let titleLabelContent: LabelContent

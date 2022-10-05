@@ -40,13 +40,13 @@ class CloudBackupSwitchCellPresenter: SwitchCellPresenting {
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
 
-    init(appSettings: BlockchainSettings.App, credentialsStore: CredentialsStoreAPI) {
+    init(cloudSettings: CloudBackupConfiguring, credentialsStore: CredentialsStoreAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.cloudBackup,
             descriptors: .settings
         )
         switchViewPresenting = CloudBackupSwitchViewPresenter(
-            appSettings: appSettings,
+            cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )
     }

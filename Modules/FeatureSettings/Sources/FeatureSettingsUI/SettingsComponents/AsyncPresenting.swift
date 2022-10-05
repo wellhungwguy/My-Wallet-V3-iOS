@@ -5,6 +5,6 @@ import Foundation
 /// `SettingsAsyncPresenting` is used in a few presenters in `SettingsScreenPresenter`
 /// (e.g. `BadgeCellPresenting`). If the cell is loading, the `SettingsScreenAction` that
 /// is returned should be `.none`
-public protocol AsyncPresenting {
+protocol AsyncPresenting {
     var isLoading: Bool { get }
 }

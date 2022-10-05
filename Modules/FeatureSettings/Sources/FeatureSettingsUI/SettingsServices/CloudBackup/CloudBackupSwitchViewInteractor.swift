@@ -31,21 +31,21 @@ class CloudBackupSwitchViewInteractor: SwitchViewInteracting {
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    private let appSettings: BlockchainSettings.App
+    private let cloudSettings: CloudBackupConfiguring
     private let credentialsStore: CredentialsStoreAPI
     private lazy var setup: Void = Observable
-        .just(appSettings.cloudBackupEnabled)
+        .just(cloudSettings.cloudBackupEnabled)
         .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
 
-    init(appSettings: BlockchainSettings.App, credentialsStore: CredentialsStoreAPI) {
-        self.appSettings = appSettings
+    init(cloudSettings: CloudBackupConfiguring, credentialsStore: CredentialsStoreAPI) {
+        self.cloudSettings = cloudSettings
         self.credentialsStore = credentialsStore
     }
 
     private func updateCloudBackup(enabled: Bool) {
-        appSettings.cloudBackupEnabled = enabled
+        cloudSettings.cloudBackupEnabled = enabled
         if !enabled {
             credentialsStore.erase()
         }

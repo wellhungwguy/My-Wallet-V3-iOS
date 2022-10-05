@@ -20,7 +20,7 @@ final class UpdateEmailScreenPresenter {
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.UpdateEmail
     private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateEmail
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     var leadingButton: Screen.Style.LeadingButton {
         .back

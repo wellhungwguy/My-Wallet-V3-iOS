@@ -14,16 +14,13 @@ import ToolKit
 
 final class DeepLinkHandler: DeepLinkHandling {
 
-    private let appSettings: BlockchainSettings.App
     private let kycSettings: KYCSettingsAPI
     private let app: AppProtocol
 
     init(
-        appSettings: BlockchainSettings.App = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
-        self.appSettings = appSettings
         self.kycSettings = kycSettings
         self.app = app
     }

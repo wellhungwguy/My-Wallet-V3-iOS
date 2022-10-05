@@ -7,7 +7,7 @@ import RxSwift
 
 final class SwitchTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
     var presenter: SwitchCellPresenting! {
         didSet {

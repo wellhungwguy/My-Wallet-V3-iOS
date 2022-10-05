@@ -16,7 +16,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LinkedCardView" customModule="PlatformUIKit">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LinkedCardView" customModule="FeatureSettingsUI">
             <connections>
                 <outlet property="badgeImageView" destination="4ka-7Y-WOs" id="wPB-D9-F8S"/>
                 <outlet property="cardLimitLabel" destination="UJf-BR-sWJ" id="mxb-QN-eU0"/>

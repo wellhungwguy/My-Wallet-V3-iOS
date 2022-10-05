@@ -3,10 +3,11 @@
 import BlockchainComponentLibrary
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxDataSources
 
-public protocol LinkedBankViewModelAPI {
+protocol LinkedBankViewModelAPI {
     var nameLabelContent: LabelContent { get }
     var limitLabelContent: LabelContent { get }
     var accountLabelContent: LabelContent { get }
@@ -17,7 +18,7 @@ public protocol LinkedBankViewModelAPI {
     var tapRelay: PublishRelay<Void> { get }
 }
 
-public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
+final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 
     // MARK: - Types
 
@@ -25,19 +26,19 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 
     // MARK: - Properties
 
-    public let data: Beneficiary
+    let data: Beneficiary
 
-    public let nameLabelContent: LabelContent
-    public let limitLabelContent: LabelContent
-    public let accountLabelContent: LabelContent
-    public let badgeImageViewModel: BadgeImageViewModel
+    let nameLabelContent: LabelContent
+    let limitLabelContent: LabelContent
+    let accountLabelContent: LabelContent
+    let badgeImageViewModel: BadgeImageViewModel
 
-    public let tapRelay = PublishRelay<Void>()
-    public let isCustomButtonEnabled: Bool = false
+    let tapRelay = PublishRelay<Void>()
+    let isCustomButtonEnabled: Bool = false
 
     // MARK: - Setup
 
-    public init(data: Beneficiary) {
+    init(data: Beneficiary) {
         self.data = data
 
         badgeImageViewModel = .template(
@@ -78,13 +79,13 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 }
 
 extension BeneficiaryLinkedBankViewModel: IdentifiableType {
-    public var identity: String {
+    var identity: String {
         "\(data.identifier)-\(data.name)-\(data.account)"
     }
 }
 
 extension BeneficiaryLinkedBankViewModel: Equatable {
-    public static func == (lhs: BeneficiaryLinkedBankViewModel, rhs: BeneficiaryLinkedBankViewModel) -> Bool {
+    static func == (lhs: BeneficiaryLinkedBankViewModel, rhs: BeneficiaryLinkedBankViewModel) -> Bool {
         lhs.data == rhs.data
     }
 }

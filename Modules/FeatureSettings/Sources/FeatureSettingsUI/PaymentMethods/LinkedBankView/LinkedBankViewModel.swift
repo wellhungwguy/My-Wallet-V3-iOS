@@ -2,10 +2,11 @@
 
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxDataSources
 
-public final class LinkedBankViewModel: LinkedBankViewModelAPI {
+final class LinkedBankViewModel: LinkedBankViewModelAPI {
 
     // MARK: - Types
 
@@ -13,23 +14,23 @@ public final class LinkedBankViewModel: LinkedBankViewModelAPI {
 
     // MARK: - Properties
 
-    public let data: LinkedBankData
+    let data: LinkedBankData
 
-    public let nameLabelContent: LabelContent
-    public let limitLabelContent: LabelContent
-    public let accountLabelContent: LabelContent
-    public let badgeImageViewModel: BadgeImageViewModel
+    let nameLabelContent: LabelContent
+    let limitLabelContent: LabelContent
+    let accountLabelContent: LabelContent
+    let badgeImageViewModel: BadgeImageViewModel
 
-    public let isCustomButtonEnabled: Bool = true
+    let isCustomButtonEnabled: Bool = true
 
-    public let tapRelay = PublishRelay<Void>()
-    public var tap: Signal<Void> {
+    let tapRelay = PublishRelay<Void>()
+    var tap: Signal<Void> {
         tapRelay.asSignal()
     }
 
     // MARK: - Setup
 
-    public init(data: LinkedBankData) {
+    init(data: LinkedBankData) {
         self.data = data
 
         badgeImageViewModel = .primary(
@@ -67,13 +68,13 @@ public final class LinkedBankViewModel: LinkedBankViewModelAPI {
 }
 
 extension LinkedBankViewModel: IdentifiableType {
-    public var identity: String {
+    var identity: String {
         data.identifier
     }
 }
 
 extension LinkedBankViewModel: Equatable {
-    public static func == (lhs: LinkedBankViewModel, rhs: LinkedBankViewModel) -> Bool {
+    static func == (lhs: LinkedBankViewModel, rhs: LinkedBankViewModel) -> Bool {
         lhs.data == rhs.data
     }
 }

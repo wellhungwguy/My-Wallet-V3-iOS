@@ -19,7 +19,7 @@ extension AppEnvironment {
             app: resolve(),
             appStoreOpener: resolve(),
             backgroundAppHandler: resolve(),
-            blockchainSettings: .shared,
+            blockchainSettings: resolve(),
             blurEffectHandler: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber,
             cacheSuite: resolve(),

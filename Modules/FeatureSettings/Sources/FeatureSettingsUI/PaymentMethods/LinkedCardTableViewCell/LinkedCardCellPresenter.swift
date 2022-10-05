@@ -3,20 +3,21 @@
 import FeatureCardPaymentDomain
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxDataSources
 import RxRelay
 import RxSwift
 import ToolKit
 
-public final class LinkedCardCellPresenter {
+final class LinkedCardCellPresenter {
 
     // MARK: - Private Types
 
     private typealias LocalizationIDs = LocalizationConstants.Settings.Badge
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.LinkedCardCell
 
-    // MARK: - Public
+    // MARK: - Properties
 
     let accessibility: Accessibility = .id(AccessibilityIDs.view)
     let linkedCardViewModel: LinkedCardViewModel
@@ -35,11 +36,11 @@ public final class LinkedCardCellPresenter {
         tapRelay.asSignal()
     }
 
-    public let cardData: CardData
+    let cardData: CardData
 
     private let badgeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
 
-    public init(acceptsUserInteraction: Bool, cardData: CardData) {
+    init(acceptsUserInteraction: Bool, cardData: CardData) {
         self.cardData = cardData
 
         linkedCardViewModel = .init(type: cardData.type)
@@ -103,13 +104,13 @@ public final class LinkedCardCellPresenter {
 }
 
 extension LinkedCardCellPresenter: IdentifiableType {
-    public var identity: String {
+    var identity: String {
         cardData.identifier
     }
 }
 
 extension LinkedCardCellPresenter: Equatable {
-    public static func == (lhs: LinkedCardCellPresenter, rhs: LinkedCardCellPresenter) -> Bool {
+    static func == (lhs: LinkedCardCellPresenter, rhs: LinkedCardCellPresenter) -> Bool {
         lhs.cardData == rhs.cardData
     }
 }

@@ -7,7 +7,7 @@ import PlatformUIKit
 import RxSwift
 import ToolKit
 
-public final class SettingsScreenInteractor {
+final class SettingsScreenInteractor {
 
     // MARK: - Interactors
 
@@ -36,7 +36,6 @@ public final class SettingsScreenInteractor {
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
-    let appSettings: BlockchainSettings.App
     let recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding
     let authenticationCoordinator: AuthenticationCoordinating
 
@@ -44,12 +43,11 @@ public final class SettingsScreenInteractor {
 
     private let disposeBag = DisposeBag()
 
-    public init(
+    init(
         credentialsStore: CredentialsStoreAPI = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
-        appSettings: BlockchainSettings.App = resolve(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
@@ -60,7 +58,6 @@ public final class SettingsScreenInteractor {
         recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
-        self.appSettings = appSettings
         self.settingsService = settingsService
         emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding

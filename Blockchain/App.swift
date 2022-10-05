@@ -155,7 +155,9 @@ func defineDependencies() {
         DependencyContainer.featureCardPaymentData
         DependencyContainer.delegatedSelfCustodyData
         DependencyContainer.blockchainActivity
+        DependencyContainer.blockchainDashboard
         DependencyContainer.blockchainDelegatedSelfCustody
+        DependencyContainer.blockchainSettings
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

@@ -42,9 +42,6 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
                 .init(cellType: .common(.webLogin))
             ]
         )
-        if BuildFlag.isInternal {
-            viewModel.items.append(.init(cellType: .common(.loginToWebWallet)))
-        }
 
         let cardIssuingCellModelDisplay = SettingsCellViewModel(
             cellType: .common(.cardIssuing)

@@ -59,8 +59,6 @@ extension SettingsSectionType.CellType {
                 return .launchChangePassword
             case .changePIN:
                 return .showChangePinScreen
-            case .loginToWebWallet:
-                return .launchWebLogin
             case .webLogin:
                 return .showWebLogin
             case .rateUs:

@@ -19,8 +19,6 @@ extension SettingsSectionType.CellType {
             ]
         case .clipboard(.walletID):
             return [AnalyticsEvents.Settings.settingsWalletIdCopyClick]
-        case .common(.loginToWebWallet):
-            return [AnalyticsEvents.Settings.settingsWebWalletLoginClick]
         case .common(.changePassword):
             return [AnalyticsEvents.Settings.settingsPasswordClick]
         case .common(.changePIN):

@@ -12,8 +12,6 @@ extension SettingsSectionType.CellType.CommonCellType {
         switch self {
         case .rateUs:
             return LocalizationConstants.Settings.rateUs
-        case .loginToWebWallet:
-            return LocalizationConstants.Settings.loginToWebWallet
         case .webLogin:
             return LocalizationConstants.Settings.webLogin
         case .changePassword:
@@ -43,8 +41,6 @@ extension SettingsSectionType.CellType.CommonCellType {
 
     var icon: UIImage? {
         switch self {
-        case .loginToWebWallet:
-            return Icon.phone.uiImage
         case .webLogin:
             return Icon.computer.uiImage
         case .contactSupport:

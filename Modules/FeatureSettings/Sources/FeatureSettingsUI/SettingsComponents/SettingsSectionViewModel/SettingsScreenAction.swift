@@ -8,7 +8,6 @@ import PlatformKit
 /// This enum aggregates possible action types that can be done in the dashboard
 public enum SettingsScreenAction {
     case launchChangePassword
-    case launchWebLogin
     case promptGuidCopy
     case presentTradeLimits
     case launchPIT

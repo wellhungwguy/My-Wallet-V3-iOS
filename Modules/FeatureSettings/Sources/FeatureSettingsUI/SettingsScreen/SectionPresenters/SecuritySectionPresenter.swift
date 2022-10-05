@@ -38,7 +38,7 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
         settingsAuthenticater: AppSettingsAuthenticating,
         recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding,
         authenticationCoordinator: AuthenticationCoordinating,
-        appSettings: BlockchainSettings.App = resolve()
+        cloudSettings: CloudBackupConfiguring = resolve()
     ) {
         smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
             service: smsTwoFactorService
@@ -52,7 +52,7 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
             recoveryStatusProviding: recoveryPhraseStatusProvider
         )
         cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
-            appSettings: appSettings,
+            cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )
     }

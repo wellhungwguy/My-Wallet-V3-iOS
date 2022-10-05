@@ -8,6 +8,5 @@ public protocol SettingsRouterAPI: RoutingPreviousStateEmitterAPI {
     var actionRelay: PublishRelay<SettingsScreenAction> { get }
     var navigationRouter: NavigationRouterAPI { get }
 
-    func presentSettings()
-    func makeViewController() -> SettingsViewController
+    func makeViewController() -> BaseScreenViewController
 }

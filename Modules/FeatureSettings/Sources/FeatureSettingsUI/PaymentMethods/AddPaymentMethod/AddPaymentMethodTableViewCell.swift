@@ -8,7 +8,7 @@ import RxSwift
 
 final class AddPaymentMethodTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
     var presenter: AddPaymentMethodCellPresenter! {
         willSet {

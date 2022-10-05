@@ -5,7 +5,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-public final class SettingsScreenPresenter {
+final class SettingsScreenPresenter {
 
     // MARK: - Types
 
@@ -21,7 +21,7 @@ public final class SettingsScreenPresenter {
 
     let barStyle: Screen.Style.Bar = .lightContent()
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     var sectionObservable: Observable<[SettingsSectionViewModel]> {
         sectionsProvider.sections
@@ -59,7 +59,7 @@ public final class SettingsScreenPresenter {
 
     // MARK: - Init
 
-    public init(
+    init(
         interactor: SettingsScreenInteractor,
         router: SettingsRouterAPI
     ) {
