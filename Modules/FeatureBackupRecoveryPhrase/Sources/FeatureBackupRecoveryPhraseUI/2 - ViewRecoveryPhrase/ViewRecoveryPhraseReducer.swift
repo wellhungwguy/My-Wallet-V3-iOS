@@ -1,0 +1,111 @@
+import BlockchainNamespace
+import ComposableArchitecture
+import UIKit
+
+public enum ViewRecoveryPhraseModule {}
+
+extension ViewRecoveryPhraseModule {
+    public static var reducer: Reducer<ViewRecoveryPhraseState, ViewRecoveryPhraseAction, ViewRecoveryPhraseEnvironment> {
+        .init { state, action, environment in
+            switch action {
+            case .onAppear:
+                return .merge(
+                    environment
+                    .recoveryPhraseVerifyingService
+                    .recoveryPhraseComponents()
+                    .catchToEffect()
+                    .map { result in
+                        switch result {
+                        case .success(let words):
+                            return .onRecoveryPhraseComponentsFetchSuccess(words)
+                        case .failure:
+                            return .onRecoveryPhraseComponentsFetchedFailed
+                        }
+                    },
+                    environment
+                    .recoveryPhraseRepository
+                    .sendExposureAlertEmail()
+                    .fireAndForget()
+                )
+
+            case .onRecoveryPhraseComponentsFetchSuccess(let words):
+                state.availableWords = words
+                return .none
+
+            case .onRecoveryPhraseComponentsFetchedFailed:
+                return .fireAndForget {
+                    environment.onFailed()
+                }
+
+            case .onCopyTap:
+                state.recoveryPhraseCopied = true
+
+                return .merge(
+                    .fireAndForget { [availableWords = state.availableWords] in
+                        UIPasteboard.general.string = availableWords
+                            .map(\.label)
+                            .joined(separator: " ")
+                    },
+                    Effect(value: .onCopyReturn)
+                        .delay(
+                            for: 20,
+                            scheduler: environment.mainQueue
+                        )
+                        .eraseToEffect()
+                )
+            case .onCopyReturn:
+                state.recoveryPhraseCopied = false
+                return .fireAndForget {
+                    clearPasteBoard()
+                }
+
+            case .onBackupToIcloudTap:
+                state.backupLoading = true
+                environment.cloudBackupService.cloudBackupEnabled = true
+                return environment
+                    .recoveryPhraseVerifyingService
+                    .markBackupVerified()
+                    .map { _ in
+                        environment.recoveryPhraseRepository.updateMnemonicBackup()
+                    }
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map { result in
+                        switch result {
+                        case .success:
+                            return .onBackupToIcloudComplete
+                        case .failure:
+                            return .onBackupToIcloudComplete
+                        }
+                    }
+
+            case .onBackupToIcloudComplete:
+                state.backupLoading = false
+                return .fireAndForget {
+                    environment.onIcloudBackedUp()
+                }
+
+            case .onBackupManuallyTap:
+                clearPasteBoard()
+                environment.onNext()
+                return .none
+
+            case .onBlurViewTouch:
+                state.blurEnabled = false
+                return .none
+
+            case .onBlurViewRelease:
+                state.blurEnabled = true
+                return .none
+
+            case .onDoneTap:
+                environment.onDone()
+                return .none
+            }
+        }
+    }
+
+    static func clearPasteBoard() {
+        UIPasteboard.general.string = nil
+    }
+}

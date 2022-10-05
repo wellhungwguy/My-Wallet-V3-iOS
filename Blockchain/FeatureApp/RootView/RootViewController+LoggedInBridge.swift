@@ -363,7 +363,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func startBackupFlow() {
-        backupRouter.start()
+        backupRouter.presentFlow()
     }
 
     func showSettingsView() {

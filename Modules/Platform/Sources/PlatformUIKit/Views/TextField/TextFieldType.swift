@@ -49,10 +49,6 @@ public enum TextFieldType: Hashable {
     /// Current password for changing to new password
     case currentPassword
 
-    /// A single word from the mnemonic used for backup verification.
-    /// The index is the index of the word in the mnemonic.
-    case backupVerification(index: Int)
-
     /// Mobile phone number entry
     case mobile
 
@@ -88,8 +84,6 @@ extension TextFieldType: CustomDebugStringConvertible {
             return "password"
         case .currentPassword:
             return "current-password"
-        case .backupVerification(let index):
-            return "backup-verification-\(index)"
         case .mobile:
             return "mobile-number"
         case .oneTimeCode:
@@ -129,7 +123,6 @@ extension TextFieldType {
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
-             .backupVerification,
              .oneTimeCode,
              .cardNumber,
              .cardCVV:
@@ -182,8 +175,6 @@ extension TextFieldType {
             return .id(AccessibilityId.mobileVerification)
         case .oneTimeCode:
             return .id(AccessibilityId.oneTimeCode)
-        case .backupVerification:
-            return .id(AccessibilityId.backupVerification)
         case .addressLine(let number):
             return .id("\(AccessibilityId.addressLine)-\(number)")
         case .personFullName:
@@ -205,7 +196,6 @@ extension TextFieldType {
     var showsHintWhileTyping: Bool {
         switch self {
         case .email,
-             .backupVerification,
              .addressLine,
              .city,
              .postcode,
@@ -250,7 +240,6 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .email,
-             .backupVerification,
              .addressLine,
              .city,
              .postcode,
@@ -291,8 +280,6 @@ extension TextFieldType {
             return LocalizedString.mobile
         case .oneTimeCode:
             return LocalizedString.oneTimeCode
-        case .backupVerification(index: let index):
-            return index.placeholder
         case .addressLine(let number):
             return "\(LocalizedString.addressLine) \(number)"
         case .city:
@@ -319,7 +306,6 @@ extension TextFieldType {
              .confirmNewPassword,
              .password,
              .currentPassword,
-             .backupVerification,
              .oneTimeCode,
              .description,
              .cryptoAddress,
@@ -349,8 +335,7 @@ extension TextFieldType {
              .personFullName,
              .addressLine:
             return .words
-        case .backupVerification,
-             .password,
+        case .password,
              .currentPassword,
              .newPassword,
              .confirmNewPassword,
@@ -371,7 +356,6 @@ extension TextFieldType {
     var isSecure: Bool {
         switch self {
         case .email,
-             .backupVerification,
              .cardCVV,
              .cardholderName,
              .expirationDate,
@@ -407,7 +391,6 @@ extension TextFieldType {
             return .name
         case .expirationDate,
              .cardCVV,
-             .backupVerification,
              .description,
              .cryptoAddress,
              .memo:
@@ -436,40 +419,6 @@ extension TextFieldType {
             return .postalCode
         case .personFullName:
             return .name
-        }
-    }
-}
-
-extension Int {
-    fileprivate typealias Index = LocalizationConstants.VerifyBackupScreen.Index
-    fileprivate var placeholder: String {
-        switch self {
-        case 0:
-            return Index.first
-        case 1:
-            return Index.second
-        case 2:
-            return Index.third
-        case 3:
-            return Index.fourth
-        case 4:
-            return Index.fifth
-        case 5:
-            return Index.sixth
-        case 6:
-            return Index.seventh
-        case 7:
-            return Index.eighth
-        case 8:
-            return Index.ninth
-        case 9:
-            return Index.tenth
-        case 10:
-            return Index.eleventh
-        case 11:
-            return Index.twelfth
-        default:
-            return ""
         }
     }
 }

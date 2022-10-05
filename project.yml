@@ -296,6 +296,8 @@ packages:
     path: Modules/FeatureUserDeletion
   FeatureSuperAppIntro:
     path: Modules/FeatureSuperAppIntro
+  FeatureBackupRecoveryPhrase:
+    path: Modules/FeatureBackupRecoveryPhrase
   FeaturePaymentsIntegration:
     path: Modules/FeaturePaymentsIntegration
   LinkKit:
@@ -485,6 +487,9 @@ targets:
         product: FraudIntelligence
       - package: FeatureSuperAppIntro
         product: FeatureSuperAppIntro
+      - package: FeatureBackupRecoveryPhrase
+        product: FeatureBackupRecoveryPhrase
+
 
     platform: iOS
     postBuildScripts:

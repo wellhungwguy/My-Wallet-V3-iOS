@@ -12,9 +12,5 @@ extension DependencyContainer {
         factory { PITConnectionStatusProvider() as PITConnectionStatusProviding }
 
         factory { TierLimitsProvider() as TierLimitsProviding }
-
-        factory { () -> RecoveryPhraseStatusProviding in
-            RecoveryPhraseStatusProvider(mnemonicVerificationStatusProvider: DIKit.resolve())
-        }
     }
 }

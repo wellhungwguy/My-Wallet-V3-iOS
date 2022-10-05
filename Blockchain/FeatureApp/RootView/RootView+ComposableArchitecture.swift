@@ -9,10 +9,10 @@ import ComposableArchitectureExtensions
 import ComposableNavigation
 import DIKit
 import FeatureAppUI
+import FeatureBackupRecoveryPhraseUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
-import FeatureSettingsUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -123,14 +123,14 @@ enum RootViewRoute: NavigationRoute {
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
     var app: AppProtocol
-    var backupFundsRouter: BackupFundsRouterAPI
+    var backupFundsRouter: RecoveryPhraseBackupRouterAPI
     var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     var analyticsRecorder: AnalyticsEventRecorderAPI
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
-        backupFundsRouter: BackupFundsRouterAPI,
+        backupFundsRouter: RecoveryPhraseBackupRouterAPI,
         coincore: CoincoreAPI,
         recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding,
         analyticsRecoder: AnalyticsEventRecorderAPI

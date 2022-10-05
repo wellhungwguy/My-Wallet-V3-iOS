@@ -22,7 +22,6 @@ import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureNotificationPreferencesDomain
-import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
 import FeatureWalletConnectData
@@ -136,7 +135,6 @@ func defineDependencies() {
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
         DependencyContainer.blockchain
-        DependencyContainer.featureSettingsData
         DependencyContainer.featureSettingsDomain
         DependencyContainer.featureSettingsUI
         DependencyContainer.remoteNotificationsKit

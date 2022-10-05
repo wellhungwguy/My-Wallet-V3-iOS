@@ -29,7 +29,8 @@ let package = Package(
         .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../FeatureBackupRecoveryPhrase")
     ],
     targets: [
         .target(
@@ -46,7 +47,10 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "UIComponents", package: "UIComponents")
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "UIComponents", package: "UIComponents"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
+                .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase")
             ]
         ),
         .testTarget(

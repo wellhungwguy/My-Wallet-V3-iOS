@@ -70,7 +70,7 @@ extension AppModeSwitcherModule {
                         .fireAndForget {
                             environment
                                 .backupFundsRouter
-                                .start()
+                                .presentFlow()
                         },
                         environment
                             .backupFundsRouter

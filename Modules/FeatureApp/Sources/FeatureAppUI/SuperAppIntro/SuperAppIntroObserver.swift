@@ -3,6 +3,7 @@
 import BlockchainNamespace
 import Combine
 import DIKit
+import FeatureBackupRecoveryPhraseUI
 import FeatureSuperAppIntroUI
 import Foundation
 import SwiftUI

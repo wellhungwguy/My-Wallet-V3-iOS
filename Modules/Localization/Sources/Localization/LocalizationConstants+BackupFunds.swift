@@ -7,97 +7,87 @@ import Foundation
 // MARK: Groups
 
 extension LocalizationConstants {
-    public enum BackupFundsScreen {}
-    public enum RecoveryPhraseScreen {}
-    public enum VerifyBackupScreen {}
+    public enum BackupRecoveryPhrase {
+        public enum ViewIntroScreen {}
+        public enum SkipConfirmScreen {}
+        public enum BackupRecoveryPhraseFailedScreen {}
+        public enum ViewRecoveryPhraseScreen {}
+        public enum ManualBackupRecoveryPhraseScreen {}
+        public enum VerifyRecoveryPhraseScreen {}
+        public enum BackupRecoveryPhraseSuccessScreen {}
+    }
 }
 
 // MARK: BackupFundsScreen
 
-extension LocalizationConstants.BackupFundsScreen {
-
-    public static let title = NSLocalizedString("Secret Private Key Recovery", comment: "Screen title.")
-    public static let action = NSLocalizedString("View Recovery Phrase", comment: "Button titleView Recovery Phrase.")
-
-    public enum Body {
-        public static let partA = NSLocalizedString(
-            "In crypto, when you hold the private keys, you're in control of the funds in your Private Key Wallet. The downside is that WHOEVER holds your private keys can control your Private Key Wallet.",
-            comment: ""
-        )
-        public static let partB = NSLocalizedString(
-            "Warning: If someone has your backup phrase they will have access to your Private Key Wallet and can withdraw funds.",
-            comment: ""
-        )
-        public static let notice = NSLocalizedString(
-            "Blockchain.com will never ask to view or receive your recovery phrase.",
-            comment: ""
-        )
-        public enum List {
-            public static let title = NSLocalizedString(
-                "So you must:",
-                comment: ""
-            )
-            public static let item1 = NSLocalizedString(
-                "1. Write down the 12 word phrase on the next screen in the exact order it appears.",
-                comment: ""
-            )
-            public static let item2 = NSLocalizedString(
-                "2. Keep it safe, ideally on a securely stored piece of paper (in other words, not a digital copy).",
-                comment: ""
-            )
-            public static let item3 = NSLocalizedString(
-                "3. NEVER share your backup phrase with anyone.",
-                comment: ""
-            )
-        }
-    }
+extension LocalizationConstants.BackupRecoveryPhrase {
+    public static let skipButton = NSLocalizedString("Skip", comment: "Skip")
+    public static let doneButton = NSLocalizedString("Done", comment: "Done")
 }
 
-// MARK: RecoveryPhraseScreen
-
-extension LocalizationConstants.RecoveryPhraseScreen {
-    public static let title = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
-    public static let subtitle = NSLocalizedString("Write Down Recovery Phrase", comment: "Write Down Recovery Phrase")
-    public static let description = NSLocalizedString(
-        "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure.",
-        comment: "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure."
-    )
-    public static let copyToClipboard = NSLocalizedString("Copy to Clipboard", comment: "Copy to Clipboard")
-    public static let next = NSLocalizedString("Next", comment: "Next")
+extension LocalizationConstants.BackupRecoveryPhrase.ViewIntroScreen {
+    public static let navigationTitle = NSLocalizedString("Secure Your Private Key Wallet", comment: "Navbar title.")
+    public static let title = NSLocalizedString("Let’s Back Up Your Wallet", comment: "Screen title.")
+    public static let description = NSLocalizedString("In the next few screens, you will get your 12 words to recover your wallets if ever needed in the future.", comment: "Description")
+    public static let rowText1 = NSLocalizedString("If I lose my secret phrase, my funds will be lost forever.", comment: "Row Text 1")
+    public static let rowText2 = NSLocalizedString("If I expose or share my secret phrase to anybody, \n my funds can get stolen.", comment: "Row Text 2")
+    public static let rowText3 = NSLocalizedString("It is my full responsibility to keep my secret phrase secure.", comment: "Row Text 3")
+    public static let backupButton = NSLocalizedString("Back Up Now", comment: "Back Up Now")
+    public static let skipButton = NSLocalizedString("Skip", comment: "Skip")
+    public static let tagBackedUp = NSLocalizedString("Backed Up", comment: "Backed Up")
+    public static let tagNotBackedUp = NSLocalizedString("Not Backed Up", comment: "Not Backed Up")
 }
 
-// MARK: VerifyBackupScreen
+extension LocalizationConstants.BackupRecoveryPhrase.SkipConfirmScreen {
+    public static let title = NSLocalizedString("Are you sure you want to skip your wallet backup?", comment: "Question")
+    public static let description = NSLocalizedString("If you don't create a backup, you risk losing access to your funds permanently.", comment: "Description")
+    public static let confirmButton = NSLocalizedString("Yes, Skip Backup", comment: "Yes, Skip Backup")
+    public static let backupButton = NSLocalizedString("Back Up(Recommended)", comment: "Back Up(Recommended)")
+}
 
-extension LocalizationConstants.VerifyBackupScreen {
-    public static let title = NSLocalizedString(
-        "Verify Your Backup",
-        comment: "Verify Your Backup"
-    )
-    public static let description = NSLocalizedString(
-        "Enter the following words from your Backup Phrase to complete the backup process.",
-        comment: "Enter the following words from your Backup Phrase to complete the backup process."
-    )
-    public static let action = NSLocalizedString(
-        "Verify",
-        comment: "Verify"
-    )
-    public static let errorDescription = NSLocalizedString(
-        "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly",
-        comment: "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly"
-    )
+extension LocalizationConstants.BackupRecoveryPhrase.ViewRecoveryPhraseScreen {
+    public static let navigationTitle = NSLocalizedString("Secure Your Private Key Wallet", comment: "Secure Your Private Key Wallet")
+    public static let title = NSLocalizedString("Your Recovery Phrase", comment: "Title")
+    public static let caption = NSLocalizedString("These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.", comment: "These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.")
+    public static let doneButton = NSLocalizedString("Done", comment: "Done")
+    public static let backupToIcloudButton = NSLocalizedString("Backup to iCloud", comment: "Backup to iCloud")
+    public static let backupManuallyButton = NSLocalizedString("Backup Manually", comment: "Backup Manually")
+    public static let copyButton = NSLocalizedString("Copy", comment: "Copy")
+    public static let copiedButton = NSLocalizedString("Copied for 2 Minutes", comment: "Copied for 2 Minutes")
+    public static let tagBackedUp = NSLocalizedString("Backed Up", comment: "Backed Up")
+    public static let tagNotBackedUp = NSLocalizedString("Not Backed Up", comment: "Not Backed Up")
+}
 
-    public enum Index {
-        public static let first = NSLocalizedString("first word", comment: "first word")
-        public static let second = NSLocalizedString("second word", comment: "second word")
-        public static let third = NSLocalizedString("third word", comment: "third word")
-        public static let fourth = NSLocalizedString("fourth word", comment: "fourth word")
-        public static let fifth = NSLocalizedString("fifth word", comment: "fifth word")
-        public static let sixth = NSLocalizedString("sixth word", comment: "sixth word")
-        public static let seventh = NSLocalizedString("seventh word", comment: "seventh word")
-        public static let eighth = NSLocalizedString("eighth word", comment: "eighth word")
-        public static let ninth = NSLocalizedString("ninth word", comment: "ninth word")
-        public static let tenth = NSLocalizedString("tenth word", comment: "tenth word")
-        public static let eleventh = NSLocalizedString("eleventh", comment: "eleventh word")
-        public static let twelfth = NSLocalizedString("twelfth word", comment: "twelfth word")
-    }
+extension LocalizationConstants.BackupRecoveryPhrase.ManualBackupRecoveryPhraseScreen {
+    public static let navigationTitle = NSLocalizedString("Step 1 of 2", comment: "Step 1 of 2")
+    public static let title = NSLocalizedString("Manual Back Up", comment: "Manual Back Up")
+    public static let caption = NSLocalizedString("These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.", comment: "These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.")
+    public static let nextButton = NSLocalizedString("Next", comment: "Next")
+    public static let copyButton = NSLocalizedString("Copy", comment: "Copy")
+    public static let copiedButton = NSLocalizedString("Copied for 2 Minutes", comment: "Copied for 2 Minutes")
+}
+
+extension LocalizationConstants.BackupRecoveryPhrase.VerifyRecoveryPhraseScreen {
+    public static let navigationTitle = NSLocalizedString("Step 2 of 2", comment: "Step 2 of 2")
+    public static let title = NSLocalizedString("Verify your Phrase", comment: "Verify your Phrase")
+    public static let description = NSLocalizedString("Tap the words to put them in the correct order.", comment: "Tap the words to put them in the correct order.")
+    public static let verifyButton = NSLocalizedString("Verify", comment: "Verify")
+    public static let resetWordsButton = NSLocalizedString("Reset Words", comment: "Reset Words")
+    public static let errorLabel = NSLocalizedString("Incorrect order. Reset or tap individual words to remove.", comment: "Incorrect order. Reset or tap individual words to remove.")
+    public static let backupFailedAlertTitle = NSLocalizedString("Failed to record backup", comment: "Failed to record backup")
+    public static let backupFailedAlertDescription = NSLocalizedString("We couldn’t record that you backed up your phrase. Try again later.", comment: "We couldn’t record that you backed up your phrase. Try again later.")
+    public static let backupFailedAlertOkButton = NSLocalizedString("OK", comment: "OK")
+}
+
+extension LocalizationConstants.BackupRecoveryPhrase.BackupRecoveryPhraseFailedScreen {
+    public static let title = NSLocalizedString("We couldn’t decrypt your seed phrase", comment: "Failed title")
+    public static let description = NSLocalizedString("Please restart the app and retry. If it doesn’t work, looks like you’ve found a bug.", comment: "Failed description")
+    public static let reportABugButton = NSLocalizedString("Report Bug", comment: "Report Bug")
+    public static let okButton = NSLocalizedString("OK", comment: "OK")
+}
+
+extension LocalizationConstants.BackupRecoveryPhrase.BackupRecoveryPhraseSuccessScreen {
+    public static let title = NSLocalizedString("Back Up Successful!", comment: "Back Up Successful!")
+    public static let description = NSLocalizedString("Remember to keep your Recovery Phrase stored in a safe location and to never share it with anyone.", comment: "Remember to keep your Recovery Phrase stored in a safe location and to never share it with anyone.")
+    public static let doneButton = NSLocalizedString("Done", comment: "Done")
 }

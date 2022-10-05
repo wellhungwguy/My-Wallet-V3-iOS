@@ -15,6 +15,9 @@ import FeatureAttributionData
 import FeatureAttributionDomain
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureBackupRecoveryPhraseData
+import FeatureBackupRecoveryPhraseDomain
+import FeatureBackupRecoveryPhraseUI
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
@@ -71,8 +74,6 @@ extension UIApplication: PlatformKit.AppStoreOpening {}
 extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPropertyInteracting {}
 
 extension AnnouncementPresenter: FeatureDashboardUI.AnnouncementPresenting {}
-
-extension FeatureSettingsUI.BackupFundsRouter: FeatureDashboardUI.BackupRouterAPI {}
 
 // MARK: - Blockchain Module
 
@@ -156,13 +157,6 @@ extension DependencyContainer {
         }
 
         factory { UIApplication.shared as AppStoreOpening }
-
-        factory {
-            BackupFundsRouter(
-                entry: .custody,
-                navigationRouter: NavigationRouter()
-            ) as FeatureDashboardUI.BackupRouterAPI
-        }
 
         factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
 
@@ -255,8 +249,10 @@ extension DependencyContainer {
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
+            let mnemonicComponentsProviding: MnemonicComponentsProviding = DIKit.resolve()
             return RecoveryPhraseVerifyingService(
-                verifyMnemonicBackupService: backupService
+                verifyMnemonicBackupService: backupService,
+                mnemonicComponentsProviding: mnemonicComponentsProviding
             )
         }
 
@@ -715,6 +711,31 @@ extension DependencyContainer {
         }
 
         factory { LegacyForgetWallet() as LegacyForgetWalletAPI }
+
+        // MARK: Feature Backup Seed Phrase
+
+        factory { RecoveryPhraseExposureAlertClient() as RecoveryPhraseExposureAlertClientAPI }
+
+        factory { RecoveryPhraseBackupClient() as RecoveryPhraseBackupClientAPI }
+
+        // MARK: - Repositories
+
+        factory { RecoveryPhraseRepository() as RecoveryPhraseRepositoryAPI }
+
+        factory { () -> RecoveryPhraseStatusProviding in
+            RecoveryPhraseStatusProvider(mnemonicVerificationStatusProvider: DIKit.resolve())
+        }
+
+        factory { () -> CloudBackupConfiguring in
+            CloudBackupService(defaults: DIKit.resolve())
+        }
+
+        factory { () -> RecoveryPhraseBackupRouterAPI in
+             RecoveryPhraseBackupRouter(
+                 topViewController: DIKit.resolve(),
+                 recoveryStatusProviding: DIKit.resolve()
+             ) as RecoveryPhraseBackupRouterAPI
+        }
     }
 }
 
