@@ -67,6 +67,7 @@ public struct CardManagementState: Equatable {
     var canFetchMoreTransactions = true
     var cardholderName: String
     var tokenisationCoordinator: PassTokenisationCoordinator
+    var isTokenisationEnabled: Bool
 
     public init(
         card: Card? = nil,
@@ -84,6 +85,7 @@ public struct CardManagementState: Equatable {
         self.error = error
         self.transactions = transactions
         self.tokenisationCoordinator = tokenisationCoordinator
+        self.isTokenisationEnabled = PKAddPaymentPassViewController.canAddPaymentPass()
     }
 }
 

@@ -3,6 +3,8 @@ username(ENV["FASTLANE_USER"])
 
 type "adhoc"
 
+template_name "ApplePay In-App Provisioning Distribution"
+
 for_lane :alpha do
     type "appstore"
 end

@@ -138,8 +138,10 @@ struct CardManagementDetailsView: View {
                     RoundedRectangle(cornerRadius: Spacing.padding1)
                         .stroke(Color.semantic.muted, lineWidth: 1)
                 )
-                AddToWalletButton {
-                    isPresented = true
+                if viewStore.state.isTokenisationEnabled {
+                    AddToWalletButton {
+                        isPresented = true
+                    }
                 }
             }
             .padding([.top, .trailing, .leading], Spacing.padding3)
