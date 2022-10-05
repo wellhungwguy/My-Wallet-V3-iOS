@@ -4,18 +4,15 @@ import SwiftUI
 
 extension View {
     @ViewBuilder
-    public func highlighted(_ highlighted: Bool) -> some View {
-        modifier(HighlightedModifier(isHighlighted: highlighted))
+    public func highlighted() -> some View {
+        modifier(HighlightedModifier())
     }
 }
 
 private struct HighlightedModifier: ViewModifier {
-    let isHighlighted: Bool
     func body(content: Content) -> some View {
-        if isHighlighted {
             content
-                .overlay(highlightDot, alignment: .topTrailing)
-        }
+             .overlay(highlightDot, alignment: .topTrailing)
     }
 
     private var highlightDot: some View {

@@ -243,7 +243,7 @@ struct RootView: View {
                 viewStore.send(.onAppModeSwitcherTapped)
             }
         )
-        .highlighted(!viewStore.appModeSeen)
+        .if(!viewStore.appModeSeen, then: { $0.highlighted() })
         .identity(blockchain.ux.switcher.entry)
     }
 
