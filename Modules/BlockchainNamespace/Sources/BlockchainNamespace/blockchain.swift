@@ -3852,6 +3852,7 @@ public final class L_blockchain_ux: L, I_blockchain_ux {
 }
 public protocol I_blockchain_ux: I {}
 public extension I_blockchain_ux {
+	var `app`: L_blockchain_ux_app { .init("\(__).app") }
 	var `asset`: L_blockchain_ux_asset { .init("\(__).asset") }
 	var `buy_and_sell`: L_blockchain_ux_buy__and__sell { .init("\(__).buy_and_sell") }
 	var `customer`: L_blockchain_ux_customer { .init("\(__).customer") }
@@ -3872,6 +3873,24 @@ public extension I_blockchain_ux {
 	var `user`: L_blockchain_ux_user { .init("\(__).user") }
 	var `web`: L_blockchain_ux_web { .init("\(__).web") }
 }
+public final class L_blockchain_ux_app: L, I_blockchain_ux_app {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.app", comment: "") }
+}
+public protocol I_blockchain_ux_app: I {}
+public extension I_blockchain_ux_app {
+	var `mode`: L_blockchain_ux_app_mode { .init("\(__).mode") }
+}
+public final class L_blockchain_ux_app_mode: L, I_blockchain_ux_app_mode {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.app.mode", comment: "") }
+}
+public protocol I_blockchain_ux_app_mode: I {}
+public extension I_blockchain_ux_app_mode {
+	var `seen`: L_blockchain_ux_app_mode_seen { .init("\(__).seen") }
+}
+public final class L_blockchain_ux_app_mode_seen: L, I_blockchain_ux_app_mode_seen {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.app.mode.seen", comment: "") }
+}
+public protocol I_blockchain_ux_app_mode_seen: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_ux_asset: L, I_blockchain_ux_asset {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset", comment: "") }
 }

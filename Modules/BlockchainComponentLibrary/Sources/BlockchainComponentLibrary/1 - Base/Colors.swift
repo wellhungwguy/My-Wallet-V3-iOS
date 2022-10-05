@@ -107,6 +107,7 @@ extension Color {
 
         public static let gold: Color = .palette.gold
         public static let silver: Color = .palette.silver
+        public static let pink: Color = .palette.pink
     }
 }
 
@@ -194,6 +195,9 @@ extension Color {
 
         // purple
         static let purple: Color = Asset.purple.color()
+
+        // pink
+        static let pink: Color = Asset.pink700.color()
     }
 }
 
@@ -257,6 +261,8 @@ extension Color {
         case gold
 
         case purple
+
+        case pink700
 
         func color() -> SwiftUI.Color {
             SwiftUI.Color(rawValue, bundle: Bundle.componentLibrary)

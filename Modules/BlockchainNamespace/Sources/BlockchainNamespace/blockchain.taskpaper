@@ -1007,6 +1007,11 @@ blockchain:
 				created:
 				+ blockchain.db.type.boolean
 	ux:
+		app:
+			mode:
+				seen:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.preference.value
 		asset:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story

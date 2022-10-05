@@ -67,6 +67,7 @@ public struct AppModeSwitcherView: View {
             ) {
                 Icon
                     .portfolio
+                    .color(.semantic.primary)
                     .frame(width: 24, height: 24)
             } trailing: {
                 if viewStore.currentAppMode == .trading {
