@@ -19,6 +19,7 @@ final class SettingsScreenInteractor {
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
     let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
+    let blockchainDomainsAdapter: BlockchainDomainsAdapter
     let cardIssuingAdapter: CardIssuingAdapterAPI
     let referralAdapter: ReferralAdapterAPI
 
@@ -30,7 +31,6 @@ final class SettingsScreenInteractor {
 
     let settingsService: SettingsServiceAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
-    let emailNotificationsService: EmailNotificationSettingsServiceAPI
 
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
@@ -47,7 +47,6 @@ final class SettingsScreenInteractor {
         credentialsStore: CredentialsStoreAPI = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
-        emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
@@ -55,11 +54,11 @@ final class SettingsScreenInteractor {
         authenticationCoordinator: AuthenticationCoordinating,
         cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
         referralAdapter: ReferralAdapterAPI = resolve(),
-        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve()
+        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve(),
+        blockchainDomainsAdapter: BlockchainDomainsAdapter = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
         self.settingsService = settingsService
-        emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.cardIssuingAdapter = cardIssuingAdapter
         self.referralAdapter = referralAdapter
@@ -90,6 +89,7 @@ final class SettingsScreenInteractor {
         )
 
         biometryProviding = BiometryProvider(settings: settingsAuthenticating)
+        self.blockchainDomainsAdapter = blockchainDomainsAdapter
         self.settingsAuthenticating = settingsAuthenticating
         self.recoveryPhraseStatusProvider = recoveryPhraseStatusProvider
         self.credentialsStore = credentialsStore

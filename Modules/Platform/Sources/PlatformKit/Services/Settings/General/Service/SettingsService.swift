@@ -334,28 +334,6 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
     }
 }
 
-// MARK: - EmailNotificationSettingsServiceAPI
-
-extension SettingsService: EmailNotificationSettingsServiceAPI {
-    func emailNotifications(enabled: Bool) -> Completable {
-        credentialsRepository.credentials.asSingle()
-            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
-                self.client.emailNotifications(
-                    enabled: enabled,
-                    guid: payload.guid,
-                    sharedKey: payload.sharedKey
-                )
-                .asObservable()
-                .ignoreElements()
-                .asCompletable()
-            }
-            .flatMapSingle(weak: self) { (self) in
-                self.fetch(force: true)
-            }
-            .asCompletable()
-    }
-}
-
 // MARK: - UpdateMobileSettingsServiceAPI
 
 extension SettingsService: UpdateMobileSettingsServiceAPI {

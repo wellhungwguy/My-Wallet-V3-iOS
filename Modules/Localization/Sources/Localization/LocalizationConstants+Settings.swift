@@ -68,7 +68,6 @@ extension LocalizationConstants.Settings {
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
     public static let cookiesPolicy = NSLocalizedString("Cookies Policy", comment: "Cookies Policy")
     public static let logout = NSLocalizedString("Logout", comment: "Logout cell title in settings")
-    public static let addresses = NSLocalizedString("Addresses", comment: "Addresses title in settings")
     public static let deleteAccount = NSLocalizedString("Delete Account", comment: "Delete Account title in settings")
     public static let contactSupport = NSLocalizedString("Contact Support", comment: "Contact support cell title in settings")
     public static let changePIN = NSLocalizedString("Change PIN", comment: "Change PIN")
@@ -78,6 +77,8 @@ extension LocalizationConstants.Settings {
     public static let enableTouchID = NSLocalizedString("Enable Touch ID", comment: "Enable Touch ID")
     public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
     public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
+    public static let cryptoDomainsTitle = NSLocalizedString("Domains", comment: "Domains cell title")
+    public static let cryptoDomainsClaim = NSLocalizedString("Claim for free", comment: "Claim for free text")
     public enum Card {
         public static let add = NSLocalizedString("Add a Card", comment: "Add a Card")
         public static let maximum = NSLocalizedString(

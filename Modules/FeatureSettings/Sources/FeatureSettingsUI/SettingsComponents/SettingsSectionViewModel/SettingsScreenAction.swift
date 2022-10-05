@@ -24,12 +24,12 @@ public enum SettingsScreenAction {
     case showRemoveBankScreen(Beneficiary)
     case showAddCardScreen
     case showAddBankScreen(FiatCurrency)
-    case showAccountsAndAddresses
     case showContactSupport
     case showWebLogin
     case showCardIssuing
     case showNotificationsSettings
     case showReferralScreen(Referral)
     case showUserDeletionScreen
+    case showBlockchainDomains
     case none
 }

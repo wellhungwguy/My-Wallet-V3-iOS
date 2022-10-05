@@ -71,6 +71,7 @@ final class SettingsRouter: SettingsRouterAPI {
 
     // MARK: - Private
 
+    private let blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenterAPI
@@ -96,13 +97,14 @@ final class SettingsRouter: SettingsRouterAPI {
     private var topViewController: UIViewController {
         let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
         guard let viewController = topViewController else {
-            fatalError("Failed to present open banking flow, no view controller available for presentation")
+            fatalError("Failed to present from SettingsRouter, no view controller available for presentation")
         }
         return viewController
     }
 
     init(
         builder: SettingsBuilding = SettingsBuilder(),
+        blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter = resolve(),
         guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve(),
         authenticationCoordinator: AuthenticationCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),
@@ -124,6 +126,7 @@ final class SettingsRouter: SettingsRouterAPI {
         exchangeUrlProvider: @escaping () -> String
     ) {
         self.builder = builder
+        self.blockchainDomainsRouterAdapter = blockchainDomainsRouterAdapter
         self.authenticationCoordinator = authenticationCoordinator
         self.appStoreOpener = appStoreOpener
         self.navigationRouter = navigationRouter
@@ -313,8 +316,6 @@ final class SettingsRouter: SettingsRouterAPI {
             updateMobileRouter.start()
         case .logout:
             externalActionsProvider.logout()
-        case .showAccountsAndAddresses:
-            break
         case .showContactSupport:
             externalActionsProvider.handleSupport()
         case .showWebLogin:
@@ -327,9 +328,15 @@ final class SettingsRouter: SettingsRouterAPI {
             showReferralScreen(with: referral)
         case .showUserDeletionScreen:
             showUserDeletionScreen()
+        case .showBlockchainDomains:
+            showBlockchainDomains()
         case .none:
             break
         }
+    }
+
+    private func showBlockchainDomains() {
+        blockchainDomainsRouterAdapter.presentFlow(from: navigationRouter)
     }
 
     private func showCardIssuingFlow() {

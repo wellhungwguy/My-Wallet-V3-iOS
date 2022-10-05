@@ -108,8 +108,8 @@ final class SettingsViewController: BaseScreenViewController {
                 cell = self.badgeCell(for: indexPath, presenter: presenter)
             case .clipboard(let type):
                 cell = self.clipboardCell(for: indexPath, viewModel: type.viewModel)
-            case .common(let type):
-                cell = self.commonCell(for: indexPath, viewModel: type.viewModel)
+            case .common(let type, let presenter):
+                cell = self.commonCell(for: indexPath, viewModel: type.viewModel(presenter: presenter))
             case .cards(let type):
                 switch type {
                 case .skeleton:

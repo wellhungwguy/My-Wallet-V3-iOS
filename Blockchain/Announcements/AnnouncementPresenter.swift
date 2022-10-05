@@ -53,9 +53,7 @@ final class AnnouncementPresenter {
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let navigationRouter: NavigationRouterAPI
     private let viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI
-
-    private let coincore: CoincoreAPI
-    private let nabuUserService: NabuUserServiceAPI
+    private let blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter
 
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
@@ -83,8 +81,7 @@ final class AnnouncementPresenter {
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI = DIKit.resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
-        coincore: CoincoreAPI = DIKit.resolve(),
-        nabuUserService: NabuUserServiceAPI = DIKit.resolve()
+        blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter = DIKit.resolve()
     ) {
         self.app = app
         self.interactor = interactor
@@ -101,8 +98,7 @@ final class AnnouncementPresenter {
         self.backupFlowStarter = backupFlowStarter
         self.settingsStarter = settingsStarter
         self.navigationRouter = navigationRouter
-        self.coincore = coincore
-        self.nabuUserService = nabuUserService
+        self.blockchainDomainsRouterAdapter = blockchainDomainsRouterAdapter
 
         app.modePublisher()
             .asObservable()
@@ -512,42 +508,8 @@ extension AnnouncementPresenter {
     }
 
     private func presentClaimIntroductionHostingController() {
-        let vc = ClaimIntroductionHostingController(
-            mainQueue: .main,
-            analyticsRecorder: DIKit.resolve(),
-            externalAppOpener: DIKit.resolve(),
-            searchDomainRepository: DIKit.resolve(),
-            orderDomainRepository: DIKit.resolve(),
-            userInfoProvider: { [coincore, nabuUserService] in
-                Deferred { [coincore] in
-                    Just([coincore[.ethereum], coincore[.bitcoin], coincore[.bitcoinCash], coincore[.stellar]])
-                }
-                .eraseError()
-                .flatMap { [nabuUserService] cryptoAssets -> AnyPublisher<([ResolutionRecord], NabuUser), Error> in
-                    guard let providers = cryptoAssets as? [DomainResolutionRecordProviderAPI] else {
-                        return .empty()
-                    }
-                    let recordPublisher = providers.map(\.resolutionRecord).zip()
-                    let nabuUserPublisher = nabuUserService.user.eraseError()
-                    return recordPublisher
-                        .zip(nabuUserPublisher)
-                        .eraseToAnyPublisher()
-                }
-                .map { records, nabuUser -> OrderDomainUserInfo in
-                    OrderDomainUserInfo(
-                        nabuUserId: nabuUser.identifier,
-                        nabuUserName: nabuUser
-                            .personalDetails
-                            .firstName?
-                            .replacingOccurrences(of: " ", with: "") ?? "",
-                        resolutionRecords: records
-                    )
-                }
-                .eraseToAnyPublisher()
-            }
-        )
-        let nav = UINavigationController(rootViewController: vc)
-        navigationRouter.present(viewController: nav, using: .modalOverTopMost)
+        blockchainDomainsRouterAdapter
+            .presentClaimIntroductionHostingController(from: navigationRouter)
     }
 
     /// Computes SDD Users Buy announcement

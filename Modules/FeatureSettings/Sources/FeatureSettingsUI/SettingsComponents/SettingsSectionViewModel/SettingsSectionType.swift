@@ -26,7 +26,7 @@ enum SettingsSectionType: Int, Equatable {
                 return type.identity
             case .clipboard(let type):
                 return type.rawValue
-            case .common(let type):
+            case .common(let type, _):
                 return type.rawValue
             case .switch(let type, _):
                 return type.rawValue
@@ -45,7 +45,7 @@ enum SettingsSectionType: Int, Equatable {
                 return left == right
             case (.cards(let left), .cards(let right)):
                 return left == right
-            case (.common(let left), .common(let right)):
+            case (.common(let left, _), .common(let right, _)):
                 return left == right
             case (.banks(let left), .banks(let right)):
                 return left == right
@@ -61,7 +61,7 @@ enum SettingsSectionType: Int, Equatable {
         case clipboard(ClipboardCellType)
         case cards(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedCardCellPresenter>)
         case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, BeneficiaryLinkedBankViewModel>)
-        case common(CommonCellType)
+        case common(CommonCellType, CommonCellPresenting? = nil)
         case refferal(ReferralCellType, ReferralTableViewCellViewModel)
 
         enum BadgeCellType: String {
@@ -73,6 +73,7 @@ enum SettingsSectionType: Int, Equatable {
             case pitConnection
             case recoveryPhrase
             case cardIssuing
+            case blockchainDomains
         }
 
         enum SwitchCellType: String {
@@ -129,7 +130,7 @@ enum SettingsSectionType: Int, Equatable {
         }
 
         enum CommonCellType: String {
-            case addresses
+            case blockchainDomains
             case cardIssuing
             case changePassword
             case changePIN

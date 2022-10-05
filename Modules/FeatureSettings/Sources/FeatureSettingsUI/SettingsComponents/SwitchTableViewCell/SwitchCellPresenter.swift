@@ -14,23 +14,6 @@ protocol SwitchCellPresenting {
     var switchViewPresenting: SwitchViewPresenting { get }
 }
 
-class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
-
-    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-
-    let accessibility: Accessibility = .id(AccessibilityId.EmailNotifications.title)
-    let labelContentPresenting: LabelContentPresenting
-    let switchViewPresenting: SwitchViewPresenting
-
-    init(service: EmailNotificationSettingsServiceAPI) {
-        labelContentPresenting = DefaultLabelContentPresenter(
-            knownValue: LocalizationConstants.Settings.emailNotifications,
-            descriptors: .settings
-        )
-        switchViewPresenting = EmailSwitchViewPresenter(service: service)
-    }
-}
-
 class CloudBackupSwitchCellPresenter: SwitchCellPresenting {
 
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell.CloudBackup

@@ -84,16 +84,16 @@ final class SettingsScreenPresenter {
             interactor: interactor.bankSectionInteractor
         )
 
-        profileSectionPresenter = .init(
+        profileSectionPresenter = ProfileSectionPresenter(
             tiersLimitsProvider: interactor.tiersProviding,
             emailVerificationInteractor: interactor.emailVerificationBadgeInteractor,
             mobileVerificationInteractor: interactor.mobileVerificationBadgeInteractor,
             cardIssuingInteractor: interactor.cardIssuingBadgeInteractor,
+            blockchainDomainsAdapter: interactor.blockchainDomainsAdapter,
             cardIssuingAdapter: interactor.cardIssuingAdapter
         )
 
         preferencesSectionPresenter = .init(
-            emailNotificationService: interactor.emailNotificationsService,
             preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor,
             preferredTradingCurrencyBadgeInteractor: interactor.preferredTradingCurrencyBadgeInteractor
         )

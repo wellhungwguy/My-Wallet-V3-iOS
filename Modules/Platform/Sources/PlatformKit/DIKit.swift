@@ -146,11 +146,6 @@ extension DependencyContainer {
             return completeSettings
         }
 
-        factory { () -> EmailNotificationSettingsServiceAPI in
-            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
-            return completeSettings
-        }
-
         // MARK: - ExchangeProvider
 
         single { ExchangeProvider() as ExchangeProviding }

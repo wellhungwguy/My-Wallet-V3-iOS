@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureSettingsDomain
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -26,7 +27,7 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
         return .just(.loaded(next: .some(state)))
     }
 
-    private let recoveryCellPresenter: RecoveryStatusCellPresenter
+    private let recoveryCellPresenter: BadgeCellPresenting
     private let bioAuthenticationCellPresenter: BioAuthenticationSwitchCellPresenter
     private let smsTwoFactorSwitchCellPresenter: SMSTwoFactorSwitchCellPresenter
     private let cloudBackupSwitchCellPresenter: CloudBackupSwitchCellPresenter
@@ -48,8 +49,10 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
             appSettingsAuthenticating: settingsAuthenticater,
             authenticationCoordinator: authenticationCoordinator
         )
-        recoveryCellPresenter = RecoveryStatusCellPresenter(
-            recoveryStatusProviding: recoveryPhraseStatusProvider
+        recoveryCellPresenter = DefaultBadgeCellPresenter(
+            accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.BackupPhrase.title),
+            interactor: RecoveryPhraseBadgeInteractor(provider: recoveryPhraseStatusProvider),
+            title: LocalizationConstants.Settings.Badge.recoveryPhrase
         )
         cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
             cloudSettings: cloudSettings,

@@ -66,17 +66,12 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Apple Pay
     case applePay
 
-    /// Enable Notification Preferences
-    case notificationPreferences
-
     /// Enables the use of the hot wallet address for custodial transactions.
     case hotWalletCustodial
 
     case sendToDomainsAnnouncement
 
     case blockchainDomains
-
-    case polygonSupport
 
     // MARK: - Onboarding
 
@@ -150,10 +145,6 @@ extension AppFeature {
             return "ios_ff_send_to_domains_announcement"
         case .blockchainDomains:
             return "ios_ff_blockchain_domains"
-        case .notificationPreferences:
-            return "ios_ff_notification_preferences"
-        case .polygonSupport:
-            return "ios_ff_polygon"
         case .accountCredentialsMetadataMigration:
             return "ios_ff_account_credentials_metadata_migration"
         case .skAdNetworkAttribution:
@@ -211,10 +202,6 @@ extension AppFeature {
         case .sendToDomainsAnnouncement:
             return true
         case .blockchainDomains:
-            return true
-        case .notificationPreferences:
-            return true
-        case .polygonSupport:
             return true
         case .accountCredentialsMetadataMigration:
             return false
