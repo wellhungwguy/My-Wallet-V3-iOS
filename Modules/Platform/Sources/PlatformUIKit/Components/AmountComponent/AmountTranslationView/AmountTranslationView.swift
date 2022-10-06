@@ -65,14 +65,22 @@ public final class AmountTranslationView: UIView, AmountViewable {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { unimplemented() }
 
+    /// Init
+    /// - Parameters:
+    ///   - presenter: AmountTranslationPresenter
+    ///   - app: AppProtocol
+    ///   - prefillButtonsEnabled: Whether or not to show the prefill buttons
+    ///   - shouldShowAvailableBalanceView: Whether or not to show the available balance view. This should
+    ///  match `prefillButtonsEnabled` except for `Buy` in which case we don't want to show this.
     public init(
         presenter: AmountTranslationPresenter,
         app: AppProtocol,
-        prefillButtonsEnabled: Bool = false
+        prefillButtonsEnabled: Bool = false,
+        shouldShowAvailableBalanceView: Bool = false
     ) {
         self.app = app
         self.presenter = presenter
-        availableBalanceViewController = prefillButtonsEnabled ? UIHostingController(
+        availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
             rootView: AvailableBalanceView(
                 store: .init(
                     initialState: .init(),

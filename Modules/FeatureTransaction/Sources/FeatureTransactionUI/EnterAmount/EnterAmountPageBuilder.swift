@@ -114,7 +114,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             amountViewable = AmountTranslationView(
                 presenter: amountViewPresenting as! AmountTranslationPresenter,
                 app: app,
-                prefillButtonsEnabled: isQuickfillEnabled
+                prefillButtonsEnabled: isQuickfillEnabled,
+                shouldShowAvailableBalanceView: isQuickfillEnabled
             )
         case .swap,
              .send,
@@ -146,7 +147,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             amountViewable = AmountTranslationView(
                 presenter: amountViewPresenting as! AmountTranslationPresenter,
                 app: app,
-                prefillButtonsEnabled: isQuickfillEnabled
+                prefillButtonsEnabled: isQuickfillEnabled,
+                shouldShowAvailableBalanceView: isQuickfillEnabled
             )
 
         case .deposit,
