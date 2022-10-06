@@ -44,7 +44,12 @@ struct FormSelectionDropdownAnswersView: View {
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                selectionPanelOpened.toggle()
+                // hide current keybaord if presented,
+                // delay needed to wait until keyboard is dismissed
+                stopEditing()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    selectionPanelOpened.toggle()
+                }
             }
 
             switch selectionMode {
@@ -53,7 +58,11 @@ struct FormSelectionDropdownAnswersView: View {
                    selectedAnswer.children?.isEmpty == false
                 {
                     if let index = answers.firstIndex(of: selectedAnswer) {
-                        FormRecursiveAnswerView(answer: $answers[index], showAnswerState: $showAnswerState) {
+                        FormRecursiveAnswerView(
+                            title: title,
+                            answer: $answers[index],
+                            showAnswerState: $showAnswerState
+                        ) {
                             EmptyView()
                         }
                     }
