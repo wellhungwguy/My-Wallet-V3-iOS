@@ -374,6 +374,10 @@ blockchain:
 				+ blockchain.session.state.value
 				submit:
 				+ blockchain.ux.type.analytics.event
+				supported:
+					flows:
+					+ blockchain.db.type.array.of.strings
+					+ blockchain.session.state.value
 				trigger:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
@@ -1564,6 +1568,12 @@ blockchain:
 					finish:
 					go:
 						back:
+					link:
+						a:
+							bank:
+							card:
+						payment:
+							method:
 					select:
 						source:
 						target:
@@ -1596,6 +1606,38 @@ blockchain:
 				will:
 					finish:
 					start:
+			payment:
+				method:
+					is:
+						ApplePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						GooglePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						bank:
+							ACH:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+							OpenBanking:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+						card:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						funds:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+					link:
+						a:
+							bank:
+								via:
+									ACH:
+									+ blockchain.ux.type.story
+									OpenBanking:
+									+ blockchain.ux.type.story
+							card:
+							+ blockchain.ux.type.story
 			previous:
 				payment:
 					method:
@@ -1778,6 +1820,38 @@ blockchain:
 					+ blockchain.ux.type.story
 			activity:
 			+ blockchain.ux.type.story
+			authentication:
+				sign:
+					in:
+					+ blockchain.ux.type.story
+						continue:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
+						enter:
+							pin:
+							+ blockchain.ux.type.story
+						unlock:
+							wallet:
+								password:
+									required:
+									+ blockchain.ux.type.story
+					up:
+					+ blockchain.ux.type.story
+						create:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
 			event:
 				authenticated:
 					pin:

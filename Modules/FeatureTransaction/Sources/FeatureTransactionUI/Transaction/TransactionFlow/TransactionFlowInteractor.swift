@@ -310,7 +310,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     /// If the flow was started with a destination already, like if they
                     /// are depositing into a `FiatAccount`, we apply the destination.
                     /// This will route the user to the `Enter Amount` screen.
-                    if let destination = state.destination {
+                    if let destination = state.destination, !state.stepsBackStack.contains(.enterAmount) {
                         self?.didSelectDestinationAccount(target: destination)
                     }
                 case .selectTarget:
@@ -883,6 +883,33 @@ extension TransactionFlowInteractor {
                     default:
                         break
                     }
+
+                    state.clear(blockchain.ux.transaction.payment.method.is.card)
+                    state.clear(blockchain.ux.transaction.payment.method.is.ApplePay)
+                    state.clear(blockchain.ux.transaction.payment.method.is.funds)
+                    state.clear(blockchain.ux.transaction.payment.method.is.bank.OpenBanking)
+                    state.clear(blockchain.ux.transaction.payment.method.is.bank.ACH)
+
+                    switch action {
+                    case .sourceAccountSelected(let account as PaymentMethodAccount):
+                        switch account.paymentMethodType {
+                        case .card:
+                            state.set(blockchain.ux.transaction.payment.method.is.card, to: true)
+                        case .linkedBank(let bank):
+                            state.set(blockchain.ux.transaction.payment.method.is.bank.OpenBanking, to: bank.partner == .yapily)
+                            state.set(blockchain.ux.transaction.payment.method.is.bank.ACH, to: bank.partner == .yodlee || bank.partner == .plaid)
+                        case .account:
+                            state.set(blockchain.ux.transaction.payment.method.is.funds, to: true)
+                        case .applePay:
+                            state.set(blockchain.ux.transaction.payment.method.is.ApplePay, to: true)
+                        case .suggested(let suggestion) where suggestion.type.isApplePay:
+                            state.set(blockchain.ux.transaction.payment.method.is.ApplePay, to: true)
+                        default:
+                            break
+                        }
+                    default:
+                        break
+                    }
                 }
                 switch action {
                 case .validateSourceAccount:
@@ -895,6 +922,12 @@ extension TransactionFlowInteractor {
                     app.post(event: blockchain.ux.transaction.event.did.select.target)
                 case .returnToPreviousStep:
                     app.post(event: blockchain.ux.transaction.event.did.go.back)
+                case .cardLinkingFlowCompleted:
+                    app.post(event: blockchain.ux.transaction.event.did.link.a.card)
+                    app.post(event: blockchain.ux.transaction.event.did.link.payment.method)
+                case .bankAccountLinked:
+                    app.post(event: blockchain.ux.transaction.event.did.link.a.bank)
+                    app.post(event: blockchain.ux.transaction.event.did.link.payment.method)
                 default:
                     break
                 }

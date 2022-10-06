@@ -418,6 +418,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func presentLinkACard(transactionModel: TransactionModel) {
+        app.post(event: blockchain.ux.transaction.payment.method.link.a.card)
         let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
         cardLinker.presentCardLinkingFlow(from: presenter) { [transactionModel] result in
             presenter.dismiss(animated: true) {
@@ -459,25 +460,31 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         attachChild(router)
 
         let app: AppProtocol = DIKit.resolve()
-        let view = PlaidView(store: .init(
-            initialState: PlaidState(),
-            reducer: PlaidModule.reducer,
-            environment: .init(
-                app: app,
-                mainQueue: .main,
-                plaidRepository: DIKit.resolve(),
-                dismissFlow: { [weak self] success in
-                    presentingViewController.dismiss(animated: true) {
-                        self?.detachChild(router)
-                        if success {
-                            transactionModel.process(action: .bankAccountLinked(state.action))
-                        } else {
-                            transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+        let view = PlaidView(
+            store: .init(
+                initialState: PlaidState(),
+                reducer: PlaidModule.reducer,
+                environment: .init(
+                    app: app,
+                    mainQueue: .main,
+                    plaidRepository: DIKit.resolve(),
+                    dismissFlow: { [weak self] success in
+                        presentingViewController.dismiss(animated: true) {
+                            self?.detachChild(router)
+                            if success {
+                                transactionModel.process(action: .bankAccountLinked(state.action))
+                            } else {
+                                transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                            }
                         }
                     }
-                }
+                )
             )
-        )).app(app)
+        )
+        .app(app)
+        .onAppear {
+            app.post(event: blockchain.ux.transaction.payment.method.link.a.bank.via.ACH)
+        }
 
         let viewController = UIHostingController(rootView: view)
 

@@ -8,6 +8,7 @@ import UIKit
 
 /// Acts as a container for `PinRouter` wireframing actions
 final class PinHostingController: UIViewController {
+
     let store: Store<PinCore.State, PinCore.Action>
     let viewStore: ViewStore<PinCore.State, PinCore.Action>
 
@@ -46,6 +47,11 @@ final class PinHostingController: UIViewController {
                 self?.authenticatePin()
             }
             .store(in: &cancellables)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        app.post(event: blockchain.ux.user.authentication.sign.in.enter.pin)
     }
 
     /// Authenticate using a pin code. Used during login when the app enters active state.

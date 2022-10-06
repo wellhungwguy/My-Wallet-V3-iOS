@@ -133,6 +133,9 @@ final class OnboardingHostingController: UIViewController {
     ) -> some View {
         PrimaryNavigationView {
             PasswordRequiredView(store: store)
+                .onAppear { [app] in
+                    app.post(event: blockchain.ux.user.authentication.sign.in.unlock.wallet.password.required)
+                }
                 .primaryNavigation()
         }
     }

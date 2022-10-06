@@ -12,6 +12,9 @@ public protocol MobileIntelligence_p: AnyObject {
 
     static func submitData(completion: @escaping ((Response) -> Void))
     static func updateOptions(options: UpdateOptions, completion: ((Response) -> Void)?)
+
+    static func trackField(forKey key: String, text: String)
+    static func trackFieldFocus(forKey key: String, hasFocus: Bool)
 }
 
 public protocol MobileIntelligenceOptions_p: Codable {
@@ -22,8 +25,9 @@ public protocol MobileIntelligenceOptions_p: Codable {
     var environment: String? { get set }
     var flow: String? { get set }
     var partnerId: String? { get set }
-    var enableBehaviorBiometrics: Bool? { get set }
-    var enableClipboardTracking: Bool? { get set }
+    var enableBehaviorBiometrics: Bool { get set }
+    var enableClipboardTracking: Bool { get set }
+    var enableFieldTracking: Bool { get set }
 
     static var ENV_SANDBOX: String { get }
     static var ENV_PRODUCTION: String { get }

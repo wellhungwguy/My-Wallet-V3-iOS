@@ -102,6 +102,10 @@ extension AppProtocol {
             )
         }
 
+        #if canImport(MobileIntelligence)
+        observers.insert(Sardine<MobileIntelligence>(self))
+        #endif
+
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)
             state.transaction { state in

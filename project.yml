@@ -188,6 +188,9 @@ packages:
   Pulse:
     url: https://github.com/kean/Pulse.git
     version: 2.0.3
+  Sardine:
+    url: https://github.com/oliveratkinson-bc/swift-sardine.git
+    version: 1.0.17
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -487,9 +490,10 @@ targets:
         product: FraudIntelligence
       - package: FeatureSuperAppIntro
         product: FeatureSuperAppIntro
+      - package: Sardine
+        product: MobileIntelligence
       - package: FeatureBackupRecoveryPhrase
         product: FeatureBackupRecoveryPhrase
-
 
     platform: iOS
     postBuildScripts:

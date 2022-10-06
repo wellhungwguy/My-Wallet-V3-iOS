@@ -60,7 +60,7 @@ final class FraudIntelligenceTests: XCTestCase {
         }
 
         XCTAssertEqual(Test.MobileIntelligence.options.userIdHash, "user-id".sha256())
-        XCTAssertEqual(Test.MobileIntelligence.options.sessionKey, "session-id")
+        XCTAssertEqual(Test.MobileIntelligence.options.sessionKey, "session-id".sha256())
         XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
     }
 
@@ -74,9 +74,26 @@ final class FraudIntelligenceTests: XCTestCase {
             }
         }
 
-        let flows: [String: String] = [
-            blockchain.session.event.will.sign.in(\.id): "login",
-            blockchain.ux.transaction.event.did.start(\.id): "order"
+        let flows: [[String: Any]] = [
+            [
+                "name": "login",
+                "event": blockchain.session.event.will.sign.in(\.id)
+            ],
+            [
+                "name": "order",
+                "event": blockchain.ux.transaction.event.did.start(\.id)
+            ],
+            [
+                "name": "ach",
+                "event": blockchain.ux.transaction.enter.amount,
+                "start": [
+                    "if": [blockchain.session.state.value(\.id)]
+                ]
+            ],
+            [
+                "name": "unsupported",
+                "event": blockchain.ux.transaction.event.did.finish(\.id)
+            ]
         ]
 
         let flow = { [state = app.state] in
@@ -84,6 +101,11 @@ final class FraudIntelligenceTests: XCTestCase {
         }
 
         app.remoteConfiguration.override(blockchain.app.fraud.sardine.flow, with: flows)
+        app.state.set(blockchain.app.fraud.sardine.supported.flows, to: [
+            "login",
+            "order",
+            "ach"
+        ])
         XCTAssertThrowsError(try flow())
         XCTAssertNil(Test.MobileIntelligence.options.flow)
 
@@ -94,6 +116,19 @@ final class FraudIntelligenceTests: XCTestCase {
         app.post(event: blockchain.ux.transaction.event.did.start)
         XCTAssertEqual(try flow(), "order")
         XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+
+        app.post(event: blockchain.ux.transaction.enter.amount)
+        XCTAssertEqual(try flow(), "order")
+        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+
+        app.state.set(blockchain.session.state.value, to: true)
+        app.post(event: blockchain.ux.transaction.enter.amount)
+        XCTAssertEqual(try flow(), "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
+
+        app.post(event: blockchain.ux.transaction.event.did.finish)
+        XCTAssertEqual(try flow(), "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
     }
 
     func test_trigger() throws {
@@ -131,6 +166,8 @@ enum Test {
         static var options: Options!
         static var count: Int = 0
 
+        static var field: [String: (focus: Bool, text: String)] = [:]
+
         static func tearDown() {
             options = nil
             count = 0
@@ -152,6 +189,18 @@ enum Test {
             Self.options.userIdHash = options.userIdHash
             completion?(Response(status: true, message: nil))
         }
+
+        static func trackField(forKey key: String, text: String) {
+            var o = field[key, default: (false, "")]
+            o.text = text
+            field[key] = o
+        }
+
+        static func trackFieldFocus(forKey key: String, hasFocus: Bool) {
+            var o = field[key, default: (false, "")]
+            o.focus = hasFocus
+            field[key] = o
+        }
     }
 }
 
@@ -165,8 +214,9 @@ extension Test.MobileIntelligence {
         var environment: String?
         var flow: String?
         var partnerId: String?
-        var enableBehaviorBiometrics: Bool?
-        var enableClipboardTracking: Bool?
+        var enableBehaviorBiometrics: Bool = false
+        var enableClipboardTracking: Bool = false
+        var enableFieldTracking: Bool = false
 
         static var ENV_SANDBOX: String = "ENV_SANDBOX"
         static var ENV_PRODUCTION: String = "ENV_PRODUCTION"

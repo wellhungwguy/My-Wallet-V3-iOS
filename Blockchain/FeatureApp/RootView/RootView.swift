@@ -101,6 +101,7 @@ struct RootView: View {
             app.post(event: tab.tag)
         }
         .onAppear {
+            app.post(event: blockchain.ux.home)
             app.post(event: viewStore.tab.tag)
         }
         .onAppear {
