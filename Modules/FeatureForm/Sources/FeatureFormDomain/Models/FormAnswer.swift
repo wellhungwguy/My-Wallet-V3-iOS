@@ -2,7 +2,7 @@
 
 import ToolKit
 
-public struct FormAnswer: Codable, Identifiable, Equatable {
+public struct FormAnswer: Codable, Hashable, Identifiable {
 
     public struct AnswerType: NewTypeString {
         public let value: String
@@ -17,7 +17,7 @@ public struct FormAnswer: Codable, Identifiable, Equatable {
         public static let openEnded: Self = "OPEN_ENDED"
     }
 
-    public struct Validation: Equatable, Codable {
+    public struct Validation: Hashable, Codable {
 
         public enum Rule: String, Equatable, Codable {
             /// Requires that the `input` field is set to a non-empty `String`.
@@ -32,7 +32,7 @@ public struct FormAnswer: Codable, Identifiable, Equatable {
             case withinRange = "RANGE"
         }
 
-        public enum MetadataKey: String, Equatable, Codable {
+        public enum MetadataKey: String, Hashable, Codable {
             case minValue
             case maxValue
         }
