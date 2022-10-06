@@ -38,13 +38,15 @@ final class BlockchainNameResolutionServiceTests: XCTestCase {
 
     func testReverseResolution() {
         let address = "address"
+        let currency = "currency"
         let e = expectation(description: "Completion Block Called")
-        repositoryMock.underlyingReverseResolve = { walletAddress in
-            XCTAssertEqual(walletAddress, address)
+        repositoryMock.underlyingReverseResolve = { receivedAddress, receivedCurrency in
+            XCTAssertEqual(receivedAddress, address)
+            XCTAssertEqual(receivedCurrency, currency)
             e.fulfill()
             return .just([.init(domainName: "domainName")])
         }
-        let publisher = subject.reverseResolve(address: address)
+        let publisher = subject.reverseResolve(address: address, currency: currency)
         XCTAssertPublisherCompletion(publisher)
 
         wait(for: [e], timeout: 10)

@@ -14,8 +14,9 @@ final class MockBlockchainNameResolutionRepository: BlockchainNameResolutionRepo
     }
 
     var underlyingReverseResolve: (
-        _ address: String
-    ) -> AnyPublisher<[ReverseResolution], NetworkError> = { _ in
+        _ address: String,
+        _ currency: String
+    ) -> AnyPublisher<[ReverseResolution], NetworkError> = { _, _ in
         .just([.init(domainName: "domainName")])
     }
 
@@ -27,8 +28,9 @@ final class MockBlockchainNameResolutionRepository: BlockchainNameResolutionRepo
     }
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<[ReverseResolution], NetworkError> {
-        underlyingReverseResolve(address)
+        underlyingReverseResolve(address, currency)
     }
 }

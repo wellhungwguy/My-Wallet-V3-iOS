@@ -12,6 +12,7 @@ protocol BlockchainNameResolutionClientAPI {
     ) -> AnyPublisher<DomainResolutionResponse, NetworkError>
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<ReverseResolutionResponse, NetworkError>
 }

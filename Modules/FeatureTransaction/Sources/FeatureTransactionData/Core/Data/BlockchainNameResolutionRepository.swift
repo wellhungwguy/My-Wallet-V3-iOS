@@ -29,10 +29,14 @@ final class BlockchainNameResolutionRepository: BlockchainNameResolutionReposito
     }
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<[ReverseResolution], NetworkError> {
         client
-            .reverseResolve(address: address)
+            .reverseResolve(
+                address: address,
+                currency: currency
+            )
             .map(\.domains)
             .map { $0.filter(\.isBlockchainDomain) }
             .map { $0.map(ReverseResolution.init) }

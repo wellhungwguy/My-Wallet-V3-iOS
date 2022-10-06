@@ -30,6 +30,7 @@ public protocol BlockchainNameResolutionRepositoryAPI {
     ) -> AnyPublisher<DomainResolution, NetworkError>
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<[ReverseResolution], NetworkError>
 }

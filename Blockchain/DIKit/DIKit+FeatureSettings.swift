@@ -117,7 +117,11 @@ struct BlockchainDomainsAdapter: FeatureSettingsDomain.BlockchainDomainsAdapter 
             }
             return provider.resolutionRecord
                 .flatMap { [nameResolutionRepository] resolutionRecord in
-                    nameResolutionRepository.reverseResolve(address: resolutionRecord.walletAddress)
+                    nameResolutionRepository
+                        .reverseResolve(
+                            address: resolutionRecord.walletAddress,
+                            currency: resolutionRecord.symbol
+                        )
                 }
                 .replaceError(with: [])
                 .eraseToAnyPublisher()

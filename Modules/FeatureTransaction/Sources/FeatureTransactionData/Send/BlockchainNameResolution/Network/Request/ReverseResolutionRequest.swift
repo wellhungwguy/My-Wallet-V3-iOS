@@ -4,4 +4,5 @@ import Foundation
 
 struct ReverseResolutionRequest: Encodable {
     let address: String
+    let currency: String
 }

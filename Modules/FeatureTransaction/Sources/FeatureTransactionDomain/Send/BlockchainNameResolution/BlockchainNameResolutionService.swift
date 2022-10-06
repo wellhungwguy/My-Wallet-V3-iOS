@@ -13,8 +13,29 @@ public protocol BlockchainNameResolutionServiceAPI {
     ) -> AnyPublisher<ReceiveAddress?, Never>
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<[String], Never>
+}
+
+extension BlockchainNameResolutionServiceAPI {
+
+    public func reverseResolve(
+        address: String,
+        currency: CryptoCurrency
+    ) -> AnyPublisher<[String], Never> {
+        reverseResolve(address: address, currency: currency.code)
+    }
+
+    public func reverseResolve(
+        address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<[String], Never> {
+        guard let cryptoCurrency = currencyType.cryptoCurrency else {
+            return .just([])
+        }
+        return reverseResolve(address: address, currency: cryptoCurrency)
+    }
 }
 
 final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI {
@@ -38,7 +59,10 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
             return .just(nil)
         }
         return repository
-            .resolve(domainName: domainName, currency: currency.code)
+            .resolve(
+                domainName: domainName,
+                currency: currency.code
+            )
             .eraseError()
             .flatMap { [factory] response -> AnyPublisher<ReceiveAddress?, Error> in
                 factory
@@ -58,10 +82,14 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
     }
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<[String], Never> {
         repository
-            .reverseResolve(address: address)
+            .reverseResolve(
+                address: address,
+                currency: currency
+            )
             .replaceError(with: [])
             .map { $0.map(\.domainName) }
             .eraseToAnyPublisher()
