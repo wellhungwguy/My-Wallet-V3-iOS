@@ -30,6 +30,16 @@ struct FormQuestionView: View {
     @ViewBuilder
     private func makeAnswersView() -> some View {
         switch question.type {
+
+        case .multipleSelection where question.isDropdown == true:
+            FormSelectionDropdownAnswersView(
+                title: question.text,
+                subtitle: question.instructions,
+                selectionMode: .multi,
+                answers: $question.children,
+                showAnswerState: $showAnswersState
+            )
+
         case .multipleSelection:
             FormMultipleSelectionAnswersView(
                 answers: $question.children,
@@ -37,7 +47,10 @@ struct FormQuestionView: View {
             )
 
         case .singleSelection where question.isDropdown == true:
-            FormSingleSelectionDropdownAnswersView(
+            FormSelectionDropdownAnswersView(
+                title: question.text,
+                subtitle: question.instructions,
+                selectionMode: .single,
                 answers: $question.children,
                 showAnswerState: $showAnswersState
             )
