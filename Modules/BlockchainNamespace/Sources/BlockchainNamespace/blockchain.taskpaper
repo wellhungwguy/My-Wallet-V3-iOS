@@ -184,6 +184,17 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			multiapp:
+				brokerage:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				defi:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value

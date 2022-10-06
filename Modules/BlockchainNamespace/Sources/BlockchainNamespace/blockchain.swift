@@ -145,6 +145,7 @@ public extension I_blockchain_app_configuration {
 	var `kyc`: L_blockchain_app_configuration_kyc { .init("\(__).kyc") }
 	var `localized`: L_blockchain_app_configuration_localized { .init("\(__).localized") }
 	var `manual`: L_blockchain_app_configuration_manual { .init("\(__).manual") }
+	var `multiapp`: L_blockchain_app_configuration_multiapp { .init("\(__).multiapp") }
 	var `performance`: L_blockchain_app_configuration_performance { .init("\(__).performance") }
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
 	var `profile`: L_blockchain_app_configuration_profile { .init("\(__).profile") }
@@ -812,6 +813,48 @@ public final class L_blockchain_app_configuration_manual_login_is_enabled: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.manual.login.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_manual_login_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_multiapp: L, I_blockchain_app_configuration_multiapp {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp: I {}
+public extension I_blockchain_app_configuration_multiapp {
+	var `brokerage`: L_blockchain_app_configuration_multiapp_brokerage { .init("\(__).brokerage") }
+	var `defi`: L_blockchain_app_configuration_multiapp_defi { .init("\(__).defi") }
+	var `is`: L_blockchain_app_configuration_multiapp_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_multiapp_brokerage: L, I_blockchain_app_configuration_multiapp_brokerage {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.brokerage", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_brokerage: I {}
+public extension I_blockchain_app_configuration_multiapp_brokerage {
+	var `tabs`: L_blockchain_app_configuration_multiapp_brokerage_tabs { .init("\(__).tabs") }
+}
+public final class L_blockchain_app_configuration_multiapp_brokerage_tabs: L, I_blockchain_app_configuration_multiapp_brokerage_tabs {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.brokerage.tabs", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_brokerage_tabs: I_blockchain_app_configuration_tabs {}
+public final class L_blockchain_app_configuration_multiapp_defi: L, I_blockchain_app_configuration_multiapp_defi {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.defi", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_defi: I {}
+public extension I_blockchain_app_configuration_multiapp_defi {
+	var `tabs`: L_blockchain_app_configuration_multiapp_defi_tabs { .init("\(__).tabs") }
+}
+public final class L_blockchain_app_configuration_multiapp_defi_tabs: L, I_blockchain_app_configuration_multiapp_defi_tabs {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.defi.tabs", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_defi_tabs: I_blockchain_app_configuration_tabs {}
+public final class L_blockchain_app_configuration_multiapp_is: L, I_blockchain_app_configuration_multiapp_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_is: I {}
+public extension I_blockchain_app_configuration_multiapp_is {
+	var `enabled`: L_blockchain_app_configuration_multiapp_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_multiapp_is_enabled: L, I_blockchain_app_configuration_multiapp_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.multiapp.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_multiapp_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_performance: L, I_blockchain_app_configuration_performance {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.performance", comment: "") }
 }

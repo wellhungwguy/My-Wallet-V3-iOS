@@ -31,6 +31,8 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var isAppModeSwitcherPresented: Bool = false
     @BindableState var appModeSeen: Bool = false
 
+    @BindableState var multiAppIsEnabled: Bool = false
+
     var appSwitcherEnabled: Bool {
         appMode != .universal
     }
@@ -222,16 +224,34 @@ let rootViewReducer = Reducer<
     case .onAppear:
         let tabsPublisher = app
             .modePublisher()
-            .flatMap { appMode -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
-                if appMode == .pkw {
-                    return environment
-                        .app
-                        .publisher(for: blockchain.app.configuration.defi.tabs, as: OrderedSet<Tab>.self)
-                } else {
+            .combineLatest(app.publisher(for: blockchain.app.configuration.multiapp.is.enabled, as: Bool.self))
+            .flatMap { appMode, multiAppEnabled -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
+                guard multiAppEnabled.value == true else {
+                    if appMode == .pkw {
+                        return environment
+                            .app
+                            .publisher(for: blockchain.app.configuration.defi.tabs, as: OrderedSet<Tab>.self)
+                    }
                     return environment
                         .app
                         .publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
                 }
+
+                if appMode == .pkw {
+                    return environment
+                        .app
+                        .publisher(for: blockchain.app.configuration.multiapp.defi.tabs, as: OrderedSet<Tab>.self)
+                }
+
+                if appMode == .trading {
+                    return environment
+                        .app
+                        .publisher(for: blockchain.app.configuration.multiapp.brokerage.tabs, as: OrderedSet<Tab>.self)
+                }
+
+                return environment
+                    .app
+                    .publisher(for: blockchain.app.configuration.tabs, as: OrderedSet<Tab>.self)
             }
             .compactMap(\.value)
 
@@ -320,7 +340,14 @@ let rootViewReducer = Reducer<
                 .replaceError(with: false)
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$appModeSeen, $0)) }
+                .map { .binding(.set(\.$appModeSeen, $0)) },
+
+            environment
+                .app.publisher(for: blockchain.app.configuration.multiapp.is.enabled, as: Bool.self)
+                .replaceError(with: false)
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$multiAppIsEnabled, $0)) }
         )
 
     case .onDisappear:

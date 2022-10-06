@@ -234,7 +234,6 @@ extension Icon {
     public static let `googleTranslate` = Icon(name: "Google Translate")
     public static let `hardware` = Icon(name: "Hardware")
     public static let `history` = Icon(name: "History")
-    public static let `home` = Icon(name: "Home")
     public static let `identification` = Icon(name: "Identification")
     public static let `information` = Icon(name: "Information")
     public static let `interestCircle` = Icon(name: "Interest Circle")
@@ -257,7 +256,6 @@ extension Icon {
     public static let `moreHorizontal` = Icon(name: "More Horizontal")
     public static let `moreVertical` = Icon(name: "More Vertical")
     public static let `newWindow` = Icon(name: "New Window")
-    public static let `nft` = Icon(name: "NFT")
     public static let `notificationOff` = Icon(name: "Notification Off")
     public static let `notificationOn` = Icon(name: "Notification On")
     public static let `paperclip` = Icon(name: "Paperclip")
@@ -323,6 +321,17 @@ extension Icon {
     public static let `walletTrade` = Icon(name: "Wallet Trade")
     public static let `walletTransfer` = Icon(name: "Wallet Transfer")
     public static let `walletWithdraw` = Icon(name: "Wallet Withdraw")
+}
+
+extension Icon {
+    public static let `home` = Icon(name: "Home_New")
+    public static let `homeFilled` = Icon(name: "Home Filled")
+    public static let `prices` = Icon(name: "Prices filled")
+    public static let `pricesFilled` = Icon(name: "Prices Filled")
+    public static let `nft` = Icon(name: "NFT")
+    public static let `nftFilled` = Icon(name: "NFT Filled")
+    public static let `card` = Icon(name: "Card")
+    public static let `cardFilled` = Icon(name: "Card Filled")
 }
 
 extension Icon {

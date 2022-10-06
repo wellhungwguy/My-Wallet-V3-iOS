@@ -19,6 +19,7 @@ struct Tab: Hashable, Identifiable, Codable {
     var ux: UX.Dialog?
     var url: URL?
     var icon: Icon
+    var unselectedIcon: Icon?
 }
 
 extension Tab: CustomStringConvertible {
@@ -59,26 +60,11 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            TabView(selection: viewStore.binding(\.$tab)) {
-                tabs(in: viewStore)
+            if viewStore.multiAppIsEnabled == false {
+                legacyAppTabView()
+            } else if viewStore.tabs != nil {
+                multiAppTabView()
             }
-            .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
-                    .identity(blockchain.ux.frequent.action)
-                    .background(
-                        Circle()
-                            .fill(Color.semantic.background)
-                            .padding(Spacing.padding1)
-                    )
-                    .pulse(enabled: viewStore.fab.animate, inset: 8)
-                    .padding([.leading, .trailing], 24.pt)
-                    .offset(y: 6.pt)
-                    .contentShape(Rectangle())
-                    .background(Color.white.invisible())
-                    .if(viewStore.hideFAB, then: { view in view.hidden() }),
-                alignment: .bottom
-            )
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .bottomSheet(
             isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
@@ -127,6 +113,57 @@ struct RootView: View {
         .app(app)
     }
 
+    @ViewBuilder func legacyAppTabView() -> some View {
+            TabView(selection: viewStore.binding(\.$tab)) {
+                       tabs(in: viewStore)
+            }
+            .overlay(
+                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
+                                       .identity(blockchain.ux.frequent.action)
+                                       .background(
+                                           Circle()
+                                               .fill(Color.semantic.background)
+                                               .padding(Spacing.padding1)
+                                       )
+                                       .pulse(enabled: viewStore.fab.animate, inset: 8)
+                                       .padding([.leading, .trailing], 24.pt)
+                                       .offset(y: 6.pt)
+                                       .contentShape(Rectangle())
+                                       .background(Color.white.invisible())
+                                       .if(viewStore.hideFAB, then: { view in view.hidden() }),
+                alignment: .bottom
+            )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+
+    @ViewBuilder func multiAppTabView() -> some View {
+                        TabView(
+                            selection: viewStore.binding(\.$tab),
+                            content: {
+                            tabs(in: viewStore)
+                            }
+                        )
+                        .overlay(
+                            VStack {
+                                Spacer()
+                                BottomBar(
+                                    selectedItem: viewStore.binding(\.$tab),
+                                    items: bottomViewItems(for: viewStore)
+                                )
+                                .cornerRadius(100)
+                                .shadow(color: Color.black.opacity(0.15), radius: 10, x: 10, y: 5)
+                                .padding(EdgeInsets(
+                                    top: 0,
+                                    leading: 40,
+                                    bottom: 0,
+                                    trailing: 40
+                                ))
+                            }
+                        )
+                        .tabViewStyle(.page)
+                        .ignoresSafeArea(.keyboard, edges: .bottom)
+    }
+
     func tabs(in viewStore: ViewStore<RootViewState, RootViewAction>) -> some View {
         ForEach(viewStore.tabs ?? []) { tab in
             tabItem(tab) {
@@ -165,6 +202,18 @@ struct RootView: View {
         }
     }
 
+    func bottomViewItems(for viewStore: ViewStore<RootViewState, RootViewAction>) -> [BottomBarItem<Tag.Reference>] {
+    let tabs = viewStore.tabs ?? []
+     return tabs
+            .map { BottomBarItem(
+                id: $0.ref,
+                selectedIcon: $0.icon.renderingMode(.original),
+                unselectedIcon: $0.unselectedIcon?.renderingMode(.original) ?? Icon.hardware,
+                title: $0.name.localized()
+            )
+        }
+    }
+
     @ViewBuilder func maintenance(_ tab: Tab) -> some View {
         if let ux = tab.ux {
             ErrorView(
@@ -175,6 +224,28 @@ struct RootView: View {
     }
 
     @ViewBuilder func tabItem<Content>(
+        _ tab: Tab,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View where Content: View {
+        if viewStore.multiAppIsEnabled {
+            multiAppTabItem(tab, content: content)
+        } else {
+            legacyTabItem(tab, content: content)
+        }
+    }
+
+    @ViewBuilder private func multiAppTabItem<Content>(
+        _ tab: Tab,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View where Content: View {
+        PrimaryNavigationView {
+            content()
+        }
+        .tag(tab.ref)
+        .identity(tab.ref)
+    }
+
+    @ViewBuilder private func legacyTabItem<Content>(
         _ tab: Tab,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View where Content: View {
