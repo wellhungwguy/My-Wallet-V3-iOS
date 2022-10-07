@@ -7,7 +7,7 @@ enum AccountWrapper {
     struct Version3: Equatable, Codable {
         let label: String
         let archived: Bool
-        let xpriv: String
+        let xpriv: String?
         let xpub: String
         let addressLabels: [AddressLabelResponse]
         let cache: AddressCacheResponse
@@ -26,10 +26,10 @@ enum AccountWrapper {
             label = try container.decode(String.self, forKey: .label)
             // some clients might not send the `archived` key/value, so we check this and default to `false`
             archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
-            xpriv = try container.decode(String.self, forKey: .xpriv)
+            xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
             xpub = try container.decode(String.self, forKey: .xpub)
             addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
-            cache = try container.decode(AddressCacheResponse.self, forKey: .cache)
+            cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
         }
 
         init(

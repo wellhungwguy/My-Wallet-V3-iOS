@@ -20,7 +20,7 @@ public enum DerivationType: String, Equatable, CaseIterable {
 public struct Derivation: Equatable {
     public let type: DerivationType
     public let purpose: Int
-    public let xpriv: String
+    public let xpriv: String?
     public let xpub: String
     public let addressLabels: [AddressLabel]
     public let cache: AddressCache
@@ -28,7 +28,7 @@ public struct Derivation: Equatable {
     public init(
         type: DerivationType,
         purpose: Int,
-        xpriv: String,
+        xpriv: String?,
         xpub: String,
         addressLabels: [AddressLabel],
         cache: AddressCache

@@ -51,10 +51,7 @@ class AccountTests: XCTestCase {
         XCTAssertEqual(accountVersion3.label, "Private Key Wallet")
         // this should default to `false` for broken accounts
         XCTAssertFalse(accountVersion3.archived)
-        XCTAssertEqual(
-            accountVersion3.xpriv,
-            "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG"
-        )
+
         XCTAssertEqual(
             accountVersion3.xpub,
             "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3"
