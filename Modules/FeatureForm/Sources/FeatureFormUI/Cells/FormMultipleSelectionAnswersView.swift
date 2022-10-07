@@ -6,6 +6,7 @@ import SwiftUI
 
 struct FormMultipleSelectionAnswersView: View {
 
+    let title: String
     @Binding var answers: [FormAnswer]
     @Binding var showAnswersState: Bool
 
@@ -21,9 +22,17 @@ struct FormMultipleSelectionAnswersView: View {
     private func view(for answer: Binding<FormAnswer>) -> some View {
         switch answer.wrappedValue.type {
         case .date:
-            FormDateAnswerView(answer: answer, showAnswerState: $showAnswersState)
+            FormDateDropdownAnswersView(
+                title: title,
+                answer: answer,
+                showAnswerState: $showAnswersState
+            )
         case .selection:
-            FormMultipleSelectionAnswerView(answer: answer, showAnswerState: $showAnswersState)
+            FormMultipleSelectionAnswerView(
+                title: title,
+                answer: answer,
+                showAnswerState: $showAnswersState
+            )
         case .openEnded:
             FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
         default:
@@ -80,7 +89,11 @@ struct FormMultipleSelectionAnswersView_Previews: PreviewProvider {
         @State var showAnswersState: Bool
 
         var body: some View {
-            FormMultipleSelectionAnswersView(answers: $answers, showAnswersState: $showAnswersState)
+            FormMultipleSelectionAnswersView(
+                title: "Title",
+                answers: $answers,
+                showAnswersState: $showAnswersState
+            )
         }
     }
 }

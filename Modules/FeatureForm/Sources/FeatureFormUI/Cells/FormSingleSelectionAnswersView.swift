@@ -6,6 +6,7 @@ import SwiftUI
 
 struct FormSingleSelectionAnswersView: View {
 
+    let title: String
     @Binding var answers: [FormAnswer]
     @Binding var showAnswersState: Bool
 
@@ -21,19 +22,27 @@ struct FormSingleSelectionAnswersView: View {
     private func view(for answer: Binding<FormAnswer>) -> some View {
         switch answer.wrappedValue.type {
         case .selection:
-            FormSingleSelectionAnswerView(answer: answer, showAnswerState: $showAnswersState)
-                .onChange(of: answer.wrappedValue) { newValue in
-                    guard newValue.checked == true else {
-                        return
-                    }
-                    for index in answers.indices {
-                        answers[index].checked = answers[index] == newValue
-                    }
+            FormSingleSelectionAnswerView(
+                title: title,
+                answer: answer,
+                showAnswerState: $showAnswersState
+            )
+            .onChange(of: answer.wrappedValue) { newValue in
+                guard newValue.checked == true else {
+                    return
                 }
+                for index in answers.indices {
+                    answers[index].checked = answers[index] == newValue
+                }
+            }
         case .openEnded:
             FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
         case .date:
-            FormDateAnswerView(answer: answer, showAnswerState: $showAnswersState)
+            FormDateDropdownAnswersView(
+                title: title,
+                answer: answer,
+                showAnswerState: $showAnswersState
+            )
         default:
             Text(answer.wrappedValue.type.value)
                 .typography(.paragraph1)
@@ -78,7 +87,11 @@ struct FormSingleSelectionAnswersView_Previews: PreviewProvider {
         @State var showAnswersState: Bool
 
         var body: some View {
-            FormSingleSelectionAnswersView(answers: $answers, showAnswersState: $showAnswersState)
+            FormSingleSelectionAnswersView(
+                title: "Title",
+                answers: $answers,
+                showAnswersState: $showAnswersState
+            )
         }
     }
 }

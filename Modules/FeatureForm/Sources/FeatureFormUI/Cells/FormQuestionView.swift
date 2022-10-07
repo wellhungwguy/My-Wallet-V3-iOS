@@ -42,6 +42,7 @@ struct FormQuestionView: View {
 
         case .multipleSelection:
             FormMultipleSelectionAnswersView(
+                title: question.text,
                 answers: $question.children,
                 showAnswersState: $showAnswersState
             )
@@ -57,18 +58,21 @@ struct FormQuestionView: View {
 
         case .singleSelection:
             FormSingleSelectionAnswersView(
+                title: question.text,
                 answers: $question.children,
                 showAnswersState: $showAnswersState
             )
 
         case .openEnded where question.children.isNotEmpty:
             FormSingleSelectionAnswersView(
+                title: question.text,
                 answers: $question.children,
                 showAnswersState: $showAnswersState
             )
 
         case .openEnded:
             FormSingleSelectionAnswersView(
+                title: question.text,
                 answers: $question.own.transform(get: { [$0] }, set: { $0[0] }),
                 showAnswersState: $showAnswersState
             )

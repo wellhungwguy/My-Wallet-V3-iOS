@@ -22,7 +22,7 @@ struct PersonalInfoView: View {
                 submitAction: {
                     viewStore.send(.submit)
                 },
-                submitButtonMode: .submitButtonAlwaysEnabled,
+                submitButtonMode: .onlyEnabledWhenAllAnswersValid,
                 headerIcon: {
                     headerIcon
                 }
