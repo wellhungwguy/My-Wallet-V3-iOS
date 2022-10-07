@@ -172,19 +172,6 @@ extension RootViewController {
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {
 
         viewStore.publisher
-            .reloadAfterMultiAddressResponse
-            .filter { $0 }
-            .sink(to: My.reload, on: self)
-            .store(in: &bag)
-
-        viewStore.publisher
-            .displayWalletAlertContent
-            .compactMap { $0 }
-            .removeDuplicates()
-            .sink(to: My.alert, on: self)
-            .store(in: &bag)
-
-        viewStore.publisher
             .displaySendCryptoScreen
             .filter(\.self)
             .sink(to: My.handleSendCrypto, on: self)

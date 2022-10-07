@@ -105,12 +105,6 @@ final class LoggedInReducerTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func test_verify_initial_state_is_correct() {
-        let state = LoggedIn.State()
-        XCTAssertNil(state.displayWalletAlertContent)
-        XCTAssertFalse(state.reloadAfterMultiAddressResponse)
-    }
-
     func test_calling_start_on_reducer_should_post_login_notification() {
         let expectation = expectation(forNotification: .login, object: nil)
 
