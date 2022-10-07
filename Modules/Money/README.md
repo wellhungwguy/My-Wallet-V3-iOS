@@ -1,6 +1,6 @@
 # Money
 
-The Money Package encompasses the models that represent fiat and crypto currencies. There are also services that returns Blockchain supported assets and enabled currencies for users.
+The Money package encompasses all models and services necessary to provide a consumer framework and/or app with data about supported currencies and networks, prices of those currencies, and mathematical operations on top of money values.
 
 ## Key Classes
 

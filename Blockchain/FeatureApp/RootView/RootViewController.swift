@@ -11,6 +11,7 @@ import FeatureDashboardUI
 import FeatureOnboardingUI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import StoreKit

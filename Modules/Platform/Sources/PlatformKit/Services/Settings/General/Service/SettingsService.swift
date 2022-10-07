@@ -80,7 +80,7 @@ final class SettingsService: SettingsServiceAPI {
 
         supportedFiatCurrencies = Deferred {
             app.publisher(for: blockchain.user.currency.available.currencies)
-                .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
+                .replaceError(with: Set(FiatCurrency.allEnabledFiatCurrencies))
                 .shareReplay()
         }
         .eraseToAnyPublisher()

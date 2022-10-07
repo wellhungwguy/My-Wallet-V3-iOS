@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 
 import PackageDescription
 
@@ -242,7 +242,7 @@ let package = Package(
                 .target(name: "ERC20Kit"),
                 .target(name: "ERC20KitMock"),
                 .target(name: "EthereumKit"),
-                .product(name: "MoneyKitMock", package: "Money"),
+                .product(name: "MoneyDomainKitMock", package: "Money"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
@@ -256,7 +256,7 @@ let package = Package(
             dependencies: [
                 .target(name: "ERC20Kit"),
                 .target(name: "ERC20KitMock"),
-                .product(name: "MoneyKitMock", package: "Money"),
+                .product(name: "MoneyDomainKitMock", package: "Money"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test")
             ]
@@ -266,7 +266,7 @@ let package = Package(
             dependencies: [
                 .target(name: "EthereumKit"),
                 .target(name: "EthereumKitMock"),
-                .product(name: "MoneyKitMock", package: "Money"),
+                .product(name: "MoneyDomainKitMock", package: "Money"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "RxBlocking", package: "RxSwift"),

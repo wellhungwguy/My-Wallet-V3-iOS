@@ -23,9 +23,7 @@ struct FormSelectionDropdownAnswersView: View {
         VStack {
             let selectedAnswers = answers.filter { $0.checked == true }
             HStack(spacing: Spacing.padding1) {
-                let selectedAnswersText = selectedAnswers.compactMap {
-                    $0.text
-                }.joined(separator: ", ")
+                let selectedAnswersText = selectedAnswers.compactMap(\.text).joined(separator: ", ")
                 Text(selectedAnswersText)
                     .typography(.paragraph2)
                     .foregroundColor(.semantic.body)
@@ -320,7 +318,8 @@ struct FormSelectionDropdownAnswersView_Previews: PreviewProvider {
                 subtitle: "Subtitle",
                 selectionMode: .single,
                 answers: $answers,
-                showAnswerState: $showAnswerState)
+                showAnswerState: $showAnswerState
+            )
                 .padding()
         }
     }

@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs

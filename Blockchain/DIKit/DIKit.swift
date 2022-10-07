@@ -230,10 +230,6 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory {
-            EVMSupport(app: DIKit.resolve()) as MoneyKit.EVMSupport
-        }
-
         // MARK: - UserInformationServiceProvider
 
         // user state can be observed by multiple objects and the state is made up of multiple components

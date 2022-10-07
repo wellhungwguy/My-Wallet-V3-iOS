@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 
 import PackageDescription
 
@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/tuist/XcodeProj.git",
-            .upToNextMajor(from: "8.0.0")
+            .upToNextMajor(from: "8.8.0")
         )
     ],
     targets: [

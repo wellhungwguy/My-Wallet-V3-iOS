@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureInterestDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import SwiftUI

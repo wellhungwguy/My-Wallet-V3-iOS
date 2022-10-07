@@ -212,7 +212,7 @@ struct RootView: View {
                 unselectedIcon: $0.unselectedIcon?.renderingMode(.original) ?? Icon.hardware,
                 title: $0.name.localized()
             )
-        }
+            }
     }
 
     @ViewBuilder func maintenance(_ tab: Tab) -> some View {
