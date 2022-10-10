@@ -38,7 +38,7 @@ struct DerivationResponse: Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = try container.decode(Format.self, forKey: .type)
         purpose = try container.decode(Int.self, forKey: .purpose)
-        xpriv = try container.decode(String.self, forKey: .xpriv)
+        xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv) ?? ""
         xpub = try container.decode(String.self, forKey: .xpub)
         addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
         cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
