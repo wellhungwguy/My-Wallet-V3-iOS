@@ -146,9 +146,7 @@ public struct VerifyRecoveryPhraseView: View {
 
     @ViewBuilder func availableWordView(word: RecoveryPhraseWord) -> some View {
         Button(action: {
-            if !viewStore.selectedWords.contains(word) {
                 viewStore.send(.onAvailableWordTap(word))
-            }
         }, label: {
             Text(word.label)
         })
@@ -158,10 +156,8 @@ public struct VerifyRecoveryPhraseView: View {
         .foregroundColor(Color.WalletSemantic.title)
         .cornerRadius(4)
         .border(Color.WalletSemantic.medium, width: 1)
+        .opacity(viewStore.selectedWords.contains(word) ? 0 : 1)
         .background(Color.white)
-        .if(viewStore.selectedWords.contains(word)) { view in
-            view.hidden()
-        }
     }
 
     var availableWordsView: some View {
@@ -172,11 +168,9 @@ public struct VerifyRecoveryPhraseView: View {
                     .chunks(ofCount: 4),
                 id: \.self
             ) { words in
-                if words.isNotEmpty {
-                    HStack {
+                HStack {
                         ForEach(words, id: \.self) { word in
                             availableWordView(word: word)
-                        }
                     }
                 }
             }

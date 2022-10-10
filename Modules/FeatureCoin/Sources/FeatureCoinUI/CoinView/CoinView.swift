@@ -99,8 +99,14 @@ public struct CoinView: View {
             trailing: {
                 WithViewStore(store) { viewStore in
                     if let isFavorite = viewStore.isFavorite {
-                        IconButton(icon: isFavorite ? .favorite : .favoriteEmpty) {
-                            viewStore.send(isFavorite ? .removeFromWatchlist : .addToWatchlist)
+                        if isFavorite {
+                            IconButton(icon: .favorite) {
+                                viewStore.send(.removeFromWatchlist)
+                            }
+                        } else {
+                            IconButton(icon: .favoriteEmpty) {
+                                viewStore.send(.addToWatchlist)
+                            }
                         }
                     } else {
                         ProgressView()
@@ -134,7 +140,9 @@ public struct CoinView: View {
 
                     if let swapAction = viewStore.swapButton {
                         PrimaryButton(title: swapAction.title) {
-                            swapAction.icon
+                            swapAction
+                                .icon
+                                .color(.white)
                         } action: {
                             app.post(event: swapAction.event[].ref(to: context), context: context)
                         }
@@ -245,7 +253,7 @@ public struct CoinView: View {
                 ForEach(viewStore.actions, id: \.event) { action in
                     SecondaryButton(
                         title: action.title,
-                        leadingView: { action.icon },
+                        leadingView: { action.icon.color(.white) },
                         action: {
                             app.post(event: action.event[].ref(to: context), context: context)
                         }
