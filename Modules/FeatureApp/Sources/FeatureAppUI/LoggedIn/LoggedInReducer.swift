@@ -44,11 +44,9 @@ public enum LoggedIn {
     }
 
     public struct State: Equatable {
-        public var reloadAfterMultiAddressResponse: Bool = false
         public var displaySendCryptoScreen: Bool = false
         public var displayPostSignUpOnboardingFlow: Bool = false
         public var displayPostSignInOnboardingFlow: Bool = false
-        public var displayWalletAlertContent: AlertViewContent?
     }
 
     public struct Environment {
@@ -70,10 +68,6 @@ public enum LoggedIn {
 
     public enum WalletAction: Equatable {
         case authenticateForBiometrics(password: String)
-        case accountInfoAndExchangeRates
-        case accountInfoAndExchangeRatesHandled
-        case handleWalletBackup
-        case handleFailToLoadHistory(String?)
     }
 }
 
@@ -159,31 +153,7 @@ let loggedInReducer = Reducer<
         return .cancel(id: LoggedInIdentifier())
     case .wallet(.authenticateForBiometrics):
         return .cancel(id: LoggedInIdentifier())
-    case .wallet(.accountInfoAndExchangeRates):
-        environment.loadingViewPresenter.hide()
-        state.reloadAfterMultiAddressResponse = true
-        return Effect(value: .wallet(.accountInfoAndExchangeRatesHandled))
-    case .wallet(.accountInfoAndExchangeRatesHandled):
-        state.reloadAfterMultiAddressResponse = false
-        return .none
-    case .wallet(.handleWalletBackup):
-        return .none
-    case .wallet(.handleFailToLoadHistory(let error)):
-        // the logic heres follow what was on the legacy AppCoordinator
-        guard let errorMessage = error, !errorMessage.isEmpty else {
-            state.displayWalletAlertContent = AlertViewContent(
-                title: LocalizationConstants.Errors.error,
-                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
-            )
-            return .none
-        }
-        environment.analyticsRecorder.record(
-            event: AnalyticsEvents.BTCHistoryEvent.btcHistoryError(errorMessage)
-        )
-        state.displayWalletAlertContent = AlertViewContent(
-            title: LocalizationConstants.Errors.error,
-            message: LocalizationConstants.Errors.balancesGeneric
-        )
+    case .wallet:
         return .none
     case .none:
         return .none

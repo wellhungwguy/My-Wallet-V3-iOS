@@ -58,7 +58,6 @@ final class OnboardingHostingController: UIViewController {
         viewStore.publisher
             .displayAlert
             .compactMap { $0 }
-            .removeDuplicates()
             .sink { [weak self] alert in
                 guard let self = self else { return }
                 self.showAlert(type: alert)
