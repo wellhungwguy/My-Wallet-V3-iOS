@@ -2,7 +2,6 @@
 
 import ComposableArchitecture
 import DIKit
-import MoneyKit
 import PlatformKit
 
 struct InterestAccountDetailsEnvironment {

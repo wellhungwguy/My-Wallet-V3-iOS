@@ -9,7 +9,6 @@ import FeatureCardPaymentDomain
 import FeatureSettingsDomain
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
-import MoneyKit
 import PlatformKit
 import WalletPayloadKit
 

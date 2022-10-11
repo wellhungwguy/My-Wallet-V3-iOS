@@ -1,7 +1,6 @@
 import BlockchainNamespace
 import Combine
 import FeatureCardPaymentDomain
-import MoneyKit
 import PassKit
 import PlatformKit
 import ToolKit

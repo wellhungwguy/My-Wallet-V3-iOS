@@ -108,8 +108,7 @@ func defineDependencies() {
         DependencyContainer.walletPayloadDataKit
         DependencyContainer.metadataKit
         DependencyContainer.metadataDataKit
-        DependencyContainer.moneyDataKit
-        DependencyContainer.moneyDomainKit
+        DependencyContainer.moneyKit
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit

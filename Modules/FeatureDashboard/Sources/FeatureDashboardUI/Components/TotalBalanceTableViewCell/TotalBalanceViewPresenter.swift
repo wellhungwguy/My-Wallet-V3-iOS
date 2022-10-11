@@ -2,7 +2,6 @@
 
 import BlockchainNamespace
 import Localization
-import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift

@@ -546,7 +546,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     case .crypto:
                         return true
                     case .fiat(let fiatCurrency):
-                        return FiatCurrency.allEnabledFiatCurrencies.contains(fiatCurrency)
+                        return MoneyKit.allEnabledFiatCurrencies.contains(fiatCurrency)
                     }
                 }
             }

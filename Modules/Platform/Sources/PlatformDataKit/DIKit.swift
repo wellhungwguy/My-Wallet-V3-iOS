@@ -28,5 +28,20 @@ extension DependencyContainer {
         single { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
 
         factory { InterestAccountReceiveAddressRepository() as InterestAccountReceiveAddressRepositoryAPI }
+
+        // MARK: - Price
+
+        factory { () -> PriceClientAPI in
+            let client: PlatformDataAPIClient = DIKit.resolve()
+            return client as PriceClientAPI
+        }
+
+        single {
+            PriceRepository() as PriceRepositoryAPI
+        }
+
+        single(tag: DIKitPriceContext.volume) {
+            PriceRepository(refreshControl: PerpetualCacheRefreshControl()) as PriceRepositoryAPI
+        }
     }
 }

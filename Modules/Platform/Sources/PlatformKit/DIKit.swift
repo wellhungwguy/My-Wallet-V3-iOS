@@ -113,6 +113,10 @@ extension DependencyContainer {
 
         single { TradingBalanceService() as TradingBalanceServiceAPI }
 
+        factory { PriceService() as PriceServiceAPI }
+
+        factory { MarketCapService() as MarketCapServiceAPI }
+
         factory { () -> CurrencyConversionServiceAPI in
             CurrencyConversionService(priceService: DIKit.resolve())
         }

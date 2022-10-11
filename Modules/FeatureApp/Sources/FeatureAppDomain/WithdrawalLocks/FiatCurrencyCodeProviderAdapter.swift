@@ -4,7 +4,7 @@ import Combine
 import DIKit
 import FeatureWithdrawalLocksDomain
 import Foundation
-import MoneyKit
+import PlatformKit
 
 final class FiatCurrencyCodeProviderAdapter: FiatCurrencyCodeProviderAPI {
 

@@ -8,6 +8,7 @@ import PlatformKit
 import ToolKit
 
 typealias PlatformDataAPIClient = InterestAccountEligibilityClientAPI &
+    PriceClientAPI &
     InterestAccountReceiveAddressClientAPI
 
 final class APIClient: PlatformDataAPIClient {
@@ -28,14 +29,21 @@ final class APIClient: PlatformDataAPIClient {
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
+    private let priceRequestBuilder: RequestBuilder
+    private let priceNetworkAdapter: NetworkAdapterAPI
+
     // MARK: - Setup
 
     init(
         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+        priceNetworkAdapter: NetworkAdapterAPI = resolve(),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
+        priceRequestBuilder: RequestBuilder = resolve()
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
+        self.priceNetworkAdapter = priceNetworkAdapter
+        self.priceRequestBuilder = priceRequestBuilder
     }
 
     // MARK: - InterestAccountReceiveAddressClientAPI
@@ -83,5 +91,46 @@ final class APIClient: PlatformDataAPIClient {
 
         return networkAdapter
             .perform(request: request)
+    }
+
+    // MARK: - PriceClientAPI
+
+    func symbols()
+        -> AnyPublisher<PriceResponse.Symbols.Response, NetworkError>
+    {
+        let request: NetworkRequest! = PriceRequest.Symbols.request(
+            requestBuilder: priceRequestBuilder
+        )
+        return priceNetworkAdapter.perform(request: request)
+    }
+
+    func price(
+        of bases: Set<String>,
+        in quote: String,
+        time: String?
+    ) -> AnyPublisher<PriceResponse.IndexMulti.Response, NetworkError> {
+        let request: NetworkRequest! = PriceRequest.IndexMulti.request(
+            requestBuilder: priceRequestBuilder,
+            bases: bases,
+            quote: quote,
+            time: time
+        )
+        return priceNetworkAdapter.perform(request: request)
+    }
+
+    func priceSeries(
+        of base: String,
+        in quote: String,
+        start: String,
+        scale: String
+    ) -> AnyPublisher<[PriceResponse.Item], NetworkError> {
+        let request: NetworkRequest! = PriceRequest.IndexSeries.request(
+            requestBuilder: priceRequestBuilder,
+            base: base,
+            quote: quote,
+            start: start,
+            scale: scale
+        )
+        return priceNetworkAdapter.perform(request: request)
     }
 }

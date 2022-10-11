@@ -9,13 +9,13 @@ import FeatureAccountPickerUI
 import FeatureWithdrawalLocksUI
 import Foundation
 import Localization
-import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+import PlatformKit
 
 class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
@@ -33,7 +33,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
     fileprivate let header = PassthroughSubject<HeaderStyle, Error>()
 
-    lazy var onSwitchChanged: ((Bool) -> Void)? = { [app, accountFilterRelay] isOn in
+    lazy var onSwitchChanged: ((Bool)-> Void)? = {[app, accountFilterRelay ] isOn in
         // Account switcher to automatically filter based on some condition
         guard app.currentMode == .pkw else {
             return

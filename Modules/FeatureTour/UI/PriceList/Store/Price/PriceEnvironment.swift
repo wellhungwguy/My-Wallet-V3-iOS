@@ -3,7 +3,7 @@
 import CombineSchedulers
 import DIKit
 import Foundation
-import MoneyKit
+import PlatformKit
 
 struct PriceEnvironment {
 

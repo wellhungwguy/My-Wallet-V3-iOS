@@ -6,7 +6,6 @@ import ComposableArchitecture
 import DIKit
 import FeatureInterestDomain
 import FeatureTransactionUI
-import MoneyKit
 import PlatformKit
 
 struct InterestAccountSelectionEnvironment {

@@ -3,6 +3,6 @@
 import ToolKit
 import XCTest
 
-final class MockErrorRecorder: ErrorRecording {
+class MockErrorRecorder: ErrorRecording {
     func error(_ error: Error) {}
 }
