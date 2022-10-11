@@ -14,7 +14,7 @@ enum AddressSearchAction: Equatable, BindableAction, NavigationAction {
 
     case onAppear
     case route(RouteIntent<AddressSearchRoute>?)
-    case searchAddresses(searchText: String?, containerId: String?, country: String?)
+    case searchAddresses(searchText: String?, country: String?)
     case didReceiveAddressesResult(Result<[AddressSearchResult], AddressSearchServiceError>)
     case selectAddress(AddressSearchResult)
     case modifySelectedAddress(addressId: String?)
@@ -32,6 +32,10 @@ let AddressSearchDebounceInMilliseconds: Int = 500
 
 struct AddressSearchState: Equatable, NavigationState {
 
+    struct ContainerSearch: Equatable {
+        let containerId: String?
+        let searchText: String?
+    }
     @BindableState var searchText: String = ""
     @BindableState var isSearchFieldSelected: Bool = false
     var isSearchResultsLoading: Bool = false
@@ -45,6 +49,7 @@ struct AddressSearchState: Equatable, NavigationState {
     var addressModificationState: AddressModificationState?
     var loading = false
     var screenTitle: String = ""
+    var containerSearch: ContainerSearch?
     var error: Nabu.Error?
 
     init(
@@ -104,7 +109,8 @@ let addressSearchReducer = Reducer.combine(
         case .binding(\.$searchText):
             return Effect(
                 value: .searchAddresses(
-                    searchText: state.searchText, containerId: nil, country: state.address?.country
+                    searchText: state.searchText,
+                    country: state.address?.country
                 )
             )
 
@@ -112,11 +118,15 @@ let addressSearchReducer = Reducer.combine(
             if searchAddressResult.isAddressType {
                 return Effect(value: .modifySelectedAddress(addressId: searchAddressResult.addressId))
             } else {
-                state.searchText = (searchAddressResult.text ?? "") + " "
+                let searchText = (searchAddressResult.text ?? "") + " "
+                state.searchText = searchText
+                state.containerSearch = .init(
+                    containerId: searchAddressResult.addressId,
+                    searchText: searchText
+                )
                 return Effect(
                     value: .searchAddresses(
                         searchText: state.searchText,
-                        containerId: searchAddressResult.addressId,
                         country: state.address?.country
                     )
                 )
@@ -142,10 +152,10 @@ let addressSearchReducer = Reducer.combine(
             state.screenTitle = env.config.addressSearchScreen.title
             guard state.address == .none else {
                 if state.searchResults.isEmpty {
+                    state.containerSearch = nil
                     return Effect(
                         value: .searchAddresses(
                             searchText: state.address?.searchText,
-                            containerId: nil,
                             country: state.address?.country
                         )
                     )
@@ -192,20 +202,26 @@ let addressSearchReducer = Reducer.combine(
                 env.onComplete(addressResult)
             }
 
-        case .searchAddresses(let searchText, let containerId, let country):
+        case .searchAddresses(let searchText, let country):
             guard let searchText = searchText, searchText.isNotEmpty,
                   let country = country, country.isNotEmpty
             else {
                 state.searchResults = []
                 state.isSearchResultsLoading = false
+                state.containerSearch = nil
                 return .cancel(id: AddressSearchIdentifier())
+            }
+            if let containerSearchText = state.containerSearch?.searchText {
+                if !searchText.hasPrefix(containerSearchText) {
+                    state.containerSearch = nil
+                }
             }
             state.isSearchResultsLoading = true
             return env
                 .addressSearchService
                 .fetchAddresses(
                     searchText: searchText,
-                    containerId: containerId,
+                    containerId: state.containerSearch?.containerId,
                     countryCode: country,
                     sateCode: state.address?.state
                 )
