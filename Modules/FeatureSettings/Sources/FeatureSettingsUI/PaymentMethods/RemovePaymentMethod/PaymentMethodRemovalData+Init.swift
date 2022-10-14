@@ -22,7 +22,8 @@ extension PaymentMethodRemovalData {
             title: beneficiary.name,
             description: beneficiary.account,
             event: .sbRemoveBank,
-            type: .beneficiary(beneficiary.type)
+            type: .beneficiary(beneficiary.type),
+            icon: beneficiary.icon
         )
     }
 }

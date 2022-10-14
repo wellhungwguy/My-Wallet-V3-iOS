@@ -11,14 +11,18 @@ final class IconButtonTexts: XCTestCase {
         isRecording = false
     }
 
-    let button = IconButton(icon: .qrCode) {}
-
     func testDefault() {
-        assertSnapshot(matching: button, as: .image)
+        assertSnapshot(
+            matching: IconButton(icon: .qrCode) {}.frame(width: 32, height: 32),
+            as: .image
+        )
     }
 
     func testDisabled() {
-        assertSnapshot(matching: button.disabled(true), as: .image)
+        assertSnapshot(
+            matching: IconButton(icon: .qrCode) {}.frame(width: 32, height: 32).disabled(true),
+            as: .image
+        )
     }
 
     func testCircle() {

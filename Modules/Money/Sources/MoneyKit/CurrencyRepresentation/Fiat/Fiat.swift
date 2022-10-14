@@ -12,11 +12,7 @@ public protocol Fiat: Money {
 extension Fiat {
 
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
-        toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale)
-    }
-
-    public func toDisplayString(includeSymbol: Bool, format: NumberFormatter.CurrencyFormat) -> String {
-        toDisplayString(includeSymbol: includeSymbol, format: format, locale: .current)
+        toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale, precision: nil)
     }
 
     /// Creates a displayable string, representing the currency amount in major units, in the given locale, using the given format, optionally including the currency symbol.
@@ -25,8 +21,13 @@ extension Fiat {
     ///   - includeSymbol: Whether the symbol should be included.
     ///   - format                    A format.
     ///   - locale:        A locale.
-    public func toDisplayString(includeSymbol: Bool, format: NumberFormatter.CurrencyFormat, locale: Locale) -> String {
-        let currencyPrecision = currency.precision
+    public func toDisplayString(
+        includeSymbol: Bool,
+        format: NumberFormatter.CurrencyFormat = .fullLength,
+        locale: Locale = .current,
+        precision: Int? = nil
+    ) -> String {
+        let currencyPrecision = precision ?? currency.precision
         let displayMajorValue = displayMajorValue
         let oneMinor = Decimal(1) / pow(10, currencyPrecision)
         let valueLessThanOneMinor = displayMajorValue > 0 && (displayMajorValue < oneMinor)

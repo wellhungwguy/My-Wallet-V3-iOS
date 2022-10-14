@@ -1546,6 +1546,12 @@ blockchain:
 						+ blockchain.ui.type.button.secondary
 						min:
 						+ blockchain.ui.type.button.secondary
+					default:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							currency:
+							+ blockchain.type.currency
 					input:
 					+ blockchain.ui.type.input
 					output:
@@ -1606,6 +1612,10 @@ blockchain:
 				will:
 					finish:
 					start:
+			loading:
+			+ blockchain.ux.type.story
+				close:
+				+ blockchain.ui.type.button.primary
 			payment:
 				method:
 					is:

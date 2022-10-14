@@ -5503,6 +5503,7 @@ public extension I_blockchain_ux_transaction {
 	var `details`: L_blockchain_ux_transaction_details { .init("\(__).details") }
 	var `enter`: L_blockchain_ux_transaction_enter { .init("\(__).enter") }
 	var `event`: L_blockchain_ux_transaction_event { .init("\(__).event") }
+	var `loading`: L_blockchain_ux_transaction_loading { .init("\(__).loading") }
 	var `payment`: L_blockchain_ux_transaction_payment { .init("\(__).payment") }
 	var `previous`: L_blockchain_ux_transaction_previous { .init("\(__).previous") }
 	var `smart`: L_blockchain_ux_transaction_smart { .init("\(__).smart") }
@@ -5830,6 +5831,7 @@ public final class L_blockchain_ux_transaction_enter_amount: L, I_blockchain_ux_
 public protocol I_blockchain_ux_transaction_enter_amount: I_blockchain_ux_type_story {}
 public extension I_blockchain_ux_transaction_enter_amount {
 	var `button`: L_blockchain_ux_transaction_enter_amount_button { .init("\(__).button") }
+	var `default`: L_blockchain_ux_transaction_enter_amount_default { .init("\(__).default") }
 	var `input`: L_blockchain_ux_transaction_enter_amount_input { .init("\(__).input") }
 	var `output`: L_blockchain_ux_transaction_enter_amount_output { .init("\(__).output") }
 	var `quick`: L_blockchain_ux_transaction_enter_amount_quick { .init("\(__).quick") }
@@ -5856,6 +5858,29 @@ public final class L_blockchain_ux_transaction_enter_amount_button_min: L, I_blo
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.button.min", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_enter_amount_button_min: I_blockchain_ui_type_button_secondary {}
+public final class L_blockchain_ux_transaction_enter_amount_default: L, I_blockchain_ux_transaction_enter_amount_default {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_enter_amount_default: I {}
+public extension I_blockchain_ux_transaction_enter_amount_default {
+	var `input`: L_blockchain_ux_transaction_enter_amount_default_input { .init("\(__).input") }
+}
+public final class L_blockchain_ux_transaction_enter_amount_default_input: L, I_blockchain_ux_transaction_enter_amount_default_input {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default.input", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_enter_amount_default_input: I {}
+public extension I_blockchain_ux_transaction_enter_amount_default_input {
+	var `amount`: L_blockchain_ux_transaction_enter_amount_default_input_amount { .init("\(__).amount") }
+	var `currency`: L_blockchain_ux_transaction_enter_amount_default_input_currency { .init("\(__).currency") }
+}
+public final class L_blockchain_ux_transaction_enter_amount_default_input_amount: L, I_blockchain_ux_transaction_enter_amount_default_input_amount {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default.input.amount", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_enter_amount_default_input_amount: I_blockchain_db_type_bigint {}
+public final class L_blockchain_ux_transaction_enter_amount_default_input_currency: L, I_blockchain_ux_transaction_enter_amount_default_input_currency {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default.input.currency", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_enter_amount_default_input_currency: I_blockchain_type_currency {}
 public final class L_blockchain_ux_transaction_enter_amount_input: L, I_blockchain_ux_transaction_enter_amount_input {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.input", comment: "") }
 }
@@ -6160,6 +6185,17 @@ public final class L_blockchain_ux_transaction_event_will_start: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.will.start", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_event_will_start: I {}
+public final class L_blockchain_ux_transaction_loading: L, I_blockchain_ux_transaction_loading {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.loading", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_loading: I_blockchain_ux_type_story {}
+public extension I_blockchain_ux_transaction_loading {
+	var `close`: L_blockchain_ux_transaction_loading_close { .init("\(__).close") }
+}
+public final class L_blockchain_ux_transaction_loading_close: L, I_blockchain_ux_transaction_loading_close {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.loading.close", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_loading_close: I_blockchain_ui_type_button_primary {}
 public final class L_blockchain_ux_transaction_payment: L, I_blockchain_ux_transaction_payment {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment", comment: "") }
 }

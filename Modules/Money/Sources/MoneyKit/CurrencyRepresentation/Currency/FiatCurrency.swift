@@ -1029,7 +1029,7 @@ extension FiatCurrency {
         }
     }
 
-    public var storeExtraPrecision: Int { 6 }
+    public var storeExtraPrecision: Int { 8 }
 
     public var displayPrecision: Int { precision }
 

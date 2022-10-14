@@ -41,14 +41,24 @@ final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
     init(data: Beneficiary) {
         self.data = data
 
-        badgeImageViewModel = .template(
-            image: .local(name: Icon.bank.name, bundle: .componentLibrary),
-            templateColor: .secondary,
-            backgroundColor: .lightBlueBackground,
-            cornerRadius: .round,
-            accessibilityIdSuffix: data.identifier
-        )
-        badgeImageViewModel.marginOffsetRelay.accept(4)
+        if let icon = data.icon {
+            badgeImageViewModel = .template(
+                image: .remote(url: icon),
+                templateColor: .secondary,
+                backgroundColor: .clear,
+                cornerRadius: .round,
+                accessibilityIdSuffix: data.identifier
+            )
+        } else {
+            badgeImageViewModel = .template(
+                image: .local(name: Icon.bank.name, bundle: .componentLibrary),
+                templateColor: .secondary,
+                backgroundColor: .lightBlueBackground,
+                cornerRadius: .round,
+                accessibilityIdSuffix: data.identifier
+            )
+            badgeImageViewModel.marginOffsetRelay.accept(4)
+        }
 
         nameLabelContent = LabelContent(
             text: data.name,

@@ -49,7 +49,6 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     weak var listener: AddNewPaymentMethodListener?
 
     private let paymentMethodService: SelectPaymentMethodService
-    private let loadingViewPresenter: LoadingViewPresenting
     private let eventRecorder: AnalyticsEventRecorderAPI
     private let filter: (PaymentMethodType) -> Bool
 
@@ -58,12 +57,10 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     init(
         presenter: AddNewPaymentMethodPresentable,
         paymentMethodService: SelectPaymentMethodService,
-        loadingViewPresenter: LoadingViewPresenting = resolve(),
         eventRecorder: AnalyticsEventRecorderAPI = resolve(),
         filter: @escaping (PaymentMethodType) -> Bool
     ) {
         self.paymentMethodService = paymentMethodService
-        self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder
         self.filter = filter
         super.init(presenter: presenter)
@@ -109,7 +106,6 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                 // this to the sorted list. If not, we just return the sorted list.
                 return fundsPaymentMethod == nil ? sorted : sorted + [fundsPaymentMethod!]
             }
-            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .map { [weak self] (methods: [PaymentMethodType]) -> [AddNewPaymentMethodCellViewModelItem] in
                 guard let self = self else { return [] }
                 return methods.compactMap { type in

@@ -82,6 +82,7 @@ struct AccountPickerRowView<
                 withdrawalLocksView()
             }
         }
+        .background(Color.white.opacity(0.001))
         .onTapGesture {
             send(.accountPickerRowDidTap(model.id))
         }
@@ -196,9 +197,14 @@ private struct PaymentMethodRow: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 0) {
                 ZStack {
-                    model.badgeView
-                        .frame(width: 32, height: 32)
-                        .scaledToFit()
+                    if let url = model.badgeURL {
+                        AsyncMedia(url: url)
+                            .frame(width: 32, height: 32)
+                    } else {
+                        model.badgeView
+                            .frame(width: 32, height: 32)
+                            .scaledToFit()
+                    }
                 }
                 .frame(width: 32, height: 32)
                 .padding(6)

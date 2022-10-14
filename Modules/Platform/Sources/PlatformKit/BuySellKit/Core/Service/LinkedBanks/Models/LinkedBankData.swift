@@ -46,6 +46,8 @@ public struct LinkedBankData {
     public let entity: String?
     public let paymentMethodType: PaymentMethodPayloadType
     public let partner: Partner
+    public let icon: URL?
+    public let logo: URL?
 
     public var topLimit: FiatValue
 
@@ -74,6 +76,8 @@ public struct LinkedBankData {
         }
         self.currency = currency
         topLimit = .zero(currency: .USD)
+        icon = (response.attributes?.media?.first(where: { $0.type == "icon" })?.source).flatMap(URL.init(string:))
+        logo = (response.attributes?.media?.first(where: { $0.type == "logo" })?.source).flatMap(URL.init(string:))
     }
 }
 

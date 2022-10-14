@@ -15,6 +15,7 @@ extension AccountPickerRow {
         var title: String
         var description: String
         var badgeView: Image?
+        var badgeURL: URL?
         var badgeBackground: Color
 
         // MARK: - Init
@@ -26,6 +27,7 @@ extension AccountPickerRow {
             title: String,
             description: String,
             badgeView: Image?,
+            badgeURL: URL? = nil,
             badgeBackground: Color
         ) {
             self.id = id
@@ -34,6 +36,7 @@ extension AccountPickerRow {
             self.title = title
             self.description = description
             self.badgeView = badgeView
+            self.badgeURL = badgeURL
             self.badgeBackground = badgeBackground
         }
     }

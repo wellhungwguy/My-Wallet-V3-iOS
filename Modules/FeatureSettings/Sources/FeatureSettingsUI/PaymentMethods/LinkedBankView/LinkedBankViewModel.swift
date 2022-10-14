@@ -34,7 +34,7 @@ final class LinkedBankViewModel: LinkedBankViewModelAPI {
         self.data = data
 
         badgeImageViewModel = .primary(
-            image: .local(name: "icon-bank", bundle: .platformUIKit),
+            image: data.icon.map(ImageResource.remote(url:)) ?? .local(name: "icon-bank", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: data.identifier
         )

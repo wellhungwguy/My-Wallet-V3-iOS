@@ -1390,7 +1390,7 @@ Hesabına Yükseltin";
 "This could take up to 30 seconds. Please do not go back or close the app." = "Bu işlem 30 saniye kadar sürebilir. Lütfen geri dönmeyin veya uygulamayı kapatmayın.";
 "To avoid uncesssary fees and network slipage, the minimum amount for this pair is **%@**." = "Gereksiz ücretlerin ve aşırı fiyatlamanın önüne geçmek amacıyla bu çift için minimum tutar **%@** kadardır.";
 "To execture this transaction the expected fee is %@ but your balance is only %@." = "Bu işlemi gerçekleştirmek için istenen ücret %1$@ ancak bakiyeniz yalnızca %2$@.";
-"To offset fees and market volatility, the minimum amount for any buy is **%@**." = "Ücretleri ve piyasa oynaklığını dengelemek amacıyla minimum **%@** tutarında satın alım yapılabilir.";
+"The minimum amount for any buy is **%@**." = "Ücretleri ve piyasa oynaklığını dengelemek amacıyla minimum **%@** tutarında satın alım yapılabilir.";
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Ücretleri dengelemek amacıyla minimum **%@** tutarında para çekme işlemi yapılabilir.";
 "Too many active orders" = "Çok fazla aktif emir";
 "Transaction in progress" = "İşlem devam ediyor";
