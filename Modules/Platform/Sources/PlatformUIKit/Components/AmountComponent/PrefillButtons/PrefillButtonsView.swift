@@ -35,7 +35,8 @@ public struct PrefillButtonsState: Equatable {
         // the user's max spendable amount which is the same as `maxLimit`.
         // Swap and sell do not use `previousTxAmount`
         let majorValues = configurations
-            .map { $0.suggestedFiatAmountWithBaseValue(maxLimit, maxLimit: maxLimit) }
+            .enumerated()
+            .map { $0.element.suggestedFiatAmountWithBaseValue(maxLimit, maxLimit: maxLimit, index: $0.offset) }
             .compactMap { $0 }
         // Remove duplicates.
         // In some cases you may have duplicate prefill amounts like when the maxLimit is a very small number.
@@ -121,40 +122,27 @@ public struct PrefillButtonsEnvironment {
 
 public enum QuickfillConfiguration: Decodable, Equatable {
 
-    public enum Size: String, Decodable, Comparable {
+    public enum Size: Int, Comparable {
         case small
         case medium
         case large
         case max
 
-        private var comparisonValue: String {
+        public var analyticsDescription: String {
             switch self {
             case .small:
-                return "a"
+                return "SMALL"
             case .medium:
-                return "b"
+                return "MEDIUM"
             case .large:
-                return "c"
+                return "LARGE"
             case .max:
-                return "d"
+                return "MAX"
             }
         }
 
-        public static func < (lhs: Self, rhs: Self) -> Bool {
-            lhs.comparisonValue < rhs.comparisonValue
-        }
-
-        public var uppercased: String {
-            rawValue.uppercased()
-        }
-    }
-
-    var size: Size {
-        switch self {
-        case .balance(let config):
-            return config.size
-        case .baseValue(let config):
-            return config.size
+        public static func < (lhs: QuickfillConfiguration.Size, rhs: QuickfillConfiguration.Size) -> Bool {
+            lhs.rawValue < rhs.rawValue
         }
     }
 
@@ -172,18 +160,21 @@ public enum QuickfillConfiguration: Decodable, Equatable {
 
     func suggestedFiatAmountWithBaseValue(
         _ baseValue: FiatValue,
-        maxLimit: FiatValue
+        maxLimit: FiatValue,
+        index: Int
     ) -> QuickfillSuggestion? {
         switch self {
         case .baseValue(let config):
             return config.suggestedFiatAmountWithBaseValue(
                 baseValue,
-                maxLimit: maxLimit
+                maxLimit: maxLimit,
+                index: index
             )
         case .balance(let config):
             return config.suggestedMajorValueWithBaseFiatValue(
                 baseValue,
-                maxLimit: maxLimit
+                maxLimit: maxLimit,
+                index: index
             )
         }
     }
@@ -211,16 +202,17 @@ extension QuickfillConfiguration {
 public struct BaseValueQuickfillConfiguration: Decodable, Equatable {
     let multiplier: Double
     let rounding: Int
-    let size: QuickfillConfiguration.Size
 
     func suggestedFiatAmountWithBaseValue(
         _ baseValue: FiatValue,
-        maxLimit: FiatValue
+        maxLimit: FiatValue,
+        index: Int
     ) -> QuickfillSuggestion? {
         let amount = baseValue.displayMajorValue.doubleValue * multiplier
         let rounding = Double(rounding)
         let result = (amount / rounding).rounded(.up) / (1.0 / rounding)
         guard let value = FiatValue.create(major: "\(result)", currency: baseValue.currency) else { return nil }
+        guard let size: QuickfillConfiguration.Size = .init(rawValue: index) else { return nil }
         return (try? value < maxLimit) == true
         ? .init(majorValue: result, size: size, currency: baseValue.currency)
         : nil
@@ -232,7 +224,6 @@ public struct BaseValueQuickfillConfiguration: Decodable, Equatable {
 public struct BalanceQuickfillConfiguration: Decodable, Equatable {
     let multiplier: Double
     let rounding: [Int]
-    let size: QuickfillConfiguration.Size
 
     var min: Int {
         rounding.min()!
@@ -244,7 +235,8 @@ public struct BalanceQuickfillConfiguration: Decodable, Equatable {
 
     func suggestedMajorValueWithBaseFiatValue(
         _ baseValue: FiatValue,
-        maxLimit: FiatValue
+        maxLimit: FiatValue,
+        index: Int
     ) -> QuickfillSuggestion? {
         // The amount should be greater than zero.
         guard baseValue.isPositive else { return nil }
@@ -262,6 +254,7 @@ public struct BalanceQuickfillConfiguration: Decodable, Equatable {
         }
         let result = ((amount * multiplier) / Double(roundingValue)).rounded(.up) / (1 / Double(roundingValue))
         guard let value = FiatValue.create(major: "\(result)", currency: baseValue.currency) else { return nil }
+        guard let size: QuickfillConfiguration.Size = .init(rawValue: index) else { return nil }
         // If the result is less than the max spendable amount, then it can be a suggested value.
         // If the result is more than the max spendable amount, we do not want to show it.
         return (try? value < maxLimit) == true
@@ -272,7 +265,7 @@ public struct BalanceQuickfillConfiguration: Decodable, Equatable {
 
 extension BalanceQuickfillConfiguration {
     static let `default`: [BalanceQuickfillConfiguration] = [
-        .init(multiplier: 0.25, rounding: [1], size: .small)
+        .init(multiplier: 0.25, rounding: [1])
     ]
 }
 
@@ -301,6 +294,10 @@ public struct QuickfillSuggestion: Comparable, Hashable, Identifiable {
         lhs.majorValue < rhs.majorValue &&
         lhs.size < rhs.size
     }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.majorValue == rhs.majorValue
+    }
 }
 
 // MARK: - Reducer
@@ -320,11 +317,13 @@ public let prefillButtonsReducer = Reducer<
         return .merge(
             environment.lastPurchasePublisher
                 .map(\.rounded)
+                .removeDuplicates()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map(PrefillButtonsAction.updatePreviousTxAmount),
 
             environment.maxLimitPublisher
+                .removeDuplicates()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map(PrefillButtonsAction.updateMaxLimit),
@@ -408,20 +407,24 @@ public struct PrefillButtonsView: View {
                         HStack {
                             Spacer()
                                 .frame(width: Spacing.outer)
-                            ForEach(viewStore.suggestedValues) { suggestedValue in
-                                if let fiatValue = suggestedValue.fiatValue {
-                                    SmallMinimalButton(
-                                        title: fiatValue.toDisplayString(
-                                            includeSymbol: true,
-                                            format: .shortened,
-                                            locale: .current
-                                        ),
-                                        action: {
-                                            viewStore.send(.select(fiatValue, suggestedValue.size))
-                                        }
-                                    )
+                            HStack {
+                                ForEach(viewStore.suggestedValues) { suggestedValue in
+                                    if let fiatValue = suggestedValue.fiatValue {
+                                        SmallMinimalButton(
+                                            title: fiatValue.toDisplayString(
+                                                includeSymbol: true,
+                                                format: .shortened,
+                                                locale: .current
+                                            ),
+                                            action: {
+                                                viewStore.send(.select(fiatValue, suggestedValue.size))
+                                            }
+                                        )
+                                        .transition(.opacity)
+                                    }
                                 }
                             }
+                            .animation(.easeInOut)
                             Spacer()
                                 .frame(width: Constants.gradientLength)
                         }
@@ -477,13 +480,13 @@ extension Array where Element == BaseValueQuickfillConfiguration {
     func suggestedFiatAmountsWithBaseValue(_ fiatValue: FiatValue, maxLimit: FiatValue) -> [QuickfillSuggestion] {
         var result: [QuickfillSuggestion] = []
         let currency = fiatValue.currency
-        for element in self {
+        enumerated().forEach { index, configuration in
             if let previous = result.last,
                let base = FiatValue.create(major: "\(previous.majorValue)", currency: currency),
-               let suggestion = element.suggestedFiatAmountWithBaseValue(base, maxLimit: maxLimit)
+               let suggestion = configuration.suggestedFiatAmountWithBaseValue(base, maxLimit: maxLimit, index: index)
             {
                 result.append(suggestion)
-            } else if let suggestion = element.suggestedFiatAmountWithBaseValue(fiatValue, maxLimit: maxLimit) {
+            } else if let suggestion = configuration.suggestedFiatAmountWithBaseValue(fiatValue, maxLimit: maxLimit, index: index) {
                 result.append(suggestion)
             }
         }

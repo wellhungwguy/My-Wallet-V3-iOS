@@ -7,6 +7,7 @@ import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import MoneyKit
+import OrderedCollections
 import XCTest
 
 final class PrefillButtonsReducerTests: XCTestCase {
@@ -23,15 +24,15 @@ final class PrefillButtonsReducerTests: XCTestCase {
     private let maxLimit = FiatValue.create(minor: 120000, currency: .USD)
 
     private let baseValueQuickfillConfigurations: [QuickfillConfiguration] = [
-        .init(multiplier: 2.0, rounding: 10, size: .small),
-        .init(multiplier: 2.0, rounding: 50, size: .medium),
-        .init(multiplier: 2.0, rounding: 100, size: .large)
+        .init(multiplier: 2.0, rounding: 10),
+        .init(multiplier: 2.0, rounding: 50),
+        .init(multiplier: 2.0, rounding: 100)
     ].map { .baseValue($0) }
 
     private let balanceQuickfillConfigurations: [QuickfillConfiguration] = [
-        .init(multiplier: 0.25, rounding: [1, 10, 25, 100, 500, 1000], size: .small),
-        .init(multiplier: 0.5, rounding: [1, 10, 25, 100, 500, 1000], size: .medium),
-        .init(multiplier: 0.75, rounding: [1, 10, 25, 100, 500, 1000], size: .large)
+        .init(multiplier: 0.25, rounding: [1, 10, 25, 100, 500, 1000]),
+        .init(multiplier: 0.5, rounding: [1, 10, 25, 100, 500, 1000]),
+        .init(multiplier: 0.75, rounding: [1, 10, 25, 100, 500, 1000])
     ].map { .balance($0) }
 
     override func setUpWithError() throws {
@@ -50,6 +51,21 @@ final class PrefillButtonsReducerTests: XCTestCase {
         XCTAssertEqual(state.suggestedValues[0].fiatValue!, FiatValue.create(minor: 30000, currency: .USD))
         XCTAssertEqual(state.suggestedValues[1].fiatValue!, FiatValue.create(minor: 60000, currency: .USD))
         XCTAssertEqual(state.suggestedValues[2].fiatValue!, FiatValue.create(minor: 90000, currency: .USD))
+    }
+
+    func test_removing_duplicates_ignoring_size() {
+        let suggestions: [QuickfillSuggestion] = [
+            .init(majorValue: 1000, size: .small, currency: .GBP),
+            .init(majorValue: 1000, size: .medium, currency: .GBP),
+            .init(majorValue: 5000, size: .medium, currency: .GBP)
+        ]
+        let expected: [QuickfillSuggestion] = [
+            .init(majorValue: 1000, size: .small, currency: .GBP),
+            .init(majorValue: 5000, size: .medium, currency: .GBP)
+        ]
+        let result = OrderedSet(suggestions)
+            .array
+        XCTAssertEqual(expected, result)
     }
 
     func test_buy_stateValues() {

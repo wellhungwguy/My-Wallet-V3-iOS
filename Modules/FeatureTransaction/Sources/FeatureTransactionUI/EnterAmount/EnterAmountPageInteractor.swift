@@ -430,8 +430,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
 
-        transactionState
-            .map(\.maxSpendable)
+        spendable
+            .map(\.cryptoMax)
             .distinctUntilChanged()
             .bindAndCatch(weak: self) { (self, amount) in
                 guard self.amountViewInteractor is AmountTranslationInteractor else { return }

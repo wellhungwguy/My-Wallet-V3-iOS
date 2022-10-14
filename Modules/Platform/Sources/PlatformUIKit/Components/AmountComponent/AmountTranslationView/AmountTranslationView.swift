@@ -111,7 +111,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                                 event: blockchain.app.configuration.transaction.quickfill,
                                 context: [
                                     blockchain.app.configuration.transaction.quickfill.amount: prefillMoneyValue.displayString,
-                                    blockchain.app.configuration.transaction.quickfill.type: size.uppercased
+                                    blockchain.app.configuration.transaction.quickfill.type: size.analyticsDescription
                                 ]
                             )
                             presenter.interactor.set(amount: prefillMoneyValue.moneyValue)
