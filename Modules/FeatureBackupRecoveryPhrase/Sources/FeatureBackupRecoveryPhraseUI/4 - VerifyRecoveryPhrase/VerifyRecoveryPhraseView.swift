@@ -185,6 +185,7 @@ public struct VerifyRecoveryPhraseView: View {
             .disabled(viewStore.ctaButtonDisabled)
         }
         .padding(.horizontal, Spacing.padding3)
+        .padding(.bottom, Spacing.padding2)
     }
 
     var failedSection: some View {

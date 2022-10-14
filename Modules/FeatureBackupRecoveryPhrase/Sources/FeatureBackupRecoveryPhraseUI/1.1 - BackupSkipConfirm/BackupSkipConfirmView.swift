@@ -41,6 +41,7 @@ public struct BackupSkipConfirmView: View {
                 }
             }
             .padding(.horizontal, Spacing.padding3)
+            .padding(.bottom, Spacing.padding2)
         }
     }
 }
