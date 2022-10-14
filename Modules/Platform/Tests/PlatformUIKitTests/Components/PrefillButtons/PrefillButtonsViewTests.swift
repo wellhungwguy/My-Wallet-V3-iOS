@@ -11,9 +11,9 @@ import XCTest
 final class PrefillButtonsViewTests: XCTestCase {
 
     private let balanceQuickfillConfigurations: [QuickfillConfiguration] = [
-        .init(multiplier: 0.25, rounding: [1, 10, 25, 100, 500, 1000], size: .small),
-        .init(multiplier: 0.5, rounding: [1, 10, 25, 100, 500, 1000], size: .medium),
-        .init(multiplier: 0.75, rounding: [1, 10, 25, 100, 500, 1000], size: .large)
+        .init(multiplier: 0.25, rounding: [1, 10, 25, 100, 500, 1000]),
+        .init(multiplier: 0.5, rounding: [1, 10, 25, 100, 500, 1000]),
+        .init(multiplier: 0.75, rounding: [1, 10, 25, 100, 500, 1000])
     ].map { .balance($0) }
     private let maxLimit = FiatValue.create(minor: 120000, currency: .USD)
 
