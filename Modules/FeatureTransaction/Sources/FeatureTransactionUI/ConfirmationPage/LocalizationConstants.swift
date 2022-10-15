@@ -8,5 +8,9 @@ extension LocalizationConstants {
             "Confirm Swap",
             comment: "Swap confirmation navigation bar title"
         )
+        static let buyTitle = NSLocalizedString(
+            "Confirm",
+            comment: "Buy confirmation navigation bar title"
+        )
     }
 }

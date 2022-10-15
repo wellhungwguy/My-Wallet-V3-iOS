@@ -41,6 +41,18 @@ public struct IconButton: View {
     }
 }
 
+extension IconButton {
+
+    public init(icon: Icon, toggle: Binding<Bool>) {
+        self.init(
+            icon: icon,
+            action: {
+                withAnimation { toggle.wrappedValue.toggle() }
+            }
+        )
+    }
+}
+
 // MARK: - Internal
 
 struct IconButtonStyle: ButtonStyle {

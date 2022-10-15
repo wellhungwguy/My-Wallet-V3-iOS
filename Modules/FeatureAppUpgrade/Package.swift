@@ -29,7 +29,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.0"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.39.1"
+            exact: "0.40.2"
         ),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0"),
         .package(path: "../BlockchainComponentLibrary"),

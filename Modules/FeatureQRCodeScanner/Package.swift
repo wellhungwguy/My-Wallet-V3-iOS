@@ -43,7 +43,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.39.1"
+            exact: "0.40.2"
         ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),

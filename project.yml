@@ -169,10 +169,10 @@ packages:
     version: 1.9.0
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    version: 0.39.1
+    version: 0.40.2
   Intercom:
     url: https://github.com/intercom/intercom-ios.git
-    version: 12.4.3
+    version: 13.0.0
   DIKit:
     url: https://github.com/dchatzieleftheriou-bc/DIKit.git
     branch: safe-property-wrappers-locks

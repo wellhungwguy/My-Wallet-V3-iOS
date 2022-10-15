@@ -38,6 +38,8 @@ public struct ErrorView<Fallback: View>: View {
             .multilineTextAlignment(.center)
             actions
         }
+        .foregroundTexture(ux.dialog?.style?.foreground)
+        .backgroundTexture(ux.dialog?.style?.background)
         .padding()
         .onAppear {
             app.state.transaction { state in

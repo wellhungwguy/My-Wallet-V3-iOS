@@ -24,7 +24,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.39.1"
+            exact: "0.40.2"
         ),
         .package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",

@@ -1521,6 +1521,13 @@ blockchain:
 							url:
 							+ blockchain.db.type.url
 							+ blockchain.session.configuration.value
+				terms:
+					of:
+						service:
+						+ blockchain.ux.type.action
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
 			configuration:
 				link:
 					a:

@@ -173,7 +173,7 @@ extension Icon {
 
     public func micro() -> Icon {
         var icon = self
-        icon.size = .init(length: 14.pt)
+        icon.size = .init(length: 16.pt)
         return icon
     }
 

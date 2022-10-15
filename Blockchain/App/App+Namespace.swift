@@ -48,6 +48,7 @@ let app: AppProtocol = App(
             blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is.enabled: false,
             blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is.enabled: false,
             blockchain.ux.transaction["swap"].checkout.is.enabled: BuildFlag.isInternal,
+            blockchain.ux.transaction["buy"].checkout.is.enabled: BuildFlag.isInternal,
             blockchain.ux.transaction["swap"].checkout.exchange.rate.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360061672651",
             blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees",
             blockchain.ux.transaction["swap"].checkout.refund.policy.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/4417063009172"

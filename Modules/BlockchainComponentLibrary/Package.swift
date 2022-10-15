@@ -39,7 +39,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/kean/Nuke.git",
-            from: "11.0.0"
+            from: "11.3.0"
         ),
         .package(path: "../Extensions")
     ],

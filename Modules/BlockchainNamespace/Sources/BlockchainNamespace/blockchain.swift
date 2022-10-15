@@ -5656,6 +5656,7 @@ public extension I_blockchain_ux_transaction_checkout {
 	var `fee`: L_blockchain_ux_transaction_checkout_fee { .init("\(__).fee") }
 	var `is`: L_blockchain_ux_transaction_checkout_is { .init("\(__).is") }
 	var `refund`: L_blockchain_ux_transaction_checkout_refund { .init("\(__).refund") }
+	var `terms`: L_blockchain_ux_transaction_checkout_terms { .init("\(__).terms") }
 }
 public final class L_blockchain_ux_transaction_checkout_confirmed: L, I_blockchain_ux_transaction_checkout_confirmed {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.confirmed", comment: "") }
@@ -5740,6 +5741,31 @@ public final class L_blockchain_ux_transaction_checkout_refund_policy_disclaimer
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.refund.policy.disclaimer.url", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_checkout_refund_policy_disclaimer_url: I_blockchain_db_type_url, I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_transaction_checkout_terms: L, I_blockchain_ux_transaction_checkout_terms {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.terms", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_terms: I {}
+public extension I_blockchain_ux_transaction_checkout_terms {
+	var `of`: L_blockchain_ux_transaction_checkout_terms_of { .init("\(__).of") }
+}
+public final class L_blockchain_ux_transaction_checkout_terms_of: L, I_blockchain_ux_transaction_checkout_terms_of {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.terms.of", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_terms_of: I {}
+public extension I_blockchain_ux_transaction_checkout_terms_of {
+	var `service`: L_blockchain_ux_transaction_checkout_terms_of_service { .init("\(__).service") }
+}
+public final class L_blockchain_ux_transaction_checkout_terms_of_service: L, I_blockchain_ux_transaction_checkout_terms_of_service {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.terms.of.service", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_terms_of_service: I_blockchain_ux_type_action {}
+public extension I_blockchain_ux_transaction_checkout_terms_of_service {
+	var `url`: L_blockchain_ux_transaction_checkout_terms_of_service_url { .init("\(__).url") }
+}
+public final class L_blockchain_ux_transaction_checkout_terms_of_service_url: L, I_blockchain_ux_transaction_checkout_terms_of_service_url {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.terms.of.service.url", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_terms_of_service_url: I_blockchain_db_type_url, I_blockchain_session_configuration_value {}
 public final class L_blockchain_ux_transaction_configuration: L, I_blockchain_ux_transaction_configuration {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.configuration", comment: "") }
 }
