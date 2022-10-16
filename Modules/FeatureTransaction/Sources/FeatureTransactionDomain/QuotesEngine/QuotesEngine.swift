@@ -76,7 +76,9 @@ final class QuotesEngine: QuotesEngineAPI {
     }
 
     func update(amount: BigInt) {
-        amountSubject.send(amount)
+        DispatchQueue.main.async { [amountSubject] in
+            amountSubject.send(amount)
+        }
     }
 
     func startPollingRate(
