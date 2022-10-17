@@ -11,7 +11,7 @@ final class FraudIntelligenceTests: XCTestCase {
         super.setUp()
         app = App.test
         app.state.set(blockchain.ux.transaction.id, to: "buy")
-        sut = Sardine(app)
+        sut = Sardine(app, http: URLSession.test, scheduler: .immediate)
         sut.start()
     }
 

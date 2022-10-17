@@ -14,6 +14,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
     }
 
     unowned let app: AppProtocol
+    let scheduler: AnySchedulerOf<DispatchQueue>
 
     var http: URLSessionProtocol
     private let baseURL = URL(string: "https://\(Bundle.main.plist?.RETAIL_CORE_URL ?? "api.blockchain.info/nabu-gateway")")!
@@ -23,10 +24,12 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
     public init(
         _ app: AppProtocol,
         http: URLSessionProtocol = URLSession.shared,
+        scheduler: AnySchedulerOf<DispatchQueue> = .main,
         sdk _: MobileIntelligence.Type = MobileIntelligence.self
     ) {
         self.app = app
         self.http = http
+        self.scheduler = scheduler
     }
 
     // MARK: Observers
@@ -36,12 +39,14 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
         app.on(blockchain.app.did.finish.launching)
             .combineLatest(client)
             .prefix(1)
+            .receive(on: scheduler)
             .sink { [weak self] event, client in
                 self?.initialise(event: event, clientId: client)
             }
             .store(in: &bag)
 
         user.combineLatest(session, flow)
+            .receive(on: scheduler)
             .sink { [weak self] user, session, flow in
                 self?.update(userId: user, sessionKey: session, flow: flow)
             }
@@ -65,6 +70,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             .flatMap { [app] tags in
                 tags.compacted().map { tag in app.on(tag) }.merge()
             }
+            .receive(on: scheduler)
             .sink { [app] _ in
                 app.post(event: blockchain.app.fraud.sardine.submit)
             }
