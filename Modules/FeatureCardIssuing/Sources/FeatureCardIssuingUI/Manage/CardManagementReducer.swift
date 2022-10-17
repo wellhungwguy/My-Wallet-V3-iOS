@@ -85,7 +85,7 @@ public struct CardManagementState: Equatable {
         self.error = error
         self.transactions = transactions
         self.tokenisationCoordinator = tokenisationCoordinator
-        self.isTokenisationEnabled = PKAddPaymentPassViewController.canAddPaymentPass()
+        isTokenisationEnabled = PKAddPaymentPassViewController.canAddPaymentPass()
     }
 }
 

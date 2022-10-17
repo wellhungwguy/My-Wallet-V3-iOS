@@ -142,7 +142,7 @@ private struct LoadingTransactionFlowView: View {
             do {
                 try await scheduler.sleep(for: .seconds(15))
                 showClose = true
-            } catch { }
+            } catch {}
         }
     }
 }

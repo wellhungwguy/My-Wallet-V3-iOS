@@ -265,11 +265,12 @@ struct BuyCheckoutView_Previews: PreviewProvider {
 import PassKit
 
 private struct _ApplePayButton: UIViewRepresentable {
-    func updateUIView(_ uiView: PKPaymentButton, context: Context) { }
+    func updateUIView(_ uiView: PKPaymentButton, context: Context) {}
     func makeUIView(context: Context) -> PKPaymentButton {
         PKPaymentButton(paymentButtonType: .plain, paymentButtonStyle: .black)
     }
 }
+
 struct ApplePayButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View { _ApplePayButton().frame(maxHeight: 44.pt) }
 }

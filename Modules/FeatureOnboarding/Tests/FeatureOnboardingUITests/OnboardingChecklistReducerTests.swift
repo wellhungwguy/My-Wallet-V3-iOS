@@ -86,7 +86,7 @@ final class OnboardingChecklistReducerTests: XCTestCase {
             $0.completedItems = [.verifyIdentity]
         }
         // then they go through linking a payment method
-        await  testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
         await testStore.receive(.updatePromotion)

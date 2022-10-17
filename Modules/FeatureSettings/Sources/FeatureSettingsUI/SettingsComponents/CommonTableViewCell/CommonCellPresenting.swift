@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ComposableArchitectureExtensions
 import Combine
+import ComposableArchitectureExtensions
 
 protocol CommonCellPresenting: AsyncPresenting {
     var subtitle: AnyPublisher<LoadingState<String>, Never> { get }

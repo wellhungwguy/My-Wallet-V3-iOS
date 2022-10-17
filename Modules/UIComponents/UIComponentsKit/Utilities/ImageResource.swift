@@ -34,7 +34,7 @@ public enum ImageResource: Hashable {
     }
 
     public var url: URL? {
-        if case let .remote(url) = self {
+        if case .remote(let url) = self {
             return url
         }
         return nil

@@ -88,6 +88,7 @@ extension LocalizationConstants {
             static func price(_ code: String) -> String {
                 NSLocalizedString("%@ Price", comment: "").interpolating(code)
             }
+
             static let priceDisclaimer = NSLocalizedString(
                 "Blockchain.com provides the best market price we receive and applies a spread.",
                 comment: ""
@@ -98,6 +99,7 @@ extension LocalizationConstants {
             static func buy(_ code: String) -> String {
                 NSLocalizedString("Buy %@", comment: "").interpolating(code)
             }
+
             static let confirmSwap = NSLocalizedString(
                 "Swap %@ for %@",
                 comment: "Swap confirmation button title"

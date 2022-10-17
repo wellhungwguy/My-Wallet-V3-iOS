@@ -106,7 +106,7 @@ struct TradingCurrencySelector_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(
                     displayCurrency: .JPY,
-                    currencies: MoneyKit.allEnabledFiatCurrencies
+                    currencies: FiatCurrency.allEnabledFiatCurrencies
                 ),
                 reducer: TradingCurrency.reducer,
                 environment: .init(

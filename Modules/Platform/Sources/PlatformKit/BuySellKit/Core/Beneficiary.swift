@@ -28,7 +28,7 @@ public struct Beneficiary {
             return nil
         }
         self.currency = currency
-        self.icon = nil
+        icon = nil
     }
 
     init(linkedBankData: LinkedBankData) {

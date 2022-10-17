@@ -36,6 +36,7 @@ struct AddressSearchState: Equatable, NavigationState {
         let containerId: String?
         let searchText: String?
     }
+
     @BindableState var searchText: String = ""
     @BindableState var isSearchFieldSelected: Bool = false
     var isSearchResultsLoading: Bool = false

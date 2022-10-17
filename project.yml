@@ -91,7 +91,6 @@ settingGroups:
       CODE_SIGN_ENTITLEMENTS: Blockchain/Blockchain.entitlements
       CODE_SIGN_STYLE: Manual
       DEVELOPMENT_TEAM: NZ6PH75U7K
-
   debug_signing_dev:
     base:
       CODE_SIGN_IDENTITY: iPhone Developer
@@ -191,6 +190,9 @@ packages:
   Sardine:
     url: https://github.com/oliveratkinson-bc/swift-sardine.git
     version: 1.0.17
+  LinkKit:
+    url: https://github.com/plaid/plaid-link-ios
+    from: 3.1.0
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -303,9 +305,6 @@ packages:
     path: Modules/FeatureBackupRecoveryPhrase
   FeaturePaymentsIntegration:
     path: Modules/FeaturePaymentsIntegration
-  LinkKit:
-    url: https://github.com/plaid/plaid-link-ios
-    from: 3.1.0
 
 targets:
   BlockchainApp:
@@ -574,8 +573,6 @@ targets:
         path: Blockchain
     type: application
   BlockchainTests:
-    settings:
-       OTHER_LDFLAGS: -undefined dynamic_lookup
     dependencies:
       - target: BlockchainApp
       - package: Test
@@ -594,7 +591,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: Modules/Money/Sources/MoneyKitMock
+      path: Modules/Money/Sources/MoneyDomainKitMock
     - createIntermediateGroups: true
       path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
