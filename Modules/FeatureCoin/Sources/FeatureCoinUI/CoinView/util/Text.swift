@@ -6,7 +6,7 @@ import SwiftUI
 extension Text {
 
     init(amount: Double, currency: FiatCurrency) {
-        self.init(.create(major: Decimal(amount), currency: currency))
+        self.init(.create(major: amount, currency: currency))
     }
 
     init(_ fiatValue: FiatValue) {
@@ -17,7 +17,7 @@ extension Text {
 extension String {
 
     init(amount: Double, currency: FiatCurrency) {
-        self.init(.create(major: Decimal(amount), currency: currency))
+        self.init(.create(major: amount, currency: currency))
     }
 
     init(_ fiatValue: FiatValue) {

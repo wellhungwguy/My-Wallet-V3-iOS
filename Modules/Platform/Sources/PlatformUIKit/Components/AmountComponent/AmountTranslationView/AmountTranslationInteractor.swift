@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
+import Combine
 import MoneyKit
 import PlatformKit
 import RxCocoa
@@ -94,17 +96,79 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             }
     }
 
+    public var accountBalancePublisher: AnyPublisher<FiatValue, Never> {
+        accountBalanceFiatValueRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .eraseToAnyPublisher()
+    }
+
+    public var transactionFeePublisher: AnyPublisher<FiatValue, Never> {
+        transactionFeeFiatValueRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .eraseToAnyPublisher()
+    }
+
+    public var maxLimitPublisher: AnyPublisher<FiatValue, Never> {
+        maxActionableFiatAmountRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .eraseToAnyPublisher()
+    }
+
+    public var lastPurchasePublisher: AnyPublisher<FiatValue, Never> {
+        let amount = app.publisher(
+            for: blockchain.ux.transaction.source.target.previous.input.amount,
+            as: BigInt.self
+        )
+        .map(\.value)
+        let currency = app.publisher(
+            for: blockchain.ux.transaction.source.target.previous.input.currency.code,
+            as: FiatCurrency.self
+        )
+        .map(\.value)
+        let tradingCurrency = app.publisher(
+            for: blockchain.user.currency.preferred.fiat.trading.currency,
+            as: FiatCurrency.self
+        )
+        .compactMap(\.value)
+        return amount.combineLatest(currency, tradingCurrency)
+            .map { amount, currency, tradingCurrency in
+                if let amount = amount, let currency = currency {
+                    return FiatValue.create(minor: amount, currency: currency)
+                } else {
+                    // If there's no previous purchase default to 50.00 of trading currency
+                    return FiatValue.create(majorBigInt: 50, currency: tradingCurrency)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+
     /// The amount as `FiatValue`
     private let fiatAmountRelay: BehaviorRelay<MoneyValue>
 
     /// The amount as `CryptoValue`
     private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
 
+    /// The maximum amount of fiat the user can use for the transaction.
+    private let maxActionableFiatAmountRelay: BehaviorRelay<FiatValue>
+
+    /// The balance of the `BlockchainAccount`
+    private let accountBalanceFiatValueRelay: BehaviorRelay<FiatValue>
+
+    /// The transaction fee
+    private let transactionFeeFiatValueRelay: BehaviorRelay<FiatValue>
+
     /// A relay that streams an effect, such as a failure
     private let effectRelay = BehaviorRelay<AmountInteractorEffect>(value: .none)
 
     // MARK: - Injected
 
+    private let app: AppProtocol
     private let fiatCurrencyClosure: () -> Observable<FiatCurrency>
     private let cryptoCurrencyService: CryptoCurrencyServiceAPI
     private let priceProvider: AmountTranslationPriceProviding
@@ -121,10 +185,15 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         cryptoCurrencyService: CryptoCurrencyServiceAPI,
         priceProvider: AmountTranslationPriceProviding,
         defaultFiatCurrency: FiatCurrency = .default,
+        app: AppProtocol,
         defaultCryptoCurrency: CryptoCurrency,
         initialActiveInput: ActiveAmountInput
     ) {
+        self.app = app
         activeInputRelay = BehaviorRelay(value: initialActiveInput)
+        maxActionableFiatAmountRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
+        accountBalanceFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
+        transactionFeeFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
         cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
         cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
@@ -346,6 +415,57 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .asDriver(onErrorJustReturn: .validInput(.none))
     }
 
+    public func setActionableAmount(_ amount: MoneyValue) {
+        if let fiatValue = amount.fiatValue {
+            maxActionableFiatAmountRelay.accept(fiatValue)
+        }
+        if let cryptoValue = amount.cryptoValue {
+            pairFromCryptoInput(
+                amount: cryptoValue.displayString
+            )
+            .map(\.quote)
+            .subscribe { [maxActionableFiatAmountRelay] moneyValue in
+                guard let value = moneyValue.fiatValue else { return }
+                maxActionableFiatAmountRelay.accept(value)
+            }
+            .disposed(by: disposeBag)
+        }
+    }
+
+    public func setAccountBalance(_ amount: MoneyValue) {
+        if let fiatValue = amount.fiatValue {
+            accountBalanceFiatValueRelay.accept(fiatValue)
+        }
+        if let cryptoValue = amount.cryptoValue {
+            pairFromCryptoInput(
+                amount: cryptoValue.displayString
+            )
+            .map(\.quote)
+            .subscribe { [accountBalanceFiatValueRelay] moneyValue in
+                guard let value = moneyValue.fiatValue else { return }
+                accountBalanceFiatValueRelay.accept(value)
+            }
+            .disposed(by: disposeBag)
+        }
+    }
+
+    public func setTransactionFeeAmount(_ amount: MoneyValue) {
+        if let fiatValue = amount.fiatValue {
+            transactionFeeFiatValueRelay.accept(fiatValue)
+        }
+        if let cryptoValue = amount.cryptoValue {
+            pairFromCryptoInput(
+                amount: cryptoValue.displayString
+            )
+            .map(\.quote)
+            .subscribe { [transactionFeeFiatValueRelay] moneyValue in
+                guard let value = moneyValue.fiatValue else { return }
+                transactionFeeFiatValueRelay.accept(value)
+            }
+            .disposed(by: disposeBag)
+        }
+    }
+
     public func set(amount: String) {
         currentInteractor
             .asObservable()
@@ -374,9 +494,24 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         set(amount: minAmount)
     }
 
+    private let availableBalanceViewSelectedRelay = PublishRelay<AvailableBalanceDetails>()
+    public var availableBalanceViewSelected: Observable<AvailableBalanceDetails> {
+        availableBalanceViewSelectedRelay.asObservable()
+    }
+
     private let maxAmountSelectedRelay = PublishRelay<Void>()
     public var maxAmountSelected: Observable<Void> {
         maxAmountSelectedRelay.asObservable()
+    }
+
+    public func availableBalanceViewTapped() {
+        availableBalanceViewSelectedRelay.accept(
+            .init(
+                balance: accountBalancePublisher,
+                availableBalance: maxLimitPublisher,
+                fee: transactionFeePublisher
+            )
+        )
     }
 
     public func set(maxAmount: MoneyValue) {

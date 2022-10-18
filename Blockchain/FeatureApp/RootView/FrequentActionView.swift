@@ -43,7 +43,7 @@ struct FrequentActionView: View {
                     subtitle: item.description.localized(),
                     leading: {
                         item.icon.circle(backgroundColor: .semantic.light)
-                            .accentColor(.semantic.title)
+                            .color(.semantic.title)
                             .frame(width: 32.pt)
                     },
                     action: {
@@ -62,7 +62,7 @@ struct FrequentActionView: View {
                         button
                             .icon
                             .circle(backgroundColor: .semantic.medium)
-                            .accentColor(.semantic.title)
+                            .color(.semantic.title)
                     },
                     action: {
                         app.post(event: button.tag, context: context)

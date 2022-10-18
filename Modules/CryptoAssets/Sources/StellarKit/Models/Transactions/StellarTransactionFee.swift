@@ -9,7 +9,6 @@ struct StellarTransactionFee: TransactionFee, Decodable {
     enum CodingKeys: String, CodingKey {
         case regular
         case priority
-        case limits
     }
 
     static let cryptoType: HasPathComponent = CryptoCurrency.stellar
@@ -25,12 +24,17 @@ struct StellarTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        regular = CryptoValue(amount: BigInt(regularFee), currency: .stellar)
-        priority = CryptoValue(amount: BigInt(priorityFee), currency: .stellar)
+        self.init(regular: regularFee, priority: priorityFee)
     }
 
     init(regular: Int, priority: Int) {
-        self.regular = CryptoValue(amount: BigInt(regular), currency: .stellar)
-        self.priority = CryptoValue(amount: BigInt(priority), currency: .stellar)
+        self.regular = CryptoValue.create(
+            minor: regular,
+            currency: .stellar
+        )
+        self.priority = CryptoValue.create(
+            minor: priority,
+            currency: .stellar
+        )
     }
 }

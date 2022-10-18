@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -39,6 +40,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
     // MARK: - Properties
 
+    private let app: AppProtocol
     private let fiatAmountLabelView = AmountLabelView()
     private let cryptoAmountLabelView = AmountLabelView()
     private let auxiliaryButton = ButtonView()
@@ -51,6 +53,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         return swapButton
     }()
 
+    private let availableBalanceViewController: UIViewController?
     private let prefillViewController: UIViewController?
     private let presenter: AmountTranslationPresenter
     private let labelsStackView: UIStackView
@@ -62,20 +65,55 @@ public final class AmountTranslationView: UIView, AmountViewable {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { unimplemented() }
 
+    /// Init
+    /// - Parameters:
+    ///   - presenter: AmountTranslationPresenter
+    ///   - app: AppProtocol
+    ///   - prefillButtonsEnabled: Whether or not to show the prefill buttons
+    ///   - shouldShowAvailableBalanceView: Whether or not to show the available balance view. This should
+    ///  match `prefillButtonsEnabled` except for `Buy` in which case we don't want to show this.
     public init(
         presenter: AmountTranslationPresenter,
-        prefillButtonsEnabled: Bool = false
+        app: AppProtocol,
+        prefillButtonsEnabled: Bool = false,
+        shouldShowAvailableBalanceView: Bool = false
     ) {
+        self.app = app
         self.presenter = presenter
+        availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
+            rootView: AvailableBalanceView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: availableBalanceViewReducer,
+                    environment: AvailableBalanceViewEnvironment(
+                        app: app,
+                        balancePublisher: presenter.interactor.accountBalancePublisher,
+                        availableBalancePublisher: presenter.maxLimitPublisher,
+                        feesPublisher: presenter.interactor.transactionFeePublisher,
+                        onViewTapped: {
+                            presenter.interactor.availableBalanceViewTapped()
+                        }
+                    )
+                )
+            )
+        ) : nil
         prefillViewController = prefillButtonsEnabled ? UIHostingController(
             rootView: PrefillButtonsView(
                 store: .init(
                     initialState: .init(),
                     reducer: prefillButtonsReducer,
                     environment: PrefillButtonsEnvironment(
+                        app: app,
                         lastPurchasePublisher: presenter.lastPurchasePublisher,
                         maxLimitPublisher: presenter.maxLimitPublisher,
-                        onValueSelected: { [presenter] prefillMoneyValue in
+                        onValueSelected: { [app, presenter] (prefillMoneyValue, size) in
+                            app.post(
+                                event: blockchain.app.configuration.transaction.quickfill,
+                                context: [
+                                    blockchain.app.configuration.transaction.quickfill.amount: prefillMoneyValue.displayString,
+                                    blockchain.app.configuration.transaction.quickfill.type: size.analyticsDescription
+                                ]
+                            )
                             presenter.interactor.set(amount: prefillMoneyValue.moneyValue)
                         }
                     )
@@ -126,6 +164,12 @@ public final class AmountTranslationView: UIView, AmountViewable {
         auxiliaryButton.layoutToSuperview(.leading, relation: .greaterThanOrEqual)
         auxiliaryButton.layoutToSuperview(.trailing, relation: .lessThanOrEqual)
 
+        if let availableBalanceView = availableBalanceViewController?.view {
+            addSubview(availableBalanceView)
+            availableBalanceView.layoutToSuperview(.top, .leading, .trailing)
+            availableBalanceView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            availableBalanceViewController?.willMove(toParent: nil)
+        }
         if let prefillView = prefillViewController?.view {
             addSubview(prefillView)
             prefillView.layoutToSuperview(.bottom, .leading, .trailing)

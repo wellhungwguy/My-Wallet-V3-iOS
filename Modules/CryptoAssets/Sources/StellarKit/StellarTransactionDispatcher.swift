@@ -31,7 +31,7 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let horizonProxy: HorizonProxyAPI
 
-    private let minSend = CryptoValue(amount: 1, currency: .stellar)
+    private let minSend = CryptoValue.create(minor: 1, currency: .stellar)
     private var sendTimeOutSeconds: Single<Int> {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
@@ -257,8 +257,8 @@ extension stellarsdk.TransactionPostResponseEnum {
     fileprivate func toSendConfirmationDetails(sendDetails: SendDetails) throws -> SendConfirmationDetails {
         switch self {
         case .success(let details):
-            let feeCharged = CryptoValue(
-                amount: BigInt(details.transactionResult.feeCharged),
+            let feeCharged = CryptoValue.create(
+                minor: BigInt(details.transactionResult.feeCharged),
                 currency: .stellar
             )
             return SendConfirmationDetails(

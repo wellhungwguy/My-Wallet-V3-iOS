@@ -70,7 +70,7 @@ public struct UserDeletionView: View {
 
                 Icon.close
                     .circle()
-                    .accentColor(.semantic.error)
+                    .color(.semantic.error)
                     .frame(width: 24, height: 24)
 
                 Text(LocalizedString.bulletPoints.first)
@@ -92,7 +92,7 @@ public struct UserDeletionView: View {
 
                 Icon.close
                     .circle()
-                    .accentColor(.semantic.error)
+                    .color(.semantic.error)
                     .frame(width: 24, height: 24)
 
                 Text(LocalizedString.bulletPoints.second)
@@ -125,7 +125,7 @@ public struct UserDeletionView: View {
                 title: LocalizedString.externalLinks.dataRetention,
                 trailing: {
                     Icon.newWindow
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 24, height: 24)
                 },
                 action: {
@@ -136,7 +136,7 @@ public struct UserDeletionView: View {
                 title: LocalizedString.externalLinks.needHelp,
                 trailing: {
                     Icon.newWindow
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 24, height: 24)
                 },
                 action: {

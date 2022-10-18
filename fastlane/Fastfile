@@ -1,6 +1,6 @@
 opt_out_usage
 
-DERIVED_DATA_PATH = "~/Library/Developer/Xcode/DerivedData"
+DERIVED_DATA_PATH = "$BITRISE_SOURCE_DIR/DerivedData"
 
 default_platform(:ios)
 platform :ios do
@@ -128,16 +128,16 @@ platform :ios do
   desc "Updates code signing on the current machine"
   lane :code_signing do
     # Global parameters are loaded from the Matchfile
-    match(type: "appstore", readonly: is_ci?)
-    match(type: "adhoc", force_for_new_devices: true)
-    match(type: "development", force_for_new_devices: true)
+    match(type: "appstore", readonly: is_ci?, template_name: "ApplePay In-App Provisioning Distribution")
+    match(type: "adhoc", force_for_new_devices: true, template_name: "ApplePay In-App Provisioning Distribution")
+    match(type: "development", force_for_new_devices: true, template_name: "ApplePay In-App Provisioning Distribution")
   end
   
   desc "Upload to TestFlight"
   lane :upload do
     api_key = fetch_app_store_connect_api_key
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier).first
-    match(type: "appstore", readonly: true, api_key: api_key)
+    match(type: "appstore", readonly: true, api_key: api_key, template_name: "ApplePay In-App Provisioning Distribution")
     upload_to_testflight(
       api_key: api_key,
       app_identifier: app_identifier,
@@ -198,7 +198,7 @@ platform :ios do
   desc "Runs Match for the current configuration."
   private_lane :update_code_signing do | options |
     puts "🔏  Updating Code Signing"
-    match(force_for_new_devices: is_ci?)
+    match(force_for_new_devices: is_ci?, template_name: "ApplePay In-App Provisioning Distribution")
   end
 
   desc "Runs Gym for the current configuration."

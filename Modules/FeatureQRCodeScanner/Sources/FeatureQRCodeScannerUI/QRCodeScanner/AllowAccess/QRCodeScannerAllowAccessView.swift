@@ -73,8 +73,8 @@ struct QRCodeScannerAllowAccessView: View {
                 subtitle: LocalizedString.ScanQRPoint.description,
                 leading: {
                     Icon.people
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )
@@ -83,8 +83,8 @@ struct QRCodeScannerAllowAccessView: View {
                 subtitle: LocalizedString.AccessWebWallet.description,
                 leading: {
                     Icon.computer
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )
@@ -123,8 +123,8 @@ struct QRCodeScannerAllowAccessView: View {
             },
             label: {
                 Icon.closeCirclev2
+                    .color(.semantic.muted)
                     .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
             }
         )
     }

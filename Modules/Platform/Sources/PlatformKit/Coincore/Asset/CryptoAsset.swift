@@ -50,7 +50,8 @@ extension CryptoAsset {
 
     /// Possible transaction targets this `Asset` has for a transaction initiating from the given `SingleAccount`.
     public func transactionTargets(
-        account: SingleAccount
+        account: SingleAccount,
+        action: AssetAction
     ) -> AnyPublisher<[SingleAccount], Never> {
         guard let crypto = account as? CryptoAccount else {
             fatalError("Expected a CryptoAccount: \(account).")
@@ -63,7 +64,7 @@ extension CryptoAsset {
              is NonCustodialAccount:
             return canTransactToCustodial
                 .flatMap { [accountGroup] canTransactToCustodial -> AnyPublisher<AccountGroup?, Never> in
-                    accountGroup(canTransactToCustodial ? .all : .nonCustodial)
+                    accountGroup(canTransactToCustodial ? action.allFilterType : .nonCustodial)
                 }
                 .compactMap { $0 }
                 .map(\.accounts)
@@ -71,6 +72,27 @@ extension CryptoAsset {
                 .eraseToAnyPublisher()
         default:
             unimplemented()
+        }
+    }
+}
+
+extension AssetAction {
+    fileprivate var allFilterType: AssetFilter {
+        switch self {
+        case .send:
+            return .all
+        case .buy,
+                .deposit,
+                .interestTransfer,
+                .interestWithdraw,
+                .receive,
+                .sell,
+                .sign,
+                .swap,
+                .viewActivity,
+                .withdraw,
+                .linkToDebitCard:
+            return .allExcludingExchange
         }
     }
 }

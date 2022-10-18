@@ -367,7 +367,7 @@ extension Tag: Codable {
         let container = try decoder.singleValueContainer()
         let language = decoder.userInfo[.language] as? Language ?? Language.root.language
         let id = try container.decode(String.self)
-        let tag = try Self.init(id: id, in: language)
+        let tag = try Self(id: id, in: language)
         self = tag.protonym ?? tag
     }
 

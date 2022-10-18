@@ -62,9 +62,8 @@ extension SellTransactionEngine {
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         quotesEngine.quotePublisher
-            .asObservable()
             .map { [target] pricedQuote -> MoneyValue in
-                MoneyValue(amount: pricedQuote.price, currency: target.currencyType)
+                .create(minor: pricedQuote.price, currency: target.currencyType)
             }
             .map { [sourceAsset] rate -> MoneyValuePair in
                 MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
@@ -271,7 +270,7 @@ extension TransactionLimits {
 
     private func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
         let destinationCurrency = quote.networkFee.currencyType
-        let price = MoneyValue(amount: quote.price, currency: destinationCurrency)
+        let price = MoneyValue.create(minor: quote.price, currency: destinationCurrency)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destinationCurrency)
         let convertedFees: MoneyValue = totalFees.convert(usingInverse: price, currency: currencyType)
         let minimum = minimum ?? .zero(currency: destinationCurrency)

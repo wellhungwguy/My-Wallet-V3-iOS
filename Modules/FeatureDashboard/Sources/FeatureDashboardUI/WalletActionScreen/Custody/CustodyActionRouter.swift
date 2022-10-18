@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
+import FeatureBackupRecoveryPhraseUI
 import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
@@ -10,11 +12,6 @@ import RxRelay
 import RxSwift
 import RxToolKit
 import ToolKit
-
-public protocol BackupRouterAPI {
-    var completionRelay: PublishRelay<Void> { get }
-    func start()
-}
 
 public protocol WalletOperationsRouting {
     func handleSwapCrypto(account: CryptoAccount?)
@@ -29,7 +26,7 @@ public protocol WalletOperationsRouting {
 public final class CustodyActionRouterProvider {
     public init() {}
     public func create(
-        backupRouterAPI: BackupRouterAPI,
+        backupRouterAPI: RecoveryPhraseBackupRouterAPI,
         tabSwapping: TabSwapping
     ) -> CustodyActionRouterAPI {
         CustodyActionRouter(
@@ -48,9 +45,10 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
     let walletOperationsRouter: WalletOperationsRouting
 
     private var stateService: CustodyActionStateServiceAPI!
-    private let backupRouterAPI: BackupRouterAPI
+    private let backupRouterAPI: RecoveryPhraseBackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private var depositRouter: DepositRootRouting!
+    private var cancellables: Set<AnyCancellable> = []
 
     private let navigationRouter: NavigationRouterAPI
 
@@ -64,7 +62,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
     private let analyticsRecoder: AnalyticsEventRecorderAPI
     private var disposeBag = DisposeBag()
 
-    convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
+    convenience init(backupRouterAPI: RecoveryPhraseBackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
             tabSwapping: tabSwapping,
@@ -73,7 +71,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     init(
-        backupRouterAPI: BackupRouterAPI,
+        backupRouterAPI: RecoveryPhraseBackupRouterAPI,
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
         navigationRouter: NavigationRouterAPI = resolve(),
@@ -95,11 +93,11 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         self.analyticsRecoder = analyticsRecoder
 
         backupRouterAPI
-            .completionRelay
-            .bindAndCatch(weak: self, onNext: { (self, _) in
+            .completionSubject
+            .sink(receiveValue: { _ in
                 self.stateService.nextRelay.accept(())
             })
-            .disposed(by: disposeBag)
+            .store(in: &cancellables)
 
         custodyWithdrawalRouter
             .completionRelay
@@ -150,7 +148,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             /// The `topMost` screen is the `CustodyActionScreen`
             dismiss { [weak self] in
                 guard let self = self else { return }
-                self.backupRouterAPI.start()
+                self.backupRouterAPI.presentFlow()
             }
         case .send:
             showSend()

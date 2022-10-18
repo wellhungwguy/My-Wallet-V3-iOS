@@ -34,8 +34,8 @@ public final class AssetPriceViewHistoricalInteractor: AssetPriceViewInteracting
                 let currency = result.historicalPrices.currency
                 let window = result.priceWindow
                 let currentPrice = result.currentFiatValue
-                let priceChange = FiatValue(
-                    amount: result.historicalPrices.fiatChange,
+                let priceChange = FiatValue.create(
+                    minor: result.historicalPrices.fiatChange,
                     currency: result.currentFiatValue.currency
                 )
                 return .loaded(

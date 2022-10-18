@@ -22,7 +22,7 @@ struct WithdrawalLocksDetailsView: View {
                     presentationMode.wrappedValue.dismiss()
                 } label: {
                     Icon.closeCircle
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(height: 24.pt)
                 }
             }

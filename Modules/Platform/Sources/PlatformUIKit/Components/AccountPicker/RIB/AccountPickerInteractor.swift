@@ -25,6 +25,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
     // MARK: - Private Properties
 
     private let searchRelay: PublishRelay<String?> = .init()
+    private let accountFilterRelay: PublishRelay<AccountType?> = .init()
+
     private let accountProvider: AccountPickerAccountProviding
     private let didSelect: AccountPickerDidSelect?
     private let disposeBag = DisposeBag()
@@ -32,6 +34,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
     private let app: AppProtocol
     private let priceRepository: PriceRepositoryAPI
+    private let initialAccountTypeFilter: AccountType?
 
     // MARK: - Init
 
@@ -40,11 +43,13 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
         accountProvider: AccountPickerAccountProviding,
         listener: AccountPickerListenerBridge,
         app: AppProtocol = resolve(),
-        priceRepository: PriceRepositoryAPI = resolve(tag: DIKitPriceContext.volume)
+        priceRepository: PriceRepositoryAPI = resolve(tag: DIKitPriceContext.volume),
+        initialAccountTypeFilter: AccountType?
     ) {
         self.app = app
         self.priceRepository = priceRepository
         self.accountProvider = accountProvider
+        self.initialAccountTypeFilter = initialAccountTypeFilter
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -76,20 +81,31 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             .distinctUntilChanged()
             .debounce(.milliseconds(350), scheduler: MainScheduler.asyncInstance)
 
+        let accountFilterObservable = accountFilterRelay.asObservable()
+            .startWith(initialAccountTypeFilter)
+            .distinctUntilChanged()
+
         let interactorState: Driver<State> = Observable
             .combineLatest(
                 accountProvider.accounts.flatMap { [app, priceRepository] accounts in
                     accounts.snapshot(app: app, priceRepository: priceRepository).asObservable()
                 },
-                searchObservable
+                searchObservable,
+                accountFilterObservable
             )
-            .map { [button] accounts, searchString -> State in
+            .map { [button] accounts, searchString, accountFilter -> State in
                 let isFiltering = searchString
                     .flatMap { !$0.isEmpty } ?? false
 
                 var interactors = accounts
                     .filter { snapshot in
                         snapshot.account.currencyType.matchSearch(searchString)
+                    }
+                    .filter { snapshot in
+                        guard let filter = accountFilter else {
+                            return true
+                        }
+                        return snapshot.account.accountType == filter
                     }
                     .sorted(by: >)
                     .map(\.account)
@@ -128,6 +144,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             listener?.didTapClose()
         case .filter(let string):
             searchRelay.accept(string)
+        case .accountFilter(let filter):
+            accountFilterRelay.accept(filter)
         case .button:
             listener?.didSelectActionButton()
         case .ux(let ux):
@@ -151,6 +169,7 @@ extension AccountPickerInteractor {
         case closed
         case ux(UX.Dialog)
         case filter(String?)
+        case accountFilter(AccountType?)
         case button
         case none
     }
@@ -206,13 +225,13 @@ struct BlockchainAccountSnapshot: Comparable {
         (
             lhs.isSelectedAsset ? 1 : 0,
             lhs.count,
-            lhs.balance.amount,
+            lhs.balance.minorAmount,
             lhs.account.currencyType == .bitcoin ? 1 : 0,
             lhs.volume24h
         ) < (
             rhs.isSelectedAsset ? 1 : 0,
             rhs.count,
-            rhs.balance.amount,
+            rhs.balance.minorAmount,
             rhs.account.currencyType == .bitcoin ? 1 : 0,
             rhs.volume24h
         )
@@ -254,17 +273,20 @@ extension Collection where Element == BlockchainAccount {
             ) else {
                 throw BlockchainAccountSnapshotError.noTradingCurrency
             }
-            let prices = try await priceRepository.prices(
+
+            let usdPrices = try await priceRepository.prices(
                 of: map(\.currencyType),
                 in: FiatCurrency.USD,
                 at: .oneDay
             )
             .stream()
             .next()
+
             var accounts = [BlockchainAccountSnapshot]()
             for account in self {
+                let currencyCode = account.currencyType.code
                 let count: Int? = try? await app.get(
-                    blockchain.ux.transaction.source.target[account.currencyType.code].count.of.completed
+                    blockchain.ux.transaction.source.target[currencyCode].count.of.completed
                 )
                 let currentId: String? = try? await app.get(
                     blockchain.ux.transaction.source.target.id
@@ -272,15 +294,19 @@ extension Collection where Element == BlockchainAccount {
                 let balance = try? await account.fiatBalance(fiatCurrency: currency)
                     .stream()
                     .next()
+                let volume24h: BigInt? = usdPrices["\(currencyCode)-USD"].flatMap { quote in
+                    quote.moneyValue.minorAmount * BigInt(quote.volume24h.or(.zero))
+                }
+                let isSelectedAsset: Bool? = currentId.flatMap { currentId in
+                    currentId.caseInsensitiveCompare(currencyCode) == .orderedSame
+                }
                 accounts.append(
                     BlockchainAccountSnapshot(
                         account: account,
                         balance: balance?.fiatValue ?? .zero(currency: currency),
                         count: count ?? 0,
-                        isSelectedAsset: currentId?.lowercased() == account.currencyType.code.lowercased(),
-                        volume24h: prices["\(account.currencyType.code)-USD"].flatMap { quote in
-                            quote.moneyValue.amount * BigInt(quote.volume24h.or(.zero))
-                        } ?? .zero
+                        isSelectedAsset: isSelectedAsset ?? false,
+                        volume24h: volume24h ?? .zero
                     )
                 )
             }

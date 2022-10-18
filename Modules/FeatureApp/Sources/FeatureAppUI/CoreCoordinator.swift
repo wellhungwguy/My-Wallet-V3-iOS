@@ -442,6 +442,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .map(CoreAppAction.proceedToLoggedIn)
 
     case .proceedToLoggedIn(.failure(let error)):
+        environment.loadingViewPresenter.hide()
         state.onboarding?.displayAlert = .proceedToLoggedIn(error)
         return .merge(
             .cancel(id: WalletCancelations.AssetInitializationId()),

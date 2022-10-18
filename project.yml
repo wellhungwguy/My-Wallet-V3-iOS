@@ -296,6 +296,13 @@ packages:
     path: Modules/FeatureUserDeletion
   FeatureSuperAppIntro:
     path: Modules/FeatureSuperAppIntro
+  FeatureBackupRecoveryPhrase:
+    path: Modules/FeatureBackupRecoveryPhrase
+  FeaturePaymentsIntegration:
+    path: Modules/FeaturePaymentsIntegration
+  LinkKit:
+    url: https://github.com/plaid/plaid-link-ios
+    from: 3.1.0
 
 targets:
   BlockchainApp:
@@ -377,6 +384,12 @@ targets:
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
+      - package: FeaturePaymentsIntegration
+        product: FeaturePlaidData
+      - package: FeaturePaymentsIntegration
+        product: FeaturePlaidDomain
+      - package: FeaturePaymentsIntegration
+        product: FeaturePlaidUI
       - package: FeatureProducts
         product: FeatureProductsData
       - package: FeatureProducts
@@ -407,6 +420,7 @@ targets:
         product: PulseUI
       - package: Pulse
       - package: Intercom
+      - package: LinkKit
 
       - package: Analytics
         product: AnalyticsKit
@@ -473,6 +487,9 @@ targets:
         product: FraudIntelligence
       - package: FeatureSuperAppIntro
         product: FeatureSuperAppIntro
+      - package: FeatureBackupRecoveryPhrase
+        product: FeatureBackupRecoveryPhrase
+
 
     platform: iOS
     postBuildScripts:

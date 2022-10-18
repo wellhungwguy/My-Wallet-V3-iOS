@@ -46,7 +46,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
 
                 let cryptoStreams: [Observable<MoneyValuePair>] = coincore.cryptoAssets.map { asset in
                     asset
-                        .accountGroup(filter: .all)
+                        .accountGroup(filter: .allExcludingExchange)
                         .compactMap({ $0 })
                         .flatMap { accountGroup in
                             accountGroup.balancePair(fiatCurrency: fiatCurrency)
@@ -54,7 +54,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                         .asObservable()
                 }
                 let fiatStream: Observable<MoneyValuePair> = coincore.fiatAsset
-                    .accountGroup(filter: .all)
+                    .accountGroup(filter: .allExcludingExchange)
                     .compactMap({ $0 })
                     .flatMap { accountGroup in
                         accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
@@ -63,9 +63,10 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                     .asObservable()
 
                 return Observable.combineLatest(cryptoStreams + [fiatStream])
-                    .map { pairs -> AssetPieChart.State.Interaction in
-                        let total = try pairs.map(\.quote)
-                            .reduce(.zero(currency: fiatCurrency), +)
+                    .map { (pairs: [MoneyValuePair]) -> AssetPieChart.State.Interaction in
+                        let total: MoneyValue = try pairs.map(\.quote)
+                            .reduce(MoneyValue.zero(currency: fiatCurrency), +)
+
                         guard total.isPositive else {
                             return .loaded(next: [])
                         }
@@ -73,7 +74,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                         let states = pairs.map { pair in
                             AssetPieChart.Value.Interaction(
                                 asset: pair.base.currency,
-                                percentage: pair.quote.amount.decimalDivision(by: total.amount)
+                                percentage: (try? pair.quote.percentage(in: total)) ?? 0
                             )
                         }
                         return .loaded(next: states)

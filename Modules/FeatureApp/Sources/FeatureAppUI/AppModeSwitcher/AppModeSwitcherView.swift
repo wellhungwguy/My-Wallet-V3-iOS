@@ -67,6 +67,7 @@ public struct AppModeSwitcherView: View {
             ) {
                 Icon
                     .portfolio
+                    .color(.semantic.primary)
                     .frame(width: 24, height: 24)
             } trailing: {
                 if viewStore.currentAppMode == .trading {
@@ -86,7 +87,7 @@ public struct AppModeSwitcherView: View {
                 leading: {
                     Icon
                         .wallet
-                        .accentColor(.semantic.defi)
+                        .color(.semantic.defi)
                         .frame(width: 24, height: 24)
                 },
                 trailing: {
@@ -123,15 +124,15 @@ public struct AppModeSwitcherView: View {
     private var chevronIcon: some View {
         Icon
             .chevronRight
+            .color(.semantic.muted)
             .frame(width: 24, height: 24)
-            .accentColor(.semantic.muted)
     }
 
     private var checkMarkIcon: some View {
         Icon
             .checkCircle
             .renderingMode(.template)
+            .color(.semantic.primary)
             .frame(width: 24, height: 24)
-            .accentColor(.semantic.primary)
     }
 }

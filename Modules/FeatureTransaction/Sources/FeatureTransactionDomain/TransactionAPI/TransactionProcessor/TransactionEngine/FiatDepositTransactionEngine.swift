@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import DIKit
+import Errors
+import FeaturePlaidDomain
 import MoneyKit
 import PlatformKit
 import RxSwift
@@ -20,8 +23,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    var sourceBankAccount: LinkedBankAccount! {
-        sourceAccount as? LinkedBankAccount
+    var sourceBankAccount: PlatformKit.LinkedBankAccount! {
+        sourceAccount as? PlatformKit.LinkedBankAccount
     }
 
     var target: FiatAccount { transactionTarget as! FiatAccount }
@@ -30,30 +33,36 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let paymentMethodsService: PaymentMethodTypesServiceAPI
     private let transactionLimitsService: TransactionLimitsServiceAPI
     private let bankTransferRepository: BankTransferRepositoryAPI
+    private let plaidRepository: PlaidRepositoryAPI
 
     // MARK: - Init
 
     init(
+        app: AppProtocol = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         paymentMethodsService: PaymentMethodTypesServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
-        bankTransferRepository: BankTransferRepositoryAPI = resolve()
+        bankTransferRepository: BankTransferRepositoryAPI = resolve(),
+        plaidRepository: PlaidRepositoryAPI = resolve()
     ) {
+        self.app = app
         self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
         self.transactionLimitsService = transactionLimitsService
         self.paymentMethodsService = paymentMethodsService
         self.bankTransferRepository = bankTransferRepository
+        self.plaidRepository = plaidRepository
     }
 
     // MARK: - TransactionEngine
 
     func assertInputsValid() {
-        precondition(sourceAccount is LinkedBankAccount)
+        precondition(sourceAccount is PlatformKit.LinkedBankAccount)
         precondition(transactionTarget is FiatAccount)
     }
 
@@ -91,8 +100,35 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         .just(pendingTransaction.update(amount: amount))
     }
 
+    private func validateSourceBankAccountStatus(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        guard app.state.yes(if: blockchain.ux.payment.method.plaid.is.available) else {
+            return .just(pendingTransaction)
+        }
+        let accountId = sourceBankAccount.accountId
+        return plaidRepository
+            .getSettlementInfo(
+                accountId: accountId,
+                amount: pendingTransaction.amount.minorString
+            )
+            .asSingle()
+            .flatMap { info in
+                if let ux = info.error {
+                    return .error(UX.Error(nabu: ux))
+                }
+                if let ux = info.settlement.reason?.uxError(accountId) {
+                    return .error(ux)
+                }
+                return .just(pendingTransaction)
+            }
+    }
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                self.validateSourceBankAccountStatus(pendingTransaction: pendingTransaction)
+            }
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 

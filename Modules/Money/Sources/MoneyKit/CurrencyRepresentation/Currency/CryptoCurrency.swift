@@ -126,6 +126,8 @@ extension CryptoCurrency {
         assetModel.precision
     }
 
+    public var storeExtraPrecision: Int { 0 }
+
     public var displayPrecision: Int {
         min(CryptoCurrency.maxDisplayPrecision, precision)
     }

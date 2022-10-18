@@ -197,8 +197,8 @@ public struct CredentialsView: View {
             } label: {
                 Icon
                     .questionCircle
+                    .color(.semantic.muted)
                     .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
             }
             .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.nextButton)
         }

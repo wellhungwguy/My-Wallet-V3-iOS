@@ -98,33 +98,12 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         auxiliaryButtonEnabledRelay.asDriver()
     }
 
-    let maxLimitPublisher: AnyPublisher<FiatValue, Never>
+    var maxLimitPublisher: AnyPublisher<FiatValue, Never> {
+        interactor.maxLimitPublisher
+    }
+
     var lastPurchasePublisher: AnyPublisher<FiatValue, Never> {
-        let amount = app.publisher(
-            for: blockchain.ux.transaction.source.target.previous.input.amount,
-            as: BigInt.self
-        )
-        .map(\.value)
-        let currency = app.publisher(
-            for: blockchain.ux.transaction.source.target.previous.input.currency.code,
-            as: FiatCurrency.self
-        )
-        .map(\.value)
-        let tradingCurrency = app.publisher(
-            for: blockchain.user.currency.preferred.fiat.trading.currency,
-            as: FiatCurrency.self
-        )
-        .compactMap(\.value)
-        return amount.combineLatest(currency, tradingCurrency)
-            .map { amount, currency, tradingCurrency in
-                if let amount = amount, let currency = currency {
-                    return FiatValue(amount: amount, currency: currency)
-                } else {
-                    // If there's no previous purchase default to 50.00 of trading currency
-                    return FiatValue(amount: 5000, currency: tradingCurrency)
-                }
-            }
-            .eraseToAnyPublisher()
+        interactor.lastPurchasePublisher
     }
 
     // MARK: - Injected
@@ -156,7 +135,6 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         self.analyticsRecorder = analyticsRecorder
         self.displayBundle = displayBundle
         self.app = app
-        self.maxLimitPublisher = maxLimitPublisher
 
         swapButtonVisibilityRelay.accept(inputTypeToggleVisibility)
         fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)

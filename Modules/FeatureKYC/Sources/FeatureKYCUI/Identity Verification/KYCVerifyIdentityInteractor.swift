@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -16,10 +17,8 @@ protocol KYCVerifyIdentityInput: AnyObject {
         onError: @escaping ((Error) -> Void)
     )
     func supportedDocumentTypes(
-        countryCode: String,
-        onSuccess: @escaping (([KYCDocumentType]) -> Void),
-        onError: @escaping ((Error) -> Void)
-    )
+        countryCode: String
+    ) -> AnyPublisher<[KYCDocumentType], NabuNetworkError>
 }
 
 class KYCVerifyIdentityInteractor {
@@ -45,21 +44,6 @@ class KYCVerifyIdentityInteractor {
     deinit {
         disposable?.dispose()
         disposable = nil
-    }
-
-    private func supportedDocumentTypes(_ countryCode: String) -> Single<[KYCDocumentType]> {
-        // Check cache
-        if let types = cache[countryCode] {
-            return Single.just(types)
-        }
-
-        return client
-            .supportedDocuments(for: countryCode)
-            .asSingle()
-            .map(\.documentTypes)
-            .do(onSuccess: { [weak self] types in
-                self?.cache[countryCode] = types
-            })
     }
 }
 
@@ -91,12 +75,20 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
     }
 
     func supportedDocumentTypes(
-        countryCode: String,
-        onSuccess: @escaping (([KYCDocumentType]) -> Void),
-        onError: @escaping ((Error) -> Void)
-    ) {
-        disposable = supportedDocumentTypes(countryCode)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: onSuccess, onFailure: onError)
+        countryCode: String
+    ) -> AnyPublisher<[KYCDocumentType], NabuNetworkError> {
+        // Check cache
+        if let types = cache[countryCode] {
+            return .just(types)
+        }
+
+        return client
+            .supportedDocuments(for: countryCode)
+            .map { [weak self] documents in
+                let documentTypes = documents.documentTypes
+                self?.cache[countryCode] = documentTypes
+                return documentTypes
+            }
+            .eraseToAnyPublisher()
     }
 }

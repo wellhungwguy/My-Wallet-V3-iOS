@@ -10,6 +10,7 @@ import Errors
 import ErrorsUI
 import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
+import FeaturePlaidUI
 import FeatureTransactionDomain
 import Localization
 import PlatformKit
@@ -431,13 +432,15 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     }
 
     func presentLinkABank(transactionModel: TransactionModel) {
-
         analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
+        Task {
+            let isPlaidAvailable = app.state.yes(if: blockchain.ux.payment.method.plaid.is.available)
+            let isArgentinaEnabled = (try? await app.get(blockchain.app.configuration.argentinalinkbank.is.enabled)) ?? false
 
-        Task(priority: .userInitiated) {
             let country: String = try app.state.get(blockchain.user.address.country.code)
-            let isArgentinaLinkBankEnabled: Bool = (try? await isArgentinaLinkBankEnabled.await()) ?? false
-            if isArgentinaLinkBankEnabled, country.isArgentina {
+            if isPlaidAvailable {
+                try await presentPlaidLinkABank(transactionModel: transactionModel)
+            } else if country.isArgentina, isArgentinaEnabled {
                 try await presentBINDLinkABank(transactionModel: transactionModel)
             } else {
                 presentDefaultLinkABank(transactionModel: transactionModel)
@@ -445,14 +448,63 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
     }
 
-    private var isArgentinaLinkBankEnabled: AnyPublisher<Bool, Never> {
-        app.publisher(
-            for: blockchain.app.configuration.argentinalinkbank.is.enabled,
-            as: Bool.self
-        )
-        .map(\.value)
-        .replaceNil(with: false)
-        .eraseToAnyPublisher()
+    @MainActor
+    private func presentPlaidLinkABank(
+        transactionModel: TransactionModel
+    ) async throws {
+        let state = try await transactionModel.state.await()
+        let presentingViewController = viewController.uiviewController
+
+        let router = Router<Interactor>(interactor: Interactor())
+        attachChild(router)
+
+        let app: AppProtocol = DIKit.resolve()
+        let view = PlaidView(store: .init(
+            initialState: PlaidState(),
+            reducer: PlaidModule.reducer,
+            environment: .init(
+                app: app,
+                mainQueue: .main,
+                plaidRepository: DIKit.resolve(),
+                dismissFlow: { [weak self] success in
+                    presentingViewController.dismiss(animated: true) {
+                        self?.detachChild(router)
+                        if success {
+                            transactionModel.process(action: .bankAccountLinked(state.action))
+                        } else {
+                            transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                        }
+                    }
+                }
+            )
+        )).app(app)
+
+        let viewController = UIHostingController(rootView: view)
+
+        viewController.isModalInPresentation = true
+        presentingViewController.present(viewController, animated: true)
+    }
+
+    private func presentDefaultLinkABank(transactionModel: TransactionModel) {
+        let builder = LinkBankFlowRootBuilder()
+        let router = builder.build()
+        linkBankFlowRouter = router
+        router.startFlow()
+            .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .asPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [topMostViewControllerProvider] effect, state in
+                topMostViewControllerProvider
+                    .topMostViewController?
+                    .dismiss(animated: true, completion: nil)
+                switch effect {
+                case .closeFlow:
+                    transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                case .bankLinked:
+                    transactionModel.process(action: .bankAccountLinked(state.action))
+                }
+            })
+            .store(in: &cancellables)
     }
 
     @MainActor
@@ -512,28 +564,6 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.modalPresentationStyle = .custom
         let presenter = topMostViewControllerProvider.topMostViewController
         presenter?.present(viewController, animated: true, completion: nil)
-    }
-
-    private func presentDefaultLinkABank(transactionModel: TransactionModel) {
-        let builder = LinkBankFlowRootBuilder()
-        let router = builder.build()
-        linkBankFlowRouter = router
-        router.startFlow()
-            .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .asPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [topMostViewControllerProvider] effect, state in
-                topMostViewControllerProvider
-                    .topMostViewController?
-                    .dismiss(animated: true, completion: nil)
-                switch effect {
-                case .closeFlow:
-                    transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
-                case .bankLinked:
-                    transactionModel.process(action: .bankAccountLinked(state.action))
-                }
-            })
-            .store(in: &cancellables)
     }
 
     func presentBankWiringInstructions(transactionModel: TransactionModel) {
@@ -743,7 +773,10 @@ extension TransactionFlowRouter {
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(
+                subtitle: subtitle,
+                searchable: isSearchEnabled
+            )),
             buttonViewModel: button
         )
     }
@@ -765,12 +798,24 @@ extension TransactionFlowRouter {
         )
         let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
         let searchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.search.is.enabled)
+        let switchable: Bool = app.remoteConfiguration.yes(if: blockchain.app.configuration.swap.switch.pkw.is.enabled)
+
         let isSearchEnabled = action == .swap && searchable
+        let isSwitchEnabled = action == .swap && app.currentMode == .pkw && switchable
+        let switchTitle = isSwitchEnabled ? Localization.Swap.tradingAccountsSwitchTitle : nil
+        let initialAccountTypeFilter: AccountType? = app.currentMode == .pkw ? .nonCustodial : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle, searchable: isSearchEnabled)),
-            buttonViewModel: button
+            headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(
+                subtitle: subtitle,
+                searchable: isSearchEnabled,
+                switchable: isSwitchEnabled,
+                switchTitle: switchTitle
+            )
+            ),
+            buttonViewModel: button,
+            initialAccountTypeFilter: initialAccountTypeFilter
         )
     }
 }
@@ -823,4 +868,5 @@ extension PaymentMethodAccount {
 
 extension CountryCode {
     var isArgentina: Bool { self == "AR" }
+    var isAmerica: Bool { self == "US" }
 }

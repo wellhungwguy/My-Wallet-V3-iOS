@@ -113,7 +113,7 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                                 CryptoCurrencyQuote(
                                     cryptoCurrency: pair.cryptoCurrency,
                                     fiatCurrency: pair.fiatCurrency,
-                                    quote: quote.moneyValue.amount,
+                                    quote: quote.moneyValue.minorAmount,
                                     formattedQuote: quote
                                         .moneyValue
                                         .toDisplayString(

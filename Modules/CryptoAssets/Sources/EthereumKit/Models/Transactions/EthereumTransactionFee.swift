@@ -119,9 +119,9 @@ public struct EthereumTransactionFee {
     public func gasPrice(feeLevel: FeeLevel) -> BigUInt {
         switch feeLevel {
         case .regular:
-            return BigUInt(regular.amount)
+            return BigUInt(regular.minorAmount)
         case .priority:
-            return BigUInt(priority.amount)
+            return BigUInt(priority.minorAmount)
         }
     }
 
@@ -155,8 +155,8 @@ extension CryptoValue {
         network: EVMNetwork
     ) -> CryptoValue {
         let wei = gwei * BigInt(1e9)
-        return CryptoValue(
-            amount: wei,
+        return CryptoValue.create(
+            minor: wei,
             currency: network.cryptoCurrency
         )
     }

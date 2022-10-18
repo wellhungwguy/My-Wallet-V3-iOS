@@ -23,28 +23,34 @@ let package = Package(
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "5.0.2"
         ),
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../FeaturePaymentsIntegration"),
         .package(path: "../FeatureTransaction"),
+        .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
-        .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../UIComponents"),
-        .package(path: "../FeatureWithdrawalLocks")
+        .package(path: "../FeatureBackupRecoveryPhrase")
     ],
     targets: [
         .target(
             name: "FeatureDashboardUI",
             dependencies: [
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "FeaturePlaidUI", package: "FeaturePaymentsIntegration"),
                 .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "RxCocoa", package: "RxSwift"),
+                .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
+                .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase")
             ]
         ),
         .testTarget(

@@ -107,8 +107,8 @@ public struct ErrorView<Fallback: View>: View {
                         )
                     } else {
                         Icon.alert
+                            .color(.semantic.error)
                             .scaledToFit()
-                            .accentColor(.semantic.warning)
                     }
                 }
                 .frame(
@@ -159,7 +159,8 @@ public struct ErrorView<Fallback: View>: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                Icon.copy.frame(width: 16.pt, height: 16.pt)
+                Icon.copy
+                    .frame(width: 16.pt, height: 16.pt)
                     .accentColor(.semantic.light)
             }
             .typography(.micro)
@@ -237,7 +238,7 @@ extension ErrorView where Fallback == AnyView {
         self.ux = ux
         fallback = {
             AnyView(
-                Icon.error.accentColor(.semantic.warning)
+                Icon.error.color(.semantic.warning)
             )
         }
         self.dismiss = dismiss

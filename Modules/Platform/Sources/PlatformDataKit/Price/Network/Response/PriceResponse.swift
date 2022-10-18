@@ -13,7 +13,7 @@ extension PriceResponse {
 
     /// Model for a quoted price by the Service-Price endpoint in given base currency.
     struct Item: Decodable, Equatable {
-        let price: Decimal?
+        let price: Double?
         let timestamp: Date
         let volume24h: Double?
         let marketCap: Double?

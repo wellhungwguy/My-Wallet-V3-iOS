@@ -14,14 +14,9 @@ let package = Package(
         .library(
             name: "FeatureSettings",
             targets: [
-                "FeatureSettingsData",
                 "FeatureSettingsDomain",
                 "FeatureSettingsUI"
             ]
-        ),
-        .library(
-            name: "FeatureSettingsData",
-            targets: ["FeatureSettingsData"]
         ),
         .library(
             name: "FeatureSettingsDomain",
@@ -55,6 +50,7 @@ let package = Package(
         .package(path: "../WalletPayload"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../FeatureCardPayment"),
+        .package(path: "../FeatureBackupRecoveryPhrase"),
         .package(path: "../FeatureNotificationPreferences"),
         .package(path: "../FeatureReferral"),
         .package(path: "../FeatureUserDeletion")
@@ -77,14 +73,6 @@ let package = Package(
             ]
         ),
         .target(
-            name: "FeatureSettingsData",
-            dependencies: [
-                .target(name: "FeatureSettingsDomain"),
-                .product(name: "NetworkKit", package: "Network"),
-                .product(name: "DIKit", package: "DIKit")
-            ]
-        ),
-        .target(
             name: "FeatureSettingsUI",
             dependencies: [
                 .target(name: "FeatureSettingsDomain"),
@@ -97,7 +85,8 @@ let package = Package(
                 .product(name: "FeatureUserDeletionData", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionDomain", package: "FeatureUserDeletion"),
                 .product(name: "FeatureUserDeletionUI", package: "FeatureUserDeletion"),
-                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary")
+                .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
+                .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase")
             ]
         ),
         .target(

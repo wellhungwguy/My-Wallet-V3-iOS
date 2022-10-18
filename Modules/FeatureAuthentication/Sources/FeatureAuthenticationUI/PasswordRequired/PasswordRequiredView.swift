@@ -38,8 +38,8 @@ public struct PasswordRequiredView: View {
     private var passwordRequiredHeader: some View {
         VStack(spacing: Spacing.padding3) {
             Icon.lockClosed
+                .color(.semantic.primary)
                 .frame(width: 48, height: 48)
-                .accentColor(.semantic.primary)
             Text(LocalizedString.title)
                 .typography(.title2)
         }

@@ -49,7 +49,7 @@ struct AccountRow: View {
             },
             leading: {
                 account.accountType.icon
-                    .accentColor(assetColor)
+                    .color(assetColor)
                     .frame(width: 24)
             }
         )

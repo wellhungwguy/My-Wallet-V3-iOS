@@ -21,7 +21,10 @@ public protocol Asset: AnyObject {
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never>
 
-    func transactionTargets(account: SingleAccount) -> AnyPublisher<[SingleAccount], Never>
+    func transactionTargets(
+        account: SingleAccount,
+        action: AssetAction
+    ) -> AnyPublisher<[SingleAccount], Never>
 
     /// Validates the given address
     /// - Parameter address: A `String` value of the address to be parse

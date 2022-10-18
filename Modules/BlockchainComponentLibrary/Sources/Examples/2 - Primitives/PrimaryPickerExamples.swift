@@ -62,7 +62,7 @@ struct PrimaryPickerExamples: View {
                         identifier: .trailingNoPicker,
                         trailing: {
                             Icon.chevronDown
-                                .accentColor(.semantic.muted)
+                                .color(.semantic.muted)
                                 .frame(height: 24)
                         }
                     ),

@@ -10,10 +10,10 @@ enum StellarHistoricalTransaction {
         switch self {
         case .accountCreated(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue(amount: BigInt(fee), currency: .stellar)
+            return CryptoValue.create(minor: BigInt(fee), currency: .stellar)
         case .payment(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue(amount: BigInt(fee), currency: .stellar)
+            return CryptoValue.create(minor: BigInt(fee), currency: .stellar)
         }
     }
 

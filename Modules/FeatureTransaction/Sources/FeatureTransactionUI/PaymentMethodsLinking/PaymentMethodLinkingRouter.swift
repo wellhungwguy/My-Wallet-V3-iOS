@@ -1,8 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
+import DIKit
+import FeaturePlaidUI
 import MoneyKit
 import PlatformKit
+import SwiftUI
 import ToolKit
 import UIKit
 
@@ -77,16 +81,19 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
     private let bankAccountLinker: BankAccountLinkerAPI
     private let bankWireLinker: BankWireLinkerAPI
     private let cardLinker: CardLinkerAPI
+    private let app: AppProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
     init(
+        app: AppProtocol = DIKit.resolve(),
         featureFlagsService: FeatureFlagsServiceAPI,
         paymentMethodsLinker: PaymentMethodLinkingSelectorAPI = PaymentMethodLinkingSelector(),
         bankAccountLinker: BankAccountLinkerAPI = BankAccountLinker(),
         bankWireLinker: BankWireLinkerAPI = BankWireLinker(),
         cardLinker: CardLinkerAPI = CardLinker()
     ) {
+        self.app = app
         self.featureFlagsService = featureFlagsService
         self.paymentMethodsLinker = paymentMethodsLinker
         self.bankAccountLinker = bankAccountLinker
@@ -193,8 +200,37 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
-        bankAccountLinker.presentBankLinkingFlow(from: viewController) { result in
-            completion(result == .abandoned ? .abandoned : .completed(nil))
+        if app.state.yes(if: blockchain.ux.payment.method.plaid.is.available) {
+            showLinkBankFlowWithPlaid(from: viewController, completion: completion)
+        } else {
+            bankAccountLinker.presentBankLinkingFlow(from: viewController) { result in
+                completion(result == .abandoned ? .abandoned : .completed(nil))
+            }
+        }
+    }
+
+    private func showLinkBankFlowWithPlaid(
+        from presenter: UIViewController,
+        completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
+    ) {
+        let app: AppProtocol = DIKit.resolve()
+        let view = PlaidView(store: .init(
+            initialState: PlaidState(),
+            reducer: PlaidModule.reducer,
+            environment: .init(
+                app: app,
+                mainQueue: .main,
+                plaidRepository: DIKit.resolve(),
+                dismissFlow: { success in
+                    completion(success ? .completed(nil) : .abandoned)
+                }
+            )
+        )).app(app)
+
+        let viewController = UIHostingController(rootView: view)
+        viewController.isModalInPresentation = true
+        DispatchQueue.main.async {
+            presenter.present(viewController, animated: false)
         }
     }
 

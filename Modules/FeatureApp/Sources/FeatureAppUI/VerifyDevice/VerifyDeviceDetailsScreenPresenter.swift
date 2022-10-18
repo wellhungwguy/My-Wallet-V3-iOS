@@ -34,6 +34,7 @@ public final class VerifyDeviceDetailsScreenPresenter: DetailsScreenPresenterAPI
         )
         let model = AccountPickerHeaderModel(
             imageContent: image,
+            switchable: true,
             subtitle: LocalizedString.subtitle,
             tableTitle: nil,
             title: LocalizedString.title

@@ -7,6 +7,7 @@ import Errors
 import FeatureCardIssuingDomain
 import Localization
 import MoneyKit
+import PassKit
 import SwiftUI
 import ToolKit
 
@@ -441,6 +442,15 @@ struct MockServices: CardServiceAPI,
     func update(residentialAddress: Card.Address) -> AnyPublisher<Card.Address, NabuNetworkError> {
         .just(Self.address)
     }
+
+    func tokenise(
+        card: Card,
+        with certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data
+    ) -> AnyPublisher<PKAddPaymentPassRequest, Errors.NabuNetworkError> {
+        .just(PKAddPaymentPassRequest())
+    }
 }
 
 extension MockServices: TransactionServiceAPI {
@@ -490,6 +500,12 @@ extension MockServices: AddressSearchRouterAPI {
         isPresentedFromSearchView: Bool
     ) -> AnyPublisher<CardAddressSearchResult, Never> {
         .just(.saved(MockServices.address))
+    }
+}
+
+extension MockServices: UserInfoProviderAPI {
+    var fullName: AnyPublisher<String, Errors.NabuNetworkError> {
+        .just("Clément approve")
     }
 }
 #endif

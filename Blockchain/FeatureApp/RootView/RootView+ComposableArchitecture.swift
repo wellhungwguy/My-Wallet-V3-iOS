@@ -9,10 +9,10 @@ import ComposableArchitectureExtensions
 import ComposableNavigation
 import DIKit
 import FeatureAppUI
+import FeatureBackupRecoveryPhraseUI
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureSettingsDomain
-import FeatureSettingsUI
 import Localization
 import MoneyKit
 import PlatformKit
@@ -29,6 +29,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var unreadSupportMessageCount: Int = 0
     @BindableState var appMode: AppMode?
     @BindableState var isAppModeSwitcherPresented: Bool = false
+    @BindableState var appModeSeen: Bool = false
 
     var appSwitcherEnabled: Bool {
         appMode != .universal
@@ -122,14 +123,14 @@ enum RootViewRoute: NavigationRoute {
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
     var app: AppProtocol
-    var backupFundsRouter: BackupFundsRouterAPI
+    var backupFundsRouter: RecoveryPhraseBackupRouterAPI
     var recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     var analyticsRecorder: AnalyticsEventRecorderAPI
     private var coincore: CoincoreAPI
 
     init(
         app: AppProtocol,
-        backupFundsRouter: BackupFundsRouterAPI,
+        backupFundsRouter: RecoveryPhraseBackupRouterAPI,
         coincore: CoincoreAPI,
         recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding,
         analyticsRecoder: AnalyticsEventRecorderAPI
@@ -188,6 +189,7 @@ let rootViewReducer = Reducer<
     case .tab(let tab):
         state.tab = tab
         return .none
+
     case .binding(\.$fab.isOn):
         if state.fab.isOn {
             state.fab.animate = false
@@ -205,7 +207,9 @@ let rootViewReducer = Reducer<
             currentAppMode: appMode
         )
         state.isAppModeSwitcherPresented.toggle()
-        return .none
+        return .fireAndForget {
+            environment.app.post(value: true, of: blockchain.ux.app.mode.seen)
+        }
 
     case .onAccountTotalsFetched(let accountTotals):
         state.accountTotals = RootViewState.AccountTotals(
@@ -251,7 +255,7 @@ let rootViewReducer = Reducer<
 
         let totalsPublishers = Publishers.CombineLatest3(
             environment
-                .fetchTotalBalance(filter: .all),
+                .fetchTotalBalance(filter: .allExcludingExchange),
             environment
                 .fetchTotalBalance(filter: .nonCustodial),
             environment
@@ -309,7 +313,14 @@ let rootViewReducer = Reducer<
             frequentActionsPublisher
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$fab.data, $0)) }
+                .map { .binding(.set(\.$fab.data, $0)) },
+
+            environment
+                .app.publisher(for: blockchain.ux.app.mode.seen, as: Bool.self)
+                .replaceError(with: false)
+                .receive(on: DispatchQueue.main)
+                .eraseToEffect()
+                .map { .binding(.set(\.$appModeSeen, $0)) }
         )
 
     case .onDisappear:
@@ -325,6 +336,7 @@ let rootViewReducer = Reducer<
             },
             .enter(into: .referrals, context: .none)
         )
+
     case .appModeSwitcherAction(let action):
         if action == .dismiss {
             state.isAppModeSwitcherPresented.toggle()

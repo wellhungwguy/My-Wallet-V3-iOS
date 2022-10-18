@@ -461,7 +461,7 @@ extension CoincoreAPI {
     func cryptoAccounts(
         for cryptoCurrency: CryptoCurrency,
         supporting action: AssetAction? = nil,
-        filter: AssetFilter = .all
+        filter: AssetFilter = .allExcludingExchange
     ) async throws -> [CryptoAccount] {
         try await cryptoAccounts(for: cryptoCurrency, supporting: action, filter: filter).stream().next()
     }

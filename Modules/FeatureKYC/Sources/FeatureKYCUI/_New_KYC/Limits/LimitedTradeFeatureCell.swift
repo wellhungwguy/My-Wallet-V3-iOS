@@ -13,8 +13,8 @@ struct LimitedTradeFeatureCell: View {
     var body: some View {
         HStack(spacing: Spacing.padding2) {
             feature.icon
+                .color(.semantic.body)
                 .frame(width: 24, height: 24)
-                .accentColor(.semantic.body)
 
             VStack(alignment: .leading, spacing: Spacing.textSpacing) {
                 Text(feature.title)
@@ -52,7 +52,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .send,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -60,7 +60,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .receive,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -68,7 +68,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .swap,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -81,7 +81,7 @@ struct LimitedTradeFeatureCell_Previews: PreviewProvider {
             id: .buyWithCard,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: .create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),

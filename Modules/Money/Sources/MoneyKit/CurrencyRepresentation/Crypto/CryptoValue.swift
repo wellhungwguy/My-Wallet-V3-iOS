@@ -5,7 +5,7 @@ import BigInt
 /// A crypto money value.
 public struct CryptoValue: CryptoMoney, Hashable {
 
-    public let amount: BigInt
+    public let storeAmount: BigInt
 
     public let currency: CryptoCurrency
 
@@ -14,8 +14,8 @@ public struct CryptoValue: CryptoMoney, Hashable {
     /// - Parameters:
     ///   - amount:   An amount in minor units.
     ///   - currency: A crypto currency.
-    public init(amount: BigInt, currency: CryptoCurrency) {
-        self.amount = amount
+    public init(storeAmount: BigInt, currency: CryptoCurrency) {
+        self.storeAmount = storeAmount
         self.currency = currency
     }
 }

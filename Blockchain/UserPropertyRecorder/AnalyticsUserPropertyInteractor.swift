@@ -67,7 +67,7 @@ final class AnalyticsUserPropertyInteractor {
         coincore.cryptoAssets
             .map { asset -> AnyPublisher<(asset: CryptoCurrency, moneyValue: MoneyValue?), Never> in
                 asset
-                    .accountGroup(filter: .all)
+                    .accountGroup(filter: .allExcludingExchange)
                     .compactMap { $0 }
                     .flatMap { accountGroup -> AnyPublisher<MoneyValue, Error> in
                         // We want to record the fiat balance analytics event always in USD.
@@ -167,7 +167,7 @@ final class AnalyticsUserPropertyInteractor {
             StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))
         )
         recorder.record(
-            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0))
+            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.minorAmount ?? 0))
         )
     }
 

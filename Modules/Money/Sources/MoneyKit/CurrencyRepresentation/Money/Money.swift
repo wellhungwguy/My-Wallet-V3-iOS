@@ -9,7 +9,10 @@ public protocol Money: CustomDebugStringConvertible {
     var currencyType: CurrencyType { get }
 
     /// The currency amount in minor units (the smallest unit of the respective currency - e.g. `cent` for `USD`, `Satoshi` for `BTC`, etc.).
-    var amount: BigInt { get }
+    var minorAmount: BigInt { get }
+
+    /// The currency amount in minor units in the currency's store precision.
+    var storeAmount: BigInt { get }
 
     /// The currency code (e.g. `USD`, `BTC`, etc.).
     var code: String { get }
@@ -22,6 +25,9 @@ public protocol Money: CustomDebugStringConvertible {
 
     /// The currency precision.
     var precision: Int { get }
+
+    /// The currency store precision.
+    var storePrecision: Int { get }
 
     /// The currency display precision.
     var displayPrecision: Int { get }
@@ -64,6 +70,10 @@ public protocol Money: CustomDebugStringConvertible {
 
 extension Money {
 
+    public var minorAmount: BigInt {
+        storeAmount / BigInt(10).power(currencyType.storeExtraPrecision)
+    }
+
     public var code: String {
         currencyType.code
     }
@@ -80,28 +90,32 @@ extension Money {
         currencyType.precision
     }
 
+    public var storePrecision: Int {
+        currencyType.storePrecision
+    }
+
     public var displayPrecision: Int {
         currencyType.displayPrecision
     }
 
     public var isZero: Bool {
-        amount.isZero
+        storeAmount.isZero
     }
 
     public var isNotZero: Bool {
-        !amount.isZero
+        !storeAmount.isZero
     }
 
     public var isPositive: Bool {
-        amount > 0
+        storeAmount > 0
     }
 
     public var isNegative: Bool {
-        amount < 0
+        storeAmount < 0
     }
 
     public var minorString: String {
-        amount.description
+        minorAmount.description
     }
 
     public var displayString: String {
@@ -110,9 +124,9 @@ extension Money {
 
     /// Used for analytics purposes only, for other things use `displayString` instead.
     public var displayMajorValue: Decimal {
-        amount.toDecimalMajor(
-            baseDecimalPlaces: currencyType.precision,
-            roundingDecimalPlaces: currencyType.precision
+        storeAmount.toDecimalMajor(
+            baseDecimalPlaces: currencyType.storePrecision,
+            roundingDecimalPlaces: currencyType.storePrecision
         )
     }
 

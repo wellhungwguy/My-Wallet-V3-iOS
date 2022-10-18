@@ -55,7 +55,7 @@ final class FiatBalanceCollectionViewInteractor {
                 }
                 return self.coincore
                     .fiatAsset
-                    .accountGroup(filter: .all)
+                    .accountGroup(filter: .allExcludingExchange)
                     .compactMap { $0 }
                     .map(\.accounts)
                     .asObservable()

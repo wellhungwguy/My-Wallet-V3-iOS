@@ -10,6 +10,8 @@ public protocol CryptoAssetRepositoryAPI {
 
     var allAccountsGroup: AnyPublisher<AccountGroup?, Never> { get }
 
+    var allExcludingExchangeAccountsGroup: AnyPublisher<AccountGroup?, Never> { get }
+
     var custodialGroup: AnyPublisher<AccountGroup?, Never> { get }
 
     var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> { get }
@@ -72,6 +74,18 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             custodialGroup,
             interestGroup,
             exchangeGroup
+        ]
+        .zip()
+        .compactMap { $0 }
+        .eraseToAnyPublisher()
+        .flatMapAllAccountGroup()
+    }
+
+    public var allExcludingExchangeAccountsGroup: AnyPublisher<AccountGroup?, Never> {
+        [
+            nonCustodialGroup,
+            custodialGroup,
+            interestGroup
         ]
         .zip()
         .compactMap { $0 }
@@ -173,6 +187,8 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         switch filter {
         case .all:
             return allAccountsGroup
+        case .allExcludingExchange:
+            return allExcludingExchangeAccountsGroup
         case .custodial:
             return custodialGroup
         case .interest:

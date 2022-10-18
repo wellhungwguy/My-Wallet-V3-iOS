@@ -10,6 +10,7 @@ public enum AnnouncementType: String, Codable {
     case backupFunds = "backup_funds"
     case buyBitcoin = "buy_btc"
     case claimFreeCryptoDomain = "claim_free_crypto_domain"
+    case claimFreeCryptoDomainKYC = "claim_free_crypto_domain_kyc"
     case majorProductBlocked = "major_product_blocked"
     case newAsset = "new_asset"
     case resubmitDocuments = "kyc_resubmit"
@@ -26,32 +27,36 @@ public enum AnnouncementType: String, Codable {
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
+        case .applePay:
+            return .applePay
+        case .backupFunds:
+            return .backupFunds
+        case .buyBitcoin:
+            return .buyBitcoin
+        case .claimFreeCryptoDomain:
+            return .claimFreeCryptoDomain
+        case .claimFreeCryptoDomainKYC:
+            return .claimFreeCryptoDomainKYC
         case .majorProductBlocked:
             return .majorProductBlocked
+        case .resubmitDocuments:
+            return .resubmitDocuments
         case .resubmitDocumentsAfterRecovery:
             return .resubmitDocumentsAfterRecovery
         case .sddUsersFirstBuy:
             return .sddUsersFirstBuy
-        case .verifyEmail:
-            return .verifyEmail
-        case .buyBitcoin:
-            return .buyBitcoin
+        case .simpleBuyKYCIncomplete:
+            return .simpleBuyKYCIncomplete
         case .transferBitcoin:
             return .transferBitcoin
         case .twoFA:
             return .twoFA
-        case .backupFunds:
-            return .backupFunds
+        case .verifyEmail:
+            return .verifyEmail
         case .verifyIdentity:
             return .verifyIdentity
-        case .resubmitDocuments:
-            return .resubmitDocuments
-        case .simpleBuyKYCIncomplete:
-            return .simpleBuyKYCIncomplete
         case .viewNFTWaitlist:
             return .viewNFTWaitlist
-        case .claimFreeCryptoDomain:
-            return .claimFreeCryptoDomain
         case .walletConnect:
             return .walletConnect
         case .newAsset:
@@ -64,14 +69,13 @@ public enum AnnouncementType: String, Codable {
                 unimplemented("AnnouncementType.assetRename does not have a default key.")
             }
             return .assetRename(code: "")
-        case .applePay:
-            return .applePay
         }
     }
 
     public var showsWhenWalletHasNoBalance: Bool {
         switch self {
-        case .claimFreeCryptoDomain:
+        case .claimFreeCryptoDomain,
+             .claimFreeCryptoDomainKYC:
             return true
         default:
             return false

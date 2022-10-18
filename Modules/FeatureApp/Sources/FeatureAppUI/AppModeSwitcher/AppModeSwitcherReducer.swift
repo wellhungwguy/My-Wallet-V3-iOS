@@ -29,7 +29,7 @@ extension AppModeSwitcherModule {
 
             case .onDefiTapped:
                 if let defiAccountBalance = state.defiAccountBalance,
-                   defiAccountBalance.amount.isZero, state.shouldShowDefiModeIntro
+                   defiAccountBalance.isZero, state.shouldShowDefiModeIntro
                 {
                     state.defiWalletState.isDefiIntroPresented = true
                     return .none
@@ -70,7 +70,7 @@ extension AppModeSwitcherModule {
                         .fireAndForget {
                             environment
                                 .backupFundsRouter
-                                .start()
+                                .presentFlow()
                         },
                         environment
                             .backupFundsRouter

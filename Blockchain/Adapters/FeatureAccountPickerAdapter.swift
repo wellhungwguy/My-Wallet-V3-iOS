@@ -15,6 +15,7 @@ import RxSwift
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+import PlatformKit
 
 class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
@@ -28,8 +29,17 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let backButtonRelay = PublishRelay<Void>()
     fileprivate let closeButtonRelay = PublishRelay<Void>()
     private let searchRelay = PublishRelay<String?>()
+    private let accountFilterRelay = PublishRelay<AccountType?>()
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
     fileprivate let header = PassthroughSubject<HeaderStyle, Error>()
+
+    lazy var onSwitchChanged: ((Bool)-> Void)? = {[app, accountFilterRelay ] isOn in
+        // Account switcher to automatically filter based on some condition
+        guard app.currentMode == .pkw else {
+            return
+        }
+        accountFilterRelay.accept(isOn ? nil : .nonCustodial)
+    }
 
     fileprivate lazy var environment = AccountPickerEnvironment(
         rowSelected: { [weak self, modelSelectedRelay] (identifier: AnyHashable) -> Void in
@@ -124,7 +134,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                 .map { Dictionary($0) { _, right in right } } // Don't care which value we take, just no dupes.
                 .eraseToAnyPublisher()
         },
-        header: { [header] in header.eraseToAnyPublisher() }
+        header: { [header] in header.eraseToAnyPublisher() },
+        onSwitchChanged: onSwitchChanged
     )
 
     fileprivate var models: [AccountPickerSectionViewModel] = []
@@ -304,7 +315,9 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                 case .simple(let model):
                     header = .simple(
                         subtitle: model.subtitle,
-                        searchable: model.searchable
+                        searchable: model.searchable,
+                        switchable: model.switchable,
+                        switchTitle: model.switchTitle
                     )
                 case .none:
                     header = .none
@@ -421,13 +434,18 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.filter($0) }
             .asDriverCatchError()
 
+        let accountFilterEffect = accountFilterRelay
+            .map { AccountPickerInteractor.Effects.accountFilter($0) }
+            .asDriverCatchError()
+
         return .merge(
             modelSelected,
             badgeSelected,
             buttonSelected,
             backButtonEffect,
             closeButtonEffect,
-            searchEffect
+            searchEffect,
+            accountFilterEffect
         )
     }
 }

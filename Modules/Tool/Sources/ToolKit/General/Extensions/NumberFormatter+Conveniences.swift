@@ -24,7 +24,11 @@ extension NumberFormatter {
     ///   - locale:            A locale.
     ///   - currencyCode:      A currency code.
     ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
-    public convenience init(locale: Locale, currencyCode: String, maxFractionDigits: Int) {
+    public convenience init(
+        locale: Locale,
+        currencyCode: String,
+        maxFractionDigits: Int
+    ) {
         self.init()
         usesGroupingSeparator = true
         roundingMode = .down

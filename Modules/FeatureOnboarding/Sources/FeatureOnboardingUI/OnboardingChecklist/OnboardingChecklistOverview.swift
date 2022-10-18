@@ -72,8 +72,8 @@ public struct OnboardingChecklistNUXOverview: View {
             Spacer()
 
             Icon.chevronRight
+                .color(.semantic.primary)
                 .frame(width: 24, height: 24)
-                .accentColor(.semantic.primary)
         }
         // pad content
         .padding(Spacing.padding2)

@@ -1,13 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import Errors
 import FeatureCardIssuingDomain
 import Foundation
 import NetworkKit
+import PassKit
 import ToolKit
 
 final class CardRepository: CardRepositoryAPI {
+
+    let app: AppProtocol
 
     private static let marqetaPath = "/marqeta-card/#/"
 
@@ -36,10 +40,12 @@ final class CardRepository: CardRepositoryAPI {
     private let cardCache: AnyCache<String, [Card]>
 
     init(
+        app: AppProtocol,
         client: CardClientAPI,
         userInfoProvider: UserInfoProviderAPI,
         baseCardHelperUrl: String
     ) {
+        self.app = app
         self.client = client
         self.userInfoProvider = userInfoProvider
         self.baseCardHelperUrl = baseCardHelperUrl
@@ -167,6 +173,41 @@ final class CardRepository: CardRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
+    func tokenise(
+        card: Card,
+        with certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data
+    ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError> {
+        let config = Base64Configuration(
+            activationData: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.activationData.is.enabled),
+            ephemeralPublicKey: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is.enabled),
+            encryptedPassData: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is.enabled)
+        )
+        return client.tokenise(
+            cardId: card.id,
+            with: TokeniseCardParameters(
+                certificates: certificates,
+                nonce: nonce,
+                nonceSignature: nonceSignature
+            )
+        )
+        .map {
+            PKAddPaymentPassRequest($0, config)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private func isEnabled(_ tag: Tag.Event) -> Bool {
+        guard let value = try? app.remoteConfiguration.get(tag) else {
+            return false
+        }
+        guard let isEnabled = value as? Bool else {
+            return false
+        }
+        return isEnabled
+    }
+
     private static func buildCardHelperUrl(
         with base: String,
         token: String,
@@ -177,5 +218,36 @@ final class CardRepository: CardRepositoryAPI {
         return URL(
             string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)/\(nameParam)"
         )!
+    }
+}
+
+struct Base64Configuration {
+    let activationData: Bool
+    let ephemeralPublicKey: Bool
+    let encryptedPassData: Bool
+}
+
+extension PKAddPaymentPassRequest {
+
+    convenience init(
+        _ response: TokeniseCardResponse,
+        _ configuration: Base64Configuration
+    ) {
+        self.init()
+        if configuration.activationData {
+            activationData = Data(base64Encoded: response.activationData)
+        } else {
+            activationData = response.activationData.data(using: .utf8)
+        }
+        if configuration.ephemeralPublicKey {
+            ephemeralPublicKey = Data(base64Encoded: response.ephemeralPublicKey)
+        } else {
+            ephemeralPublicKey = response.ephemeralPublicKey.data(using: .utf8)
+        }
+        if configuration.encryptedPassData {
+            encryptedPassData = Data(base64Encoded: response.encryptedPassData)
+        } else {
+            encryptedPassData = response.encryptedPassData.data(using: .utf8)
+        }
     }
 }

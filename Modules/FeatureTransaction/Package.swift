@@ -69,17 +69,18 @@ let package = Package(
         .package(path: "../BlockchainComponentLibrary"),
         .package(path: "../BlockchainNamespace"),
         .package(path: "../DelegatedSelfCustody"),
+        .package(path: "../Errors"),
         .package(path: "../FeatureKYC"),
+        .package(path: "../FeaturePaymentsIntegration"),
         .package(path: "../FeatureProducts"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Errors"),
         .package(path: "../Platform"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "Modules/Checkout"),
-        .package(path: "Modules/BIND")
+        .package(path: "Modules/BIND"),
+        .package(path: "Modules/Checkout")
     ],
     targets: [
         .target(
@@ -87,9 +88,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "BigInt", package: "BigInt"),
-                .product(name: "DelegatedSelfCustodyKit", package: "DelegatedSelfCustody"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "DelegatedSelfCustodyKit", package: "DelegatedSelfCustody"),
                 .product(name: "Errors", package: "Errors"),
+                .product(name: "FeaturePlaidDomain", package: "FeaturePaymentsIntegration"),
                 .product(name: "FeatureProductsDomain", package: "FeatureProducts"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
@@ -114,12 +116,16 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
+                .product(name: "BINDWithdrawDomain", package: "BIND"),
+                .product(name: "BINDWithdrawUI", package: "BIND"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ErrorsUI", package: "Errors"),
+                .product(name: "FeatureCheckoutUI", package: "Checkout"),
                 .product(name: "FeatureKYCDomain", package: "FeatureKYC"),
                 .product(name: "FeatureKYCUI", package: "FeatureKYC"),
+                .product(name: "FeaturePlaidUI", package: "FeaturePaymentsIntegration"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
@@ -128,10 +134,7 @@ let package = Package(
                 .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "FeatureCheckoutUI", package: "Checkout"),
-                .product(name: "BINDWithdrawUI", package: "BIND"),
-                .product(name: "BINDWithdrawDomain", package: "BIND")
+                .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
         .target(

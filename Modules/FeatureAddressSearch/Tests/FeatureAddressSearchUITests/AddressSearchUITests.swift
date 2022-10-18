@@ -57,7 +57,6 @@ final class AddressSearchReducerTests: XCTestCase {
         testStore.receive(
             .searchAddresses(
                 searchText: address.searchText,
-                containerId: nil,
                 country: address.country
             )
         ) {
@@ -128,7 +127,6 @@ final class AddressSearchReducerTests: XCTestCase {
         testStore.receive(
             .searchAddresses(
                 searchText: address.searchText,
-                containerId: nil,
                 country: address.country
             )
         ) {
@@ -150,7 +148,12 @@ final class AddressSearchReducerTests: XCTestCase {
             type: "OTHER_TYPE"
         )
         testStore.send(.selectAddress(searchResult)) {
-            $0.searchText = (searchResult.text ?? "") + " "
+            let searchText = (searchResult.text ?? "") + " "
+            $0.searchText = searchText
+            $0.containerSearch = .init(
+                containerId: searchResult.addressId,
+                searchText: searchText
+            )
         }
 
         mainScheduler.advance(by: .init(searchDebounceInMilliseconds))
@@ -158,7 +161,6 @@ final class AddressSearchReducerTests: XCTestCase {
         testStore.receive(
             .searchAddresses(
                 searchText: testStore.state.searchText,
-                containerId: searchResult.addressId,
                 country: address.country
             )
         ) {

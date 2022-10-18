@@ -61,6 +61,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
                 accessibility: .none,
                 renderingMode: .normal
             ),
+            switchable: true,
             subtitle: LocalizedSend.Header.chooseWalletToSend,
             title: LocalizedSend.Header.sendCryptoNow
         )

@@ -277,8 +277,8 @@ extension Account.Snapshot {
         fiatCurrency: FiatCurrency = .USD,
         receiveAddress: String = "0xadada0ada0d0a0d0ad13",
         actions: OrderedSet<Account.Action> = [.send, .receive],
-        crypto: MoneyValue = .init(amount: BigInt(123000000), currency: .crypto(.bitcoin)),
-        fiat: MoneyValue = .init(amount: BigInt(4417223), currency: .fiat(.USD))
+        crypto: MoneyValue = .create(minor: BigInt(123000000), currency: .crypto(.bitcoin)),
+        fiat: MoneyValue = .create(minor: BigInt(4417223), currency: .fiat(.USD))
     ) -> Account.Snapshot {
         Account.Snapshot(
             id: id,

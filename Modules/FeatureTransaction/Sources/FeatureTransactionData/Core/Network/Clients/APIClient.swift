@@ -51,8 +51,6 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let transfer = ["payments", "withdrawals"]
         static let bankTransfer = ["payments", "banktransfer"]
         static let transferFees = ["payments", "withdrawals", "fees"]
-        static let domainResolution = ["explorer-gateway", "resolution", "resolve"]
-        static let reverseResolution = ["explorer-gateway", "resolution", "reverse"]
         static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
 
         static func updateOrder(transactionID: String) -> [String] {
@@ -459,18 +457,22 @@ extension APIClient {
     ) -> AnyPublisher<DomainResolutionResponse, NetworkError> {
         let payload = DomainResolutionRequest(currency: currency, name: domainName)
         let request = defaultRequestBuilder.post(
-            path: Path.domainResolution,
+            path: "/explorer-gateway/resolution/resolve",
             body: try? JSONEncoder().encode(payload)
         )!
         return defaultNetworkAdapter.perform(request: request)
     }
 
     func reverseResolve(
-        address: String
+        address: String,
+        currency: String
     ) -> AnyPublisher<ReverseResolutionResponse, NetworkError> {
-        let payload = ReverseResolutionRequest(address: address)
+        let payload = ReverseResolutionRequest(
+            address: address,
+            currency: currency
+        )
         let request = defaultRequestBuilder.post(
-            path: Path.reverseResolution,
+            path: "/explorer-gateway/resolution/reverse",
             body: try? JSONEncoder().encode(payload)
         )!
         return defaultNetworkAdapter.perform(request: request)

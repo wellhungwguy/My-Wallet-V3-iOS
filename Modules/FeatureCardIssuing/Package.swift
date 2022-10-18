@@ -38,6 +38,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
+        .package(path: "../Extensions"),
         .package(path: "../Tool"),
         .package(path: "../Money"),
         .package(path: "../BlockchainComponentLibrary")
@@ -74,7 +75,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions")
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
+                .product(name: "Extensions", package: "Extensions")
             ]
         )
     ]

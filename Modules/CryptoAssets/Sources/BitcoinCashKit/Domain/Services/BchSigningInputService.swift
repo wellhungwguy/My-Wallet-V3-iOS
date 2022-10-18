@@ -28,8 +28,8 @@ final class BchSigningInputService: BchSigningInputServiceAPI {
             .map { dust in
                 BchSigningInput(
                     spendableOutputs: candidate.utxos,
-                    amount: UInt64(candidate.amount.amount),
-                    change: UInt64(candidate.change.amount),
+                    amount: UInt64(candidate.amount.minorAmount),
+                    change: UInt64(candidate.change.minorAmount),
                     privateKeys: candidate.keys.map(\.privateKeyData),
                     toAddress: candidate.destinationAddress,
                     changeAddress: candidate.changeAddress,

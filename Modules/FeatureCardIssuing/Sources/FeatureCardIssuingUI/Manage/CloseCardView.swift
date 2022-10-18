@@ -29,7 +29,7 @@ struct CloseCardView: View {
                     ZStack(alignment: .topTrailing) {
                         Icon
                             .creditcard
-                            .accentColor(.WalletSemantic.primary)
+                            .color(.WalletSemantic.primary)
                             .frame(width: 60, height: 60)
                         ZStack {
                             Circle()
@@ -40,8 +40,8 @@ struct CloseCardView: View {
                                 .frame(width: 22, height: 22)
                             Icon
                                 .close
+                                .color(.white)
                                 .frame(width: 12, height: 12)
-                                .accentColor(.white)
                         }
                         .padding(.top, -4)
                         .padding(.trailing, -8)
@@ -82,7 +82,7 @@ struct CloseCard_Previews: PreviewProvider {
             .bottomSheet(isPresented: .constant(true)) {
                 CloseCardView(
                     store: Store(
-                        initialState: .init(),
+                        initialState: .init(tokenisationCoordinator: .init(service: MockServices())),
                         reducer: cardManagementReducer,
                         environment: .preview
                     )

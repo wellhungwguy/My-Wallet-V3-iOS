@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import ComposableArchitecture
 import DIKit
+import Errors
 import FeatureKYCDomain
 import Localization
 import PlatformKit
@@ -11,9 +13,12 @@ import ToolKit
 import Veriff
 
 private typealias Events = AnalyticsEvents.New.KYC
+private typealias LocalizedStrings = LocalizationConstants.NewKYC.Steps.IdentityVerification
 
 /// Account verification screen in KYC flow
 final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView {
+
+    var identityVerificationRepository = IdentityVerificationRepository()
 
     // MARK: ProgressableView
 
@@ -24,23 +29,6 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     enum VerificationProviders {
         case veriff
     }
-
-    // MARK: - Views
-
-    @IBOutlet private var nextButton: PrimaryButtonContainer!
-
-    // MARK: - UILabels
-
-    @IBOutlet private var headline: UILabel!
-    @IBOutlet private var subheadline: UILabel!
-    @IBOutlet private var passport: UILabel!
-    @IBOutlet private var nationalIDCard: UILabel!
-    @IBOutlet private var residenceCard: UILabel!
-    @IBOutlet private var driversLicense: UILabel!
-    @IBOutlet private var enableCamera: UILabel!
-    @IBOutlet private var enableCameraDescription: UILabel!
-    @IBOutlet private var countrySupportedHeader: UILabel!
-    @IBOutlet private var countrySupportedDescription: ActionableLabel!
 
     // MARK: UIStackView
 
@@ -68,7 +56,8 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     // MARK: Factory
 
     override class func make(with coordinator: KYCRouter) -> KYCVerifyIdentityController {
-        let controller = makeFromStoryboard(in: .module)
+        let controller = KYCVerifyIdentityController()
+        controller.title = LocalizedStrings.title
         controller.router = coordinator
         controller.pageType = .verifyIdentity
         return controller
@@ -81,99 +70,53 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
         self.countryCode = countryCode
     }
 
-    // MARK: - Lifecycle Methods
+    // MARK: Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        addAccessibilityIds()
         dependenciesSetup()
-        nextButton.actionBlock = { [unowned self] in
-            self.analyticsRecorder.record(event: Events.preVerificationCTAClicked)
-            self.analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVerifyIdStartButtonClick)
-            switch self.currentProvider {
-            case .veriff:
-                self.presenter.didTapNext()
-            }
-        }
-        enableCamera.text = LocalizationConstants.KYC.enableCamera
-        enableCameraDescription.text = LocalizationConstants.KYC.enableCameraDescription
-        passport.text = LocalizationConstants.KYC.passport
-        nationalIDCard.text = LocalizationConstants.KYC.nationalIdentityCard
-        residenceCard.text = LocalizationConstants.KYC.residencePermit
-        driversLicense.text = LocalizationConstants.KYC.driversLicense
-        setupCountrySupportedText()
-        setupProgressView()
+        embedContentView()
     }
 
-    private func setupCountrySupportedText() {
-        countrySupportedHeader.text = LocalizationConstants.KYC.isCountrySupportedHeader
+    // MARK: Helpers
 
-        countrySupportedDescription.delegate = self
-
-        countrySupportedTrigger = ActionableTrigger(
-            text: LocalizationConstants.KYC.isCountrySupportedDescription1,
-            CTA: LocalizationConstants.KYC.isCountrySupportedDescription2,
-            secondary: LocalizationConstants.KYC.isCountrySupportedDescription3
-        ) { [unowned self] in
-            guard let url = URL(string: "https://support.blockchain.com/hc/en-us/articles/360018751932") else {
-                return
-            }
-            let viewController = SFSafariViewController(url: url)
-            self.present(viewController, animated: true)
-        }
-
-        let description = NSMutableAttributedString(
-            string: countrySupportedTrigger.primaryString,
-            attributes: defaultAttributes()
-        )
-        description.append(
-            NSAttributedString(
-                string: " " + countrySupportedTrigger.callToAction,
-                attributes: actionAttributes()
-            )
-        )
-        if let secondaryString = countrySupportedTrigger.secondaryString {
-            description.append(
-                NSAttributedString(
-                    string: " " + secondaryString,
-                    attributes: defaultAttributes()
+    private func embedContentView() {
+        let view = IdentityVerificationView(
+            store: Store(
+                initialState: IdentityVerification.State(),
+                reducer: IdentityVerification.reducer,
+                environment: IdentityVerification.Environment(
+                    onCompletion: startVerification,
+                    supportedDocumentTypes: supportedDocumentTypes,
+                    analyticsRecorder: analyticsRecorder,
+                    mainQueue: .main
                 )
             )
+        )
+        embed(view)
+    }
+
+    private func supportedDocumentTypes() -> AnyPublisher<[KYCDocumentType], NabuNetworkError> {
+        guard let code = countryCode else { return .just([]) }
+
+        return identityVerificationRepository
+            .supportedDocumentTypes(countryCode: code)
+    }
+
+    // MARK: - Lifecycle Methods
+
+    func startVerification() {
+        analyticsRecorder.record(event: Events.preVerificationCTAClicked)
+        analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVerifyIdStartButtonClick)
+        switch currentProvider {
+        case .veriff:
+            presenter.didTapNext()
         }
-        countrySupportedDescription.attributedText = description
-    }
-
-    private func addAccessibilityIds() {
-        headline.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.headerText)
-        subheadline.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.subheaderText)
-        passport.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.passportText)
-        nationalIDCard.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.nationalIDCardText)
-        residenceCard.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.residenceCardText)
-        driversLicense.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.driversLicenseText)
-        enableCamera.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraHeaderText)
-        enableCameraDescription.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraSubheaderText)
-        countrySupportedHeader.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedHeaderText)
-        countrySupportedDescription.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedSubheaderText)
-    }
-
-    private func actionAttributes() -> [NSAttributedString.Key: Any] { [
-        .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-        .foregroundColor: UIColor.brandSecondary
-    ]
-    }
-
-    private func defaultAttributes() -> [NSAttributedString.Key: Any] { [
-        .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-        .foregroundColor: countrySupportedDescription.textColor as Any
-    ]
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateLeftBarButtonItem()
-
-        guard let code = countryCode else { return }
-        presenter.presentDocumentTypeOptions(code)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -197,7 +140,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     private func dependenciesSetup() {
         let interactor = KYCVerifyIdentityInteractor()
-        let identityPresenter = KYCVerifyIdentityPresenter(interactor: interactor, loadingView: self)
+        let identityPresenter = KYCVerifyIdentityPresenter(interactor: interactor)
         identityPresenter.identityView = self
         identityPresenter.cameraPromptingDelegate = self
         identityPresenter.microphonePromptingDelegate = self
@@ -235,34 +178,9 @@ extension KYCVerifyIdentityController: ActionableLabelDelegate {
     }
 }
 
-extension KYCVerifyIdentityController: KYCVerifyIdentityView {
-    func showDocumentTypes(_ types: [KYCDocumentType]) {
-        documentTypeStackView.isHidden = false
-        types.forEach { [weak self] type in
-            guard let this = self else { return }
-            switch type {
-            case .driversLicense:
-                this.driversLicense.isHidden = false
-            case .nationalIdentityCard:
-                this.nationalIDCard.isHidden = false
-            case .passport:
-                this.passport.isHidden = false
-            case .residencePermit:
-                this.residenceCard.isHidden = false
-            }
-        }
-    }
-}
+extension KYCVerifyIdentityController: KYCVerifyIdentityView {}
 
-extension KYCVerifyIdentityController: PlatformUIKit.LoadingView {
-    func showLoadingIndicator() {
-        nextButton.isLoading = true
-    }
-
-    func hideLoadingIndicator() {
-        nextButton.isLoading = false
-    }
-
+extension KYCVerifyIdentityController {
     func showErrorMessage(_ message: String) {
         let alertPresenter: AlertViewPresenterAPI = DIKit.resolve()
         alertPresenter.standardError(message: message)

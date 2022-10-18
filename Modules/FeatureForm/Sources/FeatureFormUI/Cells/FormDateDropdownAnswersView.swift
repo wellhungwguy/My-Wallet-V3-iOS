@@ -1,0 +1,151 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import BlockchainComponentLibrary
+import FeatureFormDomain
+import Localization
+import SwiftUI
+
+struct FormDateDropdownAnswersView: View {
+
+    let title: String
+    @Binding var answer: FormAnswer
+    @State private var selectionPanelOpened: Bool = false
+    @Binding var showAnswerState: Bool
+
+    var body: some View {
+        VStack {
+            HStack(spacing: Spacing.padding1) {
+
+                let dateString: String? = {
+                    guard let input = answer.input, let timeInterval = TimeInterval(input) else {
+                        return nil
+                    }
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    return dateFormatter.string(from: Date(timeIntervalSince1970: timeInterval))
+                }()
+
+                Text(dateString ?? "")
+                    .typography(.paragraph2)
+                    .foregroundColor(.semantic.body)
+
+                Spacer()
+            }
+            .padding(.vertical, Spacing.padding2)
+            .padding(.horizontal, Spacing.padding3)
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+                        .fill(Color.semantic.background)
+
+                    RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+                        .stroke(
+                            showAnswerState
+                            ? answer.answerBackgroundStrokeColor
+                            : .semantic.medium
+                        )
+                }
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                // hide current keybaord if presented,
+                // delay needed to wait until keyboard is dismissed
+                stopEditing()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    selectionPanelOpened.toggle()
+                }
+            }
+        }
+        .sheet(isPresented: $selectionPanelOpened) {
+            FormDatePickerView(
+                title: title,
+                answer: $answer,
+                selectionPanelOpened: $selectionPanelOpened,
+                showAnswerState: $showAnswerState
+            )
+        }
+    }
+}
+
+struct FormDatePickerView: View {
+
+    let title: String
+    @Binding var answer: FormAnswer
+    @Binding var selectionPanelOpened: Bool
+
+    @Binding var showAnswerState: Bool
+
+    private var minDate: Date {
+        if let minValue = answer.validation?.metadata?[.minValue], let timeInterval = TimeInterval(minValue) {
+            return Date(timeIntervalSince1970: timeInterval)
+        }
+        return Date.distantPast
+    }
+
+    private var maxDate: Date {
+        if let maxValue = answer.validation?.metadata?[.maxValue], let timeInterval = TimeInterval(maxValue) {
+            return Date(timeIntervalSince1970: timeInterval)
+        }
+        return Date.distantFuture
+    }
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                datePicker
+            }
+            .padding(.vertical, Spacing.padding1)
+            .padding(.horizontal, Spacing.padding2)
+            .background(Color.semantic.background)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack {
+                        Spacer()
+                        Text(title).typography(.body2)
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        primaryButton
+    }
+
+    private var datePicker: some View {
+        VStack {
+            DatePicker(
+                selection: Binding(
+                    get: {
+                        guard let input = answer.input, let timeInterval = TimeInterval(input) else {
+                            return Date()
+                        }
+                        return Date(timeIntervalSince1970: timeInterval)
+                    },
+                    set: {
+                        answer.input = String($0.timeIntervalSince1970)
+                    }
+                ),
+                in: minDate...maxDate,
+                displayedComponents: .date,
+                label: EmptyView.init
+            )
+            .datePickerStyle(.graphical)
+        }
+        .padding(.horizontal, Spacing.padding1)
+        .padding(.vertical, Spacing.padding1)
+    }
+
+    private var primaryButton: some View {
+        PrimaryButton(
+            title: LocalizationConstants.MultiSelection.Buttons.done
+        ) {
+            selectionPanelOpened.toggle()
+        }
+        .frame(alignment: .bottom)
+        .padding([.horizontal, .bottom])
+        .background(
+            Rectangle()
+                .fill(.white)
+                .shadow(color: .white, radius: 3, x: 0, y: -15)
+        )
+    }
+}

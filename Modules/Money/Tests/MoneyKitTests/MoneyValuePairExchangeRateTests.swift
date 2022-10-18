@@ -9,8 +9,8 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         // GIVEN: The exchange rate USD-BTC
         let originalPair = MoneyValuePair(
             base: .one(currency: .USD),
-            exchangeRate: MoneyValue(
-                amount: 3357,
+            exchangeRate: MoneyValue.create(
+                minor: 3357,
                 currency: .crypto(.bitcoin)
             )
         )
@@ -23,17 +23,18 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         XCTAssertEqual(inversePair.quote.displayString, "$29,788.50")
         let expectedInversePair = MoneyValuePair(
             base: .one(currency: .crypto(.bitcoin)),
-            exchangeRate: .init(amount: 2978850, currency: .fiat(.USD))
+            exchangeRate: MoneyValue.create(minor: 2978850, currency: .fiat(.USD))
         )
-        XCTAssertEqual(inversePair, expectedInversePair)
+        XCTAssertEqual(inversePair.base.minorAmount, expectedInversePair.base.minorAmount)
+        XCTAssertEqual(inversePair.quote.minorAmount, expectedInversePair.quote.minorAmount)
     }
 
     func test_inverts_pair_crypto_to_fiat() {
         // GIVEN: The exchange rate BTC-USD
         let originalPair = MoneyValuePair(
             base: .one(currency: .crypto(.bitcoin)),
-            exchangeRate: MoneyValue(
-                amount: 2978850,
+            exchangeRate: MoneyValue.create(
+                minor: 2978850,
                 currency: .fiat(.USD)
             )
         )
@@ -46,12 +47,13 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         XCTAssertEqual(inversePair.quote.displayString, "0.00003357 BTC")
         let expectedInversePair = MoneyValuePair(
             base: .one(currency: .USD),
-            exchangeRate: .init(
-                amount: 000003357,
+            exchangeRate: MoneyValue.create(
+                minor: 000003357,
                 currency: .crypto(.bitcoin)
             )
         )
-        XCTAssertEqual(inversePair, expectedInversePair)
+        XCTAssertEqual(inversePair.base.minorAmount, expectedInversePair.base.minorAmount)
+        XCTAssertEqual(inversePair.quote.minorAmount, expectedInversePair.quote.minorAmount)
     }
 
     func test_inverts_with_non_one_base() {

@@ -42,10 +42,10 @@ extension GraphData {
             )
             .map { sin($0) + 1 }
             .enumerated()
-            .map {
-                .init(
-                    price: $1 * 10,
-                    timestamp: Date(timeIntervalSinceNow: Double($0) * 60 * series.cycles)
+            .map { index, value -> GraphData.Index in
+                GraphData.Index(
+                    price: value * 10,
+                    timestamp: Date(timeIntervalSinceNow: Double(index) * 60 * series.cycles)
                 )
             },
             base: .bitcoin,

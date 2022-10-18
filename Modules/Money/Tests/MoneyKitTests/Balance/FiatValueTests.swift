@@ -8,7 +8,7 @@ class FiatValueTests: XCTestCase {
     func testInitalization() {
         XCTAssertEqual(
             1000,
-            FiatValue.create(minor: "1000", currency: .USD).amount
+            FiatValue.create(minor: "1000", currency: .USD).minorAmount
         )
 
         XCTAssertEqual(
@@ -18,7 +18,7 @@ class FiatValueTests: XCTestCase {
 
         XCTAssertEqual(
             8000000,
-            FiatValue.create(minor: "8000000", currency: .USD).amount
+            FiatValue.create(minor: "8000000", currency: .USD).minorAmount
         )
     }
 
@@ -210,12 +210,12 @@ class FiatValueTests: XCTestCase {
     func testValueIncrease() {
         let current = FiatValue.create(minor: "1100", currency: .USD)! // $USD 11.00
         let before = current.value(before: 0.1) // before 10% increase
-        XCTAssertTrue(before.amount == 1000)
+        XCTAssertEqual(before.minorAmount, 1000)
     }
 
     func testValueDecrease() {
         let current = FiatValue.create(minor: "12000", currency: .USD)! // $USD 120.00
         let before = current.value(before: -0.2) // before 20% decrease
-        XCTAssertTrue(before.amount == 15000)
+        XCTAssertEqual(before.minorAmount, 15000)
     }
 }

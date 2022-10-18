@@ -52,11 +52,33 @@ private struct CheckboxToggleStyle: ToggleStyle {
     let variant: Checkbox.Variant
 
     func makeBody(configuration: Configuration) -> some View {
-        Icon.check
-            .accentColor(
-                configuration.isOn ? .semantic.background : .clear
-            )
-            .frame(width: 24, height: 24)
+        if configuration.isOn {
+            headerIcon(isOn: true)
+                .add(configuration: configuration, variant: variant)
+        } else {
+            headerIcon(isOn: false)
+                .add(configuration: configuration, variant: variant)
+        }
+    }
+
+    private func headerIcon(isOn: Bool) -> some View {
+        if isOn {
+            return Icon.check
+                .color(.semantic.background)
+        } else {
+            return Icon.check
+                .color(.clear)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func add(
+        configuration: ToggleStyle.Configuration,
+        variant: Checkbox.Variant
+    ) -> some View {
+        frame(width: 24, height: 24)
             .background(
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .fill(

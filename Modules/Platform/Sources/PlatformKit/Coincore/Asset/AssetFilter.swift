@@ -16,14 +16,15 @@ public struct AssetFilter: OptionSet, Hashable {
     public static let exchange = AssetFilter(rawValue: 1 << 3)
 
     public static let all: AssetFilter = [.custodial, .nonCustodial, .interest, .exchange]
-    public static let `default`: AssetFilter = [.all]
+    public static let allExcludingExchange: AssetFilter = [.custodial, .nonCustodial, .interest]
+    public static let `default`: AssetFilter = [.allExcludingExchange]
 }
 
 extension AppMode {
     public var filter: AssetFilter {
         switch self {
         case .universal:
-            return .all
+            return .allExcludingExchange
         case .pkw:
             return .nonCustodial
         case .trading:

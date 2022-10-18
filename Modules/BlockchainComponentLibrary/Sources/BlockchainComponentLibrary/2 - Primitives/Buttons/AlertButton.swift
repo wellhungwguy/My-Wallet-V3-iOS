@@ -37,7 +37,7 @@ public struct AlertButton: View {
             HStack(spacing: Spacing.baseline) {
                 Icon
                     .alert
-                    .accentColor(.palette.orange600)
+                    .color(.palette.orange600)
                     .frame(width: 16)
                     .background(
                         Circle()

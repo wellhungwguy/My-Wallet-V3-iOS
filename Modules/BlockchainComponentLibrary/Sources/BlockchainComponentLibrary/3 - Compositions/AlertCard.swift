@@ -58,7 +58,7 @@ public struct AlertCard<Footer: View>: View {
                                         dark: .palette.grey800
                                     )
                                 )
-                                .accentColor(.palette.grey400)
+                                .color(.palette.grey400)
                                 .frame(width: 24)
                         }
                     )

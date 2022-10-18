@@ -31,6 +31,8 @@ protocol EnterAmountPagePresentable: Presentable {
 
     var continueButtonTapped: Signal<Void> { get }
 
+    func presentAvailableBalanceDetailView(_ availableBalanceDetails: AvailableBalanceDetails)
+
     func presentWithdrawalLocks(amountAvailable: String)
 
     func connect(
@@ -123,6 +125,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor
+            .availableBalanceViewSelected
+            .subscribe { [weak self] availableBalanceDetails in
+                self?.presenter.presentAvailableBalanceDetailView(availableBalanceDetails)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor
             .auxiliaryButtonTappedRelay
             .asObservable()
             .subscribe(on: MainScheduler.asyncInstance)
@@ -199,9 +208,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
             guard try await app.get(previous.did.error) else { return }
 
-            let money = try await MoneyValue(
-                amount: app.get(previous.input.amount),
-                currency: CurrencyType(code: app.get(previous.input.currency.code))
+            let minorAmount: BigInt = try await app.get(previous.input.amount)
+            let currencyCode: String = try await app.get(previous.input.currency.code)
+            let currencyType = try CurrencyType(code: currencyCode)
+            let money = MoneyValue.create(
+                minor: minorAmount,
+                currency: currencyType
             )
             await MainActor.run {
                 amountViewInteractor.set(amount: money)
@@ -418,6 +430,34 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
 
+        spendable
+            .map(\.cryptoMax)
+            .distinctUntilChanged()
+            .bindAndCatch(weak: self) { (self, amount) in
+                guard self.amountViewInteractor is AmountTranslationInteractor else { return }
+                self.amountViewInteractor.setActionableAmount(amount)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
+            .compactMap(\.source)
+            .flatMap { $0.balance.asObservable() }
+            .distinctUntilChanged()
+            .bindAndCatch(weak: self) { (self, balance) in
+                guard self.amountViewInteractor is AmountTranslationInteractor else { return }
+                self.amountViewInteractor.setAccountBalance(balance)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
+            .map(\.feeAmount)
+            .distinctUntilChanged()
+            .bindAndCatch(weak: self) { (self, feeAmount) in
+                guard self.amountViewInteractor is AmountTranslationInteractor else { return }
+                self.amountViewInteractor.setTransactionFeeAmount(feeAmount)
+            }
+            .disposeOnDeactivate(interactor: self)
+
         transactionState
             .compactMap { state -> (action: AssetAction, amountIsZero: Bool, networkFeeAdjustmentSupported: Bool)? in
                 guard let pendingTransaction = state.pendingTransaction else {
@@ -516,7 +556,23 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     }
 
     private func bottomAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
-        action.supportsBottomAccountsView ? accountAuxiliaryViewPresenter : sendAuxiliaryViewPresenter
+        let isQuickfillEnabled = app
+            .remoteConfiguration
+            .yes(if: blockchain.app.configuration.transaction.quickfill.is.enabled)
+
+        // Buy is the only transaction type that supports a bottom accounts view and
+        // shows quick fill. Other transaction types that show quick fill should not
+        // have a view at the bottom of the enter amount screen other than quick fill.
+        if action.supportsBottomAccountsView, action == .buy {
+            // Always show the account button so that the user can select a different source account.
+            return accountAuxiliaryViewPresenter
+        } else if isQuickfillEnabled {
+            // If Quickfill is enabled, do not show anything on the bottom of the Enter Amount Screen.
+            // This does not apply to `Buy`.
+            return nil
+        } else {
+            return action.supportsBottomAccountsView ? accountAuxiliaryViewPresenter : sendAuxiliaryViewPresenter
+        }
     }
 
     private func handle(effects: NavigationEffects) {
@@ -646,7 +702,8 @@ extension TransactionState {
              .pendingOrdersLimitReached,
              .unknownError,
              .nabuError,
-             .fatalError:
+             .fatalError,
+             .sourceRequiresUpdate:
             return .invalidInput(.none)
         }
     }

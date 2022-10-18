@@ -167,6 +167,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let restrictionsProvider: TransactionRestrictionsProviderAPI
     private let analyticsHook: TransactionAnalyticsHook
     private let messageRecorder: MessageRecording
+    private let linkedBankFactory: LinkedBanksFactoryAPI
     private let app: AppProtocol
 
     private var bag = Set<AnyCancellable>()
@@ -180,6 +181,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         restrictionsProvider: TransactionRestrictionsProviderAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
         messageRecorder: MessageRecording = resolve(),
+        linkedBankFactory: LinkedBanksFactoryAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
         self.transactionModel = transactionModel
@@ -189,6 +191,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.messageRecorder = messageRecorder
+        self.linkedBankFactory = linkedBankFactory
         self.app = app
         super.init(presenter: presenter)
         presenter.listener = self
@@ -854,11 +857,11 @@ extension TransactionFlowInteractor {
                     case .showCheckout:
                         guard let value = tx.pendingTransaction?.amount else { break }
 
-                        let amount = try value.amount.json()
+                        let minorAmount = try value.minorAmount.json()
                         let previous = blockchain.ux.transaction.source.target.previous
 
                         state.clear(previous.did.error)
-                        state.set(previous.input.amount, to: amount)
+                        state.set(previous.input.amount, to: minorAmount)
                         state.set(previous.input.currency.code, to: value.currency.code)
 
                         if intent == .buy, let source = tx.source {
@@ -1037,6 +1040,31 @@ extension TransactionFlowInteractor {
         app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
             guard let transactionModel = self?.transactionModel else { return }
             transactionModel.process(action: .resetFlow)
+        }
+        .subscribe()
+        .store(in: &bag)
+
+        app.on(
+            blockchain.ux.transaction.action.select.payment.method
+        ) { [weak self] event in
+            guard let transactionModel = self?.transactionModel else { return }
+            if let accountId = try? event.context.decode(
+                blockchain.ux.transaction.action.select.payment.method.id,
+                as: String.self
+            ) {
+                _ = self?
+                    .linkedBankFactory
+                    .linkedBanks
+                    .asPublisher()
+                    .map { accounts in
+                        if let account = accounts.first(where: { account in
+                            account.accountId == accountId
+                        }) {
+                            transactionModel.process(action: .sourceAccountSelected(account))
+                        }
+                    }
+                    .sink(receiveValue: { _ in })
+            }
         }
         .subscribe()
         .store(in: &bag)

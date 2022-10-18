@@ -5,6 +5,7 @@ import BlockchainNamespace
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureBackupRecoveryPhraseUI
 import FeatureCardPaymentDomain
 import FeatureNotificationPreferencesUI
 import FeatureReferralDomain
@@ -63,7 +64,10 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Routers
 
     private lazy var updateMobileRouter = UpdateMobileRouter(navigationRouter: navigationRouter)
-    private lazy var backupRouterAPI = BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
+    private lazy var backupRouterAPI = RecoveryPhraseBackupRouter(
+        topViewController: resolve(),
+        recoveryStatusProviding: resolve()
+    )
 
     // MARK: - Private
 
@@ -215,7 +219,7 @@ final class SettingsRouter: SettingsRouterAPI {
         case .showAppStore:
             appStoreOpener.openAppStore()
         case .showBackupScreen:
-            backupRouterAPI.start()
+            backupRouterAPI.presentFlow()
         case .showChangePinScreen:
             authenticationCoordinator.changePin()
         case .showCurrencySelectionScreen:

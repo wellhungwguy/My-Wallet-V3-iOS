@@ -6,9 +6,9 @@ import DIKit
 import FeatureAppDomain
 import FeatureAppUI
 import FeatureAuthenticationDomain
+import FeatureBackupRecoveryPhraseUI
 import FeatureDashboardUI
 import FeatureOnboardingUI
-import FeatureSettingsUI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
 import PlatformKit
@@ -31,10 +31,9 @@ final class RootViewController: UIHostingController<RootView> {
 
         self.global = ViewStore(global)
 
-        let backupFundsRouter = BackupFundsRouter(entry: .defiIntroScreen, navigationRouter: resolve())
         let environment = RootViewEnvironment(
             app: app,
-            backupFundsRouter: backupFundsRouter,
+            backupFundsRouter: resolve(),
             coincore: resolve(),
             recoveryPhraseStatusProviding: resolve(),
             analyticsRecoder: resolve()
@@ -82,7 +81,7 @@ final class RootViewController: UIHostingController<RootView> {
     // MARK: Dependencies
 
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
-    @LazyInject var backupRouter: FeatureDashboardUI.BackupRouterAPI
+    @LazyInject var backupRouter: RecoveryPhraseBackupRouterAPI
     @LazyInject var coincore: CoincoreAPI
     @LazyInject var eligibilityService: EligibilityServiceAPI
     @LazyInject var featureFlagService: FeatureFlagsServiceAPI
@@ -171,19 +170,6 @@ extension RootViewController {
     }
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {
-
-        viewStore.publisher
-            .reloadAfterMultiAddressResponse
-            .filter { $0 }
-            .sink(to: My.reload, on: self)
-            .store(in: &bag)
-
-        viewStore.publisher
-            .displayWalletAlertContent
-            .compactMap { $0 }
-            .removeDuplicates()
-            .sink(to: My.alert, on: self)
-            .store(in: &bag)
 
         viewStore.publisher
             .displaySendCryptoScreen

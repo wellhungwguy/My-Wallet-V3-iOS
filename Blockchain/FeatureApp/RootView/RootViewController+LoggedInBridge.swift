@@ -247,7 +247,7 @@ extension RootViewController: LoggedInBridge {
     private func currentFiatAccount() -> AnyPublisher<FiatAccount, CoincoreError> {
         fiatCurrencyService.displayCurrencyPublisher
             .flatMap { [coincore] currency in
-                coincore.allAccounts(filter: .all)
+                coincore.allAccounts(filter: .allExcludingExchange)
                     .map { group in
                         group.accounts
                             .first { account in
@@ -363,7 +363,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func startBackupFlow() {
-        backupRouter.start()
+        backupRouter.presentFlow()
     }
 
     func showSettingsView() {

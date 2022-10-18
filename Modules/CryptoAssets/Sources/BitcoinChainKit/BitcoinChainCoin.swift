@@ -22,14 +22,6 @@ public enum BitcoinChainCoin: String {
         }
     }
 
-    public var maximumSupply: BigInt {
-        switch self {
-        case .bitcoin,
-             .bitcoinCash:
-            return 2100000000000000
-        }
-    }
-
     public var dust: BigInt {
         switch self {
         case .bitcoin,

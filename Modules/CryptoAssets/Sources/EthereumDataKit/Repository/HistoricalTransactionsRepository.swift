@@ -123,7 +123,10 @@ extension EthereumHistoricalTransaction {
             from: response.from,
             accountAddress: accountAddress
         )
-        let amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .ethereum)
+        let amount = CryptoValue.create(
+            minor: response.value,
+            currency: .ethereum
+        ) ?? .zero(currency: .ethereum)
         let fee = EthereumHistoricalTransaction.fee(
             gasPrice: response.gasPrice,
             gasUsed: response.gasUsed

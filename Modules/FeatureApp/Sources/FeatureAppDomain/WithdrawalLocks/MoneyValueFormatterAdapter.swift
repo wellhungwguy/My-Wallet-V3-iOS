@@ -9,6 +9,8 @@ import PlatformKit
 final class MoneyValueFormatterAdapter: MoneyValueFormatterAPI {
 
     func formatMoney(amount: String, currency: String) -> String {
-        FiatValue(amount: BigInt(stringLiteral: amount), currency: .init(code: currency)!).displayString
+        let currency = FiatCurrency(code: currency)!
+        let fiatValue = FiatValue.create(minor: amount, currency: currency)!
+        return fiatValue.displayString
     }
 }

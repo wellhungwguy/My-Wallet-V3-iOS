@@ -15,6 +15,9 @@ import FeatureAttributionData
 import FeatureAttributionDomain
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureBackupRecoveryPhraseData
+import FeatureBackupRecoveryPhraseDomain
+import FeatureBackupRecoveryPhraseUI
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
@@ -32,6 +35,9 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeaturePlaidData
+import FeaturePlaidDomain
+import FeaturePlaidUI
 import FeatureProductsData
 import FeatureProductsDomain
 import FeatureReferralData
@@ -68,8 +74,6 @@ extension UIApplication: PlatformKit.AppStoreOpening {}
 extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPropertyInteracting {}
 
 extension AnnouncementPresenter: FeatureDashboardUI.AnnouncementPresenting {}
-
-extension FeatureSettingsUI.BackupFundsRouter: FeatureDashboardUI.BackupRouterAPI {}
 
 // MARK: - Blockchain Module
 
@@ -154,13 +158,6 @@ extension DependencyContainer {
 
         factory { UIApplication.shared as AppStoreOpening }
 
-        factory {
-            BackupFundsRouter(
-                entry: .custody,
-                navigationRouter: NavigationRouter()
-            ) as FeatureDashboardUI.BackupRouterAPI
-        }
-
         factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
 
         factory { AnnouncementPresenter() as FeatureDashboardUI.AnnouncementPresenting }
@@ -207,11 +204,6 @@ extension DependencyContainer {
             return bridge.resolveDrawerRouting() as DrawerRouting
         }
 
-        factory { () -> LoggedInReloadAPI in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveLoggedInReload() as LoggedInReloadAPI
-        }
-
         factory { () -> QRCodeScannerRouting in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
@@ -252,8 +244,10 @@ extension DependencyContainer {
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
+            let mnemonicComponentsProviding: MnemonicComponentsProviding = DIKit.resolve()
             return RecoveryPhraseVerifyingService(
-                verifyMnemonicBackupService: backupService
+                verifyMnemonicBackupService: backupService,
+                mnemonicComponentsProviding: mnemonicComponentsProviding
             )
         }
 
@@ -473,6 +467,18 @@ extension DependencyContainer {
                 network: adapter.network
             )
             return OpenBanking(app: DIKit.resolve(), banking: client)
+        }
+
+        // MARK: FeaturePlaid
+
+        factory { () -> PlaidRepositoryAPI in
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let client = PlaidClient(
+                networkAdapter: adapter,
+                requestBuilder: builder
+            )
+            return PlaidRepository(client: client)
         }
 
         // MARK: Coin View
@@ -700,6 +706,31 @@ extension DependencyContainer {
         }
 
         factory { LegacyForgetWallet() as LegacyForgetWalletAPI }
+
+        // MARK: Feature Backup Seed Phrase
+
+        factory { RecoveryPhraseExposureAlertClient() as RecoveryPhraseExposureAlertClientAPI }
+
+        factory { RecoveryPhraseBackupClient() as RecoveryPhraseBackupClientAPI }
+
+        // MARK: - Repositories
+
+        factory { RecoveryPhraseRepository() as RecoveryPhraseRepositoryAPI }
+
+        factory { () -> RecoveryPhraseStatusProviding in
+            RecoveryPhraseStatusProvider(mnemonicVerificationStatusProvider: DIKit.resolve())
+        }
+
+        factory { () -> CloudBackupConfiguring in
+            CloudBackupService(defaults: DIKit.resolve())
+        }
+
+        factory { () -> RecoveryPhraseBackupRouterAPI in
+             RecoveryPhraseBackupRouter(
+                 topViewController: DIKit.resolve(),
+                 recoveryStatusProviding: DIKit.resolve()
+             ) as RecoveryPhraseBackupRouterAPI
+        }
     }
 }
 

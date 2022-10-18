@@ -19,7 +19,7 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
             id: .send,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: MoneyValue.create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -27,7 +27,7 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
             id: .receive,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: MoneyValue.create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -35,7 +35,7 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
             id: .swap,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: MoneyValue.create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),
@@ -48,7 +48,7 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
             id: .buyWithCard,
             enabled: true,
             limit: .init(
-                value: MoneyValue(amount: 200000, currency: .fiat(.USD)),
+                value: MoneyValue.create(minor: 200000, currency: .fiat(.USD)),
                 period: .year
             )
         ),

@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import Foundation
+import PassKit
 
 final class CardService: CardServiceAPI {
 
@@ -60,5 +61,14 @@ final class CardService: CardServiceAPI {
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
         repository.unlock(card: card)
+    }
+
+    func tokenise(
+        card: Card,
+        with certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data
+    ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError> {
+        repository.tokenise(card: card, with: certificates, nonce: nonce, nonceSignature: nonceSignature)
     }
 }

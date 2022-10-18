@@ -18,6 +18,7 @@ extension DependencyContainer {
                 addressService: DIKit.resolve(),
                 transactionService: DIKit.resolve(),
                 supportRouter: DIKit.resolve(),
+                userInfoProvider: DIKit.resolve(),
                 topUpRouter: DIKit.resolve(),
                 addressSearchRouter: DIKit.resolve()
             ) as CardIssuingBuilderAPI

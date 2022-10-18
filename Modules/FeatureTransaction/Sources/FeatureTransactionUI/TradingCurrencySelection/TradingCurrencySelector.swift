@@ -55,7 +55,7 @@ struct TradingCurrencySelector: View {
                 content: {
                     VStack(spacing: Spacing.padding3) {
                         Icon.globe
-                            .accentColor(.semantic.primary)
+                            .color(.semantic.primary)
                             .frame(width: 32, height: 32)
                         VStack(spacing: Spacing.baseline) {
                             Text(LocalizedStrings.screenTitle)

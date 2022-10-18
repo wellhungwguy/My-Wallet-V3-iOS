@@ -4,6 +4,7 @@ import BlockchainComponentLibrary
 import ComposableArchitecture
 import FeatureCardIssuingDomain
 import Localization
+import PassKit
 import SceneKit
 import SwiftUI
 import ToolKit
@@ -13,6 +14,8 @@ struct CardManagementDetailsView: View {
     private typealias L10n = LocalizationConstants.CardIssuing.Manage.Details
 
     private let store: Store<CardManagementState, CardManagementAction>
+
+    @State var isPresented = false
 
     init(store: Store<CardManagementState, CardManagementAction>) {
         self.store = store
@@ -82,6 +85,16 @@ struct CardManagementDetailsView: View {
                     CloseCardView(store: store)
                 }
             )
+            .bottomSheet(isPresented: $isPresented) {
+                AddToWalletView(
+                    coordinator: viewStore.state.tokenisationCoordinator,
+                    card: viewStore.state.card,
+                    cardholderName: viewStore.state.cardholderName,
+                    callback: { _, _ in
+                        isPresented = false
+                    }
+                )
+            }
         }
     }
 
@@ -125,39 +138,22 @@ struct CardManagementDetailsView: View {
                     RoundedRectangle(cornerRadius: Spacing.padding1)
                         .stroke(Color.semantic.muted, lineWidth: 1)
                 )
+                if viewStore.state.isTokenisationEnabled {
+                    AddToWalletButton {
+                        isPresented = true
+                    }
+                }
             }
             .padding([.top, .trailing, .leading], Spacing.padding3)
         }
     }
 
-    @ViewBuilder var appleWalletButton: some View {
-        WithViewStore(store) { viewStore in
-            ZStack {
-                HStack {
-                    Image("apple-wallet", bundle: .cardIssuing)
-                    Text(L10n.addToAppleWallet)
-                        .foregroundColor(Color.white)
-                }
-                .padding(12)
-            }
-            .frame(maxWidth: .infinity)
-            .background(Color.black)
-            .cornerRadius(8)
-            .padding(.horizontal, Spacing.padding3)
-            .padding(.bottom, Spacing.padding2)
-            .padding(.top, Spacing.padding1)
-            .onTapGesture {
-                viewStore.send(.addToAppleWallet)
-            }
-        }
-    }
-
     @ViewBuilder var chevronRight: some View {
         Icon.chevronRight
-            .frame(width: 18, height: 18)
-            .accentColor(
+            .color(
                 .semantic.muted
             )
+            .frame(width: 18, height: 18)
             .flipsForRightToLeftLayoutDirection(true)
     }
 }
@@ -186,7 +182,7 @@ struct CardManagementDetails_Previews: PreviewProvider {
         NavigationView {
             CardManagementDetailsView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(tokenisationCoordinator: PassTokenisationCoordinator(service: MockServices())),
                     reducer: cardManagementReducer,
                     environment: .preview
                 )
@@ -195,3 +191,115 @@ struct CardManagementDetails_Previews: PreviewProvider {
     }
 }
 #endif
+
+struct AddToWalletButton: UIViewRepresentable {
+
+    let action: (() -> Void)?
+
+    func makeUIView(context: Context) -> some UIView {
+        let button = PKAddPassButton(addPassButtonStyle: .black)
+        button.addTarget(context.coordinator, action: #selector(Coordinator.onTap), for: .touchUpInside)
+        return button
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(action: action)
+    }
+
+    class Coordinator: NSObject {
+        let action: (() -> Void)?
+
+        init(action: (() -> Void)?) {
+            self.action = action
+        }
+
+        @objc func onTap() {
+            action?()
+        }
+    }
+}
+
+struct AddToWalletView: UIViewControllerRepresentable {
+
+    let coordinator: PassTokenisationCoordinator
+    let card: Card?
+    let cardholderName: String
+    let callback: ((PKPaymentPass?, Error?) -> Void)?
+
+    func makeUIViewController(context: Context) -> PKAddPaymentPassViewController {
+
+        guard let configuration = PKAddPaymentPassRequestConfiguration(encryptionScheme: .ECC_V2) else {
+            return PKAddPaymentPassViewController()
+        }
+        configuration.primaryAccountSuffix = card?.last4
+        configuration.cardholderName = cardholderName
+
+        return PKAddPaymentPassViewController(requestConfiguration: configuration, delegate: context.coordinator) ?? PKAddPaymentPassViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: PKAddPaymentPassViewController, context: Context) {}
+
+    func makeCoordinator() -> PassTokenisationCoordinator {
+        coordinator.parent = self
+        return coordinator
+    }
+}
+
+public final class PassTokenisationCoordinator: NSObject, PKAddPaymentPassViewControllerDelegate {
+
+    var parent: AddToWalletView?
+
+    private var service: CardServiceAPI
+    private var cancellables: Set<AnyCancellable> = []
+
+    init(service: CardServiceAPI) {
+        self.service = service
+    }
+
+    public func addPaymentPassViewController(
+        _ controller: PKAddPaymentPassViewController,
+        generateRequestWithCertificateChain certificates: [Data],
+        nonce: Data,
+        nonceSignature: Data,
+        completionHandler handler: @escaping (PKAddPaymentPassRequest) -> Void
+    ) {
+        guard let card = parent?.card else {
+            parent?.callback?(nil, nil)
+            return
+        }
+        service
+            .tokenise(
+                card: card,
+                with: certificates,
+                nonce: nonce,
+                nonceSignature: nonceSignature
+            )
+            .receive(on: DispatchQueue.main)
+            .handleEvents(
+                receiveOutput: {
+                    handler($0)
+                },
+                receiveCompletion: { [weak self] result in
+                    guard case .failure(let error) = result else {
+                        return
+                    }
+                    self?.parent?.callback?(nil, error)
+                }
+            )
+            .subscribe()
+            .store(in: &cancellables)
+    }
+
+    public func addPaymentPassViewController(
+        _ controller: PKAddPaymentPassViewController,
+        didFinishAdding pass: PKPaymentPass?,
+        error: Error?
+    ) {
+        print("PK:", error.description)
+        DispatchQueue.main.async { [weak self] in
+            self?.parent?.callback?(pass, error)
+        }
+    }
+}

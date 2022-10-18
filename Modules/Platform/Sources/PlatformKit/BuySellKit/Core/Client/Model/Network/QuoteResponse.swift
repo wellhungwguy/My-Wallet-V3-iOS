@@ -1,16 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Errors
 import MoneyKit
 import ToolKit
-
-@available(*, deprecated, message: "This should not be used when new quote model becomes stable")
-struct OldQuoteResponse: Decodable {
-    let time: String
-    let rate: String
-    let rateWithoutFee: String
-    let fee: String
-}
 
 struct QuoteResponse: Decodable {
     struct FeeDetails: Decodable {
@@ -21,16 +14,6 @@ struct QuoteResponse: Decodable {
         let feeWithoutPromo: String
         let fee: String
         let feeFlags: [FeeFlag]
-    }
-
-    struct SettlementDetails: Decodable {
-        enum AvailabilityType: String, Decodable {
-            case instant = "INSTANT"
-            case regular = "REGULAR"
-            case unavailable = "UNAVAILABLE"
-        }
-
-        let availability: AvailabilityType
     }
 
     let quoteId: String
@@ -46,6 +29,25 @@ struct QuoteResponse: Decodable {
     let feeDetails: FeeDetails
     let settlementDetails: SettlementDetails
     let sampleDepositAddress: String?
+}
+
+public struct SettlementDetails: Decodable {
+    public enum AvailabilityType: String, Decodable {
+        case instant = "INSTANT"
+        case regular = "REGULAR"
+        case unavailable = "UNAVAILABLE"
+    }
+
+    public enum ReasonType: String, Decodable {
+        case requiresUpdate = "REQUIRES_UPDATE"
+        case insufficientBalance = "INSUFFICIENT_BALANCE"
+        case staleBalance = "STALE_BALANCE"
+        case generic = "GENERIC"
+    }
+
+    public let availability: AvailabilityType
+    public let reason: ReasonType?
+    public let ux: UX.Dialog?
 }
 
 public struct Quote {
@@ -68,48 +70,11 @@ public struct Quote {
     public let rate: MoneyValue
     public let estimatedDestinationAmount: MoneyValue
     public let estimatedSourceAmount: MoneyValue
+    public let settlementDetails: SettlementDetails
 
     private let dateFormatter = DateFormatter.sessionDateFormat
 
     // MARK: - Setup
-
-    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
-    init(
-        sourceCurrency: Currency,
-        destinationCurrency: Currency,
-        value: MoneyValue,
-        response: OldQuoteResponse
-    ) throws {
-        guard let quoteCreated = dateFormatter.date(from: response.time) else {
-            throw SetupError.dateFormatting
-        }
-        guard let rate = BigInt(response.rate) else {
-            throw SetupError.priceParsing
-        }
-        guard let feeRateMinor = Decimal(string: response.fee) else {
-            throw SetupError.feeParsing
-        }
-        guard let source = sourceCurrency as? FiatCurrency,
-              let destination = destinationCurrency as? CryptoCurrency
-        else {
-            throw SetupError.wrongCurrenciesPair
-        }
-        let majorEstimatedAmount: Decimal = value.amount.decimalDivision(by: rate)
-        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        let estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: destination)
-        estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
-        let feeAmountMinor = feeRateMinor * estimatedDestinationAmount.displayMajorValue
-        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        fee = FiatValue.create(minor: feeAmountMinor, currency: source).moneyValue
-        quoteCreatedAt = quoteCreated
-        let fiatRate = FiatValue.create(minor: rate, currency: source)
-        self.rate = fiatRate.moneyValue
-        estimatedSourceAmount = estimatedCryptoAmount.convert(using: fiatRate).moneyValue
-
-        // Unused
-        quoteId = nil
-        quoteExpiresAt = quoteCreatedAt
-    }
 
     init(
         sourceCurrency: Currency,
@@ -118,6 +83,7 @@ public struct Quote {
         response: QuoteResponse
     ) throws {
         quoteId = response.quoteId
+        settlementDetails = response.settlementDetails
 
         // formatting dates
         guard let quoteCreatedDate = dateFormatter.date(from: response.quoteCreatedAt),
@@ -143,7 +109,7 @@ public struct Quote {
             guard let fiatAmount = value.fiatValue else {
                 fatalError("Amount must be in fiat for a buy quote")
             }
-            let estimatedFiatAmount = FiatValue.create(minor: fiatAmount.amount, currency: source)
+            let estimatedFiatAmount = FiatValue.create(minor: fiatAmount.minorAmount, currency: source)
             let cryptoPriceValue = CryptoValue.create(minor: priceMinorBigInt, currency: destination)
             let cryptoPriceDisplayString = cryptoPriceValue.toDisplayString(includeSymbol: false, locale: Locale.US)
             guard let cryptoMajorAmount = Decimal(string: cryptoPriceDisplayString) else {
@@ -151,7 +117,7 @@ public struct Quote {
             }
             let fiatRate = FiatValue.create(major: 1 / cryptoMajorAmount, currency: source)
             let estimatedCryptoAmount = CryptoValue.create(
-                major: estimatedFiatAmount.amount.decimalDivision(by: fiatRate.amount),
+                major: estimatedFiatAmount.minorAmount.decimalDivision(by: fiatRate.minorAmount),
                 currency: destination
             )
             estimatedSourceAmount = estimatedFiatAmount.moneyValue
@@ -164,14 +130,14 @@ public struct Quote {
             guard let cryptoAmount = value.cryptoValue else {
                 fatalError("Amount must be in crypto for a sell quote")
             }
-            let estimatedCryptoAmount = CryptoValue.create(minor: cryptoAmount.amount, currency: source)
+            let estimatedCryptoAmount = CryptoValue.create(minor: cryptoAmount.minorAmount, currency: source)
             let fiatPriceValue = FiatValue.create(minor: priceMinorBigInt, currency: destination)
             guard let fiatMajorAmount = Decimal(string: fiatPriceValue.displayString) else {
                 throw SetupError.priceParsing
             }
             let cryptoRate = CryptoValue.create(major: 1 / fiatMajorAmount, currency: source)
             let estimatedFiatAmount = FiatValue.create(
-                major: estimatedCryptoAmount.amount.decimalDivision(by: cryptoRate.amount),
+                major: estimatedCryptoAmount.minorAmount.decimalDivision(by: cryptoRate.minorAmount),
                 currency: destination
             )
             estimatedSourceAmount = estimatedCryptoAmount.moneyValue
@@ -184,14 +150,14 @@ public struct Quote {
             guard let cryptoAmount = value.cryptoValue else {
                 fatalError("Amount must be in crypto for a sell quote")
             }
-            let fromTokenAmount = CryptoValue.create(minor: cryptoAmount.amount, currency: source)
+            let fromTokenAmount = CryptoValue.create(minor: cryptoAmount.minorAmount, currency: source)
             let toTokenPriceValue = CryptoValue.create(minor: priceMinorBigInt, currency: destination)
             guard let toTokenMajorAmount = Decimal(string: toTokenPriceValue.displayString) else {
                 throw SetupError.priceParsing
             }
             let fromTokenRate = CryptoValue.create(major: 1 / toTokenMajorAmount, currency: source)
             let toTokenAmount = CryptoValue.create(
-                major: fromTokenAmount.amount.decimalDivision(by: fromTokenRate.amount),
+                major: fromTokenAmount.minorAmount.decimalDivision(by: fromTokenRate.minorAmount),
                 currency: destination
             )
             estimatedSourceAmount = fromTokenAmount.moneyValue

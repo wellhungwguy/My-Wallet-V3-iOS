@@ -243,6 +243,7 @@ struct RootView: View {
                 viewStore.send(.onAppModeSwitcherTapped)
             }
         )
+        .if(!viewStore.appModeSeen, then: { $0.highlighted() })
         .identity(blockchain.ux.switcher.entry)
     }
 
@@ -296,7 +297,6 @@ extension Color {
 }
 
 extension View {
-
     @ViewBuilder
     func identity(_ tag: Tag.Event, in context: Tag.Context = [:]) -> some View {
         id(tag.description)

@@ -1,24 +1,33 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import SwiftUI
 import UIComponentsKit
 
 struct HeaderView: View {
     let viewModel: HeaderStyle
-
     @Binding var searchText: String?
     @Binding var isSearching: Bool
+    @Binding var toggleIsOn: Bool
 
     var body: some View {
         switch viewModel {
         case .none:
             EmptyView()
-        case .simple(subtitle: let subtitle, searchable: let searchable):
+        case .simple(
+            subtitle: let subtitle,
+            searchable: let searchable,
+            switchable: let switchable,
+            switchTitle: let switchTitle
+        ):
             SimpleHeaderView(
                 subtitle: subtitle,
                 searchable: searchable,
+                switchTitle: switchTitle,
+                switchable: switchable,
                 searchText: $searchText,
-                isSearching: $isSearching
+                isSearching: $isSearching,
+                toggleIsOn: $toggleIsOn
             )
         case .normal(
             title: let title,
@@ -134,13 +143,13 @@ private struct NormalHeaderView: View {
 private struct SimpleHeaderView: View {
     let subtitle: String
     let searchable: Bool
-
+    let switchTitle: String?
+    let switchable: Bool
     @Binding var searchText: String?
     @Binding var isSearching: Bool
+    @Binding var toggleIsOn: Bool
 
     private enum Layout {
-        static let margins = EdgeInsets(top: 8.0, leading: 24, bottom: 8.0, trailing: 24)
-
         static let dividerLineHeight: CGFloat = 1
         static let subtitleFontSize: CGFloat = 14
     }
@@ -151,13 +160,32 @@ private struct SimpleHeaderView: View {
                 Text(subtitle)
                     .font(Font(weight: .medium, size: Layout.subtitleFontSize))
                     .foregroundColor(.textSubheading)
-                    .padding(Layout.margins)
+                    .padding(.horizontal, Spacing.padding3)
+                    .padding(.vertical, Spacing.padding1)
             }
 
-            if searchable {
-                SearchBar(text: $searchText, isActive: $isSearching)
-                    .padding(.trailing, Layout.margins.trailing - 8)
-                    .padding(.leading, Layout.margins.leading - 8)
+            if searchable || switchable {
+                VStack {
+                    if searchable {
+                        SearchBar(text: $searchText, isActive: $isSearching)
+                            .padding(.horizontal, Spacing.padding2)
+                    }
+
+                    if switchable {
+                        HStack {
+                            Text(switchTitle ?? "")
+                                .typography(.paragraph1)
+                                .foregroundColor(.WalletSemantic.text)
+                            Spacer()
+                            PrimarySwitch(
+                                variant: .green,
+                                accessibilityLabel: "",
+                                isOn: $toggleIsOn
+                            )
+                        }
+                        .padding(.horizontal, Spacing.padding3)
+                    }
+                }
             } else {
                 Rectangle()
                     .frame(height: Layout.dividerLineHeight)
@@ -235,6 +263,7 @@ struct HeaderView_Previews: PreviewProvider {
     struct PreviewContainer: View {
         @State var searchText: String?
         @State var isSearching: Bool = false
+        @State var toggleIsOn: Bool = false
 
         var body: some View {
             HeaderView(
@@ -246,7 +275,8 @@ struct HeaderView_Previews: PreviewProvider {
                     searchable: true
                 ),
                 searchText: $searchText,
-                isSearching: $isSearching
+                isSearching: $isSearching,
+                toggleIsOn: $toggleIsOn
             )
             .animation(.easeInOut, value: isSearching)
         }

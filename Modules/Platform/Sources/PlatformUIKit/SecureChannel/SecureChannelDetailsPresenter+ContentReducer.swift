@@ -50,6 +50,7 @@ extension SecureChannelDetailsPresenter {
             )
             let model = AccountPickerHeaderModel(
                 imageContent: image,
+                switchable: false,
                 subtitle: subtitle,
                 tableTitle: nil,
                 title: title

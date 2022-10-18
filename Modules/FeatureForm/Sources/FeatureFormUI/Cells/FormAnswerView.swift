@@ -7,6 +7,7 @@ import SwiftUI
 
 struct FormRecursiveAnswerView<Content: View>: View {
 
+    let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
     let content: () -> Content
@@ -17,72 +18,13 @@ struct FormRecursiveAnswerView<Content: View>: View {
 
             if answer.checked == true, answer.children?.isEmpty == false {
                 FormSingleSelectionAnswersView(
+                    title: title,
                     answers: $answer.children ?? [],
                     showAnswersState: $showAnswerState
                 )
                 .padding([.leading, .vertical], Spacing.padding2)
             }
         }
-    }
-}
-
-struct FormDateAnswerView: View {
-
-    @Binding var answer: FormAnswer
-    @Binding var showAnswerState: Bool
-
-    private var minDate: Date {
-        if let minValue = answer.validation?.metadata?[.minValue], let timeInterval = TimeInterval(minValue) {
-            return Date(timeIntervalSince1970: timeInterval)
-        }
-        return Date.distantPast
-    }
-
-    private var maxDate: Date {
-        if let maxValue = answer.validation?.metadata?[.maxValue], let timeInterval = TimeInterval(maxValue) {
-            return Date(timeIntervalSince1970: timeInterval)
-        }
-        return Date.distantFuture
-    }
-
-    var body: some View {
-        ZStack {
-            DatePicker(
-                selection: Binding(
-                    get: {
-                        guard let input = answer.input, let timeInterval = TimeInterval(input) else {
-                            return Date()
-                        }
-                        return Date(timeIntervalSince1970: timeInterval)
-                    },
-                    set: {
-                        answer.input = String($0.timeIntervalSince1970)
-                    }
-                ),
-                in: minDate...maxDate,
-                displayedComponents: .date,
-                label: EmptyView.init
-            )
-            .labelsHidden()
-            .fixedSize()
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.horizontal, Spacing.padding1)
-        .padding(.vertical, Spacing.padding1)
-        .frame(minHeight: 24)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
-                    .fill(Color.semantic.background)
-
-                RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
-                    .stroke(
-                        showAnswerState
-                        ? answer.answerBackgroundStrokeColor
-                        : .semantic.medium
-                    )
-            }
-        )
     }
 }
 
@@ -113,11 +55,16 @@ struct FormOpenEndedAnswerView: View {
 
 struct FormSingleSelectionAnswerView: View {
 
+    let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
 
     var body: some View {
-        FormRecursiveAnswerView(answer: $answer, showAnswerState: $showAnswerState) {
+        FormRecursiveAnswerView(
+            title: title,
+            answer: $answer,
+            showAnswerState: $showAnswerState
+        ) {
             HStack(spacing: Spacing.padding1) {
                 if let text = answer.text {
                     Text(text)
@@ -147,11 +94,13 @@ struct FormSingleSelectionAnswerView: View {
 
 struct FormMultipleSelectionAnswerView: View {
 
+    let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
 
     var body: some View {
         FormRecursiveAnswerView(
+            title: title,
             answer: $answer,
             showAnswerState: $showAnswerState
         ) {
@@ -243,8 +192,16 @@ struct FormAnswerView_Previews: PreviewProvider {
         var body: some View {
             VStack(spacing: Spacing.padding1) {
                 FormOpenEndedAnswerView(answer: $answer, showAnswerState: $showAnswerState)
-                FormSingleSelectionAnswerView(answer: $answer, showAnswerState: $showAnswerState)
-                FormMultipleSelectionAnswerView(answer: $answer, showAnswerState: $showAnswerState)
+                FormSingleSelectionAnswerView(
+                    title: "Title",
+                    answer: $answer,
+                    showAnswerState: $showAnswerState
+                )
+                FormMultipleSelectionAnswerView(
+                    title: "Title",
+                    answer: $answer,
+                    showAnswerState: $showAnswerState
+                )
             }
             .padding()
         }
@@ -252,7 +209,7 @@ struct FormAnswerView_Previews: PreviewProvider {
 }
 
 extension FormAnswer {
-    fileprivate var answerBackgroundStrokeColor: Color {
+    var answerBackgroundStrokeColor: Color {
         switch isValid {
         case true:
             return .semantic.medium
@@ -260,6 +217,7 @@ extension FormAnswer {
             return .semantic.error
         }
     }
+
     fileprivate var inputState: InputState {
         switch isValid {
         case true:

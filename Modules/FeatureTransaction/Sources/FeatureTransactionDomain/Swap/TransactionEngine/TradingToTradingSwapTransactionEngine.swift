@@ -108,7 +108,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             pendingTransaction.update(amount: normalized, available: balance)
         }
         .do(onSuccess: { [weak self] transaction in
-            self?.quotesEngine.update(amount: transaction.amount.amount)
+            self?.quotesEngine.update(amount: transaction.amount.minorAmount)
         })
         .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
             self.clearConfirmations(pendingTransaction: pendingTransaction)

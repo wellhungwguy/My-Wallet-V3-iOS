@@ -100,7 +100,7 @@ final class Coincore: CoincoreAPI {
     }
 
     func account(where isIncluded: @escaping (BlockchainAccount) -> Bool) -> AnyPublisher<[BlockchainAccount], Error> {
-        allAccounts(filter: .all)
+        allAccounts(filter: .allExcludingExchange)
             .map(\.accounts)
             .map { accounts in
                 accounts.filter(isIncluded)
@@ -152,7 +152,7 @@ final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            return allAccounts(filter: .all)
+            return allAccounts(filter: .allExcludingExchange)
                 .map(\.accounts)
                 .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
@@ -169,7 +169,7 @@ final class Coincore: CoincoreAPI {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
             return self[cryptoAccount.asset]
-                .transactionTargets(account: cryptoAccount)
+                .transactionTargets(account: cryptoAccount, action: action)
                 .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(

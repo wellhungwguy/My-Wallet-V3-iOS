@@ -61,7 +61,7 @@ extension SwapTransactionEngine {
         quotesEngine.quotePublisher
             .asObservable()
             .map(weak: self) { (self, pricedQuote) -> MoneyValue in
-                MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
+                MoneyValue.create(minor: pricedQuote.price, currency: self.target.currencyType)
             }
             .map(weak: self) { (self, rate) -> MoneyValuePair in
                 MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
@@ -123,7 +123,7 @@ extension SwapTransactionEngine {
         return quotesEngine.quotePublisher
             .asSingle()
             .map { [sourceAccount, target] pricedQuote -> (PendingTransaction, PricedQuote) in
-                let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
+                let resultValue = MoneyValue.create(minor: pricedQuote.price, currency: targetAsset.currencyType)
                 let swapDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
                     TransactionConfirmations.QuoteExpirationTimer(

@@ -10,7 +10,7 @@ struct AnnouncementCardExamples: View {
             onCloseTapped: {},
             leading: {
                 Icon.wallet
-                    .accentColor(.semantic.gold)
+                    .color(.semantic.gold)
             }
         )
     }

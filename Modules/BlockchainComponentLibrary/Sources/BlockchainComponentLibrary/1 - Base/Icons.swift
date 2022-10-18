@@ -10,14 +10,14 @@ import UIKit
 /// An icon asset view from the Component Library
 ///
 /// See extension below for supported icons.
-/// Note that coloring the icon is done via `.accentColor(...)` instead of `.foregroundColor(...)`
+/// Note that coloring the icon is done via `.color(...)` instead of `.foregroundColor(...)`
 /// Apply a fixed width or height to size the icon.
 ///
 /// # Usage:
 ///
 /// ```
 /// Icon.activity
-///     .accentColor(.green)
+///     .color(.green)
 ///     .frame(width: 20)
 /// ```
 ///
@@ -29,27 +29,41 @@ public struct Icon: View, Hashable, Codable {
     public let name: String
 
     fileprivate var renderingMode: Image.TemplateRenderingMode
-    fileprivate var circle: Bool
+    fileprivate var isCircle: Bool
+    fileprivate var color: Color
     fileprivate var circleColor: Color
+
+    private var size: Size?
 
     init(
         name: String,
         renderingMode: Image.TemplateRenderingMode = .template,
-        circle: Bool = false,
-        circleColor: Color = .accentColor.opacity(0.15)
+        isCircle: Bool = false,
+        color: Color = .semantic.muted,
+        circleColor: Color = .semantic.muted.opacity(0.15)
     ) {
         self.name = name
         self.renderingMode = renderingMode
-        self.circle = circle
+        self.isCircle = isCircle
+        self.color = color
         self.circleColor = circleColor
     }
 
     public var body: some View {
-        if circle {
+        if let size = size {
+            _circled.frame(width: size.width, height: size.height)
+        } else {
+            _circled
+        }
+    }
+
+    @ViewBuilder
+    private var _circled: some View {
+        if isCircle {
             Circle()
                 .aspectRatio(1, contentMode: .fit)
                 .foregroundColor(circleColor)
-                .inscribed(aspectRatio: 4 / 3, _content.scaleEffect(0.85))
+                .inscribed(aspectRatio: 4 / 3, _content)
         } else {
             _content
         }
@@ -57,7 +71,7 @@ public struct Icon: View, Hashable, Codable {
 
     private var _content: some View {
         #if canImport(UIKit)
-        ImageViewRepresentable(image: uiImage, renderingMode: renderingMode)
+        ImageViewRepresentable(image: uiImage, renderingMode: renderingMode, tintColor: color)
             .scaledToFit()
         #else
         image
@@ -82,25 +96,35 @@ public struct Icon: View, Hashable, Codable {
     }
 
     enum Key: String, CodingKey {
-        case name, circle
+        case name, circle, foreground, background
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         name = try container.decode(String.self, forKey: .name)
-        circle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
+        isCircle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
         renderingMode = .template
-        circleColor = .accentColor.opacity(0.15)
+        color = try container.decodeIfPresent(Texture.Color.self, forKey: .foreground)?.swiftUI ?? .semantic.muted
+        circleColor = try container.decodeIfPresent(Texture.Color.self, forKey: .background)?.swiftUI ?? color.opacity(0.15)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
         try container.encode(name, forKey: .name)
-        try container.encode(circle, forKey: .circle)
+        try container.encode(isCircle, forKey: .circle)
+        try container.encodeIfPresent(color.texture.color, forKey: .foreground)
+        try container.encodeIfPresent(circleColor.texture.color, forKey: .background)
     }
 }
 
 extension Icon {
+
+    public func color(_ color: Color) -> Icon {
+        var newIcon = self
+        newIcon.color = color
+        newIcon.circleColor = color.opacity(0.15)
+        return newIcon
+    }
 
     public func renderingMode(_ renderingMode: Image.TemplateRenderingMode) -> Icon {
         var newIcon = self
@@ -108,11 +132,41 @@ extension Icon {
         return newIcon
     }
 
-    public func circle(backgroundColor: Color = .accentColor.opacity(0.15)) -> Icon {
+    public func circle(backgroundColor: Color = .semantic.muted.opacity(0.15)) -> Icon {
         var newIcon = self
-        newIcon.circle = true
+        newIcon.isCircle = true
         newIcon.circleColor = backgroundColor
         return newIcon
+    }
+
+    public func micro() -> Icon {
+        var icon = self
+        icon.size = .init(length: 14.pt)
+        return icon
+    }
+
+    public func small() -> Icon {
+        var icon = self
+        icon.size = .init(length: 24.pt)
+        return icon
+    }
+
+    public func medium() -> Icon {
+        var icon = self
+        icon.size = .init(length: 36.pt)
+        return icon
+    }
+
+    public func large() -> Icon {
+        var icon = self
+        icon.size = .init(length: 72.pt)
+        return icon
+    }
+
+    public func scaleToFit() -> Icon {
+        var icon = self
+        icon.size = nil
+        return icon
     }
 }
 
@@ -425,6 +479,7 @@ extension Icon {
 struct ImageViewRepresentable: UIViewRepresentable {
     let image: UIImage?
     let renderingMode: Image.TemplateRenderingMode
+    let tintColor: Color
 
     private var uiRenderingMode: UIImage.RenderingMode {
         switch renderingMode {
@@ -443,6 +498,7 @@ struct ImageViewRepresentable: UIViewRepresentable {
         )
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        view.tintColor = UIColor(tintColor)
         return view
     }
 
@@ -463,11 +519,11 @@ struct Icon_Previews: PreviewProvider {
             ForEach(Icon.allIcons, id: \.name) { icon in
                 VStack {
                     icon
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 24)
 
                     icon.circle()
-                        .accentColor(.semantic.muted)
+                        .color(.semantic.muted)
                         .frame(width: 32)
 
                     Text(icon.name)

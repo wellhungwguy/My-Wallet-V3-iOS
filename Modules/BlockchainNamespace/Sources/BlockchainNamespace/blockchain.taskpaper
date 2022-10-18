@@ -55,6 +55,23 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					tokenise:
+						base64:
+							activationData:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+							encryptedPassData:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
+							ephemeralPublicKey:
+								is:
+									enabled:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.configuration.value
 				success:
 					rate:
 						is:
@@ -221,6 +238,12 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+				switch:
+					pkw:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			tabs:
 			+ blockchain.db.type.array.of.tags
 			+ blockchain.session.configuration.value
@@ -232,6 +255,18 @@ blockchain:
 					+ blockchain.session.state.shared.value
 			transaction:
 			+ blockchain.db.collection
+				quickfill:
+					amount:
+					+ blockchain.db.type.string
+					configuration:
+					+ blockchain.db.array
+					+ blockchain.session.configuration.value
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+					type:
+					+ blockchain.db.type.string
 				should:
 					prefill:
 						with:
@@ -279,6 +314,8 @@ blockchain:
 				post:
 					sign:
 						up:
+			plaid:
+				oauth_token:
 			qr:
 			referral:
 			send:
@@ -970,6 +1007,11 @@ blockchain:
 				created:
 				+ blockchain.db.type.boolean
 	ux:
+		app:
+			mode:
+				seen:
+				+ blockchain.db.type.boolean
+				+ blockchain.session.state.preference.value
 		asset:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
@@ -1363,6 +1405,38 @@ blockchain:
 							authorised:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.state.value
+				plaid:
+					event:
+						finished:
+						+ blockchain.ux.type.action
+						receive:
+							OAuth:
+								token:
+								+ blockchain.db.type.string
+							link:
+								token:
+								+ blockchain.db.type.string
+							success:
+								id:
+								+ blockchain.db.type.string
+								token:
+								+ blockchain.db.type.string
+						reload:
+							linked_banks:
+							+ blockchain.ux.type.action
+						update:
+							account_id:
+							+ blockchain.db.type.string
+					is:
+						available:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+						linking:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
 		prices:
 		+ blockchain.ux.type.story
 		referral:
@@ -1394,6 +1468,12 @@ blockchain:
 							enter:
 								amount:
 				reset:
+				select:
+					payment:
+						method:
+						+ blockchain.ux.type.action
+							id:
+							+ blockchain.db.type.string
 				show:
 					wire:
 						transfer:

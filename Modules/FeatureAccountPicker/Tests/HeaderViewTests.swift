@@ -24,7 +24,8 @@ class HeaderViewTests: XCTestCase {
                 searchable: false
             ),
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 
@@ -41,7 +42,8 @@ class HeaderViewTests: XCTestCase {
                 searchable: false
             ),
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 
@@ -58,7 +60,8 @@ class HeaderViewTests: XCTestCase {
                 searchable: false
             ),
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 
@@ -75,7 +78,8 @@ class HeaderViewTests: XCTestCase {
                 searchable: true
             ),
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 
@@ -92,7 +96,8 @@ class HeaderViewTests: XCTestCase {
                 searchable: true
             ),
             searchText: .constant("Search"),
-            isSearching: .constant(true)
+            isSearching: .constant(true),
+            toggleIsOn: .constant(false)
         )
         .animation(nil)
         .frame(width: 375)
@@ -104,10 +109,13 @@ class HeaderViewTests: XCTestCase {
         let view = HeaderView(
             viewModel: .simple(
                 subtitle: "Subtitle",
-                searchable: false
+                searchable: false,
+                switchable: false,
+                switchTitle: nil
             ),
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 
@@ -118,7 +126,8 @@ class HeaderViewTests: XCTestCase {
         let view = HeaderView(
             viewModel: .none,
             searchText: .constant(nil),
-            isSearching: .constant(false)
+            isSearching: .constant(false),
+            toggleIsOn: .constant(false)
         )
         .fixedSize()
 

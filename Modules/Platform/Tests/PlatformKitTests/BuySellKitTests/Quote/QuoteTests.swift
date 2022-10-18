@@ -44,7 +44,9 @@ extension SimpleBuyQuoteTests {
                 feeFlags: []
             ),
             settlementDetails: .init(
-                availability: .instant
+                availability: .instant,
+                reason: nil,
+                ux: nil
             ),
             sampleDepositAddress: nil
         )

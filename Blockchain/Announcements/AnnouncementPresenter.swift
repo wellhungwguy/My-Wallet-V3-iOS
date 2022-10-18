@@ -200,32 +200,11 @@ final class AnnouncementPresenter {
         preliminaryData: AnnouncementPreliminaryData
     ) -> Announcement {
         switch type {
-        case .majorProductBlocked:
-            let reason = preliminaryData.majorProductBlocked
-            return majorProductBlocked(reason)
-        case .claimFreeCryptoDomain:
-            return claimFreeCryptoDomainAnnouncement(
-                claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
-            )
-        case .resubmitDocumentsAfterRecovery:
-            return resubmitDocumentsAfterRecovery(user: preliminaryData.user)
-        case .sddUsersFirstBuy:
-            return sddUsersFirstBuy(
-                tiers: preliminaryData.tiers,
-                isSDDEligible: preliminaryData.isSDDEligible,
-                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
-                reappearanceTimeInterval: metadata.interval
-            )
-        case .verifyEmail:
-            return verifyEmail(
-                user: preliminaryData.user,
-                reappearanceTimeInterval: metadata.interval
-            )
-        case .twoFA:
-            return twoFA(
-                hasTwoFA: preliminaryData.hasTwoFA,
-                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
-                reappearanceTimeInterval: metadata.interval
+        case .applePay:
+            return applePay()
+        case .assetRename:
+            return assetRename(
+                data: preliminaryData.assetRename
             )
         case .backupFunds:
             return backupFunds(
@@ -238,33 +217,59 @@ final class AnnouncementPresenter {
                 hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
                 reappearanceTimeInterval: metadata.interval
             )
-        case .transferBitcoin:
-            return transferBitcoin(
-                isKycSupported: preliminaryData.isKycSupported,
-                reappearanceTimeInterval: metadata.interval
+        case .claimFreeCryptoDomain:
+            return claimFreeCryptoDomainAnnouncement(
+                claimFreeDomainEligible: preliminaryData.claimFreeDomainEligible
             )
-        case .verifyIdentity:
-            return verifyIdentity(using: preliminaryData.user)
-        case .viewNFTWaitlist:
-            return viewNFTComingSoonAnnouncement()
+        case .claimFreeCryptoDomainKYC:
+            return claimFreeCryptoDomainKYCAnnouncement(
+                tiers: preliminaryData.tiers,
+                user: preliminaryData.user
+            )
+        case .majorProductBlocked:
+            let reason = preliminaryData.majorProductBlocked
+            return majorProductBlocked(reason)
+        case .newAsset:
+            return newAsset(cryptoCurrency: preliminaryData.newAsset)
         case .resubmitDocuments:
             return resubmitDocuments(user: preliminaryData.user)
+        case .resubmitDocumentsAfterRecovery:
+            return resubmitDocumentsAfterRecovery(user: preliminaryData.user)
+        case .sddUsersFirstBuy:
+            return sddUsersFirstBuy(
+                tiers: preliminaryData.tiers,
+                isSDDEligible: preliminaryData.isSDDEligible,
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
         case .simpleBuyKYCIncomplete:
             return simpleBuyFinishSignup(
                 tiers: preliminaryData.tiers,
                 hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow,
                 reappearanceTimeInterval: metadata.interval
             )
-        case .newAsset:
-            return newAsset(cryptoCurrency: preliminaryData.newAsset)
-        case .assetRename:
-            return assetRename(
-                data: preliminaryData.assetRename
+        case .transferBitcoin:
+            return transferBitcoin(
+                isKycSupported: preliminaryData.isKycSupported,
+                reappearanceTimeInterval: metadata.interval
             )
+        case .twoFA:
+            return twoFA(
+                hasTwoFA: preliminaryData.hasTwoFA,
+                hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .verifyEmail:
+            return verifyEmail(
+                user: preliminaryData.user,
+                reappearanceTimeInterval: metadata.interval
+            )
+        case .verifyIdentity:
+            return verifyIdentity(using: preliminaryData.user)
+        case .viewNFTWaitlist:
+            return viewNFTComingSoonAnnouncement()
         case .walletConnect:
             return walletConnect()
-        case .applePay:
-            return applePay()
         }
     }
 
@@ -277,12 +282,32 @@ final class AnnouncementPresenter {
 
     private func actionForOpening(_ absoluteURL: String) -> CardAnnouncementAction {
         { [weak self] in
-            guard let destination = self?.topMostViewControllerProvider.topMostViewController else {
+            guard let self = self else {
                 return
             }
-            self?.webViewServiceAPI.openSafari(
+            guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
+                return
+            }
+            self.webViewServiceAPI.openSafari(
                 url: absoluteURL,
-                from: destination
+                from: topMostViewController
+            )
+        }
+    }
+
+    private func actionPresentKYC(user: NabuUser) -> CardAnnouncementAction {
+        { [weak self] in
+            guard let self = self else {
+                return
+            }
+            guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
+                return
+            }
+            let tier = user.tiers?.selected ?? .tier1
+            self.kycRouter.start(
+                tier: tier,
+                parentFlow: .announcement,
+                from: topMostViewController
             )
         }
     }
@@ -343,15 +368,7 @@ extension AnnouncementPresenter {
         VerifyIdentityAnnouncement(
             isCompletingKyc: kycSettings.isCompletingKyc,
             dismiss: announcementDismissAction,
-            action: { [weak self] in
-                guard let self = self else { return }
-                let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(
-                    tier: tier,
-                    parentFlow: .announcement,
-                    from: self.tabSwapping
-                )
-            }
+            action: actionPresentKYC(user: user)
         )
     }
 
@@ -436,6 +453,18 @@ extension AnnouncementPresenter {
                 self?.presentClaimIntroductionHostingController()
             },
             dismiss: announcementDismissAction
+        )
+    }
+
+    /// Claim Free Crypto Domain Announcement for eligible users
+    private func claimFreeCryptoDomainKYCAnnouncement(
+        tiers: KYC.UserTiers,
+        user: NabuUser
+    ) -> Announcement {
+        CryptoDomainKYCAnnouncement(
+            userCanCompleteTier2: tiers.canCompleteTier2,
+            dismiss: announcementDismissAction,
+            action: actionPresentKYC(user: user)
         )
     }
 
@@ -604,15 +633,7 @@ extension AnnouncementPresenter {
             needsDocumentResubmission: user.needsDocumentResubmission != nil
             && user.needsDocumentResubmission?.reason != 1,
             dismiss: announcementDismissAction,
-            action: { [weak self] in
-                guard let self = self else { return }
-                let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(
-                    tier: tier,
-                    parentFlow: .announcement,
-                    from: self.tabSwapping
-                )
-            }
+            action: actionPresentKYC(user: user)
         )
     }
 
@@ -620,15 +641,7 @@ extension AnnouncementPresenter {
         ResubmitDocumentsAfterRecoveryAnnouncement(
             // reason 1: resubmission needed due to account recovery
             needsDocumentResubmission: user.needsDocumentResubmission?.reason == 1,
-            action: { [weak self] in
-                guard let self = self else { return }
-                let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(
-                    tier: tier,
-                    parentFlow: .announcement,
-                    from: self.tabSwapping
-                )
-            }
+            action: actionPresentKYC(user: user)
         )
     }
 }

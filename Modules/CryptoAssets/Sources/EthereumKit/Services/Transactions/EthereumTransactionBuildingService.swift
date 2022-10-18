@@ -71,7 +71,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 to: address,
                 gasPrice: gasPrice,
                 gasLimit: gasLimit,
-                value: BigUInt(amount.amount),
+                value: BigUInt(amount.minorAmount),
                 nonce: nonce,
                 chainID: chainID,
                 transferType: transferType

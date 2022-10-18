@@ -8,6 +8,7 @@ import FeatureCardIssuingDomain
 import Foundation
 import Localization
 import MoneyKit
+import PassKit
 import ToolKit
 
 enum CardManagementAction: Equatable, BindableAction {
@@ -42,6 +43,8 @@ enum CardManagementAction: Equatable, BindableAction {
     case setTransactionDetailsVisible(Bool)
     case editAddress
     case editAddressComplete(Result<CardAddressSearchResult, Never>)
+    case fetchFullName
+    case fetchFullNameResponse(Result<String, NabuNetworkError>)
     case binding(BindingAction<CardManagementState>)
 }
 
@@ -62,19 +65,27 @@ public struct CardManagementState: Equatable {
     var displayedTransaction: Card.Transaction?
     var linkedAccount: AccountSnapshot?
     var canFetchMoreTransactions = true
+    var cardholderName: String
+    var tokenisationCoordinator: PassTokenisationCoordinator
+    var isTokenisationEnabled: Bool
 
     public init(
         card: Card? = nil,
+        cardholderName: String = "",
         isLocked: Bool = false,
         cardHelperUrl: URL? = nil,
         error: NabuNetworkError? = nil,
-        transactions: [Card.Transaction] = []
+        transactions: [Card.Transaction] = [],
+        tokenisationCoordinator: PassTokenisationCoordinator
     ) {
         self.card = card
+        self.cardholderName = cardholderName
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
         self.error = error
         self.transactions = transactions
+        self.tokenisationCoordinator = tokenisationCoordinator
+        self.isTokenisationEnabled = PKAddPaymentPassViewController.canAddPaymentPass()
     }
 }
 
@@ -102,6 +113,7 @@ public struct CardManagementEnvironment {
     let accountModelProvider: AccountProviderAPI
     let topUpRouter: TopUpRouterAPI
     let supportRouter: SupportRouterAPI
+    let userInfoProvider: UserInfoProviderAPI
     let addressSearchRouter: AddressSearchRouterAPI
     let notificationCenter: NotificationCenter
     let close: () -> Void
@@ -113,6 +125,7 @@ public struct CardManagementEnvironment {
         productsService: ProductsServiceAPI,
         transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
+        userInfoProvider: UserInfoProviderAPI,
         topUpRouter: TopUpRouterAPI,
         addressSearchRouter: AddressSearchRouterAPI,
         notificationCenter: NotificationCenter,
@@ -124,6 +137,7 @@ public struct CardManagementEnvironment {
         self.transactionService = transactionService
         self.accountModelProvider = accountModelProvider
         self.supportRouter = supportRouter
+        self.userInfoProvider = userInfoProvider
         self.topUpRouter = topUpRouter
         self.notificationCenter = notificationCenter
         self.addressSearchRouter = addressSearchRouter
@@ -152,6 +166,7 @@ let cardManagementReducer: Reducer<
         case .onAppear:
             return .merge(
                 Effect(value: .refreshTransactions),
+                Effect(value: .fetchFullName),
                 env.cardService
                     .fetchCards()
                     .map { cards in
@@ -243,7 +258,7 @@ let cardManagementReducer: Reducer<
             state.linkedAccount = account
             return .none
         case .getCardHelperUrl:
-            guard let card = state.card else { return .none }
+            guard let card = state.card, card.status != .unactivated else { return .none }
             return env.cardService
                 .helperUrl(for: card)
                 .receive(on: env.mainQueue)
@@ -346,6 +361,16 @@ let cardManagementReducer: Reducer<
                 state.displayedTransaction = nil
             }
             return .none
+        case .fetchFullName:
+            return env.userInfoProvider
+                    .fullName
+                    .receive(on: env.mainQueue)
+                    .catchToEffect(CardManagementAction.fetchFullNameResponse)
+        case .fetchFullNameResponse(.success(let fullName)):
+            state.cardholderName = fullName
+            return .none
+        case .fetchFullNameResponse(.failure):
+            return .none
         case .binding:
             return .none
         }
@@ -361,6 +386,7 @@ extension CardManagementEnvironment {
             productsService: MockServices(),
             transactionService: MockServices(),
             supportRouter: MockServices(),
+            userInfoProvider: MockServices(),
             topUpRouter: MockServices(),
             addressSearchRouter: MockServices(),
             notificationCenter: NotificationCenter.default,
@@ -376,7 +402,8 @@ extension CardManagementState {
             isLocked: false,
             cardHelperUrl: nil,
             error: nil,
-            transactions: [.success, .pending, .failed]
+            transactions: [.success, .pending, .failed],
+            tokenisationCoordinator: PassTokenisationCoordinator(service: MockServices())
         )
     }
 }

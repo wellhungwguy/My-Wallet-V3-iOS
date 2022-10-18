@@ -5,11 +5,13 @@ import Foundation
 public struct AccountPickerSimpleHeaderModel: Equatable {
 
     var height: CGFloat {
-        searchable ? 104 : 64
+        searchable || switchable ? 104 : 64
     }
 
     public let subtitle: String
     public let searchable: Bool
+    public let switchable: Bool
+    public let switchTitle: String?
 
     var subtitleLabel: LabelContent {
         LabelContent(
@@ -21,9 +23,13 @@ public struct AccountPickerSimpleHeaderModel: Equatable {
 
     public init(
         subtitle: String,
-        searchable: Bool = false
+        searchable: Bool = false,
+        switchable: Bool = false,
+        switchTitle: String? = nil
     ) {
         self.subtitle = subtitle
         self.searchable = searchable
+        self.switchable = switchable
+        self.switchTitle = switchTitle
     }
 }

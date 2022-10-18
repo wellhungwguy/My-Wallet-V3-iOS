@@ -1,12 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
+import FeaturePlaidUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
+import SwiftUI
 import ToolKit
 import UIComponentsKit
 
@@ -27,6 +30,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     // MARK: - Private Properties
 
+    private var app: AppProtocol
     private var transactionRouter: ViewableRouting?
     private var paymentMethodRouter: ViewableRouting?
     private var linkBankFlowRouter: LinkBankFlowStarter?
@@ -37,10 +41,12 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
     // MARK: - Init
 
     init(
+        app: AppProtocol = resolve(),
         interactor: DepositRootInteractable,
         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
+        self.app = app
         self.topMostViewControllerProviding = topMostViewControllerProviding
         self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor)
@@ -151,6 +157,48 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
     }
 
     private func showLinkBankFlow() {
+        if app.state.yes(if: blockchain.ux.payment.method.plaid.is.available) {
+            showLinkBankFlowWithPlaid()
+        } else {
+            showLinkBankFlowWithYodlee()
+        }
+    }
+
+    private func showLinkBankFlowWithPlaid() {
+        let router = Router<Interactor>(interactor: Interactor())
+        attachChild(router)
+
+        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .deposit))
+
+        let app: AppProtocol = DIKit.resolve()
+        let view = PlaidView(store: .init(
+            initialState: PlaidState(),
+            reducer: PlaidModule.reducer,
+            environment: .init(
+                app: app,
+                mainQueue: .main,
+                plaidRepository: DIKit.resolve(),
+                dismissFlow: { [weak self] success in
+                    guard let self = self else { return }
+                    self.dismissBankLinkingFlow()
+                    self.detachChild(router)
+                    if success {
+                        self.interactor.bankLinkingComplete()
+                    } else {
+                        self.interactor.bankLinkingClosed(isInteractive: true)
+                    }
+                }
+            )
+        )).app(app)
+
+        let viewController = UIHostingController(rootView: view)
+        viewController.isModalInPresentation = true
+        DispatchQueue.main.async { [weak self] in
+            self?.present(viewController: viewController)
+        }
+    }
+
+    private func showLinkBankFlowWithYodlee() {
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router

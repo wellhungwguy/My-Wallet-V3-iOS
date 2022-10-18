@@ -4,6 +4,7 @@
 //
 
 import DIKit
+import FeatureBackupRecoveryPhraseUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import PlatformKit
@@ -18,7 +19,7 @@ final class AccountsRouter: AccountsRouting {
 
     init(
         routing: TabSwapping,
-        backupRouter: FeatureDashboardUI.BackupRouterAPI = resolve()
+        backupRouter: FeatureBackupRecoveryPhraseUI.RecoveryPhraseBackupRouterAPI = resolve()
     ) {
         let provider = CustodyActionRouterProvider()
         custodyActionRouterAPI = provider.create(

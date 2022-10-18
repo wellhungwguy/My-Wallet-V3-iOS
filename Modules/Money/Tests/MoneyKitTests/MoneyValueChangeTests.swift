@@ -40,7 +40,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before 10% increase
     func testMoneyValueBefore10PercentIncrease() {
         let value = MoneyValue.create(major: "1", currency: .crypto(.bitcoin))!
-        let expected = MoneyValue.create(major: "0.90909091", currency: .crypto(.bitcoin))!
+        let expected = MoneyValue.create(major: "0.90909090909091", currency: .crypto(.bitcoin))!
         let result = value.value(before: 0.1)
         XCTAssertEqual(result, expected)
     }
@@ -64,7 +64,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before 10% increase
     func testCryptoValueBefore10PercentIncrease() {
         let value = CryptoValue.create(major: "1", currency: .bitcoin)!
-        let expected = CryptoValue.create(major: "0.90909091", currency: .bitcoin)
+        let expected = CryptoValue.create(major: "0.90909090909091", currency: .bitcoin)
         let result = value.value(before: 0.1)
         XCTAssertEqual(result, expected)
     }
@@ -79,7 +79,7 @@ final class MoneyValueChangeTests: XCTestCase {
 
     func testMoneyValueInitializeWithMajor() {
         let value = MoneyValue.create(major: "0.072", currency: .fiat(.GBP))!
-        let expected: Decimal = 0.07
+        let expected: Decimal = 0.072
         XCTAssertEqual(value.displayMajorValue, expected.roundTo(places: 2))
     }
 

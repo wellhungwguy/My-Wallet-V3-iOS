@@ -45,7 +45,7 @@ final class FiatAsset: Asset {
     }
 
     /// We cannot transfer for fiat
-    func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
+    func transactionTargets(account: SingleAccount, action: AssetAction) -> AnyPublisher<[SingleAccount], Never> {
         .just([])
     }
 

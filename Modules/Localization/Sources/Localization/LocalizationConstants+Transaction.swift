@@ -115,10 +115,22 @@ extension LocalizationConstants {
             }
         }
 
+        public enum AvailableBalance {}
+
         public enum TradingCurrency {}
 
         public enum Error {}
     }
+}
+
+extension LocalizationConstants.Transaction.AvailableBalance {
+    public static let availableTo = NSLocalizedString("Available to", comment: "Available to")
+    public static let description = NSLocalizedString("Your available balance is your total available minus estimated network fees.", comment: "Your available balance is your total available minus estimated network fees.")
+    public static let total = NSLocalizedString("Total", comment: "Total")
+    public static let estimated = NSLocalizedString("Est.", comment: "Abbreviation for Estimated")
+    public static let fees = NSLocalizedString("Fees", comment: "Fees")
+    public static let okay = NSLocalizedString("Okay", comment: "Okay")
+    public static let free = NSLocalizedString("Free", comment: "Free")
 }
 
 extension LocalizationConstants.Transaction.Notices {
@@ -606,6 +618,10 @@ extension LocalizationConstants.Transaction.Swap {
         "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
         comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
     )
+    public static let tradingAccountsSwitchTitle = NSLocalizedString(
+        "Show Trading Accounts",
+        comment: "Show Trading Accounts"
+    )
 }
 
 // MARK: - Interest Withdraw
@@ -991,6 +1007,60 @@ extension LocalizationConstants.Transaction.Sell.Completion.Failure {
 
 extension LocalizationConstants.Transaction.Confirmation.Error {
     public static let title = NSLocalizedString("Error", comment: "Error")
+
+    public enum RequiresUpdate {
+        public static let title = NSLocalizedString(
+            "Oops! Something went wrong",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "Please relink your bank account to ensure faster settlement.",
+            comment: ""
+        )
+
+        public static let relinkBankActionTitle = NSLocalizedString(
+            "Relink Bank Account",
+            comment: ""
+        )
+    }
+
+    public enum InsufficientFunds {
+        public static let title = NSLocalizedString(
+            "Insufficient Funds",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "The latest balance we fetched indicates you do not have enough funds in your bank account to make this transaction. Please check and try again.",
+            comment: ""
+        )
+    }
+
+    public enum StaleBalance {
+        public static let title = NSLocalizedString(
+            "Stale Balance",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "We could not obtain an updated balance for your bank account. Please try again.",
+            comment: ""
+        )
+    }
+
+    public enum GenericOops {
+        public static let title = NSLocalizedString(
+            "Oops! Something went wrong.",
+            comment: ""
+        )
+
+        public static let message = NSLocalizedString(
+            "We could not complete your transaction. Please try again or choose a different payment method.",
+            comment: ""
+        )
+    }
+
     public static let insufficientFunds = NSLocalizedString(
         "You have insufficient funds in this account to process this transaction",
         comment: ""

@@ -326,22 +326,12 @@ extension BitcoinOnChainTransactionEngine {
         guard sourceAccount != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
-        let sourceAccountLabel = sourceAccount.label
         return Completable.fromCallable { [pendingTransaction] in
             guard pendingTransaction.amount.isPositive else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
             }
-            guard pendingTransaction.amount.amount >= Token.coin.dust else {
+            guard pendingTransaction.amount.minorAmount >= Token.coin.dust else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
-            }
-            guard pendingTransaction.amount.amount <= Token.coin.maximumSupply else {
-                throw TransactionValidationFailure(
-                    state: .overMaximumSourceLimit(
-                        MoneyValue(amount: Token.coin.maximumSupply, currency: Token.coin.cryptoCurrency.currencyType),
-                        sourceAccountLabel,
-                        pendingTransaction.amount
-                    )
-                )
             }
         }
     }

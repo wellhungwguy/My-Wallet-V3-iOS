@@ -82,12 +82,12 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
         client
             .getQuote(queryRequest: QuoteQueryRequest(from: query))
             .asSingle()
-            .map {
+            .map { response in
                 try Quote(
                     sourceCurrency: query.sourceCurrency,
                     destinationCurrency: query.destinationCurrency,
                     value: query.amount,
-                    response: $0
+                    response: response
                 )
             }
     }

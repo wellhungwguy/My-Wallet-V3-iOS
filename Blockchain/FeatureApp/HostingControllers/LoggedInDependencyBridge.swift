@@ -23,11 +23,6 @@ protocol SettingsStarterAPI: AnyObject {
     func showSettingsView()
 }
 
-/// Provides a reload mechanism that `Wallet` triggers
-protocol LoggedInReloadAPI: AnyObject {
-    func reload()
-}
-
 /// This protocol conforms to a set of certain protocols that were used as part of the
 /// older `AppCoordinator` class which was passed around using it's `shared` property
 /// This attempts to bridge the two worlds of the `LoggedInHostingController` and any
@@ -39,7 +34,6 @@ protocol LoggedInBridge: DrawerRouting,
     WalletOperationsRouting,
     BackupFlowStarterAPI,
     SettingsStarterAPI,
-    LoggedInReloadAPI,
     InterestAccountListHostingControllerDelegate,
     AuthenticationCoordinating,
     QRCodeScannerRouting,
@@ -55,9 +49,6 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
 
     /// Provides `SettingsStarterAPI` methods
     func resolveSettingsStarter() -> SettingsStarterAPI
-
-    /// Provides `LoggedInReloadAPI` methods
-    func resolveLoggedInReload() -> LoggedInReloadAPI
 
     /// Provides `DrawerRouting` methods
     func resolveDrawerRouting() -> DrawerRouting
@@ -95,10 +86,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveSettingsStarter() -> SettingsStarterAPI {
         resolve() as SettingsStarterAPI
-    }
-
-    func resolveLoggedInReload() -> LoggedInReloadAPI {
-        resolve() as LoggedInReloadAPI
     }
 
     func resolveDrawerRouting() -> DrawerRouting {
@@ -174,7 +161,6 @@ class DynamicDependencyBridge: UIViewController, LoggedInBridge {
     func switchToActivity(for currencyType: CurrencyType) { wrapped.switchToActivity() }
     func startBackupFlow() { wrapped.startBackupFlow() }
     func showSettingsView() { wrapped.showSettingsView() }
-    func reload() { wrapped.reload() }
     func presentKYCIfNeeded() { wrapped.presentKYCIfNeeded() }
     func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) { wrapped.presentBuyIfNeeded(cryptoCurrency) }
     func enableBiometrics() { wrapped.enableBiometrics() }
@@ -211,7 +197,6 @@ class SignedOutDependencyBridge: UIViewController, LoggedInBridge {
     func switchToActivity(for currencyType: CurrencyType) {}
     func startBackupFlow() {}
     func showSettingsView() {}
-    func reload() {}
     func presentKYCIfNeeded() {}
     func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {}
     func enableBiometrics() {}

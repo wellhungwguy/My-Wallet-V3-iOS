@@ -10,20 +10,20 @@ public final class PriceServiceMock: PriceServiceAPI {
     public struct StubbedResults {
         public var moneyValuePair = MoneyValuePair(
             base: .one(currency: .bitcoin),
-            quote: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+            quote: MoneyValue.create(minor: 10000000, currency: .fiat(.USD))
         )
         public var historicalPriceSeries = HistoricalPriceSeries(
             currency: .bitcoin,
             prices: [
                 PriceQuoteAtTime(
                     timestamp: Date(),
-                    moneyValue: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+                    moneyValue: MoneyValue.create(minor: 10000000, currency: .fiat(.USD))
                 )
             ]
         )
         public var priceQuoteAtTime = PriceQuoteAtTime(
             timestamp: Date(),
-            moneyValue: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+            moneyValue: MoneyValue.create(minor: 10000000, currency: .fiat(.USD))
         )
     }
 

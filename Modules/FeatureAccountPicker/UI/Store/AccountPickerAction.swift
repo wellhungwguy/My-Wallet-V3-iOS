@@ -20,6 +20,7 @@ enum AccountPickerAction {
     case failedToUpdateHeader(Error)
 
     case search(String?)
+    case onToggleSwitch(Bool)
 
     case prefetching(PrefetchingAction)
 

@@ -20,7 +20,7 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
     /// Creates a `AvailableBalanceContentInteractor` that will stream the
     /// balance (in the given `CurrencyType`) of the first account of the given `CurrencyType`.
     public init(currencyType: CurrencyType, coincore: CoincoreAPI) {
-        contentCalculationState = coincore.allAccounts(filter: .all)
+        contentCalculationState = coincore.allAccounts(filter: .allExcludingExchange)
             .compactMap { group in
                 group.accounts.first { $0.currencyType == currencyType }
             }

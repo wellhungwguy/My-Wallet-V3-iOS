@@ -52,7 +52,7 @@ final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, 
     }
 
     var associatedAppModes: [AppMode] {
-        [AppMode.trading, AppMode.universal]
+        [AppMode.pkw, AppMode.trading, AppMode.universal]
     }
 
     var shouldShow: Bool {

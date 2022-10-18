@@ -597,7 +597,7 @@ extension TransactionsRouter {
                 ErrorView(
                     ux: state.ux(action: action.asset),
                     fallback: {
-                        Icon.globe.accentColor(.semantic.primary)
+                        Icon.globe.color(.semantic.primary)
                     },
                     dismiss: dismiss
                 )

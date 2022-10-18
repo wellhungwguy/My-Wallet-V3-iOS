@@ -22,8 +22,8 @@ struct OnboardingChecklistRow: View {
             caption: status == .pending ? item.pendingDetail : item.detail,
             leading: {
                 item.icon
+                    .color(item.accentColor)
                     .frame(width: 28, height: 28)
-                    .accentColor(item.accentColor)
                     .padding(4)
                     .background(
                         RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
@@ -34,16 +34,16 @@ struct OnboardingChecklistRow: View {
             trailing: {
                 if status == .complete {
                     Icon.checkCircle
+                        .color(.semantic.success)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.success)
                 } else if status == .pending {
                     ProgressView(value: 0.25)
                         .progressViewStyle(IndeterminateProgressStyle())
                         .frame(width: 24, height: 24)
                 } else {
                     Icon.chevronRight
+                        .color(item.accentColor)
                         .frame(width: 24, height: 24)
-                        .accentColor(item.accentColor)
                 }
             }
         )

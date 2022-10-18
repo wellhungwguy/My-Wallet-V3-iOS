@@ -2,26 +2,27 @@
 
 import BigInt
 import MoneyKit
+@testable import MoneyKitMock
 import XCTest
 
 // Tests default implementations of MoneyOperating
 final class MoneyOperatingTests: XCTestCase {
 
     func moneyValueUSD(_ int: Int) -> MoneyValue {
-        MoneyValue(amount: BigInt(int), currency: .fiat(.USD))
+        MoneyValue.create(minor: BigInt(int), currency: .fiat(.USD))
     }
 
     func moneyValueIQD(_ int: Int) -> MoneyValue {
-        MoneyValue(amount: BigInt(int), currency: .fiat(.IQD))
+        MoneyValue.create(minor: BigInt(int), currency: .fiat(.IQD))
     }
 
     func moneyValue(_ int: Int, _ currency: CurrencyType) -> MoneyValue {
-        MoneyValue(amount: BigInt(int), currency: currency)
+        MoneyValue.create(minor: BigInt(int), currency: currency)
     }
 
     func testMoneyValueMultiplication() throws {
         let r = try moneyValueUSD(1501) * moneyValueUSD(10002)
-        XCTAssertEqual(r.amount, BigInt(150130))
+        XCTAssertEqual(r.minorAmount, BigInt(150130))
     }
 
     private func divide(
@@ -29,7 +30,7 @@ final class MoneyOperatingTests: XCTestCase {
         y: MoneyValue,
         shouldBe result: BigInt
     ) {
-        XCTAssertEqual((try x / y).amount, result)
+        XCTAssertEqual((try x / y).minorAmount, result)
     }
 
     private func percentage(
@@ -213,5 +214,21 @@ final class MoneyOperatingTests: XCTestCase {
 
     func testMoneyValueDivisionByZero() {
         XCTAssertThrowsError(try moneyValueUSD(10) / moneyValueUSD(0))
+    }
+
+    func testHasPositiveDisplayableBalance() {
+        XCTAssertFalse(MoneyValue.create(major: "0.000000001", currency: .crypto(.ethereum))!.hasPositiveDisplayableBalance)
+        XCTAssertTrue(MoneyValue.create(major: "0.00000001", currency: .crypto(.ethereum))!.hasPositiveDisplayableBalance)
+    }
+
+    func testCreateOne() {
+        let cryptoCurrency: CryptoCurrency = .mockCoin(
+            symbol: "P24",
+            name: "PRECISION_24",
+            precision: 24
+        )
+        let oneCoinA = MoneyValue.one(currency: .crypto(cryptoCurrency))
+        let oneCoinB = MoneyValue.create(minor: BigInt(10).power(24), currency: .crypto(cryptoCurrency))
+        XCTAssertEqual(oneCoinA, oneCoinB)
     }
 }

@@ -20,7 +20,7 @@ final class ERC20BalanceServiceMock: ERC20BalanceServiceAPI {
     ///
     /// - Parameter cryptoCurrency: An ERC-20 crypto currency.
     init(cryptoCurrency: CryptoCurrency) {
-        balance = .create(major: 2, currency: cryptoCurrency)
+        balance = .create(majorBigInt: 2, currency: cryptoCurrency)
     }
 
     // MARK: - Internal Methods

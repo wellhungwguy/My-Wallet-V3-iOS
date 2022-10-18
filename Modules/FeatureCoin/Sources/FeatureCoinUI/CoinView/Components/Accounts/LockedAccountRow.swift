@@ -19,13 +19,13 @@ struct LockedAccountRow: View {
             subtitle: subtitle,
             leading: {
                 icon
-                    .accentColor(.semantic.muted)
+                    .color(.semantic.muted)
                     .frame(width: 24)
             },
             trailing: {
                 Icon.lockClosed
+                    .color(.semantic.muted)
                     .frame(width: 24)
-                    .accentColor(.semantic.muted)
             },
             action: {
                 app.post(

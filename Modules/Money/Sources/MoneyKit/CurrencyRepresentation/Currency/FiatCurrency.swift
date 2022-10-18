@@ -1029,6 +1029,8 @@ extension FiatCurrency {
         }
     }
 
+    public var storeExtraPrecision: Int { 6 }
+
     public var displayPrecision: Int { precision }
 
     private var currentLocale: NSLocale {

@@ -41,8 +41,8 @@ struct ClaimBenefitsView: View {
             },
             label: {
                 Icon.closeCirclev2
+                    .color(.semantic.muted)
                     .frame(width: 24, height: 24)
-                    .accentColor(.semantic.muted)
             }
         )
     }
@@ -67,8 +67,8 @@ struct ClaimBenefitsView: View {
                 subtitle: LocalizedString.BenefitsList.SimplifyTransaction.description,
                 leading: {
                     Icon.flashOn
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )
@@ -77,8 +77,8 @@ struct ClaimBenefitsView: View {
                 subtitle: LocalizedString.BenefitsList.MultiNetwork.description,
                 leading: {
                     Icon.sell
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )
@@ -87,8 +87,8 @@ struct ClaimBenefitsView: View {
                 subtitle: LocalizedString.BenefitsList.Ownership.description,
                 leading: {
                     Icon.verified
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )
@@ -97,8 +97,8 @@ struct ClaimBenefitsView: View {
                 subtitle: LocalizedString.BenefitsList.MuchMore.description,
                 leading: {
                     Icon.listBullets
+                        .color(.semantic.primary)
                         .frame(width: 24, height: 24)
-                        .accentColor(.semantic.primary)
                 },
                 trailing: { EmptyView() }
             )

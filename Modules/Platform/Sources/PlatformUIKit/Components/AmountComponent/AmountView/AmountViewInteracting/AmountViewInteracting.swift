@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import MoneyKit
 import PlatformKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 /// The interface for the interactors behind all `AmountViewable` views
 /// in the `Enter Amount` screen.
@@ -37,6 +39,31 @@ public protocol AmountViewInteracting {
     /// - Parameter amount: `String`
     func set(amount: String)
 
+    /// Sets the amount that the user is able to utilize in a given transaction.
+    /// This is not the same as their balance. It often times takes into account the
+    /// users balance, fees, as well as limits on their account.
+    /// This is used when calculating quickfill amounts.
+    /// - Parameter amount: `MoneyValue`
+    func setActionableAmount(_ amount: MoneyValue)
+
+    /// The total balance for a given account.
+    /// For PKW this is often more than the available balance.
+    /// This is used when displaying the `AvailableBalanceDetailView`
+    /// - Parameter amount: `MoneyValue`
+    func setAccountBalance(_ amount: MoneyValue)
+
+    /// The transactionfee that the user is liable for for a given transaction.
+    /// This is used when displaying the `AvailableBalanceDetailView`
+    /// - Parameter amount: `MoneyValue`
+    func setTransactionFeeAmount(_ amount: MoneyValue)
+
+    /// Sets the amount that the user is able to utilize in a given transaction.
+    /// This is not the same as their balance. It often times takes into account the
+    /// users balance, fees, as well as limits on their account.
+    /// This is used when calculating quickfill amounts.
+    /// - Parameter amount: `MoneyValue`
+    func availableBalanceViewTapped()
+
     /// Toggles the auxiliary view on or off.
     /// When disabled, the auxiliary view doesn't show up on error states.
     /// Instead, the amount view displays the amount in a different style (e.g - red text).
@@ -47,4 +74,36 @@ public protocol AmountViewInteracting {
     var minAmountSelected: Observable<Void> { get }
 
     var maxAmountSelected: Observable<Void> { get }
+
+    /// When the `AvailableBalanceView` is tapped.
+    /// Once tapped the `AvailableBalanceDetailView` is shown.
+    var availableBalanceViewSelected: Observable<AvailableBalanceDetails> { get }
+}
+
+extension AmountViewInteracting {
+    public var availableBalanceViewSelected: Observable<AvailableBalanceDetails> {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+
+    public func availableBalanceViewTapped() {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+
+    public func setActionableAmount(_ amount: MoneyValue) {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+
+    public func setTransactionFeeAmount(_ amount: MoneyValue) {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+
+    public func setAccountBalance(_ amount: MoneyValue) {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+}
+
+public struct AvailableBalanceDetails {
+    public let balance: AnyPublisher<FiatValue, Never>
+    public let availableBalance: AnyPublisher<FiatValue, Never>
+    public let fee: AnyPublisher<FiatValue, Never>
 }

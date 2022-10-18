@@ -46,7 +46,7 @@ struct ErrorView: View {
             ZStack(alignment: .topTrailing) {
                 Icon
                     .creditcard
-                    .accentColor(.WalletSemantic.primary)
+                    .color(.WalletSemantic.primary)
                     .frame(width: 60, height: 60)
                 ZStack {
                     Circle()
@@ -57,8 +57,8 @@ struct ErrorView: View {
                         .frame(width: 22, height: 22)
                     Icon
                         .error
+                        .color(.white)
                         .frame(width: 12, height: 12)
-                        .accentColor(.white)
                 }
                 .padding(.top, -4)
                 .padding(.trailing, -8)
