@@ -62,7 +62,7 @@ public struct BIP21URI<Token: BitcoinChainToken> {
             amount = nil
         }
 
-        guard let address = address else {
+        guard let address else {
             return nil
         }
 

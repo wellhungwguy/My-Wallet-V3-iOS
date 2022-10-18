@@ -108,7 +108,7 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
     ///
     /// - Returns: A cache value.
     private func toCacheValue(cacheItem: CacheItem?) -> CacheValue<Value> {
-        guard let cacheItem = cacheItem else {
+        guard let cacheItem else {
             return .absent
         }
 

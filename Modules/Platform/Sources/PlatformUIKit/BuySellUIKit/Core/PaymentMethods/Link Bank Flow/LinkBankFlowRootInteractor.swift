@@ -132,7 +132,7 @@ final class LinkBankFlowRootInteractor: Interactor,
     private func handleInitialRouting(with result: Result<BankLinkageData?, BankLinkageError>) {
         switch result {
         case .success(let data):
-            guard let data = data else {
+            guard let data else {
                 router?.route(to: .failure(.generic))
                 return
             }

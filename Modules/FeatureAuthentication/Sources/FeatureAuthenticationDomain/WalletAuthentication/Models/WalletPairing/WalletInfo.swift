@@ -247,9 +247,9 @@ extension WalletInfo {
 
     /// Determine whether the account attached could be upgraded
     public var shouldUpgradeAccount: Bool {
-        guard let unified = unified,
-              let upgradeable = upgradeable,
-              let mergeable = mergeable,
+        guard let unified,
+              let upgradeable,
+              let mergeable,
               userType != nil
         else {
             return false

@@ -80,7 +80,7 @@ public struct TabBar<Content: View>: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .environment(\.activeTab, activeTabIdentifier)
                     .onPreferenceChange(TabBarItemPreferenceKey.self) { item in
-                        if let item = item, !items.contains(item) {
+                        if let item, !items.contains(item) {
                             items.insert(item, at: 0)
                         }
                     }

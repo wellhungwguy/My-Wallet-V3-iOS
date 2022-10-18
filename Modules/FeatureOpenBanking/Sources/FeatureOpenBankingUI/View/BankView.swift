@@ -245,7 +245,7 @@ public struct BankView: View {
         from actions: [BankState.UI.Action]?,
         in viewStore: ViewStore<BankState, BankAction>
     ) -> [ButtonState] {
-        guard let actions = actions else { return [] }
+        guard let actions else { return [] }
         return actions
             .enumerated()
             .map { i, action in

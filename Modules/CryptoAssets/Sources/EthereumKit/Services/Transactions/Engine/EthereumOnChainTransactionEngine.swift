@@ -112,7 +112,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         )
         .map { [network, predefinedAmount] fiatCurrency, availableBalance, feeAmount -> PendingTransaction in
             let amount: MoneyValue
-            if let predefinedAmount = predefinedAmount,
+            if let predefinedAmount,
                predefinedAmount.currency == network.cryptoCurrency
             {
                 amount = predefinedAmount

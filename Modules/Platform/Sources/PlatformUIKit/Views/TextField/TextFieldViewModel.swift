@@ -293,7 +293,7 @@ public class TextFieldViewModel {
             .disposed(by: disposeBag)
 
         let matchState: Observable<TextValidationState>
-        if let textMatcher = textMatcher {
+        if let textMatcher {
             matchState = textMatcher.validationState
         } else {
             matchState = .just(.valid)

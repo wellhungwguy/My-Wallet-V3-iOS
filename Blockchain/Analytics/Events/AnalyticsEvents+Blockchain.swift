@@ -160,7 +160,7 @@ extension AnalyticsEvents {
                  .bitpayPaymentSuccess:
                 return nil
             case .bitpayPaymentFailure(error: let error):
-                guard let error = error else { return nil }
+                guard let error else { return nil }
                 return ["error": String(describing: error)]
             }
         }

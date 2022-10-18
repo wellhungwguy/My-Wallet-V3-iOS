@@ -23,7 +23,7 @@ struct ActivityDetailsView: View {
     @ViewBuilder func content(_ transaction: Card.Transaction?) -> some View {
         ScrollView {
             VStack(spacing: 0) {
-                if let transaction = transaction {
+                if let transaction {
                     transactionAmount(transaction)
                     Group {
                         DetailsRow(

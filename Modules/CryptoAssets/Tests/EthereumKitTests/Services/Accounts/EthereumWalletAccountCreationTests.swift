@@ -269,7 +269,7 @@ final class MetadataServiceMock: WalletMetadataEntryServiceAPI {
     var saveEntryCalled: Bool = false
     var saveEntryResult: Result<EmptyValue, WalletAssetSaveError> = .failure(.notInitialized)
 
-    func save<Node: MetadataNodeEntry>(node: Node) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+    func save(node: some MetadataNodeEntry) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
         saveEntryCalled = true
         return saveEntryResult.publisher.eraseToAnyPublisher()
     }

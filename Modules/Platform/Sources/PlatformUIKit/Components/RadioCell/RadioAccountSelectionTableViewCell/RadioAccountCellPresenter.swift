@@ -39,7 +39,7 @@ public final class RadioAccountCellPresenter: IdentifiableType {
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)
             .compactMap { name -> ImageViewContent? in
-                guard let name = name else {
+                guard let name else {
                     return nil
                 }
                 return ImageViewContent(

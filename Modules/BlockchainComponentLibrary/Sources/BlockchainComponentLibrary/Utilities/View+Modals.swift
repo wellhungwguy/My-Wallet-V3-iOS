@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
 
-    public func modal<Content: View>(isPresented: Binding<Bool>, content: @escaping () -> Content) -> some View {
+    public func modal(isPresented: Binding<Bool>, content: @escaping () -> some View) -> some View {
         modifier(ModalWrapper(isPresented: isPresented, modal: content))
     }
 }

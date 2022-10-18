@@ -6,7 +6,7 @@ public final class BadgeNumberedItemView: UIView {
 
     public var viewModel: BadgeNumberedItemViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             badgeView.viewModel = viewModel.badgeViewModel
             titleLabel.content = viewModel.titleLabelContent
             descriptionLabel.content = viewModel.descriptionLabelContent

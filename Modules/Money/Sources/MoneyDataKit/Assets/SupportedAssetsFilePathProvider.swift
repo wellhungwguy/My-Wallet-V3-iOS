@@ -47,21 +47,21 @@ final class SupportedAssetsFilePathProvider: SupportedAssetsFilePathProviderAPI 
     }
 
     var remoteEthereumERC20Assets: URL? {
-        guard let documentsDirectory = documentsDirectory else {
+        guard let documentsDirectory else {
             return nil
         }
         return documentsDirectory.appendingPathComponent(FileName.Remote.ethereumERC20)
     }
 
     var remoteOtherERC20Assets: URL? {
-        guard let documentsDirectory = documentsDirectory else {
+        guard let documentsDirectory else {
             return nil
         }
         return documentsDirectory.appendingPathComponent(FileName.Remote.otherERC20)
     }
 
     var remoteCustodialAssets: URL? {
-        guard let documentsDirectory = documentsDirectory else {
+        guard let documentsDirectory else {
             return nil
         }
         return documentsDirectory.appendingPathComponent(FileName.Remote.custodial)

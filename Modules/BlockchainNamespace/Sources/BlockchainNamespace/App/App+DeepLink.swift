@@ -187,7 +187,7 @@ extension URL {
     }
 }
 
-extension Collection where Element == App.DeepLink.Rule {
+extension Collection<App.DeepLink.Rule> {
 
     public func match(for url: URL) -> App.DeepLink.Rule.Match? {
         lazy.compactMap { rule -> App.DeepLink.Rule.Match? in
@@ -211,7 +211,7 @@ extension Collection where Element == App.DeepLink.Rule {
     }
 }
 
-extension Collection where Element == URLQueryItem {
+extension Collection<URLQueryItem> {
 
     public subscript(named name: String) -> URLQueryItem? {
         item(named: name)

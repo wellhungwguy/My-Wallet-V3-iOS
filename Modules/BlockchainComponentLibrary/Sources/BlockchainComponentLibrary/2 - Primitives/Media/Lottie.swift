@@ -42,7 +42,7 @@ public struct LottieView: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: Container, context: Context) {
-        if let json = json {
+        if let json {
             do {
                 uiView.animationView.animation = try JSONDecoder()
                     .decode(Animation.self, from: json)
@@ -92,7 +92,7 @@ public struct LottieView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: Container, context: Context) {
-        if let json = json {
+        if let json {
             do {
                 nsView.animationView.animation = try JSONDecoder()
                     .decode(Animation.self, from: json)

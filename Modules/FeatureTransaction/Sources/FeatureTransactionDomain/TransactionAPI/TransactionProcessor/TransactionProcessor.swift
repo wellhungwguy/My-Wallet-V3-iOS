@@ -59,7 +59,7 @@ public final class TransactionProcessor {
             sourceAccount: sourceAccount,
             transactionTarget: transactionTarget,
             askForRefreshConfirmation: { [weak self] revalidate in
-                guard let self = self else {
+                guard let self else {
                     return .empty()
                 }
                 return self.refreshConfirmations(revalidate: revalidate)
@@ -101,7 +101,7 @@ public final class TransactionProcessor {
                     self.engine.doValidateAll(pendingTransaction: transaction)
                 }
                 .do(onSuccess: { [weak self] transaction in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.updatePendingTx(transaction)
                 })
                 .asObservable()

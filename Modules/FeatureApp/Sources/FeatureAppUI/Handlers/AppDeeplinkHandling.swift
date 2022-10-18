@@ -284,7 +284,7 @@ public final class BlockchainLinksHandler: URIHandlingAPI {
         // a fragment a part of the RFC 1808 standard, so we need to check both.
         let pathOrFragment = url.fragment ?? url.path
         let route = pathOrFragment.split(separator: "/").first
-        guard let route = route,
+        guard let route,
               validRoutes.contains(String(route))
         else {
             Logger.shared.warning("unhandled route for url: \(url)")
@@ -341,7 +341,7 @@ public final class FirebaseDeeplinkHandler: URIHandlingAPI {
                     }
 
                     do {
-                        if let error = error { throw error }
+                        if let error { throw error }
 
                         var dynamicURL = try (dynamicLink?.url)
                             .flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false) }

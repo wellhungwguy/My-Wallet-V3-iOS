@@ -392,7 +392,7 @@ public final class Router: Routing {
         }
         let presentKYCFlow: (KYC.Tier) -> Void = { [weak self, weak presenter] requiredTier in
             presenter?.dismiss(animated: true) { [weak self] in
-                guard let self = self, let presenter = presenter else {
+                guard let self, let presenter else {
                     return
                 }
                 self.presentKYC(from: presenter, requiredTier: requiredTier)

@@ -66,7 +66,7 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
     ) -> AnyPublisher<NetworkRequest, PushNotificationError> {
         let sharedKey = sharedKeyProvider.sharedKey
             .flatMap { sharedKey -> AnyPublisher<String, PushNotificationError> in
-                guard let sharedKey = sharedKey else {
+                guard let sharedKey else {
                     return .failure(PushNotificationError.missingCredentials)
                 }
                 guard !sharedKey.isEmpty else {
@@ -76,7 +76,7 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
             }
         let guid = guidProvider.guid
             .flatMap { guid -> AnyPublisher<String, PushNotificationError> in
-                guard let guid = guid else {
+                guard let guid else {
                     return .failure(PushNotificationError.missingCredentials)
                 }
                 guard !guid.isEmpty else {

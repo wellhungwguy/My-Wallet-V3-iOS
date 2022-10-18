@@ -89,12 +89,12 @@ final class PinInteractor: PinInteracting {
             .asSingle()
             .do(
                 onSuccess: { [weak self] response in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 }
             )
             .map { [weak self] response -> String in
-                guard let self = self else { throw PinError.unretainedSelf }
+                guard let self else { throw PinError.unretainedSelf }
                 return try self.pinValidationStatus(from: response)
             }
             .catch { [weak self] error in
@@ -153,7 +153,7 @@ final class PinInteractor: PinInteracting {
             .setFailureType(to: PinError.self)
             .flatMap { [weak self] password -> AnyPublisher<(pin: String, password: String), PinError> in
                 // Wallet must have password at the stage
-                guard let password = password else {
+                guard let password else {
                     let error = PinError.serverError(LocalizationConstants.Pin.cannotSaveInvalidWalletState)
                     self?.recorder.error(error)
                     return .failure(error)

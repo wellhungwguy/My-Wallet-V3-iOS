@@ -51,7 +51,7 @@ public struct AnnouncementCard<Leading: View, Background: View>: View {
                 }
             }
             Spacer()
-            if let onCloseTapped = onCloseTapped {
+            if let onCloseTapped {
                 Button(
                     action: onCloseTapped,
                     label: {

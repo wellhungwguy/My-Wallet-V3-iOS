@@ -218,7 +218,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         )
         .map { (state: $0.0, activeAmountInput: $0.1, auxiliaryEnabled: $0.2) }
         .map { [weak self] value in
-            guard let self = self else { return .validInput(nil) }
+            guard let self else { return .validInput(nil) }
             return self.performEffect(
                 state: value.state,
                 activeAmountInput: value.activeAmountInput,

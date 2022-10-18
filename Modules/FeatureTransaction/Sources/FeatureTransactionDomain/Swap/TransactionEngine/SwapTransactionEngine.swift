@@ -205,11 +205,11 @@ extension SwapTransactionEngine {
             sourceAccount.receiveAddress.asSingle()
         )
         .flatMap { [weak self] destinationAddress, refundAddress -> Single<SwapOrder> in
-            guard let self = self else { return .never() }
+            guard let self else { return .never() }
             return self.quotesEngine.quotePublisher
                 .asSingle()
                 .flatMap { [weak self] quote -> Single<SwapOrder> in
-                    guard let self = self else { return .never() }
+                    guard let self else { return .never() }
                     let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress.address : nil
                     let refund = self.orderDirection.requiresRefundAddress ? refundAddress.address : nil
                     return self.orderCreationRepository

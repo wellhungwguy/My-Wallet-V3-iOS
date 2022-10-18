@@ -124,7 +124,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .map { [sourceTradingAccount, sourceAsset, predefinedAmount] transactionLimits, walletCurrency
                 -> PendingTransaction in
                 let amount: MoneyValue
-                if let predefinedAmount = predefinedAmount,
+                if let predefinedAmount,
                    predefinedAmount.currencyType == sourceAsset
                 {
                     amount = predefinedAmount

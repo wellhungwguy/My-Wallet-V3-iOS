@@ -71,7 +71,7 @@ extension SupportedAssetsResponse.Asset.AssetType {
                 minimumOnChainConfirmations: minimumOnChainConfirmations ?? 0
             )
         case Self.Name.erc20.rawValue:
-            guard let erc20Address = erc20Address else {
+            guard let erc20Address else {
                 return nil
             }
             guard let parentChain = parentChain

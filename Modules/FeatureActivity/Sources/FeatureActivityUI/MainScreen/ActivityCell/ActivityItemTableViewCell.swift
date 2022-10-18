@@ -14,7 +14,7 @@ final class ActivityItemTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             assetBalanceView.presenter = presenter.assetBalanceViewPresenter
             badgeImageView.viewModel = presenter.badgeImageViewModel
 

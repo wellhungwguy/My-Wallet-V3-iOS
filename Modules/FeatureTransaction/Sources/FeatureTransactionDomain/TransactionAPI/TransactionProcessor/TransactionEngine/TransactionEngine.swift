@@ -315,7 +315,7 @@ extension TransactionEngine {
             .tradingCurrencyPublisher
             .setFailureType(to: PriceServiceError.self)
             .flatMap { [weak self] tradingCurrency -> AnyPublisher<[MoneyValue], PriceServiceError> in
-                guard let self = self else {
+                guard let self else {
                     fatalError("Publiser not retained '\(#function)'")
                 }
                 let exchangeRatesPublishers: [AnyPublisher<MoneyValue, PriceServiceError>] = [
@@ -474,7 +474,7 @@ extension TransactionEngine {
     }
 
     public func defaultValidateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        guard let sourceAccount = sourceAccount, transactionTarget != nil else {
+        guard let sourceAccount, transactionTarget != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
 
@@ -483,7 +483,7 @@ extension TransactionEngine {
             .zip(sourceAccount.balance)
             .asSingle()
             .map { [weak self] exchangeRates, sourceBalance -> Void in
-                guard let self = self else {
+                guard let self else {
                     return
                 }
                 // normalize all amounts to the transaction's source account currency so we can compare and operate on them

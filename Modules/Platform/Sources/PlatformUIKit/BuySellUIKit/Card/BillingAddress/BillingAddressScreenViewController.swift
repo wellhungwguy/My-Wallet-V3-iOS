@@ -75,7 +75,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 
         presenter.errorTrigger
             .emit(onNext: { [weak self] error in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch error {
                 case let nabu as Nabu.Error:
                     if let ux = nabu.ux {

@@ -25,7 +25,7 @@ extension DeepLinkRoute {
         let path: String
         let parameters: [String: String]
 
-        if let fragment = fragment {
+        if let fragment {
             path = fragment.path
             parameters = url.queryArgs.merging(fragment.queryArgs, uniquingKeysWith: { $1 })
         } else {

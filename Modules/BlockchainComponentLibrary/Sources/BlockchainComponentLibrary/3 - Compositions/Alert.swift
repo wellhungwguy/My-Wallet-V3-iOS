@@ -62,13 +62,13 @@ public struct Alert<TopView: View>: View {
 
                 if title != nil || message != nil {
                     VStack(spacing: Spacing.padding1) {
-                        if let title = title {
+                        if let title {
                             Text(title)
                                 .typography(.title3)
                                 .foregroundColor(.semantic.title)
                         }
 
-                        if let message = message {
+                        if let message {
                             Text(message)
                                 .typography(.paragraph1)
                                 .foregroundColor(.semantic.body)

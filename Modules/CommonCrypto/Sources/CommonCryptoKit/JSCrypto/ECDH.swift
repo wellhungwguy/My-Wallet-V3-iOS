@@ -35,7 +35,7 @@ public enum ECDH {
         Result
             .success(privateKey.getSharedKey(publicKey: publicKey, curve: .secp256k1))
             .flatMap { sharedKey -> Result<Data, ECDHError> in
-                guard let sharedKey = sharedKey else {
+                guard let sharedKey else {
                     return .failure(.invalidSharedKey)
                 }
                 return .success(sharedKey)
@@ -47,7 +47,7 @@ public enum ECDH {
         Result
             .success(WalletCore.PrivateKey(data: priv))
             .flatMap { privateKey -> Result<WalletCore.PrivateKey, ECDHError> in
-                guard let privateKey = privateKey else {
+                guard let privateKey else {
                     return .failure(.invalidPrivateKey)
                 }
                 return .success(privateKey)
@@ -59,7 +59,7 @@ public enum ECDH {
         Result
             .success(WalletCore.PublicKey(data: pub, type: .secp256k1))
             .flatMap { publicKey -> Result<WalletCore.PublicKey, ECDHError> in
-                guard let publicKey = publicKey else {
+                guard let publicKey else {
                     return .failure(.invalidPublicKey)
                 }
                 return .success(publicKey)

@@ -208,7 +208,7 @@ extension URLRequest {
     }
 }
 
-extension Collection where Element == String {
+extension Collection<String> {
 
     func qualityEncoded() -> String {
         enumerated()

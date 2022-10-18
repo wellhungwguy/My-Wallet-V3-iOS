@@ -25,7 +25,7 @@ enum ERC20Function: Equatable {
     }
 
     private static func extractFunction(from data: String?) -> (id: String, data: String)? {
-        guard let data = data else { return nil }
+        guard let data else { return nil }
         if data.hasPrefix("0x") {
             let start = data.range(of: "0x")!.upperBound
             let newValue = data[start..<data.endIndex]

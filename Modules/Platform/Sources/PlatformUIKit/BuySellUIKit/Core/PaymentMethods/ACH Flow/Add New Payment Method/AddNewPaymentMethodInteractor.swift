@@ -107,7 +107,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                 return fundsPaymentMethod == nil ? sorted : sorted + [fundsPaymentMethod!]
             }
             .map { [weak self] (methods: [PaymentMethodType]) -> [AddNewPaymentMethodCellViewModelItem] in
-                guard let self = self else { return [] }
+                guard let self else { return [] }
                 return methods.compactMap { type in
                     if self.filter(type) {
                         return self.generateCellType(by: type) ?? nil

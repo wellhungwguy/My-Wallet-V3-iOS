@@ -406,8 +406,8 @@ extension XCTestCase {
     ///   - seconds:   The amount of time within which all expectations must be fulfilled.
     ///   - file:      The file where the failure occurs. The default is the filename of the test case where you call this function.
     ///   - line:      The line number where the failure occurs. The default is the line number where you call this function.
-    public func XCTAssertPublisherCompletion<T: Publisher>(
-        _ publisher: T,
+    public func XCTAssertPublisherCompletion(
+        _ publisher: some Publisher,
         timeout seconds: TimeInterval = 0.5,
         file: StaticString = #file,
         line: UInt = #line
@@ -430,8 +430,8 @@ extension XCTestCase {
     ///   - seconds:    The amount of time within which all expectations must be fulfilled.
     ///   - file:       The file where the failure occurs. The default is the filename of the test case where you call this function.
     ///   - line:       The line number where the failure occurs. The default is the line number where you call this function.
-    public func XCTAssertPublisherCompletion<T: Publisher>(
-        _ publishers: [T],
+    public func XCTAssertPublisherCompletion(
+        _ publishers: [some Publisher],
         timeout seconds: TimeInterval = 0.5,
         file: StaticString = #file,
         line: UInt = #line

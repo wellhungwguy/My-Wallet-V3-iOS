@@ -224,10 +224,10 @@ struct RootView: View {
         }
     }
 
-    @ViewBuilder func tabItem<Content>(
+    @ViewBuilder func tabItem(
         _ tab: Tab,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
         if viewStore.multiAppIsEnabled {
             multiAppTabItem(tab, content: content)
         } else {
@@ -235,10 +235,10 @@ struct RootView: View {
         }
     }
 
-    @ViewBuilder private func multiAppTabItem<Content>(
+    @ViewBuilder private func multiAppTabItem(
         _ tab: Tab,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
         PrimaryNavigationView {
             content()
         }
@@ -246,10 +246,10 @@ struct RootView: View {
         .identity(tab.ref)
     }
 
-    @ViewBuilder private func legacyTabItem<Content>(
+    @ViewBuilder private func legacyTabItem(
         _ tab: Tab,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(

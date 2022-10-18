@@ -53,7 +53,7 @@ extension UIImageView {
         tintColor = content?.templateColor
         accessibility = content?.accessibility ?? .none
 
-        guard let content = content else {
+        guard let content else {
             image = nil
             return
         }

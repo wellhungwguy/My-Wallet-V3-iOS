@@ -15,7 +15,7 @@ final class SignPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     func connect(state: Observable<TransactionState>) -> Observable<PendingTransactionPageState> {
         state.compactMap { [weak self] state -> PendingTransactionPageState? in
-            guard let self = self else { return nil }
+            guard let self else { return nil }
             switch state.executionStatus {
             case .inProgress, .pending, .notStarted:
                 return self.pending(state: state)

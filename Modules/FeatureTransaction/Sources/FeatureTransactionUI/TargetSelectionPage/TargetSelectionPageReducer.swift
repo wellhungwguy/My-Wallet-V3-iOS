@@ -73,7 +73,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 }
             }
             .flatMap { [weak self] items -> Driver<TargetSelectionPageSectionModel> in
-                guard let self = self else { return .empty() }
+                guard let self else { return .empty() }
                 return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
 
@@ -104,7 +104,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                     .asDriver(onErrorJustReturn: false)
             )
             .map { item, sendToDomainsAnnouncement -> [TargetSelectionPageSectionModel] in
-                guard let item = item else {
+                guard let item else {
                     return []
                 }
                 let header = TargetSelectionHeaderBuilder(

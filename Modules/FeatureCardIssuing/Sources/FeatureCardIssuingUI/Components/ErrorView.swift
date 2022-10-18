@@ -77,7 +77,7 @@ struct ErrorView: View {
             if !isModal {
                 Spacer()
             }
-            if let retryAction = retryAction {
+            if let retryAction {
                 PrimaryButton(
                     title: retryTitle
                 ) {

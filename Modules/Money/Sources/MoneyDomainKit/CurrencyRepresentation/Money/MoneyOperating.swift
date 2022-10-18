@@ -28,7 +28,7 @@ extension MoneyOperating {
     ///
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func max(_ x: Self?, _ y: Self?) throws -> Self? {
-        guard let x = x, let y = y else {
+        guard let x, let y else {
             return x ?? y
         }
         return try x > y ? x : y
@@ -53,7 +53,7 @@ extension MoneyOperating {
     ///
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func min(_ x: Self?, _ y: Self?) throws -> Self? {
-        guard let x = x, let y = y else {
+        guard let x, let y else {
             return x ?? y
         }
         return try x < y ? x : y

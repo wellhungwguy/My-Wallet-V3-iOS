@@ -31,7 +31,7 @@ final class HistoricalBalanceCellPresenter {
 
     var assetNetworkContent: Driver<LabelContent?> {
         let network = cryptoCurrency.assetModel.kind.erc20ParentChain?.name
-        guard let network = network else {
+        guard let network else {
             return .just(nil)
         }
         return .just(

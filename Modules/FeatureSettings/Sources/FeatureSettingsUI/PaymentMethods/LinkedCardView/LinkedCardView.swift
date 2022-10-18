@@ -12,7 +12,7 @@ final class LinkedCardView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
 
             badgeImageView.viewModel = viewModel.badgeImageViewModel
 

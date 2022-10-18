@@ -11,7 +11,7 @@ public final class CheckboxTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
 
             viewModel
                 .textViewViewModel

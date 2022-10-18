@@ -41,7 +41,7 @@ public final class CompositeStatusView: UIView {
             attributes
                 .drive(
                     onNext: { [weak self] attributes in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         self.removeSubviews()
                         switch attributes.type {
                         case .loader:
@@ -155,7 +155,7 @@ public final class CompositeStatusView: UIView {
         currentType
             .drive(
                 onNext: { [weak self] type in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.mainContainerView.removeSubviews()
                     self.sideContainerView.removeSubviews()
                     switch type {

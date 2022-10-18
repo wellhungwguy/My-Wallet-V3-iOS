@@ -167,7 +167,7 @@ extension UX.Error {
     }
 }
 
-extension Array where Element == UX.Action {
+extension [UX.Action] {
 
     public static var `default`: Self = [
         UX.Action(title: L10n.ok)

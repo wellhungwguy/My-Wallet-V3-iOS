@@ -38,7 +38,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
             guard onboardingChecklistViewController != oldValue else {
                 return
             }
-            if let onboardingChecklistViewController = onboardingChecklistViewController {
+            if let onboardingChecklistViewController {
 
                 addChild(onboardingChecklistViewController)
                 onboardingChecklistViewController.view.backgroundColor = .clear
@@ -160,7 +160,7 @@ final class PortfolioViewController<OnboardingChecklist: View>: BaseScreenViewCo
         let dataSource = RxDataSource(
             animationConfiguration: .init(insertAnimation: .fade, reloadAnimation: .fade, deleteAnimation: .fade),
             configureCell: { [weak self] _, _, indexPath, item in
-                guard let self = self else { return UITableViewCell() }
+                guard let self else { return UITableViewCell() }
                 let cell: UITableViewCell
 
                 switch item {

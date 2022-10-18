@@ -167,7 +167,7 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
             for: request.peek("🌎", \.urlRequest.cURLCommand).urlRequest
         )
         .handleEvents(receiveOutput: { [weak self] data, _ in
-            guard let self = self else { return }
+            guard let self else { return }
             if self.isRecording {
                 let request = request.urlRequest
                 do {
@@ -203,7 +203,7 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
             for: request.peek("🌎", \.urlRequest.cURLCommand).urlRequest
         )
         .handleEvents(receiveOutput: { [weak self] message in
-            guard let self = self else { return }
+            guard let self else { return }
             if self.isRecording {
                 let request = request.urlRequest
                 do {

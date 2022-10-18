@@ -167,7 +167,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawR
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .withdraw))
         router.startFlow()
             .subscribe(onNext: { [weak self] effect in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch effect {
                 case .closeFlow(let isInteractive):
                     self.interactor.bankLinkingClosed(isInteractive: isInteractive)

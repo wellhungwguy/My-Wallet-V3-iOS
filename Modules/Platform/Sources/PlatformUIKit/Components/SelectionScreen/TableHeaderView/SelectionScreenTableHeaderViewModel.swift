@@ -24,7 +24,7 @@ public struct SelectionScreenTableHeaderViewModel {
     let font: UIFont
 
     public init?(font: UIFont = .main(.medium, 14), title: String?, textColor: UIColor = .descriptionText) {
-        guard let title = title else { return nil }
+        guard let title else { return nil }
         self.font = font
         textRelay.accept(title)
         contentColorRelay.accept(textColor)

@@ -336,7 +336,7 @@ final class KYCRouter: KYCRouterAPI {
     }
 
     private func dismiss(completion: @escaping () -> Void) {
-        guard let navController = navController else {
+        guard let navController else {
             completion()
             return
         }
@@ -368,7 +368,7 @@ final class KYCRouter: KYCRouterAPI {
                 .subscribe(on: MainScheduler.asyncInstance)
                 .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] nextPage in
-                    guard let self = self else {
+                    guard let self else {
                         return
                     }
 
@@ -445,7 +445,7 @@ final class KYCRouter: KYCRouterAPI {
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] response in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let status = response.tierAccountStatus(for: .tier2)
 
                     controller.viewModel = KYCInformationViewModel.create(
@@ -605,7 +605,7 @@ final class KYCRouter: KYCRouterAPI {
 
         isNewAddressSearchEnabled { [weak self] isNewAddressSearchEnabled in
 
-            guard let self = self else { return }
+            guard let self else { return }
             var controller: KYCBaseViewController
             if startingPage == .accountStatus {
                 controller = self.pageFactory.createFrom(
@@ -632,7 +632,7 @@ final class KYCRouter: KYCRouterAPI {
     // MARK: Private Methods
 
     private func handlePayloadFromPageType(_ pageType: KYCPageType, _ payload: KYCPagePayload?) {
-        guard let payload = payload else { return }
+        guard let payload else { return }
         switch payload {
         case .countrySelected(let country):
             self.country = country
@@ -739,10 +739,10 @@ final class KYCRouter: KYCRouterAPI {
         _ viewController: UIViewController,
         animated: Bool = true
     ) {
-        if let navController = navController {
+        if let navController {
             navController.pushViewController(viewController, animated: animated)
         } else {
-            guard let rootViewController = rootViewController else {
+            guard let rootViewController else {
                 return
             }
             navController = presentInNavigationController(viewController, in: rootViewController)
@@ -752,10 +752,10 @@ final class KYCRouter: KYCRouterAPI {
     private func safePresentInNavigationController(
         _ viewController: UIViewController
     ) {
-        if let navController = navController {
+        if let navController {
             presentInNavigationController(viewController, in: navController)
         } else {
-            guard let rootViewController = rootViewController else {
+            guard let rootViewController else {
                 return
             }
             navController = presentInNavigationController(viewController, in: rootViewController)
@@ -813,7 +813,7 @@ extension KYCPageType {
     }
 
     private static func tier2PageType(for user: NabuUser, tiersResponse: KYC.UserTiers, latestPage: KYCPageType? = nil) -> KYCPageType? {
-        if let latestPage = latestPage {
+        if let latestPage {
             return latestPage
         }
 

@@ -42,8 +42,8 @@ public func transcationNotesUpdate(
     hash: String,
     note: String?
 ) -> [String: String] {
-    guard let notes = notes else {
-        guard let note = note else {
+    guard let notes else {
+        guard let note else {
             return [:]
         }
         return [hash: note]

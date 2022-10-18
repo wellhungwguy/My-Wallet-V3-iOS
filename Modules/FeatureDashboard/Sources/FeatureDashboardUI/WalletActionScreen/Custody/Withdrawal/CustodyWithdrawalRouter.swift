@@ -59,7 +59,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
             showWithdrawalScreen()
         case .end:
             navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.completionRelay.accept(())
             })
         }

@@ -31,7 +31,7 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
         hostingController?.rootView = nil
         hostingController = .init(rootView: rootView)
 
-        guard let hostingController = hostingController else {
+        guard let hostingController else {
             return
         }
         hostingController.view.invalidateIntrinsicContentSize()
@@ -49,7 +49,7 @@ public final class HostingTableViewCell<Content: View>: UITableViewCell {
                 insets: insets
             )
 
-            if let height = height, heightConstraint == nil {
+            if let height, heightConstraint == nil {
                 heightConstraint = contentView.heightAnchor
                     .constraint(equalToConstant: height)
                 heightConstraint?.isActive = true

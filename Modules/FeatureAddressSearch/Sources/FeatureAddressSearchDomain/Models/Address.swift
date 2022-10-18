@@ -37,7 +37,7 @@ public struct Address: Hashable {
         self.postCode = postCode
         self.country = country
 
-        if let state = state,
+        if let state,
            country == Constants.usIsoCode,
            !state.hasPrefix(Constants.usPrefix)
         {

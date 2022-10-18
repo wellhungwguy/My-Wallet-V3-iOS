@@ -80,7 +80,7 @@ public class PollService<Value> {
 
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
         self.fetch = { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return .error(ToolKitError.nullReference(A.self))
             }
             return fetch(object)

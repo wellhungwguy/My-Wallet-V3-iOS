@@ -14,10 +14,10 @@ extension View {
     ///   - then: If condition is true, apply modifiers here.
     ///   - else: If condition is false, apply modifiers here.
     /// - Returns: Self with modifiers applied accordingly.
-    @ViewBuilder public func `if`<Then: View, Else: View>(
+    @ViewBuilder public func `if`(
         _ condition: @autoclosure () -> Bool,
-        @ViewBuilder then: (Self) -> Then,
-        @ViewBuilder else: (Self) -> Else
+        @ViewBuilder then: (Self) -> some View,
+        @ViewBuilder else: (Self) -> some View
     ) -> some View {
         if condition() {
             then(self)
@@ -34,9 +34,9 @@ extension View {
     ///   - condition: Condition returning true/false for execution of the following blocks
     ///   - then: If condition is true, apply modifiers here.
     /// - Returns: Self with modifiers applied, or unchanged self if condition was false
-    @ViewBuilder public func `if`<Then: View>(
+    @ViewBuilder public func `if`(
         _ condition: @autoclosure () -> Bool,
-        @ViewBuilder then: (Self) -> Then
+        @ViewBuilder then: (Self) -> some View
     ) -> some View {
         if condition() {
             then(self)
@@ -51,10 +51,10 @@ extension View {
     ///   - then: Apply modifiers with ifLetped optional.
     ///   - else: Apply modifiers if optional is nil
     /// - Returns: Self with modifiers applied accordingly.
-    @ViewBuilder public func ifLet<Value, Then: View, Else: View>(
+    @ViewBuilder public func ifLet<Value>(
         _ optional: Value?,
-        @ViewBuilder then: (Self, Value) -> Then,
-        @ViewBuilder else: (Self) -> Else
+        @ViewBuilder then: (Self, Value) -> some View,
+        @ViewBuilder else: (Self) -> some View
     ) -> some View {
         if let value = optional {
             then(self, value)
@@ -68,9 +68,9 @@ extension View {
     ///   - optional: Optional value to be ifLetped.
     ///   - then: Apply modifiers with ifLetped optional.
     /// - Returns: Self with modifiers applied, or unchanged self if optional is nil
-    @ViewBuilder public func ifLet<Value, Then: View>(
+    @ViewBuilder public func ifLet<Value>(
         _ optional: Value?,
-        @ViewBuilder then: (Self, Value) -> Then
+        @ViewBuilder then: (Self, Value) -> some View
     ) -> some View {
         if let value = optional {
             then(self, value)
@@ -84,8 +84,8 @@ extension View {
     /// - Parameters:
     ///   - then: call closure with self
     /// - Returns: Self with modifiers applied,
-    @ViewBuilder public func apply<Then: View>(
-        @ViewBuilder _ then: (Self) -> Then
+    @ViewBuilder public func apply(
+        @ViewBuilder _ then: (Self) -> some View
     ) -> some View {
         then(self)
     }

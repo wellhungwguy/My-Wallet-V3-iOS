@@ -77,13 +77,13 @@ extension PrimaryPicker {
         ///   - trailing: Trailing view displayed in the row. Commonly contains `Tag`.
         ///   - picker: Picker displayed below the row when selected. eg `DatePicker`
         /// - Returns: A row for use in `PrimaryPicker`
-        public static func row<Trailing: View, Picker: View>(
+        public static func row(
             title: String?,
             identifier: Selection,
             placeholder: String? = nil,
             inputState: InputState = .default,
-            @ViewBuilder trailing: @escaping () -> Trailing,
-            @ViewBuilder picker: @escaping () -> Picker
+            @ViewBuilder trailing: @escaping () -> some View,
+            @ViewBuilder picker: @escaping () -> some View
         ) -> Row {
             Row(inputState) { selection in
                 PickerRow(
@@ -114,12 +114,12 @@ extension PrimaryPicker {
         ///   - identifier: ID for determining `selection`
         ///   - picker: Picker displayed below the row when selected. eg `DatePicker`
         /// - Returns: A row for use in `PrimaryPicker`
-        public static func row<Picker: View>(
+        public static func row(
             title: String?,
             identifier: Selection,
             placeholder: String? = nil,
             inputState: InputState = .default,
-            @ViewBuilder picker: @escaping () -> Picker
+            @ViewBuilder picker: @escaping () -> some View
         ) -> Row {
             row(
                 title: title,
@@ -140,12 +140,12 @@ extension PrimaryPicker {
         ///   - identifier: ID for determining `selection`
         ///   - trailing: Trailing view displayed in the row. Commonly contains `Tag`.
         /// - Returns: A row for use in `PrimaryPicker`
-        public static func row<Trailing: View>(
+        public static func row(
             title: String?,
             identifier: Selection,
             placeholder: String? = nil,
             inputState: InputState = .default,
-            @ViewBuilder trailing: @escaping () -> Trailing
+            @ViewBuilder trailing: @escaping () -> some View
         ) -> Row {
             row(
                 title: title,
@@ -303,7 +303,7 @@ extension PrimaryPicker.Row {
                     },
                     label: {
                         HStack(spacing: 0) {
-                            if let title = title {
+                            if let title {
                                 Text(title)
                                     .typography(.body1)
                                     .foregroundColor(.semantic.title)

@@ -83,7 +83,7 @@ extension TransactionConfirmations {
 
         public var formatted: (title: String, subtitle: String)? {
             var value: String = total.displayString
-            if let exchange = exchange {
+            if let exchange {
                 value = total.convert(using: exchange).displayString
             }
             return (LocalizedString.total, value)
@@ -123,7 +123,7 @@ extension TransactionConfirmations {
 
         public var formatted: (title: String, subtitle: String)? {
             var value: String = purchase.displayString
-            if let exchange = exchange {
+            if let exchange {
                 value = purchase.convert(using: exchange).displayString
             }
             return (LocalizedString.purchase, value)

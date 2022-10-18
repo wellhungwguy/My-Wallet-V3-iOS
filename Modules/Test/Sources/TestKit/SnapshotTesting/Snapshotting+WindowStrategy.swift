@@ -8,8 +8,8 @@ import UIKit
 
 extension XCTestCase {
 
-    public func assert<Content: View>(
-        _ view: Content,
+    public func assert(
+        _ view: some View,
         on config: ViewImageConfig,
         renderInWindow: Bool = false,
         testName: String = #function,
@@ -53,7 +53,7 @@ extension Snapshotting where Value: UIViewController, Format == UIImage {
                 UIView.setAnimationsEnabled(false)
                 let window = UIApplication.shared.windows.first!
                 window.rootViewController = vc
-                if let config = config {
+                if let config {
                     window.frame = CGRect(origin: .zero, size: config.size ?? .zero)
                 }
                 DispatchQueue.main.async {

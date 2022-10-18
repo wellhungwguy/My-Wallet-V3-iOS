@@ -316,7 +316,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 bottomAuxiliaryAccounts
             )
             .map { [action] userKYCTier, accounts -> Bool in
-                guard let userKYCTier = userKYCTier, action == .buy && userKYCTier < .tier2 else {
+                guard let userKYCTier, action == .buy && userKYCTier < .tier2 else {
                     return !accounts.isEmpty
                 }
                 // SDD eligible users cannot add more than 1 payment method so they should have no suggested accounts they can link.
@@ -399,7 +399,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let interactorState = transactionState
             .subscribe(on: MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, updater -> State in
-                guard let self = self else {
+                guard let self else {
                     return currentState
                 }
                 return self.calculateNextState(
@@ -672,7 +672,7 @@ extension TransactionState {
         maxTransactionsCount: Int?
     ) -> AmountInteractorState {
         let message: AmountInteractorState.MessageState
-        if let maxTransactionsCount = maxTransactionsCount {
+        if let maxTransactionsCount {
             message = .info(message: LocalizedString.Notices.maxTransactionsLimited(to: maxTransactionsCount))
         } else {
             message = .none

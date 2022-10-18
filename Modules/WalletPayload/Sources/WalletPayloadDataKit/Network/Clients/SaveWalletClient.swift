@@ -35,7 +35,7 @@ final class SaveWalletClient: SaveWalletClientAPI {
             time: Int(Date().timeIntervalSince1970 * 1000.0)
         )
         var wrapperParameters = provideWrapperParameters(from: payload)
-        if let addresses = addresses {
+        if let addresses {
             wrapperParameters.append(
                 URLQueryItem(
                     name: "active",

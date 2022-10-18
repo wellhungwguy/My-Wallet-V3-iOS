@@ -6,7 +6,7 @@ public final class ThumbnailView: UIView {
 
     public var viewModel: ThumbnailViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             imageView.set(viewModel.imageViewContent)
             backgroundColor = viewModel.backgroundColor
         }

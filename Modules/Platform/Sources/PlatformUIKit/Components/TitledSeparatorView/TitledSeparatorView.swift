@@ -15,7 +15,7 @@ public final class TitledSeparatorView: UIView {
 
     public var viewModel: TitledSeparatorViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             accessibility = viewModel.accessibility
             titleLabel.content = viewModel.titleLabelContent
             separatorView.backgroundColor = viewModel.separatorColor

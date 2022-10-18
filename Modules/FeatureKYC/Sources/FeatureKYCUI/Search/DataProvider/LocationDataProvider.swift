@@ -31,12 +31,12 @@ class LocationDataProvider: NSObject {
     // MARK: Private Functions
 
     fileprivate func registerCells() {
-        guard let tableView = tableView else { return }
+        guard let tableView else { return }
         tableView.registerNibCell(LocationSuggestionCell.self, in: .module)
     }
 
     fileprivate func update() {
-        guard let tableView = tableView else { return }
+        guard let tableView else { return }
         tableView.reloadData()
 
         switch locationResult.state {

@@ -207,7 +207,7 @@ final class EthereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI {
             .hotWalletAddress(for: cryptoCurrency, product: product)
             .asSingle()
             .flatMap { hotWalletAddress -> Single<CryptoReceiveAddress?> in
-                guard let hotWalletAddress = hotWalletAddress else {
+                guard let hotWalletAddress else {
                     return .just(nil)
                 }
                 return receiveAddressFactory.makeExternalAssetAddress(
@@ -270,7 +270,7 @@ final class EthereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI {
                 hotWalletAddress
             )
             .map { receiveAddress, hotWalletAddress in
-                guard let hotWalletAddress = hotWalletAddress else {
+                guard let hotWalletAddress else {
                     return (destination: receiveAddress, referenceAddress: nil)
                 }
                 return (destination: hotWalletAddress, referenceAddress: receiveAddress)

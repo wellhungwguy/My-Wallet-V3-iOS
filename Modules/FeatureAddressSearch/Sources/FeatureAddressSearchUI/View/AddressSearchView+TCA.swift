@@ -204,8 +204,8 @@ let addressSearchReducer = Reducer.combine(
             }
 
         case .searchAddresses(let searchText, let country):
-            guard let searchText = searchText, searchText.isNotEmpty,
-                  let country = country, country.isNotEmpty
+            guard let searchText, searchText.isNotEmpty,
+                  let country, country.isNotEmpty
             else {
                 state.searchResults = []
                 state.isSearchResultsLoading = false

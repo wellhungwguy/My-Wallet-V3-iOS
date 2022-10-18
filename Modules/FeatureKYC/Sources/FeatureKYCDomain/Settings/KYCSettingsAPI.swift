@@ -21,7 +21,7 @@ public protocol KYCSettingsAPI: AnyObject {
 extension KYCSettingsAPI {
     public var isCompletingKyc: Single<Bool> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.isCompletingKyc)

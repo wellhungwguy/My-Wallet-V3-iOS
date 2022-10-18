@@ -63,7 +63,7 @@ struct DebugView: View {
             }
             .primaryNavigation(title: "Debug") {
                 Button(window?.overrideUserInterfaceStyle == .dark ? "☀️" : "🌑") {
-                    if let window = window {
+                    if let window {
                         switch window.overrideUserInterfaceStyle {
                         case .dark:
                             window.overrideUserInterfaceStyle = .light

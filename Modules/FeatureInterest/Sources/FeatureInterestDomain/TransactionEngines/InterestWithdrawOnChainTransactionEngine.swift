@@ -221,7 +221,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     // MARK: - Private Functions
 
     private func addMemoIfNeeded(receiveAddress: String, memo: String?) -> String {
-        if let memo = memo {
+        if let memo {
             return receiveAddress + ":\(memo)"
         }
         return receiveAddress

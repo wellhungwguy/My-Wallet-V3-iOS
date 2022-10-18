@@ -60,14 +60,14 @@ final class TransactionFlowViewController: UINavigationController,
     }
 
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         setViewControllers([viewController.uiviewController], animated: animated)
     }
 
     func present(viewController: ViewControllable?, animated: Bool) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         let navigationController: UINavigationController
@@ -80,7 +80,7 @@ final class TransactionFlowViewController: UINavigationController,
     }
 
     func push(viewController: ViewControllable?) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         pushViewController(viewController.uiviewController, animated: true)

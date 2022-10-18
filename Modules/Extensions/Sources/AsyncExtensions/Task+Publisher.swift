@@ -168,7 +168,7 @@ extension Task {
                 guard demand > 0 else { return }
                 guard task == nil else { return }
                 task = .detached(priority: priority) { [yield, weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     do {
                         let value = try await yield()
                         await self.receive(value)

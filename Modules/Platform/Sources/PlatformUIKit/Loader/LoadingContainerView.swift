@@ -82,7 +82,7 @@ extension LoadingContainerView: LoadingViewProtocol {
         }
 
         // Animate status label text transition if needed
-        if let statusLabel = statusLabel {
+        if let statusLabel {
             UIView.transition(
                 with: statusLabel,
                 duration: 0.25,

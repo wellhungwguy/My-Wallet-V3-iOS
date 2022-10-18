@@ -138,7 +138,7 @@ private class MockWorkflow: WalletUpgradeWorkflow {
     var upgradedWrapper: Wrapper?
     var upgradedWrapperCalled = false
     func upgrade(wrapper: Wrapper) -> AnyPublisher<Wrapper, WalletUpgradeError> {
-        guard let upgradedWrapper = upgradedWrapper else {
+        guard let upgradedWrapper else {
             return .failure(.upgradeFailed)
         }
         upgradedWrapperCalled = true

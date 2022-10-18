@@ -121,7 +121,7 @@ extension PaymentMethodsResponse {
 
 extension PaymentMethodsResponse.Method {
     public var applePayEligible: Bool {
-        guard let mobilePayment = mobilePayment else {
+        guard let mobilePayment else {
             return false
         }
         return mobilePayment.contains { type in

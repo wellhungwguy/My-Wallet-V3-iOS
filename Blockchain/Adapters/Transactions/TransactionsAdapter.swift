@@ -170,7 +170,7 @@ final class TransactionsAdapter: TransactionsAdapterAPI {
             .replaceError(with: [])
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] accounts -> AnyPublisher<TransactionResult, Never> in
-                guard let self = self else {
+                guard let self else {
                     return .empty()
                 }
                 return self.presentTransactionFlow(to: .buy(accounts.first), from: presenter)

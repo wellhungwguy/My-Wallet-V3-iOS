@@ -125,7 +125,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             self?.validationFieldsPlaceholderSetup(country?.id)
         }
 
-        if let countryCode = countryCode {
+        if let countryCode {
             regionTextField.selectedOption = regionTextField.options.first { $0.id == countryCode }
         }
 
@@ -133,7 +133,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             .map(ValidationPickerField.PickerItem.init)
             .sorted(by: { $0.title.localizedCompare($1.title) == .orderedAscending })
 
-        if let state = state {
+        if let state {
             stateTextField.selectedOption = stateTextField.options.first { $0.id == state }
         }
 
@@ -179,7 +179,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         primaryButtonContainer.title = LocalizationConstants.KYC.submit
         primaryButtonContainer.actionBlock = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.primaryButtonTapped()
         }
 

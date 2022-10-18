@@ -51,7 +51,7 @@ public final class BiometryProvider: BiometryProviding {
             .deviceOwnerAuthenticationWithBiometrics,
             error: &error
         )
-        if let error = error {
+        if let error {
             let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
             return .failure(.system(biometryError))
         } else if !canEvaluate {
@@ -95,7 +95,7 @@ public final class BiometryProvider: BiometryProviding {
                 .deviceOwnerAuthenticationWithBiometrics,
                 localizedReason: reason.localized,
                 reply: { authenticated, error in
-                    if let error = error {
+                    if let error {
                         let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
                         observer(.error(Biometry.EvaluationError.system(biometryError)))
                     } else if !authenticated {

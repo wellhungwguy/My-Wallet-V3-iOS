@@ -172,7 +172,7 @@ private struct PushTxPayload {
             "api_code": apiCode,
             "format": "plain"
         ]
-        if let lockSecret = lockSecret {
+        if let lockSecret {
             base["lock_secret"] = lockSecret
         }
         return base

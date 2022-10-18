@@ -46,12 +46,12 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
             drawerRouter: NoDrawer(),
             showSupportedPairsOnly: true,
             customSelectionActionClosure: { [weak self] currency in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.coincore.cryptoAccounts(for: currency, filter: .custodial)
                     .ignoreFailure()
                     .receive(on: DispatchQueue.main)
                     .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
-                        guard let self = self, let account = accounts.first else {
+                        guard let self, let account = accounts.first else {
                             return .just(.abandoned)
                         }
                         return self.transactionsRouter.presentTransactionFlow(to: .buy(account))
@@ -70,7 +70,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
             action: .sell
         )
         let accountPickerDidSelect: AccountPickerDidSelect = { [weak self] account in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let cryptoAccount = account as? CryptoAccount else {
                 return
             }

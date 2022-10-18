@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension Sequence where Element == Substring {
+extension Sequence<Substring> {
     @inlinable public var string: [String] { map(\.string) }
 }
 
@@ -16,11 +16,11 @@ extension String {
 
 extension StringProtocol {
 
-    @inlinable public func dropPrefix<S>(_ contents: S) -> SubSequence where S: StringProtocol {
+    @inlinable public func dropPrefix(_ contents: some StringProtocol) -> SubSequence {
         hasPrefix(contents) ? self[index(startIndex, offsetBy: contents.count)...] : self[...]
     }
 
-    @inlinable public func dropSuffix<S>(_ contents: S) -> SubSequence where S: StringProtocol {
+    @inlinable public func dropSuffix(_ contents: some StringProtocol) -> SubSequence {
         hasSuffix(contents) ? self[..<index(endIndex, offsetBy: -contents.count)] : self[...]
     }
 }

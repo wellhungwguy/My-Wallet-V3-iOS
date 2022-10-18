@@ -41,7 +41,7 @@ extension BottomButtonContainerView where Self: UIViewController {
     }
 
     public func keyboardWillShow(with payload: KeyboardObserver.Payload?) {
-        guard let payload = payload else { return }
+        guard let payload else { return }
         UIView.animate(
             withDuration: payload.duration,
             delay: 0,
@@ -55,7 +55,7 @@ extension BottomButtonContainerView where Self: UIViewController {
     }
 
     public func keyboardWillHide(with payload: KeyboardObserver.Payload?) {
-        guard let payload = payload else { return }
+        guard let payload else { return }
         UIView.animate(
             withDuration: payload.duration,
             delay: 0,

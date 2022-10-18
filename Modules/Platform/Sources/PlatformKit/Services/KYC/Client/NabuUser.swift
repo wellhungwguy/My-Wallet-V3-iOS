@@ -154,7 +154,7 @@ extension NabuUser {
     /// Else use value of `NabuUserSettings`s `mercuryEmailVerified`.
     /// Both `ProductsUsed` and `NabuUserSettings` are optionally present.
     public var hasLinkedExchangeAccount: Bool {
-        if let productsUsed = productsUsed {
+        if let productsUsed {
             return productsUsed.exchange
         } else if let mercuryEmailVerified = settings?.mercuryEmailVerified {
             return mercuryEmailVerified
@@ -166,7 +166,7 @@ extension NabuUser {
 extension NabuUser {
 
     public var isGoldTierVerified: Bool {
-        guard let tiers = tiers else { return false }
+        guard let tiers else { return false }
         return tiers.current == .tier2
     }
 

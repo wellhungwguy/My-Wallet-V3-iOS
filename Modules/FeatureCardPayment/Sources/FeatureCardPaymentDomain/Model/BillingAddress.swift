@@ -18,17 +18,17 @@ public struct BillingAddress {
         state: String?,
         postCode: String?
     ) {
-        guard let fullName = fullName,
-              let addressLine1 = addressLine1,
-              let city = city,
-              let postCode = postCode
+        guard let fullName,
+              let addressLine1,
+              let city,
+              let postCode
         else {
             return nil
         }
 
         // Countries that have state subdomain require `state` to be initialized
         if country.hasStatesSubdomain {
-            guard let state = state else { return nil }
+            guard let state else { return nil }
             self.state = state
         } else {
             self.state = ""
@@ -48,7 +48,7 @@ public struct BillingAddress {
 extension BillingAddress {
 
     public init?(response: CardPayload.BillingAddress?) {
-        guard let response = response else { return nil }
+        guard let response else { return nil }
         guard let country = Country(code: response.country) else {
             return nil
         }

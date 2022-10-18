@@ -138,7 +138,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         .compactMap(\.value)
         return amount.combineLatest(currency, tradingCurrency)
             .map { amount, currency, tradingCurrency in
-                if let amount = amount, let currency = currency {
+                if let amount, let currency {
                     return FiatValue.create(minor: amount, currency: currency)
                 } else {
                     // If there's no previous purchase default to 50.00 of trading currency

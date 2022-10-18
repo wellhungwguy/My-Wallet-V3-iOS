@@ -151,10 +151,10 @@ final class TransactionsRouter: TransactionsRouterAPI {
             )
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] ineligibility -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else {
+                guard let self else {
                     return .empty()
                 }
-                guard let ineligibility = ineligibility else {
+                guard let ineligibility else {
                     // There is no 'ineligibility' reason, continue.
                     return self.continuePresentingTransactionFlow(
                         to: action,
@@ -263,7 +263,7 @@ final class TransactionsRouter: TransactionsRouterAPI {
             from: presenter,
             requiredTier: .tier1,
             flowCompletion: { [weak self] result in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch result {
                 case .abandoned:
                     subject.send(.abandoned)
@@ -288,12 +288,12 @@ final class TransactionsRouter: TransactionsRouterAPI {
         eligibilityService.eligibility()
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
-                guard let self = self else { return .empty() }
+                guard let self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
                     return self.pendingOrdersService.pendingOrderDetails
                         .receive(on: DispatchQueue.main)
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
-                            guard let self = self else { return .empty() }
+                            guard let self else { return .empty() }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
                             if let order = isAwaitingAction.first {
                                 return self.presentNewTransactionFlow(action, from: presenter)
@@ -320,7 +320,7 @@ final class TransactionsRouter: TransactionsRouterAPI {
                 }
             }
             .catch { [weak self] error -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else { return .empty() }
+                guard let self else { return .empty() }
                 return self.presentError(error: error, action: action, from: presenter)
             }
             .eraseToAnyPublisher()
@@ -424,7 +424,7 @@ extension TransactionsRouter {
 
         case .receive(let account):
             presenter.present(receiveCoordinator.builder.receive(), animated: true)
-            if let account = account {
+            if let account {
                 receiveCoordinator.routeToReceive(sourceAccount: account)
             }
             return .empty()
@@ -555,7 +555,7 @@ extension TransactionsRouter {
                             handler(.abandoned)
                         },
                         selectionHandler: { [weak self] selectedCurrency in
-                            guard let self = self else {
+                            guard let self else {
                                 return
                             }
                             self.fiatCurrencyService

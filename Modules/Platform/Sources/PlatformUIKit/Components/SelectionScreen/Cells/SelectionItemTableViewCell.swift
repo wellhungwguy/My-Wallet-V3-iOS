@@ -12,7 +12,7 @@ final class SelectionItemTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
 
             switch presenter.thumb {
             case .image(let content):

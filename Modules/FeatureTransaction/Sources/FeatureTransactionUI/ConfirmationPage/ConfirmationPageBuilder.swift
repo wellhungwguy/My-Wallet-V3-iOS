@@ -260,7 +260,7 @@ extension TransactionState {
     }
 
     var swapCheckout: SwapCheckout? {
-        guard let pendingTransaction = pendingTransaction else { return nil }
+        guard let pendingTransaction else { return nil }
         guard
             let sourceValue = pendingTransaction.confirmations.lazy
                 .filter(TransactionConfirmations.SwapSourceValue.self).first?.cryptoValue,

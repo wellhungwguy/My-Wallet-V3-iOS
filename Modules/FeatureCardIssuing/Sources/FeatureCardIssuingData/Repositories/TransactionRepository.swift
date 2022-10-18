@@ -46,7 +46,7 @@ final class TransactionRepository: TransactionRepositoryAPI {
         cachedValue
             .get(key: Key(cardId: card?.id))
             .flatMap { [weak self] transactions -> AnyPublisher<[Card.Transaction], NabuNetworkError> in
-                guard let self = self else {
+                guard let self else {
                     return .empty()
                 }
 

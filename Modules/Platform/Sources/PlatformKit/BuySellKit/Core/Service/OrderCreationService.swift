@@ -54,7 +54,7 @@ final class OrderCreationService: OrderCreationServiceAPI {
                 OrderDetails(recorder: self.analyticsRecorder, response: response)
             }
             .map { details -> OrderDetails in
-                guard let details = details else {
+                guard let details else {
                     throw ServiceError.mappingError
                 }
                 return details

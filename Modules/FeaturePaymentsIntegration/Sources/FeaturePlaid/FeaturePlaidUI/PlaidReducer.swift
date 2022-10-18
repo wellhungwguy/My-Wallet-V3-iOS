@@ -131,7 +131,7 @@ extension PlaidModule {
                 }
 
             case .finishedWithError(let error):
-                if let error = error {
+                if let error {
                     state.uxError = UX.Error(nabu: error)
                 } else {
                     // Oops message

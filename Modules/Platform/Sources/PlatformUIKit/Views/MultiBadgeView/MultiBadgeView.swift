@@ -25,7 +25,7 @@ class MultiBadgeView: UIView {
             stackView.removeSubviews()
         }
         didSet {
-            guard let model = model else { return }
+            guard let model else { return }
             model
                 .badges
                 .drive(weak: self) { (self, models) in

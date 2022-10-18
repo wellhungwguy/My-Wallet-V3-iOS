@@ -70,7 +70,7 @@ extension RootViewState {
     }
 
     var hideFAB: Bool {
-        guard let tabs = tabs else { return true }
+        guard let tabs else { return true }
         return tabs.lazy.map(\.ref.tag).doesNotContain(blockchain.ux.frequent.action[])
     }
 }

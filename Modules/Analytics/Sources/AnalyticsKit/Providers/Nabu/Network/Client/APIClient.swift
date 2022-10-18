@@ -46,12 +46,12 @@ final class APIClient: EventSendingAPI {
 
     // MARK: - Methods
 
-    func publish<Events: Encodable>(
-        events: Events,
+    func publish(
+        events: some Encodable,
         token: String?
     ) -> AnyPublisher<Never, URLError> {
         var headers = [String: String]()
-        if let token = token {
+        if let token {
             headers["Authorization"] = "Bearer \(token)"
         }
         let request = requestBuilder.post(

@@ -45,7 +45,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         case .modal(dismissWithAnimation: let animated):
             modalTransitionStyle = .crossDissolve
             self.viewModel.closeButtonTapped = { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.dismiss(
                     animated: animated,
                     completion: { [weak self] in
@@ -78,7 +78,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         }
 
         self.viewModel.cameraConfigured = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.viewModel.startReadingQRCode(from: self.scannerView)
             self.scannerView?.startReadingQRCode()
         }

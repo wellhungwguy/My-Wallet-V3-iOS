@@ -14,7 +14,7 @@ public final class KeyboardObserver {
         public let end: CGRect
 
         public init?(with rawValue: [AnyHashable: Any]?) {
-            guard let rawValue = rawValue else {
+            guard let rawValue else {
                 return nil
             }
             duration = rawValue[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval
@@ -62,19 +62,19 @@ public final class KeyboardObserver {
         remove()
 
         NotificationCenter.when(UIResponder.keyboardWillShowNotification) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let payload = Payload(with: notification.userInfo) else { return }
             self.stateRelay.accept(.init(visibility: .visible, payload: payload))
         }
 
         NotificationCenter.when(UIResponder.keyboardWillChangeFrameNotification) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let payload = Payload(with: notification.userInfo) else { return }
             self.stateRelay.accept(.init(visibility: .visible, payload: payload))
         }
 
         NotificationCenter.when(UIResponder.keyboardWillHideNotification) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let payload = Payload(with: notification.userInfo) else { return }
             self.stateRelay.accept(.init(visibility: .hidden, payload: payload))
         }

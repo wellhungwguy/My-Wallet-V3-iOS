@@ -44,7 +44,7 @@ extension Reducer where Action: BlockchainNamespaceObservationAction, Environmen
         on([first] + rest)
     }
 
-    public func on<C: Collection>(_ events: C) -> Reducer where C.Element == Tag.Event {
+    public func on(_ events: some Collection<Tag.Event>) -> Reducer {
         Reducer { _, action, environment in
             if let observation = (/Action.observation).extract(from: action) {
                 let keys = events.map { $0.key() }

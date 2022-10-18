@@ -515,7 +515,7 @@ extension View {
         environment(\.tableRowChevron, display)
     }
 
-    @warn_unqualified_access @ViewBuilder public func tableRowBackground<V>(_ view: V?) -> some View where V: View {
+    @warn_unqualified_access @ViewBuilder public func tableRowBackground(_ view: (some View)?) -> some View {
         environment(\.tableRowBackground, view.map { AnyView($0) })
     }
 }

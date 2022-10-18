@@ -19,7 +19,7 @@ final class ApplePayAuthorizationService: NSObject, ApplePayAuthorizationService
         tokenSubject = PassthroughSubject<Result<ApplePayToken, ApplePayError>, Never>()
         return tokenSubject
             .handleEvents(receiveSubscription: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 var requiredBillingContactFields: Set<PKContactField>? {
                     guard let fields = info.requiredBillingContactFields, fields.isNotEmpty else {
                         return nil
@@ -125,7 +125,7 @@ extension ApplePayAuthorizationService: PKPaymentAuthorizationControllerDelegate
 extension ApplePayInfo {
 
     var capabilities: PKMerchantCapability {
-        guard let allowCreditCards = allowCreditCards, allowCreditCards else {
+        guard let allowCreditCards, allowCreditCards else {
             return [.capability3DS, .capabilityDebit]
         }
         return [.capability3DS, .capabilityDebit, .capabilityCredit]

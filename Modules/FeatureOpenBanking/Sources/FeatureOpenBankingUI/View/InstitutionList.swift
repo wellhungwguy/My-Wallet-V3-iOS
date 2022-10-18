@@ -202,7 +202,7 @@ extension InstitutionList {
                 title: title,
                 leading: {
                     Group {
-                        if let image = image {
+                        if let image {
                             ImageResourceView(
                                 url: image,
                                 placeholder: { Color.semantic.background }

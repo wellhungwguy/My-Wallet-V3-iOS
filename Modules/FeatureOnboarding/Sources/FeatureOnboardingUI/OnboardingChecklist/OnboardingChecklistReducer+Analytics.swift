@@ -70,7 +70,7 @@ extension Reducer where State == OnboardingChecklist.State,
 extension OnboardingChecklist.State {
 
     fileprivate var firstPendingStep: AnalyticsEvent.PendingStep? {
-        guard let firstIncompleteItem = firstIncompleteItem else {
+        guard let firstIncompleteItem else {
             return nil
         }
         guard let firstPendingStep = AnalyticsEvent.PendingStep(firstIncompleteItem.id) else {

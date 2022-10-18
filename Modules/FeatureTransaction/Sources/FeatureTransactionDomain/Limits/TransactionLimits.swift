@@ -53,11 +53,11 @@ extension TransactionLimits {
     }
 
     private static func fixedValue(_ value: MoneyValue?, currencyType: CurrencyType) -> TransactionLimits {
-        if let value = value, value.currencyType != currencyType {
+        if let value, value.currencyType != currencyType {
             fatalError("The currency type must match the money value's currency type, when present")
         }
         let effectiveLimit: EffectiveLimit?
-        if let value = value {
+        if let value {
             effectiveLimit = .init(timeframe: .single, value: value)
         } else {
             effectiveLimit = nil

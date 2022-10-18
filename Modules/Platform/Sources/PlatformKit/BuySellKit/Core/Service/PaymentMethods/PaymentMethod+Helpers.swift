@@ -60,7 +60,7 @@ extension PaymentMethod.MethodType {
     }
 }
 
-extension Array where Element == PaymentMethod {
+extension [PaymentMethod] {
     init(response: PaymentMethodsResponse, supportedFiatCurrencies: [FiatCurrency]) {
         self.init()
         let methods = response.methods

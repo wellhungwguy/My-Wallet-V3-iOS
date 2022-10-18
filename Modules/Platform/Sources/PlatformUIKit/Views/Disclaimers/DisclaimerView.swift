@@ -22,12 +22,12 @@ public final class DisclaimerView: UIView {
             cancellables.removeAll()
         }
         didSet {
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 return
             }
             viewModel.text
                 .map { text -> NSAttributedString? in
-                    guard let text = text else { return nil }
+                    guard let text else { return nil }
                     let disclaimerText = NSMutableAttributedString(attributedString: text)
                     let paragraphStyle = NSMutableParagraphStyle()
                     paragraphStyle.alignment = .center

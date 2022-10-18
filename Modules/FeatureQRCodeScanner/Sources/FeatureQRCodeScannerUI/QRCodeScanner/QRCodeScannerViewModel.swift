@@ -209,10 +209,10 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
-                guard let self = self else {
+                guard let self else {
                     return
                 }
-                if let result = result {
+                if let result {
                     self.scanComplete?(.success(result))
                 } else {
                     self.scanComplete?(.failure(.scannerError(QRScannerError.badMetadataObject)))

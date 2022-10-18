@@ -15,7 +15,7 @@ extension ObservableType {
     ) -> Disposable {
         _bind(
             onNext: { [weak object] element in
-                guard let object = object else { return }
+                guard let object else { return }
                 onNext(object, element)
             },
             file: file,
@@ -33,7 +33,7 @@ extension ObservableType {
     ) -> Disposable {
         _bind(
             onNext: { [weak object] _ in
-                guard let object = object else { return }
+                guard let object else { return }
                 onNext(object)
             },
             file: file,

@@ -169,7 +169,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                         }
                     },
                     dismiss: { [weak self] in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         self.closeFlow()
                     }
                 )
@@ -375,7 +375,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         paymentMethodLinker.presentAccountLinkingFlow(
             from: viewController.uiviewController
         ) { [weak self] result in
-            guard let self = self else { return }
+            guard let self else { return }
             viewController.dismiss(animated: true) {
                 switch result {
                 case .abandoned:
@@ -706,7 +706,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     }
                 },
                 receiveValue: { [weak self] transactionState in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     guard
                         let order = transactionState.order as? OrderDetails,
                         let authorizationData = order.authorizationData

@@ -248,7 +248,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 }
                 .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] guid in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let alert = UIAlertController(
                         title: LocalizationConstants.AddressAndKeyImport.copyWalletId,
                         message: LocalizationConstants.AddressAndKeyImport.copyWarning,
@@ -258,7 +258,7 @@ final class SettingsRouter: SettingsRouterAPI {
                         title: LocalizationConstants.AddressAndKeyImport.copyCTA,
                         style: .destructive,
                         handler: { [weak self] _ in
-                            guard let self = self else { return }
+                            guard let self else { return }
                             self.analyticsRecording.record(event: AnalyticsEvent.settingsWalletIdCopied)
                             UIPasteboard.general.string = guid
                         }
@@ -293,7 +293,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 style: .sheet
             )
             let alert = AlertView.make(with: model) { [weak self] action in
-                guard let self = self else { return }
+                guard let self else { return }
                 guard let metadata = action.metadata else { return }
                 switch metadata {
                 case .block(let block):
@@ -492,7 +492,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     // TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     // `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
@@ -502,7 +502,7 @@ final class SettingsRouter: SettingsRouterAPI {
                     ])
                 },
                 onFailure: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.alertPresenter.standardError(
                         message: LocalizationConstants.GeneralError.loadingData
                     )
@@ -543,14 +543,14 @@ final class SettingsRouter: SettingsRouterAPI {
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.analyticsRecording.record(events: [
                         AnalyticsEvents.Settings.settingsTradingCurrencySelected(currency: currency.code),
                         AnalyticsEvents.New.Settings.settingsTradingCurrencyClicked(currency: currency.code)
                     ])
                 },
                 onFailure: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.alertPresenter.standardError(
                         message: LocalizationConstants.GeneralError.loadingData
                     )

@@ -22,7 +22,7 @@ final class VerifyEmailAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
         )
         button.tapRelay
             .bind { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.action()
             }
@@ -41,12 +41,12 @@ final class VerifyEmailAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
             description: LocalizationConstants.AnnouncementCards.VerifyEmail.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
                 self.dismiss()
             },
             didAppear: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)
             }
         )

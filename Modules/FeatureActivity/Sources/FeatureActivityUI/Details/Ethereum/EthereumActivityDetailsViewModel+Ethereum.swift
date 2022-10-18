@@ -37,7 +37,7 @@ extension EthereumActivityDetailsViewModel {
         func value(cryptoValue: CryptoValue) -> Amounts.Value {
             let cryptoAmount = cryptoValue.displayString
             let value: String
-            if let price = price {
+            if let price {
                 value = cryptoValue.convert(using: price).displayString
             } else {
                 value = ""

@@ -182,7 +182,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         Deferred {
             Future { [weak self] promise in
                 guard let walletConnectSession = session.session(address: ""),
-                      let self = self
+                      let self
                 else {
                     return
                 }

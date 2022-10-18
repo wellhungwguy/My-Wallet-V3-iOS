@@ -5,7 +5,7 @@ import EthereumKit
 
 extension EVMNetwork {
     init?(int chainID: Int?) {
-        guard let chainID = chainID else {
+        guard let chainID else {
             self = .ethereum
             return
         }

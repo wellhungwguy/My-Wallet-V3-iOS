@@ -137,7 +137,7 @@ extension KYC.Tier {
     }
 }
 
-extension Optional where Wrapped == KYC.Tier {
+extension KYC.Tier? {
 
     var tag: Tag {
         switch self {

@@ -12,7 +12,7 @@ public final class AssetPriceView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 priceLabel.text = " "
                 changeLabel.text = " "
                 return

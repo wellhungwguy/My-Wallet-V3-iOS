@@ -64,7 +64,7 @@ public struct SparklineCalculator {
     }
 }
 
-extension Array where Element == Decimal {
+extension [Decimal] {
 
     /// The largest value in the dataset.
     fileprivate var max: CGFloat {

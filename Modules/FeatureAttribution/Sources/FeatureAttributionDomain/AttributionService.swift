@@ -28,7 +28,7 @@ public class AttributionService: AttributionServiceAPI {
         featureFlagService
             .isEnabled(.skAdNetworkAttribution)
             .flatMap { [weak self] isEnabled -> AnyPublisher<Void, NetworkError> in
-                guard let self = self else { return .just(()) }
+                guard let self else { return .just(()) }
                 guard isEnabled else {
                     return .just(())
                 }

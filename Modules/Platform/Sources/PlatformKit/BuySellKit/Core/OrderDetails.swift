@@ -249,7 +249,7 @@ public struct OrderDetails: Equatable {
     }
 }
 
-extension Array where Element == OrderDetails {
+extension [OrderDetails] {
     var pendingDeposit: [OrderDetails] {
         filter { $0.state == .pendingDeposit }
     }

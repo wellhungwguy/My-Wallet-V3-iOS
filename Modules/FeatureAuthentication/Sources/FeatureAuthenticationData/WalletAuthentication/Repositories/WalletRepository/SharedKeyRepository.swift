@@ -26,7 +26,7 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
                     guard !key.isEmpty else {
                         return legacySharedKeyRepository.sharedKey
                             .flatMap { legacyRepoKey -> AnyPublisher<String?, Never> in
-                                guard let legacyRepoKey = legacyRepoKey else {
+                                guard let legacyRepoKey else {
                                     return .just(nil)
                                 }
                                 walletRepo.set(keyPath: \.credentials.sharedKey, value: legacyRepoKey)

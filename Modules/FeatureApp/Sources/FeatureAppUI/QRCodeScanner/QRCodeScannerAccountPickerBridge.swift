@@ -58,7 +58,7 @@ extension QRCodeScannerAccountPickerBridge: AccountPickerListener {
                     : nil
             }
         }
-        guard let target = target else {
+        guard let target else {
             eventsSubject.send(.finished)
             return
         }

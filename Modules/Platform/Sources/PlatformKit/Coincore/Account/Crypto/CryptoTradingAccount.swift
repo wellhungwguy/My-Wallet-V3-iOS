@@ -75,7 +75,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         balances
             .map(\.balance)
             .map { [asset] balance -> (available: MoneyValue, pending: MoneyValue) in
-                guard let balance = balance else {
+                guard let balance else {
                     return (.zero(currency: asset), .zero(currency: asset))
                 }
                 return (balance.available, balance.pending)
@@ -99,13 +99,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     public var onTxCompleted: (TransactionResult) -> Completable {
         { [weak self] result -> Completable in
-            guard let self = self else {
+            guard let self else {
                 return .error(PlatformKitError.default)
             }
             guard case .hashed(let hash, let amount) = result else {
                 return .error(PlatformKitError.default)
             }
-            guard let amount = amount, amount.isCrypto else {
+            guard let amount, amount.isCrypto else {
                 return .error(PlatformKitError.default)
             }
             return self.receiveAddress

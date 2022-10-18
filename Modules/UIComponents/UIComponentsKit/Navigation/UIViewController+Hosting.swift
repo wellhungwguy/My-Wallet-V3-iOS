@@ -7,7 +7,7 @@ extension UIViewController {
 
     /// Embeds a `SwiftUI.View` inside a `UIViewController`. The embeeded view takes over the entire controller's view.
     /// - Parameter view: The `SwiftUI.View` to embed in the controller.
-    public func embed<Content: View>(@ViewBuilder _ view: () -> Content) {
+    public func embed(@ViewBuilder _ view: () -> some View) {
         let hostViewController = UIHostingController(rootView: view())
         addChild(hostViewController)
         self.view.addSubview(hostViewController.view)
@@ -17,7 +17,7 @@ extension UIViewController {
 
     /// Embeds a `SwiftUI.View` inside a `UIViewController`. The embeeded view takes over the entire controller's view.
     /// - Parameter view: The `SwiftUI.View` to embed in the controller.
-    public func embed<Content: View>(_ view: Content) {
+    public func embed(_ view: some View) {
         let hostViewController = UIHostingController(rootView: view)
         addChild(hostViewController)
         self.view.addSubview(hostViewController.view)
@@ -29,8 +29,8 @@ extension UIViewController {
     /// - Parameters:
     ///   - view: The `SwiftUI.View` to be presented.
     ///   - inNavigationController: If `true` the `UIViewController` hosting the `view` is wrapped within a `UINavigationController`.
-    public func present<Content: View>(
-        _ view: Content,
+    public func present(
+        _ view: some View,
         inNavigationController: Bool = false,
         modalPresentationStyle: UIModalPresentationStyle = .automatic
     ) {

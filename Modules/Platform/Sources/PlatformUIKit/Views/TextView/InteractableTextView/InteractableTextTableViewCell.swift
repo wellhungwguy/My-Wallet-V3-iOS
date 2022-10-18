@@ -24,7 +24,7 @@ public final class InteractableTextTableViewCell: UITableViewCell {
 
     public var viewModel: InteractableTextViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             instructionTextView.viewModel = viewModel
             instructionTextView.setupHeight()
         }

@@ -248,7 +248,7 @@ struct AccountRow: View {
     }
 
     var body: some View {
-        if let account = account {
+        if let account {
             BalanceRow(
                 leadingTitle: account.name,
                 leadingDescription: account.leadingDescription,

@@ -15,7 +15,7 @@ public final class SelectionButtonView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 return
             }
 

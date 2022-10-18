@@ -122,7 +122,7 @@ extension AmountLabelViewPresenter {
             let string = NSMutableAttributedString()
             string.append(.init(amount))
 
-            if let placeholder = placeholder {
+            if let placeholder {
                 string.append(.init(placeholder))
             }
 

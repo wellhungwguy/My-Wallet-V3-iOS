@@ -39,7 +39,7 @@ final class CreateWalletClient: CreateWalletClientAPI {
             with: email,
             time: Int(Date().timeIntervalSince1970 * 1000.0)
         )
-        if let recaptchaToken = recaptchaToken {
+        if let recaptchaToken {
             parameters.append(
                 URLQueryItem(
                     name: "captcha",

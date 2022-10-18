@@ -153,10 +153,10 @@ public struct TransactionDescriptorViewModel {
     ) {
         self.assetAction = assetAction
         self.adjustActionIconColor = adjustActionIconColor
-        if let sourceAccount = sourceAccount {
+        if let sourceAccount {
             fromAccountRelay.accept(.value(sourceAccount))
         }
-        if let destinationAccount = destinationAccount {
+        if let destinationAccount {
             toAccountRelay.accept(.value(destinationAccount))
         }
     }

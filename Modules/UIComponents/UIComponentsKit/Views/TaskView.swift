@@ -317,7 +317,7 @@ extension UITask {
     }
 }
 
-extension Collection where Element == UITask {
+extension Collection<UITask> {
 
     fileprivate func padding(in geometry: GeometryProxy) -> EdgeInsets {
         reduce(.zero) { sum, next in
@@ -329,7 +329,7 @@ extension Collection where Element == UITask {
 extension Style.Padding {
 
     fileprivate init(_ length: Length?, edges: Edge.Set) {
-        guard let length = length else { return }
+        guard let length else { return }
         if edges.contains(.top) {
             top = length
         }

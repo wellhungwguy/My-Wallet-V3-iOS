@@ -17,17 +17,17 @@ extension UITableView {
 
     // MARK: - Register header / footer
 
-    public func register<HeaderType: UITableViewHeaderFooterView>(_ headerType: HeaderType.Type) {
+    public func register(_ headerType: (some UITableViewHeaderFooterView).Type) {
         register(headerType, forHeaderFooterViewReuseIdentifier: headerType.objectName)
     }
 
     // MARK: - Register cell type
 
-    public func register<CellType: UITableViewCell>(_ cellType: CellType.Type) {
+    public func register(_ cellType: (some UITableViewCell).Type) {
         register(cellType, forCellReuseIdentifier: cellType.objectName)
     }
 
-    public func register<CellType: UITableViewCell>(_ cellTypes: [CellType.Type]) {
+    public func register(_ cellTypes: [(some UITableViewCell).Type]) {
         for type in cellTypes {
             register(type, forCellReuseIdentifier: type.objectName)
         }

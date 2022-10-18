@@ -363,14 +363,10 @@ private struct NamespaceOnTapActionModifier<
 
 extension View {
 
-    public func onTap<
-        Event: L & I_blockchain_ui_type_action,
-        Action: L,
-        T: Hashable
-    >(
-        _ event: Event,
-        _ action: KeyPath<L_blockchain_ui_type_action, Action>,
-        data: (() async throws -> T)? = nil
+    public func onTap(
+        _ event: some L & I_blockchain_ui_type_action,
+        _ action: KeyPath<L_blockchain_ui_type_action, some L>,
+        data: (() async throws -> some Hashable)? = nil
     ) -> some View {
         modifier(NamespaceOnTapActionModifier(event: event, action: action, data: data))
     }

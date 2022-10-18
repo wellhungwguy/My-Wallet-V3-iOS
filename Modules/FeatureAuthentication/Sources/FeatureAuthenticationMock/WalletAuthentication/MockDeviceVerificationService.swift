@@ -75,7 +75,7 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
     }
 
     func authorizeVerifyDevice(from sessionToken: String, payload: String, confirmDevice: Bool?) -> AnyPublisher<Void, AuthorizeVerifyDeviceError> {
-        guard let confirmDevice = confirmDevice else {
+        guard let confirmDevice else {
             return .failure(
                 .confirmationRequired(
                     requestTime: Date(timeIntervalSince1970: 1000),

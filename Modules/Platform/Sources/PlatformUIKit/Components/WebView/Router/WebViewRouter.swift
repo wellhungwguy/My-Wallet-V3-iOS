@@ -37,7 +37,7 @@ public final class WebViewRouter: WebViewRouterAPI {
         launch
             .map(\.url)
             .emit(onNext: { [weak self] url in
-                guard let self = self else { return }
+                guard let self else { return }
                 guard let topViewController = self.topMostViewControllerProvider.topMostViewController else {
                     return
                 }

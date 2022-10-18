@@ -202,7 +202,7 @@ public final class InterestDepositTradingTransactionEngine: InterestTransactionE
                     )
             }
             .map { [weak self] pendingTransaction in
-                guard let self = self else {
+                guard let self else {
                     unexpectedDeallocation()
                 }
                 return self.modifyEngineConfirmations(

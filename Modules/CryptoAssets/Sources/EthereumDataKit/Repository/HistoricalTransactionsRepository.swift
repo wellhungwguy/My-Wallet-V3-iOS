@@ -170,7 +170,7 @@ extension EthereumHistoricalTransaction {
 
     private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
         let ethereum = CryptoCurrency.ethereum
-        guard let gasUsed = gasUsed else {
+        guard let gasUsed else {
             return .zero(currency: ethereum)
         }
         guard let gasPrice = BigInt(gasPrice),

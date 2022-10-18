@@ -74,7 +74,7 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
 
         let methods = paymentMethodTypes
             .map { [weak self] (methods: [PaymentMethodType]) -> [PaymentMethodCellViewModelItem] in
-                guard let self = self else { return [] }
+                guard let self else { return [] }
                 return methods.compactMap { type in
                     self.generateCellType(by: type) ?? nil
                 }

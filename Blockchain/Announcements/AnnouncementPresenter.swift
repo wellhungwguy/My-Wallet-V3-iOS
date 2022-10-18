@@ -278,7 +278,7 @@ final class AnnouncementPresenter {
 
     private func actionForOpening(_ absoluteURL: String) -> CardAnnouncementAction {
         { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
@@ -293,7 +293,7 @@ final class AnnouncementPresenter {
 
     private func actionPresentKYC(user: NabuUser) -> CardAnnouncementAction {
         { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
@@ -337,7 +337,7 @@ extension AnnouncementPresenter {
             hasIncompleteBuyFlow: hasIncompleteBuyFlow,
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.announcementDismissAction()
                 self.handleBuyCrypto()
             },
@@ -352,7 +352,7 @@ extension AnnouncementPresenter {
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: announcementDismissAction,
             action: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.announcementDismissAction()
                 self.tabSwapping.switchTabToReceive()
             }
@@ -431,7 +431,7 @@ extension AnnouncementPresenter {
             cryptoCurrency: cryptoCurrency,
             dismiss: announcementDismissAction,
             action: { [weak self] in
-                guard let cryptoCurrency = cryptoCurrency else {
+                guard let cryptoCurrency else {
                     return
                 }
                 self?.handleBuyCrypto(currency: cryptoCurrency)
@@ -583,7 +583,7 @@ extension AnnouncementPresenter {
         ViewNFTComingSoonAnnouncement(
             dismiss: announcementDismissAction,
             action: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.registerEmailForNFTViewWaitlist()
             }
         )

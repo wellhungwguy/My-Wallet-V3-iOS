@@ -183,7 +183,7 @@ extension BuyCheckoutView.Loaded {
     }
 
     @ViewBuilder
-    func explain<S: StringProtocol>(_ content: S, action: @escaping () async throws -> Void) -> some View {
+    func explain(_ content: some StringProtocol, action: @escaping () async throws -> Void) -> some View {
         VStack(alignment: .leading) {
             Text(rich: content)
                 .foregroundColor(.semantic.text)

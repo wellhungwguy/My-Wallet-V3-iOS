@@ -410,7 +410,7 @@ extension PinScreenPresenter {
     /// 1st pin entered, and if so, it will proceed to change the user's pin.
     func validateSecondEntry() -> Completable {
         Completable.create { [weak self] completable in
-            guard let self = self else { return Disposables.create() }
+            guard let self else { return Disposables.create() }
 
             // Extract both current and previous pins before comparing them. Both MUST NOT be nil at that point
             guard let previousPin = self.useCase.pin,
@@ -473,7 +473,7 @@ extension PinScreenPresenter {
         }
 
         return Completable.create { [weak self] completable in
-            guard let self = self else { return Disposables.create() }
+            guard let self else { return Disposables.create() }
             self.verify()
                 .asCompletable()
                 .do(onDispose: { [weak self] in

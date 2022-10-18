@@ -11,9 +11,9 @@ extension View {
     /// - Parameter content: The contents to display inside the inscribed incircle bounds
     /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
-    public func inscribed<Content>(
-        _ content: @autoclosure @escaping () -> Content
-    ) -> some View where Content: View {
+    public func inscribed(
+        _ content: @autoclosure @escaping () -> some View
+    ) -> some View {
         inscribed(content)
     }
 
@@ -25,9 +25,9 @@ extension View {
     /// - Parameter content: The contents to display inside of the inscribed incircle bounds
     /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
-    public func inscribed<Content>(
-        @ViewBuilder _ content: @escaping () -> Content
-    ) -> some View where Content: View {
+    public func inscribed(
+        @ViewBuilder _ content: @escaping () -> some View
+    ) -> some View {
         inscribed(aspectRatio: 1, content)
     }
 
@@ -39,10 +39,10 @@ extension View {
     /// - Parameter content: The contents to display inside of the inscribed incircle bounds
     /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
-    public func inscribed<Content>(
+    public func inscribed(
         aspectRatio: CGFloat,
-        _ content: @autoclosure @escaping () -> Content
-    ) -> some View where Content: View {
+        _ content: @autoclosure @escaping () -> some View
+    ) -> some View {
         inscribed(aspectRatio: aspectRatio, content)
     }
 
@@ -54,10 +54,10 @@ extension View {
     /// - Parameter content: The contents to display inside of the inscribed incircle bounds
     /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
-    public func inscribed<Content>(
+    public func inscribed(
         aspectRatio: CGFloat,
-        @ViewBuilder _ content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder _ content: @escaping () -> some View
+    ) -> some View {
         ZStack {
             if aspectRatio.isNormal {
                 withGeometry(\.size) { view, size in

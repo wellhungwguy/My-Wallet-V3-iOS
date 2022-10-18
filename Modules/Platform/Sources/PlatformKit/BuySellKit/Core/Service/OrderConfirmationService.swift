@@ -98,7 +98,7 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
                 OrderDetails(recorder: analyticsRecorder, response: response)
             }
             .flatMap { details -> AnyPublisher<OrderDetails, OrderConfirmationServiceError> in
-                guard let details = details else {
+                guard let details else {
                     return .failure(OrderConfirmationServiceError.mappingError)
                 }
                 if [.failed, .expired].contains(details.state), let ux = details.ux {

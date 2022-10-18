@@ -53,7 +53,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         search: { [searchRelay] searchText in searchRelay.accept(searchText) },
         sections: { [sections] in sections.eraseToAnyPublisher() },
         updateSingleAccounts: { [weak self] ids in
-            guard let self = self else { return .empty() }
+            guard let self else { return .empty() }
             let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
             let publishers = presenters
                 .compactMap { id, presenter
@@ -94,7 +94,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                 .eraseToAnyPublisher()
         },
         updateAccountGroups: { [weak self] ids in
-            guard let self = self else { return .empty() }
+            guard let self else { return .empty() }
             let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
             let publishers = presenters
                 .compactMap { id, presenter
@@ -290,7 +290,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
         stateWait
             .map(\.navigationModel)
             .drive(weak: self) { (self, model) in
-                if let model = model {
+                if let model {
                     self.navigationController?.setNavigationBarHidden(false, animated: false)
                     self.titleViewStyle = model.titleViewStyle
                     self.set(

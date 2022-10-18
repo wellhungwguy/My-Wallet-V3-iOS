@@ -56,7 +56,7 @@ extension Publisher where Output == [BlockchainAccount], Failure == Error {
         onFailure: ((BlockchainAccount, Failure) -> Void)? = nil
     ) -> AnyPublisher<[BlockchainAccount], Failure> {
         flatMap { accounts -> AnyPublisher<[BlockchainAccount], Failure> in
-            guard let action = action else {
+            guard let action else {
                 return .just(accounts)
             }
             return accounts.map { account in
@@ -132,7 +132,7 @@ extension Publisher where Output == [SingleAccount], Failure == Error {
         onFailure: ((SingleAccount, Failure) -> Void)? = nil
     ) -> AnyPublisher<[SingleAccount], Failure> {
         flatMap { accounts -> AnyPublisher<[SingleAccount], Failure> in
-            guard let action = action else {
+            guard let action else {
                 return .just(accounts)
             }
             return accounts.map { account in
@@ -300,7 +300,7 @@ extension CoincoreAPI {
     }
 }
 
-extension Sequence where Element == SingleAccount {
+extension Sequence<SingleAccount> {
 
     public func hasAnyFundedAccounts() -> AnyPublisher<Bool, Error> {
         map(\.isFunded)

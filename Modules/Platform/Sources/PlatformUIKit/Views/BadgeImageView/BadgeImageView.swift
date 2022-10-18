@@ -31,7 +31,7 @@ public final class BadgeImageView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 imageView.set(nil)
                 containerView.backgroundColor = nil
                 return
@@ -58,7 +58,7 @@ public final class BadgeImageView: UIView {
             viewModel.sizingType
                 .drive(
                     onNext: { [weak self] type in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         switch type {
                         case .configuredByOwner:
                             self.sizeConstraints.set(priority: .penultimateLow)
@@ -75,7 +75,7 @@ public final class BadgeImageView: UIView {
 
             viewModel.marginOffset
                 .drive(onNext: { [weak self] offset in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.leadingOffsetConstraint.constant = offset
                     self.trailingOffsetConstraint.constant = offset
                     self.topOffsetConstraint.constant = offset
@@ -136,7 +136,7 @@ public final class BadgeImageView: UIView {
 
     override public func layoutSubviews() {
         super.layoutSubviews()
-        guard let viewModel = viewModel else { return }
+        guard let viewModel else { return }
         switch viewModel.cornerRadiusRelay.value {
         case .none:
             layer.cornerRadius = 0

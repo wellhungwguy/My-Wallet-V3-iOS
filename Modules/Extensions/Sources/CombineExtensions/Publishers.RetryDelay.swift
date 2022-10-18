@@ -42,21 +42,21 @@ extension Publisher where Failure: TimeoutFailure {
     }
 
     /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
-    public func poll<S: Scheduler>(
+    public func poll(
         max attempts: Int = Int.max,
         until: @escaping (Output) -> Bool,
         delay: DispatchTimeInterval = .seconds(30),
-        scheduler: S
+        scheduler: some Scheduler
     ) -> AnyPublisher<Output, Failure> {
         poll(max: attempts, until: until, delay: .constant(delay), scheduler: scheduler)
     }
 
     /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
-    public func poll<S: Scheduler>(
+    public func poll(
         max attempts: Int = Int.max,
         until: @escaping (Output) -> Bool,
         delay: IntervalDuration,
-        scheduler: S
+        scheduler: some Scheduler
     ) -> AnyPublisher<Output, Failure> {
         flatMap { output -> AnyPublisher<Output, Failure> in
             guard until(output) else { return Fail(error: Failure.timeout).eraseToAnyPublisher() }

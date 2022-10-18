@@ -96,7 +96,7 @@ extension EffectiveLimit {
         _ x: EffectiveLimit?,
         _ y: EffectiveLimit?
     ) throws -> EffectiveLimit? {
-        guard let x = x, let y = y else {
+        guard let x, let y else {
             return x ?? y
         }
         let value: MoneyValue = try .min(x.value, y.value)
@@ -111,7 +111,7 @@ extension EffectiveLimit {
         _ x: EffectiveLimit?,
         _ y: EffectiveLimit?
     ) throws -> EffectiveLimit? {
-        guard let x = x, let y = y else {
+        guard let x, let y else {
             return x ?? y
         }
         let value: MoneyValue = try .max(x.value, y.value)

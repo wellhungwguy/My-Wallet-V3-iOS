@@ -140,14 +140,14 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
         case .introduction:
             /// The `topMost` screen is the `CustodyActionScreen`
             dismiss { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.showIntroductionScreen()
             }
         case .backup,
              .backupAfterIntroduction:
             /// The `topMost` screen is the `CustodyActionScreen`
             dismiss { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.backupRouterAPI.presentFlow()
             }
         case .send:
@@ -180,7 +180,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             /// The `topMost` screen is the `CustodyActionScreen`
             guard case .crypto(let currency) = currency else { return }
             dismiss { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.custodyWithdrawalRouter.start(with: currency)
             }
         case .withdrawalFiat(let isKYCApproved):
@@ -198,7 +198,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showSend() {
         dismiss { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             self.tabSwapping.send(from: self.account)
@@ -207,7 +207,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showReceive() {
         dismiss { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             if let account = self.account {
@@ -248,7 +248,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showDepositFlow() {
         dismiss { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.accountProviding
                 .accounts(for: self.currency)
                 .compactMap(\.first)
@@ -300,7 +300,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showWithdrawTransactionFlow(_ currency: FiatCurrency) {
         dismiss { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.accountProviding
                 .accounts(for: .fiat(currency))
                 .compactMap(\.first)

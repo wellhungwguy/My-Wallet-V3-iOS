@@ -82,7 +82,7 @@ final class TransactionInteractor {
                 action: action
             )
             .do(onSuccess: { [weak self] transactionProcessor in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.transactionProcessor = transactionProcessor
             })
                 .asObservable()
@@ -105,14 +105,14 @@ final class TransactionInteractor {
     }
 
     func update(amount: MoneyValue) -> Completable {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.updateAmount(amount: amount)
     }
 
     func updateTransactionFees(with level: FeeLevel, amount: MoneyValue?) -> Completable {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.updateFeeLevel(level, customFeeAmount: amount)
@@ -238,7 +238,7 @@ final class TransactionInteractor {
     }
 
     func verifyAndExecute(order: TransactionOrder?) -> Single<TransactionResult> {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.execute(
@@ -247,21 +247,21 @@ final class TransactionInteractor {
     }
 
     func createOrder() -> Single<TransactionOrder?> {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.createOrder()
     }
 
     func cancelOrder(with identifier: String) -> Single<Void> {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.cancelOrder(with: identifier)
     }
 
     func modifyTransactionConfirmation(_ newConfirmation: TransactionConfirmation) -> Completable {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.set(transactionConfirmation: newConfirmation)
@@ -277,7 +277,7 @@ final class TransactionInteractor {
     }
 
     var transactionExchangeRates: Observable<TransactionExchangeRates> {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.transactionExchangeRates
@@ -288,7 +288,7 @@ final class TransactionInteractor {
     }
 
     var validateTransaction: Completable {
-        guard let transactionProcessor = transactionProcessor else {
+        guard let transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.validateAll()
@@ -389,7 +389,7 @@ final class TransactionInteractor {
     }
 }
 
-extension Array where Element == OrderPair {
+extension [OrderPair] {
     fileprivate func contains(source: CurrencyType, destination: CurrencyType) -> Bool {
         contains(where: { $0.sourceCurrencyType == source && $0.destinationCurrencyType == destination })
     }

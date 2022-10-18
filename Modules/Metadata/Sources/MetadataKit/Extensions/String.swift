@@ -8,11 +8,9 @@ extension String {
     /// - Parameter codeUnits: A collection of code units encoded in the encoding
     ///     specified in `sourceEncoding`.
     /// - Returns: The decoded string
-    @inlinable static func decodeFromUTF8<C>(
-        codeUnits: C
-    ) -> Self where C: Collection,
-        C.Element == UTF8.CodeUnit
-    {
+    @inlinable static func decodeFromUTF8(
+        codeUnits: some Collection<UTF8.CodeUnit>
+    ) -> Self {
         Self(decoding: codeUnits, as: UTF8.self)
     }
 }

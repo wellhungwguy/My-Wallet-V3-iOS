@@ -7,7 +7,7 @@ import RxSwift
 extension Reactive where Base: UISwitch {
     public var thumbFillColor: Binder<UIColor?> {
         Binder(base) { switchView, color in
-            guard let color = color else { return }
+            guard let color else { return }
             switchView.thumbTintColor = color
         }
     }

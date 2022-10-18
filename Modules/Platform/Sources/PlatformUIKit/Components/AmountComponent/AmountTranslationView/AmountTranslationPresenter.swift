@@ -180,7 +180,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         interactor.connect(input: input.map(\.toInteractorInput))
             .map { [weak self] state -> AmountPresenterState in
-                guard let self = self else { return .validInput(nil) }
+                guard let self else { return .validInput(nil) }
                 return self.setupButton(by: state)
             }
     }

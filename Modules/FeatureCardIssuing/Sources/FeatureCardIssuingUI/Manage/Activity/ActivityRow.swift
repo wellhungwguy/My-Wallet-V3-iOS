@@ -93,7 +93,7 @@ extension Card.Transaction {
     }
 
     var counterAmountDisplayString: String {
-        guard let counterAmount = counterAmount else {
+        guard let counterAmount else {
             return ""
         }
         switch transactionType {

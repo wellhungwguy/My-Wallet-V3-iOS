@@ -20,8 +20,8 @@ public protocol FileIOAPI {
 }
 
 struct FileIO: FileIOAPI {
-    func write<T: Encodable>(
-        _ value: T,
+    func write(
+        _ value: some Encodable,
         to fileURL: URL,
         encodedUsing encoder: JSONEncoder
     ) -> Result<Void, FileIOError> {

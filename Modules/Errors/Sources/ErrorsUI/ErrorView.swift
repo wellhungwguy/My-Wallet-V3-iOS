@@ -57,7 +57,7 @@ public struct ErrorView<Fallback: View>: View {
             #endif
         }
         .apply { view in
-            if let dismiss = dismiss {
+            if let dismiss {
                 #if os(iOS)
                 view.navigationBarItems(
                     leading: EmptyView(),

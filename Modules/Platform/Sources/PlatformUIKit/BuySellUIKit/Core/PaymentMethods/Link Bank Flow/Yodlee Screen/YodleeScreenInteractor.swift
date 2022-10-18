@@ -102,7 +102,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         )
 
         let loadAction = Driver.deferred { [weak self] () -> Driver<URLRequest?> in
-            guard let self = self else { return .empty() }
+            guard let self else { return .empty() }
             return .just(self.yodleeRequestProvider.provideRequest(using: self.bankLinkageData))
         }
         .compactMap { $0 }
@@ -123,7 +123,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         let activationResult = successMessage
             .flatMap { [weak self] data -> Single<YodleeActivateService.State> in
-                guard let self = self else { return .just(.timeout) }
+                guard let self else { return .just(.timeout) }
                 return self.yodleeActivationService
                     .startPolling(for: self.bankLinkageData.id, providerAccountId: data.providerAccountId, accountId: data.accountId)
             }
@@ -145,7 +145,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
                 self?.recordAnalytics(for: state)
             })
             .map { [weak self] state -> YodleeScreen.Action in
-                guard let self = self else { return .none }
+                guard let self else { return .none }
                 return state.toScreenAction(reducer: self.contentReducer)
             }
             .asDriverCatchError()
@@ -160,7 +160,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         let successPendingAction = successMessage
             .map { [weak self] _ -> YodleeScreen.Action in
-                guard let self = self else { return .none }
+                guard let self else { return .none }
                 return .pending(
                     content: self.contentReducer.linkingBankPendingContent()
                 )
@@ -188,7 +188,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         let retryLoadAction = retryContentFromTap
             .compactMap { [weak self] _ -> URLRequest? in
-                guard let self = self else { return nil }
+                guard let self else { return nil }
                 return self.yodleeRequestProvider.provideRequest(using: self.bankLinkageData)
             }
             .map(YodleeScreen.Action.load)
@@ -252,7 +252,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
                 AnalyticsEvents.SimpleBuy.sbBankLinkSuccess(partner: .ach)
             ])
         case .inactive(let error):
-            guard let error = error else {
+            guard let error else {
                 return
             }
             recordAnalytics(for: error)

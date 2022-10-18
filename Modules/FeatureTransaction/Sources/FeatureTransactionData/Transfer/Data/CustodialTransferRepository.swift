@@ -62,7 +62,7 @@ final class CustodialTransferRepository: CustodialTransferRepositoryAPI {
     }
 
     private func destinationAddress(with destination: String, memo: String?) -> String {
-        guard let memo = memo, !memo.isEmpty else {
+        guard let memo, !memo.isEmpty else {
             return destination
         }
         return destination + ":" + memo

@@ -377,7 +377,7 @@ final class TransactionModel {
         )
         .subscribe(on: MainScheduler.asyncInstance)
         .subscribe { [weak self] kycStatus, sources in
-            guard let self = self else { return }
+            guard let self else { return }
             // refresh the sources so the accounts and limits get updated
             self.process(action: .availableSourceAccountsListUpdated(sources))
             // update the kyc status on the transaction
@@ -574,7 +574,7 @@ final class TransactionModel {
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
             .do(onNext: { [weak self] pendingTransaction in
-                guard let self = self else { return }
+                guard let self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
                 self.onFirstUpdate(

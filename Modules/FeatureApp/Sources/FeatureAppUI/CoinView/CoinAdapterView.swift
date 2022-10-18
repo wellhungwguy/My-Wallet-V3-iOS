@@ -201,7 +201,7 @@ public final class CoinViewObserver: Session.Observer {
                 coinView.lineGraphColor(cryptoCurrency.color)
             }
         )
-        if let vc = vc {
+        if let vc {
             topViewController.topMostViewController?.present(
                 vc,
                 animated: true

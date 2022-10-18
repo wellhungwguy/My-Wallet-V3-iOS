@@ -172,9 +172,9 @@ extension AppProtocol {
         )
     }
 
-    public func post<E: Error>(
+    public func post(
         _ tag: L_blockchain_ux_type_analytics_error,
-        error: E,
+        error: some Error,
         context: Tag.Context = [:],
         file: String = #fileID,
         line: Int = #line
@@ -182,8 +182,8 @@ extension AppProtocol {
         post(tag[], error: error, context: context, file: file, line: line)
     }
 
-    public func post<E: Error>(
-        error: E,
+    public func post(
+        error: some Error,
         context: Tag.Context = [:],
         file: String = #fileID,
         line: Int = #line
@@ -195,9 +195,9 @@ extension AppProtocol {
         }
     }
 
-    private func post<E: Error>(
+    private func post(
         _ event: Tag.Event,
-        error: E,
+        error: some Error,
         context: Tag.Context = [:],
         file: String = #fileID,
         line: Int = #line
@@ -219,9 +219,9 @@ extension AppProtocol {
         on([first] + rest)
     }
 
-    public func on<Tags>(
-        _ tags: Tags
-    ) -> AnyPublisher<Session.Event, Never> where Tags: Sequence, Tags.Element == Tag.Event {
+    public func on(
+        _ tags: some Sequence<Tag.Event>
+    ) -> AnyPublisher<Session.Event, Never> {
         events.filter(tags.map { $0.key().in(self) })
             .eraseToAnyPublisher()
     }
@@ -232,10 +232,10 @@ extension AppProtocol {
         events.filter { filter($0.tag) }.eraseToAnyPublisher()
     }
 
-    public func on<Tags>(
-        _ tags: Tags,
+    public func on(
+        _ tags: some Sequence<Tag.Event>,
         bufferingPolicy: AsyncStream<Session.Event>.Continuation.BufferingPolicy = .bufferingNewest(1)
-    ) -> AsyncStream<Session.Event> where Tags: Sequence, Tags.Element == Tag.Event {
+    ) -> AsyncStream<Session.Event> {
         events.filter(tags.map { $0.key().in(self) }).stream(bufferingPolicy: bufferingPolicy)
     }
 }

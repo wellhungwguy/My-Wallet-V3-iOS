@@ -15,7 +15,7 @@ public final class WalletBalanceView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 return
             }
 

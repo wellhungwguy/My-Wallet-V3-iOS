@@ -47,7 +47,7 @@ public final class AuthorizeDeviceViewController: UINavigationController {
             .authorizationResult
             .compactMap { $0 }
             .sink { [weak self] result in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.showAuthorizationResult(result)
             }
             .store(in: &cancellables)
@@ -71,7 +71,7 @@ public final class AuthorizeDeviceViewController: UINavigationController {
             details: viewStore.loginRequestInfo.details,
             requestTime: viewStore.loginRequestInfo.timestamp,
             didAuthorizeDevice: { [weak self] authorized in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.viewStore.send(.handleAuthorization(authorized))
             }
         )

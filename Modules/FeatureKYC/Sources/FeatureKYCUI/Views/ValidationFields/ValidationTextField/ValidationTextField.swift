@@ -272,7 +272,7 @@ extension ValidationTextField: UITextFieldDelegate {
         guard let text = textField.text else {
             return true
         }
-        guard let textReplacementBlock = textReplacementBlock else {
+        guard let textReplacementBlock else {
             return true
         }
 

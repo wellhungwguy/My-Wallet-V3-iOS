@@ -64,7 +64,7 @@ final class StellarTransactionDispatcher: StellarTransactionDispatcherAPI {
         walletOptions.walletOptions
             .map(\.xlmExchangeAddresses)
             .map { addresses -> Bool in
-                guard let addresses = addresses else {
+                guard let addresses else {
                     return false
                 }
                 return addresses

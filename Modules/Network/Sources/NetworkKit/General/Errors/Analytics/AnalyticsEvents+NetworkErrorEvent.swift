@@ -13,7 +13,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
                 "host": host,
                 "path": path
             ]
-            if let message = message {
+            if let message {
                 parameters["message"] = message
             }
             return parameters

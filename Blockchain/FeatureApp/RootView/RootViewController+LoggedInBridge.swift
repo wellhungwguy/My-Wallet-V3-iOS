@@ -37,7 +37,7 @@ extension RootViewController: LoggedInBridge {
                 "\(output)".peek("🏄")
             })
             .sink { [weak self] result in
-                guard let self = self, self.presentedViewController != nil, result != .skipped else {
+                guard let self, self.presentedViewController != nil, result != .skipped else {
                     return
                 }
                 self.dismiss(animated: true)
@@ -301,7 +301,7 @@ extension RootViewController: LoggedInBridge {
         )
         .receive(on: DispatchQueue.main)
         .sink(receiveValue: { [weak self] isSupported, isEligible in
-            guard let self = self else { return }
+            guard let self else { return }
             guard isEligible, isSupported else {
                 return self.showLegacySupportAlert()
             }
@@ -316,7 +316,7 @@ extension RootViewController: LoggedInBridge {
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { [weak self] completion in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     switch completion {
                     case .failure(let error):
                         "\(error)".peek(as: .error, "‼️")

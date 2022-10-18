@@ -211,7 +211,7 @@ extension PlaidLinkObserver {
             { _ in } // Leave this empty to avoid the default dismiss, it will be dismissed by the PlaidReducer
         )
 
-        if let handler = handler {
+        if let handler {
             // Set is_linking flag to true so when the the user returns to the app after incerting the credentials
             // the flow continues instead of dealocating and showing the PIN screen
             app.state.set(

@@ -90,7 +90,7 @@ public class BottomSheetPresenter: UIPresentationController {
     }
 
     private func installCustomViews() {
-        guard let containerView = containerView else { return }
+        guard let containerView else { return }
 
         containerView.addSubview(dimmingView)
         containerView.addSubview(roundingView)

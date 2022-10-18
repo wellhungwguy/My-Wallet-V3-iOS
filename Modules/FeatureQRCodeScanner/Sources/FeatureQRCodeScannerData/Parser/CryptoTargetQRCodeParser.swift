@@ -28,7 +28,7 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
     public func parse(
         scanResult: Result<String, QRScannerError>
     ) -> AnyPublisher<QRCodeScannerResultType, QRScannerError> {
-        if let account = account {
+        if let account {
             return parse(account: account, scanResult: scanResult)
         }
 

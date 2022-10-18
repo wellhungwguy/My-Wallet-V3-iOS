@@ -61,7 +61,7 @@ final class PortfolioScreenPresenter {
                 .totalBalance(totalBalancePresenter),
                 .withdrawalLock
             ]
-            if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
+            if let fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
             }
 
@@ -88,7 +88,7 @@ final class PortfolioScreenPresenter {
             var items: [PortfolioCellType] = [
                 .totalBalance(totalBalancePresenter)
             ]
-            if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
+            if let fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
             }
             Array(1...3)
@@ -99,7 +99,7 @@ final class PortfolioScreenPresenter {
 
         private func addingAnnouncement(items: [PortfolioCellType]) -> [PortfolioCellType] {
             var items = items
-            if let announcementCardViewModel = announcementCardViewModel {
+            if let announcementCardViewModel {
                 switch announcementCardViewModel.priority {
                 case .high: // Prepend
                     items.insert(.announcement(announcementCardViewModel), at: 0)

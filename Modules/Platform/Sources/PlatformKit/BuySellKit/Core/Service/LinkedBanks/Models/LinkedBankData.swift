@@ -56,7 +56,7 @@ public struct LinkedBankData {
     }
 
     public var label: String {
-        guard let account = account else {
+        guard let account else {
             return identifier
         }
         return "\(account.bankName) \(account.type.title) \(account.number)"
@@ -83,7 +83,7 @@ public struct LinkedBankData {
 
 extension LinkedBankData.LinkageError {
     init?(from error: LinkedBankResponse.Error?) {
-        guard let error = error else { return nil }
+        guard let error else { return nil }
         self = error
     }
 }

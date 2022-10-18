@@ -101,7 +101,7 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerHeaderView(TableHeaderView.objectName, bundle: .module)
 
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.cellType {
             case .badge(_, let presenter):

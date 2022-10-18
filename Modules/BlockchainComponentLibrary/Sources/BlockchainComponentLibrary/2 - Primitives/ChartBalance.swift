@@ -79,7 +79,7 @@ public struct ChartBalance: View {
                     }
                     .foregroundColor(changeColor)
 
-                    if let changeTime = changeTime {
+                    if let changeTime {
                         Text(changeTime)
                             .typography(.paragraph2)
                             .foregroundColor(

@@ -100,7 +100,7 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
     }
 }
 
-extension Array where Element == FormQuestion {
+extension [FormQuestion] {
 
     enum FormError: Error {
         case answerNotFound(FormAnswer.ID)

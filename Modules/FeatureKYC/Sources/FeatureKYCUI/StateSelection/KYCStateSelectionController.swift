@@ -50,7 +50,7 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
         searchBar.delegate = self
         searchBar.searchTextField.accessibilityIdentifier = "kyc.states.search_bar"
 
-        guard let country = country else {
+        guard let country else {
             Logger.shared.error("Country not set.")
             return
         }

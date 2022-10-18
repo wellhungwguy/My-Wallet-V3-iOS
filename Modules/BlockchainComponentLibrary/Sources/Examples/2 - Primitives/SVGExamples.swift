@@ -31,7 +31,7 @@ struct SVGExamples: View {
                     Capsule(style: .continuous)
                         .stroke(Color.semantic.light, lineWidth: 1)
                 )
-            if let url = url {
+            if let url {
                 AsyncMedia(
                     url: URL(string: url),
                     placeholder: { ProgressView().progressViewStyle(.circular) }

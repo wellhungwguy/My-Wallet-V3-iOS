@@ -91,7 +91,7 @@ extension String {
     fileprivate func ranges(of substring: String) -> [NSRange] {
         var ranges: [Range<Index>] = []
         enumerateSubstrings(in: startIndex..<endIndex, options: .byWords) { word, value, _, _ in
-            if let word = word, word == substring {
+            if let word, word == substring {
                 ranges.append(value)
             }
         }

@@ -46,7 +46,7 @@ public struct PrimarySlider<Value: BinaryFloatingPoint>: View
             step: step
         )
         #else
-        if let step = step {
+        if let step {
             Slider(
                 value: $value,
                 in: bounds,
@@ -73,7 +73,7 @@ private struct SliderRepresentable<Value: BinaryFloatingPoint>: UIViewRepresenta
 
     func makeCoordinator() -> Coordinator {
         Coordinator { slider in
-            if let step = step {
+            if let step {
                 let newValue = round(slider.value / Float(step)) * Float(step)
                 value = Value(newValue)
                 slider.value = newValue

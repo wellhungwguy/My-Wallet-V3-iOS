@@ -10,11 +10,11 @@ extension URLRequest {
 
         var command = "curl"
 
-        if let httpMethod = httpMethod {
+        if let httpMethod {
             command.append(commandLineArgument: "-X \(httpMethod)")
         }
 
-        if let httpBody = httpBody, !httpBody.isEmpty {
+        if let httpBody, !httpBody.isEmpty {
 
             let bodyString = [
                 ("\\", "\\\\"),
@@ -32,14 +32,14 @@ extension URLRequest {
             command.append(commandLineArgument: "--compressed")
         }
 
-        if let url = url, let cookies = HTTPCookieStorage.shared.cookies(for: url), !cookies.isEmpty {
+        if let url, let cookies = HTTPCookieStorage.shared.cookies(for: url), !cookies.isEmpty {
 
             let cookieCommand = cookies.map { "\($0.name)=\($0.value);" }.joined()
 
             command.append(commandLineArgument: "--cookie \"\(cookieCommand)\"")
         }
 
-        if let allHTTPHeaderFields = allHTTPHeaderFields {
+        if let allHTTPHeaderFields {
             for (header, value) in allHTTPHeaderFields {
                 command.append(
                     commandLineArgument: "-H '\(header): \(value.replacingOccurrences(of: "\'", with: "\\\'"))'"
@@ -47,7 +47,7 @@ extension URLRequest {
             }
         }
 
-        if let url = url {
+        if let url {
             command.append(commandLineArgument: "\"\(url.absoluteString)\"")
         }
 

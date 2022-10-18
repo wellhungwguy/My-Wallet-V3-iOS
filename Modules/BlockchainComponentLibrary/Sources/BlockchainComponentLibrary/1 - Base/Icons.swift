@@ -50,7 +50,7 @@ public struct Icon: View, Hashable, Codable {
     }
 
     public var body: some View {
-        if let size = size {
+        if let size {
             Content(icon: self).frame(width: size.width, height: size.height)
         } else {
             Content(icon: self)

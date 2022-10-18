@@ -267,7 +267,7 @@ extension PinRouter {
 
     /// Handle the display of a new view controller
     private func present(viewController: UIViewController) {
-        if let navigationController = navigationController {
+        if let navigationController {
             navigationController.pushViewController(viewController, animated: true)
         } else {
             let navigationController = UINavigationController(rootViewController: viewController)
@@ -302,7 +302,7 @@ extension PinRouter {
     ) {
         // Concentrate any cleanup logic here
         let cleanup = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.navigationController = nil
             self.isBeingDisplayed = false
             if completedSuccessfully, performsCompletionAfterDismissal {

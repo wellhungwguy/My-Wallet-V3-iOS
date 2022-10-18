@@ -107,7 +107,7 @@ extension stellarsdk.OperationsService {
 
 extension OperationResponse {
     fileprivate func buildOperation(accountID: String) -> StellarHistoricalTransaction? {
-        guard let transaction = transaction else {
+        guard let transaction else {
             return nil
         }
 

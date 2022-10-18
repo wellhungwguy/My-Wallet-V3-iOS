@@ -33,7 +33,7 @@ extension ERC20ActivityDetailsViewModel {
         func value(cryptoValue: CryptoValue, price: FiatValue?) -> Amounts.Value {
             let cryptoAmount = cryptoValue.displayString
             let value: String
-            if let price = price {
+            if let price {
                 value = cryptoValue.convert(using: price).displayString
             } else {
                 value = ""

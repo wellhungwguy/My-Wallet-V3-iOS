@@ -71,7 +71,7 @@ public struct AsyncThrowingSequencePublisher<S: AsyncSequence>: Combine.Publishe
                         subscriber.receive(completion: .failure(error))
                         throw CancellationError()
                     }
-                    guard let element = element else {
+                    guard let element else {
                         subscriber.receive(completion: .finished)
                         throw CancellationError()
                     }

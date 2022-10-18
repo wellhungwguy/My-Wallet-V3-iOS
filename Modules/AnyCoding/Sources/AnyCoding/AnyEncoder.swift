@@ -37,7 +37,7 @@ open class AnyEncoder: AnyEncoderProtocol, TopLevelEncoder {
         set { set(newValue) }
     }
 
-    public func encode<T>(_ this: T) throws -> Any? where T: Encodable {
+    public func encode(_ this: some Encodable) throws -> Any? {
         root.container = this.containerType
         if let o = this as? OptionalEncodableProtocol {
             return o.encodeUnwrapped(to: self)
@@ -46,7 +46,7 @@ open class AnyEncoder: AnyEncoderProtocol, TopLevelEncoder {
         return _value
     }
 
-    open func convert<T>(_ value: T) throws -> Any? {
+    open func convert(_ value: some Any) throws -> Any? {
         switch value {
         case let url as URL:
             return url.absoluteString
@@ -96,7 +96,7 @@ extension AnyEncoder.KeyedContainer: KeyedEncodingContainerProtocol {
         encoder.value = NSNull()
     }
 
-    public mutating func encode<T>(_ value: T, forKey key: Key) throws where T: Encodable {
+    public mutating func encode(_ value: some Encodable, forKey key: Key) throws {
         encoder.codingPath.append(key)
         defer { encoder.codingPath.removeLast() }
         encoder.value = try encoder.box(value)
@@ -124,7 +124,7 @@ extension AnyEncoder.SingleValueContainer: SingleValueEncodingContainer {
         encoder.value = NSNull()
     }
 
-    public func encode<T>(_ value: T) throws where T: Encodable {
+    public func encode(_ value: some Encodable) throws {
         switch value.containerType {
         case .singleValue:
             encoder.value = try encoder.convert(value) ?? value
@@ -160,7 +160,7 @@ extension AnyEncoder.UnkeyedContainer: UnkeyedEncodingContainer {
         encoder.value = NSNull()
     }
 
-    public mutating func encode<T>(_ value: T) throws where T: Encodable {
+    public mutating func encode(_ value: some Encodable) throws {
         defer { count += 1 }
         encoder.codingPath.append(AnyCodingKey(count))
         defer { encoder.codingPath.removeLast() }
@@ -182,7 +182,7 @@ extension AnyEncoder {
     }
 
     func set(_ newValue: Any?) {
-        if let `super` = `super` {
+        if let `super` {
             let old = `super`.codingPath
             `super`.codingPath = codingPath
             defer { `super`.codingPath = old }

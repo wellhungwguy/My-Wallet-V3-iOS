@@ -332,7 +332,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             .first
 
         var memoModels: [DetailsScreen.CellType] = []
-        if let memo = memo {
+        if let memo {
             let subtitle = memo.formatted?.subtitle ?? ""
             memoModel.originalTextRelay.accept(subtitle)
             memoModel

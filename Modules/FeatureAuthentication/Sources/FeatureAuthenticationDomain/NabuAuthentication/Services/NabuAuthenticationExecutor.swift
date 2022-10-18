@@ -179,7 +179,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     .mapError()
                     .flatMap { sessionToken
                         -> AnyPublisher<NabuSessionToken, NabuAuthenticationExecutorError> in
-                        guard let sessionToken = sessionToken else {
+                        guard let sessionToken else {
                             return .failure(.missingCredentials(MissingCredentialsError.sessionToken))
                         }
                         return .just(sessionToken)
@@ -249,7 +249,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
 
         let guid = credentialsRepository.guid
             .flatMap { guid -> AnyPublisher<String, NabuAuthenticationExecutorError> in
-                guard let guid = guid else {
+                guard let guid else {
                     return .failure(.missingCredentials(MissingCredentialsError.guid))
                 }
                 return .just(guid)

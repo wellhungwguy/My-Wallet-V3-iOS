@@ -25,7 +25,7 @@ final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, 
         )
         button.tapRelay
             .bind { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.action()
             }
@@ -45,7 +45,7 @@ final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, 
             buttons: [button],
             dismissState: .undismissible,
             didAppear: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)
             }
         )

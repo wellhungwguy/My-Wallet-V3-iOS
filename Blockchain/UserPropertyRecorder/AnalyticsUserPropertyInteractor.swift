@@ -133,12 +133,12 @@ final class AnalyticsUserPropertyInteractor {
             recorder.record(property)
         }
 
-        if let guid = guid {
+        if let guid {
             let property = HashedUserProperty(key: .walletID, value: guid)
             recorder.record(property)
         }
 
-        if let tiers = tiers {
+        if let tiers {
             let value = "\(tiers.latestTier.rawValue)"
             recorder.record(StandardUserProperty(key: .kycLevel, value: value))
         }

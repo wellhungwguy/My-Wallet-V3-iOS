@@ -24,7 +24,7 @@ final class SettingsService: SettingsServiceAPI {
     var valueObservable: Observable<WalletSettings> {
         settingsRelay
             .flatMap(weak: self) { (self, settings) -> Observable<WalletSettings> in
-                guard let settings = settings else {
+                guard let settings else {
                     return self.fetch(force: false).asObservable()
                 }
                 return .just(settings)

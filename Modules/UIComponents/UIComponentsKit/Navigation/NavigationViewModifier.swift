@@ -133,7 +133,7 @@ final class NavigationConfigurationViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        if let navigationController = navigationController {
+        if let navigationController {
             configure(navigationController)
         }
     }

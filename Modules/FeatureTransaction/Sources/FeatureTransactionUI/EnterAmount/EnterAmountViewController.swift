@@ -482,7 +482,7 @@ extension UIViewController {
     }
 
     func remove(child: UIViewController?) {
-        guard let child = child, child.parent === self else {
+        guard let child, child.parent === self else {
             return
         }
         child.view.removeFromSuperview()

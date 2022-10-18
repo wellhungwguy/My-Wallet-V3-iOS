@@ -242,7 +242,7 @@ final class SecureChannelService: SecureChannelAPI {
                 self.guidRepository.guid.asSingle()
             }
             .map { guid -> SecureChannel.PairingHandshake in
-                guard let guid = guid else {
+                guard let guid else {
                     throw SecureChannelError.missingGUID
                 }
                 return SecureChannel.PairingHandshake(guid: guid)
@@ -264,13 +264,13 @@ final class SecureChannelService: SecureChannelAPI {
             passwordRepository.password.asSingle()
         )
         .map { guid, sharedKey, password -> (guid: String, sharedKey: String, password: String) in
-            guard let guid = guid else {
+            guard let guid else {
                 throw SecureChannelError.missingGUID
             }
-            guard let sharedKey = sharedKey else {
+            guard let sharedKey else {
                 throw SecureChannelError.missingSharedKey
             }
-            guard let password = password else {
+            guard let password else {
                 throw SecureChannelError.missingPassword
             }
             return (guid, sharedKey, password)
@@ -307,8 +307,8 @@ final class SecureChannelService: SecureChannelAPI {
             }
     }
 
-    private func sendMessage<Message: Encodable>(
-        _ message: Message,
+    private func sendMessage(
+        _ message: some Encodable,
         channelId: String,
         pubKeyHash: String,
         success: Bool

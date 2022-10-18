@@ -222,7 +222,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         sourceAccount
             .subscribe(onNext: { [weak self] account in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.targetSelectionPageModel.process(action: .sourceAccountSelected(account, self.action))
             })
             .disposeOnDeactivate(interactor: self)
@@ -230,7 +230,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         let interactorState = transactionState
             .observe(on: MainScheduler.instance)
             .scan(.empty) { [weak self] state, updater -> TargetSelectionPageInteractor.State in
-                guard let self = self else {
+                guard let self else {
                     return state
                 }
                 guard updater.sourceAccount != nil else {

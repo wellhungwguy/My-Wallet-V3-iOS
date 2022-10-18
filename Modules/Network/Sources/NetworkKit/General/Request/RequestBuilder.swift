@@ -270,7 +270,7 @@ public class RequestBuilder {
     private func buildURL(path: String, parameters: [URLQueryItem]? = nil) -> URL? {
         var components = defaultComponents
         components.path += path
-        if let parameters = parameters {
+        if let parameters {
             components.queryItems = parameters
         }
         if let parameters = queryParameters {

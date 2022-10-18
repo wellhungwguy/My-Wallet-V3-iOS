@@ -28,8 +28,8 @@ final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
 
     // MARK: - AnalyticsEventsRepositoryAPI
 
-    func publish<Events: Encodable>(
-        events: Events
+    func publish(
+        events: some Encodable
     ) -> AnyPublisher<Never, URLError> {
         client
             .publish(events: events, token: tokenProvider())

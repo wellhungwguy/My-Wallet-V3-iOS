@@ -77,7 +77,7 @@ extension Data {
     }
 }
 
-extension Optional where Wrapped == Data {
+extension Data? {
 
     func json() throws -> Any {
         switch self {

@@ -116,7 +116,7 @@ extension AssetModelType.ERC20ParentChain {
     }
 }
 
-extension Array where Element == AssetModelProduct {
+extension [AssetModelProduct] {
 
     /// Whether the list of supported products causes its owner currency to be enabled in the wallet app.
     var enablesCurrency: Bool {

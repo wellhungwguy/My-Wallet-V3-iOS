@@ -10,7 +10,7 @@ extension JSONEncoder {
     /// - returns: A new `Data` value containing the encoded JSON data.
     /// - throws: `EncodingError.invalidValue` if a non-conforming floating-point value is encountered during encoding, and the encoding strategy is `.throw`.
     /// - throws: An error if any value throws an error during encoding.
-    func encode<T: Encodable>(value: T) -> Result<Data, EncodingError> {
+    func encode(value: some Encodable) -> Result<Data, EncodingError> {
         Result { try encode(value) }
             .mapError { error -> EncodingError in
                 error as! EncodingError // This is safe because `encode` always throws an `EncodingError`

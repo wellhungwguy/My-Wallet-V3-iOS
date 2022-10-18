@@ -124,7 +124,7 @@ extension FeatureSuperAppIntroView {
                         .frame(width: 80.vw)
                         .typography(.paragraph1)
 
-                    if let badge = badge {
+                    if let badge {
                         TagView(
                             text: badge,
                             variant: .default,

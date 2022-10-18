@@ -10,7 +10,7 @@ final class TotalBalanceTableViewCell: UITableViewCell {
     /// Presenter should be injected
     var presenter: TotalBalanceViewPresenter! {
         didSet {
-            if let presenter = presenter {
+            if let presenter {
                 titleLabel.content = presenter.titleContent
                 balanceView.presenter = presenter.balancePresenter
                 pieChartView.presenter = presenter.pieChartPresenter

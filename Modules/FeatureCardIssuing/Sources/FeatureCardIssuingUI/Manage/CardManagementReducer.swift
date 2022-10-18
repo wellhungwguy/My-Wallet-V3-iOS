@@ -232,7 +232,7 @@ let cardManagementReducer: Reducer<
         case .addToAppleWallet:
             return .none
         case .getCardResponse(.success(let card)):
-            guard let card = card else {
+            guard let card else {
                 return .none
             }
             state.card = card

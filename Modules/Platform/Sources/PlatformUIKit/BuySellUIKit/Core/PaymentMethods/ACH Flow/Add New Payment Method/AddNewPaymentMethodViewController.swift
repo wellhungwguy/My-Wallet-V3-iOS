@@ -49,7 +49,7 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
 
         let dataSource = RxDataSource(
             configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
-                guard let self = self else { return UITableViewCell() }
+                guard let self else { return UITableViewCell() }
                 switch item {
                 case .paymentMethodTypeView(let viewModel):
                     return self.paymentMethodTypeViewCell(for: indexPath, viewModel: viewModel)

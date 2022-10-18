@@ -96,7 +96,7 @@ public struct SeedPhraseState: Equatable {
     var isLoading: Bool
 
     var accountResettable: Bool {
-        guard let nabuInfo = nabuInfo else {
+        guard let nabuInfo else {
             return false
         }
         return nabuInfo.recoverable

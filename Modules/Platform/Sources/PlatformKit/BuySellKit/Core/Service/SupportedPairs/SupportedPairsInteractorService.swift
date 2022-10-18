@@ -27,7 +27,7 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
     var pairs: Observable<SupportedPairs> {
         pairsRelay
             .flatMap(weak: self) { (self, pairs) -> Observable<SupportedPairs> in
-                guard let pairs = pairs else {
+                guard let pairs else {
                     return self.fetch()
                 }
                 return .just(pairs)

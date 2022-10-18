@@ -81,7 +81,7 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
 
         let dataSource = RxDataSource(
             configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
-                guard let self = self else { return UITableViewCell() }
+                guard let self else { return UITableViewCell() }
                 switch item {
                 case .label(let content):
                     return self.labelCell(with: content, row: indexPath.row)

@@ -14,7 +14,7 @@ final class BadgeTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             presenter.badgeAssetPresenting.state
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.viewModel)

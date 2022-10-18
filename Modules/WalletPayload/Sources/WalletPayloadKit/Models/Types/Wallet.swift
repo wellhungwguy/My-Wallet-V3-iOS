@@ -187,7 +187,7 @@ func getSeedHex(
         return .failure(.initialization(.missingSeedHex))
     }
     if wallet.doubleEncrypted {
-        guard let secondPassword = secondPassword else {
+        guard let secondPassword else {
             return .failure(.initialization(.needsSecondPassword))
         }
         return decryptValue(

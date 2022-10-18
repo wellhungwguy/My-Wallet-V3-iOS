@@ -246,7 +246,7 @@ extension FiatValue {
 extension Currency {
 
     public func matchSearch(_ searchString: String?) -> Bool {
-        guard let searchString = searchString,
+        guard let searchString,
               !searchString.isEmpty
         else {
             return true

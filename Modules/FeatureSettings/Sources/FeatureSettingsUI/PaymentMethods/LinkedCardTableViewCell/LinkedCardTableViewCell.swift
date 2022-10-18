@@ -13,7 +13,7 @@ final class LinkedCardTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
 
             accessibility = presenter.accessibility
             linkedCardView.viewModel = presenter.linkedCardViewModel

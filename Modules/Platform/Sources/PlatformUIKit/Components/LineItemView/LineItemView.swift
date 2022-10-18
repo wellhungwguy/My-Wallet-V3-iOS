@@ -13,7 +13,7 @@ public final class LineItemView: UIView {
 
     public var viewModel: LineItemViewViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             titleLabel.content = viewModel.title
             subtitleLabel.content = viewModel.subtitle
         }

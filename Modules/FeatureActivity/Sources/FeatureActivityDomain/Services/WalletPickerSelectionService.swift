@@ -35,7 +35,7 @@ final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
         selectedDataRelay = BehaviorRelay(value: nil)
         sharedStream = selectedDataRelay
             .flatMapLatest(weak: self) { (self, account) -> Observable<BlockchainAccount> in
-                guard let account = account else {
+                guard let account else {
                     return self.defaultValue.map { $0 as BlockchainAccount }
                 }
                 return .just(account)

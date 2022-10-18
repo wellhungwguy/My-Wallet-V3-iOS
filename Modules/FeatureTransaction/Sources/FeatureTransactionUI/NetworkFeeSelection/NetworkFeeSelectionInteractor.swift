@@ -63,7 +63,7 @@ final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelec
 
         let state = transactionState
             .scan(.initial) { [weak self] state, updater -> State in
-                guard let self = self else { return state }
+                guard let self else { return state }
                 return self.calculateNextState(with: state, updater: updater)
             }
             .asDriverCatchError()

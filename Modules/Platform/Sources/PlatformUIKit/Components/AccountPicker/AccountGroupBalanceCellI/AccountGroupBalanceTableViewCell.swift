@@ -8,7 +8,7 @@ final class AccountGroupBalanceTableViewCell: UITableViewCell {
     var presenter: AccountGroupBalanceCellPresenter! {
         didSet {
             disposeBag = DisposeBag()
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             accessibility = presenter.accessibility
             walletBalanceView.presenter = presenter.walletBalanceViewPresenter
             badgeImageView.viewModel = presenter.badgeImageViewModel

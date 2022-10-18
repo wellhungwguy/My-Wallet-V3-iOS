@@ -35,7 +35,7 @@ public final class PasswordTextFieldView: TextFieldView {
         // That is why we need to monitor `UITextField.textDidChangeNotification` as well and check the value AFTER
         // the change too.
         NotificationCenter.when(UITextField.textDidChangeNotification) { [weak self] _ in
-            guard let self = self, self.isTextFieldFocused else { return }
+            guard let self, self.isTextFieldFocused else { return }
             self.viewModel?.textFieldEdited(with: self.text)
         }
     }

@@ -32,7 +32,7 @@ public class WebViewViewModel: ObservableObject {
 
 extension WebViewViewModel {
     private func setupObservers() {
-        func subscriber<Value>(for keyPath: KeyPath<WKWebView, Value>) -> NSKeyValueObservation {
+        func subscriber(for keyPath: KeyPath<WKWebView, some Any>) -> NSKeyValueObservation {
             webView.observe(keyPath, options: [.prior]) { _, change in
                 if change.isPrior {
                     self.objectWillChange.send()

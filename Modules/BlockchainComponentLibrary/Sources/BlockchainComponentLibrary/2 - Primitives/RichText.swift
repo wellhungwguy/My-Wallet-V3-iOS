@@ -15,7 +15,7 @@ import SwiftUI
 /// - `[https://blockchain.com](Links)` // Currently font color only, no tap action
 ///
 /// - Parameter content: Markdown text to be parsed
-public func RichText<S: StringProtocol>(_ text: S) -> SwiftUI.Text {
+public func RichText(_ text: some StringProtocol) -> SwiftUI.Text {
     SwiftUI.Text(rich: text)
 }
 

@@ -524,7 +524,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             switch action {
             case .buy:
                 router?.presentKYCFlowIfNeeded { [weak self, newState] isComplete in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     if isComplete {
                         self.linkPaymentMethodOrMoveToNextStep(for: newState)
                     } else {
@@ -633,7 +633,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         sourceAccount: BlockchainAccount?,
         target: TransactionTarget?
     ) -> TransactionAction {
-        if let source = sourceAccount, let target = target {
+        if let source = sourceAccount, let target {
             return .initialiseWithSourceAndTargetAccount(
                 action: .deposit,
                 sourceAccount: source,
@@ -646,7 +646,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 sourceAccount: source
             )
         }
-        if let target = target {
+        if let target {
             return .initialiseWithTargetAndNoSource(
                 action: .deposit,
                 target: target
@@ -721,7 +721,7 @@ extension TransactionFlowInteractor {
         previousState: TransactionState?,
         newState: TransactionState
     ) -> Bool {
-        guard let previousState = previousState,
+        guard let previousState,
               previousState.step.goingBackSkipsNavigation
         else {
             return false
@@ -756,7 +756,7 @@ extension TransactionFlowInteractor {
             .asSingle()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe { [app, weak self] state in
-                guard let self = self else { return }
+                guard let self else { return }
                 if
                     app.state.no(if: blockchain.user.is.cowboy.fan),
                     state.canPresentKYCUpgradeFlowAfterClosingTxFlow

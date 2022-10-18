@@ -74,11 +74,11 @@ extension Publisher where Output == Session.Event {
         filter([type])
     }
 
-    public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag {
+    public func filter(_ types: some Sequence<Tag>) -> Publishers.Filter<Self> {
         filter { $0.tag.is(types) }
     }
 
-    public func filter<S: Sequence>(_ types: S) -> Publishers.Filter<Self> where S.Element == Tag.Reference {
+    public func filter(_ types: some Sequence<Tag.Reference>) -> Publishers.Filter<Self> {
         filter { event in
             types.contains { type in
                 event.reference == type ||
@@ -130,12 +130,12 @@ extension AppProtocol {
         on(events.map { $0 as Tag.Event }, file: file, line: line, priority: priority, action: action)
     }
 
-    @inlinable public func on<Events>(
-        _ events: Events,
+    @inlinable public func on(
+        _ events: some Sequence<Tag.Event>,
         file: String = #fileID,
         line: Int = #line,
         action: @escaping (Session.Event) throws -> Void
-    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element == Tag.Event {
+    ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
             app: self,
             events: Array(events),
@@ -145,13 +145,13 @@ extension AppProtocol {
         )
     }
 
-    @inlinable public func on<Events>(
-        _ events: Events,
+    @inlinable public func on(
+        _ events: some Sequence<Tag.Event>,
         file: String = #fileID,
         line: Int = #line,
         priority: TaskPriority? = nil,
         action: @escaping (Session.Event) async throws -> Void
-    ) -> BlockchainEventSubscription where Events: Sequence, Events.Element == Tag.Event {
+    ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
             app: self,
             events: Array(events),
@@ -220,7 +220,7 @@ public final class BlockchainEventSubscription: Hashable {
         guard subscription == nil else { return self }
         subscription = app.on(events).sink(
             receiveValue: { [weak self] event in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch self.action {
                 case .sync(let action):
                     do {

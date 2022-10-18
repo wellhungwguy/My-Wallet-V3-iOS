@@ -44,7 +44,7 @@ public final class CardExpirationDateValidator: TextValidating {
     private var dateValidationState: Single<TextValidationState> {
         date
             .map { date in
-                guard let date = date else { return false }
+                guard let date else { return false }
                 return date > Date()
             }
             .map { $0 ? .valid : .invalid(reason: LocalizedString.invalidExpirationDate) }

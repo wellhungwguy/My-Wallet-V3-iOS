@@ -88,7 +88,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
                 guard !shouldUpdate else {
                     return fetchBeneficiaries.asObservable()
                 }
-                guard let beneficiaries = beneficiaries else {
+                guard let beneficiaries else {
                     return fetchBeneficiaries.asObservable()
                 }
                 return .just(beneficiaries)

@@ -65,7 +65,7 @@ public struct PendingStateViewModel {
         self.compositeStatusViewType = compositeStatusViewType
         self.title = Self.title(title)
         var inputs: [InteractableTextViewModel.Input] = [.text(string: subtitle)]
-        if let interactableText = interactibleText, let url = url {
+        if let interactableText = interactibleText, let url {
             inputs.append(.url(string: interactableText, url: url))
         }
 

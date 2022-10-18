@@ -206,7 +206,7 @@ public struct GridReader<Content: View>: View {
     }
 
     public var body: some View {
-        if let width = width {
+        if let width {
             contentView(width: width)
         } else {
             GeometryReader { proxy in

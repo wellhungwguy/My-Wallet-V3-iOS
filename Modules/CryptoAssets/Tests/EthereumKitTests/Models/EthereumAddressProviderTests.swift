@@ -13,7 +13,7 @@ class EthereumAddressProviderTests: XCTestCase {
         let mnemonic = "business envelope ride merry time drink chat cinnamon hamster left spend gather"
         let hdWallet = WalletCore.HDWallet(mnemonic: mnemonic, passphrase: "")
 
-        guard let hdWallet = hdWallet else {
+        guard let hdWallet else {
             XCTFail("couldn't not create HDWallet")
             return
         }

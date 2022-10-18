@@ -28,7 +28,7 @@ final class ActivityCardDataService: ActivityCardDataServiceAPI {
         cardListService
             .card(by: paymentMethodId)
             .map { cardData in
-                guard let cardData = cardData else {
+                guard let cardData else {
                     return nil
                 }
                 return "\(cardData.label) \(cardData.displaySuffix)"

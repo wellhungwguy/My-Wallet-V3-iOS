@@ -68,7 +68,7 @@ extension Observable {
         func request(_ demand: Subscribers.Demand) {
             guard disposable == nil else { return }
             disposable = observable.subscribe { [weak self] event in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.lock.lock()
                 defer { self.lock.unlock() }
                 switch event {
@@ -119,7 +119,7 @@ extension ObservableType {
         _ selector: @escaping (A, Element) throws -> R
     ) -> Observable<R> {
         map { [weak object] element -> R in
-            guard let object = object else {
+            guard let object else {
                 throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, element)
@@ -134,7 +134,7 @@ extension ObservableType {
         selector: @escaping (A, Self.Element) throws -> Observable<R>
     ) -> Observable<R> {
         flatMap { [weak object] value -> Observable<R> in
-            guard let object = object else {
+            guard let object else {
                 throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
@@ -146,7 +146,7 @@ extension ObservableType {
         selector: @escaping (A, Self.Element) throws -> Observable<R>
     ) -> Observable<R> {
         flatMapLatest { [weak object] value -> Observable<R> in
-            guard let object = object else {
+            guard let object else {
                 throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
@@ -158,7 +158,7 @@ extension ObservableType {
         selector: @escaping (A, Self.Element) throws -> Observable<R>
     ) -> Observable<R> {
         flatMapFirst { [weak object] value -> Observable<R> in
-            guard let object = object else {
+            guard let object else {
                 throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
@@ -174,7 +174,7 @@ extension ObservableType {
         subscribe: @escaping (A, AnyObserver<Element>) -> Disposable
     ) -> Observable<Element> {
         Observable<Element>.create { [weak object] observer -> Disposable in
-            guard let object = object else {
+            guard let object else {
                 observer.on(.error(ToolKitError.nullReference(A.self)))
                 return Disposables.create()
             }
@@ -191,7 +191,7 @@ extension ObservableType {
         _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>
     ) -> Observable<Element> {
         `catch` { [weak object] error -> Observable<Element> in
-            guard let object = object else {
+            guard let object else {
                 throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, error)

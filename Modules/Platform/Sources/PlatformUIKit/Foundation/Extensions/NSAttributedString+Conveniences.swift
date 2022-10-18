@@ -146,7 +146,7 @@ extension Sequence where Element: NSAttributedString {
         let result = NSMutableAttributedString()
         for (index, string) in enumerated() {
             if index > 0 {
-                if let separator = separator {
+                if let separator {
                     result.append(separator)
                 }
             }

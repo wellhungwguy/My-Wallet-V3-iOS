@@ -155,7 +155,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     private var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
         delegatedCustodyAccount
             .map { [asset, addressFactory] delegatedCustodyAccount in
-                guard let delegatedCustodyAccount = delegatedCustodyAccount else {
+                guard let delegatedCustodyAccount else {
                     return nil
                 }
                 let account = CryptoDelegatedCustodyAccount(

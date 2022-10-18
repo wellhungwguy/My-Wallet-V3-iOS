@@ -15,7 +15,7 @@ final class AddPaymentMethodTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
 
             presenter.badgeImagePresenter.state
                 .compactMap { $0 }

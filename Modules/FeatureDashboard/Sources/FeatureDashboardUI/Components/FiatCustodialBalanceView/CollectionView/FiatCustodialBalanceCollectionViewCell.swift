@@ -10,7 +10,7 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
         didSet {
             custodialBalanceView.presenter = presenter
 
-            guard let presenter = presenter else {
+            guard let presenter else {
                 return
             }
             switch presenter.presentationStyle {

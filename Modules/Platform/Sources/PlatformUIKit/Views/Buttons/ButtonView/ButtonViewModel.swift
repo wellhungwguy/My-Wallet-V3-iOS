@@ -160,7 +160,7 @@ public struct ButtonViewModel {
     public var image: Driver<UIImage?> {
         imageName.asDriver()
             .map { name in
-                if let name = name {
+                if let name {
                     return UIImage(named: name)!.withRenderingMode(.alwaysTemplate)
                 }
                 return nil
