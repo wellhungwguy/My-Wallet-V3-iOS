@@ -18,8 +18,8 @@ final class SearchCryptoDomainReducerTests: XCTestCase {
     private var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         SearchCryptoDomainState,
-        SearchCryptoDomainState,
         SearchCryptoDomainAction,
+        SearchCryptoDomainState,
         SearchCryptoDomainAction,
         SearchCryptoDomainEnvironment
     >!

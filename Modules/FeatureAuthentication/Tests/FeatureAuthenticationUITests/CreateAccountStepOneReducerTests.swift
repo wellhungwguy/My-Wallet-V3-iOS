@@ -14,8 +14,8 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
 
     private var testStore: TestStore<
         CreateAccountStepOneState,
-        CreateAccountStepOneState,
         CreateAccountStepOneAction,
+        CreateAccountStepOneState,
         CreateAccountStepOneAction,
         CreateAccountStepOneEnvironment
     >!

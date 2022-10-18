@@ -28,8 +28,8 @@ final class EmailVerificationReducerTests: XCTestCase {
     private var testPollingQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         EmailVerificationState,
-        EmailVerificationState,
         EmailVerificationAction,
+        EmailVerificationState,
         EmailVerificationAction,
         EmailVerificationEnvironment
     >!

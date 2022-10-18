@@ -22,8 +22,8 @@ final class WelcomeReducerTests: XCTestCase {
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         WelcomeState,
-        WelcomeState,
         WelcomeAction,
+        WelcomeState,
         WelcomeAction,
         WelcomeEnvironment
     >!

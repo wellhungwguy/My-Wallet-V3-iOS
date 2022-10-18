@@ -12,8 +12,8 @@ final class AddressModificationReducerTests: XCTestCase {
 
     typealias TestStoreType = TestStore<
         AddressModificationState,
-        AddressModificationState,
         AddressModificationAction,
+        AddressModificationState,
         AddressModificationAction,
         AddressModificationEnvironment
     >
@@ -198,7 +198,7 @@ extension TestStore {
         state: String? = nil,
         isPresentedFromSearchView: Bool = false
     ) -> AddressModificationReducerTests.TestStoreType {
-        .init(
+        ComposableArchitecture.TestStore(
             initialState: AddressModificationState(
                 addressDetailsId: addressDetailsId,
                 country: country,

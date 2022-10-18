@@ -17,8 +17,8 @@ final class SeedPhraseReducerTests: XCTestCase {
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         SeedPhraseState,
-        SeedPhraseState,
         SeedPhraseAction,
+        SeedPhraseState,
         SeedPhraseAction,
         SeedPhraseEnvironment
     >!

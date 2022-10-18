@@ -12,8 +12,8 @@ final class OnboardingChecklistReducerTests: XCTestCase {
 
     private var testStore: TestStore<
         OnboardingChecklist.State,
-        OnboardingChecklist.State,
         OnboardingChecklist.Action,
+        OnboardingChecklist.State,
         OnboardingChecklist.Action,
         OnboardingChecklist.Environment
     >!

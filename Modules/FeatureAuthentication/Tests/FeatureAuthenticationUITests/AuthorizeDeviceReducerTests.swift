@@ -13,8 +13,8 @@ final class AuthorizeDeviceReducerTests: XCTest {
     private var mockDeviceVerificationService: DeviceVerificationServiceAPI!
     private var testStore: TestStore<
         AuthorizeDeviceState,
-        AuthorizeDeviceState,
         AuthorizeDeviceAction,
+        AuthorizeDeviceState,
         AuthorizeDeviceAction,
         AuthorizeDeviceEnvironment
     >!

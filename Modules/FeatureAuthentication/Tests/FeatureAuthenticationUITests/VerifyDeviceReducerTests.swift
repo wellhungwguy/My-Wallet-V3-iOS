@@ -21,8 +21,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
     private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var testStore: TestStore<
         VerifyDeviceState,
-        VerifyDeviceState,
         VerifyDeviceAction,
+        VerifyDeviceState,
         VerifyDeviceAction,
         VerifyDeviceEnvironment
     >!

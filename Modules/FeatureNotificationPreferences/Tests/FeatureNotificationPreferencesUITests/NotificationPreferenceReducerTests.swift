@@ -13,8 +13,8 @@ import XCTest
 class NotificationPreferencesReducerTest: XCTestCase {
     private var testStore: TestStore<
         NotificationPreferencesState,
-        NotificationPreferencesState,
         NotificationPreferencesAction,
+        NotificationPreferencesState,
         NotificationPreferencesAction,
         NotificationPreferencesEnvironment
     >!

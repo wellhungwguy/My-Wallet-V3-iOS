@@ -15,8 +15,8 @@ final class PrefillButtonsReducerTests: XCTestCase {
     private var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         PrefillButtonsState,
-        PrefillButtonsState,
         PrefillButtonsAction,
+        PrefillButtonsState,
         PrefillButtonsAction,
         PrefillButtonsEnvironment
     >!

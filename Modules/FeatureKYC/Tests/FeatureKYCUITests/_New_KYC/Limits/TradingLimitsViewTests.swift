@@ -19,8 +19,8 @@ final class TradingLimitsViewTests: XCTestCase {
 
     private var testStore: TestStore<
         TradingLimitsState,
-        TradingLimitsState,
         TradingLimitsAction,
+        TradingLimitsState,
         TradingLimitsAction,
         TradingLimitsEnvironment
     >!

@@ -24,8 +24,8 @@ final class PersonalInfoReducerTests: XCTestCase {
 
     private var testStore: TestStore<
         PersonalInfo.State,
-        PersonalInfo.State,
         PersonalInfo.Action,
+        PersonalInfo.State,
         PersonalInfo.Action,
         PersonalInfo.Environment
     >!

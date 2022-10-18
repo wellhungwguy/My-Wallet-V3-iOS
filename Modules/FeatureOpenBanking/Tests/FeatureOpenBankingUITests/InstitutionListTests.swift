@@ -9,8 +9,8 @@ final class InstitutionListTests: OpenBankingTestCase {
 
     typealias Store = TestStore<
         InstitutionListState,
-        InstitutionListState,
         InstitutionListAction,
+        InstitutionListState,
         InstitutionListAction,
         OpenBankingEnvironment
     >

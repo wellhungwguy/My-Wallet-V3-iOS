@@ -18,8 +18,8 @@ final class EmailLoginReducerTests: XCTestCase {
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         EmailLoginState,
-        EmailLoginState,
         EmailLoginAction,
+        EmailLoginState,
         EmailLoginAction,
         EmailLoginEnvironment
     >!

@@ -10,8 +10,8 @@ final class BankLinkTests: OpenBankingTestCase {
 
     typealias Store = TestStore<
         BankState,
-        BankState,
         BankAction,
+        BankState,
         BankAction,
         OpenBankingEnvironment
     >
@@ -110,8 +110,8 @@ final class BankPaymentTests: OpenBankingTestCase {
 
     typealias Store = TestStore<
         BankState,
-        BankState,
         BankAction,
+        BankState,
         BankAction,
         OpenBankingEnvironment
     >

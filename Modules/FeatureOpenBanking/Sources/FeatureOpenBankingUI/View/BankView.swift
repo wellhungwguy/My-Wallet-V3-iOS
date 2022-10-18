@@ -173,7 +173,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
 
 extension Reducer where State == BankState, Action == BankAction, Environment == OpenBankingEnvironment {
 
-    func analytics() -> Reducer {
+    func analytics() -> Self {
         combined(
             with: .init { _, action, environment in
                 switch action {
