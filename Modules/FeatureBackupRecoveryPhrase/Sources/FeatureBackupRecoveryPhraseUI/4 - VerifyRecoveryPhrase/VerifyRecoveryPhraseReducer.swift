@@ -31,6 +31,7 @@ extension VerifyRecoveryPhraseModule {
                 return .none
 
             case .onSelectedWordTap(let word):
+                state.backupPhraseStatus = .idle
                 state.selectedWords = state.selectedWords.filter { $0 != word }
                 return .none
 

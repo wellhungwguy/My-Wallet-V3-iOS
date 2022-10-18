@@ -29,7 +29,7 @@ public final class ReceiveRootBuilder {
                 accessibility: .none,
                 renderingMode: .normal
             ),
-            switchable: true,
+            searchable: true,
             subtitle: LocalizedReceive.Header.chooseWalletToReceive,
             title: LocalizedReceive.Header.receiveCryptoNow
         )

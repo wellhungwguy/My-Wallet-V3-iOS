@@ -7,6 +7,7 @@ public struct ViewRecoveryPhraseState: Equatable {
     var recoveryPhraseCopied = false
     var blurEnabled: Bool
     var backupLoading: Bool = false
+    var exposureEmailSent: Bool = false
 
     var shouldBlurBackupPhrase: Bool {
         blurEnabled && recoveryPhraseBackedUp

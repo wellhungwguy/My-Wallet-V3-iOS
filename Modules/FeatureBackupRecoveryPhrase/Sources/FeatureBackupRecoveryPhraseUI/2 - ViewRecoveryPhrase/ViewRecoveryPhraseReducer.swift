@@ -9,8 +9,8 @@ extension ViewRecoveryPhraseModule {
         .init { state, action, environment in
             switch action {
             case .onAppear:
-                return .merge(
-                    environment
+                return
+                environment
                     .recoveryPhraseVerifyingService
                     .recoveryPhraseComponents()
                     .catchToEffect()
@@ -21,12 +21,7 @@ extension ViewRecoveryPhraseModule {
                         case .failure:
                             return .onRecoveryPhraseComponentsFetchedFailed
                         }
-                    },
-                    environment
-                    .recoveryPhraseRepository
-                    .sendExposureAlertEmail()
-                    .fireAndForget()
-                )
+                    }
 
             case .onRecoveryPhraseComponentsFetchSuccess(let words):
                 state.availableWords = words
@@ -92,6 +87,13 @@ extension ViewRecoveryPhraseModule {
 
             case .onBlurViewTouch:
                 state.blurEnabled = false
+                if state.exposureEmailSent == false {
+                    state.exposureEmailSent = true
+                    return environment
+                        .recoveryPhraseRepository
+                        .sendExposureAlertEmail()
+                        .fireAndForget()
+                }
                 return .none
 
             case .onBlurViewRelease:

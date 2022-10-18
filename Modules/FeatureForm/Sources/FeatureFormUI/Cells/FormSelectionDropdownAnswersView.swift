@@ -320,7 +320,7 @@ struct FormSelectionDropdownAnswersView_Previews: PreviewProvider {
                 answers: $answers,
                 showAnswerState: $showAnswerState
             )
-                .padding()
+            .padding()
         }
     }
 }

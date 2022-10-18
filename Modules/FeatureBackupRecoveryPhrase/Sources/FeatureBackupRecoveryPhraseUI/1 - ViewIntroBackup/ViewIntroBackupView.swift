@@ -70,6 +70,7 @@ public struct ViewIntroBackupView: View {
                 viewStore.send(.onSkipTap)
             }
         }
+        .padding(.bottom, Spacing.padding2)
     }
 
     var badgeImage: some View {

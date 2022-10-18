@@ -14,14 +14,12 @@ public struct AccountPickerView<
 >: View {
 
     // MARK: - Internal properties
-
+    @State var toggleIsOn: Bool
     let store: Store<AccountPickerState, AccountPickerAction>
     @ViewBuilder let badgeView: (AnyHashable) -> BadgeView
     @ViewBuilder let iconView: (AnyHashable) -> IconView
     @ViewBuilder let multiBadgeView: (AnyHashable) -> MultiBadgeView
     @ViewBuilder let withdrawalLocksView: () -> WithdrawalLocksView
-    @ObservedObject var viewStore: ViewStore<AccountPickerState, AccountPickerAction>
-
     // MARK: - Private properties
 
     @State private var isSearching: Bool = false
@@ -36,11 +34,11 @@ public struct AccountPickerView<
         @ViewBuilder withdrawalLocksView: @escaping () -> WithdrawalLocksView
     ) {
         self.store = store
-        viewStore = ViewStore(store)
         self.badgeView = badgeView
         self.iconView = iconView
         self.multiBadgeView = multiBadgeView
         self.withdrawalLocksView = withdrawalLocksView
+        self.toggleIsOn = false
     }
 
     public init(
@@ -121,10 +119,7 @@ public struct AccountPickerView<
                         set: { viewStore.send(.search($0)) }
                     ),
                     isSearching: $isSearching,
-                    toggleIsOn: Binding<Bool>(
-                        get: { viewStore.header.toggleIsOn },
-                        set: { viewStore.send(.onToggleSwitch($0)) }
-                    )
+                    toggleIsOn: $toggleIsOn
                 )
                 .onChange(of: viewStore.selected) { _ in
                     isSearching = false
@@ -156,12 +151,15 @@ public struct AccountPickerView<
                                     ViewStore(store)
                                         .send(.prefetching(.onAppear(index: index)))
                                 }
-                                .onChange(of: self.viewStore.header.toggleIsOn) { _ in
+                                .onChange(of: toggleIsOn, perform: { newValue in
+                                    ViewStore(store)
+                                        .send(.onToggleSwitch(newValue))
+
                                     let indices = Set(viewStore.content.indices)
                                     ViewStore(store)
-                                        .send(.prefetching(.requeue(indices: indices))
-                                    )
-                                }
+                                        .send(.prefetching(.requeue(indices: indices)))
+
+                                })
                             }
                         }
                     }

@@ -111,6 +111,8 @@ public final class PlaidLinkObserver: Session.Observer {
             as: String.self
         ) else { return }
 
+        // Dismiss any error popup before starting the Plaid flow
+        app.post(event: blockchain.ux.error.then.close)
         startPlaidLinking(accountId)
     }
 
@@ -128,7 +130,6 @@ public final class PlaidLinkObserver: Session.Observer {
     private func startPlaidLinking(_ accountId: String? = nil) {
         let presentingViewController = topViewController.topMostViewController
 
-        let app: AppProtocol = DIKit.resolve()
         let view = PlaidView(store: .init(
             initialState: PlaidState(accountId: accountId),
             reducer: PlaidModule.reducer,

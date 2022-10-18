@@ -30,6 +30,7 @@ public struct BackupRecoveryPhraseSuccessView: View {
             PrimaryButton(title: Localization.doneButton) {
                     viewStore.send(.onDoneTapped)
             }
+            .padding(.bottom, Spacing.padding2)
         }
             .navigationBarBackButtonHidden()
             .primaryNavigation(trailing: {
