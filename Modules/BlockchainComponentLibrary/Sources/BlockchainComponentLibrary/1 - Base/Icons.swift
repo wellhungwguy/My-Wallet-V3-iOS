@@ -30,8 +30,8 @@ public struct Icon: View, Hashable, Codable {
 
     fileprivate var renderingMode: Image.TemplateRenderingMode
     fileprivate var isCircle: Bool
-    fileprivate var color: Color
-    fileprivate var circleColor: Color
+    fileprivate var color: Color?
+    fileprivate var circleColor: Color?
 
     private var size: Size?
 
@@ -39,8 +39,8 @@ public struct Icon: View, Hashable, Codable {
         name: String,
         renderingMode: Image.TemplateRenderingMode = .template,
         isCircle: Bool = false,
-        color: Color = .semantic.muted,
-        circleColor: Color = .semantic.muted.opacity(0.15)
+        color: Color? = nil,
+        circleColor: Color? = nil
     ) {
         self.name = name
         self.renderingMode = renderingMode
@@ -51,31 +51,44 @@ public struct Icon: View, Hashable, Codable {
 
     public var body: some View {
         if let size = size {
-            _circled.frame(width: size.width, height: size.height)
+            Content(icon: self).frame(width: size.width, height: size.height)
         } else {
-            _circled
+            Content(icon: self)
         }
     }
 
-    @ViewBuilder
-    private var _circled: some View {
-        if isCircle {
-            Circle()
-                .aspectRatio(1, contentMode: .fit)
-                .foregroundColor(circleColor)
-                .inscribed(aspectRatio: 4 / 3, _content)
-        } else {
-            _content
-        }
-    }
+    struct Content: View {
 
-    private var _content: some View {
-        #if canImport(UIKit)
-        ImageViewRepresentable(image: uiImage, renderingMode: renderingMode, tintColor: color)
-            .scaledToFit()
-        #else
-        image
-        #endif
+        let icon: Icon
+        @Environment(\.iconColor) var iconColor
+
+        var foregroundColor: Color {
+            icon.color ?? iconColor ?? .accentColor
+        }
+
+        var backgroundColor: Color {
+            icon.circleColor ?? iconColor?.opacity(0.15) ?? .accentColor.opacity(0.15)
+        }
+
+        var body: some View {
+            if icon.isCircle {
+                Circle()
+                    .aspectRatio(1, contentMode: .fit)
+                    .foregroundColor(backgroundColor)
+                    .inscribed(aspectRatio: 4 / 3, _content)
+            } else {
+                _content
+            }
+        }
+
+        private var _content: some View {
+            #if canImport(UIKit)
+            ImageViewRepresentable(image: icon.uiImage, renderingMode: icon.renderingMode, tintColor: foregroundColor)
+                .scaledToFit()
+            #else
+            icon.image
+            #endif
+        }
     }
 
     #if canImport(UIKit)
@@ -105,15 +118,34 @@ public struct Icon: View, Hashable, Codable {
         isCircle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
         renderingMode = .template
         color = try container.decodeIfPresent(Texture.Color.self, forKey: .foreground)?.swiftUI ?? .semantic.muted
-        circleColor = try container.decodeIfPresent(Texture.Color.self, forKey: .background)?.swiftUI ?? color.opacity(0.15)
+        circleColor = try container.decodeIfPresent(Texture.Color.self, forKey: .background)?.swiftUI ?? color?.opacity(0.15)
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
         try container.encode(name, forKey: .name)
         try container.encode(isCircle, forKey: .circle)
-        try container.encodeIfPresent(color.texture.color, forKey: .foreground)
-        try container.encodeIfPresent(circleColor.texture.color, forKey: .background)
+        try container.encodeIfPresent(color?.texture.color, forKey: .foreground)
+        try container.encodeIfPresent(circleColor?.texture.color, forKey: .background)
+    }
+}
+
+extension EnvironmentValues {
+
+    public var iconColor: Color? {
+        get { self[IconColorEnvironmentValue.self] }
+        set { self[IconColorEnvironmentValue.self] = newValue }
+    }
+}
+
+private struct IconColorEnvironmentValue: EnvironmentKey {
+    static var defaultValue: Color?
+}
+
+extension View {
+
+    @warn_unqualified_access public func iconColor(_ color: Color?) -> some View {
+        environment(\.iconColor, color)
     }
 }
 
@@ -141,7 +173,7 @@ extension Icon {
 
     public func micro() -> Icon {
         var icon = self
-        icon.size = .init(length: 14.pt)
+        icon.size = .init(length: 16.pt)
         return icon
     }
 
@@ -234,7 +266,6 @@ extension Icon {
     public static let `googleTranslate` = Icon(name: "Google Translate")
     public static let `hardware` = Icon(name: "Hardware")
     public static let `history` = Icon(name: "History")
-    public static let `home` = Icon(name: "Home")
     public static let `identification` = Icon(name: "Identification")
     public static let `information` = Icon(name: "Information")
     public static let `interestCircle` = Icon(name: "Interest Circle")
@@ -257,7 +288,6 @@ extension Icon {
     public static let `moreHorizontal` = Icon(name: "More Horizontal")
     public static let `moreVertical` = Icon(name: "More Vertical")
     public static let `newWindow` = Icon(name: "New Window")
-    public static let `nft` = Icon(name: "NFT")
     public static let `notificationOff` = Icon(name: "Notification Off")
     public static let `notificationOn` = Icon(name: "Notification On")
     public static let `paperclip` = Icon(name: "Paperclip")
@@ -323,6 +353,17 @@ extension Icon {
     public static let `walletTrade` = Icon(name: "Wallet Trade")
     public static let `walletTransfer` = Icon(name: "Wallet Transfer")
     public static let `walletWithdraw` = Icon(name: "Wallet Withdraw")
+}
+
+extension Icon {
+    public static let `home` = Icon(name: "Home_New")
+    public static let `homeFilled` = Icon(name: "Home Filled")
+    public static let `prices` = Icon(name: "Prices filled")
+    public static let `pricesFilled` = Icon(name: "Prices Filled")
+    public static let `nft` = Icon(name: "NFT")
+    public static let `nftFilled` = Icon(name: "NFT Filled")
+    public static let `card` = Icon(name: "Card")
+    public static let `cardFilled` = Icon(name: "Card Filled")
 }
 
 extension Icon {

@@ -498,8 +498,8 @@ extension LocalizationConstants.Transaction.Buy {
         comment: "Title of screen to select a Payment Method to Buy"
     )
     public static let selectDestinationTitle = NSLocalizedString(
-        "Select a Crypto Currency",
-        comment: "Title of screen to select the Crypto Currency to Buy"
+        "Select a Cryptocurrency",
+        comment: "Title of screen to select the Cryptocurrency to Buy"
     )
     public static let confirmationDisclaimer = NSLocalizedString(
         "Your final amount might change due to market activity.",
@@ -890,8 +890,8 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         comment: "Buy Complete"
     )
     public static let description = NSLocalizedString(
-        "Your %@ is now available in your Wallet.",
-        comment: "Your %@ is now available in your Wallet."
+        "Your %@ is now available in your Trading Account.",
+        comment: "Your %@ is now available in your Trading Account."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -956,8 +956,8 @@ extension LocalizationConstants.Transaction.Sell.Completion.Success {
         comment: "Sell Complete"
     )
     public static let description = NSLocalizedString(
-        "Your %@ is now available in your Wallet.",
-        comment: "Your %@ is now available in your Wallet."
+        "Your %@ is now available in your Fiat Account.",
+        comment: "Your %@ is now available in your Fiat Account."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -1338,7 +1338,7 @@ extension LocalizationConstants.Transaction.Error {
         comment: "Error recovery title - input below minimum amount valid for transaction"
     )
     public static let belowMinimumLimitRecoveryMessage_buy = NSLocalizedString(
-        "To offset fees and market volatility, the minimum amount for any buy is **%@**.",
+        "The minimum amount for any buy is **%@**.",
         comment: "Error recovery message - input below minimum amount valid for 'buy' transaction"
     )
     public static let belowMinimumLimitRecoveryMessage_sell = NSLocalizedString(

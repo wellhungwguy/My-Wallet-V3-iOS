@@ -213,6 +213,7 @@ extension TransactionAction {
             // The standard flow is [select source] -> [select target] -> [enter amount] -> ...
             // Therefore if we have ... -> [enter amount] -> [select source] -> ... we should go back to [enter amount]
             let isGoingBack = newState.stepsBackStack.contains { $0 == .enterAmount }
+            newState.step = isGoingBack ? .enterAmount : newState.step
             return newState
                 .update(keyPath: \.isGoingBack, value: isGoingBack)
                 .withUpdatedBackstack(oldState: oldState)

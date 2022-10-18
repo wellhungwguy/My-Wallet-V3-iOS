@@ -33,25 +33,16 @@ final class ErrorViewSnapshotTests: XCTestCase {
             )
         }
         .app(App.test)
+        .frame(width: 375, height: 800)
 
         assertSnapshots(
             matching: view,
             as: [
                 .image(
-                    layout: .device(config: .iPhone8),
                     traits: .init(userInterfaceStyle: .light)
                 ),
                 .image(
-                    layout: .device(config: .iPhone8),
                     traits: .init(userInterfaceStyle: .dark)
-                ),
-                .image(
-                    layout: .device(config: .iPhoneSe),
-                    traits: .init(userInterfaceStyle: .light)
-                ),
-                .image(
-                    layout: .device(config: .iPhoneXsMax),
-                    traits: .init(userInterfaceStyle: .light)
                 )
             ]
         )

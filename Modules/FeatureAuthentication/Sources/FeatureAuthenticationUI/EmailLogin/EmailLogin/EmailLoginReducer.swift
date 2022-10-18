@@ -183,10 +183,13 @@ let emailLoginReducer = Reducer.combine(
         // MARK: - Transitions and Navigations
 
         case .onAppear:
-            environment.analyticsRecorder.record(
-                event: .loginViewed
-            )
-            return .none
+
+            return .fireAndForget {
+                environment.analyticsRecorder.record(
+                    event: .loginViewed
+                )
+                environment.app.post(event: blockchain.ux.user.authentication.sign.in)
+            }
 
         case .route(let route):
             if let routeValue = route?.route {
@@ -201,7 +204,12 @@ let emailLoginReducer = Reducer.combine(
 
         case .continueButtonTapped:
             state.isLoading = true
-            return Effect(value: .setupSessionToken)
+            return .merge(
+                Effect(value: .setupSessionToken),
+                .fireAndForget {
+                    environment.app.post(event: blockchain.ux.user.authentication.sign.in.continue.tap)
+                }
+            )
 
         // MARK: - Email
 

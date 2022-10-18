@@ -108,7 +108,8 @@ func defineDependencies() {
         DependencyContainer.walletPayloadDataKit
         DependencyContainer.metadataKit
         DependencyContainer.metadataDataKit
-        DependencyContainer.moneyKit
+        DependencyContainer.moneyDataKit
+        DependencyContainer.moneyDomainKit
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit
@@ -155,7 +156,9 @@ func defineDependencies() {
         DependencyContainer.featureCardPaymentData
         DependencyContainer.delegatedSelfCustodyData
         DependencyContainer.blockchainActivity
+        DependencyContainer.blockchainDashboard
         DependencyContainer.blockchainDelegatedSelfCustody
+        DependencyContainer.blockchainSettings
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

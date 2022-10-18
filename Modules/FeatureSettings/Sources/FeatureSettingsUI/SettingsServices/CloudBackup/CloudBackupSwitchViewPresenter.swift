@@ -52,13 +52,13 @@ final class CloudBackupSwitchViewPresenter: SwitchViewPresenting {
     private let disposeBag = DisposeBag()
 
     init(
-        appSettings: BlockchainSettings.App,
+        cloudSettings: CloudBackupConfiguring,
         credentialsStore: CredentialsStoreAPI,
         analyticsRecording: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.analyticsRecording = analyticsRecording
         interactor = CloudBackupSwitchViewInteractor(
-            appSettings: appSettings,
+            cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )
     }

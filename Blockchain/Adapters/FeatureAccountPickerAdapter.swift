@@ -9,13 +9,13 @@ import FeatureAccountPickerUI
 import FeatureWithdrawalLocksUI
 import Foundation
 import Localization
+import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
 import SwiftUI
 import ToolKit
 import UIComponentsKit
-import PlatformKit
 
 class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
@@ -33,7 +33,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
     fileprivate let header = PassthroughSubject<HeaderStyle, Error>()
 
-    lazy var onSwitchChanged: ((Bool)-> Void)? = {[app, accountFilterRelay ] isOn in
+    lazy var onSwitchChanged: ((Bool) -> Void)? = { [app, accountFilterRelay] isOn in
         // Account switcher to automatically filter based on some condition
         guard app.currentMode == .pkw else {
             return
@@ -175,7 +175,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         view.backgroundColor = .white
         children.forEach { child in
             view.addSubview(child.view)
-            child.view.fillSuperview(usesSafeAreaLayoutGuide: true)
+            child.view.fillSuperview(usesSafeAreaLayoutGuide: false)
             child.didMove(toParent: self)
         }
     }
@@ -229,8 +229,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
             BadgeImageViewRepresentable(viewModel: presenter.badgeRelay.value, size: 32)
         case .accountGroup(let presenter):
             BadgeImageViewRepresentable(viewModel: presenter.badgeImageViewModel, size: 32)
-        case .linkedBankAccount:
-            Icon.bank
+        case .linkedBankAccount(let data):
+            AsyncMedia(url: data.account.data.icon)
         default:
             EmptyView()
         }
@@ -253,7 +253,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         case .linkedBankAccount(let presenter):
             MultiBadgeViewRepresentable(viewModel: presenter.multiBadgeViewModel)
         case .singleAccount(let presenter):
-            MultiBadgeViewRepresentable(viewModel: .just(presenter.multiBadgeViewModel))
+            if presenter.multiBadgeViewModel.isEmpty {
+                EmptyView()
+            } else {
+                MultiBadgeViewRepresentable(viewModel: .just(presenter.multiBadgeViewModel))
+            }
         default:
             EmptyView()
         }
@@ -377,6 +381,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                         .balance
                                         .displayString,
                                     badgeView: presenter.account.logoResource.image,
+                                    badgeURL: presenter.account.logoResource.url,
                                     badgeBackground: Color(presenter.account.logoBackgroundColor)
                                 )
                             )
@@ -391,11 +396,12 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                             )
 
                         case .singleAccount(let presenter):
+                            let action = try? app.state.get(blockchain.ux.transaction.id) as AssetAction
                             return .singleAccount(
                                 .init(
                                     id: item.identity,
                                     title: presenter.account.currencyType.name,
-                                    description: presenter.account.currencyType.isFiatCurrency
+                                    description: presenter.account.currencyType.isFiatCurrency || action == .buy
                                         ? presenter.account.currencyType.displayCode
                                         : presenter.account.label
                                 )

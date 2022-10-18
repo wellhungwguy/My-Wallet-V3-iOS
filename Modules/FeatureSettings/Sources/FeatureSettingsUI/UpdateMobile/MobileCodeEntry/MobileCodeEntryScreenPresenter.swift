@@ -14,7 +14,7 @@ final class MobileCodeEntryScreenPresenter {
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.MobileCodeEntry
     private typealias LocalizationIDs = LocalizationConstants.Settings.MobileCodeEntry
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let leadingButton: Screen.Style.LeadingButton = .back
 

@@ -29,6 +29,13 @@ public class HistoricalPriceService {
                 series: series,
                 relativeTo: relativeTo
             )
+            .map { data in
+                GraphData(
+                    series: data.series.filter(\.price.isNormal),
+                    base: data.base,
+                    quote: data.quote
+                )
+            }
         }
         .eraseToAnyPublisher()
     }

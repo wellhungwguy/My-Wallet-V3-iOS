@@ -63,6 +63,10 @@ extension Accessibility.Identifier {
             public enum Referral {
                 public static let title = "\(SettingsCell.prefix)Referral"
             }
+
+            public enum CryptoDomains {
+                public static let title = "\(SettingsCell.prefix)CryptoDomains"
+            }
         }
 
         public enum LinkedCardCell {

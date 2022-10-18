@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 
 import PackageDescription
 
@@ -17,13 +17,13 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(path: "../BlockchainNamespace")
+        .package(path: "../Blockchain")
     ],
     targets: [
         .target(
             name: "FraudIntelligence",
             dependencies: [
-                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
+                .product(name: "Blockchain", package: "Blockchain")
             ]
         ),
         .testTarget(

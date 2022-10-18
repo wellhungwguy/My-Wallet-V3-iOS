@@ -12,16 +12,6 @@ public protocol ClaimEligibilityClientAPI {
 
 public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
 
-    // MARK: - Type
-
-    private enum Path {
-        static let eligibility = [
-            "users",
-            "domain-campaigns",
-            "eligibility"
-        ]
-    }
-
     // MARK: - Properties
 
     private let networkAdapter: NetworkAdapterAPI
@@ -43,14 +33,18 @@ public final class ClaimEligibilityClient: ClaimEligibilityClientAPI {
         let parameters = [
             URLQueryItem(
                 name: "domainCampaign",
-                value: "UNSTOPPABLE_DOMAINS"
+                value: Constants.udDomainCampaign.rawValue
             )
         ]
         let request = requestBuilder.get(
-            path: Path.eligibility,
+            path: "/users/domain-campaigns/eligibility",
             parameters: parameters,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)
     }
+}
+
+enum Constants: String {
+    case udDomainCampaign = "UNSTOPPABLE_DOMAINS"
 }

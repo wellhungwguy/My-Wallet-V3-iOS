@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import SwiftUI
 
 /// A visual element used to separate other content.
@@ -37,5 +38,35 @@ struct PrimaryDivider_Previews: PreviewProvider {
         }
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Vertical")
+    }
+}
+
+public struct ForEachWithDivider<
+    Data: RandomAccessCollection,
+    Content: View,
+    ID: Hashable
+>: View {
+
+    var data: Data
+    var id: KeyPath<Data.Element, ID>
+    var content: (Data.Element) -> Content
+
+    public init(
+        _ data: Data,
+        id: KeyPath<Data.Element, ID>,
+        content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        self.id = id
+        self.content = content
+    }
+
+    public var body: some View {
+        ForEach(data.indexed(), id: (\IndexedCollection<Data>.Element.element).appending(path: id)) { index, element in
+            content(element)
+            if index != data.indices.last {
+                PrimaryDivider()
+            }
+        }
     }
 }

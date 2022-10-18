@@ -7,7 +7,6 @@ import RxSwift
 public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
     EmailSettingsServiceAPI &
     LastTransactionSettingsUpdateServiceAPI &
-    EmailNotificationSettingsServiceAPI &
     FiatCurrencySettingsServiceAPI &
     SMSTwoFactorSettingsServiceAPI &
     UpdateMobileSettingsServiceAPI &
@@ -39,10 +38,6 @@ public protocol SettingsServiceAPI: SettingsServiceCombineAPI {
 
 public protocol LastTransactionSettingsUpdateServiceAPI: AnyObject {
     func updateLastTransaction() -> Completable
-}
-
-public protocol EmailNotificationSettingsServiceAPI: SettingsServiceAPI {
-    func emailNotifications(enabled: Bool) -> Completable
 }
 
 public protocol UpdateMobileSettingsServiceAPI {

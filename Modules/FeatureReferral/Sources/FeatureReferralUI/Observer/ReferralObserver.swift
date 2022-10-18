@@ -54,10 +54,9 @@ public final class ReferralAppObserver: Session.Observer {
     ) { [unowned self] _ in
         do {
             guard try await app.get(blockchain.app.configuration.referral.is.enabled) else { return }
-            try await app.post(
-                value: referralService.fetchReferralCampaign().await(),
-                of: blockchain.user.referral.campaign
-            )
+            let campaign = try await referralService.fetchReferralCampaign().await()
+            guard try await campaign != app.get(blockchain.user.referral.campaign) else { return }
+            app.post(value: campaign, of: blockchain.user.referral.campaign)
         } catch {
             app.state.clear(blockchain.user.referral.campaign)
         }

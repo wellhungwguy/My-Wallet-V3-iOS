@@ -274,10 +274,20 @@ final class EnterAmountViewController: BaseScreenViewController,
             .drive(continueButtonView.viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
+        var id = UUID()
+
         stateDriver
             .map(\.showErrorRecoveryAction)
             .drive(onNext: { [weak errorRecoveryViewController] showError in
-                errorRecoveryViewController?.view.isHidden = !showError
+                id = UUID()
+                if showError {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [capture = id] in
+                        guard id == capture else { return }
+                        errorRecoveryViewController?.view.isHidden = false
+                    }
+                } else {
+                    errorRecoveryViewController?.view.isHidden = true
+                }
             })
             .disposed(by: disposeBag)
 

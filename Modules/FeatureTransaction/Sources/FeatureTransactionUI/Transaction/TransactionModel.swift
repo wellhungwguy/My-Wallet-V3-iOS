@@ -688,7 +688,7 @@ extension PaymentMethodAccount {
 }
 
 extension LinkedBankData {
-    fileprivate var isYapily: Bool {
+    var isYapily: Bool {
         partner == .yapily
     }
 }

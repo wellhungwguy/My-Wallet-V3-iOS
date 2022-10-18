@@ -12,5 +12,9 @@ extension DependencyContainer {
         factory { PITConnectionStatusProvider() as PITConnectionStatusProviding }
 
         factory { TierLimitsProvider() as TierLimitsProviding }
+
+        single { () -> BlockchainSettingsAppAPI in
+            BlockchainSettingsApp()
+        }
     }
 }

@@ -17,7 +17,7 @@ final class UpdateMobileScreenPresenter {
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.UpdateMobile
     private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateMobile
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     let leadingButton: Screen.Style.LeadingButton = .back
 

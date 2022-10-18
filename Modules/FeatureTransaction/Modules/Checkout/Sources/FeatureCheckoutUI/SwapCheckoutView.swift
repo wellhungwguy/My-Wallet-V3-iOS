@@ -86,9 +86,9 @@ public struct SwapCheckoutView: View {
                 }
                 HStack {
                     Icon.arrowDown
+                        .color(.semantic.muted)
                         .circle(backgroundColor: .semantic.background)
                         .frame(width: 36, height: 24)
-                        .accentColor(.semantic.muted)
                         .overlay(Circle().stroke(Color.semantic.muted, lineWidth: 0.5))
                         .padding(.leading, Spacing.padding3.pt)
 
@@ -119,8 +119,11 @@ public struct SwapCheckoutView: View {
                         Color.clear
                         Circle()
                             .fill(Color.semantic.background)
-                            .inscribed(target.isPrivateKey ? Icon.private : Icon.trade)
-                            .accentColor(currency.color)
+                            .inscribed(
+                                target.isPrivateKey
+                                    ? Icon.private.color(currency.color)
+                                    : Icon.trade.color(currency.color)
+                            )
                             .frame(width: 12.pt, height: 12.pt)
                     }
                 )

@@ -389,7 +389,27 @@ let createAccountStepOneReducer = Reducer.combine(
             return Effect(value: .informWalletFetched(context))
 
         case .createWalletStepTwo(.accountCreation(.failure(let error))):
-            return Effect(value: .createWalletStepTwo(.accountCreation(.failure(error))))
+            return .merge(
+                Effect(value: .createWalletStepTwo(.accountCreation(.failure(error)))),
+                .fireAndForget {
+                    environment.app?.post(
+                        event: blockchain.ux.user.authentication.sign.up.did.fail,
+                        context: [
+                            blockchain.ux.user.authentication.sign.up.did.fail.error: String(describing: error)
+                        ]
+                    )
+                }
+            )
+
+        case .createWalletStepTwo(.createButtonTapped):
+            return .fireAndForget {
+                environment.app?.post(event: blockchain.ux.user.authentication.sign.up.create.tap)
+            }
+
+        case .createWalletStepTwo(.accountCreation(.success)):
+            return .fireAndForget {
+                environment.app?.post(event: blockchain.ux.user.authentication.sign.up.did.succeed)
+            }
 
         case .alert(.dismiss):
             state.failureAlert = nil
@@ -409,12 +429,17 @@ let createAccountStepOneReducer = Reducer.combine(
             return .none
 
         case .onAppear:
-            return environment
-                .featureFlagsService
-                .isEnabled(.referral)
-                .map(CreateAccountStepOneAction.referralFieldIsEnabled)
-                .receive(on: environment.mainQueue)
-                .eraseToEffect()
+            return .merge(
+                .fireAndForget {
+                    environment.app?.post(event: blockchain.ux.user.authentication.sign.up)
+                },
+                environment
+                    .featureFlagsService
+                    .isEnabled(.referral)
+                    .map(CreateAccountStepOneAction.referralFieldIsEnabled)
+                    .receive(on: environment.mainQueue)
+                    .eraseToEffect()
+            )
 
         case .informWalletFetched:
             return .none

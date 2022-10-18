@@ -80,7 +80,7 @@ final class SettingsService: SettingsServiceAPI {
 
         supportedFiatCurrencies = Deferred {
             app.publisher(for: blockchain.user.currency.available.currencies)
-                .replaceError(with: Set(MoneyKit.allEnabledFiatCurrencies))
+                .replaceError(with: Set(FiatCurrency.allEnabledFiatCurrencies))
                 .shareReplay()
         }
         .eraseToAnyPublisher()
@@ -320,28 +320,6 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
         credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.updateLastTransactionTime(
-                    guid: payload.guid,
-                    sharedKey: payload.sharedKey
-                )
-                .asObservable()
-                .ignoreElements()
-                .asCompletable()
-            }
-            .flatMapSingle(weak: self) { (self) in
-                self.fetch(force: true)
-            }
-            .asCompletable()
-    }
-}
-
-// MARK: - EmailNotificationSettingsServiceAPI
-
-extension SettingsService: EmailNotificationSettingsServiceAPI {
-    func emailNotifications(enabled: Bool) -> Completable {
-        credentialsRepository.credentials.asSingle()
-            .flatMapCompletable(weak: self) { (self, payload) -> Completable in
-                self.client.emailNotifications(
-                    enabled: enabled,
                     guid: payload.guid,
                     sharedKey: payload.sharedKey
                 )

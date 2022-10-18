@@ -7,7 +7,7 @@ import PlatformUIKit
 import RxSwift
 import ToolKit
 
-public final class SettingsScreenInteractor {
+final class SettingsScreenInteractor {
 
     // MARK: - Interactors
 
@@ -19,6 +19,7 @@ public final class SettingsScreenInteractor {
     let cardSectionInteractor: CardSettingsSectionInteractor
     let bankSectionInteractor: BanksSettingsSectionInteractor
     let cardIssuingBadgeInteractor: CardIssuingBadgeInteractor
+    let blockchainDomainsAdapter: BlockchainDomainsAdapter
     let cardIssuingAdapter: CardIssuingAdapterAPI
     let referralAdapter: ReferralAdapterAPI
 
@@ -30,13 +31,11 @@ public final class SettingsScreenInteractor {
 
     let settingsService: SettingsServiceAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
-    let emailNotificationsService: EmailNotificationSettingsServiceAPI
 
     let tiersProviding: TierLimitsProviding
     let settingsAuthenticating: AppSettingsAuthenticating
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
-    let appSettings: BlockchainSettings.App
     let recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding
     let authenticationCoordinator: AuthenticationCoordinating
 
@@ -44,12 +43,10 @@ public final class SettingsScreenInteractor {
 
     private let disposeBag = DisposeBag()
 
-    public init(
+    init(
         credentialsStore: CredentialsStoreAPI = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
-        emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
-        appSettings: BlockchainSettings.App = resolve(),
         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
@@ -57,12 +54,11 @@ public final class SettingsScreenInteractor {
         authenticationCoordinator: AuthenticationCoordinating,
         cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
         referralAdapter: ReferralAdapterAPI = resolve(),
-        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve()
+        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding = resolve(),
+        blockchainDomainsAdapter: BlockchainDomainsAdapter = resolve()
     ) {
         self.smsTwoFactorService = smsTwoFactorService
-        self.appSettings = appSettings
         self.settingsService = settingsService
-        emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.cardIssuingAdapter = cardIssuingAdapter
         self.referralAdapter = referralAdapter
@@ -93,6 +89,7 @@ public final class SettingsScreenInteractor {
         )
 
         biometryProviding = BiometryProvider(settings: settingsAuthenticating)
+        self.blockchainDomainsAdapter = blockchainDomainsAdapter
         self.settingsAuthenticating = settingsAuthenticating
         self.recoveryPhraseStatusProvider = recoveryPhraseStatusProvider
         self.credentialsStore = credentialsStore

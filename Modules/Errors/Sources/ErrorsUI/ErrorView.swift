@@ -38,6 +38,8 @@ public struct ErrorView<Fallback: View>: View {
             .multilineTextAlignment(.center)
             actions
         }
+        .foregroundTexture(ux.dialog?.style?.foreground)
+        .backgroundTexture(ux.dialog?.style?.background)
         .padding()
         .onAppear {
             app.state.transaction { state in
@@ -160,8 +162,8 @@ public struct ErrorView<Fallback: View>: View {
                 }
                 .frame(maxWidth: .infinity)
                 Icon.copy
+                    .color(.semantic.light)
                     .frame(width: 16.pt, height: 16.pt)
-                    .accentColor(.semantic.light)
             }
             .typography(.micro)
             .minimumScaleFactor(0.5)

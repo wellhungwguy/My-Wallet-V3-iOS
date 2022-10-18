@@ -116,8 +116,19 @@ extension PinRouter {
         let presenter = PinScreenPresenter(
             useCase: useCase,
             flow: flow,
+            interactor: PinInteractor(),
+            biometryProvider: BiometryProvider(),
+            appSettings: DIKit.resolve(),
+            cloudSettings: DIKit.resolve(),
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
+            credentialsStore: DIKit.resolve(),
+            backwardRouting: nil,
             forwardRouting: forwardRouting,
-            performEffect: effectHandling
+            performEffect: effectHandling,
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         let pinViewController = PinScreenViewController(using: presenter)
         if useCase.isAuthenticateOnLogin {
@@ -155,9 +166,19 @@ extension PinRouter {
         let presenter = PinScreenPresenter(
             useCase: .authenticateBeforeChanging,
             flow: flow,
+            interactor: PinInteractor(),
+            biometryProvider: BiometryProvider(),
+            appSettings: DIKit.resolve(),
+            cloudSettings: DIKit.resolve(),
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
+            credentialsStore: DIKit.resolve(),
             backwardRouting: backwardRouting,
             forwardRouting: forwardRouting,
-            performEffect: effectHandling
+            performEffect: effectHandling,
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
@@ -183,9 +204,19 @@ extension PinRouter {
         let presenter = PinScreenPresenter(
             useCase: useCase,
             flow: flow,
+            interactor: PinInteractor(),
+            biometryProvider: BiometryProvider(),
+            appSettings: DIKit.resolve(),
+            cloudSettings: DIKit.resolve(),
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
+            credentialsStore: DIKit.resolve(),
             backwardRouting: backwardRouting,
             forwardRouting: forwardRouting,
-            performEffect: effectHandling
+            performEffect: effectHandling,
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
@@ -215,9 +246,19 @@ extension PinRouter {
         let presenter = PinScreenPresenter(
             useCase: useCase,
             flow: flow,
+            interactor: PinInteractor(),
+            biometryProvider: BiometryProvider(),
+            appSettings: DIKit.resolve(),
+            cloudSettings: DIKit.resolve(),
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
+            credentialsStore: DIKit.resolve(),
             backwardRouting: backwardRouting,
             forwardRouting: forwardRouting,
-            performEffect: effectHandling
+            performEffect: effectHandling,
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)

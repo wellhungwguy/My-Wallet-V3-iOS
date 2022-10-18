@@ -14,7 +14,7 @@ public final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
         self.analyticsServiceProviders = analyticsServiceProviders
     }
 
-    public static var isLogging = false
+    public static var isLogging = ProcessInfo.processInfo.environment["BLOCKCHAIN_DEBUG_ANALYTICS"] == "TRUE"
 
     public func record(event: AnalyticsEvent) {
         for provider in analyticsServiceProviders where provider.isEventSupported(event) {

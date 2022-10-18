@@ -26,7 +26,6 @@ public protocol AppSettingsBaseAPI: AnyObject {
 
 public typealias BlockchainSettingsAppAPI = AppSettingsAuthenticating
     & AppSettingsSecureChannel
-    & CloudBackupConfiguring
     & PermissionSettingsAPI
     & AppSettingsBaseAPI
 
@@ -34,277 +33,251 @@ public typealias BlockchainSettingsAppAPI = AppSettingsAuthenticating
  Settings for the current user.
  All settings are written and read from NSUserDefaults.
  */
-@objc
-public final class BlockchainSettings: NSObject {
+final class BlockchainSettingsApp: BlockchainSettingsAppAPI {
 
-    // MARK: - App
+    private let defaults: CacheSuite
 
-    @objc(BlockchainSettingsApp)
-    public final class App: NSObject, BlockchainSettingsAppAPI {
+    // MARK: - Properties
 
-        @Inject @objc public static var shared: App
-
-        @LazyInject private var defaults: CacheSuite
-
-        // MARK: - Properties
-
-        public var didRequestCameraPermissions: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
-            }
+    var didRequestCameraPermissions: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
         }
-
-        public var didRequestMicrophonePermissions: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
-            }
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
         }
+    }
 
-        public var didRequestNotificationPermissions: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
-            }
+    var didRequestMicrophonePermissions: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
         }
-
-        /**
-         Stores the encrypted wallet password.
-
-         - Note:
-         The value of this setting is the result of calling the `encrypt(_ data: String, password: String)` function of the wallet.
-
-         - Important:
-         The encryption key is generated from the pin created by the user.
-         legacyEncryptedPinPassword is required for wallets that created a PIN prior to Homebrew release - see IOS-1537
-         */
-        public var encryptedPinPassword: String? {
-            atomicGet(on: readWriteQueue) {
-                let encryptedPinPassword = defaults.string(
-                    forKey: UserDefaults.Keys.encryptedPinPassword.rawValue
-                )
-                let legacyEncryptedPinPassword = defaults.string(
-                    forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue
-                )
-                return encryptedPinPassword ?? legacyEncryptedPinPassword
-            }
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
         }
+    }
 
-        public func set(encryptedPinPassword: String?) {
-            atomicSet(value: encryptedPinPassword, on: readWriteQueue) { encryptedPinPasswordValue in
-                defaults.set(
-                    encryptedPinPasswordValue,
-                    forKey: UserDefaults.Keys.encryptedPinPassword.rawValue
-                )
-                defaults.set(
-                    nil,
-                    forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue
-                )
-            }
+    var didRequestNotificationPermissions: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
         }
-
-        public var hasEndedFirstSession: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
-            }
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
         }
+    }
 
-        public var pin: String? {
-            atomicGet(on: readWriteQueue) { [keychainItemWrapper] in
-                keychainItemWrapper.pin()
-            }
+    /**
+     Stores the encrypted wallet password.
+
+     - Note:
+     The value of this setting is the result of calling the `encrypt(_ data: String, password: String)` function of the wallet.
+
+     - Important:
+     The encryption key is generated from the pin created by the user.
+     legacyEncryptedPinPassword is required for wallets that created a PIN prior to Homebrew release - see IOS-1537
+     */
+    var encryptedPinPassword: String? {
+        atomicGet(on: readWriteQueue) {
+            let encryptedPinPassword = defaults.string(
+                forKey: UserDefaults.Keys.encryptedPinPassword.rawValue
+            )
+            let legacyEncryptedPinPassword = defaults.string(
+                forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue
+            )
+            return encryptedPinPassword ?? legacyEncryptedPinPassword
         }
+    }
 
-        public func set(pin: String?) {
-            atomicSet(value: pin, on: readWriteQueue) { [keychainItemWrapper] pinValue in
-                keychainItemWrapper.setPin(pinValue)
-            }
+    func set(encryptedPinPassword: String?) {
+        atomicSet(value: encryptedPinPassword, on: readWriteQueue) { encryptedPinPasswordValue in
+            defaults.set(
+                encryptedPinPasswordValue,
+                forKey: UserDefaults.Keys.encryptedPinPassword.rawValue
+            )
+            defaults.set(
+                nil,
+                forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue
+            )
         }
+    }
 
-        public var pinKey: String? {
-            atomicGet(on: readWriteQueue) {
-                defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
-            }
+    var hasEndedFirstSession: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
         }
-
-        public func set(pinKey: String?) {
-            atomicSet(value: pinKey, on: readWriteQueue) { pinKeyValue in
-                defaults.set(pinKeyValue, forKey: UserDefaults.Keys.pinKey.rawValue)
-            }
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
         }
+    }
 
-        /// The first 5 characters of SHA256 hash of the user's password
-        public var passwordPartHash: String? {
-            atomicGet(on: readWriteQueue) {
-                defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
-            }
+    var pin: String? {
+        atomicGet(on: readWriteQueue) { [keychainItemWrapper] in
+            keychainItemWrapper.pin()
         }
+    }
 
-        public func set(passwordPartHash: String?) {
-            atomicSet(value: passwordPartHash, on: readWriteQueue) { passwordPartHashValue in
-                defaults.set(passwordPartHashValue, forKey: UserDefaults.Keys.passwordPartHash.rawValue)
-            }
+    func set(pin: String?) {
+        atomicSet(value: pin, on: readWriteQueue) { [keychainItemWrapper] pinValue in
+            keychainItemWrapper.setPin(pinValue)
         }
+    }
 
-        /**
-         Keeps track if the user has elected to use biometric authentication in the application.
-
-         - Note:
-         This setting should be **deprecated** in the future, as we should always assume a user
-         wants to use this feature if it is enabled system-wide.
-
-         - SeeAlso:
-         [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/authentication)
-         */
-        public var biometryEnabled: Bool {
-            atomicGet(on: readWriteQueue) {
-                defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
-            }
+    var pinKey: String? {
+        atomicGet(on: readWriteQueue) {
+            defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
         }
+    }
 
-        public func set(biometryEnabled: Bool) {
-            atomicSet(value: biometryEnabled, on: readWriteQueue) { biometryEnabledValue in
-                defaults.set(
-                    biometryEnabledValue,
-                    forKey: UserDefaults.Keys.biometryEnabled.rawValue
-                )
-            }
+    func set(pinKey: String?) {
+        atomicSet(value: pinKey, on: readWriteQueue) { pinKeyValue in
+            defaults.set(pinKeyValue, forKey: UserDefaults.Keys.pinKey.rawValue)
         }
+    }
 
-        /**
-         Determines if the application should back up credentials to iCloud.
-
-         - Note:
-         The value of this setting is controlled by a switch on the settings screen.
-
-         The default of this setting is `true`.
-         */
-        public var cloudBackupEnabled: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
-            }
+    /// The first 5 characters of SHA256 hash of the user's password
+    var passwordPartHash: String? {
+        atomicGet(on: readWriteQueue) {
+            defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
         }
+    }
 
-        public var deviceKey: String? {
-            get {
-                defaults.string(forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
-            }
+    func set(passwordPartHash: String?) {
+        atomicSet(value: passwordPartHash, on: readWriteQueue) { passwordPartHashValue in
+            defaults.set(passwordPartHashValue, forKey: UserDefaults.Keys.passwordPartHash.rawValue)
         }
+    }
 
-        public var browserIdentities: String? {
-            get {
-                defaults.string(forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
-            }
+    /**
+     Keeps track if the user has elected to use biometric authentication in the application.
+
+     - Note:
+     This setting should be **deprecated** in the future, as we should always assume a user
+     wants to use this feature if it is enabled system-wide.
+
+     - SeeAlso:
+     [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/authentication)
+     */
+    var biometryEnabled: Bool {
+        atomicGet(on: readWriteQueue) {
+            defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
         }
+    }
 
-        public var custodySendInterstitialViewed: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
-            }
+    func set(biometryEnabled: Bool) {
+        atomicSet(value: biometryEnabled, on: readWriteQueue) { biometryEnabledValue in
+            defaults.set(
+                biometryEnabledValue,
+                forKey: UserDefaults.Keys.biometryEnabled.rawValue
+            )
         }
+    }
 
-        public var sendToDomainAnnouncementViewed: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
-            }
+    var deviceKey: String? {
+        get {
+            defaults.string(forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
         }
-
-        private var buySellCache: EventCache {
-            resolve()
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
         }
+    }
 
-        private var fiatSettings: FiatCurrencySettingsServiceAPI {
-            resolve()
+    var browserIdentities: String? {
+        get {
+            defaults.string(forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
         }
-
-        private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-        private let keychainItemWrapper: KeychainItemWrapping
-
-        private let readWriteQueue = DispatchQueue(label: "Atomic read/write queue", attributes: .concurrent)
-
-        public init(
-            enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-            keychainItemWrapper: KeychainItemWrapping = resolve()
-        ) {
-            self.enabledCurrenciesService = enabledCurrenciesService
-            self.keychainItemWrapper = keychainItemWrapper
-
-            super.init()
-
-            defaults.register(defaults: [
-                UserDefaults.Keys.cloudBackupEnabled.rawValue: true
-            ])
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
         }
+    }
 
-        // MARK: - Public
-
-        /**
-         Resets app-specific settings back to their initial value.
-         - Note:
-         This function will not reset any settings which are derived from wallet options.
-         */
-        public func reset() {
-            clearPin()
-            sendToDomainAnnouncementViewed = false
-            custodySendInterstitialViewed = false
-
-            let kycSettings: KYCSettingsAPI = resolve()
-            kycSettings.reset()
-            AnnouncementRecorder.reset()
-
-            buySellCache.reset()
-
-            Logger.shared.info("Application settings have been reset.")
+    var custodySendInterstitialViewed: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
         }
-
-        /// - Warning: Calling This function will remove **ALL** settings in the application.
-        /// Resets secure keys from
-        public func clear() {
-            let secureKeys: [UserDefaults.Keys] = [
-                .passwordPartHash,
-                .pinKey,
-                .encryptedPinPassword,
-                .legacyEncryptedPinPassword,
-                .secureChannelDeviceKey,
-                .secureChannelBrowserIdentities
-            ]
-            for key in secureKeys {
-                defaults.removeObject(forKey: key.rawValue)
-            }
-            Logger.shared.info("Application settings have been cleared.")
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
         }
+    }
 
-        public func clearPin() {
-            set(pin: nil)
-            set(encryptedPinPassword: nil)
-            set(pinKey: nil)
-            set(passwordPartHash: nil)
+    var sendToDomainAnnouncementViewed: Bool {
+        get {
+            defaults.bool(forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
         }
+        set {
+            defaults.set(newValue, forKey: UserDefaults.Keys.sendToDomainAnnouncementViewed.rawValue)
+        }
+    }
+
+    private var buySellCache: EventCache {
+        resolve()
+    }
+
+    private var fiatSettings: FiatCurrencySettingsServiceAPI {
+        resolve()
+    }
+
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let keychainItemWrapper: KeychainItemWrapping
+
+    private let readWriteQueue = DispatchQueue(label: "Atomic read/write queue", attributes: .concurrent)
+
+    init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        keychainItemWrapper: KeychainItemWrapping = resolve(),
+        defaults: CacheSuite = resolve()
+    ) {
+        self.enabledCurrenciesService = enabledCurrenciesService
+        self.defaults = defaults
+        self.keychainItemWrapper = keychainItemWrapper
+
+        defaults.register(defaults: [
+            UserDefaults.Keys.cloudBackupEnabled.rawValue: true
+        ])
+    }
+
+    // MARK: - Public
+
+    /**
+     Resets app-specific settings back to their initial value.
+     - Note:
+     This function will not reset any settings which are derived from wallet options.
+     */
+    func reset() {
+        clearPin()
+        sendToDomainAnnouncementViewed = false
+        custodySendInterstitialViewed = false
+
+        let kycSettings: KYCSettingsAPI = resolve()
+        kycSettings.reset()
+        AnnouncementRecorder.reset()
+
+        buySellCache.reset()
+
+        Logger.shared.info("Application settings have been reset.")
+    }
+
+    /// - Warning: Calling This function will remove **ALL** settings in the application.
+    /// Resets secure keys from
+    func clear() {
+        let secureKeys: [UserDefaults.Keys] = [
+            .passwordPartHash,
+            .pinKey,
+            .encryptedPinPassword,
+            .legacyEncryptedPinPassword,
+            .secureChannelDeviceKey,
+            .secureChannelBrowserIdentities
+        ]
+        for key in secureKeys {
+            defaults.removeObject(forKey: key.rawValue)
+        }
+        Logger.shared.info("Application settings have been cleared.")
+    }
+
+    func clearPin() {
+        set(pin: nil)
+        set(encryptedPinPassword: nil)
+        set(pinKey: nil)
+        set(passwordPartHash: nil)
     }
 }
 

@@ -184,6 +184,17 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			multiapp:
+				brokerage:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				defi:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
@@ -363,6 +374,10 @@ blockchain:
 				+ blockchain.session.state.value
 				submit:
 				+ blockchain.ux.type.analytics.event
+				supported:
+					flows:
+					+ blockchain.db.type.array.of.strings
+					+ blockchain.session.state.value
 				trigger:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
@@ -1506,6 +1521,13 @@ blockchain:
 							url:
 							+ blockchain.db.type.url
 							+ blockchain.session.configuration.value
+				terms:
+					of:
+						service:
+						+ blockchain.ux.type.action
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
 			configuration:
 				link:
 					a:
@@ -1531,6 +1553,12 @@ blockchain:
 						+ blockchain.ui.type.button.secondary
 						min:
 						+ blockchain.ui.type.button.secondary
+					default:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							currency:
+							+ blockchain.type.currency
 					input:
 					+ blockchain.ui.type.input
 					output:
@@ -1553,6 +1581,12 @@ blockchain:
 					finish:
 					go:
 						back:
+					link:
+						a:
+							bank:
+							card:
+						payment:
+							method:
 					select:
 						source:
 						target:
@@ -1585,6 +1619,42 @@ blockchain:
 				will:
 					finish:
 					start:
+			loading:
+			+ blockchain.ux.type.story
+				close:
+				+ blockchain.ui.type.button.primary
+			payment:
+				method:
+					is:
+						ApplePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						GooglePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						bank:
+							ACH:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+							OpenBanking:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+						card:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						funds:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+					link:
+						a:
+							bank:
+								via:
+									ACH:
+									+ blockchain.ux.type.story
+									OpenBanking:
+									+ blockchain.ux.type.story
+							card:
+							+ blockchain.ux.type.story
 			previous:
 				payment:
 					method:
@@ -1767,6 +1837,38 @@ blockchain:
 					+ blockchain.ux.type.story
 			activity:
 			+ blockchain.ux.type.story
+			authentication:
+				sign:
+					in:
+					+ blockchain.ux.type.story
+						continue:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
+						enter:
+							pin:
+							+ blockchain.ux.type.story
+						unlock:
+							wallet:
+								password:
+									required:
+									+ blockchain.ux.type.story
+					up:
+					+ blockchain.ux.type.story
+						create:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
 			event:
 				authenticated:
 					pin:

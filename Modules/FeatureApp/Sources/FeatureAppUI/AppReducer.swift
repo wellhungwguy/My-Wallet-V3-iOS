@@ -54,7 +54,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             environment: {
                 AppDelegateEnvironment(
                     app: $0.app,
-                    appSettings: $0.blockchainSettings,
                     cacheSuite: $0.cacheSuite,
                     remoteNotificationBackgroundReceiver: $0.remoteNotificationServiceContainer.backgroundReceiver,
                     remoteNotificationAuthorizer: $0.remoteNotificationServiceContainer.authorizer,

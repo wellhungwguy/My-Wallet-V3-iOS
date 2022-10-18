@@ -73,7 +73,8 @@ extension App {
                         app.remoteConfiguration.override(ref.in(app), with: value)
                     }
                     if let event = dsl.event {
-                        app.post(event: event, context: Tag.Context(dsl.context))
+                        let context = Tag.Context(dsl.context)
+                        app.post(event: event.ref(to: context), context: context)
                     }
                 } catch {
                     app.post(error: error)
@@ -83,7 +84,8 @@ extension App {
             guard let match = rules.match(for: url) else {
                 return
             }
-            app.post(event: match.rule.event, context: Tag.Context(match.parameters()))
+            let context = Tag.Context(match.parameters())
+            app.post(event: match.rule.event.ref(to: context), context: context)
         }
     }
 }

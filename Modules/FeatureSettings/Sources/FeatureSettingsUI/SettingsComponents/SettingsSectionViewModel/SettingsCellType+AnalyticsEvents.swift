@@ -19,22 +19,20 @@ extension SettingsSectionType.CellType {
             ]
         case .clipboard(.walletID):
             return [AnalyticsEvents.Settings.settingsWalletIdCopyClick]
-        case .common(.loginToWebWallet):
-            return [AnalyticsEvents.Settings.settingsWebWalletLoginClick]
-        case .common(.changePassword):
+        case .common(.changePassword, _):
             return [AnalyticsEvents.Settings.settingsPasswordClick]
-        case .common(.changePIN):
+        case .common(.changePIN, _):
             return [
                 AnalyticsEvents.Settings.settingsChangePinClick,
                 AnalyticsEvents.New.Security.changePinClicked
             ]
-        case .common(.rateUs):
+        case .common(.rateUs, _):
             return [AnalyticsEvents.New.Settings.settingsHyperlinkClicked(destination: .rateUs)]
-        case .common(.termsOfService):
+        case .common(.termsOfService, _):
             return [AnalyticsEvents.New.Settings.settingsHyperlinkClicked(destination: .termsOfService)]
-        case .common(.privacyPolicy):
+        case .common(.privacyPolicy, _):
             return [AnalyticsEvents.New.Settings.settingsHyperlinkClicked(destination: .privacyPolicy)]
-        case .common(.cookiesPolicy):
+        case .common(.cookiesPolicy, _):
             return [AnalyticsEvents.New.Settings.settingsHyperlinkClicked(destination: .cookiesPolicy)]
         default:
             return []

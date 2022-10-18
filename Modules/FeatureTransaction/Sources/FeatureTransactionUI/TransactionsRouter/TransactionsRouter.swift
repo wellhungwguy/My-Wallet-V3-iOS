@@ -62,7 +62,6 @@ final class TransactionsRouter: TransactionsRouterAPI {
     private let kyc: FeatureKYCUI.Routing
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
-    private let loadingViewPresenter: LoadingViewPresenting
     private var transactionFlowBuilder: TransactionFlowBuildable
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuildable
@@ -91,7 +90,6 @@ final class TransactionsRouter: TransactionsRouterAPI {
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         coincore: CoincoreAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
         transactionFlowBuilder: TransactionFlowBuildable = TransactionFlowBuilder(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
@@ -114,7 +112,6 @@ final class TransactionsRouter: TransactionsRouterAPI {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         self.coincore = coincore
-        self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrdersService = pendingOrdersService
         self.transactionFlowBuilder = transactionFlowBuilder
         self.buyFlowBuilder = buyFlowBuilder
@@ -290,7 +287,6 @@ final class TransactionsRouter: TransactionsRouterAPI {
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         eligibilityService.eligibility()
             .receive(on: DispatchQueue.main)
-            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .flatMap { [weak self] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
@@ -566,7 +562,6 @@ extension TransactionsRouter {
                                 .update(tradingCurrency: selectedCurrency, context: .simpleBuy)
                                 .map(TransactionFlowResult.completed)
                                 .receive(on: DispatchQueue.main)
-                                .handleLoaderForLifecycle(loader: self.loadingViewPresenter)
                                 .sink(receiveValue: handler)
                                 .store(in: &self.cancellables)
                         },

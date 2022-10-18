@@ -113,7 +113,7 @@ public struct PrefillButtonsEnvironment {
             app: App.preview,
             lastPurchasePublisher: .empty(),
             maxLimitPublisher: .empty(),
-            onValueSelected: { _, _  in }
+            onValueSelected: { _, _ in }
         )
     }
 }

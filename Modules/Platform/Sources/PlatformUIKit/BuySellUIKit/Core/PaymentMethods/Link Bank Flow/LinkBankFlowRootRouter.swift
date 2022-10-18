@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import FeaturePlaidUI
@@ -75,6 +76,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         topMostViewControllerProvider.topMostViewController
     }
 
+    private let app: AppProtocol
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
@@ -83,6 +85,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private var navigationController: UINavigationController?
 
     init(
+        app: AppProtocol = resolve(),
         interactor: LinkBankFlowRootInteractable,
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         splashScreenBuilder: LinkBankSplashScreenBuildable,
@@ -90,6 +93,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         failureScreenBuilder: LinkBankFailureScreenBuildable,
         startOpenBanking: StartOpenBanking = resolve()
     ) {
+        self.app = app
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
@@ -114,9 +118,10 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             let router = yodleeScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
+            app.post(event: blockchain.ux.transaction.payment.method.link.a.bank.via.ACH)
         case .yapily(let data):
             detachCurrentChild()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self, app] in
                 guard let self = self else { return }
                 self.presentingController?.present(
                     self.startOpenBanking.link(
@@ -126,6 +131,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
                     ),
                     animated: true
                 )
+                app.post(event: blockchain.ux.transaction.payment.method.link.a.bank.via.OpenBanking)
             }
         case .failure:
             let router = failureScreenBuilder.build(withListener: interactor)

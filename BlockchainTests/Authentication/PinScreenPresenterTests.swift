@@ -10,7 +10,7 @@ import ToolKit
 import XCTest
 
 /// Tests the pin screen presenter
-class PinScreenPresenterTests: XCTestCase {
+final class PinScreenPresenterTests: XCTestCase {
 
     private var biometryProvider: BiometryProviding!
     private var appSettings: MockBlockchainSettingsApp!
@@ -47,9 +47,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: "5740")
 
@@ -74,9 +81,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: "5740")
 
@@ -106,9 +120,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: "5740")
 
@@ -131,9 +152,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: Pin.invalid.toString)
 
@@ -162,9 +190,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: selectedPin.toString)
 
@@ -191,10 +226,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
             backwardRouting: backward,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
 
         // Set a different value than the previosly selected one
@@ -224,9 +265,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: pin)
 
@@ -249,9 +297,16 @@ class PinScreenPresenterTests: XCTestCase {
             interactor: interactor,
             biometryProvider: biometryProvider,
             appSettings: appSettings,
+            cloudSettings: appSettings,
+            legacyGuidRepository: DIKit.resolve(),
+            legacySharedKeyRepository: DIKit.resolve(),
+            recorder: CrashlyticsRecorder(),
             credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: nil,
             forwardRouting: forward,
-            performEffect: { _ in }
+            performEffect: { _ in },
+            reachability: Reachability(),
+            analyticsRecorder: DIKit.resolve()
         )
         presenter.reset(to: previousPin.toString)
 
