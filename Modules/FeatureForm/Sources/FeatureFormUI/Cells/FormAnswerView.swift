@@ -10,6 +10,7 @@ struct FormRecursiveAnswerView<Content: View>: View {
     let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
     let content: () -> Content
 
     var body: some View {
@@ -20,7 +21,8 @@ struct FormRecursiveAnswerView<Content: View>: View {
                 FormSingleSelectionAnswersView(
                     title: title,
                     answers: $answer.children ?? [],
-                    showAnswersState: $showAnswerState
+                    showAnswersState: $showAnswerState,
+                    fieldConfiguration: fieldConfiguration
                 )
                 .padding([.leading, .vertical], Spacing.padding2)
             }
@@ -33,6 +35,7 @@ struct FormOpenEndedAnswerView: View {
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
     @State var isFirstResponder: Bool = false
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -46,7 +49,11 @@ struct FormOpenEndedAnswerView: View {
                 text: $answer.input ?? "",
                 isFirstResponder: $isFirstResponder,
                 placeholder: answer.hint,
-                state: showAnswerState ? answer.inputState : .default
+                state: showAnswerState ? answer.inputState : .default,
+                configuration: { textField in
+                    let config = fieldConfiguration(answer)
+                    textField.autocorrectionType = .init(type: config.textAutocorrectionType)
+                }
             )
             .accessibilityIdentifier(answer.id)
         }
@@ -58,12 +65,14 @@ struct FormSingleSelectionAnswerView: View {
     let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         FormRecursiveAnswerView(
             title: title,
             answer: $answer,
-            showAnswerState: $showAnswerState
+            showAnswerState: $showAnswerState,
+            fieldConfiguration: fieldConfiguration
         ) {
             HStack(spacing: Spacing.padding1) {
                 if let text = answer.text {
@@ -76,8 +85,7 @@ struct FormSingleSelectionAnswerView: View {
 
                 Radio(isOn: $answer.checked ?? false)
             }
-            .padding(.vertical, Spacing.padding2)
-            .padding(.horizontal, Spacing.padding3)
+            .padding(Spacing.padding2)
             .background(
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .stroke(Color.semantic.light)
@@ -97,12 +105,14 @@ struct FormMultipleSelectionAnswerView: View {
     let title: String
     @Binding var answer: FormAnswer
     @Binding var showAnswerState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         FormRecursiveAnswerView(
             title: title,
             answer: $answer,
-            showAnswerState: $showAnswerState
+            showAnswerState: $showAnswerState,
+            fieldConfiguration: fieldConfiguration
         ) {
             HStack(spacing: Spacing.padding1) {
                 if let text = answer.text {
@@ -115,8 +125,7 @@ struct FormMultipleSelectionAnswerView: View {
 
                 Checkbox(isOn: $answer.checked ?? false)
             }
-            .padding(.vertical, Spacing.padding2)
-            .padding(.horizontal, Spacing.padding3)
+            .padding(Spacing.padding2)
             .background(
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .stroke(Color.semantic.light)
@@ -191,16 +200,22 @@ struct FormAnswerView_Previews: PreviewProvider {
 
         var body: some View {
             VStack(spacing: Spacing.padding1) {
-                FormOpenEndedAnswerView(answer: $answer, showAnswerState: $showAnswerState)
+                FormOpenEndedAnswerView(
+                    answer: $answer,
+                    showAnswerState: $showAnswerState,
+                    fieldConfiguration: defaultFieldConfiguration
+                )
                 FormSingleSelectionAnswerView(
                     title: "Title",
                     answer: $answer,
-                    showAnswerState: $showAnswerState
+                    showAnswerState: $showAnswerState,
+                    fieldConfiguration: defaultFieldConfiguration
                 )
                 FormMultipleSelectionAnswerView(
                     title: "Title",
                     answer: $answer,
-                    showAnswerState: $showAnswerState
+                    showAnswerState: $showAnswerState,
+                    fieldConfiguration: defaultFieldConfiguration
                 )
             }
             .padding()

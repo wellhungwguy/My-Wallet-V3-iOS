@@ -651,9 +651,7 @@ final class KYCRouter: KYCRouterAPI {
 
         let informationViewController = KYCInformationController.make(with: self)
         informationViewController.viewConfig = KYCInformationViewConfig(
-            titleColor: UIColor.gray5,
-            isPrimaryButtonEnabled: true,
-            imageTintColor: nil
+            isPrimaryButtonEnabled: true
         )
 
         switch error {

@@ -316,7 +316,7 @@ extension LocalizationConstants {
                 )
 
                 static let dateOfBirthAnswerHint = NSLocalizedString(
-                    "You must be 18 years of age or older to buy & sell crypto.",
+                    "You must be 18 years or older to trade crypto.",
                     comment: "KYC Step - Personal Info Questions - Date of Birth Question Hint"
                 )
             }

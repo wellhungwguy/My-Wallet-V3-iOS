@@ -100,7 +100,7 @@ extension LocalizationConstants.AddressSearch {
         )
 
         static let zip = NSLocalizedString(
-            "Zip",
+            "Zip code",
             comment: "Address Search: Form Zip"
         )
 

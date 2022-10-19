@@ -278,6 +278,8 @@ packages:
     path: Modules/Errors
   Money:
     path: Modules/Money
+  Permissions:
+    path: Modules/Permissions
   Platform:
     path: Modules/Platform
   RemoteNotifications:
@@ -466,6 +468,8 @@ targets:
         product: MoneyKit
       - package: Observability
         product: ObservabilityKit
+      - package: Permissions
+        product: PermissionsKit
       - package: Platform
         product: PlatformKit
       - package: Platform

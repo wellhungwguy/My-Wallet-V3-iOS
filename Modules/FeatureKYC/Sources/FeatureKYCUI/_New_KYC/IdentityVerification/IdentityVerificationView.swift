@@ -29,9 +29,10 @@ struct IdentityVerificationView: View {
                         .accessibility(identifier: AccessibilityIdentifier.subheaderText)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding([.leading, .trailing], 24)
+                .padding(.horizontal, Spacing.padding3)
 
                 documentsTypesItemsListContent
+                    .padding(.horizontal, Spacing.textSpacing)
 
                 Spacer()
 

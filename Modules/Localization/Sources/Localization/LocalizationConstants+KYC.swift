@@ -248,6 +248,14 @@ extension LocalizationConstants {
             "We had some trouble verifying your account with the documents provided. Our support team will contact you shortly to resolve this.",
             comment: "Description for when KYC verification is under review."
         )
+        public static let verificationSubmittedDescription = NSLocalizedString(
+            "We’ve received your application. A Blockchain.com Support Member is reviewing your info now.",
+            comment: "Description for when KYC verification is under review or pending."
+        )
+        public static let verificationSubmitted = NSLocalizedString(
+            "Application Submitted",
+            comment: "Text displayed when KYC verification is under review."
+        )
         public static let accountUnconfirmedBadge = NSLocalizedString(
             "Unconfirmed",
             comment: "KYC verification is unconfirmed."
@@ -280,12 +288,20 @@ extension LocalizationConstants {
             "Get Started",
             comment: "Title of the button the user can tap when they want to start trading on the Exchange. This is displayed after their KYC verification has been approved."
         )
+        public static let ok = NSLocalizedString(
+            "OK",
+            comment: "Button title for under review and pending KYC"
+        )
         public static let contactSupport = NSLocalizedString(
             "Contact Support",
             comment: "Title of the button the user can tap when they want to contact support as a result of a failed KYC verification."
         )
         public static let whatHappensNext = NSLocalizedString(
             "What happens next?",
+            comment: "Text displayed (subtitle) when KYC verification is under progress"
+        )
+        public static let onceYourApplicationIsApproved = NSLocalizedString(
+            "Once your application is approved, we'll let you know.",
             comment: "Text displayed (subtitle) when KYC verification is under progress"
         )
         public static let comingSoonToX = NSLocalizedString(
@@ -517,11 +533,11 @@ extension LocalizationConstants {
             comment: "Requesting user to enable their camera"
         )
         public static let enableCameraDescription = NSLocalizedString(
-            "Please allow your Blockchain App access your camera to upload your ID and take a Selfie.",
+            "Please allow your Blockchain.com App access your camera to upload your ID and take a Selfie.",
             comment: "Description as to why the user should permit camera access"
         )
         public static let enableMicrophoneDescription = NSLocalizedString(
-            "Please allow your Blockchain app access to your microphone. This is an optional request designed to enhance user security while performing ID verification",
+            "Please allow your Blockchain.com app access to your microphone. This is an optional request designed to enhance user security while performing ID verification",
             comment: "Description as to why the user should permit microphone access"
         )
         public static let isCountrySupportedHeader = NSLocalizedString(

@@ -5,6 +5,7 @@ import FeatureKYCDomain
 import MoneyKit
 import PlatformKit
 import class PlatformUIKit.AnnouncementRecorder
+import PermissionsKit
 import RxRelay
 import RxSwift
 import ToolKit

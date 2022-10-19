@@ -53,6 +53,7 @@ import FirebaseRemoteConfig
 import MoneyKit
 import NetworkKit
 import ObservabilityKit
+import PermissionsKit
 import PlatformDataKit
 import PlatformKit
 import PlatformUIKit

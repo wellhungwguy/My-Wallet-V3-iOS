@@ -9,6 +9,9 @@ public enum PrimaryFormSubmitButtonMode {
     case submitButtonAlwaysEnabled // open ended answers are validated and shown in red if not valid
 }
 
+public typealias PrimaryFormFieldConfiguration = (FormAnswer) -> FieldConfiguation
+public let defaultFieldConfiguration: PrimaryFormFieldConfiguration = { _ in .init() }
+
 public struct PrimaryForm<Header: View>: View {
 
     @Binding private var form: FeatureFormDomain.Form
@@ -18,6 +21,7 @@ public struct PrimaryForm<Header: View>: View {
     private let submitAction: () -> Void
     private let submitButtonMode: PrimaryFormSubmitButtonMode
     private let headerIcon: () -> Header
+    private let fieldConfiguration: PrimaryFormFieldConfiguration
 
     public init(
         form: Binding<FeatureFormDomain.Form>,
@@ -25,6 +29,7 @@ public struct PrimaryForm<Header: View>: View {
         submitActionLoading: Bool,
         submitAction: @escaping () -> Void,
         submitButtonMode: PrimaryFormSubmitButtonMode = .onlyEnabledWhenAllAnswersValid,
+        fieldConfiguration: @escaping PrimaryFormFieldConfiguration = defaultFieldConfiguration,
         @ViewBuilder headerIcon: @escaping () -> Header
     ) {
         _form = form
@@ -32,6 +37,7 @@ public struct PrimaryForm<Header: View>: View {
         self.submitActionLoading = submitActionLoading
         self.submitAction = submitAction
         self.submitButtonMode = submitButtonMode
+        self.fieldConfiguration = fieldConfiguration
         self.headerIcon = headerIcon
     }
 
@@ -56,7 +62,11 @@ public struct PrimaryForm<Header: View>: View {
                 }
 
                 ForEach($form.nodes) { question in
-                    FormQuestionView(question: question, showAnswersState: $showAnswersState)
+                    FormQuestionView(
+                        question: question,
+                        showAnswersState: $showAnswersState,
+                        fieldConfiguration: fieldConfiguration
+                    )
                 }
 
                 let isSubmitButtonDisabled: Bool = {

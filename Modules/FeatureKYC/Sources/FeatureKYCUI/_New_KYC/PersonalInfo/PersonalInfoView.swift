@@ -23,6 +23,9 @@ struct PersonalInfoView: View {
                     viewStore.send(.submit)
                 },
                 submitButtonMode: .onlyEnabledWhenAllAnswersValid,
+                fieldConfiguration: { _ in
+                        .init(textAutocorrectionType: .no)
+                },
                 headerIcon: {
                     headerIcon
                 }

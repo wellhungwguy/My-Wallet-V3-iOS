@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import PermissionsKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
