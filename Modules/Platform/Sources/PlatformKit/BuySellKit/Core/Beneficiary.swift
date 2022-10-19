@@ -13,8 +13,10 @@ public struct Beneficiary {
     public let name: String
     public let identifier: String
     public let account: String
-    public let limit: FiatValue?
+    public var limit: FiatValue?
     public let icon: URL?
+    public let isBankAccount: Bool?
+    public let isBankTransferAccount: Bool?
 
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
         type = .funds
@@ -29,6 +31,8 @@ public struct Beneficiary {
         }
         self.currency = currency
         icon = nil
+        isBankAccount = nil
+        isBankTransferAccount = nil
     }
 
     init(linkedBankData: LinkedBankData) {
@@ -42,6 +46,8 @@ public struct Beneficiary {
         account = "\(accountType) \(accountNumber)"
         limit = nil
         icon = linkedBankData.icon
+        isBankAccount = linkedBankData.isBankAccount
+        isBankTransferAccount = linkedBankData.isBankTransferAccount
     }
 }
 

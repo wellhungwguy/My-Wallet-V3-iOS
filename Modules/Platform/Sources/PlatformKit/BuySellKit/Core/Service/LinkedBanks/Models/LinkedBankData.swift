@@ -48,6 +48,8 @@ public struct LinkedBankData {
     public let partner: Partner
     public let icon: URL?
     public let logo: URL?
+    public let isBankAccount: Bool
+    public let isBankTransferAccount: Bool
 
     public var topLimit: FiatValue
 
@@ -78,6 +80,9 @@ public struct LinkedBankData {
         topLimit = .zero(currency: .USD)
         icon = (response.attributes?.media?.first(where: { $0.type == "icon" })?.source).flatMap(URL.init(string:))
         logo = (response.attributes?.media?.first(where: { $0.type == "logo" })?.source).flatMap(URL.init(string:))
+
+        isBankAccount = response.isBankAccount
+        isBankTransferAccount = response.isBankTransferAccount
     }
 }
 
