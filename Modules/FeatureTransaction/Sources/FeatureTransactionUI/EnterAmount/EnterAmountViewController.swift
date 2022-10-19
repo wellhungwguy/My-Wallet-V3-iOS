@@ -416,6 +416,7 @@ final class EnterAmountViewController: BaseScreenViewController,
                 balancePublisher: availableBalanceDetails.balance,
                 availableBalancePublisher: availableBalanceDetails.availableBalance,
                 feesPublisher: availableBalanceDetails.fee,
+                transactionIsFeeLessPublisher: availableBalanceDetails.transactionIsFeeLess,
                 closeAction: { [weak self] in
                     self?.dismiss(animated: true, completion: nil)
                 }

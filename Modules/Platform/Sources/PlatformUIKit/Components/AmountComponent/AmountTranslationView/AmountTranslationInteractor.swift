@@ -104,6 +104,14 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .eraseToAnyPublisher()
     }
 
+    public var transactionIsFeeLessPublisher: AnyPublisher<Bool, Never> {
+        transactionIsFeeLessRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .eraseToAnyPublisher()
+    }
+
     public var transactionFeePublisher: AnyPublisher<FiatValue, Never> {
         transactionFeeFiatValueRelay
             .asObservable()
@@ -163,6 +171,9 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     /// The transaction fee
     private let transactionFeeFiatValueRelay: BehaviorRelay<FiatValue>
 
+    /// If the transaction FeeLevel is none
+    private let transactionIsFeeLessRelay: BehaviorRelay<Bool>
+
     /// A relay that streams an effect, such as a failure
     private let effectRelay = BehaviorRelay<AmountInteractorEffect>(value: .none)
 
@@ -197,6 +208,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
         cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
+        transactionIsFeeLessRelay = BehaviorRelay(value: true)
         self.fiatCurrencyClosure = fiatCurrencyClosure
         self.cryptoCurrencyService = cryptoCurrencyService
         self.priceProvider = priceProvider
@@ -449,6 +461,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         }
     }
 
+    public func updateTxFeeLessState(_ isTxFeeLess: Bool) {
+        transactionIsFeeLessRelay.accept(isTxFeeLess)
+    }
+
     public func setTransactionFeeAmount(_ amount: MoneyValue) {
         if let fiatValue = amount.fiatValue {
             transactionFeeFiatValueRelay.accept(fiatValue)
@@ -509,7 +525,8 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .init(
                 balance: accountBalancePublisher,
                 availableBalance: maxLimitPublisher,
-                fee: transactionFeePublisher
+                fee: transactionFeePublisher,
+                transactionIsFeeLess: transactionIsFeeLessPublisher
             )
         )
     }

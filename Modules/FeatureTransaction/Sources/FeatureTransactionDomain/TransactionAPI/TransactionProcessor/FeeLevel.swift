@@ -9,6 +9,10 @@ public enum FeeLevel: Equatable {
     case priority
     case custom
 
+    public var isFeeLess: Bool {
+        self == .none
+    }
+
     public var title: String {
         switch self {
         case .none:

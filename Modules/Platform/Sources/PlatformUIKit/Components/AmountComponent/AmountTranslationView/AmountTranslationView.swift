@@ -90,6 +90,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                         balancePublisher: presenter.interactor.accountBalancePublisher,
                         availableBalancePublisher: presenter.maxLimitPublisher,
                         feesPublisher: presenter.interactor.transactionFeePublisher,
+                        transactionIsFeeLessPublisher: presenter.interactor.transactionIsFeeLessPublisher,
                         onViewTapped: {
                             presenter.interactor.availableBalanceViewTapped()
                         }

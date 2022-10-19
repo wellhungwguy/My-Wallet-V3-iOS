@@ -57,6 +57,7 @@ public struct AvailableBalanceViewEnvironment {
     let balancePublisher: AnyPublisher<FiatValue, Never>
     let availableBalancePublisher: AnyPublisher<FiatValue, Never>
     let feesPublisher: AnyPublisher<FiatValue, Never>
+    let transactionIsFeeLessPublisher: AnyPublisher<Bool, Never>
     let onViewTapped: (() -> Void)?
 
     public init(
@@ -65,6 +66,7 @@ public struct AvailableBalanceViewEnvironment {
         balancePublisher: AnyPublisher<FiatValue, Never>,
         availableBalancePublisher: AnyPublisher<FiatValue, Never>,
         feesPublisher: AnyPublisher<FiatValue, Never>,
+        transactionIsFeeLessPublisher: AnyPublisher<Bool, Never>,
         onViewTapped: (() -> Void)? = nil
     ) {
         self.app = app
@@ -72,6 +74,7 @@ public struct AvailableBalanceViewEnvironment {
         self.balancePublisher = balancePublisher
         self.availableBalancePublisher = availableBalancePublisher
         self.feesPublisher = feesPublisher
+        self.transactionIsFeeLessPublisher = transactionIsFeeLessPublisher
         self.onViewTapped = onViewTapped
     }
 
@@ -80,7 +83,8 @@ public struct AvailableBalanceViewEnvironment {
             app: App.preview,
             balancePublisher: .empty(),
             availableBalancePublisher: .empty(),
-            feesPublisher: .empty()
+            feesPublisher: .empty(),
+            transactionIsFeeLessPublisher: .empty()
         )
     }
 }

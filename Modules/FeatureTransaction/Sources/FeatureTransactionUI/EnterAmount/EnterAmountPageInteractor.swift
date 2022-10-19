@@ -462,6 +462,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
+            .map(\.isFeeLess)
+            .distinctUntilChanged()
+            .bindAndCatch(weak: self) { (self, isFeeLess) in
+                guard self.amountViewInteractor is AmountTranslationInteractor else { return }
+                self.amountViewInteractor.updateTxFeeLessState(isFeeLess)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
             .compactMap { state -> (action: AssetAction, amountIsZero: Bool, networkFeeAdjustmentSupported: Bool)? in
                 guard let pendingTransaction = state.pendingTransaction else {
                     return nil

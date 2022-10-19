@@ -290,6 +290,13 @@ extension TransactionState {
         return pendingTx.feeAmount
     }
 
+    var isFeeLess: Bool {
+        guard let pendingTx = pendingTransaction else {
+            return false
+        }
+        return pendingTx.feeLevel.isFeeLess
+    }
+
     /// The fees associated with the transaction
     var feeSelection: FeeSelection {
         guard let pendingTx = pendingTransaction else {
