@@ -120,6 +120,7 @@ excluded:
   - Carthage/
   - vendor/bundle
   - Blockchain/JavaScript/
+  - KitchenSink/
   - Modules/*/.build/
   - Modules/*/*.generated.swift
   - SourcePackages/
