@@ -5,44 +5,45 @@ import Localization
 import SwiftUI
 
 public struct FeatureSuperAppIntroView: View {
-    let store: Store<FeatureSuperAppIntroState, FeatureSuperAppIntroAction>
-    @ObservedObject var viewStore: ViewStore<FeatureSuperAppIntroState, FeatureSuperAppIntroAction>
-    @Environment(\.presentationMode) var presentationMode
+    let store: StoreOf<FeatureSuperAppIntro>
 
-    public init(store: Store<FeatureSuperAppIntroState, FeatureSuperAppIntroAction>) {
+    public init(store: StoreOf<FeatureSuperAppIntro>) {
         self.store = store
-        viewStore = ViewStore(store)
     }
 
     public var body: some View {
-        PrimaryNavigationView {
-            contentView
-                .primaryNavigation(trailing: {
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Icon.close
-                    }
-                })
+        WithViewStore(store) { viewStore in
+            PrimaryNavigationView {
+                contentView
+                    .primaryNavigation(trailing: {
+                        Button {
+                            viewStore.send(.onDismiss)
+                        } label: {
+                            Icon.close
+                        }
+                    })
+            }
         }
     }
 
     private var contentView: some View {
-        VStack {
-            ZStack {
-                carouselContentSection()
-                buttonsSection()
-                    .padding(.bottom, Spacing.padding6)
-            }
-            .background(
+        WithViewStore(self.store) { viewStore in
+            VStack {
                 ZStack {
-                    Color.white.ignoresSafeArea()
-                    Image("gradient", bundle: .featureSuperAppIntro)
-                        .resizable()
-                        .opacity(viewStore.gradientBackgroundOpacity)
-                        .ignoresSafeArea(.all)
+                    carouselContentSection()
+                    buttonsSection()
+                        .padding(.bottom, Spacing.padding6)
                 }
-            )
+                .background(
+                    ZStack {
+                        Color.white.ignoresSafeArea()
+                        Image("gradient", bundle: .featureSuperAppIntro)
+                            .resizable()
+                            .opacity(viewStore.gradientBackgroundOpacity)
+                            .ignoresSafeArea(.all)
+                    }
+                )
+            }
         }
     }
 }
@@ -140,48 +141,51 @@ extension FeatureSuperAppIntroView {
     }
 
     @ViewBuilder private func carouselContentSection() -> some View {
-        TabView(
-            selection: viewStore.binding(
-                get: { $0.currentStep },
-                send: { .didChangeStep($0) }
-            )
-        ) {
-            Carousel.walletJustGotBetter.makeView()
-                .tag(FeatureSuperAppIntroState.Step.walletJustGotBetter)
-            Carousel.newWayToNavigate.makeView()
-                .tag(FeatureSuperAppIntroState.Step.newWayToNavigate)
-            Carousel.newHomeForDefi.makeView()
-                .tag(FeatureSuperAppIntroState.Step.newHomeForDefi)
-            Carousel.tradingAccount.makeView()
-                .tag(FeatureSuperAppIntroState.Step.tradingAccount)
+        WithViewStore(store) { viewStore in
+            TabView(
+                selection: viewStore.binding(
+                    get: { $0.currentStep },
+                    send: { .didChangeStep($0) }
+                )
+            ) {
+                Carousel.walletJustGotBetter.makeView()
+                    .tag(FeatureSuperAppIntro.State.Step.walletJustGotBetter)
+                Carousel.newWayToNavigate.makeView()
+                    .tag(FeatureSuperAppIntro.State.Step.newWayToNavigate)
+                Carousel.newHomeForDefi.makeView()
+                    .tag(FeatureSuperAppIntro.State.Step.newHomeForDefi)
+                Carousel.tradingAccount.makeView()
+                    .tag(FeatureSuperAppIntro.State.Step.tradingAccount)
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
 
     @ViewBuilder private func buttonsSection() -> some View {
-        if viewStore.currentStep == .tradingAccount {
-            VStack(spacing: .zero) {
-                Spacer()
-                PrimaryButton(title: LocalizationConstants.SuperAppIntro.getStartedButton, action: {
-                    presentationMode.wrappedValue.dismiss()
-                })
+        WithViewStore(store) { viewStore in
+            if viewStore.currentStep == .tradingAccount {
+                VStack(spacing: .zero) {
+                    Spacer()
+                    PrimaryButton(title: LocalizationConstants.SuperAppIntro.getStartedButton, action: {
+                        viewStore.send(.onDismiss)
+                    })
+                }
+                .padding(.horizontal, Spacing.padding3)
+                .opacity(viewStore.gradientBackgroundOpacity)
+            } else {
+                EmptyView()
             }
-            .padding(.horizontal, Spacing.padding3)
-            .opacity(viewStore.gradientBackgroundOpacity)
-        } else {
-            EmptyView()
         }
     }
 }
 
 struct FeatureSuperAppIntroView_Previews: PreviewProvider {
     static var previews: some View {
-        FeatureSuperAppIntroView(store: .init(
+        FeatureSuperAppIntroView(store: Store(
             initialState: .init(),
-            reducer: FeatureSuperAppIntroModule.reducer,
-            environment: ()
+            reducer: FeatureSuperAppIntro(onDismiss: {})
         )
-        )
+                                 )
     }
 }
 
