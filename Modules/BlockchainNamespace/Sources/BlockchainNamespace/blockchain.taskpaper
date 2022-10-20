@@ -1578,47 +1578,72 @@ blockchain:
 			event:
 				did:
 					error:
+					+ blockchain.ux.type.analytics.event
 					finish:
+					+ blockchain.ux.type.analytics.event
 					go:
 						back:
+						+ blockchain.ux.type.analytics.event
 					link:
 						a:
 							bank:
+							+ blockchain.ux.type.analytics.event
 							card:
+							+ blockchain.ux.type.analytics.event
 						payment:
 							method:
+							+ blockchain.ux.type.analytics.event
 					select:
 						source:
+						+ blockchain.ux.type.analytics.event
 						target:
+						+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
 				enter:
 					address:
+					+ blockchain.ux.type.analytics.event
 				execution:
 					status:
 					+ blockchain.db.type.enum
 						completed:
+						+ blockchain.ux.type.analytics.event
 						error:
+						+ blockchain.ux.type.analytics.event
 						in:
 							progress:
+							+ blockchain.ux.type.analytics.event
 						pending:
+						+ blockchain.ux.type.analytics.event
 						starting:
+						+ blockchain.ux.type.analytics.event
 				in:
 					progress:
+					+ blockchain.ux.type.analytics.event
 				link:
 					a:
 						bank:
+						+ blockchain.ux.type.analytics.event
 						card:
+						+ blockchain.ux.type.analytics.event
 					payment:
 						method:
+						+ blockchain.ux.type.analytics.event
 				select:
 					source:
+					+ blockchain.ux.type.analytics.event
 					target:
+					+ blockchain.ux.type.analytics.event
 				validate:
 					source:
+					+ blockchain.ux.type.analytics.event
 					transaction:
+					+ blockchain.ux.type.analytics.event
 				will:
 					finish:
+					+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
 			loading:
 			+ blockchain.ux.type.story
 				close:
