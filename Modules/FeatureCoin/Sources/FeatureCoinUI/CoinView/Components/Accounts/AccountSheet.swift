@@ -34,7 +34,7 @@ struct AccountSheet: View {
         VStack(spacing: 0) {
             HStack {
                 account.accountType.icon
-                    .color(account.color)
+                    .accentColor(account.color)
                     .frame(maxHeight: 24.pt)
                 Text(account.name)
                     .typography(.body2)
@@ -45,18 +45,10 @@ struct AccountSheet: View {
             }
             .padding([.leading, .trailing])
             Group {
-                if let fiat = account.fiat, let crypto = account.crypto {
-                    BalanceSectionHeader(
-                        title: fiat.displayString,
-                        subtitle: crypto.displayString
-                    )
-                } else {
-                    BalanceSectionHeader(
-                        title: "......",
-                        subtitle: "............"
-                    )
-                    .redacted(reason: .placeholder)
-                }
+                BalanceSectionHeader(
+                    title: account.fiat?.displayString ?? "",
+                    subtitle: account.crypto?.displayString ?? ""
+                )
             }
             .padding([.top, .bottom], 8.pt)
             let resolved = isNotVerified && account.isPrivateKey
@@ -70,7 +62,7 @@ struct AccountSheet: View {
                         subtitle: action.description.interpolating(account.cryptoCurrency.displayCode),
                         leading: {
                             action.icon.circle()
-                                .color(account.color)
+                                .accentColor(account.color)
                                 .frame(maxHeight: 24.pt)
                         },
                         action: {
