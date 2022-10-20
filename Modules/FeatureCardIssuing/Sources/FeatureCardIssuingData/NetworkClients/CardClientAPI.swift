@@ -19,9 +19,6 @@ protocol CardClientAPI {
     /// external token to be used in card plugin to retrieve PCI DSS scope card details, PAN, CVV
     func generateSensitiveDetailsToken(with cardId: String) -> AnyPublisher<String, NabuNetworkError>
 
-    /// one time token to be used in marqeta widget to reveal or update the card PIN
-    func generatePinToken(with cardId: String) -> AnyPublisher<String, NabuNetworkError>
-
     func fetchLinkedAccount(with cardId: String) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
     func updateAccount(
@@ -36,11 +33,21 @@ protocol CardClientAPI {
     func unlock(cardId: String) -> AnyPublisher<Card, NabuNetworkError>
 
     func tokenise(cardId: String, with parameters: TokeniseCardParameters) -> AnyPublisher<TokeniseCardResponse, NabuNetworkError>
+
+    func fulfillment(cardId: String) -> AnyPublisher<Card.Fulfillment, NabuNetworkError>
+
+    func pinWidgetUrl(cardId: String) -> AnyPublisher<URL, NabuNetworkError>
+
+    func activateWidgetUrl(cardId: String) -> AnyPublisher<URL, NabuNetworkError>
+
+    func fetchStatements() -> AnyPublisher<[Statement], NabuNetworkError>
+
+    func fetchStatementUrl(statementId: String) -> AnyPublisher<URL, NabuNetworkError>
 }
 
 struct OrderCardParameters: Encodable {
     let productCode: String
-    let deliveryAddress: Card.Address
+    let shippingAddress: Card.Address
     let ssn: String
 }
 
@@ -79,4 +86,8 @@ struct TokeniseCardResponse: Decodable {
     let encryptedPassData: String
     let activationData: String
     let ephemeralPublicKey: String
+}
+
+struct FetchUrlResponse: Decodable {
+    let url: URL
 }

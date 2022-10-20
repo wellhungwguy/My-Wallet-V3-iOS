@@ -6,24 +6,51 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
 
+    enum CallbackUrl {
+        static let activate = "https://blockchain.com/en/app/card-issuing/activated"
+        static let pin = "https://blockchain.com/en/app/card-issuing/pinset"
+    }
+
     @Binding var loading: Bool
 
     private let url: URL
+    let finishUrl: String?
+    let forceFullScreen: Bool
+    let onFinish: (() -> Void)?
 
     init(
         url: URL,
-        loading: Binding<Bool>
+        loading: Binding<Bool>? = nil,
+        finishUrl: String? = nil,
+        forceFullScreen: Bool = false,
+        onFinish: (() -> Void)? = nil
     ) {
         self.url = url
-        _loading = loading
+        self.finishUrl = finishUrl
+        self.forceFullScreen = forceFullScreen
+        self.onFinish = onFinish
+        _loading = loading ?? .constant(false)
     }
 
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        let webView: WKWebView
+        if forceFullScreen {
+            // swiftlint:disable line_length
+            let script = "var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);"
+            let userScript = WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+            let userContentController = WKUserContentController()
+            userContentController.addUserScript(userScript)
+            let config = WKWebViewConfiguration()
+            config.userContentController = userContentController
+            webView = WKWebView(frame: .zero, configuration: config)
+        } else {
+            webView = WKWebView()
+        }
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.navigationDelegate = context.coordinator
+
         return webView
     }
 
@@ -35,7 +62,8 @@ struct WebView: UIViewRepresentable {
         context.coordinator.updateUIView(uiView, for: self)
     }
 
-    class Coordinator: NSObject, WKNavigationDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {}
 
         enum State {
             case loading(URL)
@@ -90,6 +118,22 @@ struct WebView: UIViewRepresentable {
             DispatchQueue.main.async { [weak self] in
                 self?.parent.loading = false
             }
+        }
+
+        func webView(
+            _ webView: WKWebView,
+            decidePolicyFor navigationAction: WKNavigationAction,
+            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+        ) {
+            guard let finishUrl = parent.finishUrl,
+                  let loadingUrl = navigationAction.request.url,
+                  loadingUrl.absoluteString.contains(finishUrl),
+                  let onFinish = parent.onFinish else {
+                decisionHandler(.allow)
+                return
+            }
+
+            onFinish()
         }
     }
 }

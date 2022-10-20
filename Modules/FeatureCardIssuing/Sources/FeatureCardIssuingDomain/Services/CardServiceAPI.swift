@@ -18,9 +18,6 @@ public protocol CardServiceAPI {
     /// generates the URL for the webview to display card details
     func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError>
 
-    /// one time token to be used in marqeta widget to reveal or update the card PIN
-    func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError>
-
     func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
 
     func update(account: AccountBalance, for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError>
@@ -31,10 +28,20 @@ public protocol CardServiceAPI {
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 
+    func fulfillment(card: Card) -> AnyPublisher<Card.Fulfillment, NabuNetworkError>
+
     func tokenise(
         card: Card,
         with certificates: [Data],
         nonce: Data,
         nonceSignature: Data
     ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError>
+
+    func pinWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError>
+
+    func activateWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError>
+
+    func fetchStatements() -> AnyPublisher<[Statement], NabuNetworkError>
+
+    func fetchStatementUrl(statement: Statement) -> AnyPublisher<URL, NabuNetworkError>
 }

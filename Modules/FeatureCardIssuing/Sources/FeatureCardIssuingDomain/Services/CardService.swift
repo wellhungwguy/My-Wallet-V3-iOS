@@ -39,10 +39,6 @@ final class CardService: CardServiceAPI {
         repository.helperUrl(for: card)
     }
 
-    func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        repository.generatePinToken(for: card)
-    }
-
     func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         repository.fetchLinkedAccount(for: card)
     }
@@ -70,5 +66,25 @@ final class CardService: CardServiceAPI {
         nonceSignature: Data
     ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError> {
         repository.tokenise(card: card, with: certificates, nonce: nonce, nonceSignature: nonceSignature)
+    }
+
+    func fulfillment(card: Card) -> AnyPublisher<Card.Fulfillment, NabuNetworkError> {
+        repository.fulfillment(card: card)
+    }
+
+    func pinWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        repository.pinWidgetUrl(card: card)
+    }
+
+    func activateWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        repository.activateWidgetUrl(card: card)
+    }
+
+    func fetchStatements() -> AnyPublisher<[Statement], NabuNetworkError> {
+        repository.fetchStatements()
+    }
+
+    func fetchStatementUrl(statement: Statement) -> AnyPublisher<URL, NabuNetworkError> {
+        repository.fetchStatementUrl(statement: statement)
     }
 }

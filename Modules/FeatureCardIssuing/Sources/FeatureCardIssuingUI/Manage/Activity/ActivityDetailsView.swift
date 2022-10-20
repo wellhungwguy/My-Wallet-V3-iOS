@@ -191,7 +191,9 @@ extension Card.Transaction.TransactionType {
     var displayString: String {
         typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.TransactionType
         switch self {
-        case .cashback:
+        case .atmWithdrawal:
+            return L10n.atmWithdrawal
+        case .paymentWithCashback:
             return L10n.cashback
         case .chargeback:
             return L10n.chargeback

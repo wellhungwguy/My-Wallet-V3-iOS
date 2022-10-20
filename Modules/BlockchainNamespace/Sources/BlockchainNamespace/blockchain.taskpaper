@@ -56,22 +56,10 @@ blockchain:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
 					tokenise:
-						base64:
-							activationData:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
-							encryptedPassData:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
-							ephemeralPublicKey:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				success:
 					rate:
 						is:
