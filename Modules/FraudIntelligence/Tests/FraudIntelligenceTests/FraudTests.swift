@@ -9,7 +9,7 @@ final class FraudIntelligenceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        app = App.test
+        app = App.debug(scheduler: .immediate)
         app.state.set(blockchain.ux.transaction.id, to: "buy")
         sut = Sardine(app, http: URLSession.test, scheduler: .immediate)
         sut.start()

@@ -21,6 +21,23 @@ extension Session {
 
         init(
             date: Date = Date(),
+            _ event: Tag.Event,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) {
+            self.init(
+                date: date,
+                origin: event,
+                reference: event.key(to: [:]),
+                context: context,
+                file: file,
+                line: line
+            )
+        }
+
+        init(
+            date: Date = Date(),
             origin: Tag.Event,
             reference: Tag.Reference,
             context: Tag.Context = [:],

@@ -377,8 +377,9 @@ extension Tag: Codable {
     }
 }
 
-extension Tag: CustomStringConvertible {
+extension Tag: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String { id }
+    public var debugDescription: String { id }
 }
 
 extension L {

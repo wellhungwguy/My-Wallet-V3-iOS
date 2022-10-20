@@ -340,29 +340,25 @@ extension App {
 
 extension App {
 
-    public static var preview: AppProtocol = debug
+    public static var preview: AppProtocol = debug()
 
 #if DEBUG
-    public static var test: AppProtocol { debug }
+    public static var test: AppProtocol { debug() }
 #endif
 
-    /// Creates a mock AppProtocol instance.
-    private static var debug: AppProtocol {
-        let preferences: Preferences = Mock.Preferences()
-        let urlSession: URLSessionProtocol
-#if DEBUG
-        urlSession = URLSession.test
-#else
-        urlSession = URLSession.shared
-#endif
-
-        return App(
+    /// Creates a mocked AppProtocol instance.
+    public static func debug(
+        preferences: Preferences = Mock.Preferences(),
+        session: URLSessionProtocol = URLSession.test,
+        scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.test.eraseToAnyScheduler()
+    ) -> AppProtocol {
+        App(
             state: Session.State([:], preferences: preferences),
             remoteConfiguration: Session.RemoteConfiguration(
                 remote: Mock.RemoteConfiguration(),
-                session: urlSession,
+                session: session,
                 preferences: preferences,
-                scheduler: DispatchQueue.test.eraseToAnyScheduler()
+                scheduler: scheduler
             )
         )
     }
