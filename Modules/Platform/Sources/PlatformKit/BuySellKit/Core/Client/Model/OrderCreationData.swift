@@ -237,6 +237,7 @@ public enum OrderPayload {
 
         let price: String?
         let fee: String?
+        let recurringBuyId: String?
 
         let paymentType: String
         let paymentError: String?

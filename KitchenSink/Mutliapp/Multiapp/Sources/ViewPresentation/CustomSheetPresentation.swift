@@ -2,7 +2,7 @@ import BlockchainComponentLibrary
 import SwiftUI
 import UIKit
 
-enum CustomSheetPresentation { }
+enum CustomSheetPresentation {}
 
 struct ModalSheetContext: Equatable {
 
@@ -21,11 +21,11 @@ extension View {
     @available(iOS 16, *)
     @ViewBuilder
     func largestUndimmedDetentIdentifier(_ identifier: String?, modalOffset: Binding<ModalSheetContext>) -> some View {
-        let detentIdentifier =  UISheetPresentationController.Detent.Identifier(identifier ?? "")
+        let detentIdentifier = UISheetPresentationController.Detent.Identifier(identifier ?? "")
         background(CustomSheetPresentation.Representable(largestUndimmedDetent: detentIdentifier, modalOffset: modalOffset))
     }
-
 }
+
 @available(iOS 16, *)
 extension CustomSheetPresentation {
 
@@ -55,6 +55,7 @@ extension CustomSheetPresentation {
             super.init(nibName: nil, bundle: nil)
         }
 
+        @available(*, unavailable)
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
@@ -83,7 +84,7 @@ extension CustomSheetPresentation {
                 // is by observing its frame property.
                 // Tried PanGesture on the presentedView of SheetPresentationController and it seemed to be only triggered
                 // when the gesture originated within the navigation bar of the sheet...
-                observation = controller.presentedView?.observe(\.frame) { [modalOffset] (view, _) in
+                observation = controller.presentedView?.observe(\.frame) { [modalOffset] view, _ in
                     guard let superview = view.superview else {
                         return
                     }

@@ -185,7 +185,6 @@ struct PresentationDetent: Hashable, Equatable {
     }
 
     public let id: Identifier
-
 }
 
 // MARK: PresentationDetent for iOS 16 and above

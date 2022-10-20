@@ -18,9 +18,7 @@ class ScrollViewDelegate: NSObject, ObservableObject, UIScrollViewDelegate {
         didEndDragging(scrollView)
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
-    }
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {}
 
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
 //        print("target content offset ->", targetContentOffset.pointee.y)

@@ -5,7 +5,7 @@ import SwiftUI
 
 extension View {
     @ViewBuilder
-    func inject<SomeView: View>(_ view: SomeView) -> some View {
+    func inject(_ view: some View) -> some View {
         overlay(view.frame(width: 0, height: 0))
     }
 }

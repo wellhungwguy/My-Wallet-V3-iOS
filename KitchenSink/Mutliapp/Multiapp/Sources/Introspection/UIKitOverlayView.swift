@@ -1,8 +1,8 @@
 /// Extracted from Introspect library
 /// https://github.com/siteline/SwiftUI-Introspect
 
-import UIKit
 import SwiftUI
+import UIKit
 
 class IntrospectionUIView: UIView {
 

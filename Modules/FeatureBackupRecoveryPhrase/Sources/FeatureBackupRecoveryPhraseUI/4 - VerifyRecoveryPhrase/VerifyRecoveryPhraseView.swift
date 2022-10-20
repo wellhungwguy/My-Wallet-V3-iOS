@@ -171,7 +171,7 @@ public struct VerifyRecoveryPhraseView: View {
                 HStack {
                         ForEach(words, id: \.self) { word in
                             availableWordView(word: word)
-                    }
+                        }
                 }
             }
         }

@@ -17,7 +17,7 @@ struct MainContentView<Content: View>: View {
 //        selectedDetent: Binding<PresentationDetent>,
         @ViewBuilder content: () -> Content
     ) {
-        self._scrollOffset = scrollOffset
+        _scrollOffset = scrollOffset
 //        self._selectedDetent = selectedDetent
         self.content = content()
     }
@@ -30,7 +30,7 @@ struct MainContentView<Content: View>: View {
                 scrollViewDelegate.didScroll = { scrollView in
                     scrollOffset = CGPoint(x: scrollView.contentOffset.x, y: scrollView.contentOffset.y + scrollView.contentInset.top)
                 }
-                scrollViewDelegate.didEndDragging = { scrollView in
+                scrollViewDelegate.didEndDragging = { _ in
 //                    selectedDetent = .collapsed
                 }
                 self._uiScrollView = scrollView
@@ -47,7 +47,7 @@ struct MultiappTradingView: View {
                         PrimaryRow(
                             title: "Trading \(value)",
                             subtitle: "Buy & Sell",
-                            action: { }
+                            action: {}
                         )
                     }
                 }
@@ -69,7 +69,7 @@ struct MultiappDefiView: View {
                         PrimaryRow(
                             title: "Defi \(value)",
                             subtitle: "Buy & Sell",
-                            action: { }
+                            action: {}
                         )
                     }
                 }
@@ -83,8 +83,8 @@ struct MultiappDefiView: View {
 }
 
 extension View {
-    public func findScrollView(customize: @escaping (UIScrollView) -> ()) -> some View {
-        return inject(UIKitIntrospection(
+    public func findScrollView(customize: @escaping (UIScrollView) -> Void) -> some View {
+        inject(UIKitIntrospection(
             selector: { introspectionView in
                 guard let viewHost = Introspect.findViewHost(introspectionView) else {
                     return nil

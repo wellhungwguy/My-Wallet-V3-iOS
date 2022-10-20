@@ -26,10 +26,10 @@ struct MultiappHeaderView: View {
         scrollOffset: Binding<CGPoint>,
         isRefreshing: Binding<Bool>
     ) {
-        self._currentSelection = currentSelection
-        self._contentOffset = contentOffset
-        self._scrollOffset = scrollOffset
-        self._isRefreshing = isRefreshing
+        _currentSelection = currentSelection
+        _contentOffset = contentOffset
+        _scrollOffset = scrollOffset
+        _isRefreshing = isRefreshing
     }
 
     var body: some View {
@@ -91,7 +91,7 @@ struct MultiappHeaderView: View {
         if scrollOffset.y < 0.0 {
             let heightAdjusted = contentFrame.frame.height + thresholdOffsetForRefreshTrigger
             let adjustedOffset = abs(scrollOffset.y) / heightAdjusted
-            if let refreshAction  {
+            if let refreshAction {
                 if adjustedOffset > 1.1 {
                     Task {
                         isRefreshing = true
@@ -142,7 +142,6 @@ struct MultiappHeaderView: View {
     }
 }
 
-
 struct MultiappHeaderView_Previews: PreviewProvider {
     static var previews: some View {
         MultiappHeaderView(
@@ -153,4 +152,3 @@ struct MultiappHeaderView_Previews: PreviewProvider {
         )
     }
 }
-

@@ -47,7 +47,7 @@ public struct DefiWalletIntroView: View {
                     }
                     .padding(.top, Spacing.padding4)
                     .padding(.horizontal, Spacing.padding3)
-                }
+            }
 
                 Spacer()
 
