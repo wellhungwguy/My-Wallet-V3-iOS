@@ -13,7 +13,6 @@ public final class CardClient: CardClientAPI {
     private enum Path: String {
         case cards
         case sensitiveDetailsToken = "marqeta-card-widget-token"
-        case pinToken = "pin-token"
         case account
         case settings
         case eligibleAccounts = "eligible-accounts"
@@ -21,6 +20,10 @@ public final class CardClient: CardClientAPI {
         case unlock
         case digitalWallets = "digital-wallets"
         case applePay = "apple-pay"
+        case fulfillment
+        case pinWidget = "pin-widget-url"
+        case activateWidget = "activate-widget-url"
+        case statements = "statements"
     }
 
     // MARK: - Properties
@@ -98,18 +101,6 @@ public final class CardClient: CardClientAPI {
             .eraseToAnyPublisher()
     }
 
-    /// one time token to be used in marqeta widget to reveal or update the card PIN
-    func generatePinToken(with cardId: String) -> AnyPublisher<String, NabuNetworkError> {
-        let request = requestBuilder.get(
-            path: [Path.cards.rawValue, cardId, Path.pinToken.rawValue],
-            authenticated: true
-        )!
-
-        return networkAdapter
-            .perform(request: request, responseType: String.self)
-            .eraseToAnyPublisher()
-    }
-
     func fetchLinkedAccount(with cardId: String) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
         let request = requestBuilder.get(
             path: [Path.cards.rawValue, cardId, Path.account.rawValue],
@@ -179,6 +170,64 @@ public final class CardClient: CardClientAPI {
 
         return networkAdapter
             .perform(request: request, responseType: TokeniseCardResponse.self)
+            .eraseToAnyPublisher()
+    }
+
+    func fulfillment(cardId: String) -> AnyPublisher<Card.Fulfillment, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: [Path.cards.rawValue, cardId, Path.fulfillment.rawValue],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: Card.Fulfillment.self)
+            .eraseToAnyPublisher()
+    }
+
+    func pinWidgetUrl(cardId: String) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: [Path.cards.rawValue, cardId, Path.pinWidget.rawValue],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: FetchUrlResponse.self)
+            .map(\.url)
+            .eraseToAnyPublisher()
+    }
+
+    func activateWidgetUrl(cardId: String) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: [Path.cards.rawValue, Path.activateWidget.rawValue],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: FetchUrlResponse.self)
+            .map(\.url)
+            .eraseToAnyPublisher()
+    }
+
+    func fetchStatements() -> AnyPublisher<[FeatureCardIssuingDomain.Statement], Errors.NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: [Path.cards.rawValue, Path.statements.rawValue],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: [Statement].self)
+            .eraseToAnyPublisher()
+    }
+
+    func fetchStatementUrl(statementId: String) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: [Path.cards.rawValue, Path.statements.rawValue, statementId],
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request, responseType: FetchUrlResponse.self)
+            .map(\.url)
             .eraseToAnyPublisher()
     }
 }

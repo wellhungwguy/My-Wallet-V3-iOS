@@ -60,9 +60,13 @@ final class CardIssuingAdapter: FeatureSettingsUI.CardIssuingViewControllerAPI {
     }
 
     func makeManagementViewController(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> UIViewController {
-        cardIssuingBuilder.makeManagementViewController(onComplete: onComplete)
+        cardIssuingBuilder.makeManagementViewController(
+            openAddCardFlow: openAddCardFlow,
+            onComplete: onComplete
+        )
     }
 }
 

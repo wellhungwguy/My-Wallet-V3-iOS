@@ -31,25 +31,13 @@ extension Card.Transaction {
     }
 
     var displayTitle: String {
-        typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.TransactionType
-        switch transactionType {
-        case .payment:
-            return merchantName
-        case .cashback:
-            return [L10n.cashback, merchantName].joined(separator: " ")
-        case .refund:
-            return [L10n.refund, merchantName].joined(separator: " ")
-        case .chargeback:
-            return [L10n.chargeback, merchantName].joined(separator: " ")
-        case .funding:
-            return [L10n.payment, merchantName].joined(separator: " ")
-        }
+        [transactionType.displayString, merchantName].joined(separator: " ")
     }
 
     var displayStatus: String {
         typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.Status
         switch state {
-        case .pending:
+        case .pending, .created:
             return L10n.pending
         case .cancelled:
             return L10n.cancelled
@@ -62,7 +50,7 @@ extension Card.Transaction {
 
     var statusColor: Color {
         switch state {
-        case .pending:
+        case .pending, .created:
             return .WalletSemantic.muted
         case .cancelled:
             return .WalletSemantic.muted
@@ -75,7 +63,7 @@ extension Card.Transaction {
 
     var icon: Icon {
         switch (state, transactionType) {
-        case (.pending, _):
+        case (.pending, _), (.created, _):
             return Icon.pending
         case (.cancelled, _):
             return Icon.error
@@ -83,7 +71,7 @@ extension Card.Transaction {
             return Icon.error
         case (.completed, .chargeback),
              (.completed, .refund),
-             (.completed, .cashback):
+             (.completed, .paymentWithCashback):
             return Icon.arrowDown
         case (.completed, _):
             return Icon.creditcard
@@ -92,7 +80,7 @@ extension Card.Transaction {
 
     var tag: TagView {
         switch state {
-        case .pending:
+        case .pending, .created:
             return TagView(text: displayStatus, variant: .infoAlt)
         case .cancelled:
             return TagView(text: displayStatus, variant: .default)

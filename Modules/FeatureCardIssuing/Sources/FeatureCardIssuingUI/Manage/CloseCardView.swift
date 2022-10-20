@@ -47,7 +47,7 @@ struct CloseCardView: View {
                         .padding(.trailing, -8)
                     }
                     VStack(spacing: Spacing.padding1) {
-                        Text(String(format: L10n.title, viewStore.state.card?.last4 ?? ""))
+                        Text(String(format: L10n.title, viewStore.state.selectedCard?.last4 ?? ""))
                             .typography(.title3)
                             .multilineTextAlignment(.center)
                         Text(L10n.message)

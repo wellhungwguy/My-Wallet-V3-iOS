@@ -29,6 +29,17 @@ extension LocalizationConstants.CardIssuing {
                     )
                 }
             }
+
+            static let fullDisclaimer = NSLocalizedString(
+                """
+                This Blockchain.com Visa® Card is issued by Pathward, \
+                N.A., Member FDIC, pursuant to a license from Visa U.S.A. Inc. \
+                Blockchain.com Visa card can be used everywhere Visa debit cards are accepted. \
+                1No Blockchain.com Fees but a spread applies when we sell cryptocurrencies. \
+                2This optional offer is not a Pathward product or service nor does Pathward endorse this offer.
+                """,
+                comment: "Card Issuing: Bottom Page Full Disclaimer"
+            )
         }
 
         enum Selection {

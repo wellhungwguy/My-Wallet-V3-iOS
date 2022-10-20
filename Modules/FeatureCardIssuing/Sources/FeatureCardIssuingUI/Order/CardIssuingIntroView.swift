@@ -46,6 +46,10 @@ struct CardIssuingIntroView: View {
                 )
                 .padding(.top, Spacing.padding2)
                 Spacer()
+                Text(L10n.Intro.fullDisclaimer)
+                    .multilineTextAlignment(.center)
+                    .typography(.caption1)
+                    .foregroundColor(.semantic.muted)
             }
             .onAppear {
                 viewStore.send(.fetchProducts)

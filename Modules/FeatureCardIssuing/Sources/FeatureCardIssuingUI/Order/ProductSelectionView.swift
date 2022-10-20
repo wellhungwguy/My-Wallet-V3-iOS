@@ -110,7 +110,7 @@ struct ProductView: View {
 
     var body: some View {
         VStack {
-            Image("card-selection", bundle: .cardIssuing)
+            product.type.image
                 .resizable()
                 .scaledToFit()
             VStack(spacing: Spacing.padding1) {
@@ -152,7 +152,7 @@ extension Card.CardType {
     var localizedTitle: String {
         typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
-        case .physical:
+        case .physical, .shadow:
             return L10n.Physical.title
         case .virtual:
             return L10n.Virtual.title
@@ -162,7 +162,7 @@ extension Card.CardType {
     var localizedLongTitle: String {
         typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
-        case .physical:
+        case .physical, .shadow:
             return L10n.Physical.longTitle
         case .virtual:
             return L10n.Virtual.longTitle
@@ -172,7 +172,7 @@ extension Card.CardType {
     var localizedDescription: String {
         typealias L10n = LocalizationConstants.CardIssuing.CardType
         switch self {
-        case .physical:
+        case .physical, .shadow:
             return L10n.Physical.description
         case .virtual:
             return L10n.Virtual.description

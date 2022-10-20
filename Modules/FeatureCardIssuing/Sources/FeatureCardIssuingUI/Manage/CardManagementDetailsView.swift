@@ -42,24 +42,36 @@ struct CardManagementDetailsView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     header
-                    PrimaryRow(
-                        title: L10n.Lock.title,
-                        subtitle: L10n.Lock.subtitle,
-                        trailing: {
-                            PrimarySwitch(
-                                accessibilityLabel: L10n.title,
-                                isOn: viewStore.binding(\.$isLocked)
-                            )
-                        },
-                        action: {}
-                    )
-                    PrimaryDivider()
+                        .padding(.bottom, Spacing.padding1)
+                    if viewStore.state.selectedCard?.status != .unactivated {
+                        PrimaryRow(
+                            title: L10n.Lock.title,
+                            subtitle: L10n.Lock.subtitle,
+                            trailing: {
+                                PrimarySwitch(
+                                    accessibilityLabel: L10n.title,
+                                    isOn: viewStore.binding(\.$isLocked)
+                                )
+                            },
+                            action: {}
+                        )
+                        PrimaryDivider()
+                    }
                     PrimaryRow(
                         title: L10n.Personal.title,
                         subtitle: L10n.Personal.subtitle,
                         trailing: { chevronRight },
                         action: {
                             viewStore.send(.editAddress)
+                        }
+                    )
+                    PrimaryDivider()
+                    PrimaryRow(
+                        title: L10n.Statements.title,
+                        subtitle: L10n.Statements.subtitle,
+                        trailing: { chevronRight },
+                        action: {
+                            viewStore.send(.binding(.set(\.$isStatementsVisible, true)))
                         }
                     )
                     PrimaryDivider()
@@ -88,7 +100,7 @@ struct CardManagementDetailsView: View {
             .bottomSheet(isPresented: $isPresented) {
                 AddToWalletView(
                     coordinator: viewStore.state.tokenisationCoordinator,
-                    card: viewStore.state.card,
+                    card: viewStore.state.selectedCard,
                     cardholderName: viewStore.state.cardholderName,
                     callback: { _, _ in
                         isPresented = false
@@ -115,17 +127,17 @@ struct CardManagementDetailsView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: Spacing.padding1) {
                         HStack {
-                            Text(L10n.virtualCard)
+                            Text(viewStore.selectedCard?.type.localizedLongTitle ?? "")
                                 .typography(.paragraph2)
                                 .foregroundColor(.semantic.title)
                             Spacer()
-                            Text("***\(viewStore.state.card?.last4 ?? "")")
+                            Text("***\(viewStore.state.selectedCard?.last4 ?? "")")
                                 .typography(.paragraph1)
                                 .foregroundColor(.semantic.muted)
                         }
-                        Text(viewStore.state.card?.status.localizedString ?? "-")
+                        Text(viewStore.state.selectedCard?.status.localizedString ?? "-")
                             .typography(.caption2)
-                            .foregroundColor(viewStore.state.card?.status.color)
+                            .foregroundColor(viewStore.state.selectedCard?.status.color)
                     }
                     .padding(.leading, 16)
                     .padding(.vertical, 18)
@@ -297,7 +309,6 @@ public final class PassTokenisationCoordinator: NSObject, PKAddPaymentPassViewCo
         didFinishAdding pass: PKPaymentPass?,
         error: Error?
     ) {
-        print("PK:", error.description)
         DispatchQueue.main.async { [weak self] in
             self?.parent?.callback?(pass, error)
         }

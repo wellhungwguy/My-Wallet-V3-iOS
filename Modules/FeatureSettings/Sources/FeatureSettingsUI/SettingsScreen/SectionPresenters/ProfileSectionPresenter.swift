@@ -51,16 +51,18 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
         )
         let blockchainDomainsPresenter = BlockchainDomainsCommonCellPresenter(provider: blockchainDomainsAdapter)
 
+        let items: [SettingsCellViewModel] = [
+            .init(cellType: .badge(.limits, limitsPresenter)),
+            .init(cellType: .clipboard(.walletID)),
+            .init(cellType: .badge(.emailVerification, emailVerificationPresenter)),
+            .init(cellType: .badge(.mobileVerification, mobileVerificationPresenter)),
+            .init(cellType: .common(.blockchainDomains, blockchainDomainsPresenter)),
+            .init(cellType: .common(.webLogin))
+        ]
+
         var viewModel = SettingsSectionViewModel(
             sectionType: sectionType,
-            items: [
-                .init(cellType: .badge(.limits, limitsPresenter)),
-                .init(cellType: .clipboard(.walletID)),
-                .init(cellType: .badge(.emailVerification, emailVerificationPresenter)),
-                .init(cellType: .badge(.mobileVerification, mobileVerificationPresenter)),
-                .init(cellType: .common(.blockchainDomains, blockchainDomainsPresenter)),
-                .init(cellType: .common(.webLogin))
-            ]
+            items: items
         )
 
         let cardIssuingCellModelDisplay = SettingsCellViewModel(
@@ -73,24 +75,20 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
         state = cardIssuingAdapter
             .isEnabled()
             .flatMap { isEnabled -> AnyPublisher<SettingsSectionLoadingState, Never> in
-                if let index = viewModel.items.firstIndex(of: cardIssuingCellModelDisplay) {
-                    viewModel.items.remove(at: index)
-                }
 
-                if let index = viewModel.items.firstIndex(of: cardIssuingCellModelOrder) {
-                    viewModel.items.remove(at: index)
+                guard isEnabled else {
+                    viewModel.items = items
+                    return .just(.loaded(next: .some(viewModel)))
                 }
-
-                guard isEnabled else { return .just(.loaded(next: .some(viewModel))) }
 
                 return cardIssuingAdapter
                     .hasCard()
                     .map { hasCard -> SettingsSectionLoadingState in
                         switch hasCard {
                         case true:
-                            viewModel.items.append(cardIssuingCellModelDisplay)
+                            viewModel.items = items + [cardIssuingCellModelDisplay]
                         case false:
-                            viewModel.items.append(cardIssuingCellModelOrder)
+                            viewModel.items = items + [cardIssuingCellModelOrder]
                         }
 
                         return .loaded(next: .some(viewModel))

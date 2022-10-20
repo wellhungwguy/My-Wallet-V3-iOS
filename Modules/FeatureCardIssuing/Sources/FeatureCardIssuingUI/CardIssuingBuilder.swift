@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import FeatureCardIssuingDomain
@@ -19,10 +20,12 @@ public protocol CardIssuingBuilderAPI: AnyObject {
     ) -> AnyView
 
     func makeManagementViewController(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> UIViewController
 
     func makeManagementView(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> AnyView
 }
@@ -30,6 +33,7 @@ public protocol CardIssuingBuilderAPI: AnyObject {
 final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
     private let accountModelProvider: AccountProviderAPI
+    private let app: AppProtocol
     private let cardService: CardServiceAPI
     private let legalService: LegalServiceAPI
     private let productService: ProductsServiceAPI
@@ -42,6 +46,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
     init(
         accountModelProvider: AccountProviderAPI,
+        app: AppProtocol,
         cardService: CardServiceAPI,
         legalService: LegalServiceAPI,
         productService: ProductsServiceAPI,
@@ -53,6 +58,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         addressSearchRouter: AddressSearchRouterAPI
     ) {
         self.accountModelProvider = accountModelProvider
+        self.app = app
         self.cardService = cardService
         self.legalService = legalService
         self.productService = productService
@@ -102,22 +108,26 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     }
 
     func makeManagementViewController(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> UIViewController {
 
         UIHostingController(
             rootView: makeManagementView(
+                openAddCardFlow: openAddCardFlow,
                 onComplete: onComplete
             )
         )
     }
 
     func makeManagementView(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> AnyView {
 
         let env = CardManagementEnvironment(
             accountModelProvider: accountModelProvider,
+            cardIssuingBuilder: self,
             cardService: cardService,
             mainQueue: .main,
             productsService: productService,
@@ -127,15 +137,29 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             topUpRouter: topUpRouter,
             addressSearchRouter: addressSearchRouter,
             notificationCenter: NotificationCenter.default,
+            openAddCardFlow: openAddCardFlow,
             close: onComplete
         )
 
         let store = Store<CardManagementState, CardManagementAction>(
-            initialState: .init(tokenisationCoordinator: PassTokenisationCoordinator(service: cardService)),
+            initialState: .init(
+                isTokenisationEnabled: isEnabled(blockchain.app.configuration.card.issuing.tokenise.is.enabled),
+                tokenisationCoordinator: PassTokenisationCoordinator(service: cardService)
+            ),
             reducer: cardManagementReducer,
             environment: env
         )
 
         return AnyView(CardManagementView(store: store))
+    }
+
+    private func isEnabled(_ tag: Tag.Event) -> Bool {
+        guard let value = try? app.remoteConfiguration.get(tag) else {
+            return false
+        }
+        guard let isEnabled = value as? Bool else {
+            return false
+        }
+        return isEnabled
     }
 }

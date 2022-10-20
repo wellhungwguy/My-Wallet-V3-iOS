@@ -33,7 +33,10 @@ public enum CardOrderingResult {
 
 public protocol CardIssuingViewControllerAPI: AnyObject {
     func makeIntroViewController(onComplete: @escaping (CardOrderingResult) -> Void) -> UIViewController
-    func makeManagementViewController(onComplete: @escaping () -> Void) -> UIViewController
+    func makeManagementViewController(
+        openAddCardFlow: @escaping () -> Void,
+        onComplete: @escaping () -> Void
+    ) -> UIViewController
 }
 
 public protocol AuthenticationCoordinating: AnyObject {
@@ -357,9 +360,15 @@ final class SettingsRouter: SettingsRouterAPI {
         let cardIssuing: CardIssuingViewControllerAPI = resolve()
         let nav = navigationRouter.navigationControllerAPI
         nav?.pushViewController(
-            cardIssuing.makeManagementViewController(onComplete: {
-                nav?.popToRootViewControllerAnimated(animated: true)
-            }),
+            cardIssuing.makeManagementViewController(
+                openAddCardFlow: { [weak self] in
+                    nav?.popToRootViewControllerAnimated(animated: true)
+                    self?.showCardOrderingFlow()
+                },
+                onComplete: {
+                    nav?.popToRootViewControllerAnimated(animated: true)
+                }
+            ),
             animated: true
         )
     }

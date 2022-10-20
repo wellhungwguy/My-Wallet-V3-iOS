@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BlockchainNamespace
 import Combine
 import Errors
 import FeatureCardIssuingDomain
@@ -10,8 +9,6 @@ import PassKit
 import ToolKit
 
 final class CardRepository: CardRepositoryAPI {
-
-    let app: AppProtocol
 
     private static let marqetaPath = "/marqeta-card/#/"
 
@@ -40,12 +37,10 @@ final class CardRepository: CardRepositoryAPI {
     private let cardCache: AnyCache<String, [Card]>
 
     init(
-        app: AppProtocol,
         client: CardClientAPI,
         userInfoProvider: UserInfoProviderAPI,
         baseCardHelperUrl: String
     ) {
-        self.app = app
         self.client = client
         self.userInfoProvider = userInfoProvider
         self.baseCardHelperUrl = baseCardHelperUrl
@@ -86,7 +81,7 @@ final class CardRepository: CardRepositoryAPI {
     ) -> AnyPublisher<Card, NabuNetworkError> {
         client
             .orderCard(
-                with: .init(productCode: product.productCode, deliveryAddress: address, ssn: ssn)
+                with: .init(productCode: product.productCode, shippingAddress: address, ssn: ssn)
             )
             .handleEvents(receiveOutput: { [weak self] _ in
                 self?.cachedCardValue.invalidateCache()
@@ -117,6 +112,8 @@ final class CardRepository: CardRepositoryAPI {
         let baseCardHelperUrl = baseCardHelperUrl
         return client
             .generateSensitiveDetailsToken(with: card.id)
+            .replaceError(with: "-")
+            .setFailureType(to: NabuNetworkError.self)
             .combineLatest(userInfoProvider.fullName)
             .map { token, fullName in
                 Self.buildCardHelperUrl(
@@ -127,10 +124,6 @@ final class CardRepository: CardRepositoryAPI {
                 )
             }
             .eraseToAnyPublisher()
-    }
-
-    func generatePinToken(for card: Card) -> AnyPublisher<String, NabuNetworkError> {
-        client.generatePinToken(with: card.id)
     }
 
     func fetchLinkedAccount(for card: Card) -> AnyPublisher<AccountCurrency, NabuNetworkError> {
@@ -179,12 +172,7 @@ final class CardRepository: CardRepositoryAPI {
         nonce: Data,
         nonceSignature: Data
     ) -> AnyPublisher<PKAddPaymentPassRequest, NabuNetworkError> {
-        let config = Base64Configuration(
-            activationData: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.activationData.is.enabled),
-            ephemeralPublicKey: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is.enabled),
-            encryptedPassData: isEnabled(blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is.enabled)
-        )
-        return client.tokenise(
+        client.tokenise(
             cardId: card.id,
             with: TokeniseCardParameters(
                 certificates: certificates,
@@ -192,20 +180,28 @@ final class CardRepository: CardRepositoryAPI {
                 nonceSignature: nonceSignature
             )
         )
-        .map {
-            PKAddPaymentPassRequest($0, config)
-        }
+        .map(PKAddPaymentPassRequest.init)
         .eraseToAnyPublisher()
     }
 
-    private func isEnabled(_ tag: Tag.Event) -> Bool {
-        guard let value = try? app.remoteConfiguration.get(tag) else {
-            return false
-        }
-        guard let isEnabled = value as? Bool else {
-            return false
-        }
-        return isEnabled
+    func fulfillment(card: Card) -> AnyPublisher<Card.Fulfillment, NabuNetworkError> {
+        client.fulfillment(cardId: card.id)
+    }
+
+    func pinWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        client.pinWidgetUrl(cardId: card.id)
+    }
+
+    func activateWidgetUrl(card: Card) -> AnyPublisher<URL, NabuNetworkError> {
+        client.activateWidgetUrl(cardId: card.id)
+    }
+
+    func fetchStatements() -> AnyPublisher<[Statement], NabuNetworkError> {
+        client.fetchStatements()
+    }
+
+    func fetchStatementUrl(statement: Statement) -> AnyPublisher<URL, NabuNetworkError> {
+        client.fetchStatementUrl(statementId: statement.id)
     }
 
     private static func buildCardHelperUrl(
@@ -221,33 +217,14 @@ final class CardRepository: CardRepositoryAPI {
     }
 }
 
-struct Base64Configuration {
-    let activationData: Bool
-    let ephemeralPublicKey: Bool
-    let encryptedPassData: Bool
-}
-
 extension PKAddPaymentPassRequest {
 
     convenience init(
-        _ response: TokeniseCardResponse,
-        _ configuration: Base64Configuration
+        _ response: TokeniseCardResponse
     ) {
         self.init()
-        if configuration.activationData {
-            activationData = Data(base64Encoded: response.activationData)
-        } else {
-            activationData = response.activationData.data(using: .utf8)
-        }
-        if configuration.ephemeralPublicKey {
-            ephemeralPublicKey = Data(base64Encoded: response.ephemeralPublicKey)
-        } else {
-            ephemeralPublicKey = response.ephemeralPublicKey.data(using: .utf8)
-        }
-        if configuration.encryptedPassData {
-            encryptedPassData = Data(base64Encoded: response.encryptedPassData)
-        } else {
-            encryptedPassData = response.encryptedPassData.data(using: .utf8)
-        }
+        activationData = Data(base64Encoded: response.activationData)
+        ephemeralPublicKey = Data(base64Encoded: response.ephemeralPublicKey)
+        encryptedPassData = Data(base64Encoded: response.encryptedPassData)
     }
 }
