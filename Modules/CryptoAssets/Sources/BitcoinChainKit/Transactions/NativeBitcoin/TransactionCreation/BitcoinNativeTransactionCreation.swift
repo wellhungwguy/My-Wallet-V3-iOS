@@ -28,6 +28,7 @@ struct BitcoinChainPendingTransaction {
     let destinationAddress: String
     let feeLevel: FeeLevel
     let unspentOutputs: [UnspentOutput]
+    let keyPairs: [WalletKeyPair]
 }
 
 public enum TransactionOutcome {
@@ -78,10 +79,7 @@ func nativeBuildTransaction(
 ) -> AnyPublisher<NativeBitcoinTransactionCandidate, Error> {
     let amount = pendingTransaction.amount
     let unspentOutputs = pendingTransaction.unspentOutputs
-    let keyPairs = getWalletKeyPairs(
-        unspentOutputs: unspentOutputs,
-        accountKeyContext: transactionContext.accountKeyContext
-    )
+    let keyPairs = pendingTransaction.keyPairs
     let transactionAddresses = getTransactionAddresses(
         context: transactionContext
     )

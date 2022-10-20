@@ -494,7 +494,8 @@ extension BitcoinOnChainTransactionEngine {
                     amount: amountCryptoValue,
                     destinationAddress: destinationAddress,
                     feeLevel: feeLevel,
-                    unspentOutputs: unspentOutputs
+                    unspentOutputs: unspentOutputs,
+                    keyPairs: transactionContext.keyPairs
                 )
                 return nativeBuildTransaction(
                     sourceAccount: source,
