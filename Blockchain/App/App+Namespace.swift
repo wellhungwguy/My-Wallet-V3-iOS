@@ -22,6 +22,7 @@ let app: AppProtocol = App(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
         default: [
             blockchain.app.configuration.addresssearch.kyc.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.multiapp.is.enabled: false,
             blockchain.app.configuration.app.superapp.is.enabled: false,
             blockchain.app.configuration.apple.pay.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,

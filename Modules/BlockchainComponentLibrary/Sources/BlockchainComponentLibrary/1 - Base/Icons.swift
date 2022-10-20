@@ -358,7 +358,7 @@ extension Icon {
 extension Icon {
     public static let `home` = Icon(name: "Home_New")
     public static let `homeFilled` = Icon(name: "Home Filled")
-    public static let `prices` = Icon(name: "Prices filled")
+    public static let `prices` = Icon(name: "Prices")
     public static let `pricesFilled` = Icon(name: "Prices Filled")
     public static let `nft` = Icon(name: "NFT")
     public static let `nftFilled` = Icon(name: "NFT Filled")

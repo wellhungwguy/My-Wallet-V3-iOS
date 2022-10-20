@@ -4,6 +4,7 @@ import Combine
 import Foundation
 
 public enum AppMode: String, Decodable, Equatable {
+    /// aka `DeFi`
     case pkw = "PKW"
     case trading = "TRADING"
     case universal = "UNIVERSAL"
