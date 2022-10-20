@@ -177,21 +177,13 @@ private func concat(
         limitsByBaseFiat[limit.currency] = limit
     }
 
-    let topBankTransferLimit = (paymentMethods.first { $0.type.isBankTransfer })?.max
-    let topBankAccountLimit = (paymentMethods.first { $0.type.isBankAccount })?.max
     let linkedBanksResult: [Beneficiary] = linkedBanks
         .filter(\.isActive)
         .map {
-            Beneficiary(linkedBankData: $0)
-        }
-        .map { bank in
-            var bank = bank
-            if bank.isBankTransferAccount ?? false, let limit = topBankTransferLimit {
-                bank.limit = limit
-            } else if bank.isBankAccount ?? false, let limit = topBankAccountLimit {
-                bank.limit = limit
-            }
-            return bank
+            Beneficiary(
+                linkedBankData: $0,
+                topLimit: paymentMethods.topLimit(bank: $0)
+            )
         }
 
     let result: [Beneficiary] = beneficiaries.compactMap { beneficiary -> Beneficiary? in
@@ -207,4 +199,20 @@ private func concat(
     let identifiers = result.map(\.identifier)
     let linkedBanks = linkedBanksResult.filter { !identifiers.contains($0.identifier) }
     return result + linkedBanks
+}
+
+extension Array where Element == PaymentMethod {
+
+    func topLimit(bank: LinkedBankData) -> FiatValue? {
+        let topBankTransferLimit = (self.first { $0.type.isBankTransfer })?.max
+        let topBankAccountLimit = (self.first { $0.type.isBankAccount })?.max
+
+        if bank.isBankTransferAccount, let limit = topBankTransferLimit {
+            return limit.convert(using: .one(currency: bank.currency))
+        } else if bank.isBankAccount, let limit = topBankAccountLimit {
+            return limit.convert(using: .one(currency: bank.currency))
+        } else {
+            return nil
+        }
+    }
 }

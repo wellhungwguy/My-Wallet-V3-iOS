@@ -15,8 +15,6 @@ public struct Beneficiary {
     public let account: String
     public var limit: FiatValue?
     public let icon: URL?
-    public let isBankAccount: Bool?
-    public let isBankTransferAccount: Bool?
 
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
         type = .funds
@@ -31,11 +29,9 @@ public struct Beneficiary {
         }
         self.currency = currency
         icon = nil
-        isBankAccount = nil
-        isBankTransferAccount = nil
     }
 
-    init(linkedBankData: LinkedBankData) {
+    init(linkedBankData: LinkedBankData, topLimit: FiatValue?) {
         identifier = linkedBankData.identifier
         currency = linkedBankData.currency
         type = .linkedBank
@@ -44,10 +40,8 @@ public struct Beneficiary {
         let accountNumber = linkedBankData.account?.number ?? ""
         name = "\(bankName)"
         account = "\(accountType) \(accountNumber)"
-        limit = nil
+        limit = topLimit
         icon = linkedBankData.icon
-        isBankAccount = linkedBankData.isBankAccount
-        isBankTransferAccount = linkedBankData.isBankTransferAccount
     }
 }
 

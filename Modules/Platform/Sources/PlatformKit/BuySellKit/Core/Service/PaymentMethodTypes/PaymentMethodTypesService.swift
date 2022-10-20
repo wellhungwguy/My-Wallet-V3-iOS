@@ -526,7 +526,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .map { card in
                 var card = card
                 if let limit = topCardLimit {
-                    card.topLimit = limit
+                    card.topLimit = limit.convert(using: .one(currency: card.currency))
                 }
                 return card
             }
@@ -566,13 +566,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             }
             .map(PaymentMethodType.account)
 
-        let topBankTransferLimit = (paymentMethods.first { $0.type.isBankTransfer })?.max
         let activeBanks = linkedBanks.filter(\.isActive)
             .map { bank in
                 var bank = bank
-                if let limit = topBankTransferLimit {
-                    bank.topLimit = limit
-                }
+                bank.topLimit = paymentMethods.topLimit(bank: bank) ?? bank.topLimit
                 return bank
             }
             .map { PaymentMethodType.linkedBank($0) }
