@@ -56,9 +56,12 @@ enum TransactionAction: MviAction {
     case validateTransaction
     case validateTransactionAfterKYC
     case createOrder
+    case updatePrice(BrokerageQuote.Price?)
+    case updateQuote(BrokerageQuote)
     case orderCreated(TransactionOrder?)
     case orderCancelled
     case resetFlow
+    case refreshPendingTransaction
     case showSourceSelection
     case showTargetSelection
     case showEnterAmount
@@ -91,8 +94,19 @@ extension TransactionAction {
             newState.allowFiatInput = allowFiatInput
             newState.nextEnabled = false
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .updateFeeLevelAndAmount:
             return oldState
+
+        case .updateQuote(let quote):
+            var state = oldState
+            state.quote = quote
+            return state
+
+        case .updatePrice(let price):
+            var state = oldState
+            state.price = price
+            return state
 
         case .showAddAccountFlow:
             switch oldState.action {
@@ -112,6 +126,9 @@ extension TransactionAction {
 
         case .showBankLinkingFlow:
             return oldState.stateForMovingForward(to: .linkABank)
+
+        case .refreshPendingTransaction:
+            return oldState
 
         case .bankAccountLinkedFromSource,
              .bankAccountLinked:
@@ -420,6 +437,8 @@ extension TransactionAction {
                 // Some transaction engines like swap check for the source and destination currency to match or not not match as a precondition.
                 newState.destination = nil
             }
+            newState.nextEnabled = oldState.step == .confirmDetail || newState.pendingTransaction?.validationState == .canExecute
+            newState.quote = nil
             return newState
 
         case .modifyTransactionConfirmation:

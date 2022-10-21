@@ -20,7 +20,7 @@ class RecoveryPhraseRepositoryMock: RecoveryPhraseRepositoryAPI {
 }
 
 class RecoveryPhraseVerifyingServiceMock: RecoveryPhraseVerifyingServiceAPI {
-    public var recoveryPhraseComponentsSubject = CurrentValueSubject<[RecoveryPhraseWord], RecoveryPhraseVerificationError>([])
+    var recoveryPhraseComponentsSubject = CurrentValueSubject<[RecoveryPhraseWord], RecoveryPhraseVerificationError>([])
 
     var recoveryPhraseComponentsCalled = false
     func recoveryPhraseComponents() -> AnyPublisher<[RecoveryPhraseWord], RecoveryPhraseVerificationError> {

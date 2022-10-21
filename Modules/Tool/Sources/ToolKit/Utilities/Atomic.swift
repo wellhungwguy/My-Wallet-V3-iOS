@@ -26,9 +26,7 @@ public final class Atomic<Value> {
     // MARK: - Private Properties
 
     /// The wrapped value.
-    private var _value: Value {
-        didSet { subject.send(_value) }
-    }
+    private var _value: Value
 
     /// The wrapped value subject.
     private let subject: CurrentValueSubject<Value, Never>
@@ -54,10 +52,12 @@ public final class Atomic<Value> {
     /// - Returns: The updated wrapped value.
     @discardableResult
     public func mutate(_ transform: (_ current: inout Value) -> Void) -> Value {
-        lock.withLock { () -> Value in
+        let value = lock.withLock { () -> Value in
             transform(&_value)
             return _value
         }
+        defer { subject.send(value) }
+        return value
     }
 
     /// Atomically mutates the wrapped value.
@@ -70,6 +70,11 @@ public final class Atomic<Value> {
     ///
     /// - Returns: The return value of the `transform` closure.
     public func mutateAndReturn<T>(_ transform: (_ current: inout Value) -> T) -> T {
-        lock.withLock { transform(&_value) }
+        let (value, result) = lock.withLock {
+            let t = transform(&_value)
+            return (_value, t)
+        }
+        defer { subject.send(value) }
+        return result
     }
 }

@@ -69,7 +69,7 @@ final class TransactionModel {
     func perform(previousState: TransactionState, action: TransactionAction) -> Disposable? {
         switch action {
         case .pendingTransactionStarted:
-            return nil
+            return Disposables.create(streamQuotes(), streamPrices())
 
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target):
             return processTargetSelectionConfirmed(
@@ -200,7 +200,9 @@ final class TransactionModel {
         case .createOrder:
             return processCreateOrder()
         case .orderCreated:
-            process(action: .showCheckout)
+            if app.remoteConfiguration.yes(unless: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+                process(action: .showCheckout)
+            }
             return nil
         case .orderCancelled:
             interactor.resetProcessor()
@@ -226,13 +228,13 @@ final class TransactionModel {
             }
 
             // We should cancel the order if we are on the Confirmation screen.
-            let shouldCancelOrder = isConfirmDetail
+            let shouldCancelOrder = isConfirmDetail && previousState.order.isNotNil
             if shouldCancelOrder {
                 return processCancelOrder(state: previousState)
             }
 
             // If no check passed, we stop here (no further actions required).
-            return nil
+            return processValidateTransaction()
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, previousState.availableTargets?.isEmpty == false {
                 // This is going to initialize a new PendingTransaction with a 0 amount.
@@ -283,6 +285,12 @@ final class TransactionModel {
             return nil
         case .showUxDialogSuggestion:
             return nil
+        case .updateQuote(let quote):
+            return updateQuote(quote)
+        case .updatePrice:
+            return nil
+        case .refreshPendingTransaction:
+            return refresh()
         }
     }
 
@@ -290,7 +298,76 @@ final class TransactionModel {
         mviModel.destroy()
     }
 
+    func refresh() -> Disposable {
+        Disposables.create(with: interactor.refresh)
+    }
+
     // MARK: - Private methods
+
+    func streamPrices() -> Disposable {
+        state.publisher.ignoreFailure(setFailureType: Never.self)
+            .map { state in Pair(state.quoteRequest, state.isStreamingPrices) }
+            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .map(\.tuple)
+            .map { [interactor] quote, isStreamingPrices -> AnyPublisher<BrokerageQuote.Price?, Never> in
+                guard let quote else { return .just(nil) }
+                return isStreamingPrices
+                    ? interactor.prices(quote).ignoreResultFailure().map(Optional.some).eraseToAnyPublisher()
+                    : .just(nil)
+            }
+            .switchToLatest()
+            .asObservable()
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(
+                onNext: { [weak self] price in
+                    self?.process(action: .updatePrice(price))
+                },
+                onError: { [app] error in
+                    app.post(error: error)
+                }
+            )
+    }
+
+    func streamQuotes() -> Disposable {
+        state.publisher.ignoreFailure(setFailureType: Never.self)
+            .map { state in Pair(state.quoteRequest, state.isStreamingQuotes) }
+            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .map(\.tuple)
+            .map { [interactor] quote, isStreamingQuotes -> AnyPublisher<Result<BrokerageQuote, UX.Error>?, Never> in
+                guard let quote else { return .just(nil) }
+                return isStreamingQuotes
+                    ? interactor.quotes(quote).map(Optional.some).eraseToAnyPublisher()
+                    : .just(nil)
+            }
+            .switchToLatest()
+            .compacted()
+            .asObservable()
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(
+                onNext: { [weak self] output in
+                    switch output {
+                    case .success(let quote):
+                        self?.process(action: .updateQuote(quote))
+                    case .failure(let error):
+                        self?.process(action: .fatalTransactionError(error))
+                    }
+                },
+                onError: { [app] error in
+                    app.post(error: error)
+                }
+            )
+    }
+
+    func updateQuote(_ quote: BrokerageQuote) -> Disposable {
+        interactor.updateQuote(quote)
+            .subscribe(
+                onError: { error in
+                    Logger.shared.error("!TRANSACTION!> Unable to update quote")
+                }
+            )
+    }
 
     private func processModifyTransactionConfirmation(confirmation: TransactionConfirmation) -> Disposable {
         interactor
@@ -393,10 +470,13 @@ final class TransactionModel {
     }
 
     private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {
-        interactor
-            .validateTransaction
-            .subscribe { [weak self] in
-                self?.process(action: .createOrder)
+        interactor.validateTransaction
+            .subscribe { [weak self, app] in
+                if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+                    self?.process(action: .showCheckout)
+                } else {
+                    self?.process(action: .createOrder)
+                }
             } onError: { [weak self] error in
                 Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
@@ -539,10 +619,12 @@ final class TransactionModel {
             return nil
         }
         return interactor.update(amount: amount)
-            .subscribe(onError: { [weak self] error in
-                Logger.shared.error("!TRANSACTION!> Unable to process amount: \(error)")
-                self?.process(action: .fatalTransactionError(error))
-            })
+            .subscribe(
+                onError: { [weak self] error in
+                    Logger.shared.error("!TRANSACTION!> Unable to process amount: \(error)")
+                    self?.process(action: .fatalTransactionError(error))
+                }
+            )
     }
 
     private func processTargetSelectionConfirmed(
@@ -673,6 +755,44 @@ final class TransactionModel {
     }
 }
 
+extension TransactionState {
+
+    var profile: BrokerageQuote.Profile? {
+        switch action {
+        case .buy: return .buy
+        case .sell: return .swapTradingToTrading
+        case .swap:
+            switch (source, destination) {
+            case (is NonCustodialAccount, is NonCustodialAccount):
+                return .swapPKWToPKW
+            case (is NonCustodialAccount, is TradingAccount):
+                return .swapPKWToTrading
+            case (is TradingAccount, is TradingAccount):
+                return .swapTradingToTrading
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+    }
+
+    var quoteRequest: BrokerageQuote.Request? {
+        guard let sourceCurrency = source?.currencyType else { return nil }
+        guard let destinationCurrency = destination?.currencyType else { return nil }
+        guard (try? amount >= minSpendable) == true else { return nil }
+        guard let profile else { return nil }
+        let (base, quote) = (sourceCurrency, destinationCurrency)
+        return BrokerageQuote.Request(
+            amount: amount,
+            base: base,
+            quote: quote,
+            paymentMethod: (source as? PaymentMethodAccount)?.quote ?? ((source is NonCustodialAccount) ? .deposit : .funds),
+            profile: profile
+        )
+    }
+}
+
 extension PaymentMethodAccount {
     var isYapily: Bool {
         switch paymentMethodType {
@@ -683,6 +803,26 @@ extension PaymentMethodAccount {
              .card,
              .suggested:
             return false
+        }
+    }
+
+    var quote: BrokerageQuote.PaymentMethod {
+        switch paymentMethodType {
+        case .linkedBank:
+            return .bank
+        case .applePay, .card:
+            return .card
+        case .account:
+            return .funds
+        case .suggested(let suggestion):
+            switch suggestion.type {
+            case .card, .applePay:
+                return .card
+            case .funds, .bankAccount:
+                return .funds
+            case .bankTransfer:
+                return .bank
+            }
         }
     }
 }

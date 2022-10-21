@@ -1502,6 +1502,16 @@ blockchain:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+				quote:
+					refresh:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
+						max:
+							duration:
+							+ blockchain.db.type.number
+							+ blockchain.session.configuration.value
 				refund:
 					policy:
 						disclaimer:
@@ -1566,47 +1576,72 @@ blockchain:
 			event:
 				did:
 					error:
+					+ blockchain.ux.type.analytics.event
 					finish:
+					+ blockchain.ux.type.analytics.event
 					go:
 						back:
+						+ blockchain.ux.type.analytics.event
 					link:
 						a:
 							bank:
+							+ blockchain.ux.type.analytics.event
 							card:
+							+ blockchain.ux.type.analytics.event
 						payment:
 							method:
+							+ blockchain.ux.type.analytics.event
 					select:
 						source:
+						+ blockchain.ux.type.analytics.event
 						target:
+						+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
 				enter:
 					address:
+					+ blockchain.ux.type.analytics.event
 				execution:
 					status:
 					+ blockchain.db.type.enum
 						completed:
+						+ blockchain.ux.type.analytics.event
 						error:
+						+ blockchain.ux.type.analytics.event
 						in:
 							progress:
+							+ blockchain.ux.type.analytics.event
 						pending:
+						+ blockchain.ux.type.analytics.event
 						starting:
+						+ blockchain.ux.type.analytics.event
 				in:
 					progress:
+					+ blockchain.ux.type.analytics.event
 				link:
 					a:
 						bank:
+						+ blockchain.ux.type.analytics.event
 						card:
+						+ blockchain.ux.type.analytics.event
 					payment:
 						method:
+						+ blockchain.ux.type.analytics.event
 				select:
 					source:
+					+ blockchain.ux.type.analytics.event
 					target:
+					+ blockchain.ux.type.analytics.event
 				validate:
 					source:
+					+ blockchain.ux.type.analytics.event
 					transaction:
+					+ blockchain.ux.type.analytics.event
 				will:
 					finish:
+					+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
 			loading:
 			+ blockchain.ux.type.story
 				close:
@@ -1701,6 +1736,17 @@ blockchain:
 								code:
 								+ blockchain.db.type.string
 								+ blockchain.session.state.preference.value
+					quote:
+					+ blockchain.session.state.value
+						payment:
+							method:
+							+ blockchain.session.state.value
+						price:
+						+ blockchain.session.state.value
+						profile:
+						+ blockchain.session.state.value
+						value:
+						+ blockchain.session.state.value
 		type:
 			action:
 			+ blockchain.ui.type.action

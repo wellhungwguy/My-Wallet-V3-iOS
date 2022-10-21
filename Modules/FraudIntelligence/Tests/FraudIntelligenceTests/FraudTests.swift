@@ -36,22 +36,22 @@ final class FraudIntelligenceTests: XCTestCase {
         initialise()
 
         XCTAssertNotNil(Test.MobileIntelligence.options)
-        XCTAssertEqual(Test.MobileIntelligence.options.clientId, "client-id")
+        XCTAssertEqual(Test.MobileIntelligence.options?.clientId, "client-id")
     }
 
     func test_update() {
 
         initialise()
 
-        XCTAssertNil(Test.MobileIntelligence.options.userIdHash)
-        XCTAssertNil(Test.MobileIntelligence.options.sessionKey)
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
+        XCTAssertNil(Test.MobileIntelligence.options?.userIdHash)
+        XCTAssertNil(Test.MobileIntelligence.options?.sessionKey)
+        XCTAssertNil(Test.MobileIntelligence.options?.flow)
 
         app.state.set(blockchain.user.id, to: "user-id")
 
-        XCTAssertNil(Test.MobileIntelligence.options.userIdHash)
-        XCTAssertNil(Test.MobileIntelligence.options.sessionKey)
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
+        XCTAssertNil(Test.MobileIntelligence.options?.userIdHash)
+        XCTAssertNil(Test.MobileIntelligence.options?.sessionKey)
+        XCTAssertNil(Test.MobileIntelligence.options?.flow)
 
         app.state.transaction { state in
             state.set(blockchain.user.id, to: "user-id")
@@ -59,9 +59,9 @@ final class FraudIntelligenceTests: XCTestCase {
             state.set(blockchain.app.fraud.sardine.current.flow, to: "order")
         }
 
-        XCTAssertEqual(Test.MobileIntelligence.options.userIdHash, "user-id".sha256())
-        XCTAssertEqual(Test.MobileIntelligence.options.sessionKey, "session-id".sha256())
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.userIdHash, "user-id".sha256())
+        XCTAssertEqual(Test.MobileIntelligence.options?.sessionKey, "session-id".sha256())
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
     }
 
     func test_flow() throws {
@@ -107,28 +107,28 @@ final class FraudIntelligenceTests: XCTestCase {
             "ach"
         ])
         XCTAssertThrowsError(try flow())
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
+        XCTAssertNil(Test.MobileIntelligence.options?.flow)
 
         app.post(event: blockchain.session.event.will.sign.in)
         XCTAssertEqual(try flow(), "login")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "login")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "login")
 
         app.post(event: blockchain.ux.transaction.event.did.start)
         XCTAssertEqual(try flow(), "order")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
 
         app.post(event: blockchain.ux.transaction.enter.amount)
         XCTAssertEqual(try flow(), "order")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
 
         app.state.set(blockchain.session.state.value, to: true)
         app.post(event: blockchain.ux.transaction.enter.amount)
         XCTAssertEqual(try flow(), "ach")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "ach")
 
         app.post(event: blockchain.ux.transaction.event.did.finish)
         XCTAssertEqual(try flow(), "ach")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "ach")
     }
 
     func test_trigger() throws {
@@ -163,7 +163,7 @@ enum Test {
 
     class MobileIntelligence: MobileIntelligence_p {
 
-        static var options: Options!
+        static var options: Options?
         static var count: Int = 0
 
         static var field: [String: (focus: Bool, text: String)] = [:]
@@ -184,9 +184,10 @@ enum Test {
         }
 
         static func updateOptions(options: UpdateOptions, completion: ((Response) -> Void)?) {
-            Self.options.sessionKey = options.sessionKey
-            Self.options.flow = options.flow
-            Self.options.userIdHash = options.userIdHash
+            Self.options = Self.options ?? .init()
+            Self.options?.sessionKey = options.sessionKey
+            Self.options?.flow = options.flow
+            Self.options?.userIdHash = options.userIdHash
             completion?(Response(status: true, message: nil))
         }
 

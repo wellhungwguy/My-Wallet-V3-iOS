@@ -218,7 +218,7 @@ public final class Router: Routing {
             .flatMap { [presentKYCIfNeeded] result -> AnyPublisher<FlowResult, RouterError> in
                 if requireEmailVerification {
                     guard case .completed = result else {
-                        return .just(.abandoned)
+                        return .just(result)
                     }
                 }
                 return presentKYCIfNeeded(presenter, requiredTier)
@@ -236,13 +236,12 @@ public final class Router: Routing {
                 RouterError.emailVerificationFailed
             }
             .receive(on: DispatchQueue.main)
-            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             // step 2: present email verification screen, if needed.
             .flatMap { response -> AnyPublisher<FlowResult, RouterError> in
                 switch response.status {
                 case .verified:
                     // The user's email address is verified; no need to do anything. Just move on.
-                    return .just(.completed)
+                    return .just(.skipped)
 
                 case .unverified:
                     // The user's email address in NOT verified; present email verification flow.
@@ -265,7 +264,10 @@ public final class Router: Routing {
                 }
             }
             .handleEvents(
-                receiveCompletion: { [app] _ in app.post(event: blockchain.ux.kyc.event.status.did.change) }
+                receiveOutput: { [app] state in
+                    guard state == .completed else { return }
+                    app.post(event: blockchain.ux.kyc.event.status.did.change)
+                }
             )
             .eraseToAnyPublisher()
     }
@@ -283,7 +285,6 @@ public final class Router: Routing {
             .fetchTiers()
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
-            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .flatMap { [app, routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in
 
                 let presentKYC = Deferred {

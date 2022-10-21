@@ -26,6 +26,10 @@ let package = Package(
             from: "1.0.0"
         ),
         .package(
+            url: "https://github.com/apple/swift-async-algorithms.git",
+            revision: "cf70e78632e990cd041fef21044e54fa5fdd1c56"
+        ),
+        .package(
             url: "https://github.com/pointfreeco/combine-schedulers",
             from: "0.7.3"
         ),
@@ -50,7 +54,11 @@ let package = Package(
         ),
         .target(
             name: "AsyncExtensions",
-            dependencies: ["SwiftExtensions"]
+            dependencies: [
+                "SwiftExtensions",
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
+            ]
         ),
         .target(
             name: "CombineExtensions",

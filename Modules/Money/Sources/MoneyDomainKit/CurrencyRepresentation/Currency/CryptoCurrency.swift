@@ -126,6 +126,10 @@ extension CryptoCurrency {
         assetModel.precision
     }
 
+    public var logoURL: URL? {
+        assetModel.logoPngUrl
+    }
+
     public var storeExtraPrecision: Int { 0 }
 
     public var displayPrecision: Int {

@@ -62,10 +62,12 @@ public class PublishedObject<Wrapped: Publisher, S: Scheduler>: LoadableObject {
     private let publisher: Wrapped
     private var subscription: AnyCancellable?
     private var scheduler: S
+    private let animation: Animation?
 
-    public init(publisher: Wrapped, scheduler: S = DispatchQueue.main) {
+    public init(publisher: Wrapped, scheduler: S = DispatchQueue.main, animation: Animation? = .linear) {
         self.publisher = publisher
         self.scheduler = scheduler
+        self.animation = animation
     }
 
     public func load() {
@@ -75,7 +77,7 @@ public class PublishedObject<Wrapped: Publisher, S: Scheduler>: LoadableObject {
             .catch { error in
                 Just(LoadingState.failed(error))
             }
-            .receive(on: scheduler)
+            .receive(on: scheduler.animation(animation))
             .sink { [weak self] state in
                 self?.state = state
             }

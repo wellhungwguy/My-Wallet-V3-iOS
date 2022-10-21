@@ -5603,6 +5603,7 @@ public extension I_blockchain_ux_transaction_checkout {
 	var `exchange`: L_blockchain_ux_transaction_checkout_exchange { .init("\(__).exchange") }
 	var `fee`: L_blockchain_ux_transaction_checkout_fee { .init("\(__).fee") }
 	var `is`: L_blockchain_ux_transaction_checkout_is { .init("\(__).is") }
+	var `quote`: L_blockchain_ux_transaction_checkout_quote { .init("\(__).quote") }
 	var `refund`: L_blockchain_ux_transaction_checkout_refund { .init("\(__).refund") }
 	var `terms`: L_blockchain_ux_transaction_checkout_terms { .init("\(__).terms") }
 }
@@ -5664,6 +5665,43 @@ public final class L_blockchain_ux_transaction_checkout_is_enabled: L, I_blockch
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.is.enabled", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_checkout_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_transaction_checkout_quote: L, I_blockchain_ux_transaction_checkout_quote {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote: I {}
+public extension I_blockchain_ux_transaction_checkout_quote {
+	var `refresh`: L_blockchain_ux_transaction_checkout_quote_refresh { .init("\(__).refresh") }
+}
+public final class L_blockchain_ux_transaction_checkout_quote_refresh: L, I_blockchain_ux_transaction_checkout_quote_refresh {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote_refresh: I {}
+public extension I_blockchain_ux_transaction_checkout_quote_refresh {
+	var `is`: L_blockchain_ux_transaction_checkout_quote_refresh_is { .init("\(__).is") }
+	var `max`: L_blockchain_ux_transaction_checkout_quote_refresh_max { .init("\(__).max") }
+}
+public final class L_blockchain_ux_transaction_checkout_quote_refresh_is: L, I_blockchain_ux_transaction_checkout_quote_refresh_is {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh.is", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote_refresh_is: I {}
+public extension I_blockchain_ux_transaction_checkout_quote_refresh_is {
+	var `enabled`: L_blockchain_ux_transaction_checkout_quote_refresh_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_ux_transaction_checkout_quote_refresh_is_enabled: L, I_blockchain_ux_transaction_checkout_quote_refresh_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh.is.enabled", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote_refresh_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_transaction_checkout_quote_refresh_max: L, I_blockchain_ux_transaction_checkout_quote_refresh_max {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh.max", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote_refresh_max: I {}
+public extension I_blockchain_ux_transaction_checkout_quote_refresh_max {
+	var `duration`: L_blockchain_ux_transaction_checkout_quote_refresh_max_duration { .init("\(__).duration") }
+}
+public final class L_blockchain_ux_transaction_checkout_quote_refresh_max_duration: L, I_blockchain_ux_transaction_checkout_quote_refresh_max_duration {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh.max.duration", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_quote_refresh_max_duration: I_blockchain_db_type_number, I_blockchain_session_configuration_value {}
 public final class L_blockchain_ux_transaction_checkout_refund: L, I_blockchain_ux_transaction_checkout_refund {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.refund", comment: "") }
 }
@@ -6380,6 +6418,7 @@ public extension I_blockchain_ux_transaction_source_target {
 	var `is`: L_blockchain_ux_transaction_source_target_is { .init("\(__).is") }
 	var `label`: L_blockchain_ux_transaction_source_target_label { .init("\(__).label") }
 	var `previous`: L_blockchain_ux_transaction_source_target_previous { .init("\(__).previous") }
+	var `quote`: L_blockchain_ux_transaction_source_target_quote { .init("\(__).quote") }
 }
 public final class L_blockchain_ux_transaction_source_target_analytics: L, I_blockchain_ux_transaction_source_target_analytics {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.analytics", comment: "") }
@@ -6474,6 +6513,39 @@ public final class L_blockchain_ux_transaction_source_target_previous_input_curr
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.previous.input.currency.code", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_source_target_previous_input_currency_code: I_blockchain_db_type_string, I_blockchain_session_state_preference_value {}
+public final class L_blockchain_ux_transaction_source_target_quote: L, I_blockchain_ux_transaction_source_target_quote {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote: I_blockchain_session_state_value {}
+public extension I_blockchain_ux_transaction_source_target_quote {
+	var `payment`: L_blockchain_ux_transaction_source_target_quote_payment { .init("\(__).payment") }
+	var `price`: L_blockchain_ux_transaction_source_target_quote_price { .init("\(__).price") }
+	var `profile`: L_blockchain_ux_transaction_source_target_quote_profile { .init("\(__).profile") }
+	var `value`: L_blockchain_ux_transaction_source_target_quote_value { .init("\(__).value") }
+}
+public final class L_blockchain_ux_transaction_source_target_quote_payment: L, I_blockchain_ux_transaction_source_target_quote_payment {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote.payment", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote_payment: I {}
+public extension I_blockchain_ux_transaction_source_target_quote_payment {
+	var `method`: L_blockchain_ux_transaction_source_target_quote_payment_method { .init("\(__).method") }
+}
+public final class L_blockchain_ux_transaction_source_target_quote_payment_method: L, I_blockchain_ux_transaction_source_target_quote_payment_method {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote.payment.method", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote_payment_method: I_blockchain_session_state_value {}
+public final class L_blockchain_ux_transaction_source_target_quote_price: L, I_blockchain_ux_transaction_source_target_quote_price {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote.price", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote_price: I_blockchain_session_state_value {}
+public final class L_blockchain_ux_transaction_source_target_quote_profile: L, I_blockchain_ux_transaction_source_target_quote_profile {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote.profile", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote_profile: I_blockchain_session_state_value {}
+public final class L_blockchain_ux_transaction_source_target_quote_value: L, I_blockchain_ux_transaction_source_target_quote_value {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.source.target.quote.value", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_source_target_quote_value: I_blockchain_session_state_value {}
 public final class L_blockchain_ux_type: L, I_blockchain_ux_type {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type", comment: "") }
 }

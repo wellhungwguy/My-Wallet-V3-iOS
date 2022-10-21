@@ -49,6 +49,7 @@ final class BuyFlowListener: BuyFlowListening {
                     message: String(describing: error),
                     action: nil
                 )
+                completion(false)
             } receiveValue: { result in
                 completion(result == .completed || result == .skipped)
             }

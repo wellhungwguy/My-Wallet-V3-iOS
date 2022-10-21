@@ -278,6 +278,14 @@ extension BlockchainEventSubscription {
         return AnyCancellable { [self] in stop() }
     }
 
+    @inlinable public func store(in set: inout Set<AnyCancellable>) {
+        subscribe().store(in: &set)
+    }
+
+    @inlinable public func store<C>(in collection: inout C) where C: RangeReplaceableCollection, C.Element == AnyCancellable {
+        subscribe().store(in: &collection)
+    }
+
     private static var count: UInt = 0
     private static let lock = NSLock()
     private static var id: UInt {

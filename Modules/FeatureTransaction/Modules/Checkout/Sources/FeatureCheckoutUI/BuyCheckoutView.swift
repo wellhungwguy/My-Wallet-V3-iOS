@@ -1,7 +1,12 @@
 import BlockchainUI
 import SwiftUI
 
+typealias L10n = LocalizationConstants.Checkout
+
 public struct BuyCheckoutView<Object: LoadableObject>: View where Object.Output == BuyCheckout, Object.Failure == Never {
+
+    @BlockchainApp var app
+    @Environment(\.context) var context
 
     @ObservedObject var viewModel: Object
 
@@ -10,7 +15,17 @@ public struct BuyCheckoutView<Object: LoadableObject>: View where Object.Output 
     }
 
     public var body: some View {
-        AsyncContentView(source: viewModel, content: Loaded.init)
+        AsyncContentView(
+            source: viewModel,
+            loadingView: Loading(),
+            content: Loaded.init
+        )
+        .onAppear {
+            app.post(
+                event: blockchain.ux.transaction.checkout[].ref(to: context),
+                context: context
+            )
+        }
     }
 }
 
@@ -27,15 +42,26 @@ extension BuyCheckoutView {
 
 extension BuyCheckoutView {
 
+    public struct Loading: View {
+
+        public var body: some View {
+            ZStack {
+                Loaded(checkout: .preview)
+                    .redacted(reason: .placeholder)
+                ProgressView()
+            }
+        }
+    }
+
     public struct Loaded: View {
 
         @BlockchainApp var app
         @Environment(\.context) var context
-        @Environment(\.scheduler) var scheduler
 
         let checkout: BuyCheckout
 
         @State var information = (price: false, fee: false)
+        @State var readyToRefresh = false
 
         public init(checkout: BuyCheckout) {
             self.checkout = checkout
@@ -50,12 +76,14 @@ extension BuyCheckoutView {
 
 extension BuyCheckoutView.Loaded {
 
-    typealias L10n = LocalizationConstants.Checkout
-
     public var body: some View {
         VStack(alignment: .center, spacing: .zero) {
             if let expiration = checkout.quoteExpiration {
-                CountdownView(deadline: expiration).padding()
+                CountdownView(
+                    deadline: expiration,
+                    readyToRefresh: $readyToRefresh
+                )
+                .padding()
             }
             ScrollView {
                 header()
@@ -81,8 +109,8 @@ extension BuyCheckoutView.Loaded {
                         title: L10n.Label.purchase,
                         trailing: {
                             VStack(alignment: .trailing, spacing: .zero) {
-                                TableRowTitle(checkout.purchase.quote.displayString)
-                                TableRowByline(checkout.purchase.base.displayString)
+                                TableRowTitle(checkout.fiat.displayString)
+                                TableRowByline(checkout.crypto.displayString)
                             }
                         }
                     )
@@ -93,7 +121,7 @@ extension BuyCheckoutView.Loaded {
                         trailing: {
                             VStack(alignment: .trailing, spacing: .zero) {
                                 TableRowTitle(checkout.total.displayString)
-                                TableRowByline(checkout.purchase.base.displayString)
+                                TableRowByline(checkout.crypto.displayString)
                             }
                         }
                     )
@@ -101,15 +129,10 @@ extension BuyCheckoutView.Loaded {
                 PrimaryDivider()
                 disclaimer()
             }
+            .overlayWithShadow(.top, color: .semantic.background)
             footer()
         }
         .backgroundTexture(.semantic.background)
-        .onAppear {
-            app.post(
-                event: blockchain.ux.transaction.checkout[].ref(to: context),
-                context: context
-            )
-        }
     }
 
     @ViewBuilder func header() -> some View {
@@ -117,7 +140,7 @@ extension BuyCheckoutView.Loaded {
             Text(checkout.total.displayString)
                 .typography(.title1)
                 .foregroundTexture(.semantic.title)
-            Text(checkout.input.displayString)
+            Text(checkout.crypto.displayString)
                 .typography(.title3)
                 .foregroundTexture(.semantic.text)
         }
@@ -129,7 +152,7 @@ extension BuyCheckoutView.Loaded {
             title: .init(L10n.Label.price(checkout.crypto.code)),
             inlineTitleButton: IconButton(icon: question(information.price), toggle: $information.price),
             trailing: {
-                TableRowTitle(checkout.purchase.exchangeRate.quote.displayString)
+                TableRowTitle(checkout.exchangeRate.displayString)
             }
         )
         if information.price {
@@ -152,7 +175,7 @@ extension BuyCheckoutView.Loaded {
                 title: .init(L10n.Label.blockchainFee),
                 inlineTitleButton: IconButton(icon: question(information.fee), toggle: $information.fee),
                 trailing: {
-                    if let promotion = fee.promotion {
+                    if let promotion = fee.promotion, fee.value.isZero {
                         HStack {
                             Text(rich: "~~\(fee.value.displayString)~~")
                                 .typography(.paragraph1)
@@ -234,18 +257,14 @@ extension BuyCheckoutView.Loaded {
             } else {
                 PrimaryButton(
                     title: L10n.Button.buy(checkout.crypto.code),
-                    isLoading: checkout.quoteExpiration.map { time in abs(time.timeIntervalSinceNow) < 2 } ?? false,
+                    isLoading: readyToRefresh,
                     action: confirmed
                 )
+                .disabled(readyToRefresh)
             }
         }
         .padding()
-        .background(
-            Rectangle()
-                .fill(Color.semantic.background)
-                .shadow(color: .semantic.dark.opacity(0.5), radius: 8)
-        )
-        .mask(Rectangle().padding(.top, -20))
+        .backgroundWithShadow(.top)
     }
 }
 

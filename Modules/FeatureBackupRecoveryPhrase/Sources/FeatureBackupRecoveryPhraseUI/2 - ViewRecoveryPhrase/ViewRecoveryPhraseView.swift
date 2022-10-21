@@ -105,7 +105,10 @@ extension ViewRecoveryPhraseView {
 
     var buttonsSection: some View {
         VStack {
-            PrimaryButton(title: viewStore.recoveryPhraseBackedUp ? Localization.doneButton : Localization.backupToIcloudButton, isLoading: viewStore.backupLoading) {
+            PrimaryButton(
+                title: viewStore.recoveryPhraseBackedUp ? Localization.doneButton : Localization.backupToIcloudButton,
+                isLoading: viewStore.backupLoading
+            ) {
                 if viewStore.recoveryPhraseBackedUp {
                     viewStore.send(.onDoneTap)
                 } else {

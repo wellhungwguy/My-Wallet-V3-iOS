@@ -7,7 +7,21 @@ import Foundation
 
 extension AsyncSequence {
 
-    public func publisher() -> AsyncThrowingSequencePublisher<Self> {
+    public func publisher() -> AsyncSequencePublisher<Self, Error> {
+        .init(self)
+    }
+}
+
+extension AsyncStream {
+
+    public func publisher() -> AsyncSequencePublisher<Self, Never> {
+        .init(self)
+    }
+}
+
+extension AsyncThrowingStream {
+
+    public func publisher() -> AsyncSequencePublisher<Self, Failure> {
         .init(self)
     }
 }
@@ -15,10 +29,9 @@ extension AsyncSequence {
 // Once it is possible to express conformance to a non-throwing async sequence we should create a new type
 // `AsyncSequencePublisher<S: nothrow AsyncSequence>`. At the moment the safest thing to do is capture the error and
 // allow the consumer to ignore it if they wish
-public struct AsyncThrowingSequencePublisher<S: AsyncSequence>: Combine.Publisher {
+public struct AsyncSequencePublisher<S: AsyncSequence, Failure: Error>: Combine.Publisher {
 
     public typealias Output = S.Element
-    public typealias Failure = Error
 
     private var sequence: S
 
@@ -67,8 +80,11 @@ public struct AsyncThrowingSequencePublisher<S: AsyncSequence>: Combine.Publishe
                     } catch is CancellationError {
                         subscriber.receive(completion: .finished)
                         return
-                    } catch {
+                    } catch let error as Failure {
                         subscriber.receive(completion: .failure(error))
+                        throw CancellationError()
+                    } catch {
+                        assertionFailure("Expected \(Failure.self) but got \(type(of: error))")
                         throw CancellationError()
                     }
                     guard let element else {
@@ -93,5 +109,4 @@ public struct AsyncThrowingSequencePublisher<S: AsyncSequence>: Combine.Publishe
         }
     }
 }
-
 #endif

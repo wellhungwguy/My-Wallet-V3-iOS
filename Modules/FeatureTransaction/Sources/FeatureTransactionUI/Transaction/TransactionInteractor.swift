@@ -42,6 +42,7 @@ final class TransactionInteractor {
     private let errorRecorder: ErrorRecording
     private var cancellables: Set<AnyCancellable> = []
     private var transactionProcessor: TransactionProcessor?
+    private var quoteService: BrokerageQuoteService
 
     /// Used to invalidate the transaction processor chain.
     private let invalidate = PublishSubject<Void>()
@@ -56,7 +57,8 @@ final class TransactionInteractor {
         userTiersService: KYCTiersServiceAPI = resolve(),
         ordersService: OrdersServiceAPI = resolve(),
         orderFetchingRepository: OrderFetchingRepositoryAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve()
+        errorRecorder: ErrorRecording = resolve(),
+        quoteService: BrokerageQuoteService = resolve()
     ) {
         self.app = app
         self.coincore = coincore
@@ -68,6 +70,7 @@ final class TransactionInteractor {
         self.userTiersService = userTiersService
         self.ordersService = ordersService
         self.orderFetchingRepository = orderFetchingRepository
+        self.quoteService = quoteService
     }
 
     func initializeTransaction(
@@ -109,6 +112,13 @@ final class TransactionInteractor {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.updateAmount(amount: amount)
+    }
+
+    func updateQuote(_ quote: BrokerageQuote) -> Completable {
+        guard let transactionProcessor else {
+            fatalError("Tx Processor is nil")
+        }
+        return transactionProcessor.updateQuote(quote)
     }
 
     func updateTransactionFees(with level: FeeLevel, amount: MoneyValue?) -> Completable {
@@ -272,6 +282,10 @@ final class TransactionInteractor {
         transactionProcessor?.reset()
     }
 
+    func refresh() {
+        transactionProcessor?.refresh()
+    }
+
     func resetProcessor() {
         transactionProcessor?.reset()
     }
@@ -326,6 +340,22 @@ final class TransactionInteractor {
             )
             .replaceError(with: .inProgress(.pendingExecution))
             .eraseToAnyPublisher()
+    }
+
+    func prices(_ checkout: BrokerageQuote.Request) -> AnyPublisher<Result<BrokerageQuote.Price, UX.Error>, Never> {
+        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+            return quoteService.prices(checkout)
+        } else {
+            return .empty()
+        }
+    }
+
+    func quotes(_ checkout: BrokerageQuote.Request) -> AnyPublisher<Result<BrokerageQuote, UX.Error>, Never> {
+        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+            return quoteService.quotes(checkout)
+        } else {
+            return .empty()
+        }
     }
 
     // MARK: - Private Functions

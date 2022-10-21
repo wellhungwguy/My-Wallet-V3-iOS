@@ -28,8 +28,10 @@ public struct BuyCheckout: Equatable {
 
 extension BuyCheckout {
 
-    public var crypto: MoneyValue { purchase.base }
-    public var fiat: MoneyValue { purchase.quote }
+    public var exchangeRate: MoneyValue { purchase.inverseExchangeRate.quote }
+
+    public var crypto: MoneyValue { purchase.quote }
+    public var fiat: MoneyValue { purchase.base }
 
     public struct PaymentMethod: Equatable {
 
@@ -65,7 +67,7 @@ extension BuyCheckout {
                 fiatValue: .create(major: 98.00, currency: .USD),
                 exchangeRate: .create(major: 47410.61, currency: .USD),
                 cryptoCurrency: .bitcoin,
-                usesFiatAsBase: false
+                usesFiatAsBase: true
             ),
             fee: .init(
                 value: .create(major: 2.00, currency: .USD)

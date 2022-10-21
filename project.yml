@@ -288,6 +288,8 @@ packages:
     path: Modules/Test
   Tool:
     path: Modules/Tool
+  Extensions:
+    path: Modules/Extensions
   RxTool:
     path: Modules/RxTool
   UIComponents:
@@ -452,6 +454,8 @@ targets:
         product: ERC20DataKit
       - package: CryptoAssets
         product: StellarKit
+      - package: Extensions
+        product: Extensions
       - package: Keychain
         product: KeychainKit
       - package: Localization

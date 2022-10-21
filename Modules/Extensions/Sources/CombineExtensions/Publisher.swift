@@ -373,3 +373,12 @@ extension Publisher where Output == Never {
         map(absurd).eraseToAnyPublisher()
     }
 }
+
+extension Publisher where Output: OptionalProtocol {
+
+    public func compacted() -> Publishers.CompactMap<Self, Output.Wrapped> {
+        compactMap { output in
+            output.flatMap { $0 }
+        }
+    }
+}

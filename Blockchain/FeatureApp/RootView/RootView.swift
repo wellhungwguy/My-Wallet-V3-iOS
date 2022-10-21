@@ -280,11 +280,11 @@ struct RootView: View {
             referrals()
                 .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
 
-            QR()
+                    QR()
 
-            if viewStore.appSwitcherEnabled {
-                account()
-            }
+                    if viewStore.appSwitcherEnabled {
+                    account()
+                }
         }
     }
 
@@ -319,7 +319,7 @@ struct RootView: View {
             }
         )
         .if(!viewStore.appModeSeen, then: { $0.highlighted() })
-        .identity(blockchain.ux.switcher.entry)
+            .identity(blockchain.ux.switcher.entry)
     }
 
     @ViewBuilder func QR() -> some View {
