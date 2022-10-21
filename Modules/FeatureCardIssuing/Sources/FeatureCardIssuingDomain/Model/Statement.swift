@@ -9,4 +9,10 @@ public struct Statement: Codable, Equatable {
     public let month: String
 
     public let year: String
+
+    public init(id: String, month: String, year: String) {
+        self.id = id
+        self.month = month
+        self.year = year
+    }
 }

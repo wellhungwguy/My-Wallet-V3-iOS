@@ -23,6 +23,7 @@ enum CardManagementAction: Equatable, BindableAction {
     case hideActivationWebview
     case getCardsResponse(Result<[Card], NabuNetworkError>)
     case getCardResponse(Result<Card?, NabuNetworkError>)
+    case getDocuments
     case getFulfillment
     case getFulfillmentResponse(Result<Card.Fulfillment, NabuNetworkError>)
     case getLinkedAccount
@@ -54,10 +55,10 @@ enum CardManagementAction: Equatable, BindableAction {
     case editAddressComplete(Result<CardAddressSearchResult, Never>)
     case fetchFullName
     case fetchFullNameResponse(Result<String, NabuNetworkError>)
-    case fetchStatements
     case fetchStatementsResponse(Result<[Statement], NabuNetworkError>)
     case fetchStatementUrl(Statement)
     case fetchStatementUrlResponse(Result<URL, NabuNetworkError>)
+    case fetchLegalItemsResponse(Result<[LegalItem], NabuNetworkError>)
     case selectCard(String)
     case binding(BindingAction<CardManagementState>)
 }
@@ -71,7 +72,7 @@ public struct CardManagementState: Equatable {
     @BindableState var isDeleteCardPresented = false
     @BindableState var isDeleting = false
     @BindableState var isCardSelectorPresented = false
-    @BindableState var isStatementsVisible = true
+    @BindableState var isStatementsVisible = false
 
     var activationUrl: LoadingState<URL>?
     var selectedCard: Card?
@@ -87,7 +88,8 @@ public struct CardManagementState: Equatable {
     var tokenisationCoordinator: PassTokenisationCoordinator
     var isTokenisationEnabled: Bool
     var fulfillment: Card.Fulfillment?
-    var statements: [Statement] = []
+    var legalItems: [LegalItem]
+    var statements: [Statement]
 
     public init(
         card: Card? = nil,
@@ -95,6 +97,8 @@ public struct CardManagementState: Equatable {
         isLocked: Bool = false,
         cardHelperUrl: URL? = nil,
         error: NabuNetworkError? = nil,
+        legalItems: [LegalItem] = [],
+        statements: [Statement] = [],
         transactions: [Card.Transaction] = [],
         isTokenisationEnabled: Bool = true,
         tokenisationCoordinator: PassTokenisationCoordinator
@@ -104,6 +108,8 @@ public struct CardManagementState: Equatable {
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
         self.error = error
+        self.legalItems = legalItems
+        self.statements = statements
         self.transactions = transactions
         self.tokenisationCoordinator = tokenisationCoordinator
         self.isTokenisationEnabled = PKAddPaymentPassViewController.canAddPaymentPass() && isTokenisationEnabled
@@ -130,6 +136,7 @@ public struct CardManagementEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardIssuingBuilder: CardIssuingBuilderAPI
     let cardService: CardServiceAPI
+    let legalService: LegalServiceAPI
     let productsService: ProductsServiceAPI
     let transactionService: TransactionServiceAPI
     let accountModelProvider: AccountProviderAPI
@@ -145,6 +152,7 @@ public struct CardManagementEnvironment {
         accountModelProvider: AccountProviderAPI,
         cardIssuingBuilder: CardIssuingBuilderAPI,
         cardService: CardServiceAPI,
+        legalService: LegalServiceAPI,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         productsService: ProductsServiceAPI,
         transactionService: TransactionServiceAPI,
@@ -159,6 +167,7 @@ public struct CardManagementEnvironment {
         self.mainQueue = mainQueue
         self.cardIssuingBuilder = cardIssuingBuilder
         self.cardService = cardService
+        self.legalService = legalService
         self.productsService = productsService
         self.transactionService = transactionService
         self.accountModelProvider = accountModelProvider
@@ -274,7 +283,7 @@ let cardManagementReducer: Reducer<
     case .addToAppleWallet:
         return .none
     case .getCardResponse(.success(let card)):
-        guard let card = card else {
+        guard let card else {
             return .none
         }
         state.selectedCard = card
@@ -292,7 +301,8 @@ let cardManagementReducer: Reducer<
         state.fulfillment = nil
         guard let card = state.selectedCard,
               card.type == .physical,
-              card.status == .unactivated else {
+              card.status == .unactivated
+        else {
             return .none
         }
         return env.cardService
@@ -473,11 +483,6 @@ let cardManagementReducer: Reducer<
             .catchToEffect(CardManagementAction.getCardResponse)
     case .binding:
         return .none
-    case .fetchStatements:
-        return env.cardService
-            .fetchStatements()
-            .receive(on: env.mainQueue)
-            .catchToEffect(CardManagementAction.fetchStatementsResponse)
     case .fetchStatementsResponse(.success(let statements)):
         state.statements = statements
         return .none
@@ -491,6 +496,23 @@ let cardManagementReducer: Reducer<
         }
     case .fetchStatementUrlResponse(.failure):
         return .none
+    case .getDocuments:
+        return .merge(
+            env.legalService
+                .fetchLegalItems()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.fetchLegalItemsResponse),
+            env.cardService
+                .fetchStatements()
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.fetchStatementsResponse)
+        )
+    case .fetchLegalItemsResponse(let result):
+        guard case .success(let legalItems) = result else {
+            return .none
+        }
+        state.legalItems = legalItems
+        return .none
     }
 }
 .binding()
@@ -502,6 +524,7 @@ extension CardManagementEnvironment {
             accountModelProvider: MockServices(),
             cardIssuingBuilder: MockCardIssuingBuilder(),
             cardService: MockServices(),
+            legalService: MockServices(),
             mainQueue: .main,
             productsService: MockServices(),
             transactionService: MockServices(),

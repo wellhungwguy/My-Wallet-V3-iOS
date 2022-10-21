@@ -122,7 +122,7 @@ let addressModificationReducer = Reducer<
             .save(
                 address: Address(
                     line1: state.line1,
-                    line2: state.line2,
+                    line2: state.line2.isEmpty ? nil : state.line2,
                     city: state.city,
                     postCode: state.postcode,
                     state: state.state,

@@ -37,12 +37,14 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     private let cardService: CardServiceAPI
     private let legalService: LegalServiceAPI
     private let productService: ProductsServiceAPI
-    private let addressService: ResidentialAddressServiceAPI
+    private let residentialAddressService: CardIssuingAddressServiceAPI
+    private let shippingAddressService: CardIssuingAddressServiceAPI
     private let transactionService: TransactionServiceAPI
     private let supportRouter: SupportRouterAPI
     private let userInfoProvider: UserInfoProviderAPI
     private let topUpRouter: TopUpRouterAPI
     private let addressSearchRouter: AddressSearchRouterAPI
+    private let shippingAddressSearchRouter: AddressSearchRouterAPI
 
     init(
         accountModelProvider: AccountProviderAPI,
@@ -50,24 +52,28 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         cardService: CardServiceAPI,
         legalService: LegalServiceAPI,
         productService: ProductsServiceAPI,
-        addressService: ResidentialAddressServiceAPI,
+        residentialAddressService: CardIssuingAddressServiceAPI,
+        shippingAddressService: CardIssuingAddressServiceAPI,
         transactionService: TransactionServiceAPI,
         supportRouter: SupportRouterAPI,
         userInfoProvider: UserInfoProviderAPI,
         topUpRouter: TopUpRouterAPI,
-        addressSearchRouter: AddressSearchRouterAPI
+        addressSearchRouter: AddressSearchRouterAPI,
+        shippingAddressSearchRouter: AddressSearchRouterAPI
     ) {
         self.accountModelProvider = accountModelProvider
         self.app = app
         self.cardService = cardService
         self.legalService = legalService
         self.productService = productService
-        self.addressService = addressService
+        self.residentialAddressService = residentialAddressService
+        self.shippingAddressService = shippingAddressService
         self.transactionService = transactionService
         self.supportRouter = supportRouter
         self.userInfoProvider = userInfoProvider
         self.topUpRouter = topUpRouter
         self.addressSearchRouter = addressSearchRouter
+        self.shippingAddressSearchRouter = shippingAddressSearchRouter
     }
 
     func makeIntroViewController(
@@ -93,8 +99,12 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             cardService: cardService,
             legalService: legalService,
             productsService: productService,
-            addressService: addressService,
+            residentialAddressService: residentialAddressService,
+            shippingAddressService: shippingAddressService,
             addressSearchRouter: addressSearchRouter,
+            shippingAddressSearchRouter: shippingAddressSearchRouter,
+            supportRouter: supportRouter,
+            userInfoProvider: userInfoProvider,
             onComplete: onComplete
         )
 
@@ -129,6 +139,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
             accountModelProvider: accountModelProvider,
             cardIssuingBuilder: self,
             cardService: cardService,
+            legalService: legalService,
             mainQueue: .main,
             productsService: productService,
             transactionService: transactionService,

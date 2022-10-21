@@ -201,21 +201,21 @@ final class CardIssuingAddressSearchRouter: FeatureCardIssuingUI.AddressSearchRo
 
 final class AddressService: AddressServiceAPI {
 
-    private let repository: ResidentialAddressRepositoryAPI
+    private let repository: AddressRepositoryAPI
 
-    init(repository: ResidentialAddressRepositoryAPI) {
+    init(repository: AddressRepositoryAPI) {
         self.repository = repository
     }
 
     func fetchAddress() -> AnyPublisher<Address?, AddressServiceError> {
-        repository.fetchResidentialAddress()
+        repository.fetchAddress()
             .map { Address(cardAddress: $0) }
             .mapError(AddressServiceError.network)
             .eraseToAnyPublisher()
     }
 
     func save(address: Address) -> AnyPublisher<Address, AddressServiceError> {
-        repository.update(residentialAddress: Card.Address(address: address))
+        repository.update(address: Card.Address(address: address))
             .map(Address.init(cardAddress:))
             .mapError(AddressServiceError.network)
             .eraseToAnyPublisher()

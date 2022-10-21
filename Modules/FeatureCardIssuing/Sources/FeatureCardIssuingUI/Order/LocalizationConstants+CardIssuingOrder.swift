@@ -62,9 +62,9 @@ extension LocalizationConstants.CardIssuing {
                         comment: "Card Issuing: See card details button"
                     )
 
-                    static let create = NSLocalizedString(
-                        "Create Card",
-                        comment: "Card Issuing: Create card button"
+                    static let `continue` = NSLocalizedString(
+                        "Continue",
+                        comment: "Card Issuing: Continue button"
                     )
                 }
             }
