@@ -139,6 +139,7 @@ extension Card.CardType {
     }
 }
 
+#if DEBUG
 struct CardSelectorView_Previews: PreviewProvider {
     static var previews: some View {
         CardSelectorView(
@@ -150,3 +151,4 @@ struct CardSelectorView_Previews: PreviewProvider {
         )
     }
 }
+#endif
