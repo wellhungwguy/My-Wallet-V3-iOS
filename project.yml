@@ -107,7 +107,7 @@ settingGroups:
   release_signing_staging:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
-      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.staging
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.staging
     groups:
       - base_signing
   debug_signing_alpha:
