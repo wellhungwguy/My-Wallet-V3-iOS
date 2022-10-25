@@ -1,6 +1,8 @@
 /// Extracted from Introspect library
 /// https://github.com/siteline/SwiftUI-Introspect
 
+#if canImport(UIKit)
+
 import SwiftUI
 
 extension View {
@@ -84,3 +86,5 @@ enum Introspect {
         return nil
     }
 }
+
+#endif

@@ -1,6 +1,8 @@
 // Extracted from Introspect library
 // https://github.com/siteline/SwiftUI-Introspect
 
+#if canImport(UIKit)
+
 import SwiftUI
 import UIKit
 
@@ -101,3 +103,5 @@ struct UIKitIntrospectionViewController<TargetViewControllerType: UIViewControll
         }
     }
 }
+
+#endif

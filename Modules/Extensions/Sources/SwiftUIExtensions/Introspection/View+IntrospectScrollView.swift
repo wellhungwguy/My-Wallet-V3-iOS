@@ -2,6 +2,8 @@
 
 import SwiftUI
 
+#if canImport(UIKit)
+
 extension View {
 
     /// Finds a scroll view from SwiftUI, this looks for a view host and finds the first UIScrollview.
@@ -32,3 +34,5 @@ extension View {
         ))
     }
 }
+
+#endif
