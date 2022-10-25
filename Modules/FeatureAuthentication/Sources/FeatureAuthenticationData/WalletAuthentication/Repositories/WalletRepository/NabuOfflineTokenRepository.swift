@@ -8,13 +8,9 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
     let offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError>
 
-    lazy var offlineTokenPublisher: AnyPublisher<
-        Result<NabuOfflineToken, MissingCredentialsError>, Never
-    > = offlineTokenSubject.eraseToAnyPublisher()
+    let offlineTokenPublisher: AnyPublisher<Result<NabuOfflineToken, MissingCredentialsError>, Never>
 
-    private let offlineTokenSubject: PassthroughSubject<
-        Result<NabuOfflineToken, MissingCredentialsError>, Never
-    >
+    private let offlineTokenSubject: PassthroughSubject<Result<NabuOfflineToken, MissingCredentialsError>, Never>
 
     private let credentialsFetcher: AccountCredentialsFetcherAPI
     private let reactiveWallet: ReactiveWalletAPI
@@ -26,13 +22,10 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
         self.credentialsFetcher = credentialsFetcher
         self.reactiveWallet = reactiveWallet
 
-        let subject = PassthroughSubject<
-            Result<NabuOfflineToken, MissingCredentialsError>, Never
-        >()
+        let subject = PassthroughSubject<Result<NabuOfflineToken, MissingCredentialsError>, Never>()
 
         offlineToken = Deferred { [reactiveWallet, credentialsFetcher] in
             reactiveWallet.waitUntilInitializedFirst
-                .first()
                 .flatMap { _ -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
                     credentialsFetcher.fetchAccountCredentials(forceFetch: false)
                         .mapError { _ in MissingCredentialsError.offlineToken }
