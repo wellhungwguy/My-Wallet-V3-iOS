@@ -13,7 +13,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
         let start: Condition?
     }
 
-    unowned let app: AppProtocol
+    let app: AppProtocol
     let scheduler: AnySchedulerOf<DispatchQueue>
 
     var http: URLSessionProtocol
