@@ -9,6 +9,7 @@ import ToolKit
 final class EVMActivityRepository: EVMActivityRepositoryAPI {
 
     private struct Key: Hashable {
+        let network: EVMNetwork
         let cryptoCurrency: CryptoCurrency
         let address: String
     }
@@ -36,9 +37,6 @@ final class EVMActivityRepository: EVMActivityRepositoryAPI {
             cache: cache,
             fetch: { [client, latestBlockRepository] key in
                 let cryptoCurrency = key.cryptoCurrency
-                guard let network = cryptoCurrency.assetModel.evmNetwork else {
-                    return .just([])
-                }
                 let contractAddress = cryptoCurrency.assetModel
                     .kind
                     .erc20ContractAddress
@@ -47,11 +45,11 @@ final class EVMActivityRepository: EVMActivityRepositoryAPI {
                     .evmActivity(
                         address: key.address,
                         contractAddress: contractAddress,
-                        network: network
+                        network: key.network.networkConfig
                     )
                     .eraseError()
                 let currentBlock = latestBlockRepository
-                    .latestBlock(network: network)
+                    .latestBlock(network: key.network.networkConfig)
                     .eraseError()
 
                 return activity.zip(currentBlock)
@@ -60,7 +58,7 @@ final class EVMActivityRepository: EVMActivityRepositoryAPI {
                             .history
                             .compactMap { item in
                                 EVMHistoricalTransaction(
-                                    network: network,
+                                    network: key.network,
                                     response: item,
                                     cryptoCurrency: cryptoCurrency,
                                     contractAddress: contractAddress,
@@ -75,11 +73,13 @@ final class EVMActivityRepository: EVMActivityRepositoryAPI {
     }
 
     func transactions(
+        network: EVMNetwork,
         cryptoCurrency: CryptoCurrency,
         address: String
     ) -> AnyPublisher<[EVMHistoricalTransaction], Error> {
         cachedValue.get(
             key: Key(
+                network: network,
                 cryptoCurrency: cryptoCurrency,
                 address: address.lowercased()
             )
@@ -125,11 +125,11 @@ extension EVMHistoricalTransaction {
             Self.crashIfDebug("No RECEIVED movement.")
             return nil
         }
-        guard let fromAddress = EthereumAddress(address: sent.address) else {
+        guard let fromAddress = EthereumAddress(address: sent.address, network: network) else {
             Self.crashIfDebug("SENT movement address invalid \(sent.address).")
             return nil
         }
-        guard let toAddress = EthereumAddress(address: received.address) else {
+        guard let toAddress = EthereumAddress(address: received.address, network: network) else {
             Self.crashIfDebug("RECEIVED movement address invalid \(received.address).")
             return nil
         }
@@ -140,13 +140,13 @@ extension EVMHistoricalTransaction {
 
         let fee = CryptoValue.create(
             minor: response.fee,
-            currency: network.cryptoCurrency
-        ) ?? .zero(currency: network.cryptoCurrency)
+            currency: network.nativeAsset
+        ) ?? .zero(currency: network.nativeAsset)
 
         let direction: EthereumDirection
         if fromAddress == toAddress {
             direction = .transfer
-        } else if toAddress == EthereumAddress(address: source)! {
+        } else if toAddress == EthereumAddress(address: source, network: network)! {
             direction = .receive
         } else {
             direction = .send

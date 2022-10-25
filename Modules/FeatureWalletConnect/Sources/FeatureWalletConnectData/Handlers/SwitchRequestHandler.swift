@@ -15,17 +15,20 @@ final class SwitchRequestHandler: RequestHandler {
 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let getSession: (WCURL) -> Session?
+    private let getNetwork: (Int) -> EVMNetwork?
     private let responseEvent: (WalletConnectResponseEvent) -> Void
     private let sessionEvent: (WalletConnectSessionEvent) -> Void
 
     init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         getSession: @escaping (WCURL) -> Session?,
+        getNetwork: @escaping (Int) -> EVMNetwork?,
         responseEvent: @escaping (WalletConnectResponseEvent) -> Void,
         sessionEvent: @escaping (WalletConnectSessionEvent) -> Void
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.getSession = getSession
+        self.getNetwork = getNetwork
         self.responseEvent = responseEvent
         self.sessionEvent = sessionEvent
     }
@@ -49,12 +52,12 @@ final class SwitchRequestHandler: RequestHandler {
             responseEvent(.invalid(request))
             return
         }
-        guard let network: EVMNetwork = EVMNetwork(chainID: chainID) else {
+        guard let network: EVMNetwork = getNetwork(Int(chainID)) else {
             // Chain not recognised.
             responseEvent(.invalid(request))
             return
         }
-        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(network.cryptoCurrency) else {
+        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(network.nativeAsset) else {
             // Chain recognised, but currently disabled.
             responseEvent(.invalid(request))
             return

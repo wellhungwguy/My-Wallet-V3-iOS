@@ -7,8 +7,17 @@ import NetworkKit
 import ToolKit
 import WalletPayloadKit
 
+public protocol EVMAssetFactoryAPI {
+    func evmAsset(
+        network: EVMNetwork
+    ) -> CryptoAsset
+}
+
 public protocol ERC20AssetFactoryAPI {
-    func erc20Asset(erc20AssetModel: AssetModel) -> CryptoAsset
+    func erc20Asset(
+        network: EVMNetwork,
+        erc20Token: AssetModel
+    ) -> CryptoAsset
 }
 
 extension DependencyContainer {
@@ -83,10 +92,18 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
+        factory { () -> AssetLoader in
+            DynamicAssetLoader(
+                enabledCurrenciesService: DIKit.resolve(),
+                evmAssetFactory: DIKit.resolve(),
+                erc20AssetFactory: DIKit.resolve()
+            )
+        }
+
         single { () -> CoincoreAPI in
             let queue = DispatchQueue(label: "coincore.op.queue", qos: .userInitiated)
             return Coincore(
-                assetLoader: DynamicAssetLoader(),
+                assetLoader: DIKit.resolve(),
                 fiatAsset: FiatAsset(),
                 reactiveWallet: DIKit.resolve(),
                 queue: queue

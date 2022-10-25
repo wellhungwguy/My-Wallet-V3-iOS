@@ -4,6 +4,7 @@ import BigInt
 import Combine
 import DIKit
 import Foundation
+import MoneyKit
 import NetworkKit
 
 enum GasEstimateError: Error {

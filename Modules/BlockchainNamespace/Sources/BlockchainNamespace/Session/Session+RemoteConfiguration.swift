@@ -38,8 +38,8 @@ extension Session {
         private var experiments: Experiments!
         private unowned var app: AppProtocol!
 
-        public init<Remote: RemoteConfiguration_p>(
-            remote: Remote,
+        public init(
+            remote: some RemoteConfiguration_p,
             session: URLSessionProtocol = URLSession.shared,
             preferences: Preferences = UserDefaults.standard,
             scheduler: AnySchedulerOf<DispatchQueue> = .main,

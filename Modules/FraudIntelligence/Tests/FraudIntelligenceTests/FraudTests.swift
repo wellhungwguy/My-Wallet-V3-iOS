@@ -31,12 +31,12 @@ final class FraudIntelligenceTests: XCTestCase {
 
     func test_initialise() {
 
-        XCTAssertNil(Test.MobileIntelligence.options)
+        XCTAssertNil(Test.MobileIntelligence.options, "options should be nil")
 
         initialise()
 
-        XCTAssertNotNil(Test.MobileIntelligence.options)
-        XCTAssertEqual(Test.MobileIntelligence.options?.clientId, "client-id")
+        XCTAssertNotNil(Test.MobileIntelligence.options, "options should be not nil")
+        XCTAssertEqual(Test.MobileIntelligence.options?.clientId, "client-id", "client-id should match")
     }
 
     func test_update() {

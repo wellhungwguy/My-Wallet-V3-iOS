@@ -91,48 +91,15 @@ blockchain:
 				+ blockchain.db.array
 				+ blockchain.session.configuration.value
 			evm:
-				avax:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
-					tokens:
-						always:
-							fetch:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
-				bnb:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
-					tokens:
-						always:
-							fetch:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
 				name:
 					sanitize:
 						is:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
-				polygon:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
-					tokens:
-						always:
-							fetch:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
+				supported:
+				+ blockchain.db.array
+				+ blockchain.session.configuration.value
 			firebase:
 				project:
 					id:

@@ -16,7 +16,7 @@ extension OpenBanking {
 
 extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 
-    public init<E>(_ error: E) where E: Error {
+    public init(_ error: some Error) {
         switch error {
         case let error as OpenBanking.Error:
             self = error

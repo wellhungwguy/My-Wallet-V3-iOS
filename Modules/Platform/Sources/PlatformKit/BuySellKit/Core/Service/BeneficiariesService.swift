@@ -201,11 +201,11 @@ private func concat(
     return result + linkedBanks
 }
 
-extension Array where Element == PaymentMethod {
+extension [PaymentMethod] {
 
     func topLimit(bank: LinkedBankData) -> FiatValue? {
-        let topBankTransferLimit = (self.first { $0.type.isBankTransfer })?.max
-        let topBankAccountLimit = (self.first { $0.type.isBankAccount })?.max
+        let topBankTransferLimit = (first { $0.type.isBankTransfer })?.max
+        let topBankAccountLimit = (first { $0.type.isBankAccount })?.max
 
         if bank.isBankTransferAccount, let limit = topBankTransferLimit {
             return limit.convert(using: .one(currency: bank.currency))

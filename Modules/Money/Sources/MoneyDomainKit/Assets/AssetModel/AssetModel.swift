@@ -139,40 +139,4 @@ extension AssetModel {
         spotColor: "000000",
         sortIndex: 4
     )
-
-    public static let polygon = AssetModel(
-        code: "MATIC.MATIC",
-        displayCode: "MATIC",
-        kind: .coin(minimumOnChainConfirmations: 128),
-        name: "Polygon",
-        precision: 18,
-        products: [.privateKey],
-        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png",
-        spotColor: nil,
-        sortIndex: 5
-    )
-
-    public static let bnb = AssetModel(
-        code: "BNB",
-        displayCode: "BNB",
-        kind: .coin(minimumOnChainConfirmations: 30),
-        name: "Binance Smart Chain",
-        precision: 18,
-        products: [.privateKey],
-        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png",
-        spotColor: nil,
-        sortIndex: 6
-    )
-
-    public static let avax = AssetModel(
-        code: "AVAX",
-        displayCode: "AVAX",
-        kind: .coin(minimumOnChainConfirmations: 30),
-        name: "Avalanche C-Chain",
-        precision: 18,
-        products: [.privateKey],
-        logoPngUrl: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/avalanchec/info/logo.png",
-        spotColor: nil,
-        sortIndex: 7
-    )
 }

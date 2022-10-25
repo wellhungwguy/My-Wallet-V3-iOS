@@ -120,6 +120,7 @@ public final class PortfolioScreenInteractor {
         let interactor = HistoricalBalanceCellInteractor(
             cryptoAsset: cryptoAsset,
             historicalFiatPriceService: historicalProvider[cryptoAsset.asset],
+            enabledCurrenciesService: enabledCurrenciesService,
             fiatCurrencyService: fiatCurrencyService
         )
         historicalBalanceCellInteractors[cryptoCurrency] = interactor

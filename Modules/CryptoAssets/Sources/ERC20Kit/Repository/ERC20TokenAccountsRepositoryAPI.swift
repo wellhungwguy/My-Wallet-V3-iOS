@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import EthereumKit
+import MoneyKit
 import ToolKit
 
 /// An ERC-20 token accounts repository error.
@@ -30,7 +31,7 @@ public protocol ERC20BalancesRepositoryAPI {
     /// - Parameter address: The ethereum account address.
     func invalidateCache(
         for address: String,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     )
 
     /// Gets the ERC-20 token accounts associated with the given ethereum account address, optionally ignoring cached values.
@@ -42,7 +43,7 @@ public protocol ERC20BalancesRepositoryAPI {
     /// - Returns: A publisher that emits a `ERC20TokenAccounts` on success, or a `ERC20TokenAccountsError` on failure.
     func tokens(
         for address: String,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         forceFetch: Bool
     ) -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError>
 
@@ -56,7 +57,7 @@ public protocol ERC20BalancesRepositoryAPI {
     /// - Returns: A publisher that streams a `ERC20TokenAccounts` or `ERC20TokenAccountsError`, including any subsequent updates.
     func tokensStream(
         for address: String,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         skipStale: Bool
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError>
 }
@@ -69,7 +70,7 @@ extension ERC20BalancesRepositoryAPI {
     /// - Parameter address: The ethereum account address.
     func invalidateCache(
         for address: EthereumAddress,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) {
         invalidateCache(for: address.publicKey, network: network)
     }
@@ -81,7 +82,7 @@ extension ERC20BalancesRepositoryAPI {
     /// - Returns: A publisher that emits a `ERC20TokenAccounts` on success, or a `ERC20TokenAccountsError` on failure.
     public func tokens(
         for address: EthereumAddress,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         forceFetch: Bool = false
     ) -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError> {
         tokens(for: address.publicKey, network: network, forceFetch: forceFetch)
@@ -94,7 +95,7 @@ extension ERC20BalancesRepositoryAPI {
     /// - Returns: A publisher that streams a `ERC20TokenAccounts` or `ERC20TokenAccountsError`, including any subsequent updates.
     public func tokensStream(
         for address: EthereumAddress,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         skipStale: Bool = false
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError> {
         tokensStream(for: address.publicKey, network: network, skipStale: skipStale)

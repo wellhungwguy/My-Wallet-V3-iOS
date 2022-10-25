@@ -81,7 +81,7 @@ extension FetchResult {
         self.init(.init(catching: body), metadata)
     }
 
-    public init<E: Swift.Error>(_ result: Result<Any, E>, _ metadata: Metadata) {
+    public init(_ result: Result<Any, some Swift.Error>, _ metadata: Metadata) {
         switch result {
         case .success(let value):
             self = .value(value, metadata)

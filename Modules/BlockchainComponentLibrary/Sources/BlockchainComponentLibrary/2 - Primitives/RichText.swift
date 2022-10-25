@@ -33,7 +33,7 @@ extension SwiftUI.Text {
     /// - `[https://blockchain.com](Links)` // Currently font color only, no tap action
     ///
     /// - Parameter content: Markdown text to be parsed
-    public init<S>(rich content: S) where S: StringProtocol {
+    public init(rich content: some StringProtocol) {
         var visitor = Visitor()
         self = visitor.text(from: .init(parsing: String(content)))
     }

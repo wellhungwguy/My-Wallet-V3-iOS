@@ -65,7 +65,7 @@ public struct AppEnvironment {
     var resetPasswordService: ResetPasswordServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
+    var assetsRemoteService: AssetsRemoteServiceAPI
     var urlSession: URLSession
     var walletPayloadService: WalletPayloadServiceAPI
     var walletRepoPersistence: WalletRepoPersistenceAPI
@@ -116,7 +116,7 @@ public struct AppEnvironment {
         resetPasswordService: ResetPasswordServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
         siftService: FeatureAuthenticationDomain.SiftServiceAPI,
-        supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
+        assetsRemoteService: AssetsRemoteServiceAPI,
         urlSession: URLSession,
         walletPayloadService: WalletPayloadServiceAPI,
         walletRepoPersistence: WalletRepoPersistenceAPI,
@@ -166,7 +166,7 @@ public struct AppEnvironment {
         self.resetPasswordService = resetPasswordService
         self.sharedContainer = sharedContainer
         self.siftService = siftService
-        self.supportedAssetsRemoteService = supportedAssetsRemoteService
+        self.assetsRemoteService = assetsRemoteService
         self.urlSession = urlSession
         self.walletPayloadService = walletPayloadService
         self.walletRepoPersistence = walletRepoPersistence

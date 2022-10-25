@@ -21,8 +21,8 @@ struct MultiAppContentView<Content: View>: View {
         selectedDetent: Binding<PresentationDetent>,
         @ViewBuilder content: () -> Content
     ) {
-        self._scrollOffset = scrollOffset
-        self._selectedDetent = selectedDetent
+        _scrollOffset = scrollOffset
+        _selectedDetent = selectedDetent
         self.content = content()
     }
 
@@ -53,7 +53,7 @@ struct StaticMultiAppContentView<Content: View>: View {
         scrollOffset: Binding<CGPoint>,
         @ViewBuilder content: () -> Content
     ) {
-        self._scrollOffset = scrollOffset
+        _scrollOffset = scrollOffset
         self.content = content()
     }
 

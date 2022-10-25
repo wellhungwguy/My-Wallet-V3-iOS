@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A supported assets endpoint response, representing a list of supported assets.
-struct SupportedAssetsResponse: Codable {
+struct AssetsResponse: Codable {
 
     /// A supported asset.
     struct Asset: Codable {

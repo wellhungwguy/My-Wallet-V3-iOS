@@ -28,7 +28,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     public let onTxCompleted: TxCompleted
 
     public var currencyType: CurrencyType {
-        network.cryptoCurrency.currencyType
+        network.nativeAsset.currencyType
     }
 
     public var label: String {

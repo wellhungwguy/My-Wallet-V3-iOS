@@ -33,7 +33,7 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
         __subscript[keyPath: keyPath]
     }
 
-    public subscript<C: Collection>(path: C) -> Any? where C.Element == CodingKey {
+    public subscript(path: some Collection<CodingKey>) -> Any? {
         get { __subscript[path] }
         set { __subscript[path] = newValue }
     }

@@ -34,9 +34,9 @@ public class App: AppProtocol {
 
     public lazy var deepLinks = DeepLink(self)
 
-    public convenience init<Remote: RemoteConfiguration_p>(
+    public convenience init(
         language: Language = Language.root.language,
-        remote: Remote
+        remote: some RemoteConfiguration_p
     ) {
         self.init(
             language: language,

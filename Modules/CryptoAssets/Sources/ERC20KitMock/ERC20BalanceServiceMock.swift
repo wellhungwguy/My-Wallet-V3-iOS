@@ -12,30 +12,30 @@ final class ERC20BalanceServiceMock: ERC20BalanceServiceAPI {
 
     // MARK: - Private Properties
 
-    private let balance: CryptoValue
+    var underlyingBalance: CryptoValue!
 
     // MARK: - Setup
 
     /// Creates a mock ERC-20 balance service.
     ///
     /// - Parameter cryptoCurrency: An ERC-20 crypto currency.
-    init(cryptoCurrency: CryptoCurrency) {
-        balance = .create(majorBigInt: 2, currency: cryptoCurrency)
-    }
+    init() {}
 
     // MARK: - Internal Methods
 
     func balance(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> AnyPublisher<CryptoValue, ERC20TokenAccountsError> {
-        .just(balance)
+        .just(underlyingBalance)
     }
 
     func balanceStream(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> StreamOf<CryptoValue, ERC20TokenAccountsError> {
-        .just(.success(balance))
+        .just(.success(underlyingBalance))
     }
 }

@@ -6,6 +6,7 @@ import Combine
 import ComposableArchitecture
 import EthereumKit
 import FeatureWalletConnectDomain
+import MoneyKit
 import SwiftUI
 import UIComponentsKit
 import WalletConnectSwift

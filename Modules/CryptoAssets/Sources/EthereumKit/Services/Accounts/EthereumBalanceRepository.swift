@@ -54,7 +54,7 @@ final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
                     .map { response -> CryptoValue in
                         CryptoValue.create(
                             minor: response.result,
-                            currency: key.network.cryptoCurrency
+                            currency: key.network.nativeAsset
                         )
                     }
                     .mapError(EthereumBalanceRepositoryError.failed)

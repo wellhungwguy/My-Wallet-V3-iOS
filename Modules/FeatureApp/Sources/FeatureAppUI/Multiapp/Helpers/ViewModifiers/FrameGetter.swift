@@ -8,14 +8,14 @@ class ViewFrame: ObservableObject {
     /// Published value of the frame
     @Published var frame: CGRect {
         willSet {
-            if newValue.minY == 0 && newValue != startingRect {
+            if newValue.minY == 0, newValue != startingRect {
                 startingRect = newValue
             }
         }
     }
 
     init() {
-        self.frame = .zero
+        frame = .zero
     }
 }
 

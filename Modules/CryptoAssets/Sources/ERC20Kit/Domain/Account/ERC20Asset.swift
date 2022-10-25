@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import EthereumKit
 import MoneyKit
 import PlatformKit
@@ -21,7 +20,7 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Private properties
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        walletAccountRepository.defaultAccount(erc20Token: erc20Token)
+        walletAccountRepository.defaultAccount(erc20Token: erc20Token, network: network)
     }
 
     // MARK: - Private properties
@@ -30,8 +29,8 @@ final class ERC20Asset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [walletAccountRepository, erc20Token] in
-            walletAccountRepository.defaultAccount(erc20Token: erc20Token)
+        defaultAccountProvider: { [walletAccountRepository, erc20Token, network] in
+            walletAccountRepository.defaultAccount(erc20Token: erc20Token, network: network)
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory
@@ -39,26 +38,30 @@ final class ERC20Asset: CryptoAsset {
 
     private let addressFactory: ExternalAssetAddressFactory
     private let erc20Token: AssetModel
-    private let kycTiersService: KYCTiersServiceAPI
-    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
+    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
+    private let kycTiersService: KYCTiersServiceAPI
+    private let network: EVMNetwork
+    private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
 
     // MARK: - Setup
 
     init(
         erc20Token: AssetModel,
-        walletAccountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve(),
-        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        network: EVMNetwork,
+        walletAccountRepository: EthereumWalletAccountRepositoryAPI,
+        errorRecorder: ErrorRecording,
+        exchangeAccountProvider: ExchangeAccountsProviderAPI,
+        kycTiersService: KYCTiersServiceAPI,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         asset = erc20Token.cryptoCurrency!
         addressFactory = ERC20ExternalAssetAddressFactory(
             asset: asset,
+            network: network,
             enabledCurrenciesService: enabledCurrenciesService
         )
+        self.network = network
         self.erc20Token = erc20Token
         self.walletAccountRepository = walletAccountRepository
         self.errorRecorder = errorRecorder
@@ -91,13 +94,14 @@ final class ERC20Asset: CryptoAsset {
 
 extension EthereumWalletAccountRepositoryAPI {
 
-    fileprivate func defaultAccount(erc20Token: AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
+    fileprivate func defaultAccount(erc20Token: AssetModel, network: EVMNetwork) -> AnyPublisher<SingleAccount, CryptoAssetError> {
         defaultAccount
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account in
                 ERC20CryptoAccount(
                     publicKey: account.publicKey,
-                    erc20Token: erc20Token
+                    erc20Token: erc20Token,
+                    network: network
                 )
             }
             .eraseToAnyPublisher()

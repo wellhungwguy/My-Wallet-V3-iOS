@@ -3,9 +3,9 @@
 import DIKit
 import FeatureKYCDomain
 import MoneyKit
+import PermissionsKit
 import PlatformKit
 import class PlatformUIKit.AnnouncementRecorder
-import PermissionsKit
 import RxRelay
 import RxSwift
 import ToolKit

@@ -9,36 +9,39 @@ public protocol EthereumFeeServiceAPI {
     /// Streams a single `EthereumTransactionFee`, representing suggested fee amounts based on mempool.
     /// Never fails, uses default Fee values if network call fails.
     /// - Parameter cryptoCurrency: An EVM Native token or ERC20 token.
-    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never>
+    func fees(network: EVMNetwork, contractAddress: String?) -> AnyPublisher<EthereumTransactionFee, Never>
+}
+
+extension EthereumFeeServiceAPI {
+
+    public func fees(network: EVMNetwork) -> AnyPublisher<EthereumTransactionFee, Never> {
+        fees(network: network, contractAddress: nil)
+    }
+
+    public func fees(network: EVMNetwork, cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
+        fees(network: network, contractAddress: cryptoCurrency.assetModel.kind.erc20ContractAddress)
+    }
 }
 
 final class EthereumFeeService: EthereumFeeServiceAPI {
 
     // MARK: - CryptoFeeServiceAPI
 
-    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
-        guard let network = cryptoCurrency.assetModel.evmNetwork else {
-            let code = cryptoCurrency.code
-            let chain = cryptoCurrency.assetModel.kind.erc20ParentChain?.rawValue ?? ""
-            fatalError("Incompatible Asset: '\(code)', chain: '\(chain)'.")
-        }
-        let contractAddress = cryptoCurrency.assetModel.kind.erc20ContractAddress
-        switch network {
-        case .avalanceCChain,
-             .binanceSmartChain:
+    func fees(network: EVMNetwork, contractAddress: String?) -> AnyPublisher<EthereumTransactionFee, Never> {
+        switch network.networkConfig.networkTicker {
+        case _EVMNetwork.polygon.rawValue, _EVMNetwork.ethereum.rawValue:
             return client
-                .newFees(
-                    network: network,
+                .fees(
+                    network: network.networkConfig,
                     contractAddress: contractAddress
                 )
                 .map { EthereumTransactionFee(response: $0, network: network) }
                 .replaceError(with: EthereumTransactionFee.default(network: network))
                 .eraseToAnyPublisher()
-        case .ethereum,
-             .polygon:
+        default:
             return client
-                .fees(
-                    network: network,
+                .newFees(
+                    network: network.networkConfig,
                     contractAddress: contractAddress
                 )
                 .map { EthereumTransactionFee(response: $0, network: network) }

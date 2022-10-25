@@ -62,7 +62,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     siftService: $0.siftService,
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
-                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
+                    assetsRemoteService: $0.assetsRemoteService,
                     featureFlagService: $0.featureFlagsService,
                     observabilityService: $0.observabilityService,
                     mainQueue: $0.mainQueue

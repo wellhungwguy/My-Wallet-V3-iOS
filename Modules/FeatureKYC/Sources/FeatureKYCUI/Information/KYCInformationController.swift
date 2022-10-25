@@ -133,8 +133,9 @@ struct KYCProgressInformationView: View {
             }
         }
 
-        if (config?.isPrimaryButtonEnabled ?? false),
-           let buttonTitle = viewModel?.buttonTitle {
+        if config?.isPrimaryButtonEnabled ?? false,
+           let buttonTitle = viewModel?.buttonTitle
+        {
             PrimaryButton(
                 title: buttonTitle
             ) {

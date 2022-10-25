@@ -363,7 +363,7 @@ final class TransactionModel {
     func updateQuote(_ quote: BrokerageQuote) -> Disposable {
         interactor.updateQuote(quote)
             .subscribe(
-                onError: { error in
+                onError: { _ in
                     Logger.shared.error("!TRANSACTION!> Unable to update quote")
                 }
             )

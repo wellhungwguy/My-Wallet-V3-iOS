@@ -33,9 +33,9 @@ final class CryptoCurrencyTests: XCTestCase {
 
     func testUniquenessERC20AssetModelIsBasedSolelyOnSymbol() {
         let currencies: [AssetModel] = [
-            .mockERC20(symbol: "A", displaySymbol: "A", name: "A", sortIndex: 0),
-            .mockERC20(symbol: "A", displaySymbol: "X", name: "X", sortIndex: 1),
-            .mockERC20(symbol: "B", displaySymbol: "B", name: "B", sortIndex: 2)
+            .mockERC20(symbol: "A", displaySymbol: "A", name: "A", erc20Address: "", sortIndex: 0),
+            .mockERC20(symbol: "A", displaySymbol: "X", name: "X", erc20Address: "", sortIndex: 1),
+            .mockERC20(symbol: "B", displaySymbol: "B", name: "B", erc20Address: "", sortIndex: 2)
         ]
         let unique = currencies.unique
         XCTAssertEqual(unique.count, 2)

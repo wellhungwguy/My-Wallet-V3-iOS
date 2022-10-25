@@ -38,7 +38,7 @@ struct EthereumReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
         network: EVMNetwork,
         onTxCompleted: @escaping TxCompleted
     ) {
-        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: network.cryptoCurrency) else {
+        guard let eip681URI = EIP681URI(address: address, network: network) else {
             return nil
         }
         self.eip681URI = eip681URI

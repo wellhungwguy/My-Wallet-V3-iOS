@@ -181,9 +181,9 @@ extension PrimaryPicker {
             )
         }
 
-        private init<T: View>(
+        private init(
             _ inputState: InputState,
-            @ViewBuilder _ view: @escaping (Binding<Selection?>) -> T
+            @ViewBuilder _ view: @escaping (Binding<Selection?>) -> some View
         ) {
             self.inputState = inputState
             builder = { AnyView(view($0)) }

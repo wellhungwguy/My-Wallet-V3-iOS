@@ -324,7 +324,7 @@ struct QuickPriceView: View {
 
     var body: some View {
         Group {
-            if let price = price {
+            if let price {
                 Text(price.displayString)
                     .typography(.caption1)
                     .foregroundColor(.semantic.body)

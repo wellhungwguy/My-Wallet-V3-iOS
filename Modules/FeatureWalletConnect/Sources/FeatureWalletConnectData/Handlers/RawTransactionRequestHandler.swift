@@ -18,6 +18,7 @@ final class RawTransactionRequestHandler: RequestHandler {
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let getSession: (WCURL) -> Session?
+    private let getNetwork: (Int) -> EVMNetwork?
     private let responseEvent: (WalletConnectResponseEvent) -> Void
     private let userEvent: (WalletConnectUserEvent) -> Void
     private var cancellables: Set<AnyCancellable> = []
@@ -27,6 +28,7 @@ final class RawTransactionRequestHandler: RequestHandler {
         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         getSession: @escaping (WCURL) -> Session?,
+        getNetwork: @escaping (Int) -> EVMNetwork?,
         responseEvent: @escaping (WalletConnectResponseEvent) -> Void,
         userEvent: @escaping (WalletConnectUserEvent) -> Void
     ) {
@@ -34,6 +36,7 @@ final class RawTransactionRequestHandler: RequestHandler {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.enabledCurrenciesService = enabledCurrenciesService
         self.getSession = getSession
+        self.getNetwork = getNetwork
         self.responseEvent = responseEvent
         self.userEvent = userEvent
     }
@@ -52,12 +55,12 @@ final class RawTransactionRequestHandler: RequestHandler {
             responseEvent(.invalid(request))
             return
         }
-        guard let network: EVMNetwork = EVMNetwork(int: chainID) else {
+        guard let network: EVMNetwork = getNetwork(chainID) else {
             // Chain not recognised.
             responseEvent(.invalid(request))
             return
         }
-        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(network.cryptoCurrency) else {
+        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(network.nativeAsset) else {
             // Chain recognised, but currently disabled.
             responseEvent(.invalid(request))
             return

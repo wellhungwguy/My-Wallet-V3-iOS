@@ -42,7 +42,7 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
                             .map { account in
                                 adapter
                                     .createAndValidate(fromString: address, account: account)
-                                    .mapToResult()
+                                    .result()
                             }
                             .zip()
                     }

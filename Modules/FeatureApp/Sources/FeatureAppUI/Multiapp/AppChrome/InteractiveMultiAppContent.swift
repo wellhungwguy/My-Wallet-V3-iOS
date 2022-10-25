@@ -71,6 +71,7 @@ struct _Tab: Hashable {
     let unselectedIcon: Icon
     let title: String
 }
+
 private let tradingTabs = [
     _Tab(
         id: 0,
@@ -183,7 +184,7 @@ struct DummyInnerContentView: View {
                         PrimaryRow(
                             title: "\(tab.title) \(value)",
                             subtitle: "Buy & Sell",
-                            action: { }
+                            action: {}
                         )
                     }
                 }

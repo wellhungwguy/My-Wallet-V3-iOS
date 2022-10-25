@@ -85,7 +85,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService
-                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+                .fees(network: self.erc20CryptoAccount.network, cryptoCurrency: self.sourceCryptoCurrency)
                 .asSingle()
         }
     }
@@ -105,7 +105,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 .asSingle(),
             actionableBalance
         )
-        .map { [cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
+        .map { [feeCryptoCurrency, cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
             if let predefinedAmount,
                predefinedAmount.currency == cryptoCurrency
@@ -114,7 +114,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             } else {
                 amount = .zero(currency: cryptoCurrency)
             }
-            let feeCryptoCurrency = cryptoCurrency.feeCryptoCurrency
             return PendingTransaction(
                 amount: amount,
                 available: availableBalance,
@@ -123,7 +122,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(feeCryptoCurrency)
+                    asset: feeCryptoCurrency
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -261,8 +260,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                                 isContract: true
                             ),
                             nonce: nonce,
-                            chainID: network.chainID,
-                            contractAddress: erc20Token.contractAddress
+                            chainID: network.networkConfig.chainID,
+                            contractAddress: erc20Token.contractAddress(network: network)
                         ).publisher
                     }
                     .asSingle()
@@ -270,7 +269,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher.send(
                     transaction: candidate,
-                    network: network
+                    network: network.networkConfig
                 )
                 .asSingle()
             }
@@ -286,7 +285,7 @@ extension ERC20OnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         pendingTransactionRepository
             .isWaitingOnTransaction(
-                network: erc20CryptoAccount.network,
+                network: erc20CryptoAccount.network.networkConfig,
                 address: erc20CryptoAccount.publicKey
             )
             .replaceError(with: true)
@@ -409,10 +408,9 @@ extension ERC20OnChainTransactionEngine {
 
     /// Streams `MoneyValuePair` for the exchange rate of Ethereum in the current fiat currency.
     private var ethereumExchangeRatePair: Single<MoneyValuePair> {
-        let feeCryptoCurrency = cryptoCurrency.feeCryptoCurrency.currencyType
-        return walletCurrencyService
+        walletCurrencyService
             .displayCurrency
-            .flatMap { [currencyConversionService] fiatCurrency in
+            .flatMap { [feeCryptoCurrency, currencyConversionService] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: feeCryptoCurrency, to: fiatCurrency.currencyType)
                     .map { MoneyValuePair(base: .one(currency: feeCryptoCurrency), quote: $0) }
@@ -420,15 +418,8 @@ extension ERC20OnChainTransactionEngine {
             }
             .asSingle()
     }
-}
 
-extension CryptoCurrency {
-    var feeCryptoCurrency: CryptoCurrency {
-        switch assetModel.kind {
-        case .erc20(contractAddress: _, parentChain: let chain):
-            return chain.evmNetwork.cryptoCurrency
-        default:
-            return self
-        }
+    private var feeCryptoCurrency: CurrencyType {
+        erc20CryptoAccount.network.nativeAsset.currencyType
     }
 }

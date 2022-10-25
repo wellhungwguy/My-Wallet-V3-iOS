@@ -7,4 +7,5 @@ class MockEnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     var allEnabledCryptoCurrencies: [CryptoCurrency] = []
     var allEnabledFiatCurrencies: [FiatCurrency] = []
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] = []
+    var allEnabledEVMNetworks: [EVMNetwork] = []
 }

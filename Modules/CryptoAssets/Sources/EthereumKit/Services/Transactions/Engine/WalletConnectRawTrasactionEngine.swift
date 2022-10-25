@@ -154,7 +154,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
             encodedTransaction: walletConnectTarget.rawTransaction
         )
         return sendingService
-            .send(transaction: encodedTransaction, network: network)
+            .send(transaction: encodedTransaction, network: network.networkConfig)
             .map(\.transactionHash)
             .map { transactionHash -> TransactionResult in
                 .hashed(txHash: transactionHash, amount: pendingTransaction.amount)

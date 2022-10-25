@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import EthereumKit
 import Foundation
+import MoneyKit
 import PlatformKit
 
 public protocol WalletConnectAccountProviderAPI {
@@ -21,7 +22,7 @@ final class WalletConnectAccountProvider {
 
 extension WalletConnectAccountProvider: WalletConnectAccountProviderAPI {
     func defaultAccount(network: EVMNetwork) -> AnyPublisher<SingleAccount, CryptoAssetError> {
-        coincore[network.cryptoCurrency].defaultAccount
+        coincore[network.nativeAsset].defaultAccount
     }
 }
 

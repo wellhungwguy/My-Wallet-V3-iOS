@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import MoneyKit
 import ToolKit
 
 public enum EthereumAccountServiceError: Error {

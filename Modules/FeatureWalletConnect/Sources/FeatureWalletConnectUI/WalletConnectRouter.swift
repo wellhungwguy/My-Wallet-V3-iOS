@@ -7,6 +7,7 @@ import DIKit
 import EthereumKit
 import FeatureWalletConnectDomain
 import Foundation
+import MoneyKit
 import PlatformUIKit
 import SwiftUI
 import UIKit
@@ -102,7 +103,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
                 }
             }
         )
-        let state = WalletConnectEventState(session: session, state: .chainID(name: network.name))
+        let state = WalletConnectEventState(session: session, state: .chainID(name: network.networkConfig.name))
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
         controller.transitioningDelegate = sheetPresenter

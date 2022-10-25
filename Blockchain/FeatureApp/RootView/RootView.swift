@@ -282,7 +282,8 @@ struct RootView: View {
 
                     QR()
 
-                    if viewStore.appSwitcherEnabled {
+                    if viewStore.appSwitcherEnabled
+                {
                     account()
                 }
         }

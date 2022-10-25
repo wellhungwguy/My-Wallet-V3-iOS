@@ -138,8 +138,8 @@ extension EthereumHistoricalTransaction {
 
         self.init(
             identifier: response.hash,
-            fromAddress: EthereumAddress(address: response.from)!,
-            toAddress: EthereumAddress(address: response.to)!,
+            fromAddress: EthereumAddress(address: response.from, network: .ethereum)!,
+            toAddress: EthereumAddress(address: response.to, network: .ethereum)!,
             direction: direction,
             amount: amount,
             transactionHash: response.hash,

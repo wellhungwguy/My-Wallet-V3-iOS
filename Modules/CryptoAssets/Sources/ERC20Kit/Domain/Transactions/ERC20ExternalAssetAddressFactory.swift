@@ -17,13 +17,16 @@ enum ERC20AddressFactoryError: Error {
 final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
 
     private let asset: CryptoCurrency
+    private let network: EVMNetwork
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     init(
         asset: CryptoCurrency,
+        network: EVMNetwork,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         self.asset = asset
+        self.network = network
         self.enabledCurrenciesService = enabledCurrenciesService
     }
 
@@ -65,10 +68,6 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
         let replaceLabel = label == address
         // Creates BIP21URI from url.
 
-        guard let network = asset.assetModel.evmNetwork else {
-            return .failure(.invalidAddress)
-        }
-
         guard let eip681URI = EIP681URI(
             url: address,
             network: network,
@@ -77,11 +76,11 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.
-        guard Self.validateAddress(eip681URI: eip681URI) else {
+        guard Self.validateAddress(eip681URI: eip681URI, network: network) else {
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.
-        guard Self.validate(cryptoCurrency: asset, eip681URI: eip681URI) else {
+        guard Self.validate(cryptoCurrency: asset, eip681URI: eip681URI, enabledCurrenciesService: enabledCurrenciesService) else {
             return .failure(.invalidAddress)
         }
         guard eip681URI.amount == nil || eip681URI.amount?.currency == asset else {
@@ -115,7 +114,7 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // Removes the prefix, if present.
         let address = address.removing(prefix: "ethereum:")
         // Validates the address is valid.
-        guard Self.validate(address: address) else {
+        guard Self.validate(address: address, network: network) else {
             return .failure(.invalidAddress)
         }
         // Creates ERC20ReceiveAddress from 'address'.
@@ -123,7 +122,8 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
             asset: asset,
             address: address,
             label: replaceLabel ? address : label,
-            onTxCompleted: onTxCompleted
+            onTxCompleted: onTxCompleted,
+            enabledCurrenciesService: enabledCurrenciesService
         ) else {
             return .failure(.invalidAddress)
         }
@@ -132,30 +132,33 @@ final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
     }
 
     /// Validates that a given EIP681URI is 'compatible' with a 'CryptoCurrency'.
-    private static func validateAddress(eip681URI: EIP681URI) -> Bool {
+    private static func validateAddress(eip681URI: EIP681URI, network: EVMNetwork) -> Bool {
         // EIP681URI address is valid
-        guard validate(address: eip681URI.address) else {
+        guard validate(address: eip681URI.address, network: network) else {
             return false
         }
         // If it is a transfer, validate transfer destination
         guard let transferDestination = eip681URI.method.destination else {
             return true
         }
-        return validate(address: transferDestination)
+        return validate(address: transferDestination, network: network)
     }
 
-    private static func validate(address: String) -> Bool {
+    private static func validate(address: String, network: EVMNetwork) -> Bool {
         WalletCore.CoinType.ethereum.validate(address: address)
-            && EthereumAddress(address: address) != nil
+            && EthereumAddress(address: address, network: network) != nil
     }
 
     /// Validates that a given EIP681URI is 'compatible' with a 'CryptoCurrency'.
-    private static func validate(cryptoCurrency: CryptoCurrency, eip681URI: EIP681URI) -> Bool {
+    private static func validate(
+        cryptoCurrency: CryptoCurrency,
+        eip681URI: EIP681URI,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    ) -> Bool {
+        let evmNativeAssets: [CryptoCurrency] = enabledCurrenciesService.allEnabledEVMNetworks.map(\.nativeAsset)
         switch eip681URI.cryptoCurrency {
-        case .ethereum:
-            // CryptoCurrency is Ethereum, allowed.
-            return true
-        case .polygon:
+        case let item where evmNativeAssets.contains(item):
+            // CryptoCurrency is a native asset, allowed.
             return true
         case let item where item == cryptoCurrency:
             // CryptoCurrency is the same as this factory's, allowed.

@@ -46,6 +46,7 @@ struct MultiAppSwitcherView: View {
         }
     }
 }
+
 // MARK: MultiApp Mode Preferences
 
 struct MultiAppModePreferences: Equatable {

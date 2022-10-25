@@ -8,22 +8,12 @@ protocol EVMSupportAPI: AnyObject {
 
     var sanitizeTokenNamesEnabled: Bool { get }
 
-    func isEnabled(network: AssetModelType.ERC20ParentChain) -> Bool
+    func isEnabled(network: String) -> Bool
 }
 
 final class EVMSupport: EVMSupportAPI {
-
-    func isEnabled(network: AssetModelType.ERC20ParentChain) -> Bool {
-        switch network {
-        case .ethereum:
-            return true
-        case .polygon:
-            return fetchBool(tag: blockchain.app.configuration.evm.polygon.is.enabled)
-        case .bnb:
-            return fetchBool(tag: blockchain.app.configuration.evm.bnb.is.enabled)
-        case .avax:
-            return fetchBool(tag: blockchain.app.configuration.evm.avax.is.enabled)
-        }
+    func isEnabled(network: String) -> Bool {
+        supportedEVMNetworksLazy.contains(network)
     }
 
     var sanitizeTokenNamesEnabled: Bool {
@@ -31,6 +21,10 @@ final class EVMSupport: EVMSupportAPI {
         sanitizeTokenNamesEnabledLock.lock()
         return sanitizeTokenNamesEnabledLazy
     }
+
+    private lazy var supportedEVMNetworksLazy: [String] = (
+        try? app.remoteConfiguration.get(blockchain.app.configuration.evm.supported, as: [String].self)
+    ) ?? []
 
     private lazy var sanitizeTokenNamesEnabledLazy: Bool = fetchBool(
         tag: blockchain.app.configuration.evm.name.sanitize.is.enabled

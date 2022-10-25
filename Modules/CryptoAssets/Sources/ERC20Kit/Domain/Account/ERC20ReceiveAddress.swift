@@ -40,9 +40,10 @@ struct ERC20ReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
         asset: CryptoCurrency,
         address: String,
         label: String,
-        onTxCompleted: @escaping TxCompleted
+        onTxCompleted: @escaping TxCompleted,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
-        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: asset) else {
+        guard let eip681URI = EIP681URI(address: address, cryptoCurrency: asset, enabledCurrenciesService: enabledCurrenciesService) else {
             return nil
         }
         self.init(asset: asset, eip681URI: eip681URI, label: label, onTxCompleted: onTxCompleted)

@@ -41,7 +41,20 @@ public struct EIP681URI {
         method.amount
     }
 
-    public init?(address: String, cryptoCurrency: CryptoCurrency) {
+    public init?(
+        address: String,
+        network: EVMNetwork
+    ) {
+        self.address = address
+        method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
+        cryptoCurrency = network.nativeAsset
+    }
+
+    public init?(
+        address: String,
+        cryptoCurrency: CryptoCurrency,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    ) {
         guard Self.validate(address: address) else {
             return nil
         }
@@ -51,13 +64,21 @@ public struct EIP681URI {
                 destination: address,
                 amount: nil
             )
-        } else if cryptoCurrency.isCoin, cryptoCurrency.assetModel.evmNetwork != nil {
+        } else if Self.isNativeAsset(cryptoCurrency: cryptoCurrency, enabledCurrenciesService: enabledCurrenciesService) {
             self.address = address
             method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
         } else {
             return nil
         }
         self.cryptoCurrency = cryptoCurrency
+    }
+
+    private static func isNativeAsset(
+        cryptoCurrency: CryptoCurrency,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    ) -> Bool {
+        cryptoCurrency.isCoin
+            && enabledCurrenciesService.allEnabledEVMNetworks.contains(where: { $0.nativeAsset == cryptoCurrency })
     }
 
     public init?(
@@ -115,8 +136,8 @@ extension EIP681URIParser {
     ) -> CryptoCurrency? {
         switch method {
         case .send:
-            // If this is a 'send', then we are sending Ethereum.
-            return network.cryptoCurrency
+            // If this is a 'send', then we are sending the networks native token.
+            return network.nativeAsset
         case .transfer:
             // If this is a 'transfer', then we need to find which token we are sending.
             // We do this by matching 'address' with one of the coins contract address.

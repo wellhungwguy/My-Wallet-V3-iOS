@@ -2,6 +2,7 @@
 
 import Combine
 import EthereumKit
+import MoneyKit
 import NetworkKit
 
 protocol EVMActivityClientAPI {
@@ -9,7 +10,7 @@ protocol EVMActivityClientAPI {
     func evmActivity(
         address: String,
         contractAddress: String?,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMTransactionHistoryResponse, NetworkError>
 }
 
@@ -36,11 +37,11 @@ final class EVMActivityClient: EVMActivityClientAPI {
     func evmActivity(
         address: String,
         contractAddress: String?,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMTransactionHistoryResponse, NetworkError> {
         let payload = EVMTransactionHistoryRequest(
             addresses: [address],
-            network: network,
+            network: network.networkTicker,
             apiCode: apiCode,
             identifier: contractAddress
         )

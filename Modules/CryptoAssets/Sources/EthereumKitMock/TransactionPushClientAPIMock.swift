@@ -3,6 +3,7 @@
 import Combine
 import Errors
 @testable import EthereumKit
+import MoneyKit
 import PlatformKit
 
 final class TransactionPushClientAPIMock: TransactionPushClientAPI {
@@ -20,7 +21,7 @@ final class TransactionPushClientAPIMock: TransactionPushClientAPI {
 
     func evmPush(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMPushTxResponse, NetworkError> {
         lastPushedTransaction = transaction
         return evmPushTransactionResult

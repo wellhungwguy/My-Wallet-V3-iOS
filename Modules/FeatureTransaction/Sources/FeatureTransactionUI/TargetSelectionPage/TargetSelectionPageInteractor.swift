@@ -38,6 +38,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let didSelect: AccountPickerDidSelect?
     private let backButtonInterceptor: BackButtonInterceptor
     private let radioSelectionHandler: RadioSelectionHandling
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     weak var listener: TargetSelectionPageListener?
 
     // MARK: - Init
@@ -50,6 +51,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         action: AssetAction,
         radioSelectionHandler: RadioSelectionHandling,
         backButtonInterceptor: @escaping BackButtonInterceptor,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         messageRecorder: MessageRecording = resolve()
     ) {
         self.action = action
@@ -58,6 +60,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         self.messageRecorder = messageRecorder
         self.backButtonInterceptor = backButtonInterceptor
         self.radioSelectionHandler = radioSelectionHandler
+        self.enabledCurrenciesService = enabledCurrenciesService
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -214,8 +217,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         sourceAccount
             .map(\.currencyType)
-            .map { currency -> String in
-                Self.addressFieldWarning(currency: currency)
+            .map { [enabledCurrenciesService] currency -> String in
+                Self.addressFieldWarning(enabledCurrenciesService: enabledCurrenciesService, currency: currency)
             }
             .bind(to: cryptoAddressViewModel.subtitleRelay)
             .disposeOnDeactivate(interactor: self)
@@ -360,30 +363,45 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         TargetSelectionPageState(nextEnabled: false, destination: nil)
     }
 
-    private static func addressFieldWarning(currency: CurrencyType) -> String {
+    private static func addressFieldWarning(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        currency: CurrencyType
+    ) -> String {
         func defaultWarning() -> String {
             LocalizationConstants.TextField.Title.sendToCryptoWallet(
                 displayCode: currency.displaySymbol,
                 networkName: currency.name
             )
         }
-        return addressFieldERC20Warning(currency: currency)
-            ?? defaultWarning()
+        return addressFieldERC20Warning(
+            enabledCurrenciesService: enabledCurrenciesService,
+            currency: currency
+        )
+        ?? defaultWarning()
     }
 
-    private static func addressFieldERC20Warning(currency: CurrencyType) -> String? {
-        let erc20ParentChain: AssetModelType.ERC20ParentChain? = currency
+    private static func addressFieldERC20Warning(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        currency: CurrencyType
+    ) -> String? {
+
+        guard let erc20ParentChain: String = currency
             .cryptoCurrency?
             .assetModel
             .kind
             .erc20ParentChain
-        return erc20ParentChain
-            .flatMap { chain -> String in
-                LocalizationConstants.TextField.Title.sendToCryptoWallet(
-                    displayCode: currency.displaySymbol,
-                    networkName: chain.name
-                )
-            }
+        else {
+            return nil
+        }
+        let networkName: String? = enabledCurrenciesService.allEnabledEVMNetworks
+            .first(where: { $0.networkConfig.networkTicker == erc20ParentChain })?
+            .networkConfig
+            .name
+
+        return LocalizationConstants.TextField.Title.sendToCryptoWallet(
+            displayCode: currency.displaySymbol,
+            networkName: networkName ?? erc20ParentChain
+        )
     }
 }
 

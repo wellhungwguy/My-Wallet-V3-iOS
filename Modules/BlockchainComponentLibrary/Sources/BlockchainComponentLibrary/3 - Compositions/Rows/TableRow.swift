@@ -107,10 +107,10 @@ public struct TableRow<Title: View, Byline: View, Leading: View, Trailing: View,
 
 extension TableRow {
 
-    public init<S1: StringProtocol, S2: StringProtocol>(
+    public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> S1,
-        byline: @autoclosure () -> S2,
+        title: @autoclosure () -> some StringProtocol,
+        byline: @autoclosure () -> some StringProtocol,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline {
@@ -139,9 +139,9 @@ extension TableRow {
         )
     }
 
-    public init<S1: StringProtocol>(
+    public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> S1,
+        title: @autoclosure () -> some StringProtocol,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
@@ -479,7 +479,7 @@ public protocol TableRowLabelView: View, ExpressibleByStringLiteral, Expressible
 }
 
 extension TableRowLabelView {
-    public init<S: StringProtocol>(_ string: S) { self.init(Text(string)) }
+    public init(_ string: some StringProtocol) { self.init(Text(string)) }
     public init(_ key: LocalizedStringKey) { self.init(Text(key)) }
     public init(@ViewBuilder label: () -> Text) { self.init(label()) }
     public init(stringLiteral value: String) { self.init(Text(value)) }

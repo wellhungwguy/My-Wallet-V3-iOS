@@ -13,7 +13,7 @@ extension Any? {
         set { self[[first] + rest] = newValue }
     }
 
-    public subscript<C: Collection>(path: C) -> Any? where C.Element == CodingKey {
+    public subscript(path: some Collection<CodingKey>) -> Any? {
         get { try? get(path, from: self) }
         set { set(newValue, at: path, on: &self) }
     }
@@ -26,7 +26,7 @@ extension [String: Any] {
         set { self[[first] + rest] = newValue }
     }
 
-    public subscript<C: Collection>(path: C) -> Value? where C.Element == CodingKey {
+    public subscript(path: some Collection<CodingKey>) -> Value? {
         get { try? get(path) }
         set { set(newValue, at: path) }
     }
@@ -56,7 +56,7 @@ extension [Any] {
         set { self[[first] + rest] = newValue }
     }
 
-    public subscript<C: Collection>(path: C) -> Element? where C.Element == CodingKey {
+    public subscript(path: some Collection<CodingKey>) -> Element? {
         get { try? get(path) }
         set { set(newValue, at: path) }
     }
@@ -175,7 +175,7 @@ extension Any? {
         set { self[string.splitDotPath()] = newValue }
     }
 
-    public subscript<C: Collection>(_ collection: C) -> Any? where C.Element == String {
+    public subscript(_ collection: some Collection<String>) -> Any? {
         get { self[collection.codingPath] }
         set { self[collection.codingPath] = newValue }
     }
@@ -193,7 +193,7 @@ extension [String: Any] {
         set { self[string.splitDotPath()] = newValue }
     }
 
-    public subscript<C: Collection>(_ collection: C) -> Value? where C.Element == String {
+    public subscript(_ collection: some Collection<String>) -> Value? {
         get { self[collection.codingPath] }
         set { self[collection.codingPath] = newValue }
     }
@@ -211,7 +211,7 @@ extension [Any] {
         set { self[string.splitDotPath()] = newValue }
     }
 
-    public subscript<C: Collection>(_ collection: C) -> Element? where C.Element == String {
+    public subscript(_ collection: some Collection<String>) -> Element? {
         get { self[collection.codingPath] }
         set { self[collection.codingPath] = newValue }
     }
