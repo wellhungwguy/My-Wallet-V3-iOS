@@ -26,7 +26,6 @@ done
 
 echo "Installing LFS hooks"
 git lfs install
-git config lfs.url $(git config remote.origin.url)
 
 echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh
