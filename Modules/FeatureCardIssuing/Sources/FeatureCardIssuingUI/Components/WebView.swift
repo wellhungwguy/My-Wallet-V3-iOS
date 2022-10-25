@@ -7,8 +7,8 @@ import WebKit
 struct WebView: UIViewRepresentable {
 
     enum CallbackUrl {
-        static let activate = "https://blockchain.com/en/app/card-issuing/activated"
-        static let pin = "https://blockchain.com/en/app/card-issuing/pinset"
+        static let activate = "https://blockchain.com/app/card-issuing/activated"
+        static let pin = "https://blockchain.com/app/card-issuing/pinset"
     }
 
     static let listenerName = "actions"
