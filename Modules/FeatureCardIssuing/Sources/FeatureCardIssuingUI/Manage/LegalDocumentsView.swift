@@ -20,11 +20,11 @@ struct LegalDocumentsView: View {
                 VStack {
                     ForEach(
                         viewStore.state.statements.indexed(),
-                        id: \.element.id
+                        id: \.element.statementId
                     ) { index, element in
                         let isLast = index == viewStore.state.statements.indices.last
                         DocumentRow(
-                            title: [element.month, element.year].joined(separator: ", "),
+                            title: element.displayDate,
                             isFirst: index == viewStore.state.statements.indices.first,
                             isLast: isLast
                         ) {
@@ -95,6 +95,19 @@ struct DocumentRow: View {
     }
 }
 
+extension Statement {
+
+    var displayDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M yy"
+        guard let date = formatter.date(from: "\(month) \(year)") else {
+            return ""
+        }
+        formatter.dateFormat = "MMM yyyy"
+        return formatter.string(from: date)
+    }
+}
+
 #if DEBUG
 struct LegalDocumentsView_Previews: PreviewProvider {
     static var previews: some View {
@@ -126,7 +139,7 @@ struct LegalDocumentsView_Previews: PreviewProvider {
                         )
                     ],
                     statements: [
-                        .init(id: "1", month: "Jul", year: "2022")
+                        .init(id: "123", month: 9, year: 22)
                     ],
                     transactions: [.success, .pending, .failed],
                     tokenisationCoordinator: PassTokenisationCoordinator(service: MockServices())
