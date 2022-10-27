@@ -72,7 +72,7 @@ extension AppProtocol {
         observers.insert(SuperAppIntroObserver(app: self))
         observers.insert(GenerateSession(app: self))
         observers.insert(PlaidLinkObserver(app: self))
-        observers.insert(EmbraceObserver(app: self))
+        // observers.insert(EmbraceObserver(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
