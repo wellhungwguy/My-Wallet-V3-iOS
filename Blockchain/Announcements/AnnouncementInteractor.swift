@@ -116,7 +116,10 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .fetchProducts()
             .map { products in
                 products
-                    .first(where: { $0.reasonNotEligible?.reason == .eu5Sanction })?
+                    .first(where: {
+                        $0.reasonNotEligible?.reason == .eu5Sanction
+                        || $0.reasonNotEligible?.reason == .eu8Sanction
+                    })?
                     .reasonNotEligible
             }
             .eraseError()
