@@ -16,45 +16,16 @@ class EmbraceObserver: Session.Observer {
     var bag: Set<AnyCancellable> = []
 
     func start() {
-
-        app.on(blockchain.session.event.did.sign.in) { [embrace, app] _ async throws in
-            try await embrace.setUserIdentifier(app.get(blockchain.user.id))
-        }
-        .subscribe()
-        .store(in: &bag)
+        app.publisher(for: blockchain.user.id, as: String.self)
+            .receive(on: DispatchQueue.main)
+            .compactMap{$0.value}
+            .sink(receiveValue:{[embrace] identifier in
+                embrace.setUserIdentifier(identifier)
+            })
+            .store(in: &bag)
 
         app.on(blockchain.session.event.did.sign.out) { [embrace] _ in
             embrace.clearUserIdentifier()
-        }
-        .subscribe()
-        .store(in: &bag)
-
-        app.on(blockchain.ux.type.analytics.state) { [embrace] event in
-            embrace.logBreadcrumb(withMessage: event.reference.string)
-        }
-        .subscribe()
-        .store(in: &bag)
-
-        app.on(blockchain.ux.type.analytics.event) { [embrace] event in
-            embrace.logMessage(
-                event.reference.string,
-                with: .info,
-                properties: event.context.mapKeysAndValues(key: \.description, value: \.description)
-            )
-        }
-        .subscribe()
-        .store(in: &bag)
-
-        app.on(blockchain.ux.type.analytics.error) { [embrace] event in
-            struct E: Error { let message: String }
-            embrace.logHandledError(
-                E(message: event.context[blockchain.ux.type.analytics.error.message].description),
-                screenshot: false,
-                properties: [
-                    "file": event.context[blockchain.ux.type.analytics.error.source.file].description,
-                    "line": event.context[blockchain.ux.type.analytics.error.source.line].description
-                ]
-            )
         }
         .subscribe()
         .store(in: &bag)
