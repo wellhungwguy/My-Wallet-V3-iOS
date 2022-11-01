@@ -135,7 +135,8 @@ func defineDependencies() {
         DependencyContainer.featureAddressSearchUI
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
-        DependencyContainer.blockchain
+        DependencyContainer.blockchainApp
+        DependencyContainer.blockchainNetworkRequestInterceptor
         DependencyContainer.featureSettingsDomain
         DependencyContainer.featureSettingsUI
         DependencyContainer.remoteNotificationsKit

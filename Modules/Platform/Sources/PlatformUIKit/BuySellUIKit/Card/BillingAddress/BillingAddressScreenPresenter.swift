@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
 import FeatureCardPaymentDomain
 import Localization
@@ -62,6 +63,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
 
     // MARK: - Properties
 
+    let app: AppProtocol
     let title = LocalizedString.title
     let buttonViewModel: ButtonViewModel
 
@@ -102,6 +104,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
     private let userDataRepository: DataRepositoryAPI
 
     init(
+        app: AppProtocol = resolve(),
         interactor: BillingAddressScreenInteractor,
         countrySelectionRouter: SelectionRouterAPI,
         loadingViewPresenter: LoadingViewPresenting = resolve(),
@@ -109,6 +112,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         messageRecorder: MessageRecording,
         userDataRepository: DataRepositoryAPI = resolve()
     ) {
+        self.app = app
         self.interactor = interactor
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
@@ -263,12 +267,23 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .disposed(by: disposeBag)
 
         buttonViewModel.tapRelay
+            .subscribe(onNext: { [app] in
+                app.post(event: blockchain.ux.transaction.payment.method.link.a.card.billing.address.save.my.card.tap)
+            })
+            .disposed(by: disposeBag)
+
+        buttonViewModel.tapRelay
             .withLatestFrom(interactor.billingAddress)
             .bindAndCatch(weak: self) { (self, billingAddress) in
                 self.eventRecorder.record(event: AnalyticsEvent.sbBillingAddressSet)
                 self.add(billingAddress: billingAddress)
             }
             .disposed(by: disposeBag)
+    }
+
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        app.post(event: blockchain.ux.transaction.payment.method.link.a.card.billing.address)
     }
 
     private func add(billingAddress: BillingAddress) {

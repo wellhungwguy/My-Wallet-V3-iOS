@@ -175,11 +175,13 @@ extension BuyCheckoutView.Loaded {
                 title: .init(L10n.Label.blockchainFee),
                 inlineTitleButton: IconButton(icon: question(information.fee), toggle: $information.fee),
                 trailing: {
-                    if let promotion = fee.promotion, fee.value.isZero {
+                    if let promotion = fee.promotion {
                         HStack {
-                            Text(rich: "~~\(fee.value.displayString)~~")
-                                .typography(.paragraph1)
-                                .foregroundColor(.semantic.text)
+                            if promotion.isZero {
+                                Text(rich: "~~\(fee.value.displayString)~~")
+                                    .typography(.paragraph1)
+                                    .foregroundColor(.semantic.text)
+                            }
                             TagView(
                                 text: promotion.isZero ? L10n.Label.free : promotion.displayString,
                                 variant: .success,

@@ -31,6 +31,13 @@ public protocol NetworkDebugLogger {
     )
 }
 
+public struct RequestInterceptor {
+    public var process: (NetworkRequest) -> AnyPublisher<NetworkRequest, Never>
+    public init(process: @escaping (NetworkRequest) -> AnyPublisher<NetworkRequest, Never>) {
+        self.process = process
+    }
+}
+
 final class NetworkCommunicator: NetworkCommunicatorAPI {
 
     // MARK: - Private properties
@@ -39,6 +46,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private let authenticator: AuthenticatorAPI?
     private let eventRecorder: AnalyticsEventRecorderAPI?
     private let networkDebugLogger: NetworkDebugLogger
+    private let requestInterceptor: RequestInterceptor
 
     // MARK: - Setup
 
@@ -48,12 +56,14 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         sessionHandler: NetworkSessionDelegateAPI = resolve(),
         authenticator: AuthenticatorAPI? = nil,
         eventRecorder: AnalyticsEventRecorderAPI? = nil,
-        networkDebugLogger: NetworkDebugLogger = resolve()
+        networkDebugLogger: NetworkDebugLogger = resolve(),
+        requestInterceptor: RequestInterceptor = resolve()
     ) {
         self.session = session
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
         self.networkDebugLogger = networkDebugLogger
+        self.requestInterceptor = requestInterceptor
 
         sessionDelegate.delegate = sessionHandler
     }
@@ -112,47 +122,51 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private func execute(
         request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        session.erasedDataTaskPublisher(
-            for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
-        )
-        .handleEvents(
-            receiveOutput: { [networkDebugLogger, session] data, response in
-                networkDebugLogger.storeRequest(
-                    request.urlRequest,
-                    response: response,
-                    error: nil,
-                    data: data,
-                    metrics: nil,
-                    session: session as? URLSession
+        requestInterceptor.process(request)
+            .flatMap { [session, networkDebugLogger, eventRecorder] request -> AnyPublisher<ServerResponse, NetworkError> in
+                session.erasedDataTaskPublisher(
+                    for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
                 )
-            },
-            receiveCompletion: { [networkDebugLogger, session] completion in
-                guard case .failure(let error) = completion else {
-                    return
+                .handleEvents(
+                    receiveOutput: { [session, networkDebugLogger] data, response in
+                        networkDebugLogger.storeRequest(
+                            request.urlRequest,
+                            response: response,
+                            error: nil,
+                            data: data,
+                            metrics: nil,
+                            session: session as? URLSession
+                        )
+                    },
+                    receiveCompletion: { [session, networkDebugLogger] completion in
+                        guard case .failure(let error) = completion else {
+                            return
+                        }
+                        networkDebugLogger.storeRequest(
+                            request.urlRequest,
+                            response: nil,
+                            error: error,
+                            data: nil,
+                            metrics: nil,
+                            session: session as? URLSession
+                        )
+                    }
+                )
+                .mapError { error in
+                    NetworkError(request: request.urlRequest, type: .urlError(error))
                 }
-                networkDebugLogger.storeRequest(
-                    request.urlRequest,
-                    response: nil,
-                    error: error,
-                    data: nil,
-                    metrics: nil,
-                    session: session as? URLSession
-                )
+                .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
+                    request.responseHandler.handle(elements: elements, for: request)
+                }
+                .eraseToAnyPublisher()
+                .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
+                    error.analyticsEvent(for: request) { serverErrorResponse in
+                        request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
+                    }
+                }
+                .eraseToAnyPublisher()
             }
-        )
-        .mapError { error in
-            NetworkError(request: request.urlRequest, type: .urlError(error))
-        }
-        .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
-            request.responseHandler.handle(elements: elements, for: request)
-        }
-        .eraseToAnyPublisher()
-        .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
-            error.analyticsEvent(for: request) { serverErrorResponse in
-                request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
-            }
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 
     private func executeWebsocketRequest(

@@ -33,7 +33,7 @@ class WalletCryptoServiceTests: XCTestCase {
         let container = modules {
             DependencyContainer.platformKit
             DependencyContainer.walletPayloadKit
-            DependencyContainer.blockchain
+            DependencyContainer.blockchainApp
         }
         let service: WalletCryptoServiceAPI = container.resolve()
         self.service = service

@@ -143,13 +143,19 @@ final class FraudIntelligenceTests: XCTestCase {
         subscription.start()
         defer { subscription.stop() }
 
+        app.state.set(blockchain.app.fraud.sardine.current.flow, to: "TEST")
+
         app.post(event: blockchain.session.event.will.sign.in)
         XCTAssertEqual(count, 0)
         XCTAssertEqual(Test.MobileIntelligence.count, 0)
 
+        app.state.set(blockchain.app.fraud.sardine.current.flow, to: "TEST")
+
         app.post(event: blockchain.session.event.did.sign.in)
         XCTAssertEqual(count, 1)
         XCTAssertEqual(Test.MobileIntelligence.count, 1)
+
+        app.state.set(blockchain.app.fraud.sardine.current.flow, to: "TEST")
 
         app.post(event: blockchain.ux.transaction.event.did.finish)
         XCTAssertEqual(count, 2)

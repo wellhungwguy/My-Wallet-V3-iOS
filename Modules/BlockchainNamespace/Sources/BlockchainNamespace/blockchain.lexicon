@@ -150,6 +150,10 @@ blockchain:
 					enabled:
 					+ blockchain.db.type.boolean
 					+ blockchain.session.configuration.value
+			outbound:
+				request:
+					interceptor:
+					+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
@@ -329,6 +333,10 @@ blockchain:
 				+ blockchain.session.state.value
 				submit:
 				+ blockchain.ux.type.analytics.event
+					failure:
+					+ blockchain.ux.type.analytics.event
+					success:
+					+ blockchain.ux.type.analytics.event
 				supported:
 					flows:
 					+ blockchain.db.type.array.of.strings
@@ -1642,13 +1650,25 @@ blockchain:
 					link:
 						a:
 							bank:
+								type:
 								via:
 									ACH:
+									+ blockchain.ux.transaction.payment.method.link.a.bank.type
 									+ blockchain.ux.type.story
 									OpenBanking:
+									+ blockchain.ux.transaction.payment.method.link.a.bank.type
 									+ blockchain.ux.type.story
 							card:
 							+ blockchain.ux.type.story
+								billing:
+									address:
+									+ blockchain.ux.type.story
+										save:
+											my:
+												card:
+												+ blockchain.ui.type.button.primary
+								next:
+								+ blockchain.ui.type.button.primary
 			previous:
 				payment:
 					method:

@@ -31,7 +31,8 @@ public struct RecurringBuy {
     public let createDate: Date
 
     public init(
-        id: String, state: State,
+        id: String,
+        state: State,
         recurringBuyFrequency: Frequency,
         nextPaymentDate: Date,
         paymentMethodType: PaymentMethodPayloadType,

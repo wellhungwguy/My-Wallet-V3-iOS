@@ -347,7 +347,10 @@ final class KYCRouter: KYCRouterAPI {
         switch event {
         case .pageWillAppear(let type):
             handlePageWillAppear(for: type)
-            app.state.set(blockchain.ux.kyc.current.state, to: type.tag[])
+            app.post(
+                value: type.tag[],
+                of: blockchain.ux.kyc.current.state
+            )
             app.post(
                 event: blockchain.ux.kyc.event.did.enter.state[][type.descendant]!,
                 context: [blockchain.ux.kyc.current.state: type.tag[]]
