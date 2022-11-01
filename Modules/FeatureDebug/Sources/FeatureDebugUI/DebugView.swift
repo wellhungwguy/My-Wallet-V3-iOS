@@ -51,6 +51,12 @@ struct DebugView: View {
                     PrimaryRow(title: "🤖 Pulse") {
                         pulse = true
                     }
+
+                    NavigationLink {
+                        MultiAppDebugView()
+                    } label: {
+                        Text("🛠 Multi App Views")
+                    }
                 }
                 .background(Color.semantic.background)
             }

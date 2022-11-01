@@ -266,6 +266,7 @@ extension Icon {
     public static let `googleTranslate` = Icon(name: "Google Translate")
     public static let `hardware` = Icon(name: "Hardware")
     public static let `history` = Icon(name: "History")
+    public static let `home` = Icon(name: "Home")
     public static let `identification` = Icon(name: "Identification")
     public static let `information` = Icon(name: "Information")
     public static let `interestCircle` = Icon(name: "Interest Circle")
@@ -356,14 +357,16 @@ extension Icon {
 }
 
 extension Icon {
-    public static let `home` = Icon(name: "Home_New")
-    public static let `homeFilled` = Icon(name: "Home Filled")
-    public static let `prices` = Icon(name: "Prices")
-    public static let `pricesFilled` = Icon(name: "Prices Filled")
-    public static let `nft` = Icon(name: "NFT")
-    public static let `nftFilled` = Icon(name: "NFT Filled")
-    public static let `card` = Icon(name: "Card")
-    public static let `cardFilled` = Icon(name: "Card Filled")
+    public static let `multiAppHome` = Icon(name: "MultiApp Home")
+    public static let `multiAppHomeFilled` = Icon(name: "MultiApp Home Filled")
+    public static let `multiAppPrices` = Icon(name: "MultiApp Prices")
+    public static let `multiAppPricesFilled` = Icon(name: "MultiApp Prices Filled")
+    public static let `multiAppNft` = Icon(name: "NFT")
+    public static let `multiAppNftFilled` = Icon(name: "NFT Filled")
+    public static let `multiAppCard` = Icon(name: "MultiApp Card")
+    public static let `multiAppCardFilled` = Icon(name: "MultiApp Card Filled")
+    public static let `multiAppFilterFilled` = Icon(name: "MultiApp Filter Filled")
+    public static let `multiAppFilter` = Icon(name: "MultiApp Filter")
 }
 
 extension Icon {

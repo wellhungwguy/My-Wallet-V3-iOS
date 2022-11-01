@@ -33,4 +33,16 @@ extension AppProtocol {
             return .universal
         }
     }
+
+    public func mode() async -> AppMode {
+           let superAppEnabled = try? await get(blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
+           guard superAppEnabled == true else {
+               return .universal
+           }
+           do {
+               return try await get(blockchain.app.mode, as: AppMode.self)
+           } catch {
+               return .trading
+           }
+    }
 }

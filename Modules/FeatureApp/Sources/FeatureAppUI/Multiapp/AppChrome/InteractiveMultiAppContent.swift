@@ -75,8 +75,8 @@ struct _Tab: Hashable {
 private let tradingTabs = [
     _Tab(
         id: 0,
-        selectedIcon: Icon.homeFilled,
-        unselectedIcon: Icon.home,
+        selectedIcon: Icon.multiAppHomeFilled,
+        unselectedIcon: Icon.multiAppHome,
         title: "Home"
     ),
     _Tab(
@@ -87,8 +87,8 @@ private let tradingTabs = [
     ),
     _Tab(
         id: 2,
-        selectedIcon: Icon.cardFilled,
-        unselectedIcon: Icon.card,
+        selectedIcon: Icon.multiAppCardFilled,
+        unselectedIcon: Icon.multiAppCard,
         title: "Card"
     )
 ]
@@ -96,20 +96,20 @@ private let tradingTabs = [
 private let defiTabs = [
     _Tab(
         id: 0,
-        selectedIcon: Icon.homeFilled,
-        unselectedIcon: Icon.home,
+        selectedIcon: Icon.multiAppHomeFilled,
+        unselectedIcon: Icon.multiAppHome,
         title: "Home"
     ),
     _Tab(
         id: 1,
-        selectedIcon: Icon.pricesFilled,
-        unselectedIcon: Icon.prices,
+        selectedIcon: Icon.multiAppPricesFilled,
+        unselectedIcon: Icon.multiAppPrices,
         title: "Prices"
     ),
     _Tab(
         id: 2,
-        selectedIcon: Icon.nftFilled,
-        unselectedIcon: Icon.nft,
+        selectedIcon: Icon.multiAppNftFilled,
+        unselectedIcon: Icon.multiAppNft,
         title: "NFTs"
     )
 ]

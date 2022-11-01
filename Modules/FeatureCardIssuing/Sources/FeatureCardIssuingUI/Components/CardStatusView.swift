@@ -62,7 +62,7 @@ extension Card.Fulfillment.Status {
     var icon: Icon {
         switch self {
         case .delivered:
-            return Icon.card.color(.semantic.body)
+            return Icon.creditcard.color(.semantic.body)
         case .processing, .processed:
             return Icon.pending
         case .shipped:

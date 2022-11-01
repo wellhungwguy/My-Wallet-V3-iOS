@@ -76,6 +76,7 @@ extension AppProtocol {
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
+        observers.insert(MultiAppViewDebuggingObserver(app: self))
         #endif
         observers.insert(ActionObserver(app: self, application: UIApplication.shared))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))

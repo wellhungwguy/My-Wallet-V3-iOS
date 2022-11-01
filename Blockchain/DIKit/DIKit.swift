@@ -23,6 +23,8 @@ import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
 import FeatureCryptoDomainDomain
+import FeatureDashboardData
+import FeatureDashboardDomain
 import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
@@ -680,6 +682,19 @@ extension DependencyContainer {
                  topViewController: DIKit.resolve(),
                  recoveryStatusProviding: DIKit.resolve()
              ) as RecoveryPhraseBackupRouterAPI
+        }
+
+        factory { () -> AllCryptoAssetsServiceAPI in
+            AllCryptoAssetsService(
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                priceService: DIKit.resolve()
+            ) as AllCryptoAssetsServiceAPI
+        }
+
+        single { () -> AllCryptoAssetsRepositoryAPI in
+            AllCryptoAssetsRepository(allCryptoAssetService: DIKit.resolve())
         }
     }
 }

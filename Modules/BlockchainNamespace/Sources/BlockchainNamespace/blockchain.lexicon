@@ -1276,6 +1276,10 @@ blockchain:
 		maintenance:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
+		multiapp:
+			present:
+				allAssetsScreen:
+				+ blockchain.ux.type.story
 		nft:
 			asset:
 			+ blockchain.db.collection
