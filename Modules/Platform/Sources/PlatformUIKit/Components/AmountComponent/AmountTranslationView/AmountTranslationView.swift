@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import BlockchainNamespace
 import PlatformKit
 import RxCocoa
@@ -9,6 +10,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 import UIKit
+import UIKitExtensions
 
 public final class AmountTranslationView: UIView, AmountViewable {
 
@@ -56,9 +58,11 @@ public final class AmountTranslationView: UIView, AmountViewable {
     private let availableBalanceViewController: UIViewController?
     private let prefillViewController: UIViewController?
     private let presenter: AmountTranslationPresenter
-    private let labelsStackView: UIStackView
+    private var labelsStackView: UIStackView!
 
     private let disposeBag = DisposeBag()
+
+    private lazy var quickPriceViewController: UIViewController = UIHostingController(rootView: QuickPriceView().app(app))
 
     // MARK: - Init
 
@@ -121,9 +125,15 @@ public final class AmountTranslationView: UIView, AmountViewable {
                 )
             )
         ) : nil
-        labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
-        labelsStackView.axis = .vertical
+
         super.init(frame: UIScreen.main.bounds)
+
+        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, quickPriceViewController.view])
+        } else {
+            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
+        }
+        labelsStackView.axis = .vertical
 
         fiatAmountLabelView.presenter = presenter.fiatPresenter.presenter
         cryptoAmountLabelView.presenter = presenter.cryptoPresenter.presenter
@@ -209,6 +219,24 @@ public final class AmountTranslationView: UIView, AmountViewable {
             .disposed(by: disposeBag)
     }
 
+    override public func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
+        if newWindow.isNil {
+            quickPriceViewController.willMove(toParent: nil)
+        } else {
+            responderViewController?.addChild(quickPriceViewController)
+        }
+    }
+
+    override public func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window.isNil {
+            quickPriceViewController.didMove(toParent: nil)
+        } else {
+            quickPriceViewController.didMove(toParent: responderViewController)
+        }
+    }
+
     // MARK: - Public Methods
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
@@ -265,8 +293,10 @@ public final class AmountTranslationView: UIView, AmountViewable {
                 switch newInput {
                 case .fiat:
                     // remove bottom label from current position and add it back as last view in the stack
-                    self.labelsStackView.removeArrangedSubview(self.cryptoAmountLabelView)
-                    self.labelsStackView.addArrangedSubview(self.cryptoAmountLabelView)
+                    if self.labelsStackView.arrangedSubviews.contains(where: { $0 === self.cryptoAmountLabelView }) {
+                        self.labelsStackView.removeArrangedSubview(self.cryptoAmountLabelView)
+                        self.labelsStackView.addArrangedSubview(self.cryptoAmountLabelView)
+                    }
                     // ensure that the selected crypto can be compressed to make room for the other input on small screens
                     self.fiatAmountLabelView.verticalContentCompressionResistancePriority = .defaultHigh
                     self.cryptoAmountLabelView.verticalContentCompressionResistancePriority = .required
@@ -282,5 +312,31 @@ public final class AmountTranslationView: UIView, AmountViewable {
             },
             completion: nil
         )
+    }
+}
+
+import MoneyKit
+
+struct QuickPriceView: View {
+
+    @BlockchainApp var app
+    @State var price: MoneyValue?
+
+    var body: some View {
+        Group {
+            if let price {
+                Text(price.displayString)
+                    .typography(.caption1)
+                    .foregroundColor(.semantic.body)
+            }
+        }
+        .padding(.top, 8.pt)
+        .task {
+            for await money in app.stream(blockchain.ux.transaction.source.target.quote.price, as: MoneyValue.self) {
+                withAnimation(.easeOut) {
+                    price = money.value
+                }
+            }
+        }
     }
 }

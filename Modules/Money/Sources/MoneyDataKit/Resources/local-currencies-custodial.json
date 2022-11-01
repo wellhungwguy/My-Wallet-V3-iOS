@@ -402,6 +402,10 @@
       },
       "precision": 18,
       "products": [
+        "MercuryDeposits",
+        "MercuryWithdrawals",
+        "CustodialWalletBalance",
+        "InterestBalance",
         "PrivateKey"
       ]
     },
@@ -697,7 +701,7 @@
       "name": "Ethereum",
       "type": {
         "name": "COIN",
-        "minimumOnChainConfirmations": 30,
+        "minimumOnChainConfirmations": 64,
         "logoPngUrl": "https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/ethereum/info/logo.png",
         "websiteUrl": "https://ethereum.org/"
       },
@@ -816,6 +820,10 @@
       },
       "precision": 8,
       "products": [
+        "CustodialWalletBalance",
+        "MercuryDeposits",
+        "MercuryWithdrawals",
+        "InterestBalance",
         "PrivateKey"
       ]
     },
@@ -1557,7 +1565,7 @@
       "name": "Solana",
       "type": {
         "name": "COIN",
-        "minimumOnChainConfirmations": 0,
+        "minimumOnChainConfirmations": 1,
         "logoPngUrl": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png",
         "websiteUrl": "https://solana.com/"
       },
@@ -1591,7 +1599,7 @@
       "name": "Stacks",
       "type": {
         "name": "COIN",
-        "minimumOnChainConfirmations": 2,
+        "minimumOnChainConfirmations": 8,
         "logoPngUrl": "https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/stacks/info/logo.png"
       },
       "precision": 6,

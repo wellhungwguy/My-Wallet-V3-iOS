@@ -18,7 +18,8 @@ public protocol ERC20BalanceServiceAPI {
     /// - Returns: A publisher that emits the balance on success, or a `ERC20TokenAccountsError` on failure.
     func balance(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> AnyPublisher<CryptoValue, ERC20TokenAccountsError>
 
     /// Streams the balance for the given ethereum account address and the given ERC-20 crypto currency, including any subsequent updates.
@@ -30,7 +31,8 @@ public protocol ERC20BalanceServiceAPI {
     /// - Returns: A publisher that streams the balance or a `ERC20TokenAccountsError`, including any subsequent updates.
     func balanceStream(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> StreamOf<CryptoValue, ERC20TokenAccountsError>
 }
 
@@ -54,9 +56,10 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
 
     func balance(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> AnyPublisher<CryptoValue, ERC20TokenAccountsError> {
-        tokenAccountsRepository.tokens(for: address, network: cryptoCurrency.assetModel.evmNetwork!)
+        tokenAccountsRepository.tokens(for: address, network: network)
             .map { accounts in
                 accounts[cryptoCurrency]?.balance ?? .zero(currency: cryptoCurrency)
             }
@@ -65,9 +68,10 @@ final class ERC20BalanceService: ERC20BalanceServiceAPI {
 
     func balanceStream(
         for address: EthereumAddress,
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetworkConfig
     ) -> StreamOf<CryptoValue, ERC20TokenAccountsError> {
-        tokenAccountsRepository.tokensStream(for: address, network: cryptoCurrency.assetModel.evmNetwork!)
+        tokenAccountsRepository.tokensStream(for: address, network: network)
             .map { result in
                 switch result {
                 case .failure(let error):

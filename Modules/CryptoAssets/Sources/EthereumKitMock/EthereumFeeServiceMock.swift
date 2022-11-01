@@ -8,11 +8,14 @@ import PlatformKit
 class EthereumFeeServiceMock: EthereumFeeServiceAPI {
     var underlyingFees: EthereumTransactionFee
 
-    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<EthereumTransactionFee, Never> {
-        .just(underlyingFees)
-    }
-
     init(underlyingFees: EthereumTransactionFee) {
         self.underlyingFees = underlyingFees
+    }
+
+    func fees(
+        network: EVMNetwork,
+        contractAddress: String?
+    ) -> AnyPublisher<EthereumTransactionFee, Never> {
+        .just(underlyingFees)
     }
 }

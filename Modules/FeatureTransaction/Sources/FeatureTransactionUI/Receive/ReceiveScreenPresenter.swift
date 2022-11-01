@@ -64,6 +64,7 @@ final class ReceiveScreenPresenter {
     init(
         pasteboard: Pasteboarding = resolve(),
         eventsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         interactor: ReceiveScreenInteractor
     ) {
         self.interactor = interactor
@@ -144,24 +145,33 @@ final class ReceiveScreenPresenter {
             .share(replay: 1)
 
         state
-            .map { state -> AlertContent? in
+            .map { [enabledCurrenciesService] state -> AlertContent? in
                 guard let state else {
                     return nil
                 }
                 let currency = state.currency
-                let erc20ParentChain: AssetModelType.ERC20ParentChain? = currency
+                guard let erc20ParentChain: String = currency
                     .cryptoCurrency?
                     .assetModel
                     .kind
                     .erc20ParentChain
-                return erc20ParentChain
-                    .flatMap { chain -> AlertContent in
-                        let title = LocalizedString.Text
-                            .alertTitle(displayCode: currency.displayCode, networkName: chain.name)
-                        let subtitle = LocalizedString.Text
-                            .alertBody(displayCode: currency.displayCode, networkName: chain.name)
-                        return (title: title, subtitle: subtitle)
-                    }
+                else {
+                    return nil
+                }
+                let networkName: String? = enabledCurrenciesService.allEnabledEVMNetworks
+                    .first(where: { $0.networkConfig.networkTicker == erc20ParentChain })?
+                    .networkConfig
+                    .name
+
+                let title = LocalizedString.Text.alertTitle(
+                    displayCode: currency.displayCode,
+                    networkName: networkName ?? erc20ParentChain
+                )
+                let subtitle = LocalizedString.Text.alertBody(
+                    displayCode: currency.displayCode,
+                    networkName: networkName ?? erc20ParentChain
+                )
+                return (title: title, subtitle: subtitle)
             }
             .bind(to: alertContentRelay)
             .disposed(by: disposeBag)

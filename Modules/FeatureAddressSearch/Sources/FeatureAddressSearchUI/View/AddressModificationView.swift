@@ -77,6 +77,7 @@ struct AddressModificationView: View {
                         state: viewStore.state.line1.isEmpty ? .error : .default,
                         configuration: {
                             $0.textContentType = .streetAddressLine1
+                            $0.autocorrectionType = .no
                         },
                         onReturnTapped: {
                             viewStore.send(.binding(.set(\.$selectedInputField, .line2)))
@@ -91,6 +92,7 @@ struct AddressModificationView: View {
                         placeholder: L10n.Form.Placeholder.line2,
                         configuration: {
                             $0.textContentType = .streetAddressLine2
+                            $0.autocorrectionType = .no
                         },
                         onReturnTapped: {
                             viewStore.send(.binding(.set(\.$selectedInputField, .city)))
@@ -104,6 +106,7 @@ struct AddressModificationView: View {
                         label: L10n.Form.city,
                         configuration: {
                             $0.textContentType = .addressCity
+                            $0.autocorrectionType = .no
                         },
                         onReturnTapped: {
                             viewStore.send(.binding(.set(\.$selectedInputField, .state)))
@@ -119,6 +122,7 @@ struct AddressModificationView: View {
                                 label: L10n.Form.state,
                                 configuration: {
                                     $0.textContentType = .addressState
+                                    $0.autocorrectionType = .no
                                 },
                                 onReturnTapped: {
                                     viewStore.send(.binding(.set(\.$selectedInputField, .zip)))
@@ -134,6 +138,7 @@ struct AddressModificationView: View {
                             label: L10n.Form.zip,
                             configuration: {
                                 $0.textContentType = .postalCode
+                                $0.autocorrectionType = .no
                             },
                             onReturnTapped: {
                                 viewStore.send(.binding(.set(\.$selectedInputField, nil)))

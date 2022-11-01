@@ -29,12 +29,20 @@ platform :ios do
   desc "Builds are uploaded to AppCenter."
   desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
   lane :staging do | options |
+    # Set a specific version number for staging
+    increment_version_number(
+      version_number: "999999.9.9"
+    )
+    # Set a build number equal to number of commits for staging
+    build_number = number_of_commits(all: false).to_s.strip
+    increment_build_number(
+      build_number: build_number
+    )
     final_options = options.merge(
       {
         scheme: "Blockchain (Staging)",
         environment: "Staging",
-        app_center_app_name: ENV["APPCENTER_APP_NAME_STAGING"],
-        app_center_app_owner: ENV["APPCENTER_OWNER_NAME_STAGING"],
+        build_type: "appstore"
       }
     )
     produce_build(final_options)

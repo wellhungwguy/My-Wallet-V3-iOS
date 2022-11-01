@@ -123,7 +123,6 @@ final class QuotesEngine: QuotesEngineAPI {
                 expirationDate: Date(timeIntervalSinceNow: min(quoteExpirationRefresh, Constants.maxQuoteRefresh))
             )
         }
-        .eraseToAnyPublisher()
         .sink(receiveValue: quoteSubject.send(_:))
         .store(in: &cancellables)
     }

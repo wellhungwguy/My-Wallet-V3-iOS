@@ -441,11 +441,11 @@ extension EnterAmountViewController {
         }
 
         private enum Compact {
-            static let digitPadHeight: CGFloat = 216
+            static let digitPadHeight: CGFloat = 196
         }
 
         private enum Standard {
-            static let digitPadHeight: CGFloat = 260
+            static let digitPadHeight: CGFloat = 220
             static let topSelectionViewHeight: CGFloat = 78
             static let bottomSelectionViewHeight: CGFloat = 78
         }

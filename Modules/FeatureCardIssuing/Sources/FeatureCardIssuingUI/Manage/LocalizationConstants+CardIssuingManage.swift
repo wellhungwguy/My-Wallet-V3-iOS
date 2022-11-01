@@ -389,3 +389,24 @@ extension LocalizationConstants.CardIssuing {
         }
     }
 }
+
+extension LocalizationConstants.CardIssuing.Manage {
+
+    enum LegalDocuments {
+
+        static let title = NSLocalizedString(
+            "Documents",
+            comment: "CIP: Legal Documents navigation title"
+        )
+
+        static let statements = NSLocalizedString(
+            "Statements",
+            comment: "CIP: Statements"
+        )
+
+        static let legalDocuments = NSLocalizedString(
+            "Legal Documents",
+            comment: "CIP: Legal Documents"
+        )
+    }
+}

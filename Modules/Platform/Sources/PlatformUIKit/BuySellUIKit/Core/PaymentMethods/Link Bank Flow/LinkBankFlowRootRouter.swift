@@ -3,7 +3,6 @@
 import BlockchainNamespace
 import Combine
 import DIKit
-import FeaturePlaidUI
 import MoneyKit
 import PlatformKit
 import RIBs

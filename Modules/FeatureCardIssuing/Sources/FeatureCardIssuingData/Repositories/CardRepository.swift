@@ -201,7 +201,7 @@ final class CardRepository: CardRepositoryAPI {
     }
 
     func fetchStatementUrl(statement: Statement) -> AnyPublisher<URL, NabuNetworkError> {
-        client.fetchStatementUrl(statementId: statement.id)
+        client.fetchStatementUrl(statementId: statement.statementId)
     }
 
     private static func buildCardHelperUrl(

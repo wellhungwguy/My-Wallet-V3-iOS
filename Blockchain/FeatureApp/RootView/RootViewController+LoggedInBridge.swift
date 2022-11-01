@@ -379,7 +379,7 @@ extension RootViewController: LoggedInBridge {
                     from: topMostViewController ?? self,
                     requiredTier: .tier2
                 )
-                .mapToResult()
+                .result()
                 .receive(on: DispatchQueue.main)
                 .sink(receiveValue: { [weak self] result in
                     switch result {

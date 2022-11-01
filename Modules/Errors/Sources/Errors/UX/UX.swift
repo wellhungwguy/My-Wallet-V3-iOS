@@ -88,6 +88,17 @@ extension UX.Error: Hashable {
     }
 }
 
+extension UX.Error: CustomStringConvertible {
+    public var description: String {
+        """
+        UX.Error(id: \(String(describing: id)))
+
+        \(title)
+        \(message)
+        """
+    }
+}
+
 typealias L10n = LocalizationConstants.UX.Error
 
 extension UX.Error {
@@ -172,6 +183,13 @@ extension [UX.Action] {
     public static var `default`: Self = [
         UX.Action(title: L10n.ok)
     ]
+}
+
+extension UX.Error: TimeoutFailure {
+
+    public static var timeout: UX.Error {
+        UX.Error(error: nil)
+    }
 }
 
 extension UX.Error {

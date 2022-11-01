@@ -18,6 +18,7 @@ struct FormSelectionDropdownAnswersView: View {
     @Binding var answers: [FormAnswer]
     @Binding var showAnswerState: Bool
     @State private var selectionPanelOpened: Bool = false
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         VStack {
@@ -34,8 +35,7 @@ struct FormSelectionDropdownAnswersView: View {
                     .color(.semantic.muted)
                     .frame(width: 24, height: 24)
             }
-            .padding(.vertical, Spacing.padding2)
-            .padding(.horizontal, Spacing.padding3)
+            .padding(Spacing.padding2)
             .background(
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .stroke(Color.semantic.light)
@@ -59,7 +59,8 @@ struct FormSelectionDropdownAnswersView: View {
                         FormRecursiveAnswerView(
                             title: title,
                             answer: $answers[index],
-                            showAnswerState: $showAnswerState
+                            showAnswerState: $showAnswerState,
+                            fieldConfiguration: fieldConfiguration
                         ) {
                             EmptyView()
                         }
@@ -318,7 +319,8 @@ struct FormSelectionDropdownAnswersView_Previews: PreviewProvider {
                 subtitle: "Subtitle",
                 selectionMode: .single,
                 answers: $answers,
-                showAnswerState: $showAnswerState
+                showAnswerState: $showAnswerState,
+                fieldConfiguration: defaultFieldConfiguration
             )
             .padding()
         }

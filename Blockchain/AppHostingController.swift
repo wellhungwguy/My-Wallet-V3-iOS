@@ -31,6 +31,7 @@ final class AppHostingController: UIViewController {
 
     private var onboardingController: OnboardingHostingController?
     private var loggedInController: RootViewController?
+    private var multiAppController: MultiAppRootController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
     private var featureFlagsService: FeatureFlagsServiceAPI
 
@@ -125,7 +126,39 @@ final class AppHostingController: UIViewController {
                     self.onboardingController = nil
                 }
 
-                load(RootViewController(store: store))
+                func loadMultiApp(_ controller: MultiAppRootController) {
+                    controller.view.frame = self.view.bounds
+                    if let onboardingController = self.onboardingController {
+                        self.transition(
+                            from: onboardingController,
+                            to: controller,
+                            animate: true
+                        )
+                    } else {
+                        self.add(child: controller)
+                    }
+                    self.multiAppController = controller
+                    self.onboardingController = nil
+                }
+
+                // for sanity reasons, let's for now skip this logic on release versions
+                if BuildFlag.isInternal {
+                    app.publisher(for: blockchain.app.configuration.multiapp.is.enabled, as: Bool.self)
+                        .receive(on: DispatchQueue.main)
+                        .sink { isMultiAppEnabled in
+                            guard let value = isMultiAppEnabled.value else {
+                                return load(RootViewController(store: store))
+                            }
+                            if value {
+                                loadMultiApp(MultiAppRootController(store: store))
+                            } else {
+                                load(RootViewController(store: store))
+                            }
+                        }
+                        .store(in: &self.cancellables)
+                } else {
+                    load(RootViewController(store: store))
+                }
             })
             .store(in: &cancellables)
 

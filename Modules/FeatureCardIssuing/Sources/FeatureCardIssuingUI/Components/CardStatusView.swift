@@ -26,7 +26,7 @@ struct CardStatusView: View {
                             .foregroundColor(.semantic.muted)
                     }
                     Spacer()
-                    if fulfillment.status != .ordered {
+                    if fulfillment.status == .shipped || fulfillment.status == .delivered {
                         Icon.chevronRight
                             .color(.semantic.muted)
                             .frame(width: 24, height: 18)
@@ -63,7 +63,7 @@ extension Card.Fulfillment.Status {
         switch self {
         case .delivered:
             return Icon.card.color(.semantic.body)
-        case .ordered:
+        case .processing, .processed:
             return Icon.pending
         case .shipped:
             return Icon.send
@@ -82,7 +82,7 @@ extension Card.Fulfillment.Status {
     var title: String {
         typealias L10n = LocalizationConstants.CardIssuing.Fulfillment.Status
         switch self {
-        case .ordered:
+        case .processing, .processed:
             return L10n.Ordered.title
         case .delivered:
             return L10n.Delivered.title
@@ -94,7 +94,7 @@ extension Card.Fulfillment.Status {
     var subtitle: String {
         typealias L10n = LocalizationConstants.CardIssuing.Fulfillment.Status
         switch self {
-        case .ordered:
+        case .processing, .processed:
             return L10n.Ordered.subtitle
         case .delivered:
             return L10n.Delivered.subtitle

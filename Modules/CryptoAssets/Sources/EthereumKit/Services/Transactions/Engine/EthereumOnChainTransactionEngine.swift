@@ -84,7 +84,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         )
         feeCache.setFetch { [feeService, network] () -> Single<EthereumTransactionFee> in
             feeService
-                .fees(cryptoCurrency: network.cryptoCurrency)
+                .fees(network: network)
                 .asSingle()
         }
     }
@@ -99,7 +99,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private func isCurrencyTypeValid(_ value: CurrencyType) -> Bool {
-        value == .crypto(network.cryptoCurrency)
+        value == .crypto(network.nativeAsset)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -113,11 +113,11 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         .map { [network, predefinedAmount] fiatCurrency, availableBalance, feeAmount -> PendingTransaction in
             let amount: MoneyValue
             if let predefinedAmount,
-               predefinedAmount.currency == network.cryptoCurrency
+               predefinedAmount.currency == network.nativeAsset
             {
                 amount = predefinedAmount
             } else {
-                amount = .zero(currency: network.cryptoCurrency)
+                amount = .zero(currency: network.nativeAsset)
             }
             return PendingTransaction(
                 amount: amount,
@@ -127,7 +127,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 feeSelection: .init(
                     selectedLevel: .regular,
                     availableLevels: [.regular, .priority],
-                    asset: .crypto(network.cryptoCurrency)
+                    asset: .crypto(network.nativeAsset)
                 ),
                 selectedFiatCurrency: fiatCurrency
             )
@@ -198,7 +198,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             preconditionFailure("Not a `CryptoValue`.")
         }
         guard isCurrencyTypeValid(crypto.currencyType) else {
-            preconditionFailure("Not an \(network.rawValue) value.")
+            preconditionFailure("Not an \(network.networkConfig.name) value.")
         }
         return Single.zip(
             actionableBalance,
@@ -292,7 +292,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                                 isContract: isContract
                             ),
                             nonce: nonce,
-                            chainID: evmCryptoAccount.network.chainID,
+                            chainID: evmCryptoAccount.network.networkConfig.chainID,
                             contractAddress: nil
                         )
                         .publisher
@@ -303,7 +303,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 self.ethereumTransactionDispatcher
                     .send(
                         transaction: candidate,
-                        network: self.network
+                        network: self.network.networkConfig
                     )
                     .asSingle()
             }
@@ -343,7 +343,7 @@ extension EthereumOnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         pendingTransactionRepository
             .isWaitingOnTransaction(
-                network: evmCryptoAccount.network,
+                network: evmCryptoAccount.network.networkConfig,
                 address: evmCryptoAccount.publicKey
             )
             .replaceError(with: true)
@@ -401,8 +401,8 @@ extension EthereumOnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.cryptoCurrency)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.cryptoCurrency))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.nativeAsset)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.nativeAsset))
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

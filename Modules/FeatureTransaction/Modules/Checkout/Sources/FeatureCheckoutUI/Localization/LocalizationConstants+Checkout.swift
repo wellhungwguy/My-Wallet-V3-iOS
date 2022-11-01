@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable line_length
 
 import Localization
 
@@ -8,6 +9,10 @@ extension LocalizationConstants {
             static let checkout = NSLocalizedString(
                 "Checkout",
                 comment: "Checkout title"
+            )
+            static let fetchingQuote = NSLocalizedString(
+                "Fetching Quote",
+                comment: "Checkout Fetching Quote"
             )
             static let from = NSLocalizedString(
                 "From",
@@ -80,6 +85,10 @@ extension LocalizationConstants {
             static let countdown = NSLocalizedString(
                 "New Quote in: ",
                 comment: "Quote time to live coundown label."
+            )
+            static let soon = NSLocalizedString(
+                "soon",
+                comment: "Quote time soon."
             )
             static let paymentMethod = NSLocalizedString(
                 "Payment Method",

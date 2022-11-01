@@ -4,12 +4,9 @@ import Foundation
 
 /// An enumeration of Coin codes that the App supports non-custodial.
 public enum NonCustodialCoinCode: String, CaseIterable {
-    case avax = "AVAX"
-    case bnb = "BNB"
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"
     case ethereum = "ETH"
-    case polygon = "MATIC.MATIC"
     case stellar = "XLM"
 }
 

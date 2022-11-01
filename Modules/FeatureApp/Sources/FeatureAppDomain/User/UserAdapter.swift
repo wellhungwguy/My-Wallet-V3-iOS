@@ -99,7 +99,7 @@ extension KYCTiersServiceAPI {
                     .eraseToAnyPublisher()
             }
             .map(UserState.KYCStatus.init)
-            .mapToResult()
+            .result()
     }
 }
 
@@ -119,7 +119,7 @@ extension PaymentMethodTypesServiceAPI {
                     )
                 }
             }
-            .mapToResult()
+            .result()
     }
 }
 
@@ -128,7 +128,7 @@ extension OrdersServiceAPI {
     fileprivate var hasPurchasedAnyCryptoStream: AnyPublisher<Result<Bool, UserStateError>, Never> {
         hasUserMadeAnyPurchases
             .mapError(UserStateError.missingPurchaseHistory)
-            .mapToResult()
+            .result()
     }
 }
 

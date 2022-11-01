@@ -5,6 +5,7 @@ import Errors
 import EthereumKit
 import MoneyKit
 
+/// A ERC20 Activity Repository for Ethereum network only.
 public protocol ERC20ActivityRepositoryAPI {
 
     func transactions(

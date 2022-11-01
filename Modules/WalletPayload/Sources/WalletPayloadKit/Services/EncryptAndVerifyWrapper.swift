@@ -85,3 +85,13 @@ func encryptAndVerifyWrapper(
         }
         .eraseToAnyPublisher()
 }
+
+extension Publisher {
+
+    func crashOnError() -> AnyPublisher<Output, Never> {
+        self.catch { error -> AnyPublisher<Output, Never> in
+            fatalError(error.localizedDescription)
+        }
+        .eraseToAnyPublisher()
+    }
+}

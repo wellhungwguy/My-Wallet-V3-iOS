@@ -40,10 +40,6 @@ final class BuyTransactionEngine: TransactionEngine {
     // Used to fetch account statuses via settlement API
     private let plaidRepository: PlaidRepositoryAPI
 
-    // Used as a workaround to show the correct total fee to the user during checkout.
-    // This won't be needed anymore once we migrate the quotes API to v2
-    private var pendingCheckoutData: CheckoutData?
-
     init(
         app: AppProtocol = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
@@ -173,6 +169,9 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let sourceAccountLabel = sourceAccount.label
+        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+            return .just(pendingTransaction)
+        }
         return createOrder(pendingTransaction: pendingTransaction)
             .map { order -> OrderDetails in
                 guard let order = order as? OrderDetails else {
@@ -213,59 +212,58 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<TransactionOrder?> {
-        guard pendingCheckoutData == nil else {
-            return .just(pendingCheckoutData?.order)
+        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled), let quote = pendingTransaction.quote {
+            return createOrder(quote: quote)
+        } else {
+            return fetchQuote(for: pendingTransaction.amount)
+                .filter(\.quoteId.isNotNilOrEmpty)
+                .timeout(.seconds(5), scheduler: MainScheduler.asyncInstance)
+                .flatMap(weak: self) { (self, quote) in
+                    self.createOrder(
+                        quote: .init(id: quote.quoteId!, amount: quote.estimatedSourceAmount)
+                    )
+                }
         }
+    }
+
+    func createOrder(quote: PendingTransaction.Quote) -> Single<TransactionOrder?> {
         guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
         }
-        // STEP 1: Get a fresh quote for the transaction
-        return fetchQuote(for: pendingTransaction.amount)
-            // STEP 2: Create an Order for the transaction
-            .flatMap { [orderCreationService] refreshedQuote -> Single<CheckoutData> in
-                guard let fiatValue = refreshedQuote.estimatedSourceAmount.fiatValue else {
-                    return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
+        guard let destinationAccount = transactionTarget as? CryptoTradingAccount, let crypto = destinationAccount.currencyType.cryptoCurrency else {
+            return .error(TransactionValidationFailure(state: .optionInvalid))
+        }
+        guard let fiatValue = quote.amount.fiatValue else {
+            return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
+        }
+        let paymentMethodId: String?
+        if sourceAccount.paymentMethod.type.isFunds || sourceAccount.paymentMethod.type.isApplePay {
+            paymentMethodId = nil
+        } else {
+            paymentMethodId = sourceAccount.paymentMethodType.id
+        }
+        let orderDetails = CandidateOrderDetails.buy(
+            quoteId: quote.id,
+            paymentMethod: sourceAccount.paymentMethodType,
+            fiatValue: fiatValue,
+            cryptoValue: .zero(currency: crypto),
+            paymentMethodId: paymentMethodId
+        )
+        return orderCreationService.create(using: orderDetails)
+            .do(
+                onSuccess: { checkoutData in
+                    Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
+                },
+                onError: { error in
+                    Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
                 }
-                guard let cryptoValue = refreshedQuote.estimatedDestinationAmount.cryptoValue else {
-                    return .error(TransactionValidationFailure(state: .incorrectDestinationCurrency))
-                }
-                let paymentMethodId: String?
-                if sourceAccount.paymentMethod.type.isFunds
-                    || sourceAccount.paymentMethod.type.isApplePay
-                {
-                    paymentMethodId = nil
-                } else {
-                    paymentMethodId = sourceAccount.paymentMethodType.id
-                }
-                let orderDetails = CandidateOrderDetails.buy(
-                    quoteId: refreshedQuote.quoteId,
-                    paymentMethod: sourceAccount.paymentMethodType,
-                    fiatValue: fiatValue,
-                    cryptoValue: cryptoValue,
-                    paymentMethodId: paymentMethodId
-                )
-                return orderCreationService.create(using: orderDetails)
-            }
-            .do(onSuccess: { [weak self] checkoutData in
-                Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
-                self?.pendingCheckoutData = checkoutData
-            }, onError: { error in
-                Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
-            })
+            )
             .map(\.order)
             .map(Optional.some)
     }
 
     func cancelOrder(with identifier: String) -> Single<Void> {
         orderCancellationService.cancelOrder(with: identifier)
-            .handleEvents(receiveOutput: { [weak self] _ in
-                self?.pendingCheckoutData = nil
-            }, receiveCompletion: { [weak self] completion in
-                guard case .finished = completion else {
-                    return
-                }
-                self?.pendingCheckoutData = nil
-            })
             .asSingle()
     }
 
@@ -273,29 +271,35 @@ final class BuyTransactionEngine: TransactionEngine {
         pendingTransaction: PendingTransaction,
         pendingOrder: TransactionOrder?
     ) -> Single<TransactionResult> {
-        guard let order = pendingOrder as? OrderDetails else {
-            return .error(TransactionValidationFailure(state: .optionInvalid))
-        }
-        if let error = order.error {
-            return .error(OpenBanking.Error.code(error))
-        }
-        // Execute the order
-        return orderConfirmationService.confirm(checkoutData: CheckoutData(order: order))
-            .asSingle()
+
+        func execute(_ order: OrderDetails) -> Single<TransactionResult> {
+            // Execute the order
+            orderConfirmationService.confirm(checkoutData: CheckoutData(order: order))
+                .asSingle()
             // Map order to Transaction Result
-            .map { checkoutData -> TransactionResult in
-                TransactionResult.unHashed(
-                    amount: pendingTransaction.amount,
-                    orderId: checkoutData.order.identifier,
-                    order: checkoutData.order
-                )
+                .map { checkoutData -> TransactionResult in
+                    TransactionResult.unHashed(
+                        amount: pendingTransaction.amount,
+                        orderId: checkoutData.order.identifier,
+                        order: checkoutData.order
+                    )
+                }
+                .do(onSuccess: { checkoutData in
+                    Logger.shared.info("[BUY] Order confirmation successful \(String(describing: checkoutData))")
+                }, onError: { error in
+                    Logger.shared.error("[BUY] Order confirmation failed \(String(describing: error))")
+                })
+        }
+
+        if let order = pendingOrder as? OrderDetails {
+            if let error = order.error {
+                return .error(OpenBanking.Error.code(error))
             }
-            .do(onSuccess: { [weak self] checkoutData in
-                Logger.shared.info("[BUY] Order confirmation successful \(String(describing: checkoutData))")
-                self?.pendingCheckoutData = nil
-            }, onError: { error in
-                Logger.shared.error("[BUY] Order confirmation failed \(String(describing: error))")
-            })
+            return execute(order)
+        } else {
+            return createOrder(pendingTransaction: pendingTransaction)
+                .flatMap { order in execute(order as! OrderDetails) }
+        }
     }
 
     func doUpdateFeeLevel(

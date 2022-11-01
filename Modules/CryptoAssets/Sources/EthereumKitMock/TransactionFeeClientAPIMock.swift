@@ -6,7 +6,6 @@ import Errors
 import MoneyKit
 
 final class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
-
     var underlyingFees: AnyPublisher<TransactionFeeResponse, NetworkError> = .just(
         .init(
             gasLimit: 21000,
@@ -27,14 +26,14 @@ final class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
     )
 
     func fees(
-        network: EthereumKit.EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         underlyingFees
     }
 
     func newFees(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<NewTransactionFeeResponse, NetworkError> {
         underlyingNewFees

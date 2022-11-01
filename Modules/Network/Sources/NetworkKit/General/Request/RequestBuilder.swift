@@ -18,24 +18,8 @@ public struct RequestBuilderQueryParameters {
 
 public class RequestBuilder {
 
-    public enum Error: Swift.Error {
-        case buildingRequest
-    }
-
-    private var defaultComponents: URLComponents {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = networkConfig.apiScheme
-        urlComponents.host = networkConfig.apiHost
-        urlComponents.path = RequestBuilder.path(from: networkConfig.pathComponents)
-        return urlComponents
-    }
-
     private let networkConfig: Network.Config
-    private let decoder: NetworkResponseDecoderAPI
-    private let headers: () -> HTTPHeaders
-
-    private var queryParameters: [URLQueryItem]?
-    private var subscription: AnyCancellable?
+    private let baseRequestBuilder: BaseRequestBuilder
 
     public convenience init(
         config: Network.Config = resolve(),
@@ -53,13 +37,19 @@ public class RequestBuilder {
         queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
     ) {
         networkConfig = config
-        self.decoder = decoder
-        self.headers = headers
-        if BuildFlag.isInternal {
-            subscription = queryParameters.publisher.sink { [weak self] parameters in
-                self?.queryParameters = parameters
-            }
-        }
+        baseRequestBuilder = BaseRequestBuilder(
+            decoder: decoder,
+            resolveHeaders: headers,
+            queryParameters: queryParameters
+        )
+    }
+
+    public init(
+        config: Network.Config,
+        baseRequestBuilder: BaseRequestBuilder
+    ) {
+        networkConfig = config
+        self.baseRequestBuilder = baseRequestBuilder
     }
 
     // MARK: - GET
@@ -73,8 +63,9 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        get(
-            path: RequestBuilder.path(from: components),
+        baseRequestBuilder.get(
+            networkConfig: networkConfig,
+            path: components,
             parameters: parameters,
             headers: headers,
             authenticated: authenticated,
@@ -85,7 +76,7 @@ public class RequestBuilder {
     }
 
     public func get(
-        path: String,
+        path: String?,
         parameters: [URLQueryItem]? = nil,
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
@@ -93,8 +84,8 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        buildRequest(
-            method: .get,
+        baseRequestBuilder.get(
+            networkConfig: networkConfig,
             path: path,
             parameters: parameters,
             headers: headers,
@@ -117,8 +108,9 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        put(
-            path: RequestBuilder.path(from: components),
+        baseRequestBuilder.put(
+            networkConfig: networkConfig,
+            path: components,
             parameters: parameters,
             body: body,
             headers: headers,
@@ -130,7 +122,7 @@ public class RequestBuilder {
     }
 
     public func put(
-        path: String,
+        path: String?,
         parameters: [URLQueryItem]? = nil,
         body: Data? = nil,
         headers: HTTPHeaders = [:],
@@ -139,8 +131,8 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        buildRequest(
-            method: .put,
+        baseRequestBuilder.put(
+            networkConfig: networkConfig,
             path: path,
             parameters: parameters,
             body: body,
@@ -164,8 +156,9 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        post(
-            path: RequestBuilder.path(from: components),
+        baseRequestBuilder.post(
+            networkConfig: networkConfig,
+            path: components,
             parameters: parameters,
             body: body,
             headers: headers,
@@ -177,7 +170,7 @@ public class RequestBuilder {
     }
 
     public func post(
-        path: String,
+        path: String?,
         parameters: [URLQueryItem]? = nil,
         body: Data? = nil,
         headers: HTTPHeaders = [:],
@@ -186,8 +179,8 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        buildRequest(
-            method: .post,
+        baseRequestBuilder.post(
+            networkConfig: networkConfig,
             path: path,
             parameters: parameters,
             body: body,
@@ -211,9 +204,232 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
+        baseRequestBuilder.delete(
+            networkConfig: networkConfig,
+            path: components,
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: false
+        )
+    }
+
+    public static func body(from parameters: [URLQueryItem]) -> Data? {
+        BaseRequestBuilder.body(from: parameters)
+    }
+}
+
+public final class BaseRequestBuilder {
+
+    public enum Error: Swift.Error {
+        case buildingRequest
+    }
+
+    private func defaultComponents(networkConfig: Network.Config) -> URLComponents {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = networkConfig.apiScheme
+        urlComponents.host = networkConfig.apiHost
+        urlComponents.path = BaseRequestBuilder.path(from: networkConfig.pathComponents)
+        return urlComponents
+    }
+
+    private let decoder: NetworkResponseDecoderAPI
+    private let headers: () -> HTTPHeaders
+
+    private var queryParameters: [URLQueryItem]?
+    private var subscription: AnyCancellable?
+
+    public convenience init(
+        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
+        headers: HTTPHeaders = [:],
+        queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
+    ) {
+        self.init(decoder: decoder, resolveHeaders: { headers }, queryParameters: queryParameters)
+    }
+
+    public init(
+        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
+        resolveHeaders headers: @escaping () -> HTTPHeaders,
+        queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
+    ) {
+        self.decoder = decoder
+        self.headers = headers
+        if BuildFlag.isInternal {
+            subscription = queryParameters.publisher.sink { [weak self] parameters in
+                self?.queryParameters = parameters
+            }
+        }
+    }
+
+    // MARK: - GET
+
+    public func get(
+        networkConfig: Network.Config,
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        get(
+            networkConfig: networkConfig,
+            path: BaseRequestBuilder.path(from: components),
+            parameters: parameters,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    public func get(
+        networkConfig: Network.Config,
+        path: String?,
+        parameters: [URLQueryItem]? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         buildRequest(
+            networkConfig: networkConfig,
+            method: .get,
+            path: path,
+            parameters: parameters,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    // MARK: - PUT
+
+    public func put(
+        networkConfig: Network.Config,
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        put(
+            networkConfig: networkConfig,
+            path: BaseRequestBuilder.path(from: components),
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    public func put(
+        networkConfig: Network.Config,
+        path: String?,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        buildRequest(
+            networkConfig: networkConfig,
+            method: .put,
+            path: path,
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    // MARK: - POST
+
+    public func post(
+        networkConfig: Network.Config,
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        post(
+            networkConfig: networkConfig,
+            path: BaseRequestBuilder.path(from: components),
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    public func post(
+        networkConfig: Network.Config,
+        path: String?,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        buildRequest(
+            networkConfig: networkConfig,
+            method: .post,
+            path: path,
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    // MARK: - Delete
+
+    public func delete(
+        networkConfig: Network.Config,
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        buildRequest(
+            networkConfig: networkConfig,
             method: .delete,
-            path: RequestBuilder.path(from: components),
+            path: BaseRequestBuilder.path(from: components),
             parameters: parameters,
             body: body,
             headers: headers,
@@ -236,14 +452,20 @@ public class RequestBuilder {
     // MARK: - Private methods
 
     private static func path(from components: [String] = []) -> String {
-        components.reduce(into: "") { path, component in
-            path += "/\(component)"
+        guard !components.isEmpty else {
+            return ""
         }
+        var components = components
+        if components.first == "/" {
+            components.removeFirst()
+        }
+        return "/" + components.joined(separator: "/")
     }
 
     private func buildRequest(
+        networkConfig: Network.Config,
         method: NetworkRequest.NetworkMethod,
-        path: String,
+        path: String?,
         parameters: [URLQueryItem]? = nil,
         body: Data? = nil,
         headers: HTTPHeaders = [:],
@@ -252,7 +474,7 @@ public class RequestBuilder {
         decoder: NetworkResponseDecoderAPI?,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
-        guard let url = buildURL(path: path, parameters: parameters) else {
+        guard let url = buildURL(networkConfig: networkConfig, path: path, parameters: parameters) else {
             return nil
         }
         return NetworkRequest(
@@ -267,9 +489,11 @@ public class RequestBuilder {
         )
     }
 
-    private func buildURL(path: String, parameters: [URLQueryItem]? = nil) -> URL? {
-        var components = defaultComponents
-        components.path += path
+    private func buildURL(networkConfig: Network.Config, path: String?, parameters: [URLQueryItem]? = nil) -> URL? {
+        var components = defaultComponents(networkConfig: networkConfig)
+        if let path {
+            components.path += path
+        }
         if let parameters {
             components.queryItems = parameters
         }

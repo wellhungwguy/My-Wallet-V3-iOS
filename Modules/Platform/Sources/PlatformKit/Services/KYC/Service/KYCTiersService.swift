@@ -190,7 +190,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, Nabu.Error> {
-        cachedTiers.get(key: Key(), forceFetch: true)
+        cachedTiers.get(key: Key(), forceFetch: false)
     }
 
     func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> {

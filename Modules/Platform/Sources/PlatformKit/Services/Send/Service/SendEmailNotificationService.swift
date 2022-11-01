@@ -40,7 +40,7 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
             .ignoreFailure()
             .map { guid, sharedKey in
                 let assetModel = moneyValue.currency.cryptoCurrency?.assetModel
-                let network = assetModel?.kind.erc20ParentChain?.rawValue ?? moneyValue.code
+                let network = assetModel?.kind.erc20ParentChain ?? moneyValue.code
                 let amount = moneyValue.toSimpleString(includeSymbol: false)
                 return SendEmailNotificationClient.Payload(
                     guid: guid,

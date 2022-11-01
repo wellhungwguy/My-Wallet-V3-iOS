@@ -3,11 +3,12 @@
 import Combine
 import DIKit
 import Errors
+import MoneyKit
 import ToolKit
 
 public protocol PendingTransactionRepositoryAPI {
     func isWaitingOnTransaction(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         address: String
     ) -> AnyPublisher<Bool, NetworkError>
 }

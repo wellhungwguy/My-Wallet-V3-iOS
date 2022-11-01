@@ -3,7 +3,7 @@
 import MoneyKit
 import PlatformKit
 
-public struct TradeLimit {
+public struct TradeLimit: Equatable {
 
     public let limit: MoneyValue
     public let available: MoneyValue

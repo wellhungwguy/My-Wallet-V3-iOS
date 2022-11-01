@@ -14,7 +14,7 @@ public struct NavigationLinkProvider: Hashable {
     private let view: AnyView
     private let title: String
 
-    public init<Content: View>(view: Content, title: String? = nil) {
+    public init(view: some View, title: String? = nil) {
         self.title = title ?? String(describing: type(of: view))
         self.view = AnyView(view.primaryNavigation(title: self.title))
     }

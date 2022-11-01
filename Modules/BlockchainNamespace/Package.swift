@@ -19,7 +19,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/thousandyears/Lexicon.git",
-            from: "0.6.1"
+            from: "0.6.3"
         ),
         .package(path: "../Extensions"),
         .package(path: "../AnyCoding")
@@ -34,7 +34,10 @@ let package = Package(
                 .product(name: "Extensions", package: "Extensions")
             ],
             resources: [
-                .copy("blockchain.taskpaper")
+                .copy("blockchain.lexicon")
+            ],
+            plugins: [
+                .plugin(name: "SwiftStandAloneGeneratorPlugin", package: "Lexicon")
             ]
         ),
         .target(
@@ -44,7 +47,7 @@ let package = Package(
             name: "BlockchainNamespaceTests",
             dependencies: ["BlockchainNamespace"],
             resources: [
-                .copy("test.taskpaper")
+                .copy("test.lexicon")
             ]
         )
     ]

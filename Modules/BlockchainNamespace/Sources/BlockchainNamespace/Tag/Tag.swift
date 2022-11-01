@@ -215,9 +215,9 @@ extension Tag {
         self[descendant]
     }
 
-    public subscript<Descendant>(
-        descendant: Descendant
-    ) -> Tag? where Descendant: Collection, Descendant.Element == Name {
+    public subscript(
+        descendant: some Collection<Name>
+    ) -> Tag? {
         try? self.descendant(descendant)
     }
 
@@ -377,8 +377,9 @@ extension Tag: Codable {
     }
 }
 
-extension Tag: CustomStringConvertible {
+extension Tag: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String { id }
+    public var debugDescription: String { id }
 }
 
 extension L {
@@ -388,7 +389,7 @@ extension L {
 // MARK: - Static Tag
 
 extension I where Self: L {
-    public subscript<Value>(value: Value) -> Tag.KeyTo<L> where Value: Sendable, Value: Hashable {
+    public subscript(value: some Sendable & Hashable) -> Tag.KeyTo<L> {
         Tag.KeyTo(id: self, context: [self: value])
     }
 }
@@ -399,7 +400,7 @@ extension I_blockchain_db_collection where Self: L {
         Tag.KeyTo(id: self, context: [id: value])
     }
 
-    public subscript<Value>(value: Value) -> Tag.KeyTo<Self> where Value: Sendable, Value: Hashable & CustomStringConvertible {
+    public subscript(value: some Sendable & Hashable & CustomStringConvertible) -> Tag.KeyTo<Self> {
         Tag.KeyTo(id: self, context: [id: value.description])
     }
 
@@ -436,7 +437,7 @@ extension Tag {
             KeyTo<B>(id: id[keyPath: keyPath], context: context)
         }
 
-        public subscript<Value>(value: Value) -> KeyTo<A> where Value: Sendable, Value: Hashable {
+        public subscript(value: some Sendable & Hashable) -> KeyTo<A> {
             KeyTo(id: id, context: context + [id: value])
         }
     }

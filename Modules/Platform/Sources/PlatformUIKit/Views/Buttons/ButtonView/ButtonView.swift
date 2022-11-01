@@ -109,9 +109,8 @@ public final class ButtonView: UIView {
                 .throttle(
                     .milliseconds(200),
                     latest: false,
-                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                    scheduler: MainScheduler.asyncInstance
                 )
-                .observe(on: MainScheduler.instance)
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 

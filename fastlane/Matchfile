@@ -9,6 +9,10 @@ for_lane :alpha do
     type "appstore"
 end
 
+for_lane :staging do
+    type "appstore"
+end
+
 for_lane :release do
     type "appstore"
 end

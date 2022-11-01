@@ -30,16 +30,16 @@ final class HistoricalBalanceCellPresenter {
     }
 
     var assetNetworkContent: Driver<LabelContent?> {
-        let network = cryptoCurrency.assetModel.kind.erc20ParentChain?.name
-        guard let network else {
+        guard let evmNetwork = interactor.evmNetwork else {
             return .just(nil)
         }
+        let evmNetworkName = evmNetwork.networkConfig.name
         return .just(
             .init(
-                text: network,
+                text: evmNetworkName,
                 font: .main(.semibold, 12),
                 color: .descriptionText,
-                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(network)")
+                accessibility: .id("\(AccessibilityId.titleLabelFormat)\(evmNetworkName)")
             )
         )
     }

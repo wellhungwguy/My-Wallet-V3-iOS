@@ -17,25 +17,37 @@ public protocol TransactionDetailServiceAPI {
 final class TransactionDetailService: TransactionDetailServiceAPI {
 
     private let blockchainAPI: BlockchainAPI
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
-    init(blockchainAPI: BlockchainAPI) {
+    init(blockchainAPI: BlockchainAPI, enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
         self.blockchainAPI = blockchainAPI
+        self.enabledCurrenciesService = enabledCurrenciesService
     }
 
     func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
-        switch (cryptoCurrency.assetModel, cryptoCurrency.assetModel.kind) {
-        case (.bitcoin, _):
+        switch cryptoCurrency {
+        case .bitcoin:
             return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"
-        case (.ethereum, _):
-            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-        case (.bitcoinCash, _):
+        case .bitcoinCash:
             return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
-        case (.stellar, _):
+        case .stellar:
             return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
-        case (_, .erc20):
-            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
         default:
-            return nil
+            break
         }
+
+        if let network = evmNetwork(cryptoCurrency: cryptoCurrency) {
+            return "\(network.networkConfig.explorerUrl)/\(transactionHash)"
+        }
+
+        return nil
+    }
+
+    private func evmNetwork(cryptoCurrency: CryptoCurrency) -> EVMNetwork? {
+        enabledCurrenciesService
+            .allEnabledEVMNetworks
+            .first(where: { network in
+                network.nativeAsset.code == (cryptoCurrency.assetModel.kind.erc20ParentChain ?? cryptoCurrency.code)
+            })
     }
 }

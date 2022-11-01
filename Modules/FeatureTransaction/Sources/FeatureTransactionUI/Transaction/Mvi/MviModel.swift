@@ -20,7 +20,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
     init(initialState: State, performAction: @escaping (State, Action) -> Disposable?) {
         stateRelay = BehaviorRelay(value: initialState)
         actions // TODO: Inject // actions.distinctUntilChanged()
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .observe(on: MainScheduler.asyncInstance)
             .scan(initialState) { oldState, action -> State in
                 guard action.isValid(for: oldState) else {
                     return oldState
@@ -29,7 +29,6 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
                     .disposed(by: self.disposeBag)
                 return action.reduce(oldState: oldState)
             }
-            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

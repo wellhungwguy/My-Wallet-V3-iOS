@@ -4,13 +4,14 @@ import BigInt
 import Combine
 import Errors
 import EthereumKit
+import MoneyKit
 import ToolKit
 
 final class LatestBlockRepository: LatestBlockRepositoryAPI {
 
     private let client: LatestBlockClientAPI
     private let cachedValue: CachedValueNew<
-        EVMNetwork,
+        EVMNetworkConfig,
         BigInt,
         NetworkError
     >
@@ -18,7 +19,7 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
     init(client: LatestBlockClientAPI) {
         self.client = client
 
-        let cache: AnyCache<EVMNetwork, BigInt> = InMemoryCache(
+        let cache: AnyCache<EVMNetworkConfig, BigInt> = InMemoryCache(
             configuration: .default(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 10)
         ).eraseToAnyCache()
@@ -35,7 +36,7 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
     }
 
     func latestBlock(
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<BigInt, NetworkError> {
         cachedValue.get(key: network)
     }

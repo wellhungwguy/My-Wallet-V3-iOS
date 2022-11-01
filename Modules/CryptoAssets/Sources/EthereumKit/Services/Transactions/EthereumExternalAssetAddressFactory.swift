@@ -67,10 +67,10 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
             return .failure(.invalidAddress)
         }
         // Validates the address is valid.
-        guard Self.validate(address: eip681URI.address) else {
+        guard Self.validate(address: eip681URI.address, network: network) else {
             return .failure(.invalidAddress)
         }
-        guard eip681URI.cryptoCurrency == network.cryptoCurrency else {
+        guard eip681URI.cryptoCurrency == network.nativeAsset else {
             return .failure(.wrongAsset)
         }
         // Creates BitcoinChainReceiveAddress from 'BIP21URI'.
@@ -94,7 +94,7 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         // Removes the prefix, if present.
         let address = address.removing(prefix: "ethereum:")
         // Validates the address is valid.
-        guard Self.validate(address: address) else {
+        guard Self.validate(address: address, network: network) else {
             return .failure(.invalidAddress)
         }
         // Creates EthereumReceiveAddress from 'address'.
@@ -110,8 +110,8 @@ final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
         return .success(receiveAddress)
     }
 
-    private static func validate(address: String) -> Bool {
+    private static func validate(address: String, network: EVMNetwork) -> Bool {
         WalletCore.CoinType.ethereum.validate(address: address)
-            && EthereumAddress(address: address) != nil
+            && EthereumAddress(address: address, network: network) != nil
     }
 }

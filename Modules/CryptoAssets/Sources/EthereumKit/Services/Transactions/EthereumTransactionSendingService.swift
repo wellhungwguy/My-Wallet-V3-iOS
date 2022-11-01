@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import MoneyKit
 
 public enum EthereumTransactionSendingServiceError: Error {
     case pushTransactionFailed(Error)
@@ -11,13 +12,13 @@ public enum EthereumTransactionSendingServiceError: Error {
 protocol EthereumTransactionSendingServiceAPI {
     func send(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 
     func signAndSend(
         transaction: EthereumTransactionCandidate,
         keyPair: EthereumKeyPair,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
 }
 
@@ -37,7 +38,7 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
     func signAndSend(
         transaction: EthereumTransactionCandidate,
         keyPair: EthereumKeyPair,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
         transactionSigner
             .sign(transaction: transaction, keyPair: keyPair)
@@ -50,7 +51,7 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
 
     func send(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
         pushService.push(transaction: transaction, network: network)
             .mapError(EthereumTransactionSendingServiceError.pushTransactionFailed)

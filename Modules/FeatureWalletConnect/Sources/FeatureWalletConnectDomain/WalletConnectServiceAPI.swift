@@ -3,6 +3,7 @@
 import Combine
 import EthereumKit
 import Foundation
+import MoneyKit
 import PlatformKit
 import WalletConnectSwift
 

@@ -3,6 +3,7 @@
 import BigInt
 import Combine
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 
 public typealias RecordLastTransaction =
@@ -12,7 +13,7 @@ public protocol EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, Error>
 }
 
@@ -34,7 +35,7 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     func send(
         transaction: EthereumTransactionCandidate,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EthereumTransactionPublished, Error> {
         keyPairProvider
             .keyPair

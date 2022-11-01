@@ -100,6 +100,7 @@ extension Tag.Reference {
 
         var tag = blockchain[]
         var indices: [Tag: String] = [:]
+        var context: [Tag: String] = [:]
 
         for match in Tag.Reference.pattern.matches(in: id, range: NSRange(id.startIndex..<id.endIndex, in: id)) {
 
@@ -109,11 +110,12 @@ extension Tag.Reference {
             )
             tag = try tag.child(named: id[range.name].string)
             guard range.id.location != NSNotFound else { continue }
-            try indices[
-                tag.child(named: blockchain.db.collection.id[].name)
-            ] = id[range.id].string
+            context[tag] = id[range.id].string
+            if tag.isCollection, let collectionId = tag["id"] {
+                indices[collectionId] = id[range.id].string
+            }
         }
-        self.init(tag, to: Tag.Context(indices), in: nil)
+        self.init(tag, to: Tag.Context(context) + Tag.Context(indices), in: nil)
     }
 }
 
@@ -245,6 +247,7 @@ extension Tag.Reference {
     }
 }
 
-extension Tag.Reference: CustomStringConvertible {
+extension Tag.Reference: CustomStringConvertible, CustomDebugStringConvertible {
     public var description: String { string }
+    public var debugDescription: String { string }
 }

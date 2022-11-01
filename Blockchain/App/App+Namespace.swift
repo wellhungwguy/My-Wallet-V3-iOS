@@ -22,6 +22,7 @@ let app: AppProtocol = App(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
         default: [
             blockchain.app.configuration.addresssearch.kyc.is.enabled: BuildFlag.isAlpha,
+            blockchain.app.configuration.multiapp.is.enabled: false,
             blockchain.app.configuration.app.superapp.is.enabled: false,
             blockchain.app.configuration.apple.pay.is.enabled: false,
             blockchain.app.configuration.argentinalinkbank.is.enabled: false,
@@ -30,12 +31,6 @@ let app: AppProtocol = App(
             blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
             blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.evm.avax.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.evm.avax.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.evm.bnb.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.evm.bnb.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.evm.polygon.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.evm.polygon.tokens.always.fetch.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.evm.name.sanitize.is.enabled: BuildFlag.isAlpha,
             blockchain.app.configuration.profile.kyc.is.enabled: false,
             blockchain.app.configuration.request.console.logging: false,
@@ -77,6 +72,7 @@ extension AppProtocol {
         observers.insert(EmbraceObserver(app: self))
         observers.insert(GenerateSession(app: self))
         observers.insert(PlaidLinkObserver(app: self))
+        // observers.insert(EmbraceObserver(app: self))
         observers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))

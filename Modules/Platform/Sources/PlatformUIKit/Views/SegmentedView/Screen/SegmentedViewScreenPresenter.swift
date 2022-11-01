@@ -14,9 +14,9 @@ public struct SegmentedViewScreenItem {
     let id: AnyHashable
     let viewController: SegmentedViewScreenViewController
 
-    public init<H: Hashable>(
+    public init(
         title: String,
-        id: H,
+        id: some Hashable,
         viewController: SegmentedViewScreenViewController
     ) {
         self.title = title

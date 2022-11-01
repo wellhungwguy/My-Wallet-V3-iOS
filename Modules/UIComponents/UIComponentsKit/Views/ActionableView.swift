@@ -89,8 +89,8 @@ public struct ActionableView<Content: View>: View {
 
 extension ActionableView where Content == AnyView {
 
-    public init<Image: View>(
-        @ViewBuilder image: @escaping () -> Image,
+    public init(
+        @ViewBuilder image: @escaping () -> some View,
         title: String,
         message: String,
         buttons: [ActionableViewButtonState] = [],

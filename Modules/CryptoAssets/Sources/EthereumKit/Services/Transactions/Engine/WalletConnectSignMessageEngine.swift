@@ -91,7 +91,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             subtitle: walletConnectTarget.dAppAddress
         )
         let network = TransactionConfirmations.Network(
-            network: walletConnectTarget.network.name
+            network: walletConnectTarget.network.networkConfig.name
         )
         let message = TransactionConfirmations.Message(
             dAppName: walletConnectTarget.dAppName,

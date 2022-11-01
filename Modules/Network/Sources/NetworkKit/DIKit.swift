@@ -47,6 +47,8 @@ extension DependencyContainer {
 
         single { RequestBuilder() }
 
+        single { BaseRequestBuilder() }
+
         single { NetworkResponseHandler() as NetworkResponseHandlerAPI }
 
         single { NetworkAdapter.defaultAdapter() as NetworkAdapterAPI }

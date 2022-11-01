@@ -53,7 +53,7 @@ final class EVMAsset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI
     ) {
         self.network = network
-        asset = network.cryptoCurrency
+        asset = network.nativeAsset
         self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository

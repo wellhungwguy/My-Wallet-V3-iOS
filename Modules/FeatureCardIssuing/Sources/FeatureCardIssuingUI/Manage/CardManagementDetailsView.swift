@@ -87,6 +87,11 @@ struct CardManagementDetailsView: View {
                         viewStore.send(.binding(.set(\.$isDeleteCardPresented, true)))
                     }
                     .padding(Spacing.padding3)
+                    PrimaryNavigationLink(
+                        destination: LegalDocumentsView(store: store),
+                        isActive: viewStore.binding(\.$isStatementsVisible),
+                        label: EmptyView.init
+                    )
                 }
                 .listStyle(PlainListStyle())
                 .background(Color.semantic.background.ignoresSafeArea())

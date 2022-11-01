@@ -9,6 +9,7 @@ struct FormSingleSelectionAnswersView: View {
     let title: String
     @Binding var answers: [FormAnswer]
     @Binding var showAnswersState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -25,7 +26,8 @@ struct FormSingleSelectionAnswersView: View {
             FormSingleSelectionAnswerView(
                 title: title,
                 answer: answer,
-                showAnswerState: $showAnswersState
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
             .onChange(of: answer.wrappedValue) { newValue in
                 guard newValue.checked == true else {
@@ -36,7 +38,11 @@ struct FormSingleSelectionAnswersView: View {
                 }
             }
         case .openEnded:
-            FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
+            FormOpenEndedAnswerView(
+                answer: answer,
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
+            )
         case .date:
             FormDateDropdownAnswersView(
                 title: title,
@@ -90,7 +96,8 @@ struct FormSingleSelectionAnswersView_Previews: PreviewProvider {
             FormSingleSelectionAnswersView(
                 title: "Title",
                 answers: $answers,
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: defaultFieldConfiguration
             )
         }
     }

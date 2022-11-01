@@ -47,9 +47,9 @@ struct CardManagementView: View {
                             .typography(.body2)
                         Spacer()
                         SmallMinimalButton(
-                            title: L10n.Button.manage,
+                            title: L10n.Selector.myCards,
                             action: {
-                                viewStore.send(.showManagementDetails)
+                                viewStore.send(.binding(.set(\.$isCardSelectorPresented, true)))
                             }
                         )
                         SmallMinimalButton(
@@ -145,7 +145,14 @@ struct CardManagementView: View {
             )
             .sheet(
                 isPresented: viewStore.binding(\.$isDetailScreenVisible),
-                content: { CardManagementDetailsView(store: store) }
+                content: {
+                    PrimaryNavigationView {
+                        CardManagementDetailsView(
+                            store: store
+                        )
+                        .navigationBarHidden(true)
+                    }
+                }
             )
             .bottomSheet(
                 isPresented: viewStore.binding(
@@ -170,9 +177,14 @@ struct CardManagementView: View {
                 )
             ) {
                 if case .loaded(let url) = viewStore.state.activationUrl {
-                    WebView(url: url, finishUrl: WebView.CallbackUrl.activate, forceFullScreen: true) {
-                        viewStore.send(.hideActivationWebview)
-                    }
+                    WebView(
+                        url: url,
+                        finishUrl: WebView.CallbackUrl.activate,
+                        forceFullScreen: true,
+                        onFinish: {
+                            viewStore.send(.hideActivationWebview)
+                        }
+                    )
                 } else {
                     EmptyView()
                 }
@@ -198,7 +210,13 @@ struct CardManagementView: View {
                     WithViewStore(store) { viewStore in
                         WebView(
                             url: viewStore.state,
-                            loading: $isHelperReady
+                            loading: $isHelperReady,
+                            callback: { event in
+                                guard case .manage = event.type else {
+                                    return
+                                }
+                                viewStore.send(CardManagementAction.showManagementDetails)
+                            }
                         )
                         .frame(width: UIScreen.main.bounds.width, height: 355)
                     }

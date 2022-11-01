@@ -34,13 +34,16 @@ public struct PendingTransaction: Equatable {
     public let engineState: Atomic<[EngineStateKey: Any]> = Atomic([:])
 
     public var limits: TransactionLimits? {
-        get {
-            _limits.value
-        }
-        set {
-            _limits = Reference(newValue)
-        }
+        get { _limits.value }
+        set { _limits = Reference(newValue) }
     }
+
+    public struct Quote: Equatable {
+        let id: String
+        let amount: MoneyValue
+    }
+
+    public var quote: Quote?
 
     // this struct has become too big for Swift to handle :(
     private var _limits: Reference<TransactionLimits?>
@@ -66,6 +69,12 @@ public struct PendingTransaction: Equatable {
     public func update(validationState: TransactionValidationState) -> PendingTransaction {
         var copy = self
         copy.validationState = validationState
+        return copy
+    }
+
+    public func update(quote: Quote) -> PendingTransaction {
+        var copy = self
+        copy.quote = quote
         return copy
     }
 
@@ -159,16 +168,18 @@ public struct PendingTransaction: Equatable {
     // MARK: - Equatable
 
     public static func == (lhs: PendingTransaction, rhs: PendingTransaction) -> Bool {
-        lhs.amount == rhs.amount
-            && lhs.feeAmount == rhs.feeAmount
-            && lhs.available == rhs.available
-            && lhs.feeSelection == rhs.feeSelection
-            && lhs.feeForFullAvailable == rhs.feeForFullAvailable
-            && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
-            && lhs.feeLevel == rhs.feeLevel
-            && TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations)
-            && lhs.limits == rhs.limits
-            && lhs.validationState == rhs.validationState
+        guard lhs.amount == rhs.amount else { return false }
+        guard lhs.feeAmount == rhs.feeAmount else { return false }
+        guard lhs.available == rhs.available else { return false }
+        guard lhs.feeSelection == rhs.feeSelection else { return false }
+        guard lhs.feeForFullAvailable == rhs.feeForFullAvailable else { return false }
+        guard lhs.selectedFiatCurrency == rhs.selectedFiatCurrency else { return false }
+        guard lhs.feeLevel == rhs.feeLevel else { return false }
+        guard lhs.limits == rhs.limits else { return false }
+        guard lhs.validationState == rhs.validationState else { return false }
+        guard lhs.quote == rhs.quote else { return false }
+        guard TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations) else { return false }
+        return true
     }
 }
 

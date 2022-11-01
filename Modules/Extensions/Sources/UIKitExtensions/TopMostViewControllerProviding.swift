@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// A provider protocol for top most view controller
@@ -60,3 +62,5 @@ private func topViewController(of viewController: UIViewController?) -> UIViewCo
 
     return viewController
 }
+
+#endif

@@ -55,11 +55,11 @@ extension Session.State {
         public let id: UUID = UUID()
         public let call: () throws -> Any?
 
-        public init<T>(_ call: @escaping () -> T) {
+        public init(_ call: @escaping () -> some Any) {
             self.call = call as () throws -> Any?
         }
 
-        public init<T>(_ call: @escaping () throws -> T) {
+        public init(_ call: @escaping () throws -> some Any) {
             self.call = call as () throws -> Any?
         }
 

@@ -4,6 +4,7 @@ import BigInt
 import Combine
 import DIKit
 import Foundation
+import MoneyKit
 import NetworkKit
 import PlatformKit
 
@@ -48,14 +49,14 @@ final class RPCClient: EstimateGasClientAPI,
     // MARK: - Private Properties
 
     private let networkAdapter: NetworkAdapterAPI
-    private let requestBuilder: RequestBuilder
+    private let requestBuilder: BaseRequestBuilder
     private let apiCode: String
 
     // MARK: - Setup
 
     init(
         networkAdapter: NetworkAdapterAPI = resolve(),
-        requestBuilder: RequestBuilder = resolve(),
+        requestBuilder: BaseRequestBuilder = resolve(),
         apiCode: APICode = resolve()
     ) {
         self.networkAdapter = networkAdapter
@@ -136,27 +137,15 @@ final class RPCClient: EstimateGasClientAPI,
         guard let data = try? encodable.data() else {
             return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
         }
+        guard let url = URL(string: network.networkConfig.nodeURL) else {
+            return .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
+        }
         return requestBuilder.post(
-            path: network.nodePath,
+            networkConfig: Network.Config(scheme: url.scheme, host: url.host ?? "", components: url.pathComponents),
+            path: nil,
             body: data
         )
         .flatMap { .success($0) }
         ?? .failure(NetworkError(request: nil, type: .payloadError(.emptyData)))
-    }
-}
-
-extension EVMNetwork {
-
-    fileprivate var nodePath: String {
-        switch self {
-        case .avalanceCChain:
-            return "/avax/nodes/rpc/ext/bc/C/rpc"
-        case .binanceSmartChain:
-            return "/bnb/nodes/rpc"
-        case .ethereum:
-            return "/eth/nodes/rpc"
-        case .polygon:
-            return "/matic-bor/nodes/rpc"
-        }
     }
 }

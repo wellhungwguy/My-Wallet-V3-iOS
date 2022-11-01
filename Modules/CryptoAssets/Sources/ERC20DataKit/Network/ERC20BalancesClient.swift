@@ -2,6 +2,7 @@
 
 import Combine
 import EthereumKit
+import MoneyKit
 import NetworkKit
 
 /// A client in charge of interacting with the ethereum backend service, in order to fetch ERC-20 data.
@@ -14,8 +15,8 @@ protocol ERC20BalancesClientAPI {
     /// - Parameter address: The ethereum account address to fetch the ERC-20 token accounts for.
     /// - Parameter network: The EVMNetwork.
     ///
-    /// - Returns: A publisher that emits a `ERC20TokenAccountsReponse` on success, or a `NetworkError` on failure.
-    func evmTokensBalances(for address: String, network: EVMNetwork) -> AnyPublisher<EVMBalancesResponse, NetworkError>
+    /// - Returns: A publisher that emits a `ERC20TokenAccountsResponse` on success, or a `NetworkError` on failure.
+    func evmTokensBalances(for address: String, network: EVMNetworkConfig) -> AnyPublisher<EVMBalancesResponse, NetworkError>
 
     /// Fetches the ERC-20 token accounts associated with the given ethereum account address.
     ///
@@ -70,11 +71,11 @@ final class ERC20BalancesClient: ERC20BalancesClientAPI {
 
     func evmTokensBalances(
         for address: String,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMBalancesResponse, NetworkError> {
         let payload = EVMBalancesRequest(
             addresses: [address],
-            network: network,
+            network: network.networkTicker,
             apiCode: apiCode
         )
         let request = requestBuilder.post(

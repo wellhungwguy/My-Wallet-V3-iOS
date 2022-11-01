@@ -40,7 +40,7 @@ enum MockEthereumWalletTestData {
 extension EthereumTransactionCandidate {
     static var defaultMock: EthereumTransactionCandidate {
         EthereumTransactionCandidate(
-            to: EthereumAddress(address: MockEthereumWalletTestData.Transaction.to)!,
+            to: EthereumAddress(address: MockEthereumWalletTestData.Transaction.to, network: .ethereum)!,
             gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: MockEthereumWalletTestData.Transaction.value,

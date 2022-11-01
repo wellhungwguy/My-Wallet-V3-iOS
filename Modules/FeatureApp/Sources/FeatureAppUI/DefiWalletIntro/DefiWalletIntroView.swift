@@ -15,7 +15,7 @@ public struct DefiWalletIntroView: View {
     }
 
     public var body: some View {
-            VStack {
+        VStack {
             ScrollView {
                 Image("icon-defiWallet-intro")
                     .frame(width: 80, height: 80)
@@ -28,35 +28,35 @@ public struct DefiWalletIntroView: View {
                         .typography(.paragraph1)
                 }
 
-                    VStack(spacing: 8) {
-                        introRow(
-                            number: 1,
-                            title: LocalizationConstants.DefiWalletIntro.step1Title,
-                            subtitle: LocalizationConstants.DefiWalletIntro.step1Subtitle
-                        )
-                        introRow(
-                            number: 2,
-                            title: LocalizationConstants.DefiWalletIntro.step2Title,
-                            subtitle: LocalizationConstants.DefiWalletIntro.step2Subtitle
-                        )
-                        introRow(
-                            number: 3,
-                            title: LocalizationConstants.DefiWalletIntro.step3Title,
-                            subtitle: LocalizationConstants.DefiWalletIntro.step3Subtitle
-                        )
-                    }
-                    .padding(.top, Spacing.padding4)
-                    .padding(.horizontal, Spacing.padding3)
+                VStack(spacing: 8) {
+                    introRow(
+                        number: 1,
+                        title: LocalizationConstants.DefiWalletIntro.step1Title,
+                        subtitle: LocalizationConstants.DefiWalletIntro.step1Subtitle
+                    )
+                    introRow(
+                        number: 2,
+                        title: LocalizationConstants.DefiWalletIntro.step2Title,
+                        subtitle: LocalizationConstants.DefiWalletIntro.step2Subtitle
+                    )
+                    introRow(
+                        number: 3,
+                        title: LocalizationConstants.DefiWalletIntro.step3Title,
+                        subtitle: LocalizationConstants.DefiWalletIntro.step3Subtitle
+                    )
                 }
-
-                Spacer()
-
-                PrimaryButton(title: LocalizationConstants.DefiWalletIntro.enableButton) {
-                    viewStore.send(.onEnableDefiTap)
-                }
+                .padding(.top, Spacing.padding4)
                 .padding(.horizontal, Spacing.padding3)
-                .padding(.bottom, Spacing.padding2)
             }
+
+            Spacer()
+
+            PrimaryButton(title: LocalizationConstants.DefiWalletIntro.enableButton) {
+                viewStore.send(.onEnableDefiTap)
+            }
+            .padding(.horizontal, Spacing.padding3)
+            .padding(.bottom, Spacing.padding2)
+        }
         .trailingNavigationButton(.close) {
             presentationMode.wrappedValue.dismiss()
         }

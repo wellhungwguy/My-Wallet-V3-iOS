@@ -7,7 +7,7 @@ public struct NonRandomNumberGenerator: RandomNumberGenerator {
     public let sequence: AnySequence<UInt64>
     private var iterator: AnyIterator<UInt64>
 
-    public init<S: Sequence>(_ s: S) where S.Element == UInt64 {
+    public init(_ s: some Sequence<UInt64>) {
         sequence = AnySequence(s)
         iterator = sequence.makeIterator()
     }

@@ -26,13 +26,12 @@ struct FormDateDropdownAnswersView: View {
                 }()
 
                 Text(dateString ?? "")
-                    .typography(.paragraph2)
-                    .foregroundColor(.semantic.body)
+                    .typography(.body1)
+                    .foregroundColor(.semantic.title)
 
                 Spacer()
             }
-            .padding(.vertical, Spacing.padding2)
-            .padding(.horizontal, Spacing.padding3)
+            .padding(Spacing.padding2)
             .background(
                 ZStack {
                     RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)

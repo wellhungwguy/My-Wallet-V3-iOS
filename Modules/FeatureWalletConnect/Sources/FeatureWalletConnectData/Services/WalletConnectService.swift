@@ -6,6 +6,7 @@ import DIKit
 import EthereumKit
 import FeatureWalletConnectDomain
 import Foundation
+import MoneyKit
 import PlatformKit
 import ToolKit
 import WalletConnectSwift
@@ -24,6 +25,7 @@ final class WalletConnectService {
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let sessionRepository: SessionRepositoryAPI
     private let publicKeyProvider: WalletConnectPublicKeyProviderAPI
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     private let featureFlagService: FeatureFlagsServiceAPI
 
@@ -33,12 +35,14 @@ final class WalletConnectService {
         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
         sessionRepository: SessionRepositoryAPI = resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = resolve()
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.publicKeyProvider = publicKeyProvider
         self.sessionRepository = sessionRepository
         self.featureFlagService = featureFlagService
+        self.enabledCurrenciesService = enabledCurrenciesService
         server = Server(delegate: self)
         configureServer()
     }
@@ -74,6 +78,9 @@ final class WalletConnectService {
         server.register(
             handler: SignRequestHandler(
                 getSession: getSession,
+                getNetwork: { [enabledCurrenciesService] chainID in
+                    network(enabledCurrenciesService: enabledCurrenciesService, chainID: chainID)
+                },
                 responseEvent: responseEvent,
                 userEvent: userEvent
             )
@@ -83,6 +90,9 @@ final class WalletConnectService {
         server.register(
             handler: TransactionRequestHandler(
                 getSession: getSession,
+                getNetwork: { [enabledCurrenciesService] chainID in
+                    network(enabledCurrenciesService: enabledCurrenciesService, chainID: chainID)
+                },
                 responseEvent: responseEvent,
                 userEvent: userEvent
             )
@@ -92,6 +102,9 @@ final class WalletConnectService {
         server.register(
             handler: RawTransactionRequestHandler(
                 getSession: getSession,
+                getNetwork: { [enabledCurrenciesService] chainID in
+                    network(enabledCurrenciesService: enabledCurrenciesService, chainID: chainID)
+                },
                 responseEvent: responseEvent,
                 userEvent: userEvent
             )
@@ -101,6 +114,9 @@ final class WalletConnectService {
         server.register(
             handler: SwitchRequestHandler(
                 getSession: getSession,
+                getNetwork: { [enabledCurrenciesService] chainID in
+                    network(enabledCurrenciesService: enabledCurrenciesService, chainID: chainID)
+                },
                 responseEvent: responseEvent,
                 sessionEvent: sessionEvent
             )
@@ -224,7 +240,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
         session: Session,
         completion: @escaping (Session.WalletInfo) -> Void
     ) {
-        guard let network = EVMNetwork(int: session.dAppInfo.chainId) else {
+        guard let network = network(enabledCurrenciesService: enabledCurrenciesService, chainID: session.dAppInfo.chainId ?? 1) else {
             if BuildFlag.isInternal {
                 let chainID = session.dAppInfo.chainId
                 let meta = session.dAppInfo.peerMeta
@@ -239,7 +255,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
                 Session.WalletInfo(
                     approved: true,
                     accounts: [publicKey],
-                    chainId: Int(network.chainID),
+                    chainId: Int(network.networkConfig.chainID),
                     peerId: UUID().uuidString,
                     peerMeta: .blockchain
                 )
@@ -257,7 +273,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
         let walletInfo = Session.WalletInfo(
             approved: false,
             accounts: [],
-            chainId: session.dAppInfo.chainId ?? EVMNetwork.defaultChainID,
+            chainId: session.dAppInfo.chainId ?? 1,
             peerId: UUID().uuidString,
             peerMeta: .blockchain
         )
@@ -300,7 +316,7 @@ extension WalletConnectService: WalletConnectServiceAPI {
         let walletInfo = Session.WalletInfo(
             approved: oldWalletInfo.approved,
             accounts: oldWalletInfo.accounts,
-            chainId: Int(network.chainID),
+            chainId: Int(network.networkConfig.chainID),
             peerId: oldWalletInfo.peerId,
             peerMeta: oldWalletInfo.peerMeta
         )
@@ -338,8 +354,10 @@ extension Response {
     }
 }
 
-extension EVMNetwork {
-    fileprivate static var defaultChainID: Int {
-        Int(EVMNetwork.ethereum.chainID)
-    }
+private func network(enabledCurrenciesService: EnabledCurrenciesServiceAPI, chainID: Int) -> EVMNetwork? {
+    enabledCurrenciesService
+        .allEnabledEVMNetworks
+        .first(where: { network in
+            network.networkConfig.chainID == chainID
+        })
 }

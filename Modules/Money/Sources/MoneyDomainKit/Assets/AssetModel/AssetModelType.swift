@@ -3,26 +3,6 @@
 /// A type of an `AssetModel`.
 public enum AssetModelType: Hashable {
 
-    public enum ERC20ParentChain: String, CaseIterable {
-        case avax = "AVAX"
-        case bnb = "BNB"
-        case ethereum = "ETH"
-        case polygon = "MATIC"
-
-        public var name: String {
-            switch self {
-            case .avax:
-                return "Avalanche C-Chain"
-            case .bnb:
-                return "Binance Smart Chain"
-            case .ethereum:
-                return "Ethereum"
-            case .polygon:
-                return "Polygon"
-            }
-        }
-    }
-
     public enum CeloParentChain: String {
         case celo = "CELO"
     }
@@ -34,7 +14,7 @@ public enum AssetModelType: Hashable {
     case coin(minimumOnChainConfirmations: Int)
 
     /// An Ethereum ERC-20 asset.
-    case erc20(contractAddress: String, parentChain: ERC20ParentChain)
+    case erc20(contractAddress: String, parentChain: String)
 
     /// A fiat asset.
     case fiat
@@ -48,7 +28,7 @@ public enum AssetModelType: Hashable {
         }
     }
 
-    public var erc20ParentChain: ERC20ParentChain? {
+    public var erc20ParentChain: String? {
         switch self {
         case .erc20(_, let parentChain):
             return parentChain

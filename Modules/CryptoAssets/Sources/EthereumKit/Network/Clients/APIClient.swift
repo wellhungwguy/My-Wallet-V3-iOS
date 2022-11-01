@@ -16,19 +16,19 @@ protocol TransactionPushClientAPI: AnyObject {
     /// Pushes a EVM transaction
     func evmPush(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMPushTxResponse, NetworkError>
 }
 
 protocol TransactionFeeClientAPI {
 
     func fees(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError>
 
     func newFees(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<NewTransactionFeeResponse, NetworkError>
 }
@@ -40,16 +40,14 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
     /// Privately used endpoint data
     private enum Endpoint {
 
-        static func fees(network: EVMNetwork) -> String {
-            switch network {
-            case .avalanceCChain:
-                return "/currency/evm/fees/AVAX"
-            case .binanceSmartChain:
-                return "/currency/evm/fees/BNB"
-            case .ethereum:
+        static func fees(network: EVMNetworkConfig) -> String {
+            switch network.networkTicker {
+            case "ETH":
                 return "/mempool/fees/eth"
-            case .polygon:
+            case "MATIC":
                 return "/mempool/fees/matic"
+            default:
+                return "/currency/evm/fees/\(network.networkTicker)"
             }
         }
 
@@ -89,7 +87,7 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
     }
 
     func fees(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         var parameters: [URLQueryItem] = []
@@ -104,7 +102,7 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
     }
 
     func newFees(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         contractAddress: String?
     ) -> AnyPublisher<NewTransactionFeeResponse, NetworkError> {
         let parameters: [URLQueryItem] = contractAddress
@@ -121,7 +119,7 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
         let body = PushTxRequest(
             rawTx: transaction.rawTransaction,
-            network: EVMNetwork.ethereum.rawValue,
+            network: "ETH",
             api_code: apiCode
         )
         let request = requestBuilder.post(
@@ -134,11 +132,11 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
 
     func evmPush(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMPushTxResponse, NetworkError> {
         let body = PushTxRequest(
             rawTx: transaction.rawTransaction,
-            network: network.rawValue,
+            network: network.networkTicker,
             api_code: apiCode
         )
         let request = requestBuilder.post(

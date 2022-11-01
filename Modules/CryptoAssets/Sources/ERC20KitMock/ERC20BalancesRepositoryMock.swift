@@ -26,7 +26,7 @@ final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
 
     func tokens(
         for address: String,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         forceFetch: Bool
     ) -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError> {
         .just(tokenAccounts)
@@ -34,7 +34,7 @@ final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
 
     func tokensStream(
         for address: String,
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         skipStale: Bool
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError> {
         .just(.success(tokenAccounts))
@@ -42,7 +42,7 @@ final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
 
     func invalidateCache(
         for address: String,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) {
         // no-op
     }

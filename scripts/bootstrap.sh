@@ -24,6 +24,9 @@ for i in 1 2 3; do
   echo "Retry running Carthage"
 done
 
+echo "Installing LFS hooks"
+git lfs install
+
 echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh
 
