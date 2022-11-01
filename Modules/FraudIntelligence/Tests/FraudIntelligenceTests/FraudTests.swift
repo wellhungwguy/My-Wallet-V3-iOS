@@ -17,8 +17,6 @@ final class FraudIntelligenceTests: XCTestCase {
 
     override func tearDown() {
         sut.stop()
-        sut = nil
-        app = nil
         Test.MobileIntelligence.tearDown()
         super.tearDown()
     }
