@@ -10,6 +10,18 @@ struct NativeBitcoinTransactionContext {
     let unspentOutputs: [UnspentOutput]
     let multiAddressItems: [AddressItem]
     let coin: BitcoinChainCoin
+    let keyPairs: [WalletKeyPair]
+
+    init(accountKeyContext: AccountKeyContext, unspentOutputs: [UnspentOutput], multiAddressItems: [AddressItem], coin: BitcoinChainCoin) {
+        self.accountKeyContext = accountKeyContext
+        self.unspentOutputs = unspentOutputs
+        self.multiAddressItems = multiAddressItems
+        self.coin = coin
+        self.keyPairs = getWalletKeyPairs(
+            unspentOutputs: unspentOutputs,
+            accountKeyContext: accountKeyContext
+        )
+    }
 }
 
 typealias TransactionContextFor =

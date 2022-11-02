@@ -58,7 +58,6 @@ extension AppProtocol {
         performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
-
         observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
         observers.insert(AppAnalyticsObserver(app: self))
@@ -70,6 +69,7 @@ extension AppProtocol {
         observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(SuperAppIntroObserver(app: self))
+        observers.insert(EmbraceObserver(app: self))
         observers.insert(GenerateSession(app: self))
         observers.insert(PlaidLinkObserver(app: self))
         // observers.insert(EmbraceObserver(app: self))
