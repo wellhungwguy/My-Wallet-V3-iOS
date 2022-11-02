@@ -217,8 +217,11 @@ public final class Router: Routing {
             // step 2: check KYC status and present KYC flow if user has verified their email address.
             .flatMap { [presentKYCIfNeeded] result -> AnyPublisher<FlowResult, RouterError> in
                 if requireEmailVerification {
-                    guard case .completed = result else {
-                        return .just(result)
+                    switch result {
+                    case .abandoned:
+                        return .just(.abandoned)
+                    case .completed, .skipped:
+                        break
                     }
                 }
                 return presentKYCIfNeeded(presenter, requiredTier)
