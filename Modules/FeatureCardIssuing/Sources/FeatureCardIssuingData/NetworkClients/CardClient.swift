@@ -23,7 +23,7 @@ public final class CardClient: CardClientAPI {
         case fulfillment
         case pinWidget = "pin-widget-url"
         case activateWidget = "activate-widget-url"
-        case statements = "statements"
+        case statements
     }
 
     // MARK: - Properties
@@ -210,7 +210,7 @@ public final class CardClient: CardClientAPI {
 
     func fetchStatements() -> AnyPublisher<[FeatureCardIssuingDomain.Statement], Errors.NabuNetworkError> {
         let request = requestBuilder.get(
-            path: [Path.cards.rawValue, Path.statements.rawValue],
+            path: [Path.statements.rawValue],
             authenticated: true
         )!
 
@@ -221,7 +221,7 @@ public final class CardClient: CardClientAPI {
 
     func fetchStatementUrl(statementId: String) -> AnyPublisher<URL, Errors.NabuNetworkError> {
         let request = requestBuilder.get(
-            path: [Path.cards.rawValue, Path.statements.rawValue, statementId],
+            path: [Path.statements.rawValue, statementId],
             authenticated: true
         )!
 
