@@ -52,12 +52,6 @@ struct CardManagementView: View {
                                 viewStore.send(.binding(.set(\.$isCardSelectorPresented, true)))
                             }
                         )
-                        SmallMinimalButton(
-                            title: L10n.Selector.myCards,
-                            action: {
-                                viewStore.send(.binding(.set(\.$isCardSelectorPresented, true)))
-                            }
-                        )
                     }
                     .padding(Spacing.padding2)
                     card
