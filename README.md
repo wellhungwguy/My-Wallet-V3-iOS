@@ -78,14 +78,12 @@ For example, This is how `NetworkKitConfig/Production.xcconfig` looks like:
 
 ```
 API_URL = api.blockchain.info
-BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
-COINIFY_URL = app-api.coinify.com
 EXCHANGE_URL = exchange.blockchain.com
 EXPLORER_SERVER = blockchain.com
-RETAIL_CORE_SOCKET_URL = ws.blockchain.info/nabu-gateway/markets/quotes
 RETAIL_CORE_URL = api.blockchain.info/nabu-gateway
 WALLET_SERVER = blockchain.info
 WALLET_HELPER = wallet-helper.blockchain.info/wallet-helper
+WEBSOCKET_SERVER = ws.blockchain.info
 ```
 
 ## Add Firebase Config Files

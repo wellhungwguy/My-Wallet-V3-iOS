@@ -79,8 +79,6 @@
 	<string>Your permission is needed in order to upload documents from your photo library.</string>
 	<key>PIN_CERTIFICATE</key>
 	<string>$(PIN_CERTIFICATE)</string>
-	<key>RETAIL_CORE_SOCKET_URL</key>
-	<string>$(RETAIL_CORE_SOCKET_URL)</string>
 	<key>RETAIL_CORE_URL</key>
 	<string>$(RETAIL_CORE_URL)</string>
 	<key>SWIFTY_BEAVER_APP_ID</key>
@@ -121,8 +119,8 @@
 	<string>$(WALLET_HELPER)</string>
 	<key>WALLET_SERVER</key>
 	<string>$(WALLET_SERVER)</string>
-	<key>WEBSOCKET_CONVERSION_URL</key>
-	<string>$(WEBSOCKET_CONVERSION_URL)</string>
+	<key>WEBSOCKET_SERVER</key>
+	<string>$(WEBSOCKET_SERVER)</string>
 	<key>embraceAppId</key>
 	<string>$(EMBRACE_APP_ID)</string>
 	<key>intercomAPIKey</key>

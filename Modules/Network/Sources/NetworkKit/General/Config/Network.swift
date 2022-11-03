@@ -59,7 +59,7 @@ public enum Network {
 
         public static let websocketConfig = Config(
             apiScheme: "wss",
-            apiHost: InfoDictionaryHelper.value(for: .websocketConversionURL),
+            apiHost: InfoDictionaryHelper.value(for: .websocketURL),
             apiCode: "",
             pathComponents: []
         )

@@ -64,7 +64,7 @@ final class NetworkCredentialProvider: NetworkCredentialProviderAPI {
     }
 
     var websocketConversionUrl: String {
-        InfoDictionaryHelper.value(for: .websocketConversionURL)
+        InfoDictionaryHelper.value(for: .websocketURL)
     }
 
     var walletHelper: String {
