@@ -212,6 +212,15 @@ extension MoneyValue: MoneyOperating {}
 
 extension MoneyValue {
 
+    public var isDust: Bool {
+        switch _value {
+        case .crypto(let c):
+            return c.isDust
+        case .fiat(let f):
+            return f.isDust
+        }
+    }
+
     public var shortDisplayString: String {
         let formattedMinimum: String
         if let fiatValue = fiatValue?.displayableRounding(decimalPlaces: 0, roundingMode: .up) {

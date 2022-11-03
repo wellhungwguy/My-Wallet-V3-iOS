@@ -17,41 +17,17 @@ import ObservabilityKit
 import ToolKit
 import UIKit
 
-let app: AppProtocol = App(
+let app: AppProtocol = try! App(
     remoteConfiguration: Session.RemoteConfiguration(
         remote: FirebaseRemoteConfig.RemoteConfig.remoteConfig(),
-        default: [
-            blockchain.app.configuration.addresssearch.kyc.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.multiapp.is.enabled: false,
-            blockchain.app.configuration.app.superapp.is.enabled: false,
-            blockchain.app.configuration.apple.pay.is.enabled: false,
-            blockchain.app.configuration.argentinalinkbank.is.enabled: false,
-            blockchain.app.configuration.card.issuing.is.enabled: false,
-            blockchain.app.configuration.card.success.rate.is.enabled: false,
-            blockchain.app.configuration.customer.support.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.frequent.action: blockchain.app.configuration.frequent.action.json(in: .main),
-            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal,
-            blockchain.app.configuration.evm.name.sanitize.is.enabled: BuildFlag.isAlpha,
-            blockchain.app.configuration.profile.kyc.is.enabled: false,
-            blockchain.app.configuration.request.console.logging: false,
-            blockchain.app.configuration.SSL.pinning.is.enabled: true,
-            blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
-            blockchain.app.configuration.stx.all.users.is.enabled: false,
-            blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
-            blockchain.app.configuration.ui.payments.improvements.is.enabled: false,
-            blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.card.issuing.tokenise.is.enabled: true,
-            blockchain.ux.transaction["swap"].checkout.is.enabled: BuildFlag.isInternal,
-            blockchain.ux.transaction["buy"].checkout.is.enabled: BuildFlag.isInternal,
-            // swiftlint:disable line_length
-            blockchain.ux.transaction["buy"].checkout.terms.of.withdraw: "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds",
-            blockchain.ux.transaction["swap"].checkout.exchange.rate.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360061672651",
-            blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees"
+        default: .init(blockchain.app.configuration.json(in: .main) as Any) + [
+            blockchain.app.configuration.manual.login.is.enabled: BuildFlag.isInternal
         ]
     )
 )
 
 extension AppProtocol {
+
     func bootstrap(
         analytics recorder: AnalyticsEventRecorderAPI = resolve(),
         deepLink: DeepLinkCoordinator = resolve(),
@@ -109,6 +85,10 @@ extension AppProtocol {
             state.transaction { state in
                 state.set(blockchain.user.token.firebase.installation, to: result.authToken)
             }
+        }
+
+        if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
+            state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
         }
     }
 }

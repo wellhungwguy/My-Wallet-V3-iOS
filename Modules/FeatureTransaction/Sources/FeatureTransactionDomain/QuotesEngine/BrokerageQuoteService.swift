@@ -56,7 +56,7 @@ public final class BrokerageQuoteService {
                             profile: request.profile
                         )
                     } catch {
-                        guard await backoff.count() < 10 else { throw error }
+                        guard await backoff.count() < 8 else { throw error }
                         try await backoff.next()
                         continue
                     }

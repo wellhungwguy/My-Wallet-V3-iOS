@@ -36,18 +36,18 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
 
     public func start() {
         app.on(blockchain.app.did.finish.launching)
-            .combineLatest(client)
+            .combineLatest(client, session)
             .prefix(1)
             .receive(on: scheduler)
-            .sink { [weak self] event, client in
-                self?.initialise(event: event, clientId: client)
+            .sink { [weak self] event, client, session in
+                self?.initialise(event: event, clientId: client, sessionKey: session)
             }
             .store(in: &bag)
 
-        user.combineLatest(session, flow)
+        user.combineLatest(flow)
             .receive(on: scheduler)
-            .sink { [weak self] user, session, flow in
-                self?.update(userId: user, sessionKey: session, flow: flow)
+            .sink { [weak self] user, flow in
+                self?.update(userId: user, flow: flow)
             }
             .store(in: &bag)
 
@@ -69,7 +69,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             .flatMap { [app] tags in
                 tags.compacted().map { tag in app.on(tag) }.merge()
             }
-            .withLatestFrom(app.publisher(for: blockchain.app.fraud.sardine.current.flow, as: String.self).map(\.value)) { ($0, $1) }
+            .withLatestFrom(flow) { ($0, $1) }
             .receive(on: scheduler)
             .sink { [app] _, flow in
                 guard flow.isNotNil else { return }
@@ -134,16 +134,19 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
         .compactMap(\.value)
 
     lazy var user = app.publisher(for: blockchain.user.id, as: String.self)
-        .compactMap(\.value)
+        .map(\.value)
 
     lazy var flow = app.publisher(for: blockchain.app.fraud.sardine.current.flow, as: String.self)
-        .compactMap(\.value)
+        .map(\.value)
 
     lazy var event = app.on(blockchain.app.fraud.sardine.submit) { [app, scheduler] event in
         scheduler.schedule {
             MobileIntelligence.submitData { response in
                 if response.status == true {
-                    app.post(event: blockchain.app.fraud.sardine.submit.success, context: event.context)
+                    app.post(
+                        event: blockchain.app.fraud.sardine.submit.success,
+                        context: event.context + [blockchain.app.fraud.sardine.submit.success: response.message]
+                    )
                 } else {
                     app.post(
                         event: blockchain.app.fraud.sardine.submit.failure,
@@ -156,34 +159,29 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
 
     // MARK: Sardine Integration
 
-    func initialise(event: Session.Event, clientId: String) {
+    func initialise(event: Session.Event, clientId: String, sessionKey: String) {
         scheduler.schedule {
             var options = MobileIntelligence.Options()
             options.clientId = clientId
-#if DEBUG
+            options.sessionKey = sessionKey.sha256()
+            #if DEBUG
             options.environment = MobileIntelligence.Options.ENV_SANDBOX
-#else
+            #else
             options.environment = MobileIntelligence.Options.ENV_PRODUCTION
-#endif
+            #endif
             MobileIntelligence.start(options)
         }
     }
 
-    func update(userId: String, sessionKey: String, flow: String) {
+    func update(userId: String?, flow: String?) {
         scheduler.schedule { [app] in
             var options = MobileIntelligence.UpdateOptions()
-            options.sessionKey = sessionKey.sha256()
-            options.userIdHash = userId.sha256()
-            options.flow = flow
-            MobileIntelligence.updateOptions(options: options) { [app] response in
-                if response.status == true {
-                    app.post(event: blockchain.app.fraud.sardine.submit.success)
-                } else {
-                    app.post(
-                        event: blockchain.app.fraud.sardine.submit.failure,
-                        context: [blockchain.app.fraud.sardine.submit.failure: response.message]
-                    )
-                }
+            options.userIdHash = userId?.sha256()
+            if let flow {
+                options.flow = flow
+            }
+            MobileIntelligence.updateOptions(options: options) { [app] _ in
+                app.post(event: blockchain.app.fraud.sardine.submit)
             }
         }
     }

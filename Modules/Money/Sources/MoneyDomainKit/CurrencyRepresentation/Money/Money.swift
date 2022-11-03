@@ -32,6 +32,9 @@ public protocol Money: CustomDebugStringConvertible {
     /// The currency display precision.
     var displayPrecision: Int { get }
 
+    /// Whether the amount is dust (< 0.01).
+    var isDust: Bool { get }
+
     /// Whether the amount is zero.
     var isZero: Bool { get }
 
@@ -96,6 +99,10 @@ extension Money {
 
     public var displayPrecision: Int {
         currencyType.displayPrecision
+    }
+
+    var isNotDust: Bool {
+        !isDust
     }
 
     public var isZero: Bool {

@@ -381,8 +381,22 @@ extension Session.RemoteConfiguration {
 
     public struct Default: ExpressibleByDictionaryLiteral {
         let dictionary: [Tag.Reference: Any?]
+        public init(_  dictionary: [Tag.Reference: Any?]) {
+            self.dictionary = dictionary
+        }
         public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
             dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
+        }
+        public init(_ json: Any) throws {
+            dictionary = try BlockchainNamespaceDecoder()
+                .decode([String: AnyJSON?].self, from: json)
+                .mapKeysAndValues(
+                    key: { try Tag.Reference(id: $0, in: Language.root.language) },
+                    value: \.?.wrapped
+                )
+        }
+        public static func + (lhs: Self, rhs: Self) -> Self {
+            Self(lhs.dictionary + rhs.dictionary)
         }
     }
 }

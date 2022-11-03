@@ -382,3 +382,10 @@ extension Publisher where Output: OptionalProtocol {
         }
     }
 }
+
+extension Publisher where Output == Bool {
+
+    @inlinable public static prefix func ! (publisher: Self) -> Publishers.Map<Self, Bool> {
+        publisher.map { !$0 }
+    }
+}

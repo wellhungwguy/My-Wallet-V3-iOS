@@ -9,3 +9,16 @@ public func &&= (x: inout Bool, y: Bool) {
 extension Bool {
     public var not: Bool { !self }
 }
+
+extension Bool {
+
+    @inlinable public static func && (lhs: Self, rhs: () async throws -> Self) async rethrows -> Self {
+        guard lhs else { return false }
+        return try await rhs()
+    }
+
+    @inlinable public static func || (lhs: Self, rhs: () async throws -> Self) async rethrows -> Self {
+        if lhs { return true }
+        return try await rhs()
+    }
+}

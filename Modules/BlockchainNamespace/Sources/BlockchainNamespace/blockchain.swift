@@ -6750,6 +6750,7 @@ public extension I_blockchain_ux_user_account {
 	var `help`: L_blockchain_ux_user_account_help { .init("\(__).help") }
 	var `linked`: L_blockchain_ux_user_account_linked { .init("\(__).linked") }
 	var `notification`: L_blockchain_ux_user_account_notification { .init("\(__).notification") }
+	var `preferences`: L_blockchain_ux_user_account_preferences { .init("\(__).preferences") }
 	var `profile`: L_blockchain_ux_user_account_profile { .init("\(__).profile") }
 	var `rate`: L_blockchain_ux_user_account_rate { .init("\(__).rate") }
 	var `security`: L_blockchain_ux_user_account_security { .init("\(__).security") }
@@ -6907,6 +6908,38 @@ public final class L_blockchain_ux_user_account_notification_push: L, I_blockcha
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.notification.push", comment: "") }
 }
 public protocol I_blockchain_ux_user_account_notification_push: I {}
+public final class L_blockchain_ux_user_account_preferences: L, I_blockchain_ux_user_account_preferences {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.preferences", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_preferences: I {}
+public extension I_blockchain_ux_user_account_preferences {
+	var `small`: L_blockchain_ux_user_account_preferences_small { .init("\(__).small") }
+}
+public final class L_blockchain_ux_user_account_preferences_small: L, I_blockchain_ux_user_account_preferences_small {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.preferences.small", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_preferences_small: I {}
+public extension I_blockchain_ux_user_account_preferences_small {
+	var `balances`: L_blockchain_ux_user_account_preferences_small_balances { .init("\(__).balances") }
+}
+public final class L_blockchain_ux_user_account_preferences_small_balances: L, I_blockchain_ux_user_account_preferences_small_balances {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.preferences.small.balances", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_preferences_small_balances: I {}
+public extension I_blockchain_ux_user_account_preferences_small_balances {
+	var `are`: L_blockchain_ux_user_account_preferences_small_balances_are { .init("\(__).are") }
+}
+public final class L_blockchain_ux_user_account_preferences_small_balances_are: L, I_blockchain_ux_user_account_preferences_small_balances_are {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.preferences.small.balances.are", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_preferences_small_balances_are: I {}
+public extension I_blockchain_ux_user_account_preferences_small_balances_are {
+	var `hidden`: L_blockchain_ux_user_account_preferences_small_balances_are_hidden { .init("\(__).hidden") }
+}
+public final class L_blockchain_ux_user_account_preferences_small_balances_are_hidden: L, I_blockchain_ux_user_account_preferences_small_balances_are_hidden {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.preferences.small.balances.are.hidden", comment: "") }
+}
+public protocol I_blockchain_ux_user_account_preferences_small_balances_are_hidden: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
 public final class L_blockchain_ux_user_account_profile: L, I_blockchain_ux_user_account_profile {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.account.profile", comment: "") }
 }

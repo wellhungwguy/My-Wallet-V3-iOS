@@ -11,6 +11,8 @@ public protocol CryptoMoney: Money {
 
 extension CryptoMoney {
 
+    public var isDust: Bool { false }
+
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
         toDisplayString(includeSymbol: includeSymbol, withPrecision: .short, locale: locale)
     }

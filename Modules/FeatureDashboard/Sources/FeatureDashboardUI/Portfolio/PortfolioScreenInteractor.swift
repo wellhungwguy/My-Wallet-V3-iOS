@@ -71,7 +71,7 @@ public final class PortfolioScreenInteractor {
         let cryptoStreams: [Observable<CurrencyBalance>] =
             coincore
                 .cryptoAssets
-                .map { cryptoAsset -> Observable<CurrencyBalance> in
+                .map { [app] cryptoAsset -> Observable<CurrencyBalance> in
                     let currency = cryptoAsset.asset
 
                     return app.modePublisher()
@@ -87,15 +87,14 @@ public final class PortfolioScreenInteractor {
                             }
                             return group
                                 .balance
-                                .flatMap { [weak self] moneyValue -> AnyPublisher<Bool, Error> in
+                                .combineLatest(!group.hasSmallBalance())
+                                .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
                                     let appMode = self?.app.currentMode
-                                    if appMode == .pkw,
-                                        case .crypto(let currency) = group.currencyType,
-                                        currency.isCoin
-                                    {
+                                    if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
                                         return .just(true)
+                                    } else {
+                                        return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)
                                     }
-                                    return .just(moneyValue.hasPositiveDisplayableBalance)
                                 }
                                 .eraseError()
                         }

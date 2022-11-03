@@ -13,6 +13,7 @@ import FeatureOpenBankingUI
 import FeaturePlaidUI
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -767,7 +768,18 @@ extension TransactionFlowRouter {
         let builder = AccountPickerBuilder(
             accountProvider: TransactionModelAccountProvider(
                 transactionModel: transactionModel,
-                transform: { $0.availableSources }
+                transform: { model in
+                    model.availableSources
+                },
+                flatMap: { accounts in
+                    Task<[BlockchainAccount], Never>.Publisher {
+                        try await accounts.async.reduce(into: []) { accounts, account in
+                            guard try await !account.hasSmallBalance().await() else { return }
+                            accounts.append(account)
+                        }
+                    }
+                    .asObservable()
+                }
             ),
             action: action
         )
