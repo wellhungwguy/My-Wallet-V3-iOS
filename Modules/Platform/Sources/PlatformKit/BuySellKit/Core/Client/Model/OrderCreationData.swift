@@ -70,7 +70,7 @@ public enum OrderPayload {
             ) {
                 everypay = redirectURL.map(EveryPay.init)
 
-                if let applePay = applePay,
+                if let applePay,
                    let encoded = try? JSONEncoder().encode(applePay)
                 {
                     applePayPaymentToken = String(data: encoded, encoding: .utf8)
@@ -343,7 +343,7 @@ extension OrderPayload.Response {
 
 extension OrderPayload.ConfirmOrder.PaymentContact {
     fileprivate init?(contact: ApplePayToken.BillingPaymentContact?) {
-        guard let contact = contact else { return nil }
+        guard let contact else { return nil }
         self.init(
             line1: contact.line1,
             line2: contact.line2,

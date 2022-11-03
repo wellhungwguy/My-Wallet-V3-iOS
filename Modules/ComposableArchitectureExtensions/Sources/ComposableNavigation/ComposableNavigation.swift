@@ -119,9 +119,9 @@ extension View {
     }
 
     @ViewBuilder
-    public func navigationRoute<State: NavigationState, EnvironmentObject: ObservableObject>(
+    public func navigationRoute<State: NavigationState>(
         in store: Store<State, State.RouteType.Action>,
-        environmentObject: EnvironmentObject?
+        environmentObject: (some ObservableObject)?
     ) -> some View {
         navigationRoute(State.RouteType.self, in: store, environmentObject: environmentObject)
     }
@@ -186,7 +186,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute, EnvironmentObj
     }
 
     @ViewBuilder private var routing: some View {
-        if let intent = intent {
+        if let intent {
             create(intent)
                 .inserting(intent, into: $isReady)
         }
@@ -250,8 +250,8 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute, EnvironmentObj
 extension View {
 
     @ViewBuilder
-    fileprivate func environmentObject<O: ObservableObject>(_ object: O?) -> some View {
-        if let object = object {
+    fileprivate func environmentObject(_ object: (some ObservableObject)?) -> some View {
+        if let object {
             environmentObject(object)
         } else {
             self

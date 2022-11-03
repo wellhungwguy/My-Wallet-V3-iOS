@@ -272,7 +272,7 @@ extension Publisher where Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { [weak root] value in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)(value)
         }
     }

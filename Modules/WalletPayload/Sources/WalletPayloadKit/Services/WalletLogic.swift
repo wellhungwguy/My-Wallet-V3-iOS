@@ -105,7 +105,7 @@ final class WalletLogic: WalletLogicAPI {
                 .eraseToAnyPublisher()
         }
         .flatMap { wrapper -> AnyPublisher<Wrapper, WalletError> in
-            guard let wrapper = wrapper else {
+            guard let wrapper else {
                 return .failure(.initialization(.missingWallet))
             }
             return .just(wrapper)

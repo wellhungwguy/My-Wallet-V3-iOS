@@ -65,7 +65,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let accountAuxiliaryViewPresenter: AccountAuxiliaryViewPresenter
 
     /// The interactor that `SingleAmountPresenter` uses
-    private let amountViewInteractor: AmountViewInteracting
+    @MainActor private let amountViewInteractor: AmountViewInteracting
 
     private let app: AppProtocol
     private let transactionModel: TransactionModel
@@ -200,23 +200,26 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         Task(priority: .userInitiated) {
 
-            guard try await app.get(
-                blockchain.app.configuration.transaction.should.prefill.with.previous.amount
-            ) else { return }
+            do {
+                guard try await app.get(
+                    blockchain.app.configuration.transaction.should.prefill.with.previous.amount
+                ) else { throw "Should not pre-fill previous value" }
 
-            let previous = blockchain.ux.transaction.source.target.previous
+                guard try await app.get(blockchain.ux.transaction.source.target.previous.did.error) else { return }
 
-            guard try await app.get(previous.did.error) else { return }
-
-            let minorAmount: BigInt = try await app.get(previous.input.amount)
-            let currencyCode: String = try await app.get(previous.input.currency.code)
-            let currencyType = try CurrencyType(code: currencyCode)
-            let money = MoneyValue.create(
-                minor: minorAmount,
-                currency: currencyType
-            )
-            await MainActor.run {
-                amountViewInteractor.set(amount: money)
+                try await amountViewInteractor.set(
+                    amount: MoneyValue.create(
+                        minor: app.get(blockchain.ux.transaction.source.target.previous.input.amount) as BigInt,
+                        currency: CurrencyType(code: app.get(blockchain.ux.transaction.source.target.previous.input.currency.code))
+                    )
+                )
+            } catch {
+                try await amountViewInteractor.set(
+                    amount: MoneyValue.create(
+                        minor: app.get(blockchain.ux.transaction.enter.amount.default.input.amount) as String,
+                        currency: CurrencyType(code: app.get(blockchain.ux.transaction.enter.amount.default.input.currency.code))
+                    ).or(throw: "Failed to initialise MoneyValue")
+                )
             }
         }
 
@@ -313,7 +316,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 bottomAuxiliaryAccounts
             )
             .map { [action] userKYCTier, accounts -> Bool in
-                guard let userKYCTier = userKYCTier, action == .buy && userKYCTier < .tier2 else {
+                guard let userKYCTier, action == .buy && userKYCTier < .tier2 else {
                     return !accounts.isEmpty
                 }
                 // SDD eligible users cannot add more than 1 payment method so they should have no suggested accounts they can link.
@@ -396,7 +399,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let interactorState = transactionState
             .subscribe(on: MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, updater -> State in
-                guard let self = self else {
+                guard let self else {
                     return currentState
                 }
                 return self.calculateNextState(
@@ -455,6 +458,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(weak: self) { (self, feeAmount) in
                 guard self.amountViewInteractor is AmountTranslationInteractor else { return }
                 self.amountViewInteractor.setTransactionFeeAmount(feeAmount)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
+            .map(\.isFeeLess)
+            .distinctUntilChanged()
+            .bindAndCatch(weak: self) { (self, isFeeLess) in
+                guard self.amountViewInteractor is AmountTranslationInteractor else { return }
+                self.amountViewInteractor.updateTxFeeLessState(isFeeLess)
             }
             .disposeOnDeactivate(interactor: self)
 
@@ -669,7 +681,7 @@ extension TransactionState {
         maxTransactionsCount: Int?
     ) -> AmountInteractorState {
         let message: AmountInteractorState.MessageState
-        if let maxTransactionsCount = maxTransactionsCount {
+        if let maxTransactionsCount {
             message = .info(message: LocalizedString.Notices.maxTransactionsLimited(to: maxTransactionsCount))
         } else {
             message = .none

@@ -62,7 +62,7 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
     }
 }
 
-extension Array where Element == SettingsCellViewModel {
+extension [SettingsCellViewModel] {
     fileprivate init(_ presenters: [AddPaymentMethodCellPresenter]) {
         self = presenters
             .map { SettingsCellViewModel(cellType: .banks(.add($0))) }

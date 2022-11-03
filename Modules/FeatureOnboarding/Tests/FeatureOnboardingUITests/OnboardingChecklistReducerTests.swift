@@ -7,22 +7,23 @@ import ComposableArchitecture
 @testable import FeatureOnboardingUI
 import XCTest
 
+@MainActor
 final class OnboardingChecklistReducerTests: XCTestCase {
 
     private var testStore: TestStore<
         OnboardingChecklist.State,
-        OnboardingChecklist.State,
         OnboardingChecklist.Action,
+        OnboardingChecklist.State,
         OnboardingChecklist.Action,
         OnboardingChecklist.Environment
     >!
-    private var testMainScheduler: TestSchedulerOf<DispatchQueue>!
+    private var testMainScheduler: ImmediateSchedulerOf<DispatchQueue>!
     private var userStateSubject: PassthroughSubject<UserState, Never>!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         userStateSubject = PassthroughSubject()
-        testMainScheduler = DispatchQueue.test
+        testMainScheduler = DispatchQueue.immediate
         testStore = .init(
             initialState: OnboardingChecklist.State(),
             reducer: OnboardingChecklist.reducer,
@@ -60,152 +61,158 @@ final class OnboardingChecklistReducerTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func test_action_didSelectItem_kycCompleted_no_items_completed() throws {
-        resetUserStateToClean()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_kycCompleted_no_items_completed() async throws {
+        await resetUserStateToClean()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.verifyIdentity, .item))
-        // kyc is done
-        testMainScheduler.advance()
+        await testStore.send(.didSelectItem(.verifyIdentity, .item))
         // then they go through kyc
-        testStore.receive(.userStateDidChange(.kycComplete)) {
+        await testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_didSelectItem_linkPaymentMethod_no_items_completed() throws {
-        resetUserStateToClean()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_linkPaymentMethod_no_items_completed() async throws {
+        await resetUserStateToClean()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.linkPaymentMethods, .item))
+        await testStore.send(.didSelectItem(.linkPaymentMethods, .item))
         // then they go through kyc
-        testMainScheduler.advance()
         // kyc is done
-        testStore.receive(.userStateDidChange(.kycComplete)) {
+        await testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
-        testStore.receive(.updatePromotion)
         // then they go through linking a payment method
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_didSelectItem_linkPaymentMethod_kyc_completed() throws {
-        resetUserStateToKYCCompleted()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_linkPaymentMethod_kyc_completed() async throws {
+        await resetUserStateToKYCCompleted()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.linkPaymentMethods, .item))
-        testMainScheduler.advance()
+        await testStore.send(.didSelectItem(.linkPaymentMethods, .item))
         // then they go through linking a payment method
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
-        testStore.receive(.updatePromotion)
         // then go through buy
-        testStore.receive(.userStateDidChange(.complete)) {
+        await testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_didSelectItem_buyCrypto_no_items_completed() throws {
-        resetUserStateToClean()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_buyCrypto_no_items_completed() async throws {
+        await resetUserStateToClean()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto, .item))
-        testMainScheduler.advance()
+        await testStore.send(.didSelectItem(.buyCrypto, .item))
         // then they go through kyc
-        testStore.receive(.userStateDidChange(.kycComplete)) {
+        await testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.completedItems = [.verifyIdentity]
         }
-        testStore.receive(.updatePromotion)
 
         // then they go through linking a payment method
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
-        testStore.receive(.updatePromotion)
 
         // then they go through buy
-        testStore.receive(.userStateDidChange(.complete)) {
+        await testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
-        testStore.receive(.updatePromotion)
 
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.receive(.updatedPromotion(nil))
+
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_didSelectItem_buyCrypto_kyc_completed() throws {
-        resetUserStateToKYCCompleted()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_buyCrypto_kyc_completed() async throws {
+        await resetUserStateToKYCCompleted()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto, .item))
-        testMainScheduler.advance()
+        await testStore.send(.didSelectItem(.buyCrypto, .item))
         // then they go through linking a payment method
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
-        testStore.receive(.updatePromotion)
         // then they go through buy
-        testStore.receive(.userStateDidChange(.complete)) {
+        await testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.receive(.updatedPromotion(nil))
+
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_didSelectItem_buyCrypto_kyc_and_payment_completed() throws {
-        resetUserStateToKYCAndPaymentsCompleted()
-        testStore.send(.startObservingUserState)
+    func test_action_didSelectItem_buyCrypto_kyc_and_payment_completed() async throws {
+        await resetUserStateToKYCAndPaymentsCompleted()
+        await testStore.send(.startObservingUserState)
         // user taps on verify identity item
-        testStore.send(.didSelectItem(.buyCrypto, .item))
-        testMainScheduler.advance()
+        await testStore.send(.didSelectItem(.buyCrypto, .item))
         // then they go through buy
-        testStore.receive(.userStateDidChange(.complete)) {
+        await testStore.receive(.userStateDidChange(.complete)) {
             $0.completedItems = [.verifyIdentity, .linkPaymentMethod, .buyCrypto]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    func test_action_dismissFullScreenChecklist() throws {
+    func test_action_dismissFullScreenChecklist() async throws {
         // user taps on close
-        testStore.send(.dismissFullScreenChecklist)
+        await testStore.send(.dismissFullScreenChecklist)
         // then the full screen checklist gets dismissed
-        testStore.receive(.dismiss())
+        await testStore.receive(.dismiss())
     }
 
-    func test_action_presentFullScreenChecklist() throws {
+    func test_action_presentFullScreenChecklist() async throws {
         // user taps on overview
-        testStore.send(.presentFullScreenChecklist)
+        await testStore.send(.presentFullScreenChecklist)
         // then the full screen checklist gets presented
-        testStore.receive(.enter(into: .fullScreenChecklist, context: .none)) {
+        await testStore.receive(.enter(into: .fullScreenChecklist, context: .none)) {
             $0.route = .enter(into: .fullScreenChecklist, context: .none)
         }
     }
 
-    func test_action_startAndStopObservingUserState() throws {
+    func test_action_startAndStopObservingUserState() async throws {
         // view is displayed and starts listening to changes
-        testStore.send(.startObservingUserState)
+        await testStore.send(.startObservingUserState)
         // a new value is sent
         resetUserState(to: .kycComplete)
         // that new value is received
-        testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.kycComplete)) {
+        await testStore.receive(.userStateDidChange(.kycComplete)) {
             $0.isSynchronised = true
             $0.completedItems = [.verifyIdentity]
         }
-        testStore.receive(.updatePromotion)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
         // the view is dimissed and the values stream subscription is cancelled
-        testStore.send(.stopObservingUserState)
+        await testStore.send(.stopObservingUserState)
         // the next do block serves to ensure no further changes are listened to
-        testMainScheduler.advance()
     }
 }
 
@@ -213,39 +220,39 @@ final class OnboardingChecklistReducerTests: XCTestCase {
 
 extension OnboardingChecklistReducerTests {
 
-    private func resetUserStateToClean() {
-        testStore.send(.startObservingUserState)
+    private func resetUserStateToClean() async {
+        await testStore.send(.startObservingUserState)
         resetUserState(to: .initialState)
-        testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.initialState)) { state in
+        await testStore.receive(.userStateDidChange(.initialState)) { state in
             state.isSynchronised = true
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    private func resetUserStateToKYCCompleted() {
-        testStore.send(.startObservingUserState)
+    private func resetUserStateToKYCCompleted() async {
+        await testStore.send(.startObservingUserState)
         resetUserState(to: .kycComplete)
-        testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.kycComplete)) { state in
+        await testStore.receive(.userStateDidChange(.kycComplete)) { state in
             state.isSynchronised = true
             state.completedItems = [.verifyIdentity]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
-    private func resetUserStateToKYCAndPaymentsCompleted() {
-        testStore.send(.startObservingUserState)
+    private func resetUserStateToKYCAndPaymentsCompleted() async {
+        await testStore.send(.startObservingUserState)
         resetUserState(to: .paymentMethodsLinked)
-        testMainScheduler.advance()
-        testStore.receive(.userStateDidChange(.paymentMethodsLinked)) { state in
+        await testStore.receive(.userStateDidChange(.paymentMethodsLinked)) { state in
             state.isSynchronised = true
             state.completedItems = [.verifyIdentity, .linkPaymentMethod]
         }
-        testStore.receive(.updatePromotion)
-        testStore.send(.stopObservingUserState)
+        await testStore.receive(.updatePromotion)
+        await testStore.receive(.updatedPromotion(nil))
+        await testStore.send(.stopObservingUserState)
     }
 
     private func resetUserState(to userState: UserState) {

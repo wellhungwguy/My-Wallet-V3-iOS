@@ -24,11 +24,11 @@ extension View {
     /// - parameter priority: Any explicit priority that the async
     ///   task should have.
     /// - parameter action: The async action that the task should run.
-    public func task<T>(
-        id: T,
+    public func task(
+        id: some Equatable,
         priority: TaskPriority = .userInitiated,
         _ action: @escaping () async -> Void
-    ) -> some View where T: Equatable {
+    ) -> some View {
         modifier(
             TaskModifier(
                 id: id,

@@ -126,7 +126,7 @@ public final class DeepLinkCoordinator: Session.Observer {
     private lazy var onboarding = app.on(blockchain.app.deep_link.onboarding.post.sign.up)
         .receive(on: DispatchQueue.main)
         .flatMap { [weak self] _ -> AnyPublisher<Void, Never> in
-            guard let self = self, let viewController = self.window.topMostViewController else {
+            guard let self, let viewController = self.window.topMostViewController else {
                 return .empty()
             }
             return self.onboardingRouter.presentPostSignUpOnboarding(from: viewController).mapToVoid()
@@ -227,7 +227,7 @@ public final class DeepLinkCoordinator: Session.Observer {
                 .cryptoAccounts(for: cryptoCurrency)
                 .receive(on: DispatchQueue.main)
                 .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
-                    guard let self = self else {
+                    guard let self else {
                         return .just(.abandoned)
                     }
                     return self
@@ -289,7 +289,7 @@ public final class DeepLinkCoordinator: Session.Observer {
             .zip(target)
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] defaultAccount, target -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else {
+                guard let self else {
                     return .just(.abandoned)
                 }
                 return self

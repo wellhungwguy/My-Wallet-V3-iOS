@@ -18,7 +18,7 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
     var model: AccountPickerHeaderModel! {
         didSet {
-            guard let model = model else {
+            guard let model else {
                 assetImageView.image = nil
                 titleLabel.content = .empty
                 subtitleLabel.content = .empty

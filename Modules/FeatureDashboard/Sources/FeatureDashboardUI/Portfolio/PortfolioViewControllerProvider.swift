@@ -6,9 +6,9 @@ import SwiftUI
 
 public final class PortfolioViewControllerProvider {
     public init() {}
-    public func create<OnboardingChecklist: View>(
+    public func create(
         userHasCompletedOnboarding: AnyPublisher<Bool, Never>,
-        @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> OnboardingChecklist,
+        @ViewBuilder onboardingChecklistViewBuilder: @escaping () -> some View,
         drawerRouter: DrawerRouting
     ) -> BaseScreenViewController {
         PortfolioViewController(

@@ -20,7 +20,7 @@ public class CachedValue<Value> {
     public var valueSingle: Single<Value> {
         _ = setup
         return Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return self.fetch()
@@ -50,7 +50,7 @@ public class CachedValue<Value> {
     ///   - fetch: Fetch method
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
         fetchMethod = { [weak object] in
-            guard let object = object else {
+            guard let object else {
                 return .error(ToolKitError.nullReference(A.self))
             }
             return fetch(object)
@@ -59,7 +59,7 @@ public class CachedValue<Value> {
 
     private lazy var setup: Void = refreshControl.action
         .do(onNext: { [weak self] action in
-            guard let self = self else { return }
+            guard let self else { return }
             switch action {
             case .fetch:
                 self.refresh()

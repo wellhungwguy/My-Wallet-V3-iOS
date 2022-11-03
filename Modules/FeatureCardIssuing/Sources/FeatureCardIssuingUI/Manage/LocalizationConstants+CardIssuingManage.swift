@@ -149,6 +149,11 @@ extension LocalizationConstants.CardIssuing {
                     comment: "Card Issuing: Transaction Type Payment"
                 )
 
+                static let atmWithdrawal = NSLocalizedString(
+                    "ATM Withdrawal",
+                    comment: "Card Issuing: Transaction Type ATM Withdrawal"
+                )
+
                 static let refund = NSLocalizedString(
                     "Refund",
                     comment: "Card Issuing: Transaction Type Refund"
@@ -166,10 +171,39 @@ extension LocalizationConstants.CardIssuing {
             }
         }
 
+        enum Selector {
+            static let myCards = NSLocalizedString(
+                "My Cards",
+                comment: "Card Issuing: My Cards"
+            )
+
+            static let title = NSLocalizedString(
+                "Blockchain.com Visa® Card",
+                comment: "Card Issuing: Blockchain.com Visa® Card"
+            )
+
+            enum Button {
+                static let manage = NSLocalizedString(
+                    "Manage",
+                    comment: "Card Issuing: Manage Card"
+                )
+
+                static let view = NSLocalizedString(
+                    "View",
+                    comment: "Card Issuing: View Card"
+                )
+            }
+        }
+
         enum Button {
             static let manage = NSLocalizedString(
                 "Manage Card",
                 comment: "Card Issuing: Manage"
+            )
+
+            static let addCard = NSLocalizedString(
+                "＋ Add Card",
+                comment: "Card Issuing: ＋ Add Card"
             )
 
             static let addFunds = NSLocalizedString(
@@ -319,6 +353,17 @@ extension LocalizationConstants.CardIssuing {
                 static let subtitle = NSLocalizedString(
                     "View account information",
                     comment: "Card Issuing: Personal Details Description"
+                )
+            }
+
+            enum Statements {
+                static let title = NSLocalizedString(
+                    "Statements",
+                    comment: "Card Issuing: Statements Title"
+                )
+                static let subtitle = NSLocalizedString(
+                    "View monthly card statements",
+                    comment: "Card Issuing: View Monthly Card Statements"
                 )
             }
 

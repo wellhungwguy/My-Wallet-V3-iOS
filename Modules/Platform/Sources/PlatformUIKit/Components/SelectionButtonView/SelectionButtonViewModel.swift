@@ -229,7 +229,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 subtitleFontColor.asObservable()
             )
             .map { subtitle, accessibility, font, color in
-                guard let subtitle = subtitle else {
+                guard let subtitle else {
                     return nil
                 }
                 return LabelContent(

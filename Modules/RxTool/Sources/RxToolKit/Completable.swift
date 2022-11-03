@@ -42,7 +42,7 @@ extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
         subscribe: @escaping (A, @escaping Self.CompletableObserver) -> Disposable
     ) -> RxSwift.PrimitiveSequence<Self.Trait, Self.Element> {
         Completable.create { [weak object] observer -> Disposable in
-            guard let object = object else {
+            guard let object else {
                 observer(.error(ToolKitError.nullReference(A.self)))
                 return Disposables.create()
             }

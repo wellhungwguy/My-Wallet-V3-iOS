@@ -19,7 +19,7 @@ public final class NoticeView: UIView {
 
     public var viewModel: NoticeViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             imageView.set(viewModel.imageViewContent)
             sizeConstraints.setConstant(
                 horizontal: viewModel.imageViewSize.width,

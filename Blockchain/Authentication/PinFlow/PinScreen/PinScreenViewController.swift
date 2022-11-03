@@ -176,7 +176,7 @@ final class PinScreenViewController: BaseScreenViewController {
         // Subscribe to `isProcessing` indicates whether something is processing in the background
         presenter.isProcessing
             .bind { [weak self] isProcessing in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.view.isUserInteractionEnabled = !isProcessing
                 self.trailingButtonStyle = isProcessing ? .processing : self.presenter.trailingButton
             }
@@ -237,7 +237,7 @@ extension PinScreenViewController {
     private func handle(error: Error) {
         view.isUserInteractionEnabled = false
         let deferred = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.view.isUserInteractionEnabled = true
             self.presenter.reset()
         }
@@ -302,7 +302,7 @@ extension PinScreenViewController {
         UINotificationFeedbackGenerator().notificationOccurred(.error)
         let animator = securePinView.joltAnimator
         animator.addCompletion { [weak self] _ in
-            guard let optionalRecovery = optionalRecovery else {
+            guard let optionalRecovery else {
                 deferred()
                 self?.recorder.record("handle(error:), only deferred block called")
                 return

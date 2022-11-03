@@ -5,6 +5,8 @@ import RxSwift
 
 public struct MultiBadgeViewModel {
 
+    public let isEmpty: Bool
+
     public let badgesRelay = BehaviorRelay<[BadgeAssetPresenting]>(value: [])
     public var badges: Driver<[BadgeAssetPresenting]> {
         badgesRelay.asDriver()
@@ -36,6 +38,7 @@ public struct MultiBadgeViewModel {
         height: CGFloat = 32,
         badges: [BadgeAssetPresenting] = []
     ) {
+        isEmpty = badges.isEmpty
         layoutMarginsRelay = BehaviorRelay<UIEdgeInsets>(value: layoutMargins)
         heightRelay = BehaviorRelay<CGFloat>(value: height)
         badgesRelay.accept(badges)

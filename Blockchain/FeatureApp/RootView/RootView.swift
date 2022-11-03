@@ -19,6 +19,7 @@ struct Tab: Hashable, Identifiable, Codable {
     var ux: UX.Dialog?
     var url: URL?
     var icon: Icon
+    var unselectedIcon: Icon?
 }
 
 extension Tab: CustomStringConvertible {
@@ -58,28 +59,10 @@ struct RootView: View {
     }
 
     var body: some View {
-        Group {
-            TabView(selection: viewStore.binding(\.$tab)) {
-                tabs(in: viewStore)
-            }
-            .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
-                    .identity(blockchain.ux.frequent.action)
-                    .background(
-                        Circle()
-                            .fill(Color.semantic.background)
-                            .padding(Spacing.padding1)
-                    )
-                    .pulse(enabled: viewStore.fab.animate, inset: 8)
-                    .padding([.leading, .trailing], 24.pt)
-                    .offset(y: 6.pt)
-                    .contentShape(Rectangle())
-                    .background(Color.white.invisible())
-                    .if(viewStore.hideFAB, then: { view in view.hidden() }),
-                alignment: .bottom
-            )
-            .ignoresSafeArea(.keyboard, edges: .bottom)
+        TabView(selection: viewStore.binding(\.$tab)) {
+            tabs(in: viewStore)
         }
+        .overlay(overlay, alignment: .bottom)
         .bottomSheet(
             isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
             content: {
@@ -115,6 +98,7 @@ struct RootView: View {
             app.post(event: tab.tag)
         }
         .onAppear {
+            app.post(event: blockchain.ux.home)
             app.post(event: viewStore.tab.tag)
         }
         .onAppear {
@@ -125,6 +109,26 @@ struct RootView: View {
         }
         .navigationRoute(in: store)
         .app(app)
+    }
+
+    @ViewBuilder var overlay: some View {
+        floatingButtonOverlay
+    }
+
+    var floatingButtonOverlay: some View {
+        FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn).animation(.spring()))
+            .identity(blockchain.ux.frequent.action)
+            .background(
+                Circle()
+                    .fill(Color.semantic.background)
+                    .padding(Spacing.padding1)
+            )
+            .pulse(enabled: viewStore.fab.animate, inset: 8)
+            .padding([.leading, .trailing], 24.pt)
+            .offset(y: 6.pt)
+            .contentShape(Rectangle())
+            .background(Color.white.invisible())
+            .if(viewStore.hideFAB, then: { view in view.hidden() })
     }
 
     func tabs(in viewStore: ViewStore<RootViewState, RootViewAction>) -> some View {
@@ -165,6 +169,18 @@ struct RootView: View {
         }
     }
 
+    func bottomViewItems(for viewStore: ViewStore<RootViewState, RootViewAction>) -> [BottomBarItem<Tag.Reference>] {
+    let tabs = viewStore.tabs ?? []
+     return tabs
+            .map { BottomBarItem(
+                id: $0.ref,
+                selectedIcon: $0.icon.renderingMode(.original),
+                unselectedIcon: $0.unselectedIcon?.renderingMode(.original) ?? Icon.hardware,
+                title: $0.name.localized()
+            )
+            }
+    }
+
     @ViewBuilder func maintenance(_ tab: Tab) -> some View {
         if let ux = tab.ux {
             ErrorView(
@@ -174,10 +190,10 @@ struct RootView: View {
         }
     }
 
-    @ViewBuilder func tabItem<Content>(
+    @ViewBuilder private func tabItem(
         _ tab: Tab,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: @escaping () -> some View
+    ) -> some View {
         PrimaryNavigationView {
             content()
                 .primaryNavigation(

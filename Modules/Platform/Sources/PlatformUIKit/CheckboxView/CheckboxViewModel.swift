@@ -57,7 +57,7 @@ public final class CheckboxViewModel: IdentifiableType {
             .map { $0 ? "checkbox-on" : "checkbox-off" }
             .asDriver(onErrorJustReturn: nil)
             .map { name in
-                if let name = name {
+                if let name {
                     return UIImage(named: name, in: .UIComponents, compatibleWith: nil)
                 }
                 return nil

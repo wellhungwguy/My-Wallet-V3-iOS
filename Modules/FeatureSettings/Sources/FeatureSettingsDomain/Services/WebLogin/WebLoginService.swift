@@ -82,10 +82,10 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
                 credentialsRepository.sharedKey.asSingle()
             )
             .map { password, sharedKey -> (String, String) in
-                guard let password = password else {
+                guard let password else {
                     throw ServiceError.missingPassword
                 }
-                guard let sharedKey = sharedKey else {
+                guard let sharedKey else {
                     throw MissingCredentialsError.sharedKey
                 }
                 return (password, sharedKey)

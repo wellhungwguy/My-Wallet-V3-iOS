@@ -67,10 +67,10 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
         super.didBecomeActive()
 
         let button = presenter.button
-        if let button = button {
+        if let button {
             button.tapRelay
                 .bind { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.handle(effects: .button)
                 }
                 .disposeOnDeactivate(interactor: self)
@@ -114,7 +114,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
                 if interactors.isEmpty {
                     interactors.append(.emptyState)
                 }
-                if let button = button {
+                if let button {
                     interactors.append(.button(button))
                 }
 
@@ -258,7 +258,7 @@ private enum BlockchainAccountSnapshotError: Error {
     case noTradingCurrency
 }
 
-extension Collection where Element == BlockchainAccount {
+extension Collection<BlockchainAccount> {
 
     func snapshot(
         app: AppProtocol,

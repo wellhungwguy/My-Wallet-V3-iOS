@@ -12,7 +12,7 @@ public enum OpenBankingState: Equatable {
 extension OpenBankingState {
 
     public static func linkBankAccount(_ bankAccount: OpenBanking.BankAccount? = nil) -> Self {
-        if let bankAccount = bankAccount {
+        if let bankAccount {
             return .institutionList(.init(result: .success(bankAccount)))
         } else {
             return .institutionList(.init())

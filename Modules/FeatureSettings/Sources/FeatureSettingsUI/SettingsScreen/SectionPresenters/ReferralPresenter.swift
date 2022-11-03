@@ -22,7 +22,7 @@ final class ReferralSectionPresenter: SettingsSectionPresenting {
         state = refferalAdapter
             .hasReferral()
             .map { referral -> SettingsSectionLoadingState in
-                if let referral = referral {
+                if let referral {
                     let cellViewModel = ReferralTableViewCellViewModel(referral: referral)
                     let referralCellModelDisplay = SettingsCellViewModel(cellType: .refferal(.referral, cellViewModel))
                     if !viewModel.items.contains(referralCellModelDisplay) {

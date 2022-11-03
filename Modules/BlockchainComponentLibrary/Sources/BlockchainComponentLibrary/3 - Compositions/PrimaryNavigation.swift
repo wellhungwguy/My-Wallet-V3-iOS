@@ -155,7 +155,7 @@ public struct PrimaryNavigationLink<Destination: View, Label: View>: View {
     }
 
     public var body: some View {
-        if let isActive = isActive {
+        if let isActive {
             NavigationLink(
                 destination: destination,
                 isActive: isActive,

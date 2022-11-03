@@ -10,7 +10,7 @@ public final class PaymentMethodCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 titleLabel.content = .empty
                 descriptionLabel.content = .empty
                 badgeImageView.viewModel = nil

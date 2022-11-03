@@ -22,7 +22,7 @@ extension SessionTokenRepositoryAPI {
     public var hasSessionToken: AnyPublisher<Bool, Never> {
         sessionToken
             .flatMap { token -> AnyPublisher<Bool, Never> in
-                guard let token = token else { return .just(false) }
+                guard let token else { return .just(false) }
                 return .just(!token.isEmpty)
             }
             .eraseToAnyPublisher()

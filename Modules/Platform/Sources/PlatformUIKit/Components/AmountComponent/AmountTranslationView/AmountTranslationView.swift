@@ -90,6 +90,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                         balancePublisher: presenter.interactor.accountBalancePublisher,
                         availableBalancePublisher: presenter.maxLimitPublisher,
                         feesPublisher: presenter.interactor.transactionFeePublisher,
+                        transactionIsFeeLessPublisher: presenter.interactor.transactionIsFeeLessPublisher,
                         onViewTapped: {
                             presenter.interactor.availableBalanceViewTapped()
                         }
@@ -106,7 +107,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                         app: app,
                         lastPurchasePublisher: presenter.lastPurchasePublisher,
                         maxLimitPublisher: presenter.maxLimitPublisher,
-                        onValueSelected: { [app, presenter] (prefillMoneyValue, size) in
+                        onValueSelected: { [app, presenter] prefillMoneyValue, size in
                             app.post(
                                 event: blockchain.app.configuration.transaction.quickfill,
                                 context: [
@@ -218,7 +219,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         )
         .map { (state: $0.0, activeAmountInput: $0.1, auxiliaryEnabled: $0.2) }
         .map { [weak self] value in
-            guard let self = self else { return .validInput(nil) }
+            guard let self else { return .validInput(nil) }
             return self.performEffect(
                 state: value.state,
                 activeAmountInput: value.activeAmountInput,

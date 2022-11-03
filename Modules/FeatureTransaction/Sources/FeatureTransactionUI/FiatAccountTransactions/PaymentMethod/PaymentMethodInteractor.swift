@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -54,20 +55,17 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
-    private let loadingViewPresenter: LoadingViewPresenting
     private let selectionRelay = PublishRelay<(method: PaymentMethod, methodType: PaymentMethodType)>()
 
     init(
         presenter: PaymentMethodPresentable,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
-        self.loadingViewPresenter = loadingViewPresenter
         super.init(presenter: presenter)
     }
 
@@ -75,9 +73,8 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
         super.didBecomeActive()
 
         let methods = paymentMethodTypes
-            .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
             .map { [weak self] (methods: [PaymentMethodType]) -> [PaymentMethodCellViewModelItem] in
-                guard let self = self else { return [] }
+                guard let self else { return [] }
                 return methods.compactMap { type in
                     self.generateCellType(by: type) ?? nil
                 }

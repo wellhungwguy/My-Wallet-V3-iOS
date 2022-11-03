@@ -64,7 +64,7 @@ public enum DerivationComponent {
     }
 }
 
-extension Array where Element == DerivationComponent {
+extension [DerivationComponent] {
 
     public func with(normal index: UInt32) -> Self {
         self + [.normal(index)]

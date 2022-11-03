@@ -35,7 +35,7 @@ enum MetadataUtil {
         payload: [UInt8],
         prevMagicHash: [UInt8]? = nil
     ) -> Result<[UInt8], Error> {
-        guard let prevMagicHash = prevMagicHash else {
+        guard let prevMagicHash else {
             return .success(payload)
         }
         let payloadHash = payload.sha256()

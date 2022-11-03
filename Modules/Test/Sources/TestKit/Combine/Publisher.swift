@@ -33,7 +33,7 @@ extension Publisher {
         XCTWaiter().wait(for: [promise], timeout: timeout)
         cancellable.cancel()
 
-        if let error = error { throw error }
+        if let error { throw error }
 
         return try XCTUnwrap(output, file: file, line: line)
     }

@@ -98,7 +98,7 @@ import UIKit
     /// Hides the loader
     @objc public func hide() {
         runOnMainThread { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             guard self.view != nil else { return }
             self.state = .hidden
             self.view = nil
@@ -111,7 +111,7 @@ import UIKit
     /// - Parameter text: an optional String to be displayed
     @objc public func showCircular(in superview: UIView? = nil, with text: String? = nil) {
         runOnMainThread { [weak self] in
-            guard let self = self, self.isEnabled else { return }
+            guard let self, self.isEnabled else { return }
             self.setupViewIfNeeded(in: superview, style: .circle)
             self.state = .animating(text)
         }
@@ -123,7 +123,7 @@ import UIKit
     /// - Parameter text: an optional String to be displayed
     @objc public func show(in superview: UIView? = nil, with text: String? = nil) {
         runOnMainThread { [weak self] in
-            guard let self = self, self.isEnabled else { return }
+            guard let self, self.isEnabled else { return }
             self.setupViewIfNeeded(in: superview, style: .activityIndicator)
             self.state = .animating(text)
         }
@@ -168,7 +168,7 @@ import UIKit
         case .activityIndicator:
             view = ActivityIndicatorLoadingContainerView()
         }
-        if let superview = superview {
+        if let superview {
             attach(to: superview)
         } else {
             attachToTopWindow()

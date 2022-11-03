@@ -52,7 +52,7 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
 
     func configure(with deviceInput: CaptureInputProtocol) {
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             guard self.captureSession.canAdd(input: deviceInput) else {
                 return
             }

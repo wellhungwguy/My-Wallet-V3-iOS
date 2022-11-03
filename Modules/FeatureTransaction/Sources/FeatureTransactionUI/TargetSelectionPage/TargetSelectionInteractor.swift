@@ -81,7 +81,7 @@ final class TargetSelectionInteractor {
             .parse(address: address)
             .flatMap { [validate] validatedAddress
                 -> AnyPublisher<Result<ReceiveAddress, Error>, Never> in
-                guard let validatedAddress = validatedAddress else {
+                guard let validatedAddress else {
                     return validate(address, crypto.asset)
                 }
                 return .just(.success(validatedAddress))

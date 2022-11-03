@@ -93,7 +93,7 @@ final class APIClient: TransactionPushClientAPI, TransactionFeeClientAPI {
         contractAddress: String?
     ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         var parameters: [URLQueryItem] = []
-        if let contractAddress = contractAddress {
+        if let contractAddress {
             parameters.append(URLQueryItem(name: "contractAddress", value: contractAddress))
         }
         let request = requestBuilder.get(

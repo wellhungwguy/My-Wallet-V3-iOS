@@ -82,7 +82,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
 
         cardThumbnailBadgeImageViewModel
             .map { viewModel in
-                if let viewModel = viewModel {
+                if let viewModel {
                     return .badgeImageView(viewModel)
                 } else {
                     return .empty

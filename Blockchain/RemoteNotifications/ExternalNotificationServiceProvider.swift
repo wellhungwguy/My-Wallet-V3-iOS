@@ -45,7 +45,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
         Deferred { [messagingService] in
             Future { [messagingService] promise in
                 messagingService.subscribe(toTopic: topic.rawValue) { error in
-                    if let error = error {
+                    if let error {
                         promise(.failure(.system(error)))
                     } else {
                         promise(.success(()))

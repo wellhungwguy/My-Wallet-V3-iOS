@@ -68,7 +68,6 @@ extension LocalizationConstants.Settings {
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
     public static let cookiesPolicy = NSLocalizedString("Cookies Policy", comment: "Cookies Policy")
     public static let logout = NSLocalizedString("Logout", comment: "Logout cell title in settings")
-    public static let addresses = NSLocalizedString("Addresses", comment: "Addresses title in settings")
     public static let deleteAccount = NSLocalizedString("Delete Account", comment: "Delete Account title in settings")
     public static let contactSupport = NSLocalizedString("Contact Support", comment: "Contact support cell title in settings")
     public static let changePIN = NSLocalizedString("Change PIN", comment: "Change PIN")
@@ -78,6 +77,8 @@ extension LocalizationConstants.Settings {
     public static let enableTouchID = NSLocalizedString("Enable Touch ID", comment: "Enable Touch ID")
     public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
     public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
+    public static let cryptoDomainsTitle = NSLocalizedString("Domains", comment: "Domains cell title")
+    public static let cryptoDomainsClaim = NSLocalizedString("Claim for free", comment: "Claim for free text")
     public enum Card {
         public static let add = NSLocalizedString("Add a Card", comment: "Add a Card")
         public static let maximum = NSLocalizedString(
@@ -120,45 +121,6 @@ extension LocalizationConstants.Settings {
         )
         public static let disableSMS2FA = NSLocalizedString("You must disable SMS 2-Step Verification before changing your mobile number.", comment: "You must disable SMS 2-Step Verification before changing your mobile number.")
         public static let action = NSLocalizedString("Update", comment: "Update")
-    }
-
-    public enum WebLogin {
-        public enum Instruction {
-            public static let one = NSLocalizedString(
-                "Go to login.blockchain.com on your computer.",
-                comment: "Go to login.blockchain.com on your computer."
-            )
-            public static let two = NSLocalizedString(
-                "Select Login via mobile.",
-                comment: "Select Login via mobile."
-            )
-            public static let three = NSLocalizedString(
-                "Using your computer's camera, scan the QR code below.",
-                comment: "Using your computer's camera, scan the QR code below."
-            )
-        }
-
-        public enum ErrorAlert {
-            public static let title = NSLocalizedString(
-                "Oops!",
-                comment: "Generic error bottom sheet title"
-            )
-            public static let message = NSLocalizedString(
-                "Something went wrong. Please try again.",
-                comment: "Generic error bottom sheet message"
-            )
-        }
-
-        public static let title = NSLocalizedString(
-            "Login to Web Wallet",
-            comment: "Login to Web Wallet"
-        )
-        public static let notice = NSLocalizedString(
-            "Never share your mobile pairing QR code with anyone. Anyone who can view this QR code can withdraw funds.\nBlockchain.com will never ask to view or receive your mobile pairing QR code.",
-            comment: "Warning regarding QR code security."
-        )
-        public static let showQRCode = NSLocalizedString("Show QR Code", comment: "Show QR Code")
-        public static let hideQRCode = NSLocalizedString("Hide QR Code", comment: "Hide QR Code")
     }
 
     public enum MobileCodeEntry {

@@ -156,7 +156,7 @@ public final class SVG: Codable {
 extension SVG: OptionalDataInit {
 
     public convenience init?(_ data: Data?) {
-        guard let data = data else { return nil }
+        guard let data else { return nil }
         self.init(data)
     }
 }

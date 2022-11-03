@@ -16,7 +16,7 @@ public final class SelectionScreenTableHeaderView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
 
             titleLabel.font = viewModel.font
 

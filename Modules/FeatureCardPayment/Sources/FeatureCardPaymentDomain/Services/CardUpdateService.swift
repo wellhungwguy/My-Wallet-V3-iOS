@@ -125,7 +125,7 @@ final class CardUpdateService: CardUpdateServiceAPI {
         let authorizeCard = activateCard
             .mapError { $0 as Error }
             .flatMap { [weak self] payload -> AnyPublisher<PartnerAuthorizationData, Error> in
-                guard let self = self else {
+                guard let self else {
                     return .failure(CardAcquirerError.unknown)
                 }
                 return self

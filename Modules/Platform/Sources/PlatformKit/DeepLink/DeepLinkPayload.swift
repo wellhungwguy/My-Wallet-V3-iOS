@@ -18,7 +18,7 @@ extension DeepLinkPayload {
 
         let parameters: [String: String]
 
-        if let fragment = fragment {
+        if let fragment {
             parameters = url.queryArgs.merging(fragment.queryArgs, uniquingKeysWith: { $1 })
         } else {
             parameters = url.queryArgs

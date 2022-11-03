@@ -15,9 +15,9 @@ extension Messaging: FirebaseCloudMessagingServiceAPI {
 
     public func token(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
         token { token, error in
-            if let error = error {
+            if let error {
                 handler(.failure(.external(error)))
-            } else if let token = token {
+            } else if let token {
                 if token.isEmpty {
                     handler(.failure(.tokenIsEmpty))
                 } else {

@@ -77,7 +77,7 @@ final class RawTransactionRequestHandler: RequestHandler {
             }
             .sink(
                 receiveValue: { [userEvent, responseEvent] event in
-                    guard let event = event else {
+                    guard let event else {
                         responseEvent(.invalid(request))
                         return
                     }

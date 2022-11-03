@@ -27,6 +27,8 @@ extension SettingsSectionType.CellType {
                 return .showBackupScreen
             case .cardIssuing:
                 return .showCardIssuing
+            case .blockchainDomains:
+                return .showBlockchainDomains
             }
         case .cards(let type):
             switch type {
@@ -53,14 +55,12 @@ extension SettingsSectionType.CellType {
             case .walletID:
                 return .promptGuidCopy
             }
-        case .common(let type):
+        case .common(let type, _):
             switch type {
             case .changePassword:
                 return .launchChangePassword
             case .changePIN:
                 return .showChangePinScreen
-            case .loginToWebWallet:
-                return .launchWebLogin
             case .webLogin:
                 return .showWebLogin
             case .rateUs:
@@ -73,8 +73,6 @@ extension SettingsSectionType.CellType {
                 return .showURL(URL(string: Constants.Url.cookiesPolicy)!)
             case .logout:
                 return .logout
-            case .addresses:
-                return .showAccountsAndAddresses
             case .contactSupport:
                 return .showContactSupport
             case .cardIssuing:
@@ -83,6 +81,8 @@ extension SettingsSectionType.CellType {
                 return .showNotificationsSettings
             case .userDeletion:
                 return .showUserDeletionScreen
+            case .blockchainDomains:
+                return .showBlockchainDomains
             }
         case .switch:
             return .none

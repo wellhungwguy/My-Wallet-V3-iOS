@@ -219,13 +219,13 @@ struct AddressSearch_Previews: PreviewProvider {
 extension AddressSearchResult {
 
     fileprivate var textHighlightRanges: [Range<String.Index>] {
-        guard let text = text else { return [] }
+        guard let text else { return [] }
         return text
             .separateInHighlightRanges(highlight: highlight, isFirstComponent: true)
     }
 
     fileprivate var descriptionHighlightRanges: [Range<String.Index>] {
-        guard let description = description else { return [] }
+        guard let description else { return [] }
         return description
             .separateInHighlightRanges(highlight: highlight, isFirstComponent: false)
     }
@@ -237,7 +237,7 @@ extension String {
         isFirstComponent: Bool
     ) -> [Range<String.Index>] {
         guard isNotEmpty,
-              let highlight = highlight, !highlight.isEmpty
+              let highlight, !highlight.isEmpty
         else {
             return []
         }

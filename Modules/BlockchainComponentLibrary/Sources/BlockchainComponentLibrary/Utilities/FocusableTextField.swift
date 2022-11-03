@@ -90,7 +90,7 @@ struct FocusableTextField: UIViewRepresentable {
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            guard let characterLimit = characterLimit else {
+            guard let characterLimit else {
                 return true
             }
 

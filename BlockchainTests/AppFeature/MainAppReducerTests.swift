@@ -62,8 +62,8 @@ final class MainAppReducerTests: XCTestCase {
 
     var testStore: TestStore<
         CoreAppState,
-        CoreAppState,
         CoreAppAction,
+        CoreAppState,
         CoreAppAction,
         CoreAppEnvironment
     >!

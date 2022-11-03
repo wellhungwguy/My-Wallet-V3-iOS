@@ -116,7 +116,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             .optional()
             .replaceError(with: nil)
             .map { [asset] account -> CryptoAccountCustodialGroup in
-                guard let account = account else {
+                guard let account else {
                     return CryptoAccountCustodialGroup(asset: asset)
                 }
                 return CryptoAccountCustodialGroup(asset: asset, account: account)

@@ -55,7 +55,7 @@ final class AddressSearchClient: AddressSearchClientAPI {
                 value: countryCode
             )
         ]
-        if let containerId = containerId {
+        if let containerId {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.addressId,
@@ -63,7 +63,7 @@ final class AddressSearchClient: AddressSearchClientAPI {
                 )
             )
         }
-        if let sateCode = sateCode {
+        if let sateCode {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.sateCode,

@@ -20,8 +20,8 @@ public struct PrefillButtonsState: Equatable {
     var configurations: [QuickfillConfiguration]?
 
     var suggestedValues: [QuickfillSuggestion] {
-        guard let configurations = configurations else { return [] }
-        guard let previousTxAmount = previousTxAmount, let maxLimit = maxLimit, let action = action else { return [] }
+        guard let configurations else { return [] }
+        guard let previousTxAmount, let maxLimit, let action else { return [] }
 
         // `Buy` uses the users previous tx amount.
         if action == .buy {
@@ -45,7 +45,7 @@ public struct PrefillButtonsState: Equatable {
     }
 
     private func baseMultipliedBy(_ by: BigInt) -> FiatValue? {
-        guard let baseValue = previousTxAmount, let maxLimit = maxLimit else {
+        guard let baseValue = previousTxAmount, let maxLimit else {
             return nil
         }
         let multiplier = FiatValue.create(
@@ -113,7 +113,7 @@ public struct PrefillButtonsEnvironment {
             app: App.preview,
             lastPurchasePublisher: .empty(),
             maxLimitPublisher: .empty(),
-            onValueSelected: { _, _  in }
+            onValueSelected: { _, _ in }
         )
     }
 }
@@ -476,7 +476,7 @@ struct PrefillButtonsView_Previews: PreviewProvider {
     }
 }
 
-extension Array where Element == BaseValueQuickfillConfiguration {
+extension [BaseValueQuickfillConfiguration] {
     func suggestedFiatAmountsWithBaseValue(_ fiatValue: FiatValue, maxLimit: FiatValue) -> [QuickfillSuggestion] {
         var result: [QuickfillSuggestion] = []
         let currency = fiatValue.currency

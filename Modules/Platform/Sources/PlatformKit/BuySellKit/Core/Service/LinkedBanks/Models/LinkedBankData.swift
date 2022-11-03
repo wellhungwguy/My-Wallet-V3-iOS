@@ -46,6 +46,10 @@ public struct LinkedBankData {
     public let entity: String?
     public let paymentMethodType: PaymentMethodPayloadType
     public let partner: Partner
+    public let icon: URL?
+    public let logo: URL?
+    public let isBankAccount: Bool
+    public let isBankTransferAccount: Bool
 
     public var topLimit: FiatValue
 
@@ -54,7 +58,7 @@ public struct LinkedBankData {
     }
 
     public var label: String {
-        guard let account = account else {
+        guard let account else {
             return identifier
         }
         return "\(account.bankName) \(account.type.title) \(account.number)"
@@ -74,12 +78,17 @@ public struct LinkedBankData {
         }
         self.currency = currency
         topLimit = .zero(currency: .USD)
+        icon = (response.attributes?.media?.first(where: { $0.type == "icon" })?.source).flatMap(URL.init(string:))
+        logo = (response.attributes?.media?.first(where: { $0.type == "logo" })?.source).flatMap(URL.init(string:))
+
+        isBankAccount = response.isBankAccount
+        isBankTransferAccount = response.isBankTransferAccount
     }
 }
 
 extension LinkedBankData.LinkageError {
     init?(from error: LinkedBankResponse.Error?) {
-        guard let error = error else { return nil }
+        guard let error else { return nil }
         self = error
     }
 }

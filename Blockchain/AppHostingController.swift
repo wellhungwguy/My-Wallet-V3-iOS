@@ -65,10 +65,10 @@ final class AppHostingController: UIViewController {
         viewStore.publisher
             .alertState
             .sink { [weak self] alert in
-                guard let self = self else {
+                guard let self else {
                     return
                 }
-                if let alert = alert {
+                if let alert {
                     let alertController = UIAlertController(state: alert, send: { action in
                         self.viewStore.send(action)
                     })
@@ -84,7 +84,7 @@ final class AppHostingController: UIViewController {
         store
             .scope(state: \.onboarding, action: CoreAppAction.onboarding)
             .ifLet(then: { [weak self] onboardingStore in
-                guard let self = self else { return }
+                guard let self else { return }
                 let onboardingController = OnboardingHostingController(store: onboardingStore)
                 if let loggedInController = self.loggedInController {
                     self.transition(
@@ -105,7 +105,7 @@ final class AppHostingController: UIViewController {
         store
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
             .ifLet(then: { [weak self] store in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 func load(_ loggedInController: RootViewController) {
                     // this is important, register the controller as a bridge
@@ -132,7 +132,7 @@ final class AppHostingController: UIViewController {
         store
             .scope(state: \.deviceAuthorization, action: CoreAppAction.authorizeDevice)
             .ifLet(then: { [weak self] authorizeDeviceScope in
-                guard let self = self else { return }
+                guard let self else { return }
                 let nav = AuthorizeDeviceViewController(
                     store: authorizeDeviceScope,
                     viewDismissed: { [weak self] in

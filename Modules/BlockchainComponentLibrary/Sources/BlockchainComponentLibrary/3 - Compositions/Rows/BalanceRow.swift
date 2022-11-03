@@ -138,7 +138,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 
     @ViewBuilder private var leadingSubtitleView: some View {
-        if let leadingSubtitle = leadingSubtitle {
+        if let leadingSubtitle {
             Text(leadingSubtitle)
                 .typography(.paragraph2)
                 .foregroundColor(.semantic.title)
@@ -162,7 +162,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 
     @ViewBuilder private var trailingTitleView: some View {
-        if let trailingTitle = trailingTitle {
+        if let trailingTitle {
             if graph is EmptyView {
                 Text(trailingTitle)
                     .typography(.body2)
@@ -178,7 +178,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 
     @ViewBuilder private var trailingDescriptionView: some View {
-        if let trailingDescription = trailingDescription {
+        if let trailingDescription {
             Text(trailingDescription)
                 .typography(.paragraph1)
                 .foregroundColor(trailingDescriptionColor)
@@ -248,9 +248,9 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         }
     }
 
-    @ViewBuilder private func pair<Leading: View, Trailing: View>(
-        _ leading: Leading,
-        _ trailing: Trailing
+    @ViewBuilder private func pair(
+        _ leading: some View,
+        _ trailing: some View
     ) -> some View {
         HStack {
             leading

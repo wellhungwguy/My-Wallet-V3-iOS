@@ -68,7 +68,7 @@ final class ActivityRouter: ActivityRouterAPI {
                 cryptoCurrency: event.currency
             )
             .flatMap(URL.init(string:))
-        guard let url = url else {
+        guard let url else {
             return
         }
         let controller = SFSafariViewController(url: url)

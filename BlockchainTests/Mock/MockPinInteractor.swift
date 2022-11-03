@@ -20,14 +20,14 @@ class MockPinInteractor: PinInteracting {
     }
 
     func create(using payload: PinPayload) -> Completable {
-        if let expectedError = expectedError {
+        if let expectedError {
             return Completable.error(expectedError)
         }
         return Completable.empty()
     }
 
     func validate(using payload: PinPayload) -> Single<String> {
-        if let expectedError = expectedError {
+        if let expectedError {
             return Single.error(expectedError)
         }
         return Single.just(expectedPassword)

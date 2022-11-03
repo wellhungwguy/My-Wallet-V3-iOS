@@ -153,7 +153,7 @@ public class AlertView: UIView {
 
     public func registerForNotifications() {
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.teardown()
         }
     }
@@ -263,7 +263,7 @@ public class AlertView: UIView {
                 })
             },
             completion: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.dimmingView.removeFromSuperview()
                 self.removeFromSuperview()
                 if let action = selectedAction {
@@ -343,7 +343,7 @@ public class AlertView: UIView {
         }
         observer?.invalidate()
         observer = observe(\.center, options: [.new]) { [weak self] _, change in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
             guard let superview = self.superview else { return }
@@ -351,12 +351,12 @@ public class AlertView: UIView {
             UIView.animate(
                 withDuration: 0.5,
                 animations: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.alpha = 0.0
                     self.dimmingView.alpha = 0.0
                 },
                 completion: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     guard let observer = self.observer else {
                         return
                     }

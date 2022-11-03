@@ -95,8 +95,8 @@ extension MetadataServiceAPI {
     ///   - node: the encoded node
     ///   - state: the root metadata state
     /// - Returns: A `Publisher` of `Void` or error
-    public func save<Node: Encodable>(
-        node: Node,
+    public func save(
+        node: some Encodable,
         metadataType: EntryType,
         state: MetadataState
     ) -> AnyPublisher<Void, MetadataSaveError> {
@@ -151,8 +151,8 @@ private func decodeJSONStringToEntry<Entry: Decodable, E: FromDecodingError>(
         .eraseToAnyPublisher()
 }
 
-private func encodeEntryToJSONString<Entry: Encodable, E: FromEncodingError>(
-    entry: Entry
+private func encodeEntryToJSONString<E: FromEncodingError>(
+    entry: some Encodable
 ) -> AnyPublisher<String, E> {
     entry.encodeToJSONString()
         .mapError(E.from)

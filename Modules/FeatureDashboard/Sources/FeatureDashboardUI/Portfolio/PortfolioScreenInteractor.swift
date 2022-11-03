@@ -81,7 +81,7 @@ public final class PortfolioScreenInteractor {
                         }
                         .eraseError()
                         .flatMap { group -> AnyPublisher<Bool, Error> in
-                            guard let group = group else {
+                            guard let group else {
                                 return .just(false)
                                     .eraseToAnyPublisher()
                             }

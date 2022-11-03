@@ -67,26 +67,39 @@ public let availableBalanceDetailViewReducer = Reducer<
     switch action {
     case .onAppear:
 
-        let items = Publishers.Zip4(
+        let balancePublishers = Publishers.Zip(
             environment.balancePublisher,
-            environment.availableBalancePublisher,
+            environment.availableBalancePublisher
+        )
+
+        let feesPublishers = Publishers.Zip(
             environment.feesPublisher,
+            environment.transactionIsFeeLessPublisher
+        )
+
+        return Publishers.Zip3(
+            balancePublishers,
+            feesPublishers,
             environment.app
                 .publisher(for: blockchain.ux.transaction.id, as: String.self)
                 .compactMap(\.value)
                 .compactMap { AssetAction(rawValue: $0) }
         )
-
-        return items
+            .map { payload -> (FiatValue, FiatValue, FiatValue, AssetAction, Bool) in
+                let (balance, availableBalance) = payload.0
+                let (fees, isTxFeeLess) = payload.1
+                let assetAction = payload.2
+                return (balance, availableBalance, fees, assetAction, isTxFeeLess)
+            }
             .receive(on: environment.mainQueue)
             .eraseToEffect()
             .map(AvailableBalanceDetailViewAction.updateAvailableBalanceDetails)
 
-    case .updateAvailableBalanceDetails(let balance, let available, let fees, let action):
+    case .updateAvailableBalanceDetails(let balance, let available, let fees, let action, let isTxFeeLess):
         state.title = "\(LocalizedIds.availableTo) \(action.name)"
         state.data = [
             .init(title: LocalizedIds.total, content: .text(balance.displayString)),
-            .init(title: "\(LocalizedIds.estimated) \(LocalizedIds.fees.lowercased())", content: fees.isPositive ? .text(fees.displayString) : .badge("Free")),
+            .init(title: "\(LocalizedIds.estimated) \(LocalizedIds.fees.lowercased())", content: isTxFeeLess ? .badge("Free") : .text(fees.displayString)),
             .init(title: "\(LocalizedIds.availableTo) \(action.name)", content: .text(available.displayString))
         ]
         return .none
@@ -106,6 +119,7 @@ public struct AvailableBalanceDetailViewEnvironment {
     let balancePublisher: AnyPublisher<FiatValue, Never>
     let availableBalancePublisher: AnyPublisher<FiatValue, Never>
     let feesPublisher: AnyPublisher<FiatValue, Never>
+    let transactionIsFeeLessPublisher: AnyPublisher<Bool, Never>
     let closeAction: (() -> Void)?
 
     public init(
@@ -114,6 +128,7 @@ public struct AvailableBalanceDetailViewEnvironment {
         balancePublisher: AnyPublisher<FiatValue, Never>,
         availableBalancePublisher: AnyPublisher<FiatValue, Never>,
         feesPublisher: AnyPublisher<FiatValue, Never>,
+        transactionIsFeeLessPublisher: AnyPublisher<Bool, Never>,
         closeAction: (() -> Void)? = nil
     ) {
         self.app = app
@@ -121,6 +136,7 @@ public struct AvailableBalanceDetailViewEnvironment {
         self.balancePublisher = balancePublisher
         self.availableBalancePublisher = availableBalancePublisher
         self.feesPublisher = feesPublisher
+        self.transactionIsFeeLessPublisher = transactionIsFeeLessPublisher
         self.closeAction = closeAction
     }
 
@@ -129,7 +145,8 @@ public struct AvailableBalanceDetailViewEnvironment {
             app: App.preview,
             balancePublisher: .empty(),
             availableBalancePublisher: .empty(),
-            feesPublisher: .empty()
+            feesPublisher: .empty(),
+            transactionIsFeeLessPublisher: .empty()
         )
     }
 }
@@ -139,7 +156,7 @@ public struct AvailableBalanceDetailViewEnvironment {
 public enum AvailableBalanceDetailViewAction: Equatable {
     case onAppear
     case okayButtonTapped
-    case updateAvailableBalanceDetails(_ balance: FiatValue, _ available: FiatValue, _ fees: FiatValue, _ action: AssetAction)
+    case updateAvailableBalanceDetails(_ balance: FiatValue, _ available: FiatValue, _ fees: FiatValue, _ action: AssetAction, _ isTxFeeLess: Bool)
     case closeButtonTapped
 }
 

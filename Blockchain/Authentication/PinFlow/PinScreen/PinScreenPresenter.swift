@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import DIKit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import LocalAuthentication
@@ -18,10 +17,6 @@ private enum PinScreenPresenterError: Error {
 
 /// Presenter for PIN screen
 final class PinScreenPresenter {
-
-    // MARK: - Types
-
-    typealias Settings = AppSettingsAuthenticating & CloudBackupConfiguring
 
     // MARK: - Properties
 
@@ -124,7 +119,8 @@ final class PinScreenPresenter {
 
     private let interactor: PinInteracting
     private let recorder: Recording
-    private let appSettings: Settings
+    private let appSettings: AppSettingsAuthenticating
+    private let cloudSettings: CloudBackupConfiguring
     private let biometryProvider: BiometryProviding
     private let credentialsStore: CredentialsStoreAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -148,18 +144,19 @@ final class PinScreenPresenter {
     init(
         useCase: PinScreenUseCase,
         flow: PinRouting.Flow,
-        interactor: PinInteracting = PinInteractor(),
-        biometryProvider: BiometryProviding = BiometryProvider(),
-        appSettings: Settings = BlockchainSettings.App.shared,
-        legacyGuidRepository: LegacyGuidRepositoryAPI = resolve(),
-        legacySharedKeyRepository: LegacySharedKeyRepositoryAPI = resolve(),
-        recorder: Recording = CrashlyticsRecorder(),
-        credentialsStore: CredentialsStoreAPI = resolve(),
-        backwardRouting: PinRouting.RoutingType.Backward? = nil,
+        interactor: PinInteracting,
+        biometryProvider: BiometryProviding,
+        appSettings: AppSettingsAuthenticating,
+        cloudSettings: CloudBackupConfiguring,
+        legacyGuidRepository: LegacyGuidRepositoryAPI,
+        legacySharedKeyRepository: LegacySharedKeyRepositoryAPI,
+        recorder: Recording,
+        credentialsStore: CredentialsStoreAPI,
+        backwardRouting: PinRouting.RoutingType.Backward?,
         forwardRouting: @escaping PinRouting.RoutingType.Forward,
         performEffect: @escaping PinRouting.RoutingType.Effect,
-        reachability: Reachability = .init(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        reachability: Reachability,
+        analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.useCase = useCase
         self.flow = flow
@@ -168,6 +165,7 @@ final class PinScreenPresenter {
         self.appSettings = appSettings
         self.biometryProvider = biometryProvider
         self.backwardRouting = backwardRouting
+        self.cloudSettings = cloudSettings
         self.forwardRouting = forwardRouting
         self.credentialsStore = credentialsStore
         self.performEffect = performEffect
@@ -412,7 +410,7 @@ extension PinScreenPresenter {
     /// 1st pin entered, and if so, it will proceed to change the user's pin.
     func validateSecondEntry() -> Completable {
         Completable.create { [weak self] completable in
-            guard let self = self else { return Disposables.create() }
+            guard let self else { return Disposables.create() }
 
             // Extract both current and previous pins before comparing them. Both MUST NOT be nil at that point
             guard let previousPin = self.useCase.pin,
@@ -475,7 +473,7 @@ extension PinScreenPresenter {
         }
 
         return Completable.create { [weak self] completable in
-            guard let self = self else { return Disposables.create() }
+            guard let self else { return Disposables.create() }
             self.verify()
                 .asCompletable()
                 .do(onDispose: { [weak self] in
@@ -558,7 +556,7 @@ extension PinScreenPresenter {
             && legacySharedKeyRepository.directSharedKey != nil
             && appSettings.pinKey != nil
             && appSettings.encryptedPinPassword != nil
-            && appSettings.cloudBackupEnabled
+            && cloudSettings.cloudBackupEnabled
     }
 
     /// Invoked during Second Pin Validation.

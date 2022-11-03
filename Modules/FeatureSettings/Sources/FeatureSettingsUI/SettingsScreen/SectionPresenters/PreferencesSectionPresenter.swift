@@ -2,7 +2,9 @@
 
 import Combine
 import DIKit
+import Localization
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 import ToolKit
 
@@ -14,40 +16,34 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
 
     var state: Observable<SettingsSectionLoadingState>
 
-    private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
-    private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
-    private let preferredTradingCurrencyCellPresenter: PreferredTradingCurrencyCellPresenter
+    private let preferredCurrencyCellPresenter: BadgeCellPresenting
+    private let preferredTradingCurrencyCellPresenter: BadgeCellPresenting
 
     init(
-        emailNotificationService: EmailNotificationSettingsServiceAPI,
         preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor,
         preferredTradingCurrencyBadgeInteractor: PreferredTradingCurrencyBadgeInteractor,
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
-        emailNotificationsCellPresenter = .init(service: emailNotificationService)
-        preferredCurrencyCellPresenter = .init(interactor: preferredCurrencyBadgeInteractor)
-        preferredTradingCurrencyCellPresenter = .init(interactor: preferredTradingCurrencyBadgeInteractor)
+        preferredCurrencyCellPresenter = DefaultBadgeCellPresenter(
+            accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Currency.title),
+            interactor: preferredCurrencyBadgeInteractor,
+            title: LocalizationConstants.Settings.Badge.walletDisplayCurrency
+        )
+        preferredTradingCurrencyCellPresenter = DefaultBadgeCellPresenter(
+            accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Currency.title),
+            interactor: preferredTradingCurrencyBadgeInteractor,
+            title: LocalizationConstants.Settings.Badge.tradingCurrency
+        )
 
-        var viewModel = SettingsSectionViewModel(
+        let viewModel = SettingsSectionViewModel(
             sectionType: sectionType,
             items: [
-                .init(cellType: .switch(.emailNotifications, emailNotificationsCellPresenter)),
                 .init(cellType: .badge(.currencyPreference, preferredCurrencyCellPresenter)),
-                .init(cellType: .badge(.tradingCurrencyPreference, preferredTradingCurrencyCellPresenter))
+                .init(cellType: .badge(.tradingCurrencyPreference, preferredTradingCurrencyCellPresenter)),
+                .init(cellType: .common(.notifications))
             ]
         )
 
-        state = featureFlagService
-            .isEnabled(AppFeature.notificationPreferences)
-            .last()
-            .map { notificationPreferencesEnabled -> SettingsSectionLoadingState in
-                let notificationPreferencesCell: SettingsCellViewModel = .init(cellType: .common(.notifications))
-                if notificationPreferencesEnabled, viewModel.items.contains(notificationPreferencesCell) == false {
-                    viewModel.items.append(notificationPreferencesCell)
-                    viewModel.items.remove(at: 0)
-                }
-                return .loaded(next: .some(viewModel))
-            }
-            .asObservable()
+        state = .just(.loaded(next: .some(viewModel)))
     }
 }

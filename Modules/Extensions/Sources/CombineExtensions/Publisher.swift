@@ -11,7 +11,7 @@ extension Publisher where Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { [weak root] value in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)(value)
         }
     }
@@ -21,7 +21,7 @@ extension Publisher where Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { [weak root] _ in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)()
         }
     }
@@ -31,7 +31,7 @@ extension Publisher where Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject, Output == (T, U) {
         sink { [weak root] value in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)(value.0, value.1)
         }
     }
@@ -41,7 +41,7 @@ extension Publisher where Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject, Output == (T, U, V) {
         sink { [weak root] value in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)(value.0, value.1, value.2)
         }
     }
@@ -62,7 +62,7 @@ extension Publisher {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { _ in } receiveValue: { [weak root] output in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)(output)
         }
     }
@@ -72,7 +72,7 @@ extension Publisher {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { _ in } receiveValue: { [weak root] _ in
-            guard let root = root else { return }
+            guard let root else { return }
             handler(root)()
         }
     }
@@ -83,10 +83,10 @@ extension Publisher {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { [weak root] completion in
-            guard let root = root else { return }
+            guard let root else { return }
             completionHandler(root)(completion)
         } receiveValue: { [weak root] output in
-            guard let root = root else { return }
+            guard let root else { return }
             receiveValueHandler(root)(output)
         }
     }
@@ -286,7 +286,7 @@ extension Publisher where Output == Bool, Failure == Never {
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
         sink { [weak root] output in
-            guard let root = root else { return }
+            guard let root else { return }
             if output {
                 yes(root)()
             } else {
@@ -300,11 +300,11 @@ extension AnyCancellable {
 
     /// Store the lifetime of the cancellable against an Object.
     /// Once the object is deallocated the cancellable will go with it.
-    public func store<Object>(
-        withLifetimeOf object: Object,
+    public func store(
+        withLifetimeOf object: some AnyObject,
         file: StaticString = #file,
         line: UInt = #line
-    ) where Object: AnyObject {
+    ) {
         objc_setAssociatedObject(object, file.description + line.description, self, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 }
@@ -333,7 +333,7 @@ extension Publisher where Failure == Never {
 extension Publisher where Output: ResultProtocol {
 
     /// Ignore the stream output when it matches the CasePath `output`
-    public func ignore<T>(output casePath: CasePath<Output.Success, T>) -> AnyPublisher<Output, Failure> {
+    public func ignore(output casePath: CasePath<Output.Success, some Any>) -> AnyPublisher<Output, Failure> {
         filter { output in
             switch output.result {
             case .failure:
@@ -346,7 +346,7 @@ extension Publisher where Output: ResultProtocol {
     }
 
     /// Ignore the stream failure when it matches the CasePath `failure`
-    public func ignore<T>(failure casePath: CasePath<Output.Failure, T>) -> AnyPublisher<Output, Failure> {
+    public func ignore(failure casePath: CasePath<Output.Failure, some Any>) -> AnyPublisher<Output, Failure> {
         filter { output in
             switch output.result {
             case .failure(let error):

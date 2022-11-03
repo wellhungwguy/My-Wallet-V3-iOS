@@ -13,7 +13,6 @@ extension DependencyContainer {
 
         single {
             CardRepository(
-                app: DIKit.resolve(),
                 client: CardClient(
                     networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                     requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)

@@ -67,7 +67,7 @@ extension LimitedTradeFeature {
         guard enabled else {
             return LocalizedStrings.disabled
         }
-        guard let limit = limit else {
+        guard let limit else {
             return LocalizedStrings.enabled
         }
         return limit.displayString
@@ -84,7 +84,7 @@ extension LimitedTradeFeature {
 extension LimitedTradeFeature.PeriodicLimit {
 
     var displayString: String {
-        guard let value = value else {
+        guard let value else {
             return LocalizedStrings.unlimited
         }
         return value.shortDisplayString

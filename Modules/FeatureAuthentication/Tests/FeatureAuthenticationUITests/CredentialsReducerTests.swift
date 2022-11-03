@@ -18,8 +18,8 @@ final class CredentialsReducerTests: XCTestCase {
     private var mockPollingQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         CredentialsState,
-        CredentialsState,
         CredentialsAction,
+        CredentialsState,
         CredentialsAction,
         CredentialsEnvironment
     >!

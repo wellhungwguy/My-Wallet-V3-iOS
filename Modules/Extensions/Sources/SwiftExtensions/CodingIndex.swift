@@ -28,7 +28,7 @@ extension CodingIndex: ExpressibleByExtendedGraphemeClusterLiteral {
     @inlinable public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
 }
 
-extension Collection where Element == CodingIndex {
+extension Collection<CodingIndex> {
 
     @inlinable public func joined(separator: String = ".") -> String {
         lazy.map(\.stringValue).joined(separator: separator)

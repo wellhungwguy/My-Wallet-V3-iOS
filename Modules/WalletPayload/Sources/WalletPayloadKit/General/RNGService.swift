@@ -169,7 +169,7 @@ func secureRandomNumberGenerator(count: Int) -> Result<Data, RNGEntropyError> {
     return .success(data)
 }
 
-extension Array where Element == UInt8 {
+extension [UInt8] {
     /// Returns an Array of random UInt8 elements by using `SecRandomCopyBytes`
     /// - Parameter count: The count of the random bytes
     /// - Returns: An array of UInt8 elements

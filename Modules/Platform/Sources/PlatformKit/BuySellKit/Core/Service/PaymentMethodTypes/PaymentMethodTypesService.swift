@@ -302,7 +302,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         preferredPaymentMethodTypeRelay.asObservable()
             .flatMap(weak: self) { (self, paymentMethod) in
-                guard let paymentMethod = paymentMethod else {
+                guard let paymentMethod else {
                     return self.defaultPaymentMethod
                 }
                 return .just(paymentMethod)
@@ -546,7 +546,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     case .crypto:
                         return true
                     case .fiat(let fiatCurrency):
-                        return MoneyKit.allEnabledFiatCurrencies.contains(fiatCurrency)
+                        return FiatCurrency.allEnabledFiatCurrencies.contains(fiatCurrency)
                     }
                 }
             }
@@ -609,7 +609,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 }
 
-extension Array where Element == PaymentMethodType {
+extension [PaymentMethodType] {
 
     var suggestedFunds: Set<FiatCurrency> {
         let array = compactMap { paymentMethod -> FiatCurrency? in

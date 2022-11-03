@@ -17,8 +17,6 @@ public struct Card: Codable, Equatable, Identifiable {
 
     public let status: Status
 
-    public let orderStatus: [OrderStatus]?
-
     public let createdAt: String
 
     public init(
@@ -28,7 +26,6 @@ public struct Card: Codable, Equatable, Identifiable {
         expiry: String,
         brand: Card.Brand,
         status: Card.Status,
-        orderStatus: [Card.OrderStatus]?,
         createdAt: String
     ) {
         self.id = id
@@ -37,16 +34,29 @@ public struct Card: Codable, Equatable, Identifiable {
         self.expiry = expiry
         self.brand = brand
         self.status = status
-        self.orderStatus = orderStatus
         self.createdAt = createdAt
     }
 }
 
 extension Card {
 
+    public struct Fulfillment: Decodable, Equatable {
+        public let status: Status
+        public let shippingAddress: Address?
+
+        public init(
+            status: Card.Fulfillment.Status,
+            shippingAddress: Card.Address? = nil
+        ) {
+            self.status = status
+            self.shippingAddress = shippingAddress
+        }
+    }
+
     public enum CardType: String, Codable {
         case virtual = "VIRTUAL"
         case physical = "PHYSICAL"
+        case shadow = "VIRTUAL_SHADOW"
     }
 
     public enum Brand: String, Codable {
@@ -64,11 +74,6 @@ extension Card {
         case unactivated = "UNACTIVATED"
         case limited = "LIMITED"
         case locked = "LOCKED"
-    }
-
-    public struct OrderStatus: Codable, Equatable {
-        let status: Status
-        let date: Date
     }
 
     public struct Address: Codable, Hashable {
@@ -105,7 +110,7 @@ extension Card {
             self.postCode = postCode
             self.country = country
 
-            if let state = state,
+            if let state,
                country == Constants.usIsoCode,
                !state.hasPrefix(Constants.usPrefix)
             {
@@ -117,10 +122,10 @@ extension Card {
     }
 }
 
-extension Card.OrderStatus {
+extension Card.Fulfillment {
 
     public enum Status: String, Codable {
-        case ordered = "ORDERED"
+        case ordered = "PROCESSING"
         case shipped = "SHIPPED"
         case delivered = "DELIVERED"
     }

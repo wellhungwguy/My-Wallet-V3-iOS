@@ -40,7 +40,7 @@ final class GuidService: GuidServiceAPI {
         guid = sessionTokenRepository
             .sessionToken
             .flatMap { [guidRepository] token -> AnyPublisher<String?, GuidServiceError> in
-                guard let token = token else {
+                guard let token else {
                     return .failure(.missingSessionToken)
                 }
                 return guidRepository.guid(token: token)

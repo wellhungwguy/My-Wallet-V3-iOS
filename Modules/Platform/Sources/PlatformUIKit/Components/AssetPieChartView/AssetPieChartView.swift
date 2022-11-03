@@ -17,7 +17,7 @@ public final class AssetPieChartView: UIView {
     public var presenter: AssetPieChartPresenter! {
         willSet { disposeBag = DisposeBag() }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             presenter
                 .state
                 .compactMap(\.value)

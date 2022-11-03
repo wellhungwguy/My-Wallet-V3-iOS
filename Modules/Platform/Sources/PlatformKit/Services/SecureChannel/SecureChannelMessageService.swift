@@ -35,8 +35,8 @@ final class SecureChannelMessageService {
         .replaceError(with: MessageError.decryptionFailed)
     }
 
-    func buildMessage<Message: Encodable>(
-        message: Message,
+    func buildMessage(
+        message: some Encodable,
         channelId: String,
         success: Bool,
         publicKey: Data,

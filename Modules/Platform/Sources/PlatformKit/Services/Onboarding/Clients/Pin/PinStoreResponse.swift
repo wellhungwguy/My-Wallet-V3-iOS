@@ -69,13 +69,13 @@ extension PinStoreResponse {
         case .deleted:
             return PinError.tooManyAttempts
         case .incorrect:
-            guard let remaining = remaining else {
+            guard let remaining else {
                 fatalError("Incorrect PIN should have an remaining field")
             }
             let message = LocalizationConstants.Pin.incorrect
             return PinError.incorrectPin(message, remaining, nil)
         case .backoff:
-            guard let remaining = remaining else {
+            guard let remaining else {
                 fatalError("Backoff should have an remaining field")
             }
             let message = LocalizationConstants.Pin.backoff

@@ -22,9 +22,9 @@ extension IntervalDuration {
         .init(time)
     }
 
-    public static func exponential<R: RandomNumberGenerator>(
+    public static func exponential(
         unit: TimeInterval = 0.5,
-        using randomNumberGenerator: inout R
+        using randomNumberGenerator: inout some RandomNumberGenerator
     ) -> Self {
         let box = Reference(&randomNumberGenerator)
         return .init { n in

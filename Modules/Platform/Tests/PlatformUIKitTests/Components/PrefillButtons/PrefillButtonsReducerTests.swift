@@ -15,8 +15,8 @@ final class PrefillButtonsReducerTests: XCTestCase {
     private var mockMainQueue: ImmediateSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         PrefillButtonsState,
-        PrefillButtonsState,
         PrefillButtonsAction,
+        PrefillButtonsState,
         PrefillButtonsAction,
         PrefillButtonsEnvironment
     >!
@@ -99,7 +99,7 @@ final class PrefillButtonsReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 lastPurchasePublisher: .just(lastPurchase),
                 maxLimitPublisher: .just(maxLimit),
-                onValueSelected: { (_, _) in }
+                onValueSelected: { _, _ in }
             )
         )
         testStore.send(.onAppear)
@@ -121,7 +121,7 @@ final class PrefillButtonsReducerTests: XCTestCase {
                 app: App.test,
                 lastPurchasePublisher: .just(lastPurchase),
                 maxLimitPublisher: .just(maxLimit),
-                onValueSelected: { (value, _) in
+                onValueSelected: { value, _ in
                     XCTAssertEqual(value.currency, .USD)
                     XCTAssertEqual(value.minorAmount, BigInt(123))
                     e.fulfill()

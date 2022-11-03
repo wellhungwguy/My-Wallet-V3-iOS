@@ -29,7 +29,7 @@ public struct AppEnvironment {
     var app: AppProtocol
     var appStoreOpener: AppStoreOpening
     var backgroundAppHandler: BackgroundAppHandlerAPI
-    var blockchainSettings: BlockchainSettings.App
+    var blockchainSettings: BlockchainSettingsAppAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var buildVersionProvider: () -> String
     var cacheSuite: CacheSuite
@@ -80,7 +80,7 @@ public struct AppEnvironment {
         app: AppProtocol,
         appStoreOpener: AppStoreOpening,
         backgroundAppHandler: BackgroundAppHandlerAPI,
-        blockchainSettings: BlockchainSettings.App,
+        blockchainSettings: BlockchainSettingsAppAPI,
         blurEffectHandler: BlurVisualEffectHandlerAPI,
         buildVersionProvider: @escaping () -> String,
         cacheSuite: CacheSuite,

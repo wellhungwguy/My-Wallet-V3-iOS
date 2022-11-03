@@ -59,7 +59,7 @@ final class YodleeActivateService {
                     case .pending:
                         return .just(.inactive(nil))
                     case .inactive(let data):
-                        guard let data = data else {
+                        guard let data else {
                             return .just(.inactive(nil))
                         }
                         return .just(.inactive(data.error))
@@ -81,7 +81,7 @@ extension YodleeActivateService.State {
                 content: reducer.webviewSuccessContent(bankName: data.account?.bankName)
             )
         case .inactive(let error):
-            guard let error = error else {
+            guard let error else {
                 return .pending(
                     content: reducer.webviewPendingContent()
                 )

@@ -122,7 +122,7 @@ public struct CardData {
 extension CardData {
 
     public init?(response: CardPayload?) {
-        guard let response = response else { return nil }
+        guard let response else { return nil }
         guard let currency = FiatCurrency(code: response.currency) else { return nil }
         guard let billingAddress = response.address else { return nil }
         guard response.partner.isKnown else { return nil }
@@ -176,10 +176,10 @@ extension CardData {
         expirationDate: String?,
         cvv: String?
     ) {
-        guard let ownerName = ownerName,
-              var number = number,
-              let expirationDate = expirationDate,
-              let cvv = cvv
+        guard let ownerName,
+              var number,
+              let expirationDate,
+              let cvv
         else {
             return nil
         }
@@ -213,7 +213,7 @@ extension CardData {
 
 // MARK: - Array Setup
 
-extension Array where Element == CardData {
+extension [CardData] {
     init(response: [CardPayload]) {
         self.init()
         let data = response.compactMap { CardData(response: $0) }

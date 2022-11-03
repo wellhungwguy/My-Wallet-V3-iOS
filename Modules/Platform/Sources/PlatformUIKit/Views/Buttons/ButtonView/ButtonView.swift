@@ -33,7 +33,7 @@ public final class ButtonView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 button.isEnabled = false
                 label.text = nil
                 imageView.image = nil
@@ -90,7 +90,7 @@ public final class ButtonView: UIView {
             // bind contains image
             viewModel.containsImage
                 .bind { [weak self] containsImage in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     if containsImage {
                         self.label.textAlignment = .natural
                         self.labelToImageViewLeadingConstraint.priority = .penultimateHigh

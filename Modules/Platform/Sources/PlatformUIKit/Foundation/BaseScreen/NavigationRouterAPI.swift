@@ -51,7 +51,7 @@ public class NavigationRouter: NavigationRouterAPI {
     }
 
     public var defaultDismissalType: PresentationType? {
-        guard let navigationControllerAPI = navigationControllerAPI else {
+        guard let navigationControllerAPI else {
             return nil
         }
         if navigationControllerAPI.viewControllersCount == 1 {

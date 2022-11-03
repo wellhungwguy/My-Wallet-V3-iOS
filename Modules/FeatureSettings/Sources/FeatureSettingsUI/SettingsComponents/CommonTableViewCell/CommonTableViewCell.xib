@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -22,36 +22,42 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="K7t-bC-Q3g">
-                        <rect key="frame" x="16" y="12" width="366" height="59"/>
+                        <rect key="frame" x="16" y="12" width="332" height="59"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic-exchange-account" translatesAutoresizingMaskIntoConstraints="NO" id="kbF-mB-yl8">
-                                <rect key="frame" x="0.0" y="0.0" width="21.5" height="59"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kbF-mB-yl8">
+                                <rect key="frame" x="0.0" y="0.0" width="254.5" height="59"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mcK-WI-Yo6">
-                                <rect key="frame" x="37.5" y="0.0" width="328.5" height="59"/>
+                                <rect key="frame" x="270.5" y="0.0" width="61.5" height="59"/>
                                 <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                     </stackView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="999" verticalHuggingPriority="999" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="subtitle" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hPG-Nl-dXi">
+                        <rect key="frame" x="348" y="32" width="58" height="19.5"/>
+                        <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstItem="K7t-bC-Q3g" firstAttribute="leading" secondItem="nCU-AK-zm9" secondAttribute="leading" constant="16" id="1aP-iY-QBr"/>
                     <constraint firstItem="K7t-bC-Q3g" firstAttribute="top" secondItem="nCU-AK-zm9" secondAttribute="top" constant="12" id="41o-Jz-8tL"/>
-                    <constraint firstAttribute="trailing" secondItem="K7t-bC-Q3g" secondAttribute="trailing" constant="32" id="VRf-09-zxP"/>
+                    <constraint firstItem="hPG-Nl-dXi" firstAttribute="leading" secondItem="K7t-bC-Q3g" secondAttribute="trailing" id="O7I-f1-K4g"/>
+                    <constraint firstAttribute="trailing" secondItem="hPG-Nl-dXi" secondAttribute="trailing" constant="8" id="t8l-TB-1Vt"/>
+                    <constraint firstItem="hPG-Nl-dXi" firstAttribute="centerY" secondItem="nCU-AK-zm9" secondAttribute="centerY" id="w4P-ww-fG1"/>
                     <constraint firstAttribute="bottom" secondItem="K7t-bC-Q3g" secondAttribute="bottom" constant="12" id="yuR-7x-hmt"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="hStack" destination="K7t-bC-Q3g" id="Rw9-ci-IxV"/>
                 <outlet property="iconImageView" destination="kbF-mB-yl8" id="JS2-ar-FSZ"/>
+                <outlet property="subtitleLabel" destination="hPG-Nl-dXi" id="NTa-rk-M5r"/>
                 <outlet property="titleLabel" destination="mcK-WI-Yo6" id="Mti-PJ-oQV"/>
             </connections>
-            <point key="canvasLocation" x="102.89855072463769" y="65.290178571428569"/>
+            <point key="canvasLocation" x="24.637681159420293" y="50.558035714285715"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="ic-exchange-account" width="24" height="24"/>
-    </resources>
 </document>

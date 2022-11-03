@@ -56,7 +56,7 @@ final class InterestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI 
                 -> AnyPublisher<InterestAccountLimits, InterestAccountLimitsError> in
                 let limit = interestAccountLimits
                     .first(where: { $0.cryptoCurrency == cryptoCurrency })
-                guard let limit = limit else {
+                guard let limit else {
                     return .failure(.interestAccountLimitsUnavailable)
                 }
                 return .just(limit)

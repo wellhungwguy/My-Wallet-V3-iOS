@@ -32,7 +32,7 @@ extension BankState.UI {
         default:
             var ui = errors[error, default: defaultError]
             if ui.info.media == .inherited {
-                if let currency = currency {
+                if let currency {
                     ui.info.media = environment.cryptoCurrencyFormatter.displayImage(currency: currency).map(\.media)
                         ?? environment.fiatCurrencyFormatter.displayImage(currency: currency).map(\.media)
                         ?? .bankIcon

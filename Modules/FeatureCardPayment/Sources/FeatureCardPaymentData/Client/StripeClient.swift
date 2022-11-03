@@ -26,7 +26,7 @@ public class StripeClient: CardAcquirerClientAPI {
         Deferred { [client] in
             Future<CardTokenizationResponse, CardAcquirerError> { promise in
                 client.createPaymentMethod(with: card.stripeParams) { method, error in
-                    guard let method = method else {
+                    guard let method else {
                         promise(.failure(.clientError(error ?? StripeError.emptyMethod)))
                         return
                     }

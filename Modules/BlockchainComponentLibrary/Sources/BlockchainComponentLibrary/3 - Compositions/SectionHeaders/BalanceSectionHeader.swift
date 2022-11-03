@@ -35,7 +35,7 @@ public struct BalanceSectionHeader<Trailing: View>: View {
     public var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                if let header = header {
+                if let header {
                     Text(header)
                         .typography(.caption2)
                         .foregroundColor(.semantic.title)

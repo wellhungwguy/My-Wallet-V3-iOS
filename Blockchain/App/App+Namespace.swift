@@ -44,10 +44,9 @@ let app: AppProtocol = App(
             blockchain.app.configuration.stx.all.users.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
-            blockchain.app.configuration.card.issuing.tokenise.base64.activationData.is.enabled: false,
-            blockchain.app.configuration.card.issuing.tokenise.base64.ephemeralPublicKey.is.enabled: false,
-            blockchain.app.configuration.card.issuing.tokenise.base64.encryptedPassData.is.enabled: false,
+            blockchain.app.configuration.card.issuing.tokenise.is.enabled: true,
             blockchain.ux.transaction["swap"].checkout.is.enabled: BuildFlag.isInternal,
+            blockchain.ux.transaction["buy"].checkout.is.enabled: BuildFlag.isInternal,
             blockchain.ux.transaction["swap"].checkout.exchange.rate.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360061672651",
             blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees",
             blockchain.ux.transaction["swap"].checkout.refund.policy.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/4417063009172"
@@ -64,7 +63,6 @@ extension AppProtocol {
         performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
-
         observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
         observers.insert(AppAnalyticsObserver(app: self))
@@ -76,6 +74,7 @@ extension AppProtocol {
         observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         observers.insert(SuperAppIntroObserver(app: self))
+        observers.insert(EmbraceObserver(app: self))
         observers.insert(GenerateSession(app: self))
         observers.insert(PlaidLinkObserver(app: self))
         observers.insert(deepLink)
@@ -101,6 +100,10 @@ extension AppProtocol {
                 )
             )
         }
+
+        #if canImport(MobileIntelligence)
+        observers.insert(Sardine<MobileIntelligence>(self))
+        #endif
 
         Task {
             let result = try await Installations.installations().authTokenForcingRefresh(true)

@@ -74,7 +74,7 @@ extension AnalyticsEvents {
             case .transactionSuccess(let asset, let source, let target):
                 return ["asset": asset.name, "source": source, "target": target]
             case .transactionFailed(let asset, let target, let source):
-                guard let target = target, let source = source else {
+                guard let target, let source else {
                     return ["asset": asset.name]
                 }
                 return ["asset": asset.name, "target": target, "source": source]

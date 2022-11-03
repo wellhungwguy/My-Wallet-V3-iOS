@@ -9,6 +9,10 @@ public enum FeeLevel: Equatable {
     case priority
     case custom
 
+    public var isFeeLess: Bool {
+        self == .none
+    }
+
     public var title: String {
         switch self {
         case .none:
@@ -23,7 +27,7 @@ public enum FeeLevel: Equatable {
     }
 }
 
-extension Collection where Element == FeeLevel {
+extension Collection<FeeLevel> {
     /// If there's more than one `FeeLevel` (excluding `.none`)
     /// than the transaction supports adjusting the `FeeLevel`
     public var networkFeeAdjustmentSupported: Bool {

@@ -14,7 +14,7 @@ public class FadeInOutFlowLayout: UICollectionViewFlowLayout {
     }
 
     private func animateAttributes(_ attributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        guard let collectionView = collectionView else { return attributes }
+        guard let collectionView else { return attributes }
         let contentOffset = collectionView.contentOffset
 
         let offset = scrollDirection == .horizontal ? attributes.center.x - contentOffset.x : attributes.center.y - contentOffset.y

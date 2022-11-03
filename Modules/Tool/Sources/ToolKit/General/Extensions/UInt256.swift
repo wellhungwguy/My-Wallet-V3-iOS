@@ -74,7 +74,7 @@ extension BigUInt {
         let remainderPadded = fullPaddedRemainder[0..<toDecimals]
         let offset = remainderPadded.reversed().firstIndex(where: { $0 != "0" })?.base
 
-        if let offset = offset {
+        if let offset {
             if toDecimals == 0 {
                 return String(quotient)
             } else if options.contains(.stripZeroes) {

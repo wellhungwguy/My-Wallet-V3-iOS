@@ -20,7 +20,7 @@ public final class SegmentedView: UISegmentedControl {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
 
             layer.cornerRadius = viewModel.cornerRadius
 

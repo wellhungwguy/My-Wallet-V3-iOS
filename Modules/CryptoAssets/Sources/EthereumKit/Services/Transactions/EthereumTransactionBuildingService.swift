@@ -88,7 +88,7 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
         addressReference: EthereumAddress?,
         contractAddress: EthereumAddress?
     ) -> EthereumTransactionCandidate.TransferType {
-        if let contractAddress = contractAddress {
+        if let contractAddress {
             return .erc20Transfer(contract: contractAddress, addressReference: addressReference)
         } else {
             let data: Data? = addressReference.flatMap { address in

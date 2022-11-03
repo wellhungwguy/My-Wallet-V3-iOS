@@ -8,8 +8,8 @@ import CombineSchedulers
 /// - Parameter publishers: A sequence of publishers.
 ///
 /// - Returns: A function to start the publishers in parallel.
-public func configParallelStart<Output, Failure>(
-    _ publishers: inout [AnyPublisher<Output, Failure>]
+public func configParallelStart(
+    _ publishers: inout [AnyPublisher<some Any, some Any>]
 ) -> () -> Void {
     let startSubject = PassthroughSubject<Void, Never>()
 

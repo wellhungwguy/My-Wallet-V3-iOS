@@ -16,53 +16,53 @@ extension CustomStringConvertible {
         file: String = #file,
         line: Int = #line
     ) -> Self {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(self) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Message>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ message: @escaping @autoclosure () -> Message,
+        _ message: @escaping @autoclosure () -> some CustomStringConvertible,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Message: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(message()) \(self) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Property>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ keyPath: KeyPath<Self, Property>,
+        _ keyPath: KeyPath<Self, some CustomStringConvertible>,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Property: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(self[keyPath: keyPath]) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Message, Property>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ message: @escaping @autoclosure () -> Message,
-        _ keyPath: KeyPath<Self, Property>,
+        _ message: @escaping @autoclosure () -> some CustomStringConvertible,
+        _ keyPath: KeyPath<Self, some CustomStringConvertible>,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Message: CustomStringConvertible, Property: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(message()) \(self[keyPath: keyPath]) \(CodeLocation(function, file, line))")
         return self
     }
@@ -79,53 +79,53 @@ extension Optional {
         file: String = #file,
         line: Int = #line
     ) -> Self {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(self) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Message>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ message: @escaping @autoclosure () -> Message,
+        _ message: @escaping @autoclosure () -> some CustomStringConvertible,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Message: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(message()) \(String(describing: self)) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Property>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ keyPath: KeyPath<Self, Property>,
+        _ keyPath: KeyPath<Self, some CustomStringConvertible>,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Property: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(self[keyPath: keyPath]) \(CodeLocation(function, file, line))")
         return self
     }
 
     @inlinable
     @discardableResult
-    public func peek<Message, Property>(
+    public func peek(
         as level: OSLogType = .debug,
-        _ message: @escaping @autoclosure () -> Message,
-        _ keyPath: KeyPath<Self, Property>,
+        _ message: @escaping @autoclosure () -> some CustomStringConvertible,
+        _ keyPath: KeyPath<Self, some CustomStringConvertible>,
         if condition: KeyPath<Self, Bool>? = nil,
         function: String = #function,
         file: String = #file,
         line: Int = #line
-    ) -> Self where Message: CustomStringConvertible, Property: CustomStringConvertible {
-        if let condition = condition, self[keyPath: condition] == false { return self }
+    ) -> Self {
+        if let condition, self[keyPath: condition] == false { return self }
         logger.log(level: level, "\(message()) \(self[keyPath: keyPath]) \(CodeLocation(function, file, line))")
         return self
     }

@@ -71,7 +71,7 @@ final class ChangePasswordScreenInteractor {
                 hasPassword ? .passwordUnknown : .ready
             }
             .subscribe(onSuccess: { [weak self] state in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.stateRelay.accept(state)
             })
             .disposed(by: disposeBag)

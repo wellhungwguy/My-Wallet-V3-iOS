@@ -7,44 +7,44 @@ import RxDataSources
 import RxSwift
 import ToolKit
 
-public final class SettingsViewController: BaseScreenViewController {
+final class SettingsViewController: BaseScreenViewController {
 
     // MARK: - Accessibility
 
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell
     private typealias RxDataSource = RxTableViewSectionedAnimatedDataSource<SettingsSectionViewModel>
 
-    // MARK: - Private IBOutlets
-
-    @IBOutlet private var tableView: UITableView!
-
     // MARK: - Private Properties
 
+    private let tableView = UITableView(
+        frame: UIScreen.main.bounds,
+        style: .insetGrouped
+    )
     private let presenter: SettingsScreenPresenter
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    public init(presenter: SettingsScreenPresenter) {
+    init(presenter: SettingsScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: SettingsViewController.objectName, bundle: .module)
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         title = LocalizationConstants.settings
         setupTableView()
         presenter.refresh()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
         presenter.refresh()
@@ -63,40 +63,53 @@ public final class SettingsViewController: BaseScreenViewController {
     }
 
     private func setupTableView() {
-        tableView.backgroundColor = .background
-        tableView.tableFooterView = AboutView()
-        tableView.tableFooterView?.frame = .init(
+        view.addSubview(tableView)
+        tableView.layoutToSuperview(axis: .horizontal)
+        tableView.layoutToSuperview(.bottom)
+        tableView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
+
+        let mainBoundsWidth = UIScreen.main.bounds.width
+        let tableFooterFrame = CGRect(
             origin: .zero,
-            size: .init(
-                width: tableView.bounds.width,
-                height: AboutView.estimatedHeight(for: tableView.bounds.width)
+            size: CGSize(
+                width: mainBoundsWidth,
+                height: AboutView.estimatedHeight(for: mainBoundsWidth)
             )
         )
+        let tableFooterView = AboutView(frame: tableFooterFrame)
+        tableView.alwaysBounceVertical = true
+        tableView.backgroundColor = .background
+        view.backgroundColor = .background
+        tableView.delegate = self
         tableView.estimatedRowHeight = 80
         tableView.estimatedSectionHeaderHeight = 70
-        tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.sectionFooterHeight = 18
+        tableView.sectionHeaderHeight = UITableView.automaticDimension
+        tableView.separatorInset = .zero
+        tableView.tableFooterView = tableFooterView
+        tableView.tableFooterView?.frame = tableFooterFrame
         tableView.registerNibCell(SwitchTableViewCell.self, in: .module)
         tableView.registerNibCell(ReferralTableViewCell.self, in: .module)
         tableView.registerNibCell(ClipboardTableViewCell.self, in: .module)
-        tableView.registerNibCell(BadgeTableViewCell.self, in: .platformUIKit)
+        tableView.registerNibCell(BadgeTableViewCell.self, in: .module)
         tableView.registerNibCell(CommonTableViewCell.self, in: .module)
         tableView.registerNibCell(AddPaymentMethodTableViewCell.self, in: .module)
         tableView.register(LinkedBankTableViewCell.self)
-        tableView.registerNibCell(LinkedCardTableViewCell.self, in: .platformUIKit)
+        tableView.registerNibCell(LinkedCardTableViewCell.self, in: .module)
         tableView.register(SettingsSkeletonTableViewCell.self)
         tableView.registerHeaderView(TableHeaderView.objectName, bundle: .module)
 
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.cellType {
             case .badge(_, let presenter):
                 cell = self.badgeCell(for: indexPath, presenter: presenter)
             case .clipboard(let type):
                 cell = self.clipboardCell(for: indexPath, viewModel: type.viewModel)
-            case .common(let type):
-                cell = self.commonCell(for: indexPath, viewModel: type.viewModel)
+            case .common(let type, let presenter):
+                cell = self.commonCell(for: indexPath, viewModel: type.viewModel(presenter: presenter))
             case .cards(let type):
                 switch type {
                 case .skeleton:
@@ -137,16 +150,16 @@ public final class SettingsViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
     }
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonTapped()
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
+// MARK: - UITableViewDelegate
 
 extension SettingsViewController: UITableViewDelegate {
 
-    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.objectName) as? TableHeaderView else {
             return nil
         }

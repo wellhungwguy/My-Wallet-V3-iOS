@@ -90,7 +90,7 @@ extension Session.State.Data {
 
 extension Session.State {
 
-    public func transaction<Ignored>(_ yield: (Session.State) throws -> Ignored) {
+    public func transaction(_ yield: (Session.State) throws -> some Any) {
         data.beginTransaction()
         do {
             _ = try yield(self)
@@ -299,7 +299,7 @@ extension Session.State.Data {
                 return nil
             }
         }
-        if let data = data {
+        if let data {
             update(data)
         }
     }
@@ -336,7 +336,7 @@ extension Session.State.Data {
                 scope: shared,
                 filter: { $0.is(blockchain.session.state.shared.value) }
             )
-            if let user = user {
+            if let user {
                 update(
                     object: &object,
                     from: data,

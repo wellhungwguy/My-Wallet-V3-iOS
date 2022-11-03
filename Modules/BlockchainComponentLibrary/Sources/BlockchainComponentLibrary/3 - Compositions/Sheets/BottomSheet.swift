@@ -11,10 +11,10 @@ extension View {
     ///   - content: The contents of the sheet
     /// - Returns: ZStack containing `self` overlayed with the bottom sheet view
     @ViewBuilder
-    public func bottomSheet<Item, Content>(
+    public func bottomSheet<Item>(
         item: Binding<Item?>,
-        @ViewBuilder content: (Item) -> Content
-    ) -> some View where Content: View {
+        @ViewBuilder content: (Item) -> some View
+    ) -> some View {
         bottomSheet(
             isPresented: Binding(
                 get: { item.transaction(item.transaction).wrappedValue != nil },
@@ -37,9 +37,9 @@ extension View {
     ///   - isPresented: A binding which determines when the content should be shown
     ///   - content: The contents of the sheet
     /// - Returns: ZStack containing `self` overlayed with the bottom sheet view
-    public func bottomSheet<Content: View>(
+    public func bottomSheet(
         isPresented: Binding<Bool>,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> some View
     ) -> some View {
         modifier(BottomSheetModifier(isPresented: isPresented, sheetContent: content()))
     }

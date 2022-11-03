@@ -38,7 +38,7 @@ public final class AnnouncementCardViewModel {
 
         /// Computes the `UIImage` out of `imageName`
         var image: UIImage? {
-            guard let imageName = imageName else { return nil }
+            guard let imageName else { return nil }
             return UIImage(
                 named: imageName,
                 in: bundle,
@@ -262,7 +262,7 @@ public final class AnnouncementCardViewModel {
         self.buttons = buttons
         self.didAppear = didAppear
 
-        if let dismissAction = dismissAction {
+        if let dismissAction {
             dismissal
                 .subscribe(onCompleted: dismissAction)
                 .disposed(by: disposeBag)

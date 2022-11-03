@@ -53,7 +53,7 @@ final class YodleeScreenContentReducer {
 
     func webviewSuccessContent(bankName: String?) -> YodleePendingContent {
         var subtitle = LocalizedStrings.WebViewSuccessContent.subtitleGeneric
-        if let bankName = bankName {
+        if let bankName {
             subtitle = String(format: LocalizedStrings.WebViewSuccessContent.subtitleWithBankName, bankName)
         }
         return YodleePendingContent(

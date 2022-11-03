@@ -51,7 +51,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
                 client
                     .balance
                     .map { response in
-                        guard let response = response else {
+                        guard let response else {
                             return .absent
                         }
                         return CustodialAccountBalanceStates(response: response)

@@ -62,7 +62,7 @@ final class BillingAddressScreenInteractor: Interactor {
             .asSingle()
             .subscribe(
                 onSuccess: { [weak self] country in
-                    guard let country = country else { return }
+                    guard let country else { return }
                     self?.countrySelectionService.set(country: country)
                 }
             )

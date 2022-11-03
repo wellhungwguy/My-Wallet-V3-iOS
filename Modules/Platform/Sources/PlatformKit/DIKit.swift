@@ -113,10 +113,6 @@ extension DependencyContainer {
 
         single { TradingBalanceService() as TradingBalanceServiceAPI }
 
-        factory { PriceService() as PriceServiceAPI }
-
-        factory { MarketCapService() as MarketCapServiceAPI }
-
         factory { () -> CurrencyConversionServiceAPI in
             CurrencyConversionService(priceService: DIKit.resolve())
         }
@@ -142,11 +138,6 @@ extension DependencyContainer {
         }
 
         factory { () -> SMSTwoFactorSettingsServiceAPI in
-            let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
-            return completeSettings
-        }
-
-        factory { () -> EmailNotificationSettingsServiceAPI in
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }

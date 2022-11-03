@@ -244,7 +244,7 @@ extension FundsTransferDetailScreenPresenter {
     }
 }
 
-extension Array where Element == PaymentAccountProperty.Field {
+extension [PaymentAccountProperty.Field] {
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
     fileprivate func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {

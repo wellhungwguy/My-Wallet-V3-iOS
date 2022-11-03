@@ -60,14 +60,14 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
     // MARK: - Public Functions (SendRootViewControllable)
 
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         setViewControllers([viewController.uiviewController], animated: animated)
     }
 
     func present(viewController: ViewControllable?, animated: Bool) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         topMostViewControllerProvider.topMostViewController?

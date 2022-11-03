@@ -84,7 +84,7 @@ extension Tag.Reference {
 
     @discardableResult
     public func validated() throws -> Tag.Reference {
-        guard let error = error else { return self }
+        guard let error else { return self }
         throw error
     }
 }

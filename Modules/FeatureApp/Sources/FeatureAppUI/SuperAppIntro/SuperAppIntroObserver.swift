@@ -63,8 +63,9 @@ public final class SuperAppIntroObserver: Session.Observer {
     private func presentSuperAppIntro() {
         let superAppIntroView = FeatureSuperAppIntroView(store: .init(
             initialState: .init(),
-            reducer: FeatureSuperAppIntroModule.reducer,
-            environment: ()
+            reducer: FeatureSuperAppIntro(onDismiss: { [weak self] in
+                self?.dismissView()
+            })
         )
     )
 
@@ -73,5 +74,9 @@ public final class SuperAppIntroObserver: Session.Observer {
             inNavigationController: false,
             modalPresentationStyle: UIModalPresentationStyle.fullScreen
         )
+    }
+
+    private func dismissView() {
+        topViewController.topMostViewController?.dismiss(animated: true)
     }
 }

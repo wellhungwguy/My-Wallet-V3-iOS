@@ -62,7 +62,7 @@ final class SwapClient: SwapClientAPI {
                 value: "\(limit)"
             )
         ]
-        if let fiatCurrency = fiatCurrency {
+        if let fiatCurrency {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.fiatCurrency,
@@ -70,7 +70,7 @@ final class SwapClient: SwapClientAPI {
                 )
             )
         }
-        if let cryptoCurrency = cryptoCurrency {
+        if let cryptoCurrency {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.cryptoCurrency,

@@ -60,7 +60,7 @@ extension UserState {
     }
 
     public func product(id: ProductIdentifier?) -> ProductValue? {
-        guard let id = id, let product = products.first(where: { $0.id == id }) else {
+        guard let id, let product = products.first(where: { $0.id == id }) else {
             return nil
         }
         return product

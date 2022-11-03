@@ -19,7 +19,7 @@ final class WithdrawalLocksCheckRepository: WithdrawalLocksCheckRepositoryAPI {
         paymentMethod: String?,
         currencyCode: String?
     ) -> AnyPublisher<WithdrawalLocksCheck, Never> {
-        guard let paymentMethod = paymentMethod, let currencyCode = currencyCode else {
+        guard let paymentMethod, let currencyCode else {
             return .just(.init(lockDays: 0))
         }
         return client.fetchWithdrawalLocksCheck(paymentMethod: paymentMethod, currencyCode: currencyCode)

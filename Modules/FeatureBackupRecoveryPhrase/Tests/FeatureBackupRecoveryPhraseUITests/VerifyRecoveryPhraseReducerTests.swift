@@ -12,8 +12,8 @@
 class VerifyRecoveryPhraseReducerTest: XCTestCase {
     private var testStore: TestStore<
         VerifyRecoveryPhraseState,
-        VerifyRecoveryPhraseState,
         VerifyRecoveryPhraseAction,
+        VerifyRecoveryPhraseState,
         VerifyRecoveryPhraseAction,
         VerifyRecoveryPhraseEnvironment
     >!

@@ -56,22 +56,10 @@ blockchain:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
 					tokenise:
-						base64:
-							activationData:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
-							encryptedPassData:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
-							ephemeralPublicKey:
-								is:
-									enabled:
-									+ blockchain.db.type.boolean
-									+ blockchain.session.configuration.value
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				success:
 					rate:
 						is:
@@ -184,6 +172,17 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			multiapp:
+				brokerage:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				defi:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				is:
+					enabled:
+					+ blockchain.db.type.boolean
+					+ blockchain.session.configuration.value
 			performance:
 				tracing:
 				+ blockchain.session.configuration.value
@@ -363,6 +362,10 @@ blockchain:
 				+ blockchain.session.state.value
 				submit:
 				+ blockchain.ux.type.analytics.event
+				supported:
+					flows:
+					+ blockchain.db.type.array.of.strings
+					+ blockchain.session.state.value
 				trigger:
 				+ blockchain.db.type.any
 				+ blockchain.session.configuration.value
@@ -1506,6 +1509,13 @@ blockchain:
 							url:
 							+ blockchain.db.type.url
 							+ blockchain.session.configuration.value
+				terms:
+					of:
+						service:
+						+ blockchain.ux.type.action
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
 			configuration:
 				link:
 					a:
@@ -1531,6 +1541,12 @@ blockchain:
 						+ blockchain.ui.type.button.secondary
 						min:
 						+ blockchain.ui.type.button.secondary
+					default:
+						input:
+							amount:
+							+ blockchain.db.type.bigint
+							currency:
+							+ blockchain.type.currency
 					input:
 					+ blockchain.ui.type.input
 					output:
@@ -1550,41 +1566,108 @@ blockchain:
 			event:
 				did:
 					error:
+					+ blockchain.ux.type.analytics.event
 					finish:
+					+ blockchain.ux.type.analytics.event
 					go:
 						back:
+						+ blockchain.ux.type.analytics.event
+					link:
+						a:
+							bank:
+							+ blockchain.ux.type.analytics.event
+							card:
+							+ blockchain.ux.type.analytics.event
+						payment:
+							method:
+							+ blockchain.ux.type.analytics.event
 					select:
 						source:
+						+ blockchain.ux.type.analytics.event
 						target:
+						+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
 				enter:
 					address:
+					+ blockchain.ux.type.analytics.event
 				execution:
 					status:
 					+ blockchain.db.type.enum
 						completed:
+						+ blockchain.ux.type.analytics.event
 						error:
+						+ blockchain.ux.type.analytics.event
 						in:
 							progress:
+							+ blockchain.ux.type.analytics.event
 						pending:
+						+ blockchain.ux.type.analytics.event
 						starting:
+						+ blockchain.ux.type.analytics.event
 				in:
 					progress:
+					+ blockchain.ux.type.analytics.event
 				link:
 					a:
 						bank:
+						+ blockchain.ux.type.analytics.event
 						card:
+						+ blockchain.ux.type.analytics.event
 					payment:
 						method:
+						+ blockchain.ux.type.analytics.event
 				select:
 					source:
+					+ blockchain.ux.type.analytics.event
 					target:
+					+ blockchain.ux.type.analytics.event
 				validate:
 					source:
+					+ blockchain.ux.type.analytics.event
 					transaction:
+					+ blockchain.ux.type.analytics.event
 				will:
 					finish:
+					+ blockchain.ux.type.analytics.event
 					start:
+					+ blockchain.ux.type.analytics.event
+			loading:
+			+ blockchain.ux.type.story
+				close:
+				+ blockchain.ui.type.button.primary
+			payment:
+				method:
+					is:
+						ApplePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						GooglePay:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						bank:
+							ACH:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+							OpenBanking:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.state.value
+						card:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+						funds:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.state.value
+					link:
+						a:
+							bank:
+								via:
+									ACH:
+									+ blockchain.ux.type.story
+									OpenBanking:
+									+ blockchain.ux.type.story
+							card:
+							+ blockchain.ux.type.story
 			previous:
 				payment:
 					method:
@@ -1767,6 +1850,38 @@ blockchain:
 					+ blockchain.ux.type.story
 			activity:
 			+ blockchain.ux.type.story
+			authentication:
+				sign:
+					in:
+					+ blockchain.ux.type.story
+						continue:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
+						enter:
+							pin:
+							+ blockchain.ux.type.story
+						unlock:
+							wallet:
+								password:
+									required:
+									+ blockchain.ux.type.story
+					up:
+					+ blockchain.ux.type.story
+						create:
+						+ blockchain.ui.type.button.primary
+						did:
+							fail:
+							+ blockchain.ux.type.analytics.event
+								error:
+								+ blockchain.db.type.any
+							succeed:
+							+ blockchain.ux.type.analytics.event
 			event:
 				authenticated:
 					pin:

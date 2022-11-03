@@ -77,9 +77,9 @@ public class ImmediateURLSession: URLSessionProtocol {
     }
 
     public func dataTaskPublisher(for request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-        if let error = error {
+        if let error {
             return Fail(error: error).eraseToAnyPublisher()
-        } else if let data = data {
+        } else if let data {
             return Just((data, request.ok)).setFailureType(to: URLError.self).eraseToAnyPublisher()
         } else {
             return Empty().eraseToAnyPublisher()
@@ -131,7 +131,7 @@ public class MockURLProtocol: URLProtocol {
                 throw: Error(message: "No value for request")
             )(request)
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            if let data = data {
+            if let data {
                 client?.urlProtocol(self, didLoad: data)
             }
             client?.urlProtocolDidFinishLoading(self)

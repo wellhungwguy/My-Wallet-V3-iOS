@@ -46,7 +46,7 @@ struct EIP681URIParser {
             pattern: Self.regex,
             options: .dotMatchesLineSeparators
         )
-        guard let matcher = matcher else {
+        guard let matcher else {
             return nil
         }
         let nsRange = NSRange(
@@ -98,7 +98,7 @@ struct EIP681URIParser {
 
     /// Returns a `Method` for a given EIP681 query param.
     private static func method(for params: String?) -> Method {
-        guard let params = params,
+        guard let params,
               !params.isEmpty,
               let components = URLComponents(string: params)
         else {

@@ -156,7 +156,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return environment.appUpgradeState()
                 .eraseToEffect()
                 .map { state in
-                    guard let state = state else {
+                    guard let state else {
                         return .proceedToFlow
                     }
                     return .showAppUpgrade(state)

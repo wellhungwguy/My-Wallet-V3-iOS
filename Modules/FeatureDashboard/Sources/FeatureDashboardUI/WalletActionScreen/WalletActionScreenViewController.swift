@@ -60,7 +60,7 @@ final class WalletActionScreenViewController: UIViewController {
         tableView.separatorColor = .lightBorder
 
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell: UITableViewCell
 
             switch item {

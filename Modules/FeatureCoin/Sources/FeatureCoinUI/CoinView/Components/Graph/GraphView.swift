@@ -203,7 +203,7 @@ public struct GraphView: View {
             )
         }
 
-        if let selected = selected, value.series.indices.contains(selected) {
+        if let selected, value.series.indices.contains(selected) {
             return view(for: value.series[0], relativeTo: value.series[selected])
         } else {
             return view(for: value.series[0], relativeTo: value.series.last!)

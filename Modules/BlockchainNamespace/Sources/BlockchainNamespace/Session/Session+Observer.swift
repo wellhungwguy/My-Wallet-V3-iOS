@@ -11,7 +11,7 @@ extension Session {
 
         var observers: Set<AnyHashable> = []
 
-        public func insert<O: Observer>(_ observer: O) {
+        public func insert(_ observer: some Observer) {
             let (inserted, _) = observers.insert(AnyHashable(Box(observer)))
             guard inserted else { return }
             observer.start()
@@ -50,7 +50,7 @@ extension Box: Equatable {
 extension Box: Hashable {
 
     func hash(into hasher: inout Hasher) {
-        guard let value = value else { return }
+        guard let value else { return }
         hasher.combine(ObjectIdentifier(value))
     }
 }

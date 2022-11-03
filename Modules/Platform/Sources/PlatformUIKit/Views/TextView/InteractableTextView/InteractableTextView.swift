@@ -17,7 +17,7 @@ public final class InteractableTextView: UITextView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             linkTextAttributes = [.foregroundColor: viewModel.linkStyle.color]
             viewModel.inputsRelay
                 .map { inputs -> [NSAttributedString] in
@@ -83,11 +83,11 @@ public final class InteractableTextView: UITextView {
 
     /// Setups the height according to the width
     public func setupHeight() {
-        guard let attributedText = attributedText else {
+        guard let attributedText else {
             return
         }
         let height = attributedText.heightForWidth(width: bounds.width)
-        if let heightConstraint = heightConstraint {
+        if let heightConstraint {
             heightConstraint.constant = height
         } else {
             heightConstraint = heightAnchor.constraint(equalToConstant: height)

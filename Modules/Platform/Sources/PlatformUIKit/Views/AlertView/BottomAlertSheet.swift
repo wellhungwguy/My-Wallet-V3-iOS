@@ -136,7 +136,7 @@ public class BottomAlertSheet: UIView {
 
     public func registerForNotifications() {
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.hide()
         }
     }
@@ -158,7 +158,7 @@ public class BottomAlertSheet: UIView {
                 })
             },
             completion: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.dimmingView.removeFromSuperview()
                 self.removeFromSuperview()
             }
@@ -265,7 +265,7 @@ public class BottomAlertSheet: UIView {
         }
         observer?.invalidate()
         observer = observe(\.center, options: [.new]) { [weak self] _, change in
-            guard let self = self else { return }
+            guard let self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
             guard let superview = self.superview else { return }
@@ -273,12 +273,12 @@ public class BottomAlertSheet: UIView {
             UIView.animate(
                 withDuration: 0.5,
                 animations: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.alpha = 0.0
                     self.dimmingView.alpha = 0.0
                 },
                 completion: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     guard let observer = self.observer else {
                         return
                     }

@@ -21,7 +21,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnoun
         )
         button.tapRelay
             .bind { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.markDismissed()
                 self.action()
@@ -42,13 +42,13 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnoun
             description: LocalizationConstants.AnnouncementCards.TransferInCrypto.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
                 self.markDismissed()
                 self.dismiss()
             },
             didAppear: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)
             }
         )

@@ -28,7 +28,7 @@ extension AppSettingsAuthenticating {
 
     public var pin: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.pin)
@@ -37,7 +37,7 @@ extension AppSettingsAuthenticating {
 
     public var pinKey: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.pinKey)
@@ -46,7 +46,7 @@ extension AppSettingsAuthenticating {
 
     public var biometryEnabled: Single<Bool> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.biometryEnabled)
@@ -55,7 +55,7 @@ extension AppSettingsAuthenticating {
 
     public var passwordPartHash: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.passwordPartHash)
@@ -64,7 +64,7 @@ extension AppSettingsAuthenticating {
 
     public var encryptedPinPassword: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.encryptedPinPassword)

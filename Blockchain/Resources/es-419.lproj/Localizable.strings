@@ -1388,7 +1388,7 @@ unificada de Blockchain.com";
 "This could take up to 30 seconds. Please do not go back or close the app." = "Esto podría demorar hasta 30 segundos. No vuelva atrás ni cierre la aplicación.";
 "To avoid uncesssary fees and network slipage, the minimum amount for this pair is **%@**." = "Para evitar cargos innecesarios y la bajada de la red, el monto mínimo para este par es **%@**.";
 "To execture this transaction the expected fee is %@ but your balance is only %@." = "Para ejecutar esta transacción, la comisión prevista es %1$@, pero tu saldo es de solo %2$@.";
-"To offset fees and market volatility, the minimum amount for any buy is **%@**." = "Para compensar las comisiones y la volatilidad del mercado, el monto mínimo para cualquier compra es **%@**.";
+"The minimum amount for any buy is **%@**." = "Para compensar las comisiones y la volatilidad del mercado, el monto mínimo para cualquier compra es **%@**.";
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Para compensar las comisiones, el monto mínimo para cualquier retiro es **%@**.";
 "Too many active orders" = "Demasiadas órdenes activas";
 "Transaction in progress" = "Transacción en curso";

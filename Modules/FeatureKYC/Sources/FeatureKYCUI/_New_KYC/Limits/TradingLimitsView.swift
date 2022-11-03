@@ -85,7 +85,7 @@ let tradingLimitsReducer = Reducer.combine(
         case .close:
             let currentTier = state.unlockTradingState?.currentUserTier
             return .fireAndForget {
-                if let currentTier = currentTier {
+                if let currentTier {
                     environment.analyticsRecorder.record(
                         event: Events.tradingLimitsDismissed(
                             tier: currentTier.rawValue

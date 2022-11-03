@@ -45,13 +45,13 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
             .disposed(by: disposeBag)
 
         NotificationCenter.when(.login) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.refresh()
         }
 
         switchTriggerRelay
             .do(onNext: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 if $0 {
                     authenticationCoordinator.enableBiometrics()
                 } else {

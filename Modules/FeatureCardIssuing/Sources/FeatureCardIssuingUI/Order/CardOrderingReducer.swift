@@ -336,7 +336,6 @@ struct MockServices: CardServiceAPI,
         expiry: "12/99",
         brand: .visa,
         status: .active,
-        orderStatus: nil,
         createdAt: "01/10"
     )
 
@@ -450,6 +449,26 @@ struct MockServices: CardServiceAPI,
         nonceSignature: Data
     ) -> AnyPublisher<PKAddPaymentPassRequest, Errors.NabuNetworkError> {
         .just(PKAddPaymentPassRequest())
+    }
+
+    func fulfillment(card: Card) -> AnyPublisher<Card.Fulfillment, NabuNetworkError> {
+        .just(.init(status: .shipped))
+    }
+
+    func pinWidgetUrl(card: FeatureCardIssuingDomain.Card) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        .just(URL("https://blockchain.com"))
+    }
+
+    func activateWidgetUrl(card: FeatureCardIssuingDomain.Card) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        .just(URL("https://blockchain.com"))
+    }
+
+    func fetchStatements() -> AnyPublisher<[FeatureCardIssuingDomain.Statement], Errors.NabuNetworkError> {
+        .just([])
+    }
+
+    func fetchStatementUrl(statement: FeatureCardIssuingDomain.Statement) -> AnyPublisher<URL, Errors.NabuNetworkError> {
+        .just(URL("https://blockchain.com"))
     }
 }
 

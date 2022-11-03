@@ -57,7 +57,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         tableView.register(FooterTableViewCell.self)
 
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
             case .buttons(let viewModels):

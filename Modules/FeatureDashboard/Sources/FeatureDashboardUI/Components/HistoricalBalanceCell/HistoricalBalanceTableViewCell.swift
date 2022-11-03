@@ -11,7 +11,7 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
     var presenter: HistoricalBalanceCellPresenter? {
         willSet { disposeBag = DisposeBag() }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 assetSparklineView.presenter = nil
                 assetPriceView.presenter = nil
                 assetBalanceView.presenter = nil

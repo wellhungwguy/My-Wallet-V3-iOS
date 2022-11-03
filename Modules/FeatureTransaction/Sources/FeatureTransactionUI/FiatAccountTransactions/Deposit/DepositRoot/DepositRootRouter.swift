@@ -179,7 +179,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
                 mainQueue: .main,
                 plaidRepository: DIKit.resolve(),
                 dismissFlow: { [weak self] success in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.dismissBankLinkingFlow()
                     self.detachChild(router)
                     if success {
@@ -205,7 +205,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .deposit))
         router.startFlow()
             .subscribe(onNext: { [weak self] effect in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch effect {
                 case .closeFlow(let isInteractive):
                     self.interactor.bankLinkingClosed(isInteractive: isInteractive)

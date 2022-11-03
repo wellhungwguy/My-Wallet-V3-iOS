@@ -166,7 +166,7 @@ extension BitcoinOnChainTransactionEngine: OnChainTransactionEngine {
         fiatAmountAndFees(from: pendingTransaction)
             .zip(makeFeeSelectionOption(pendingTransaction: pendingTransaction))
             .map { [weak self] fiatAmountAndFees, feeSelectionOption -> [TransactionConfirmation] in
-                guard let self = self else {
+                guard let self else {
                     return []
                 }
                 return [
@@ -494,7 +494,8 @@ extension BitcoinOnChainTransactionEngine {
                     amount: amountCryptoValue,
                     destinationAddress: destinationAddress,
                     feeLevel: feeLevel,
-                    unspentOutputs: unspentOutputs
+                    unspentOutputs: unspentOutputs,
+                    keyPairs: transactionContext.keyPairs
                 )
                 return nativeBuildTransaction(
                     sourceAccount: source,
@@ -573,9 +574,9 @@ extension TransactionOutcome {
     }
 }
 
-private func fetchFee<Token: BitcoinChainToken>(
+private func fetchFee(
     for feeLevel: BitcoinChainPendingTransaction.FeeLevel,
-    feeRepository: AnyCryptoFeeRepository<BitcoinChainTransactionFee<Token>>
+    feeRepository: AnyCryptoFeeRepository<BitcoinChainTransactionFee<some BitcoinChainToken>>
 ) -> AnyPublisher<MoneyValue, Never> {
     feeRepository
         .fees

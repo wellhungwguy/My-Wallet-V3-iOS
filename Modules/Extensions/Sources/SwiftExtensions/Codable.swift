@@ -28,21 +28,21 @@ extension Data {
     }
 }
 
-extension Dictionary where Key == String, Value == Any {
+extension [String: Any] {
 
     public func json(options: JSONSerialization.WritingOptions = []) throws -> Data {
         try JSONSerialization.data(withJSONObject: self, options: options)
     }
 }
 
-extension Array where Element == Any {
+extension [Any] {
 
     public func json(options: JSONSerialization.WritingOptions = []) throws -> Data {
         try JSONSerialization.data(withJSONObject: self, options: options)
     }
 }
 
-extension Optional where Wrapped == Data {
+extension Data? {
 
     public func json() throws -> Any {
         switch self {

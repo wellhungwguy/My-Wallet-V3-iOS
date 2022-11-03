@@ -85,21 +85,21 @@ extension Card.Transaction {
 
     var originalAmountDisplayString: String {
         switch transactionType {
-        case .funding, .payment:
+        case .funding, .payment, .atmWithdrawal:
             return "-" + originalAmount.displayString
-        case .refund, .chargeback, .cashback:
+        case .refund, .chargeback, .paymentWithCashback:
             return "+" + originalAmount.displayString
         }
     }
 
     var counterAmountDisplayString: String {
-        guard let counterAmount = counterAmount else {
+        guard let counterAmount else {
             return ""
         }
         switch transactionType {
-        case .funding, .payment:
+        case .funding, .payment, .atmWithdrawal:
             return "-" + counterAmount.displayString
-        case .refund, .chargeback, .cashback:
+        case .refund, .chargeback, .paymentWithCashback:
             return "+" + counterAmount.displayString
         }
     }

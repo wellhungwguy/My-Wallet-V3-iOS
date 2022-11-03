@@ -14,7 +14,7 @@ final class InstructionTableViewCell: UITableViewCell {
 
     var viewModel: InstructionCellViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             indexLabel.content = viewModel.numberViewModel
             instructionTextView.viewModel = viewModel.textViewModel
             instructionTextView.setupHeight()

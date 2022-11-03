@@ -11,7 +11,7 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
 
             presenter
                 .image

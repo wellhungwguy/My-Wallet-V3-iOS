@@ -9,7 +9,7 @@ open class BlockchainNamespaceDecoder: AnyDecoder {
         userInfo[.language] as? Language ?? Language.root.language
     }
 
-    override public func convert<T>(_ any: Any, to type: T.Type) throws -> Any? {
+    override public func convert(_ any: Any, to type: (some Any).Type) throws -> Any? {
         switch (any, type) {
         case (let tag as Tag, is Tag.Reference.Type):
             return tag.ref(to: context)

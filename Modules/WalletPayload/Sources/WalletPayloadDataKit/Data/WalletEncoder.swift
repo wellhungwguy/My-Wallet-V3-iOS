@@ -68,7 +68,7 @@ func createInnerWrapperResponse(context: EncodedWalletPayload) -> Result<InnerWr
     )
 }
 
-private func encodeValue<T: Encodable>(of model: T) -> Result<Data, EncodingError> {
+private func encodeValue(of model: some Encodable) -> Result<Data, EncodingError> {
     Result {
         try JSONEncoder().encode(model)
     }

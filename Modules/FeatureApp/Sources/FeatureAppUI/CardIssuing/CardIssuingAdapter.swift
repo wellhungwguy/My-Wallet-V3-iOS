@@ -60,9 +60,13 @@ final class CardIssuingAdapter: FeatureSettingsUI.CardIssuingViewControllerAPI {
     }
 
     func makeManagementViewController(
+        openAddCardFlow: @escaping () -> Void,
         onComplete: @escaping () -> Void
     ) -> UIViewController {
-        cardIssuingBuilder.makeManagementViewController(onComplete: onComplete)
+        cardIssuingBuilder.makeManagementViewController(
+            openAddCardFlow: openAddCardFlow,
+            onComplete: onComplete
+        )
     }
 }
 
@@ -100,11 +104,11 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
                     })
             }
             .flatMap { [weak self] fiatAccount -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else {
+                guard let self else {
                     return .just(.abandoned)
                 }
 
-                guard let fiatAccount = fiatAccount else {
+                guard let fiatAccount else {
                     return self
                         .transactionsRouter
                         .presentTransactionFlow(to: .buy(nil))
@@ -130,7 +134,7 @@ final class CardIssuingTopUpRouter: TopUpRouterAPI {
             .cryptoAccounts(for: cryptoCurrency)
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else {
+                guard let self else {
                     return .just(.abandoned)
                 }
                 return self
@@ -472,7 +476,7 @@ extension UserAddress {
         address: FeatureAddressSearchDomain.Address,
         countryCode: String?
     ) {
-        guard let countryCode = countryCode else { return nil }
+        guard let countryCode else { return nil }
         self.init(
             lineOne: address.line1,
             lineTwo: address.line2,

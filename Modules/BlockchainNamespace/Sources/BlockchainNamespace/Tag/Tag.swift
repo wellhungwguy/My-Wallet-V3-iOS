@@ -141,7 +141,7 @@ extension Tag {
         return true
     }
 
-    public func `is`<S: Sequence>(_ types: S) -> Bool where S.Element == Tag {
+    public func `is`(_ types: some Sequence<Tag>) -> Bool {
         for type in types where isNot(type) { return false }
         return true
     }
@@ -221,9 +221,9 @@ extension Tag {
         try? self.descendant(descendant)
     }
 
-    public func descendant<Descendant>(
-        _ descendant: Descendant
-    ) throws -> Tag where Descendant: Collection, Descendant.Element == Name {
+    public func descendant(
+        _ descendant: some Collection<Name>
+    ) throws -> Tag {
         var result = self
         for name in descendant {
             result = try result.child(named: name)

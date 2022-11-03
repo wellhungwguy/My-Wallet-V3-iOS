@@ -83,8 +83,8 @@ extension Tag.Context {
 
 extension Tag.Context {
 
-    public func decode<K: Tag.Event, T: Decodable>(
-        _ event: K,
+    public func decode<T: Decodable>(
+        _ event: some Tag.Event,
         as type: T.Type = T.self,
         using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
     ) throws -> T {

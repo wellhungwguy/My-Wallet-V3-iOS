@@ -49,7 +49,7 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
     }
 }
 
-extension Array where Element == LinkedCardCellPresenter {
+extension [LinkedCardCellPresenter] {
 
     fileprivate var viewModels: [SettingsCellViewModel] {
         map {

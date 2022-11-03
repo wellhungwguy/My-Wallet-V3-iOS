@@ -60,14 +60,14 @@ let claimIntroductionReducer = Reducer.combine(
         .pullback(
             state: \ClaimIntroductionState.searchState,
             action: /ClaimIntroductionAction.searchAction,
-            environment: {
+            environment: { env in
                 SearchCryptoDomainEnvironment(
-                    mainQueue: $0.mainQueue,
-                    analyticsRecorder: $0.analyticsRecorder,
-                    externalAppOpener: $0.externalAppOpener,
-                    searchDomainRepository: $0.searchDomainRepository,
-                    orderDomainRepository: $0.orderDomainRepository,
-                    userInfoProvider: $0.userInfoProvider
+                    mainQueue: env.mainQueue,
+                    analyticsRecorder: env.analyticsRecorder,
+                    externalAppOpener: env.externalAppOpener,
+                    searchDomainRepository: env.searchDomainRepository,
+                    orderDomainRepository: env.orderDomainRepository,
+                    userInfoProvider: env.userInfoProvider
                 )
             }
         ),

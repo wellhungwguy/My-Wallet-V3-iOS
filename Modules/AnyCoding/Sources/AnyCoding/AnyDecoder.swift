@@ -317,7 +317,7 @@ extension AnyDecoder.UnkeyedContainer {
     public mutating func superDecoder() throws -> Decoder { decoder.super ?? decoder }
 }
 
-extension Sequence where Element == CodingKey {
+extension Sequence<CodingKey> {
     var string: String {
         map(\.stringValue).joined(separator: "/")
     }
@@ -328,7 +328,7 @@ private protocol OptionalDecodableProtocol {
 }
 
 extension Optional: OptionalDecodableProtocol where Wrapped: Decodable {
-    static func decodeUnwrapped<D: AnyDecoderProtocol>(from decoder: D) -> Optional {
+    static func decodeUnwrapped(from decoder: some AnyDecoderProtocol) -> Optional {
         try? decoder.decode(Wrapped.self, from: decoder.value)
     }
 }

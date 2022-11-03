@@ -80,7 +80,7 @@ public struct PromoCard: View {
                 .typography(.paragraph1)
                 .foregroundColor(.semantic.title)
                 .fixedSize(horizontal: false, vertical: true)
-            if let control = control {
+            if let control {
                 Spacer()
                     .frame(height: 16)
                 PrimaryButton(title: control.title, action: control.action)

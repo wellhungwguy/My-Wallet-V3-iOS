@@ -200,7 +200,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         return Single
             .zip(actionableBalance, absoluteFee)
             .map { actionableBalance, fees -> PendingTransaction in
-                guard let actionableBalance = actionableBalance else {
+                guard let actionableBalance else {
                     throw PlatformKitError.illegalStateException(message: "actionableBalance not CryptoValue")
                 }
                 let zeroStellar: CryptoValue = .zero(currency: .stellar)
@@ -305,7 +305,7 @@ extension StellarOnChainTransactionEngine {
                 guard isMemoRequired else {
                     return true
                 }
-                guard let memo = memo else {
+                guard let memo else {
                     return false
                 }
                 return validText(memo: memo) || validIdentifier(memo: memo)

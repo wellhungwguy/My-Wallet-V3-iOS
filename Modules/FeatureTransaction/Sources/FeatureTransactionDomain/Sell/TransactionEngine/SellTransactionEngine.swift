@@ -107,7 +107,7 @@ extension SellTransactionEngine {
         quotesEngine.quotePublisher
             .asSingle()
             .flatMap { [weak self] quote -> Single<SellOrder> in
-                guard let self = self else { return .never() }
+                guard let self else { return .never() }
                 return self.orderCreationRepository.createOrder(
                     direction: self.orderDirection,
                     quoteIdentifier: quote.identifier,

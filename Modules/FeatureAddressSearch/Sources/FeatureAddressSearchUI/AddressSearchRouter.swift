@@ -28,7 +28,7 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
         Deferred {
             Future { [weak self] promise in
 
-                guard let self = self else { return }
+                guard let self else { return }
 
                 let presenter = self.topMostViewControllerProvider.topMostViewController
                 let env = AddressSearchEnvironment(
@@ -61,7 +61,7 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
         Deferred {
             Future { [weak self] promise in
 
-                guard let self = self else { return }
+                guard let self else { return }
 
                 let presenter = self.topMostViewControllerProvider.topMostViewController
                 let env = AddressModificationEnvironment(

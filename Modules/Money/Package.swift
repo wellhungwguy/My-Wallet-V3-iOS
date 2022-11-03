@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 
 import PackageDescription
 
@@ -16,8 +16,16 @@ let package = Package(
             targets: ["MoneyKit"]
         ),
         .library(
-            name: "MoneyKitMock",
-            targets: ["MoneyKitMock"]
+            name: "MoneyDataKit",
+            targets: ["MoneyDataKit"]
+        ),
+        .library(
+            name: "MoneyDomainKit",
+            targets: ["MoneyDomainKit"]
+        ),
+        .library(
+            name: "MoneyDomainKitMock",
+            targets: ["MoneyDomainKitMock"]
         )
     ],
     dependencies: [
@@ -29,6 +37,7 @@ let package = Package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
             branch: "safe-property-wrappers-locks"
         ),
+        .package(path: "../Errors"),
         .package(path: "../Tool"),
         .package(path: "../Localization"),
         .package(path: "../Network")
@@ -37,9 +46,26 @@ let package = Package(
         .target(
             name: "MoneyKit",
             dependencies: [
+                .target(name: "MoneyDataKit"),
+                .target(name: "MoneyDomainKit")
+            ]
+        ),
+        .target(
+            name: "MoneyDomainKit",
+            dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "Errors", package: "Errors"),
                 .product(name: "Localization", package: "Localization"),
+                .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "MoneyDataKit",
+            dependencies: [
+                .target(name: "MoneyDomainKit"),
+                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DIKit", package: "DIKit"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool")
             ],
@@ -50,16 +76,24 @@ let package = Package(
             ]
         ),
         .target(
-            name: "MoneyKitMock",
+            name: "MoneyDomainKitMock",
             dependencies: [
-                .target(name: "MoneyKit")
+                .target(name: "MoneyDomainKit")
             ]
         ),
         .testTarget(
-            name: "MoneyKitTests",
+            name: "MoneyDomainKitTests",
             dependencies: [
-                .target(name: "MoneyKit"),
-                .target(name: "MoneyKitMock")
+                .target(name: "MoneyDomainKit"),
+                .target(name: "MoneyDomainKitMock")
+            ]
+        ),
+        .testTarget(
+            name: "MoneyDataKitTests",
+            dependencies: [
+                .target(name: "MoneyDataKit"),
+                .target(name: "MoneyDomainKitMock"),
+                .product(name: "ToolKitMock", package: "Tool")
             ]
         )
     ]

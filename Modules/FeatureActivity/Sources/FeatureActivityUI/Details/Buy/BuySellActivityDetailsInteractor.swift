@@ -19,7 +19,7 @@ final class BuySellActivityDetailsInteractor {
     }
 
     func fetchCardDisplayName(for paymentMethodId: String?) -> AnyPublisher<String?, Never> {
-        guard let paymentMethodId = paymentMethodId else {
+        guard let paymentMethodId else {
             return .just(nil)
         }
         return cardDataService

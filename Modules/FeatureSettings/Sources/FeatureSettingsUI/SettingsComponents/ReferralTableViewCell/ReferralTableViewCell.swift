@@ -52,7 +52,7 @@ final class ReferralTableViewCell: UITableViewCell {
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
 
-        guard let viewModel = viewModel else { return }
+        guard let viewModel else { return }
 
         if let background = viewModel.referral.announcement?.style?.background?.media, let viewController = findViewController() {
             backgroundImageView.image = nil

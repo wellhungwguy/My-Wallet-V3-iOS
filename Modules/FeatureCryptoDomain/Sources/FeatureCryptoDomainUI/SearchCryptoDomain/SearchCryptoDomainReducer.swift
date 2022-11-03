@@ -272,7 +272,7 @@ let searchCryptoDomainReducer = Reducer<SearchCryptoDomainState, SearchCryptoDom
             return .none
 
         case .checkoutAction(.removeDomain(let domain)):
-            guard let domain = domain else {
+            guard let domain else {
                 return .none
             }
             state.selectedDomains.remove(domain)

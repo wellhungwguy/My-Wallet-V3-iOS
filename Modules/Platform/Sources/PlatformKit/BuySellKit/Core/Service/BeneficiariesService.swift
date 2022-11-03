@@ -41,6 +41,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 
     private let beneficiariesRelay = BehaviorRelay<[Beneficiary]?>(value: nil)
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+    private let paymentMethodsService: PaymentMethodsServiceAPI
     private let client: BeneficiariesClientAPI
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
@@ -51,11 +52,13 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         client: BeneficiariesClientAPI = resolve(),
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()
     ) {
         self.client = client
         self.linkedBankService = linkedBankService
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.paymentMethodsService = paymentMethodsService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
 
         NotificationCenter.when(.logout) { [weak beneficiariesRelay] _ in
@@ -69,9 +72,10 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .combineLatest(
                 client.beneficiaries.asObservable(),
                 paymentMethodsShared,
-                linkedBankService.fetchLinkedBanks().asObservable()
+                linkedBankService.fetchLinkedBanks().asObservable(),
+                paymentMethodsService.paymentMethods
             )
-            .map(concat(beneficiaries:methodTypes:linkedBanks:))
+            .map(concat(beneficiaries:methodTypes:linkedBanks:paymentMethods:))
             .do(
                 onNext: { _ in
                     beneficiariesServiceUpdater.reset()
@@ -88,7 +92,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
                 guard !shouldUpdate else {
                     return fetchBeneficiaries.asObservable()
                 }
-                guard let beneficiaries = beneficiaries else {
+                guard let beneficiaries else {
                     return fetchBeneficiaries.asObservable()
                 }
                 return .just(beneficiaries)
@@ -133,9 +137,10 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .combineLatest(
                 client.beneficiaries.asObservable(),
                 paymentMethodTypesService.methodTypes,
-                linkedBankService.fetchLinkedBanks().asObservable()
+                linkedBankService.fetchLinkedBanks().asObservable(),
+                paymentMethodsService.paymentMethods
             )
-            .map(concat(beneficiaries:methodTypes:linkedBanks:))
+            .map(concat(beneficiaries:methodTypes:linkedBanks:paymentMethods:))
             .catchAndReturn([])
     }
 
@@ -163,22 +168,41 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 private func concat(
     beneficiaries: [BeneficiaryResponse],
     methodTypes: [PaymentMethodType],
-    linkedBanks: [LinkedBankData]
+    linkedBanks: [LinkedBankData],
+    paymentMethods: [PaymentMethod]
 ) -> [Beneficiary] {
     var limitsByBaseFiat: [FiatCurrency: FiatValue] = [:]
     let topLimits = methodTypes.accounts.map(\.topLimit)
     for limit in topLimits {
         limitsByBaseFiat[limit.currency] = limit
     }
-    let activeLinkedBank = linkedBanks.filter(\.isActive)
 
-    let linkedBanksResult: [Beneficiary] = activeLinkedBank.map {
-        Beneficiary(linkedBankData: $0)
-    }
+    let topBankTransferLimit = (paymentMethods.first { $0.type.isBankTransfer })?.max
+    let topBankAccountLimit = (paymentMethods.first { $0.type.isBankAccount })?.max
+    let linkedBanksResult: [Beneficiary] = linkedBanks
+        .filter(\.isActive)
+        .map {
+            Beneficiary(linkedBankData: $0)
+        }
+        .map { bank in
+            var bank = bank
+            if bank.isBankTransferAccount ?? false, let limit = topBankTransferLimit {
+                bank.limit = limit
+            } else if bank.isBankAccount ?? false, let limit = topBankAccountLimit {
+                bank.limit = limit
+            }
+            return bank
+        }
 
-    let result: [Beneficiary] = beneficiaries.compactMap {
-        guard let currency = FiatCurrency(code: $0.currency) else { return nil }
-        return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
+    let result: [Beneficiary] = beneficiaries.compactMap { beneficiary -> Beneficiary? in
+        guard let currency = FiatCurrency(code: beneficiary.currency) else { return nil }
+
+        let linkedBank = linkedBanksResult
+            .first { $0.identifier == beneficiary.id }
+        return Beneficiary(
+            response: beneficiary,
+            limit: linkedBank?.limit ?? limitsByBaseFiat[currency]
+        )
     }
     let identifiers = result.map(\.identifier)
     let linkedBanks = linkedBanksResult.filter { !identifiers.contains($0.identifier) }

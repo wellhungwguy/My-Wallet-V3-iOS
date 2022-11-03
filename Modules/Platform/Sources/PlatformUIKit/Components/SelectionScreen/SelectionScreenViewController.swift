@@ -40,7 +40,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
         presenter.dismiss
             .emit(onNext: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 let completion = {
                     self.removeFromHierarchy()
                     self.presenter.previousTapped()

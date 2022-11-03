@@ -40,11 +40,11 @@ public struct BlockchainNamespaceEvent: Equatable {
 
 extension Reducer where Action: BlockchainNamespaceObservationAction, Environment: BlockchainNamespaceAppEnvironment {
 
-    public func on(_ first: Tag.Event, _ rest: Tag.Event...) -> Reducer {
+    public func on(_ first: Tag.Event, _ rest: Tag.Event...) -> Self {
         on([first] + rest)
     }
 
-    public func on<C: Collection>(_ events: C) -> Reducer where C.Element == Tag.Event {
+    public func on(_ events: some Collection<Tag.Event>) -> Self {
         Reducer { _, action, environment in
             if let observation = (/Action.observation).extract(from: action) {
                 let keys = events.map { $0.key() }

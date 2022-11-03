@@ -107,7 +107,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         )
         .map { [cryptoCurrency, predefinedAmount] fiatCurrency, availableBalance -> PendingTransaction in
             let amount: MoneyValue
-            if let predefinedAmount = predefinedAmount,
+            if let predefinedAmount,
                predefinedAmount.currency == cryptoCurrency
             {
                 amount = predefinedAmount

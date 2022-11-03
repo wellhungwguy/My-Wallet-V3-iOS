@@ -176,7 +176,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator
         ]
 
-        if let fromPresenter = fromPresenter {
+        if let fromPresenter {
             cells += [
                 .lineItem(fromPresenter),
                 .separator

@@ -41,7 +41,7 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
         fromString string: String?,
         asset: CryptoCurrency
     ) -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> {
-        guard let string = string else {
+        guard let string else {
             return .failure(CryptoTargetPayloadError.invalidStringData)
         }
         let metadata = makeCryptoQRMetaData(

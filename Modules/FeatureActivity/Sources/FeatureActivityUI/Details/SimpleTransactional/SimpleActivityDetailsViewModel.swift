@@ -25,13 +25,13 @@ struct SimpleActivityDetailsViewModel: Equatable {
         from = event.destinationAddress ?? ""
 
         cryptoAmount = event.amount.displayString
-        if let price = price {
+        if let price {
             value = event.amount.convert(using: price).displayString
         } else {
             value = ""
         }
 
-        if let price = price {
+        if let price {
             let feeFiat = event.fee.convert(using: price)
             fee = "\(event.fee.displayString) / \(feeFiat.displayString)"
         } else {

@@ -11,7 +11,7 @@ public protocol AppSettingsSecureChannel: AnyObject {
 extension AppSettingsSecureChannel {
     public var deviceKey: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.deviceKey)
@@ -20,7 +20,7 @@ extension AppSettingsSecureChannel {
 
     public var browserIdentities: Single<String?> {
         Single.deferred { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
             return .just(self.browserIdentities)

@@ -14,7 +14,7 @@ final class FiatBalanceCollectionView: UICollectionView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             presenter.presenters
                 .drive(
                     rx.items(

@@ -25,7 +25,7 @@ public class SkAdNetworkService: SkAdNetworkServiceAPI {
 
         if #available(iOS 15.4, *) {
             SKAdNetwork.updatePostbackConversionValue(conversionValue) { [weak self] error in
-                if let error = error {
+                if let error {
                     self?.errorRecorder.record("SkAdNetwork update failed with \(error.localizedDescription)")
                     self?.errorRecorder.error(error)
                 }

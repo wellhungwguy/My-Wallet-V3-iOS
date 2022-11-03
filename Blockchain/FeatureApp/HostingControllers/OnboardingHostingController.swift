@@ -59,7 +59,7 @@ final class OnboardingHostingController: UIViewController {
             .displayAlert
             .compactMap { $0 }
             .sink { [weak self] alert in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.showAlert(type: alert)
             }
             .store(in: &cancellables)
@@ -67,7 +67,7 @@ final class OnboardingHostingController: UIViewController {
         store
             .scope(state: \.welcomeState, action: Onboarding.Action.welcomeScreen)
             .ifLet(then: { [weak self] authStore in
-                guard let self = self else { return }
+                guard let self else { return }
                 let hostingController = UIHostingController(rootView: self.makeWelcomeView(store: authStore))
                 self.transitionFromCurrentController(to: hostingController)
                 hostingController.view.constraint(edgesTo: self.view)
@@ -78,7 +78,7 @@ final class OnboardingHostingController: UIViewController {
         store
             .scope(state: \.pinState, action: Onboarding.Action.pin)
             .ifLet(then: { [weak self] pinStore in
-                guard let self = self else { return }
+                guard let self else { return }
                 let pinHostingController = PinHostingController(store: pinStore)
                 // TODO: Dismiss the alert in the respective presenting view (credentials view). This is a temporary solution until the alert state issue is resolved
                 if self.topMostViewController != self.currentController {
@@ -92,7 +92,7 @@ final class OnboardingHostingController: UIViewController {
         store
             .scope(state: \.passwordRequiredState, action: Onboarding.Action.passwordScreen)
             .ifLet(then: { [weak self] passwordRequiredStore in
-                guard let self = self else { return }
+                guard let self else { return }
                 let hostingController = UIHostingController(
                     rootView: self.makePasswordRequiredView(store: passwordRequiredStore)
                 )
@@ -105,7 +105,7 @@ final class OnboardingHostingController: UIViewController {
         store
             .scope(state: \.appUpgradeState, action: Onboarding.Action.appUpgrade)
             .ifLet(then: { [weak self] store in
-                guard let self = self else { return }
+                guard let self else { return }
                 let hostingController = UIHostingController(rootView: AppUpgradeView(store: store))
                 self.transitionFromCurrentController(to: hostingController)
                 hostingController.view.constraint(edgesTo: self.view)
@@ -132,13 +132,16 @@ final class OnboardingHostingController: UIViewController {
     ) -> some View {
         PrimaryNavigationView {
             PasswordRequiredView(store: store)
+                .onAppear { [app] in
+                    app.post(event: blockchain.ux.user.authentication.sign.in.unlock.wallet.password.required)
+                }
                 .primaryNavigation()
         }
     }
 
     /// Transition from the current controller, if any to the specified controller.
     private func transitionFromCurrentController(to controller: UIViewController) {
-        if let currentController = currentController {
+        if let currentController {
             transition(
                 from: currentController,
                 to: controller,

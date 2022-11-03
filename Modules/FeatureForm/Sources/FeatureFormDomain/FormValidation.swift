@@ -17,7 +17,7 @@ extension FormQuestion {
         case .openEnded where children.isNotEmpty:
             isValid = children.hasAllValidAnswers
         case .openEnded:
-            if let regex = regex {
+            if let regex {
                 isValid = input.emptyIfNil ~= regex
             } else {
                 isValid = input.isNilOrEmpty
@@ -31,14 +31,14 @@ extension FormAnswer {
 
     public var isValid: Bool {
         var isValid = false
-        if let validation = validation {
+        if let validation {
             switch validation.rule {
             case .selected:
                 isValid = checked == true
             case .withinRange where type == .date:
                 let minValue = validation.metadata?[.minValue] ?? ""
                 let maxValue = validation.metadata?[.maxValue] ?? ""
-                if let input = input {
+                if let input {
                     isValid = isValidDate(input: input, minValue: minValue, maxValue: maxValue)
                 } else {
                     isValid = false
@@ -57,10 +57,10 @@ extension FormAnswer {
             }
         }
 
-        if let children = children {
+        if let children {
             isValid = isValid && children.hasAllValidAnswers
         }
-        if let regex = regex {
+        if let regex {
             isValid = isValid && input.emptyIfNil ~= regex
         }
 
@@ -91,14 +91,14 @@ extension FormAnswer {
     }
 }
 
-extension Array where Element == FormAnswer {
+extension [FormAnswer] {
 
     var hasAllValidAnswers: Bool {
         allSatisfy(\.isValid)
     }
 }
 
-extension Array where Element == FormQuestion {
+extension [FormQuestion] {
 
     public var isValidForm: Bool {
         allSatisfy(\.isValid)

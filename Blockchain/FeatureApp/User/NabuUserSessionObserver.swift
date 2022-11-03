@@ -37,9 +37,10 @@ final class NabuUserSessionObserver: Session.Observer {
 
         resetTokenObserver()
         tokenRepository.sessionTokenPublisher
-            .compactMap(\.wrapped)
-            .sink { [app] nabu in
-                app.post(value: nabu.token, of: blockchain.user.token.nabu)
+            .compactMap(\.wrapped?.token)
+            .removeDuplicates()
+            .sink { [app] token in
+                app.post(value: token, of: blockchain.user.token.nabu)
             }
             .store(in: &bag)
 
@@ -77,6 +78,7 @@ final class NabuUserSessionObserver: Session.Observer {
 
     func resetTokenObserver() {
         token = offlineTokenRepository.offlineTokenPublisher
+            .receive(on: DispatchQueue.main)
             .compactMap(\.success?.userId)
             .removeDuplicates()
             .sink { [app] userId in
@@ -136,7 +138,7 @@ extension KYC.Tier {
     }
 }
 
-extension Optional where Wrapped == KYC.Tier {
+extension KYC.Tier? {
 
     var tag: Tag {
         switch self {

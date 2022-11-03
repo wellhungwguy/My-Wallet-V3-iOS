@@ -86,17 +86,17 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         return quotesEngine.quotePublisher
             .asSingle()
             .flatMap { [weak self] pricedQuote -> Single<PendingTransaction> in
-                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                 return self.startOnChainEngine(pricedQuote: pricedQuote)
                     .flatMap { [weak self] _ -> Single<(FiatCurrency, PendingTransaction)> in
-                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                         return Single.zip(
                             self.walletCurrencyService.displayCurrency.asSingle(),
                             self.onChainEngine.initializeTransaction()
                         )
                     }
                     .flatMap { [weak self] fiatCurrency, pendingTransaction -> Single<PendingTransaction> in
-                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                         let fallback = PendingTransaction(
                             amount: .zero(currency: self.sourceAsset),
                             available: .zero(currency: self.targetAsset),
@@ -110,7 +110,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                             pricedQuote: pricedQuote
                         )
                         .map { [weak self] pendingTx -> PendingTransaction in
-                            guard let self = self else { throw ToolKitError.nullReference(Self.self) }
+                            guard let self else { throw ToolKitError.nullReference(Self.self) }
                             return pendingTx.update(
                                 selectedFeeLevel: self.defaultFeeLevel(pendingTransaction: pendingTx)
                             )
@@ -124,7 +124,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
             .flatMap { [weak self] pendingTransaction -> Single<PendingTransaction> in
-                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                 switch pendingTransaction.validationState {
                 case .canExecute:
                     return self.defaultValidateAmount(pendingTransaction: pendingTransaction)
@@ -139,7 +139,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         onChainEngine
             .doValidateAll(pendingTransaction: pendingTransaction)
             .flatMap { [weak self] pendingTransaction -> Single<PendingTransaction> in
-                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                 switch pendingTransaction.validationState {
                 case .canExecute:
                     return self.defaultDoValidateAll(pendingTransaction: pendingTransaction)
@@ -159,11 +159,11 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 return (swapOrder.identifier, depositAddress)
             }
             .flatMap { [weak self] swapOrder -> Single<TransactionResult> in
-                guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
 
                 return self.createTransactionTarget(swapOrderDepositAddress: swapOrder.depositAddress)
                     .flatMap { [weak self] transactionTarget -> Single<TransactionResult> in
-                        guard let self = self else { return .error(ToolKitError.nullReference(Self.self)) }
+                        guard let self else { return .error(ToolKitError.nullReference(Self.self)) }
                         return self.executeOnChain(
                             swapOrderIdentifier: swapOrder.identifier,
                             transactionTarget: transactionTarget,
@@ -202,7 +202,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         case .success(let receiveAddress):
             return hotWalletReceiveAddress
                 .map { hotWalletAddress -> TransactionTarget in
-                    guard let hotWalletAddress = hotWalletAddress else {
+                    guard let hotWalletAddress else {
                         return receiveAddress
                     }
                     return HotWalletTransactionTarget(
@@ -219,7 +219,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             .hotWalletAddress(for: sourceAsset, product: .swap)
             .asSingle()
             .flatMap { [sourceAsset, receiveAddressFactory] hotWalletAddress -> Single<CryptoReceiveAddress?> in
-                guard let hotWalletAddress = hotWalletAddress else {
+                guard let hotWalletAddress else {
                     return .just(nil)
                 }
                 return receiveAddressFactory.makeExternalAssetAddress(
@@ -280,11 +280,11 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 onChainEngine
                     .update(amount: amount, pendingTransaction: pendingTransaction)
                     .do(onSuccess: { [weak self] pendingTransaction in
-                        guard let self = self else { throw ToolKitError.nullReference(Self.self) }
+                        guard let self else { throw ToolKitError.nullReference(Self.self) }
                         self.quotesEngine.update(amount: pendingTransaction.amount.minorAmount)
                     })
                     .map { [weak self] pendingTransaction -> PendingTransaction in
-                        guard let self = self else { throw ToolKitError.nullReference(Self.self) }
+                        guard let self else { throw ToolKitError.nullReference(Self.self) }
                         return self.clearConfirmations(pendingTransaction: pendingTransaction)
                     }
             }

@@ -152,7 +152,7 @@ let addressModificationReducer = Reducer<
         )
 
     case .fetchAddressDetails(let addressId):
-        guard let addressId = addressId else {
+        guard let addressId else {
             return .none
         }
         state.loading = true
@@ -206,7 +206,7 @@ let addressModificationReducer = Reducer<
 
     case .didReceivePrefilledAddressResult(.success(let address)):
         state.loading = false
-        guard let address = address else { return .none }
+        guard let address else { return .none }
         state.updateAddressInputs(address: address)
         return .none
 

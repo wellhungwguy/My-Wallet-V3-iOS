@@ -32,7 +32,7 @@ public struct ERC20ContractGasActivityModel {
 
     private static func gasCryptoValue(hexAmount: String?, cryptoCurrency: CryptoCurrency) -> CryptoValue? {
         guard
-            let hexAmount = hexAmount,
+            let hexAmount,
             let decimalAmount = BigInt(hexAmount, radix: 16)
         else { return nil }
         return CryptoValue.create(minor: decimalAmount, currency: cryptoCurrency)

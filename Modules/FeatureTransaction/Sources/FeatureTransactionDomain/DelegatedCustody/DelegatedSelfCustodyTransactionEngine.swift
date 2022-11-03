@@ -120,7 +120,7 @@ final class DelegatedSelfCustodyTransactionEngine: TransactionEngine {
     }
 
     private var validatedPredefinedAmount: MoneyValue {
-        guard let predefinedAmount = predefinedAmount else {
+        guard let predefinedAmount else {
             return .zero(currency: sourceAsset)
         }
         guard predefinedAmount.currencyType == sourceAsset else {

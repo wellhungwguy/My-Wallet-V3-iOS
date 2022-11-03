@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureInterestDomain
+import MoneyKit
 import PlatformKit
 import ToolKit
 

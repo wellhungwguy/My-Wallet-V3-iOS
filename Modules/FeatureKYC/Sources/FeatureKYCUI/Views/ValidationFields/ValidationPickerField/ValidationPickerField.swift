@@ -49,7 +49,7 @@ class ValidationPickerField: ValidationTextField, UIPickerViewDataSource, UIPick
         pickerView.reloadAllComponents()
         textFieldInputView = pickerView
         validationBlock = { [weak self] _ in
-            guard let self = self else { return .invalid(.unknown) }
+            guard let self else { return .invalid(.unknown) }
             let hasValidData = !self.options.isEmpty && self.selectedOption != nil
             let isOptional = self.optionalField
             let isValid = hasValidData || isOptional

@@ -394,7 +394,7 @@ final class APIClient: SimpleBuyClientAPI {
             )
         ]
 
-        if let sddEligibleTier = sddEligibleTier {
+        if let sddEligibleTier {
             queryParameters.append(contentsOf: [
                 URLQueryItem(
                     name: Parameter.fetchSDDLimits,

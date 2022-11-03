@@ -17,7 +17,7 @@ public final class AnnouncementTableViewCell: UITableViewCell {
 
     public var viewModel: AnnouncementCardViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             switch viewModel.presentation {
             case .regular:
                 cardView = AnnouncementCardView(using: viewModel)

@@ -57,6 +57,11 @@ public protocol AmountViewInteracting {
     /// - Parameter amount: `MoneyValue`
     func setTransactionFeeAmount(_ amount: MoneyValue)
 
+    /// Whether or not the transaction uses a `FeeLevel` of `.none`
+    /// This is used when displaying the `AvailableBalanceDetailView`
+    /// - Parameter isTxFeeLess: `Bool`
+    func updateTxFeeLessState(_ isTxFeeLess: Bool)
+
     /// Sets the amount that the user is able to utilize in a given transaction.
     /// This is not the same as their balance. It often times takes into account the
     /// users balance, fees, as well as limits on their account.
@@ -100,10 +105,15 @@ extension AmountViewInteracting {
     public func setAccountBalance(_ amount: MoneyValue) {
         unimplemented("Only implemented in AmountViewInteractor")
     }
+
+    public func updateTxFeeLessState(_ isTxFeeLess: Bool) {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
 }
 
 public struct AvailableBalanceDetails {
     public let balance: AnyPublisher<FiatValue, Never>
     public let availableBalance: AnyPublisher<FiatValue, Never>
     public let fee: AnyPublisher<FiatValue, Never>
+    public let transactionIsFeeLess: AnyPublisher<Bool, Never>
 }

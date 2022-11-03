@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Oliver Atkinson on 22/09/2022.
-//
-
 import SwiftUI
 
 /// TableRow from the Figma Component Library.
@@ -114,6 +107,22 @@ public struct TableRow<Title: View, Byline: View, Leading: View, Trailing: View,
 
 extension TableRow {
 
+    public init<S1: StringProtocol, S2: StringProtocol>(
+        @ViewBuilder leading: () -> Leading = EmptyView.init,
+        title: @autoclosure () -> S1,
+        byline: @autoclosure () -> S2,
+        @ViewBuilder trailing: () -> Trailing = EmptyView.init,
+        @ViewBuilder footer: () -> Footer = EmptyView.init
+    ) where Title == TableRowTitle, Byline == TableRowByline {
+        self.init(
+            leading: leading,
+            title: .init(title()),
+            byline: .init(byline()),
+            trailing: trailing,
+            footer: footer
+        )
+    }
+
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
         title: @autoclosure () -> TableRowTitle,
@@ -124,6 +133,22 @@ extension TableRow {
         self.init(
             leading: leading,
             title: title,
+            byline: byline,
+            trailing: trailing,
+            footer: footer
+        )
+    }
+
+    public init<S1: StringProtocol>(
+        @ViewBuilder leading: () -> Leading = EmptyView.init,
+        title: @autoclosure () -> S1,
+        @ViewBuilder byline: () -> Byline = EmptyView.init,
+        @ViewBuilder trailing: () -> Trailing = EmptyView.init,
+        @ViewBuilder footer: () -> Footer = EmptyView.init
+    ) where Title == TableRowTitle, Byline == EmptyView {
+        self.init(
+            leading: leading,
+            title: .init(title()),
             byline: byline,
             trailing: trailing,
             footer: footer
@@ -190,6 +215,27 @@ extension TableRow {
             title: title,
             byline: byline,
             trailing: trailingTitle,
+            footer: footer
+        )
+    }
+
+    public init(
+        @ViewBuilder leading: () -> Leading = EmptyView.init,
+        title: @autoclosure () -> TableRowTitle,
+        inlineTitleButton: IconButton,
+        @ViewBuilder trailing: () -> Trailing = EmptyView.init,
+        @ViewBuilder footer: () -> Footer = EmptyView.init
+    ) where Title == HStack<TupleView<(TableRowTitle, IconButton)>>, Byline == EmptyView {
+        self.init(
+            leading: leading,
+            title: {
+                HStack {
+                    title()
+                    inlineTitleButton
+                }
+            },
+            byline: EmptyView.init,
+            trailing: trailing,
             footer: footer
         )
     }
@@ -372,33 +418,74 @@ extension VerticalAlignment {
 
 public struct TableRowTitle: TableRowLabelView {
 
-    public var body: Text
+    public var text: Text
+
+    private var typography: Typography = .paragraph2
+    private var foregroundColor: Color = .semantic.title
 
     public init(_ text: Text) {
-        body = text.typography(.paragraph2)
-            .foregroundColor(.semantic.title)
+        self.text = text
+    }
+
+    public var body: some View {
+        text.typography(typography)
+            .foregroundColor(foregroundColor)
+    }
+
+    public func typography(_ typography: Typography) -> Self {
+        var it = self
+        it.typography = typography
+        return it
+    }
+
+    public func foregroundColor(_ foregroundColor: Color) -> Self {
+        var it = self
+        it.foregroundColor = foregroundColor
+        return it
     }
 }
 
 public struct TableRowByline: TableRowLabelView {
 
-    public var body: Text
+    public var text: Text
+
+    private var typography: Typography = .paragraph1
+    private var foregroundColor: Color = .semantic.text
 
     public init(_ text: Text) {
-        body = text.typography(.paragraph1)
-            .foregroundColor(.semantic.text)
+        self.text = text
+    }
+
+    public var body: some View {
+        text.typography(typography)
+            .foregroundColor(foregroundColor)
+    }
+
+    public func typography(_ typography: Typography) -> Self {
+        var it = self
+        it.typography = typography
+        return it
+    }
+
+    public func foregroundColor(_ foregroundColor: Color) -> Self {
+        var it = self
+        it.foregroundColor = foregroundColor
+        return it
     }
 }
 
-public protocol TableRowLabelView: View, Equatable, ExpressibleByStringLiteral where Body == Text {
+public protocol TableRowLabelView: View, ExpressibleByStringLiteral, ExpressibleByStringInterpolation {
     init(_ text: Text)
 }
 
-extension TableRowLabelView where Body == Text {
+extension TableRowLabelView {
     public init<S: StringProtocol>(_ string: S) { self.init(Text(string)) }
     public init(_ key: LocalizedStringKey) { self.init(Text(key)) }
     public init(@ViewBuilder label: () -> Text) { self.init(label()) }
     public init(stringLiteral value: String) { self.init(Text(value)) }
+    public init(stringInterpolation: DefaultStringInterpolation) {
+        self.init(Text(stringInterpolation.description))
+    }
 }
 
 extension EnvironmentValues {
@@ -428,7 +515,7 @@ extension View {
         environment(\.tableRowChevron, display)
     }
 
-    @warn_unqualified_access @ViewBuilder public func tableRowBackground<V>(_ view: V?) -> some View where V: View {
+    @warn_unqualified_access @ViewBuilder public func tableRowBackground(_ view: (some View)?) -> some View {
         environment(\.tableRowBackground, view.map { AnyView($0) })
     }
 }

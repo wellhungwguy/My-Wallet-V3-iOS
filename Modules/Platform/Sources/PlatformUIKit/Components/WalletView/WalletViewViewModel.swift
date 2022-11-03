@@ -24,8 +24,15 @@ final class WalletViewViewModel {
         let currency = account.currencyType
         identifier = account.identifier
 
+        let image: ImageResource
+        if let account = account as? LinkedBankAccount {
+            image = account.data.icon.map(ImageResource.remote(url:)) ?? .local(name: "icon-bank", bundle: .platformUIKit)
+        } else {
+            image = currency.logoResource
+        }
+
         badgeImageViewModel = .default(
-            image: account is LinkedBankAccount ? .local(name: "icon-bank", bundle: .platformUIKit) : currency.logoResource,
+            image: image,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )

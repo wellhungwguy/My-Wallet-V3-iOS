@@ -36,7 +36,7 @@ final class NewPasswordTextValidator: NewPasswordValidating {
                 (self.validator.passwordStrength(password), password)
             }
             .map { (result: DBResult?, password) -> PasswordValidationScore in
-                guard let result = result else { return .none }
+                guard let result else { return .none }
                 return PasswordValidationScore(
                     zxcvbnScore: result.score,
                     password: password

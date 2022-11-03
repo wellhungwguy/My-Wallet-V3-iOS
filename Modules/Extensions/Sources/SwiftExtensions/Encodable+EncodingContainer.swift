@@ -30,7 +30,7 @@ extension ContainerType {
 
 private struct ContainerTypeEncoder: Encoder, UnsupportedEncoderValues {
 
-    func container<T>(_ this: T) -> EncodingContainer where T: Encodable {
+    func container(_ this: some Encodable) -> EncodingContainer {
         do {
             try this.encode(to: ContainerTypeEncoder())
             return .singleValue
@@ -56,7 +56,7 @@ extension ContainerTypeEncoder {
 
 extension ContainerTypeEncoder.KeyedContainer: KeyedEncodingContainerProtocol {
     func encodeNil(forKey key: Key) throws { throw ContainerType.keyed }
-    mutating func encode<T>(_ value: T, forKey key: Key) throws where T: Encodable { throw ContainerType.keyed }
+    mutating func encode(_ value: some Encodable, forKey key: Key) throws { throw ContainerType.keyed }
 }
 
 extension ContainerTypeEncoder {
@@ -65,7 +65,7 @@ extension ContainerTypeEncoder {
 
 extension ContainerTypeEncoder.SingleValueContainer: SingleValueEncodingContainer {
     func encodeNil() throws { throw ContainerType.singleValue }
-    func encode<T>(_ value: T) throws where T: Encodable { throw ContainerType.singleValue }
+    func encode(_ value: some Encodable) throws { throw ContainerType.singleValue }
 }
 
 extension ContainerTypeEncoder {
@@ -74,7 +74,7 @@ extension ContainerTypeEncoder {
 
 extension ContainerTypeEncoder.UnkeyedContainer: UnkeyedEncodingContainer {
     mutating func encodeNil() throws { throw ContainerType.unkeyed }
-    mutating func encode<T>(_ value: T) throws where T: Encodable { throw ContainerType.unkeyed }
+    mutating func encode(_ value: some Encodable) throws { throw ContainerType.unkeyed }
 }
 
 private func unsupported(_ function: String = #function) -> Never {

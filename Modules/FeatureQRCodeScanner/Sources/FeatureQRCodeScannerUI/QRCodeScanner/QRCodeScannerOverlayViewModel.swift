@@ -75,7 +75,7 @@ final class QRCodeScannerOverlayViewModel {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.walletConnectSessionRepository = walletConnectSessionRepository
         cameraRollButtonVisibilityRelay.send(.init(boolValue: supportsCameraRoll))
-        if let subtitleText = subtitleText {
+        if let subtitleText {
             let labelContent = LabelContent(
                 text: subtitleText,
                 font: .main(.medium, 14),
@@ -84,7 +84,7 @@ final class QRCodeScannerOverlayViewModel {
             )
             subtitleLabelContentRelay.send(labelContent)
         }
-        if let titleText = titleText {
+        if let titleText {
             let titleContent = LabelContent(
                 text: titleText,
                 font: .main(.semibold, 16),

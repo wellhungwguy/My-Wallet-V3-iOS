@@ -23,7 +23,6 @@ import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
 import FeatureCryptoDomainDomain
-import FeatureDashboardUI
 import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
@@ -43,7 +42,6 @@ import FeatureProductsDomain
 import FeatureReferralData
 import FeatureReferralDomain
 import FeatureSettingsDomain
-import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureUserDeletionData
@@ -68,12 +66,6 @@ import WalletPayloadKit
 // MARK: - Settings Dependencies
 
 extension UIApplication: PlatformKit.AppStoreOpening {}
-
-// MARK: - Dashboard Dependencies
-
-extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPropertyInteracting {}
-
-extension AnnouncementPresenter: FeatureDashboardUI.AnnouncementPresenting {}
 
 // MARK: - Blockchain Module
 
@@ -120,7 +112,7 @@ extension DependencyContainer {
         }
 
         single { () -> AppDeeplinkHandlerAPI in
-            let appSettings: BlockchainSettings.App = DIKit.resolve()
+            let appSettings: BlockchainSettingsAppAPI = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(
                 markBitpayUrl: { BitpayService.shared.content = $0 },
@@ -138,17 +130,6 @@ extension DependencyContainer {
             )
         }
 
-        // MARK: ExchangeCoordinator
-
-        // MARK: - AuthenticationCoordinator
-
-        factory { () -> AuthenticationCoordinating in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveAuthenticationCoordinating() as AuthenticationCoordinating
-        }
-
-        // MARK: - Dashboard
-
         factory { () -> AccountsRouting in
             let routing: TabSwapping = DIKit.resolve()
             return AccountsRouter(
@@ -157,10 +138,6 @@ extension DependencyContainer {
         }
 
         factory { UIApplication.shared as AppStoreOpening }
-
-        factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
-
-        factory { AnnouncementPresenter() as FeatureDashboardUI.AnnouncementPresenting }
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
@@ -176,11 +153,6 @@ extension DependencyContainer {
         factory { () -> AppCoordinating in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveAppCoordinating() as AppCoordinating
-        }
-
-        factory { () -> FeatureDashboardUI.WalletOperationsRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveWalletOperationsRouting() as FeatureDashboardUI.WalletOperationsRouting
         }
 
         factory { () -> BackupFlowStarterAPI in
@@ -209,38 +181,22 @@ extension DependencyContainer {
             return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
         }
 
-        factory { () -> ExternalActionsProviderAPI in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
-        }
-
         factory { () -> SupportRouterAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveSupportRouterAPI()
         }
 
-        // MARK: - BlockchainSettings.App
-
-        single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
-
-        single { BlockchainSettings.App() }
+        // MARK: - BlockchainSettingsAppAPI
 
         factory { () -> AppSettingsAuthenticating in
-            let app: BlockchainSettings.App = DIKit.resolve()
+            let app: BlockchainSettingsAppAPI = DIKit.resolve()
             return app as AppSettingsAuthenticating
         }
 
-        factory { () -> PermissionSettingsAPI in
-            let app: BlockchainSettings.App = DIKit.resolve()
-            return app
-        }
-
         factory { () -> AppSettingsSecureChannel in
-            let app: BlockchainSettings.App = DIKit.resolve()
+            let app: BlockchainSettingsAppAPI = DIKit.resolve()
             return app as AppSettingsSecureChannel
         }
-
-        // MARK: - Settings
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let backupService: VerifyMnemonicBackupServiceAPI = DIKit.resolve()
@@ -249,6 +205,11 @@ extension DependencyContainer {
                 verifyMnemonicBackupService: backupService,
                 mnemonicComponentsProviding: mnemonicComponentsProviding
             )
+        }
+
+        factory { () -> PermissionSettingsAPI in
+            let app: BlockchainSettingsAppAPI = DIKit.resolve()
+            return app
         }
 
         // MARK: - AppFeatureConfigurator
@@ -262,10 +223,6 @@ extension DependencyContainer {
         factory { () -> FeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
-        }
-
-        factory {
-            EVMSupport(app: DIKit.resolve()) as MoneyKit.EVMSupport
         }
 
         // MARK: - UserInformationServiceProvider
@@ -352,10 +309,6 @@ extension DependencyContainer {
 
         // MARK: KYC Module
 
-        factory { () -> FeatureSettingsUI.KYCRouterAPI in
-            KYCAdapter()
-        }
-
         factory { () -> FeatureKYCDomain.EmailVerificationAPI in
             EmailVerificationAdapter(settingsService: DIKit.resolve())
         }
@@ -395,10 +348,6 @@ extension DependencyContainer {
 
         factory { () -> PlatformUIKit.KYCRouting in
             KYCAdapter()
-        }
-
-        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
-            PaymentMethodsLinkingAdapter()
         }
 
         factory { () -> FeatureTransactionUI.UserActionServiceAPI in

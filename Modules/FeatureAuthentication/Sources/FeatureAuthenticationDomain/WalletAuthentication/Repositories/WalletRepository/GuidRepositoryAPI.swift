@@ -19,7 +19,7 @@ extension GuidRepositoryAPI {
     public var hasGuid: AnyPublisher<Bool, Never> {
         guid
             .flatMap { guid -> AnyPublisher<Bool, Never> in
-                guard let guid = guid else { return .just(false) }
+                guard let guid else { return .just(false) }
                 return .just(!guid.isEmpty)
             }
             .eraseToAnyPublisher()

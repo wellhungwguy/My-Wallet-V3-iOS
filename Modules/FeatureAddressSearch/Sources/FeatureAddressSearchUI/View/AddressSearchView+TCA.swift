@@ -36,6 +36,7 @@ struct AddressSearchState: Equatable, NavigationState {
         let containerId: String?
         let searchText: String?
     }
+
     @BindableState var searchText: String = ""
     @BindableState var isSearchFieldSelected: Bool = false
     var isSearchResultsLoading: Bool = false
@@ -203,8 +204,8 @@ let addressSearchReducer = Reducer.combine(
             }
 
         case .searchAddresses(let searchText, let country):
-            guard let searchText = searchText, searchText.isNotEmpty,
-                  let country = country, country.isNotEmpty
+            guard let searchText, searchText.isNotEmpty,
+                  let country, country.isNotEmpty
             else {
                 state.searchResults = []
                 state.isSearchResultsLoading = false

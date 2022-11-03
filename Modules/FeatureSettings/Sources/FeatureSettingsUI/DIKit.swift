@@ -2,8 +2,6 @@
 
 import DIKit
 import FeatureSettingsDomain
-import PlatformUIKit
-import ToolKit
 
 extension DependencyContainer {
 

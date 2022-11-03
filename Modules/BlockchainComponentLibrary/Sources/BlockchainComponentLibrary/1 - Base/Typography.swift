@@ -176,7 +176,7 @@ extension View {
     }
 
     @ViewBuilder public func typography(_ typography: Typography?) -> some View {
-        if let typography = typography {
+        if let typography {
             self.typography(typography)
         } else {
             self
@@ -195,7 +195,7 @@ extension Text {
     }
 
     public func typography(_ typography: Typography?) -> Text {
-        if let typography = typography {
+        if let typography {
             return self.typography(typography)
         } else {
             return self
@@ -249,7 +249,7 @@ extension Typography: ViewModifier {
         case .default, .serif, .overlineKerning:
             return Font.custom(fontName.rawValue, size: size, relativeTo: style.ui)
         case .monospacedSlashedZero:
-            if let uiFont = uiFont {
+            if let uiFont {
                 return Font(uiFont as CTFont)
             } else {
                 return Font.system(size: size, weight: .medium, design: design.ui)

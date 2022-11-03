@@ -9,7 +9,7 @@ extension SettlementReasonType {
     public func uxError(_ accountId: String? = nil) -> UX.Error {
         switch self {
         case .requiresUpdate:
-            guard let accountId = accountId else {
+            guard let accountId else {
                 return SettlementReasonType.generic.uxError()
             }
 

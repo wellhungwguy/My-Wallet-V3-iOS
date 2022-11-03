@@ -42,7 +42,7 @@ public final class FormPresentationStateReducer {
 
 extension Array where Element: Equatable {
     public var areAllElementsEqual: Bool {
-        guard let first = first else { return true }
+        guard let first else { return true }
         return !dropFirst().contains { $0 != first }
     }
 

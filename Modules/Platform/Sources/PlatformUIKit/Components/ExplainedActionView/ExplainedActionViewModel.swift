@@ -81,7 +81,7 @@ public struct ExplainedActionViewModel {
                 )
             }
 
-        if let badgeTitle = badgeTitle {
+        if let badgeTitle {
             badgeViewModel = .affirmative(
                 with: badgeTitle,
                 accessibilityId: uniqueAccessibilityIdentifier + AccessibilityId.badgeView

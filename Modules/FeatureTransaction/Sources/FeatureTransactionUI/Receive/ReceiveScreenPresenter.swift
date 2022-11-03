@@ -145,7 +145,7 @@ final class ReceiveScreenPresenter {
 
         state
             .map { state -> AlertContent? in
-                guard let state = state else {
+                guard let state else {
                     return nil
                 }
                 let currency = state.currency
@@ -280,10 +280,10 @@ final class ReceiveScreenPresenter {
         shareButton.tapRelay
             .withLatestFrom(qrCodeMetadata)
             .subscribe(onNext: { [weak self] metadata in
-                guard let self = self else {
+                guard let self else {
                     return
                 }
-                guard let metadata = metadata else {
+                guard let metadata else {
                     return
                 }
                 let currencyType = self.interactor.account.currencyType

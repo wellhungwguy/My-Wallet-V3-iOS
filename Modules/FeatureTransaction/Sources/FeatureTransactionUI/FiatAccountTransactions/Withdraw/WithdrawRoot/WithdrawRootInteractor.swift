@@ -117,7 +117,7 @@ final class WithdrawRootInteractor: Interactor,
         )
         .observe(on: MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
-            guard let self = self else { return }
+            guard let self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency, isArgentinaLinkBankEnabled) = values
             let filteredLinkedBanks = linkedBanks.filter { $0.fiatCurrency == fiatCurrency }
             let country: String? = try? self.app.state.get(blockchain.user.address.country.code)
@@ -156,7 +156,7 @@ final class WithdrawRootInteractor: Interactor,
             .compactMap(\.first)
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] linkedBankAccount in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.router?.routeToWithdraw(
                     sourceAccount: self.sourceAccount,
                     destination: linkedBankAccount

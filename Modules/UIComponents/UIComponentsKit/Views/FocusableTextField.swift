@@ -81,7 +81,7 @@ public struct FocusableTextField: UIViewRepresentable {
 
 extension FocusableTextField {
     @ViewBuilder
-    public func textFieldStyle<S>(_ textFieldStyle: S) -> some View where S: TextFieldStyle {
+    public func textFieldStyle(_ textFieldStyle: some TextFieldStyle) -> some View {
 
         switch textFieldStyle {
         case let style as FormTextFieldStyle:

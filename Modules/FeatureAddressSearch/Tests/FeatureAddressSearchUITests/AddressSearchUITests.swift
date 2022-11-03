@@ -11,8 +11,8 @@ final class AddressSearchReducerTests: XCTestCase {
 
     typealias TestStoreType = TestStore<
         AddressSearchState,
-        AddressSearchState,
         AddressSearchAction,
+        AddressSearchState,
         AddressSearchAction,
         AddressSearchEnvironment
     >

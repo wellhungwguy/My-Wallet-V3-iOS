@@ -8,14 +8,14 @@ import RxSwift
 
 final class AddPaymentMethodTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
     var presenter: AddPaymentMethodCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
 
             presenter.badgeImagePresenter.state
                 .compactMap { $0 }

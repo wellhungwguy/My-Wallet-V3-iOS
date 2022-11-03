@@ -63,13 +63,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
             closeHandle
             HStack(alignment: .top, spacing: Spacing.padding2) {
                 VStack(alignment: .leading, spacing: Spacing.baseline) {
-                    if let title = title {
+                    if let title {
                         Text(title)
                             .typography(.title3)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    if let subtitle = subtitle {
+                    if let subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
                             .fixedSize(horizontal: false, vertical: true)
@@ -101,13 +101,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
             if title != nil || subtitle != nil {
                 VStack(spacing: Spacing.baseline) {
-                    if let title = title {
+                    if let title {
                         Text(title)
                             .typography(.title3)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    if let subtitle = subtitle {
+                    if let subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
                             .fixedSize(horizontal: false, vertical: true)
@@ -135,13 +135,13 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
             if title != nil || subtitle != nil {
                 VStack(spacing: Spacing.baseline) {
-                    if let title = title {
+                    if let title {
                         Text(title)
                             .typography(.title2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    if let subtitle = subtitle {
+                    if let subtitle {
                         Text(subtitle)
                             .typography(.paragraph1)
                             .fixedSize(horizontal: false, vertical: true)

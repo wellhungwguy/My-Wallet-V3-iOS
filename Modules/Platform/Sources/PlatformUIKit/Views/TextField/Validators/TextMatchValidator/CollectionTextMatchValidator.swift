@@ -62,7 +62,7 @@ extension CollectionTextMatchValidator {
     }
 }
 
-extension Array where Element == String {
+extension [String] {
     public var containsEmpty: Bool {
         contains("")
     }

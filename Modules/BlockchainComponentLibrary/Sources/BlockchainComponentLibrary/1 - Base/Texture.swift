@@ -213,11 +213,11 @@ extension Texture.Color {
 extension Texture: View {
 
     public var body: some View {
-        if let color = color {
+        if let color {
             SwiftUI.Color(color)
-        } else if let gradient = gradient, let linearGradient = LinearGradient(gradient) {
+        } else if let gradient, let linearGradient = LinearGradient(gradient) {
             linearGradient
-        } else if let media = media {
+        } else if let media {
             AsyncMedia(url: media.url, placeholder: EmptyView.init)
         }
     }

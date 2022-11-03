@@ -27,7 +27,7 @@ class KYCPageViewFactory {
         case .confirmEmail:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycConfirmEmail)
             let confirmEmailController = KYCConfirmEmailController.make(with: coordinator)
-            if let payload = payload, case .emailPendingVerification(let email) = payload {
+            if let payload, case .emailPendingVerification(let email) = payload {
                 confirmEmailController.email = email
             }
             return confirmEmailController
@@ -45,7 +45,7 @@ class KYCPageViewFactory {
         case .states:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycStates)
             let stateController = KYCStateSelectionController.make(with: coordinator)
-            if let payload = payload, case .countrySelected(let country) = payload {
+            if let payload, case .countrySelected(let country) = payload {
                 stateController.country = country
             }
             return stateController
@@ -66,7 +66,7 @@ class KYCPageViewFactory {
         case .confirmPhone:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycConfirmPhone)
             let confirmPhoneNumberController = KYCConfirmPhoneNumberController.make(with: coordinator)
-            if let payload = payload, case .phoneNumberUpdated(let number) = payload {
+            if let payload, case .phoneNumberUpdated(let number) = payload {
                 confirmPhoneNumberController.phoneNumber = number
             }
             return confirmPhoneNumberController

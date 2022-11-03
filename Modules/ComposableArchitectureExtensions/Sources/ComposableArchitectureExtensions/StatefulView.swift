@@ -26,15 +26,13 @@ import SwiftUI
     Value,
     Action,
     LoadedAction,
-    LoadingAction,
-    Loaded: View,
-    Loading: View
+    LoadingAction
 >(
     store: Store<LoadingState<Value>, Action>,
     loadedAction: @escaping (LoadedAction) -> Action,
     loadingAction: @escaping (LoadingAction) -> Action,
-    @ViewBuilder loaded: @escaping (Store<Value, LoadedAction>) -> Loaded,
-    @ViewBuilder loading: @escaping (Store<Void, LoadingAction>) -> Loading
+    @ViewBuilder loaded: @escaping (Store<Value, LoadedAction>) -> some View,
+    @ViewBuilder loading: @escaping (Store<Void, LoadingAction>) -> some View
 ) -> some View {
     LoadingSwitchView(
         store: store,
@@ -65,15 +63,13 @@ import SwiftUI
     Failure: Error,
     Action,
     SuccessAction,
-    FailureAction,
-    SuccessView: View,
-    FailureView: View
+    FailureAction
 >(
     store: Store<Result<Success, Failure>, Action>,
     successAction: @escaping (SuccessAction) -> Action,
     failureAction: @escaping (FailureAction) -> Action,
-    @ViewBuilder success: @escaping (Store<Success, SuccessAction>) -> SuccessView,
-    @ViewBuilder failure: @escaping (Store<Failure, FailureAction>) -> FailureView
+    @ViewBuilder success: @escaping (Store<Success, SuccessAction>) -> some View,
+    @ViewBuilder failure: @escaping (Store<Failure, FailureAction>) -> some View
 ) -> some View {
     ResultSwitchView(
         store: store,
@@ -110,19 +106,16 @@ import SwiftUI
     LoadedAction,
     LoadingAction,
     SuccessAction,
-    FailureAction,
-    LoadingView: View,
-    SuccessView: View,
-    FailureView: View
+    FailureAction
 >(
     store: Store<LoadingState<Result<Success, Failure>>, Action>,
     loadedAction: @escaping (LoadedAction) -> Action,
     loadingAction: @escaping (LoadingAction) -> Action,
     successAction: @escaping (SuccessAction) -> LoadedAction,
     failureAction: @escaping (FailureAction) -> LoadedAction,
-    @ViewBuilder loading: @escaping (Store<Void, LoadingAction>) -> LoadingView,
-    @ViewBuilder success: @escaping (Store<Success, SuccessAction>) -> SuccessView,
-    @ViewBuilder failure: @escaping (Store<Failure, FailureAction>) -> FailureView
+    @ViewBuilder loading: @escaping (Store<Void, LoadingAction>) -> some View,
+    @ViewBuilder success: @escaping (Store<Success, SuccessAction>) -> some View,
+    @ViewBuilder failure: @escaping (Store<Failure, FailureAction>) -> some View
 ) -> some View {
     LoadingSwitchView(
         store: store,

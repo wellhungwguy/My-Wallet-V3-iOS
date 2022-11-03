@@ -112,7 +112,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         )
         .observe(on: MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
-            guard let self = self else { return }
+            guard let self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency, openBanking) = values
             // An array of linked bank accounts that can be used for Deposit
             let filteredLinkedBanks = linkedBanks.filter { linkedBank in
@@ -146,7 +146,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
             .compactMap(\.first)
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] linkedBankAccount in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.router?.routeToDeposit(
                     target: self.targetAccount,
                     sourceAccount: linkedBankAccount

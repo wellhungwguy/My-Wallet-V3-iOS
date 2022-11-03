@@ -184,7 +184,7 @@ private func handleStartup(
 
 extension Reducer where Action == LoggedIn.Action, Environment == LoggedIn.Environment {
 
-    func namespace() -> Reducer {
+    func namespace() -> Self {
         Reducer { _, action, environment in
             switch action {
             case .logout:

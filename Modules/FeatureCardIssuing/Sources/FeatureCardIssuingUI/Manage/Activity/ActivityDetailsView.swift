@@ -23,7 +23,7 @@ struct ActivityDetailsView: View {
     @ViewBuilder func content(_ transaction: Card.Transaction?) -> some View {
         ScrollView {
             VStack(spacing: 0) {
-                if let transaction = transaction {
+                if let transaction {
                     transactionAmount(transaction)
                     Group {
                         DetailsRow(
@@ -191,7 +191,9 @@ extension Card.Transaction.TransactionType {
     var displayString: String {
         typealias L10n = LocalizationConstants.CardIssuing.Manage.Transaction.TransactionType
         switch self {
-        case .cashback:
+        case .atmWithdrawal:
+            return L10n.atmWithdrawal
+        case .paymentWithCashback:
             return L10n.cashback
         case .chargeback:
             return L10n.chargeback

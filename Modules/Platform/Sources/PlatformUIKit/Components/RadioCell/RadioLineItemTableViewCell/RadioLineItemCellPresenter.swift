@@ -48,7 +48,7 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)
             .map { name in
-                if let name = name {
+                if let name {
                     return UIImage(named: name, in: .platformUIKit, compatibleWith: nil)
                 }
                 return nil

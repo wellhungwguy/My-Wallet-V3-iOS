@@ -5,6 +5,6 @@
 /// - Parameter param: A parameter.
 @inlinable
 @inline(__always)
-public func noop<A>(_ param: A) {
+public func noop(_ param: some Any) {
     // no-op
 }

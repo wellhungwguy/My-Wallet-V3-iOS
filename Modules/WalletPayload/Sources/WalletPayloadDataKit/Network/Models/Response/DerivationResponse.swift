@@ -20,7 +20,7 @@ struct DerivationResponse: Equatable, Codable {
 
     let type: Format
     let purpose: Int
-    let xpriv: String
+    let xpriv: String?
     let xpub: String
     let addressLabels: [AddressLabelResponse]
     let cache: AddressCacheResponse
@@ -38,7 +38,7 @@ struct DerivationResponse: Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = try container.decode(Format.self, forKey: .type)
         purpose = try container.decode(Int.self, forKey: .purpose)
-        xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv) ?? ""
+        xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
         xpub = try container.decode(String.self, forKey: .xpub)
         addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
         cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
@@ -47,7 +47,7 @@ struct DerivationResponse: Equatable, Codable {
     init(
         type: DerivationResponse.Format,
         purpose: Int,
-        xpriv: String,
+        xpriv: String?,
         xpub: String,
         addressLabels: [AddressLabelResponse],
         cache: AddressCacheResponse

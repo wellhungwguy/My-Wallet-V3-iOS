@@ -11,12 +11,14 @@ extension Card {
             case cancelled = "CANCELLED"
             case declined = "DECLINED"
             case completed = "COMPLETED"
+            case created = "CREATED"
         }
 
         public enum TransactionType: String, Decodable {
             case payment = "PAYMENT"
+            case paymentWithCashback = "PAYMENT_WITH_CASHBACK"
+            case atmWithdrawal = "ATM_WITHDRAWAL"
             case chargeback = "CHARGEBACK"
-            case cashback = "CASHBACK"
             case funding = "FUNDING"
             case refund = "REFUND"
         }

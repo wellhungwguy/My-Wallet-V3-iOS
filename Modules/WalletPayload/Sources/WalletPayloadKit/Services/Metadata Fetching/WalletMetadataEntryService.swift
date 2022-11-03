@@ -76,7 +76,7 @@ final class WalletMetadataEntryService: WalletMetadataEntryServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func save<Node: MetadataNodeEntry>(node: Node) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
+    func save(node: some MetadataNodeEntry) -> AnyPublisher<EmptyValue, WalletAssetSaveError> {
         walletHolder.walletStatePublisher
             .flatMap { state -> AnyPublisher<MetadataState, WalletAssetSaveError> in
                 guard let metadata = state?.metadata else {

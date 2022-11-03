@@ -49,7 +49,7 @@ infix operator ??^: AssignmentPrecedence
 extension Optional {
 
     @discardableResult
-    public func or<E>(throw error: @autoclosure () -> E) throws -> Wrapped where E: Error {
+    public func or(throw error: @autoclosure () -> some Error) throws -> Wrapped {
         guard let value = self else { throw error() }
         return value
     }
@@ -67,7 +67,7 @@ extension Optional {
         wrapped as? T
     }
 
-    public static func ??^ <Err: Error>(lhs: Optional, rhs: @autoclosure () -> Err) throws -> Wrapped {
+    public static func ??^ (lhs: Optional, rhs: @autoclosure () -> some Error) throws -> Wrapped {
         try lhs.or(throw: rhs())
     }
 }
@@ -76,7 +76,7 @@ extension Optional {
 infix operator ?=: AssignmentPrecedence
 
 public func ?= <A>(l: inout A, r: A?) {
-    if let r = r { l = r }
+    if let r { l = r }
 }
 
 extension Optional {
@@ -165,10 +165,10 @@ extension KeyedDecodingContainer {
 
 extension KeyedEncodingContainer {
 
-    public mutating func encode<T>(
-        _ value: T,
+    public mutating func encode(
+        _ value: some Encodable & OptionalCodingPropertyWrapper,
         forKey key: KeyedEncodingContainer<K>.Key
-    ) throws where T: Encodable, T: OptionalCodingPropertyWrapper {
+    ) throws {
         if case Optional<Any>.none = value.wrappedValue as Any { return }
         try encodeIfPresent(value, forKey: key)
     }

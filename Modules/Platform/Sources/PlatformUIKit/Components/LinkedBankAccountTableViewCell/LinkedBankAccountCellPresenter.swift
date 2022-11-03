@@ -60,7 +60,7 @@ public final class LinkedBankAccountCellPresenter {
             )
         )
         badgeImageViewModel = .just(.default(
-            image: .local(name: "icon-bank", bundle: .platformUIKit),
+            image: account.data.icon.map(ImageResource.remote(url:)) ?? .local(name: "icon-bank", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         ))

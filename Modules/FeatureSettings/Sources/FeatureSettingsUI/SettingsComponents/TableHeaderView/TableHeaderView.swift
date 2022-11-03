@@ -13,7 +13,7 @@ final class TableHeaderView: UITableViewHeaderFooterView {
 
     private let disposeBag = DisposeBag()
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     var viewModel: TableHeaderViewModel! {
         didSet {

@@ -123,7 +123,7 @@ class WalletSyncTests: XCTestCase {
                     XCTFail("should not fail: \(error)")
                 },
                 receiveValue: { [weak self] _ in
-                    guard let self = self else {
+                    guard let self else {
                         return
                     }
                     // verify encrypt/decrypt were called
@@ -239,7 +239,7 @@ class WalletSyncTests: XCTestCase {
                     XCTFail("should not fail: \(error)")
                 },
                 receiveValue: { [weak self] _ in
-                    guard let self = self else {
+                    guard let self else {
                         return
                     }
                     // verify encrypt/decrypt were called

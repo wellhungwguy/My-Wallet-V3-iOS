@@ -13,7 +13,7 @@ public final class LinkView: UIView {
     public var viewModel: LinkViewModel! {
         didSet {
             disposeBag = DisposeBag()
-            guard let viewModel = viewModel else {
+            guard let viewModel else {
                 return
             }
             textView.viewModel = viewModel.textViewModel

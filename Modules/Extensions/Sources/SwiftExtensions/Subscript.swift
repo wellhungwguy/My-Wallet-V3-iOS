@@ -6,7 +6,7 @@ public enum SubscriptError: Error {
     case other(Error)
 }
 
-extension Optional where Wrapped == Any {
+extension Any? {
 
     public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
         get { self[[first] + rest] }
@@ -19,7 +19,7 @@ extension Optional where Wrapped == Any {
     }
 }
 
-extension Dictionary where Key == String, Value == Any {
+extension [String: Any] {
 
     public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
         get { self[[first] + rest] }
@@ -31,7 +31,7 @@ extension Dictionary where Key == String, Value == Any {
         set { set(newValue, at: path) }
     }
 
-    public func get<C: Collection>(_ path: C) throws -> Value where C.Element == CodingKey {
+    public func get(_ path: some Collection<CodingKey>) throws -> Value {
         guard let (head, remaining) = path.headAndTail else { return self }
         guard let value = self[head.stringValue] else {
             throw SubscriptError.pathDoesNotExist(
@@ -42,14 +42,14 @@ extension Dictionary where Key == String, Value == Any {
         return try _get(remaining, from: value)
     }
 
-    public mutating func set<C: Collection>(_ value: Value?, at path: C) where C.Element == CodingKey {
+    public mutating func set(_ value: Value?, at path: some Collection<CodingKey>) {
         guard let (head, remaining) = path.headAndTail else { return }
         let key = head.stringValue
         self[key] = _set(value, at: remaining, on: self[key] as Any)
     }
 }
 
-extension Array where Element == Any {
+extension [Any] {
 
     public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
         get { self[[first] + rest] }
@@ -61,7 +61,7 @@ extension Array where Element == Any {
         set { set(newValue, at: path) }
     }
 
-    public func get<C: Collection>(_ path: C) throws -> Element where C.Element == CodingKey {
+    public func get(_ path: some Collection<CodingKey>) throws -> Element {
         guard let (head, remaining) = path.headAndTail else { return self }
         guard let idx = head.intValue.map(bidirectionalIndex) else {
             throw SubscriptError.pathDoesNotExist(
@@ -75,7 +75,7 @@ extension Array where Element == Any {
         return try _get(remaining, from: self[idx])
     }
 
-    public mutating func set<C: Collection>(_ value: Element?, at path: C) where C.Element == CodingKey {
+    public mutating func set(_ value: Element?, at path: some Collection<CodingKey>) {
         guard let (head, remaining) = path.headAndTail else { return }
         guard let idx = head.intValue.map(bidirectionalIndex) else { return }
         padded(to: idx, with: Any?.none as Any)
@@ -97,16 +97,16 @@ extension RangeReplaceableCollection where Self: BidirectionalCollection {
     }
 }
 
-private func get<T, C: Collection>(
-    _ path: C,
+private func get<T>(
+    _ path: some Collection<CodingKey>,
     from any: Any?,
     as _: T.Type = T.self
-) throws -> T? where C.Element == CodingKey {
+) throws -> T? {
     let any: Any = try _get(path, from: any)
     return try (any as? T).or(throw: SubscriptError.message("\(type(of: any)) is not \(T.self)"))
 }
 
-private func _get<C: Collection>(_ path: C, from any: Any?) throws -> Any where C.Element == CodingKey {
+private func _get(_ path: some Collection<CodingKey>, from any: Any?) throws -> Any {
     switch any {
     case let array as [Any]:
         return try array.get(path)
@@ -124,11 +124,11 @@ private func _get<C: Collection>(_ path: C, from any: Any?) throws -> Any where 
     }
 }
 
-private func set<T, C: Collection>(_ value: T, at path: C, on any: inout Any?) where C.Element == CodingKey {
+private func set(_ value: some Any, at path: some Collection<CodingKey>, on any: inout Any?) {
     any = _set(value, at: path, on: any)
 }
 
-private func _set<C: Collection>(_ value: Any?, at path: C, on any: Any?) -> Any where C.Element == CodingKey {
+private func _set(_ value: Any?, at path: some Collection<CodingKey>, on any: Any?) -> Any {
     guard let (crumb, _) = path.headAndTail else { return recursiveFlatMapOptional(value) as Any }
     switch crumb {
     case _ where crumb.intValue != nil:
@@ -159,11 +159,11 @@ extension String {
     }
 }
 
-extension Collection where Element == String {
+extension Collection<String> {
     fileprivate var codingPath: [CodingKey] { map { AnyCodingKey($0) } }
 }
 
-extension Optional where Wrapped == Any {
+extension Any? {
 
     public subscript(first: String, rest: String...) -> Any? {
         get { self[[first] + rest] }
@@ -181,7 +181,7 @@ extension Optional where Wrapped == Any {
     }
 }
 
-extension Dictionary where Key == String, Value == Any {
+extension [String: Any] {
 
     public subscript(first: String, rest: String...) -> Any? {
         get { self[[first] + rest] }
@@ -199,7 +199,7 @@ extension Dictionary where Key == String, Value == Any {
     }
 }
 
-extension Array where Element == Any {
+extension [Any] {
 
     public subscript(first: String, rest: String...) -> Any? {
         get { self[[first] + rest] }

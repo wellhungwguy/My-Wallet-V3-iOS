@@ -35,8 +35,8 @@ final class LoggedInReducerTests: XCTestCase {
 
     var testStore: TestStore<
         LoggedIn.State,
-        LoggedIn.State,
         LoggedIn.Action,
+        LoggedIn.State,
         LoggedIn.Action,
         LoggedIn.Environment
     >!

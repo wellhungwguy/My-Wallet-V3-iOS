@@ -3,7 +3,7 @@
 import Foundation
 
 extension UserDefaults {
-    public func set<T: Encodable>(codable: T?, forKey key: String) {
+    public func set(codable: (some Encodable)?, forKey key: String) {
         let encoder = JSONEncoder()
         guard codable != nil else {
             set(nil, forKey: key)

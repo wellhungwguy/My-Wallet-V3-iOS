@@ -63,7 +63,7 @@ extension TransactionsParams {
         params.append(.init(name: CodingKeys.toId.rawValue, value: toId))
         params.append(.init(name: CodingKeys.fromId.rawValue, value: fromId))
 
-        if let limit = limit {
+        if let limit {
             params.append(.init(name: CodingKeys.limit.rawValue, value: "\(limit)"))
         }
 

@@ -34,11 +34,11 @@ extension Comparable where Self: FloatingPoint {
     }
 }
 
-@inlinable public func min<T, U: Comparable>(_ a: T, _ b: T, by: (T) -> U) -> T {
+@inlinable public func min<T>(_ a: T, _ b: T, by: (T) -> some Comparable) -> T {
     by(a) < by(b) ? a : b
 }
 
-@inlinable public func max<T, U: Comparable>(_ a: T, _ b: T, by: (T) -> U) -> T {
+@inlinable public func max<T>(_ a: T, _ b: T, by: (T) -> some Comparable) -> T {
     by(a) >= by(b) ? a : b
 }
 

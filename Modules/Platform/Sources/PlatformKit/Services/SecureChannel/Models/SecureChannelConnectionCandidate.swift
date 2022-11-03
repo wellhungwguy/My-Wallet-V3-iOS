@@ -18,7 +18,7 @@ public struct SecureChannelConnectionCandidate {
         self.details = details
         self.isAuthorized = isAuthorized
         self.timestamp = Date(timeIntervalSince1970: TimeInterval(timestamp) / 1000)
-        if let lastUsed = lastUsed {
+        if let lastUsed {
             self.lastUsed = Date(timeIntervalSince1970: TimeInterval(lastUsed) / 1000)
         } else {
             self.lastUsed = nil

@@ -44,7 +44,7 @@ final class BankAccountLinker: BankAccountLinkerAPI {
             .startFlow()
             .subscribe(
                 onNext: { [weak self] effect in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.linkBankFlowRouter = nil
                     switch effect {
                     case .closeFlow:

@@ -30,7 +30,7 @@ struct CountdownView: View {
 
             Text(LocalizationConstants.Checkout.Label.countdown)
             ZStack(alignment: .leading) {
-                if let remaining = remaining {
+                if let remaining {
                     Text(remaining)
                 }
                 Text("MM:SS").opacity(0) // hack to fix alignment of the counter

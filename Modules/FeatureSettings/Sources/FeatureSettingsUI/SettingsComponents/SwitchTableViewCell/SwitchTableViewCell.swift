@@ -7,12 +7,12 @@ import RxSwift
 
 final class SwitchTableViewCell: UITableViewCell {
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
     var presenter: SwitchCellPresenting! {
         didSet {
             disposeBag = DisposeBag()
-            guard let presenter = presenter else { return }
+            guard let presenter else { return }
             switchView.viewModel = presenter.switchViewPresenting.viewModel
             presenter.labelContentPresenting.state
                 .compactMap { $0 }

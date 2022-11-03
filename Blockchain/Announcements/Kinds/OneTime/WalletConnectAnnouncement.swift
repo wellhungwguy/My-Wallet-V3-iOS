@@ -24,7 +24,7 @@ final class WalletConnectAnnouncement: OneTimeAnnouncement, ActionableAnnounceme
         )
         button.tapRelay
             .bind { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.markRemoved()
                 self.action()
@@ -45,13 +45,13 @@ final class WalletConnectAnnouncement: OneTimeAnnouncement, ActionableAnnounceme
             description: LocalizedString.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
                 self.markRemoved()
                 self.dismiss()
             },
             didAppear: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)
             }
         )

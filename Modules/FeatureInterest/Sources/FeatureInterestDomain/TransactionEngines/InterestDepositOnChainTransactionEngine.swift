@@ -148,7 +148,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         return onChainEngine
             .doBuildConfirmations(pendingTransaction: pendingTransaction)
             .map { [weak self] pendingTransaction in
-                guard let self = self else {
+                guard let self else {
                     unexpectedDeallocation()
                 }
                 return self.modifyEngineConfirmations(
@@ -224,7 +224,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
                 hotWalletReceiveAddress
             )
             .map { receiveAddress, hotWalletAddress -> TransactionTarget in
-                guard let hotWalletAddress = hotWalletAddress else {
+                guard let hotWalletAddress else {
                     return receiveAddress
                 }
                 return HotWalletTransactionTarget(
@@ -240,7 +240,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             .hotWalletAddress(for: sourceCryptoCurrency, product: .rewards)
             .asSingle()
             .flatMap { [sourceCryptoCurrency, receiveAddressFactory] hotWalletAddress -> Single<CryptoReceiveAddress?> in
-                guard let hotWalletAddress = hotWalletAddress else {
+                guard let hotWalletAddress else {
                     return .just(nil)
                 }
                 return receiveAddressFactory.makeExternalAssetAddress(

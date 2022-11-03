@@ -12,13 +12,18 @@ final class AnnouncementCardTests: XCTestCase {
         isRecording = false
     }
 
-    func testSnapshot() {
-        let view = VStack(spacing: Spacing.baseline) {
-            AnnouncementCard_Previews.previews
-        }
+    func x_testSnapshot() {
+        let view = AnnouncementCard(
+            title: "New Asset",
+            message: "Dogecoin (DOGE) is now available on Blockchain.",
+            onCloseTapped: {},
+            leading: {
+                Icon.wallet
+                    .color(.semantic.gold)
+            }
+        )
         .frame(width: 375)
-        .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
+        assertSnapshot(matching: view, as: .image)
     }
 }

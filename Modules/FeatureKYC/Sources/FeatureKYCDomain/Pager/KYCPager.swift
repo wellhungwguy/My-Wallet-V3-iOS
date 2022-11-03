@@ -32,7 +32,7 @@ public final class KYCPager: KYCPagerAPI {
     public func nextPage(from page: KYCPageType, payload: KYCPagePayload?) -> Maybe<KYCPageType> {
         // Get country from payload if present
         var kycCountry: CountryData?
-        if let payload = payload {
+        if let payload {
             switch payload {
             case .countrySelected(let country):
                 kycCountry = country
@@ -211,7 +211,7 @@ extension KYCPageType {
         case .finish:
             return nil
         case .welcome:
-            if let user = user {
+            if let user {
                 // We can pass true here, as non-eligible users would get send to the Tier 2 upgrade path anyway
                 return KYCPageType.startingPage(
                     forUser: user,
@@ -235,10 +235,10 @@ extension KYCPageType {
             }
             return isNewProfile ? .profileNew : .profile
         case .country:
-            if let country = country, !country.states.isEmpty {
+            if let country, !country.states.isEmpty {
                 return .states
             }
-            if let user = user, user.personalDetails.isComplete {
+            if let user, user.personalDetails.isComplete {
                 return .address
             }
             return isNewProfile ? .profileNew : .profile
@@ -279,7 +279,7 @@ extension KYCPageType {
         switch self {
         case .tier1ForcedTier2:
             // Skip the enter phone step if the user already has verified their phone number
-            if let user = user, let mobile = user.mobile, mobile.verified {
+            if let user, let mobile = user.mobile, mobile.verified {
                 guard tiersResponse.canCompleteTier2 else {
                     return .accountStatus
                 }

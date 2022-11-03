@@ -1391,7 +1391,7 @@ Unificada Blockchain";
 "This could take up to 30 seconds. Please do not go back or close the app." = "Isto pode demorar até 30 segundos. Não retroceda nem feche a aplicação.";
 "To avoid uncesssary fees and network slipage, the minimum amount for this pair is **%@**." = "Para evitar taxas desnecessárias e escorregamento da rede, o valor mínimo para este par é ** %@ **.";
 "To execture this transaction the expected fee is %@ but your balance is only %@." = "Para realizar esta transação, a taxa esperada é de %1$@ mas o seu saldo é de apenas %2$@ .";
-"To offset fees and market volatility, the minimum amount for any buy is **%@**." = "Para compensar as taxas e a volatilidade do mercado, o valor mínimo para qualquer compra é ** %@ **.";
+"The minimum amount for any buy is **%@**." = "Para compensar as taxas e a volatilidade do mercado, o valor mínimo para qualquer compra é ** %@ **.";
 "To offset fees, the minimum amount for any withdrawal is **%@**." = "Para compensar as taxas, o valor mínimo para qualquer saque é ** %@ **.";
 "Too many active orders" = "Demasiados pedidos ativos";
 "Transaction in progress" = "Transação em curso";

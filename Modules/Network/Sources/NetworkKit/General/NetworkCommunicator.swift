@@ -66,7 +66,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         guard request.authenticated else {
             return execute(request: request)
         }
-        guard let authenticator = authenticator else {
+        guard let authenticator else {
             fatalError("Authenticator missing")
         }
         let _execute = execute
@@ -82,7 +82,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         guard request.authenticated else {
             return openWebSocket(request: request)
         }
-        guard let authenticator = authenticator else {
+        guard let authenticator else {
             fatalError("Authenticator missing")
         }
         let _executeWebsocketRequest = executeWebsocketRequest

@@ -12,8 +12,6 @@ extension SettingsSectionType.CellType.CommonCellType {
         switch self {
         case .rateUs:
             return LocalizationConstants.Settings.rateUs
-        case .loginToWebWallet:
-            return LocalizationConstants.Settings.loginToWebWallet
         case .webLogin:
             return LocalizationConstants.Settings.webLogin
         case .changePassword:
@@ -28,8 +26,6 @@ extension SettingsSectionType.CellType.CommonCellType {
             return LocalizationConstants.Settings.cookiesPolicy
         case .logout:
             return LocalizationConstants.Settings.logout
-        case .addresses:
-            return LocalizationConstants.Settings.addresses
         case .contactSupport:
             return LocalizationConstants.Settings.contactSupport
         case .cardIssuing:
@@ -38,13 +34,13 @@ extension SettingsSectionType.CellType.CommonCellType {
             return LocalizationConstants.Settings.Badge.notifications
         case .userDeletion:
             return LocalizationConstants.Settings.deleteAccount
+        case .blockchainDomains:
+            return LocalizationConstants.Settings.cryptoDomainsTitle
         }
     }
 
     var icon: UIImage? {
         switch self {
-        case .loginToWebWallet:
-            return Icon.phone.uiImage
         case .webLogin:
             return Icon.computer.uiImage
         case .contactSupport:
@@ -80,9 +76,11 @@ extension SettingsSectionType.CellType.CommonCellType {
         rawValue
     }
 
-    var viewModel: CommonCellViewModel {
-        .init(
+    func viewModel(presenter: CommonCellPresenting?) -> CommonCellViewModel {
+        CommonCellViewModel(
             title: title,
+            subtitle: nil,
+            presenter: presenter,
             icon: icon,
             showsIndicator: showsIndicator,
             overrideTintColor: overrideTintColor,

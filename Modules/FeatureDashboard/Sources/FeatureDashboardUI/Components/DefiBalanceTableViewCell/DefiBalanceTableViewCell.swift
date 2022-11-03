@@ -11,7 +11,7 @@ final class DefiBalanceTableViewCell: UITableViewCell {
     var presenter: HistoricalBalanceCellPresenter? {
         willSet { disposeBag = DisposeBag() }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 assetBalanceView.presenter = nil
                 badgeImageView.viewModel = nil
                 assetTitleLabel.content = .empty

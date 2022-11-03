@@ -52,9 +52,16 @@ struct CardManagementView: View {
                                 viewStore.send(.showManagementDetails)
                             }
                         )
+                        SmallMinimalButton(
+                            title: L10n.Selector.myCards,
+                            action: {
+                                viewStore.send(.binding(.set(\.$isCardSelectorPresented, true)))
+                            }
+                        )
                     }
                     .padding(Spacing.padding2)
                     card
+                    CardStatusView(store: store)
                     VStack {
                         AccountRow(account: viewStore.state.linkedAccount) {
                             viewStore.send(.showSelectLinkedAccountFlow)
@@ -131,6 +138,12 @@ struct CardManagementView: View {
                 content: { topUpSheet }
             )
             .sheet(
+                isPresented: viewStore.binding(\.$isCardSelectorPresented),
+                content: {
+                    CardSelectorView(store: store)
+                }
+            )
+            .sheet(
                 isPresented: viewStore.binding(\.$isDetailScreenVisible),
                 content: { CardManagementDetailsView(store: store) }
             )
@@ -145,6 +158,25 @@ struct CardManagementView: View {
                     ActivityDetailsView(store: store.scope(state: \.displayedTransaction))
                 }
             )
+            .sheet(
+                isPresented: viewStore.binding(
+                    get: {
+                        guard case .loaded = $0.activationUrl else {
+                            return false
+                        }
+                        return true
+                    },
+                    send: CardManagementAction.hideActivationWebview
+                )
+            ) {
+                if case .loaded(let url) = viewStore.state.activationUrl {
+                    WebView(url: url, finishUrl: WebView.CallbackUrl.activate, forceFullScreen: true) {
+                        viewStore.send(.hideActivationWebview)
+                    }
+                } else {
+                    EmptyView()
+                }
+            }
             PrimaryNavigationLink(
                 destination: ActivityListView(store: store),
                 isActive: viewStore.binding(\.$isTransactionListPresented),
@@ -168,7 +200,7 @@ struct CardManagementView: View {
                             url: viewStore.state,
                             loading: $isHelperReady
                         )
-                        .frame(width: 300, height: 355)
+                        .frame(width: UIScreen.main.bounds.width, height: 355)
                     }
                 },
                 else: {
@@ -248,7 +280,7 @@ struct AccountRow: View {
     }
 
     var body: some View {
-        if let account = account {
+        if let account {
             BalanceRow(
                 leadingTitle: account.name,
                 leadingDescription: account.leadingDescription,

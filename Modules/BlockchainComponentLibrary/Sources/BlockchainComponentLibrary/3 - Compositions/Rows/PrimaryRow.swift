@@ -153,7 +153,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     @ViewBuilder var mainContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 5) {
-                if let caption = caption {
+                if let caption {
                     Text(caption)
                         .typography(.caption1)
                         .foregroundColor(.semantic.body)
@@ -170,7 +170,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
                     )
                 )
 
-                if let subtitle = subtitle {
+                if let subtitle {
                     textView(
                         text: subtitle,
                         textTypography: .paragraph1,
@@ -189,7 +189,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
             .alignmentGuide(.customRowVerticalAlignment) {
                 $0[VerticalAlignment.center]
             }
-            if let description = description {
+            if let description {
                 Text(description)
                     .typography(.caption1)
                     .foregroundColor(

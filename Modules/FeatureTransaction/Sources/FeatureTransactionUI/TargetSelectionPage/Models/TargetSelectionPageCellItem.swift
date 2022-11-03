@@ -69,7 +69,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
         case .radioSelection(let presenter):
             return presenter.identity
         case .singleAccount:
-            guard let account = account else {
+            guard let account else {
                 fatalError("Expected an account")
             }
             return account.identifier

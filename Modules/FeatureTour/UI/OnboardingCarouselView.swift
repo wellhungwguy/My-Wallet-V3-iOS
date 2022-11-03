@@ -89,7 +89,7 @@ extension OnboardingCarouselView {
         @ViewBuilder private func makeCarouselView(image: Image?, text: String) -> some View {
             let isSmallDevice = DevicePresenter.type <= .compact
             VStack(spacing: Spacing.padding2) {
-                if let image = image {
+                if let image {
                     image
                         .resizable()
                         .scaledToFit()

@@ -106,7 +106,7 @@ extension UnspentOutput {
     }
 }
 
-extension Array where Element == UnspentOutput {
+extension [UnspentOutput] {
     func sum() -> BigUInt {
         guard !isEmpty else {
             return BigUInt.zero

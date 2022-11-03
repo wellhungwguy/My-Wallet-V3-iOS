@@ -61,7 +61,7 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
         }
 
         #if !targetEnvironment(simulator)
-        if let accessGroup = accessGroup {
+        if let accessGroup {
             query[kSecAttrAccessGroup as String] = accessGroup
         }
         #endif

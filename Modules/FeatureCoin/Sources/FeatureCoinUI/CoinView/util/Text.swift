@@ -10,7 +10,15 @@ extension Text {
     }
 
     init(_ fiatValue: FiatValue) {
-        self.init(fiatValue.displayString)
+        do {
+            if try fiatValue < .one(currency: fiatValue.currency) {
+                self.init(fiatValue.toDisplayString(includeSymbol: true, precision: fiatValue.currencyType.storeExtraPrecision))
+            } else {
+                self.init(fiatValue.toDisplayString(includeSymbol: true))
+            }
+        } catch {
+            self.init(fiatValue.displayString)
+        }
     }
 }
 
@@ -21,6 +29,14 @@ extension String {
     }
 
     init(_ fiatValue: FiatValue) {
-        self = fiatValue.displayString
+        do {
+            if try fiatValue < .one(currency: fiatValue.currency) {
+                self = fiatValue.toDisplayString(includeSymbol: true, precision: fiatValue.currencyType.storeExtraPrecision)
+            } else {
+                self = fiatValue.toDisplayString(includeSymbol: true)
+            }
+        } catch {
+            self = fiatValue.displayString
+        }
     }
 }

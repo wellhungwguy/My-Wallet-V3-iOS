@@ -8,6 +8,7 @@ import UIKit
 
 /// Acts as a container for `PinRouter` wireframing actions
 final class PinHostingController: UIViewController {
+
     let store: Store<PinCore.State, PinCore.Action>
     let viewStore: ViewStore<PinCore.State, PinCore.Action>
 
@@ -48,6 +49,11 @@ final class PinHostingController: UIViewController {
             .store(in: &cancellables)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        app.post(event: blockchain.ux.user.authentication.sign.in.enter.pin)
+    }
+
     /// Authenticate using a pin code. Used during login when the app enters active state.
     private func authenticatePin() {
         // If already authenticating, skip this as the screen is already presented
@@ -73,7 +79,7 @@ final class PinHostingController: UIViewController {
         let boxedParent = UnretainedContentBox<UIViewController>(self)
         let flow = PinRouting.Flow.createPin(from: .attachedOn(controller: boxedParent))
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.viewStore.send(.pinCreated)
         }
         pinRouter?.execute()

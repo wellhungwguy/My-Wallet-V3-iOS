@@ -40,7 +40,7 @@ extension WalletPayloadWrapper: Codable {
     }
 
     public init(string: String?) throws {
-        guard let string = string else { throw MappingError.missingRawInput }
+        guard let string else { throw MappingError.missingRawInput }
         guard let data = string.data(using: .utf8) else { throw MappingError.dataConversionFailure }
         self = try data.decode(to: WalletPayloadWrapper.self)
     }

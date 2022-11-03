@@ -213,7 +213,7 @@ final class KYCClient: KYCClientAPI {
         }
 
         func normalizedState() -> String? {
-            guard let state = state else {
+            guard let state else {
                 return nil
             }
             return "\(country)-\(state)".uppercased()

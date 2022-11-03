@@ -19,7 +19,7 @@ extension SharedKeyRepositoryAPI {
     public var hasSharedKey: AnyPublisher<Bool, Never> {
         sharedKey
             .map { sharedKey -> Bool in
-                guard let sharedKey = sharedKey else { return false }
+                guard let sharedKey else { return false }
                 return !sharedKey.isEmpty
             }
             .eraseToAnyPublisher()

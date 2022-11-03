@@ -179,7 +179,7 @@ extension Account.Action {
     )
 }
 
-extension Collection where Element == Account {
+extension Collection<Account> {
 
     public var snapshot: AnyPublisher<[Account.Snapshot], Never> {
         map { account -> AnyPublisher<Account.Snapshot, Never> in
@@ -219,7 +219,7 @@ extension Collection where Element == Account {
     }
 }
 
-extension Collection where Element == Account.Snapshot {
+extension Collection<Account.Snapshot> {
 
     public var cryptoBalance: MoneyValue? {
         guard let currency = first?.cryptoCurrency else { return nil }

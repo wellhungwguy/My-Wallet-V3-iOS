@@ -72,7 +72,7 @@ extension LegalItem {
     }
 }
 
-extension Array where Element == LegalItem {
+extension [LegalItem] {
 
     var acceptParameters: AcceptLegalParameters {
         AcceptLegalParameters(legalPolicies: map(\.acceptParameters))

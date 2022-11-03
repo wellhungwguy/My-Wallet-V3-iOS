@@ -46,7 +46,7 @@ extension WebSocketTaskPublisher {
         }
 
         func request(_ demand: Subscribers.Demand) {
-            guard let target = target else { return }
+            guard let target else { return }
             // Resume the task
             task.resume()
             listen(for: target, with: demand)

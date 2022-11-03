@@ -78,7 +78,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
             .compactMap { $0 }
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] loading in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.toggle(visibility: loading, of: self.pendingView)
                 self.toggle(visibility: !loading, of: self.webview)
             })

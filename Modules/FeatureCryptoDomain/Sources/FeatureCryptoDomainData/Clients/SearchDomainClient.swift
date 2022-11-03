@@ -18,23 +18,6 @@ public protocol SearchDomainClientAPI {
 
 public final class SearchDomainClient: SearchDomainClientAPI {
 
-    // MARK: - Type
-
-    private enum Path {
-        static let search = [
-            "explorer-gateway",
-            "resolution",
-            "ud",
-            "search"
-        ]
-        static let freeSearch = [
-            "explorer-gateway",
-            "resolution",
-            "ud",
-            "suggestions"
-        ]
-    }
-
     // MARK: - Properties
 
     private let requestBuilder: RequestBuilder
@@ -56,8 +39,7 @@ public final class SearchDomainClient: SearchDomainClientAPI {
         searchKey: String
     ) -> AnyPublisher<SearchResultResponse, NetworkError> {
         let request = requestBuilder.get(
-            path: Path.search + [searchKey],
-            contentType: .json
+            path: "/explorer-gateway/resolution/ud/search/\(searchKey)"
         )!
         return networkAdapter.perform(request: request)
     }
@@ -66,8 +48,7 @@ public final class SearchDomainClient: SearchDomainClientAPI {
         searchKey: String
     ) -> AnyPublisher<FreeSearchResultResponse, NetworkError> {
         let request = requestBuilder.get(
-            path: Path.freeSearch + [searchKey],
-            contentType: .json
+            path: "/explorer-gateway/resolution/ud/suggestions/\(searchKey)"
         )!
         return networkAdapter.perform(request: request)
     }

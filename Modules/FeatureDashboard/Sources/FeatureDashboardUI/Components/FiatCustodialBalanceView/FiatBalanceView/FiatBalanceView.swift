@@ -13,7 +13,7 @@ final class FiatBalanceView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let presenter = presenter else {
+            guard let presenter else {
                 return
             }
 

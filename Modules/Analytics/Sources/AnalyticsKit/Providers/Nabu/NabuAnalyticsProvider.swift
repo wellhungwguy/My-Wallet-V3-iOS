@@ -78,7 +78,7 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
 
     private func setupBatching() {
         queue.sync { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
 
             // Sending triggers
 
@@ -143,7 +143,7 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
             .subscribe(on: queue)
             .receive(on: queue)
             .sink { [weak self] completion in
-                guard let self = self else { return }
+                guard let self else { return }
                 switch completion {
                 case .failure(let error):
                     if Constants.allowedErrorCodes.contains(error.errorCode)

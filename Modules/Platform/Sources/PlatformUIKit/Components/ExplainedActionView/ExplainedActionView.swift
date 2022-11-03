@@ -9,7 +9,7 @@ public final class ExplainedActionView: UIView {
 
     public var viewModel: ExplainedActionViewModel! {
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             thumbBadgeImageView.viewModel = viewModel.thumbBadgeImageViewModel
             titleLabel.content = viewModel.titleLabelContent
             contentStackView.removeSubviews()
@@ -34,7 +34,7 @@ public final class ExplainedActionView: UIView {
                 badgeView = BadgeView()
                 badgeView.viewModel = badgeViewModel
                 contentStackView.addArrangedSubview(badgeView)
-            } else if let badgeView = badgeView {
+            } else if let badgeView {
                 contentStackView.removeArrangedSubview(badgeView)
                 self.badgeView = nil
             }

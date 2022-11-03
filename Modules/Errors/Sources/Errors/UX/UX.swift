@@ -22,6 +22,8 @@ public enum UX {
         public var actions: [Action]
         public var categories: [String] = []
 
+        public private(set) var dialog: UX.Dialog?
+
         public init(
             source: Swift.Error? = nil,
             id: String? = nil,
@@ -103,6 +105,7 @@ extension UX.Error {
             icon = ux.icon
             actions = ux.actions ?? []
             categories = ux.categories ?? []
+            dialog = ux
         } else {
             id = nil
             title = L10n.networkError.title
@@ -130,6 +133,7 @@ extension UX.Error {
         actions = ux.actions ?? .default
         metadata = [:]
         categories = ux.categories ?? []
+        dialog = ux
     }
 }
 
@@ -163,7 +167,7 @@ extension UX.Error {
     }
 }
 
-extension Array where Element == UX.Action {
+extension [UX.Action] {
 
     public static var `default`: Self = [
         UX.Action(title: L10n.ok)

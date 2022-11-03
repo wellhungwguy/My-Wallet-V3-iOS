@@ -63,14 +63,14 @@ final class KYCInformationController: KYCBaseViewController {
     }
 
     private func applyViewModel() {
-        guard let viewModel = viewModel else {
+        guard let viewModel else {
             imageView.image = nil
             labelTitle.text = ""
             labelSubtitle.superview?.removeFromSuperview()
             labelDescription.text = ""
             buttonPrimaryContainer.title = ""
             var presentingViewControllerName: String = ""
-            if let presentingViewController = presentingViewController {
+            if let presentingViewController {
                 presentingViewControllerName = NSStringFromClass(
                     presentingViewController.classForCoder
                 ).components(separatedBy: ".").last ?? ""

@@ -25,7 +25,7 @@ final class WalletView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            guard let viewModel = viewModel else { return }
+            guard let viewModel else { return }
             Driver.just(viewModel.badgeImageViewModel)
                 .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)

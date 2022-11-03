@@ -36,7 +36,7 @@ extension UNUserNotificationCenterAPI {
         Deferred { [requestAuthorization] in
             Future { [requestAuthorization] promise in
                 requestAuthorization(options) { isGranted, error in
-                    if let error = error {
+                    if let error {
                         promise(.failure(error))
                     } else {
                         promise(.success(isGranted))

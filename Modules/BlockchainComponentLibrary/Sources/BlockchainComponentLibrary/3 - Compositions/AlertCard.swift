@@ -47,7 +47,7 @@ public struct AlertCard<Footer: View>: View {
                     .typography(.paragraph2)
                     .foregroundColor(variant.titleColor)
                 Spacer()
-                if let onCloseTapped = onCloseTapped {
+                if let onCloseTapped {
                     Button(
                         action: onCloseTapped,
                         label: {

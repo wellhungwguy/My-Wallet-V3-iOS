@@ -143,7 +143,7 @@ extension EIP681URIParser.Method {
                 gasPrice: gasPrice.flatMap { BigUInt($0) }
             )
         case .transfer(let address, let amount):
-            guard let address = address else {
+            guard let address else {
                 return nil
             }
             return .transfer(

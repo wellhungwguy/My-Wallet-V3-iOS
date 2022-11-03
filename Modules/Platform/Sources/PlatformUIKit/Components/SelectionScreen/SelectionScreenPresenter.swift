@@ -100,7 +100,7 @@ public final class SelectionScreenPresenter {
                             presenters[index].select()
                             self.selectionRelay.accept(index)
 
-                            if let previousIndex = previousIndex {
+                            if let previousIndex {
                                 self.dismissRelay.accept(())
                                 presenters[previousIndex].deselect()
                             } else if !self.shouldPreselect {

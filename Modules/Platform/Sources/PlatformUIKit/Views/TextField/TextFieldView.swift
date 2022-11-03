@@ -145,8 +145,8 @@ public class TextFieldView: UIView {
 
         /// Cleanup the sensitive data if necessary
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak textField, weak viewModel] _ in
-            guard let textField = textField else { return }
-            guard let viewModel = viewModel else { return }
+            guard let textField else { return }
+            guard let viewModel else { return }
             if viewModel.type.requiresCleanupOnBackgroundState {
                 textField.text = ""
                 viewModel.textFieldEdited(with: "")
@@ -258,7 +258,7 @@ public class TextFieldView: UIView {
         viewModel.focus
             .map(\.isOn)
             .drive(onNext: { [weak self] shouldGainFocus in
-                guard let self = self else { return }
+                guard let self else { return }
                 if shouldGainFocus {
                     self.textFieldGainedFocus()
                 } else {
@@ -269,7 +269,7 @@ public class TextFieldView: UIView {
     }
 
     private func textFieldGainedFocus() {
-        if let scrollView = scrollView {
+        if let scrollView {
             let frameInScrollView = convert(frame, to: scrollView)
             scrollView.scrollRectToVisible(frameInScrollView, animated: true)
         }

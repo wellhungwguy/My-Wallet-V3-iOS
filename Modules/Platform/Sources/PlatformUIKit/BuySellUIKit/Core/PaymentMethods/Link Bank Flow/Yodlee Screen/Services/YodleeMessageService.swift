@@ -103,10 +103,10 @@ private func parse(status: MessageStatus, reason: String?, providerAccountId: In
     guard case .success = status else {
         return .closed(reason: reason ?? "unknown reason")
     }
-    guard let providerAccountId = providerAccountId else {
+    guard let providerAccountId else {
         return .error(.providerIdNotFound)
     }
-    guard let accountId = accountId else {
+    guard let accountId else {
         return .error(.accountIdNotFound)
     }
     return .success(data: .init(providerAccountId: String(providerAccountId), accountId: accountId))

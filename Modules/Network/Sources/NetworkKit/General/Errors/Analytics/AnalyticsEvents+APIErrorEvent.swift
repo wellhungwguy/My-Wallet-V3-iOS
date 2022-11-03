@@ -13,13 +13,13 @@ enum APIErrorEvent: AnalyticsEvent {
                 "host": host,
                 "path": path
             ]
-            if let errorCode = errorCode {
+            if let errorCode {
                 parameters["error_code"] = errorCode
             }
-            if let body = body {
+            if let body {
                 parameters["body"] = body
             }
-            if let requestId = requestId {
+            if let requestId {
                 parameters["request_id"] = requestId
             }
             return parameters

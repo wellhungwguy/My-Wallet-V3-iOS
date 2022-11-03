@@ -12,15 +12,15 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
     ) -> Disposable {
         drive(
             onNext: { [weak object] element in
-                guard let object = object else { return }
+                guard let object else { return }
                 onNext?(object, element)
             },
             onCompleted: { [weak object] in
-                guard let object = object else { return }
+                guard let object else { return }
                 onCompleted?(object)
             },
             onDisposed: { [weak object] in
-                guard let object = object else { return }
+                guard let object else { return }
                 onDisposed?(object)
             }
         )
@@ -32,7 +32,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
     ) -> Disposable {
         drive(
             onNext: { [weak object] element in
-                guard let object = object else { return }
+                guard let object else { return }
                 onNext?(object, element)
             }
         )
@@ -44,7 +44,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
     ) -> Disposable {
         drive(
             onNext: { [weak object] _ in
-                guard let object = object else { return }
+                guard let object else { return }
                 onNext?(object)
             }
         )
