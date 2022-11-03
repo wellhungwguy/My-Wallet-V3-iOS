@@ -8,5 +8,9 @@
 	<false/>
 	<key>CAPTURE_TAPPED_ELEMENTS</key>
 	<false/>
+	<key>WEBVIEW_ENABLE</key>
+	<false/>
+	<key>WEBVIEW_STRIP_QUERYPARAMS</key>
+	<true/>
 </dict>
 </plist>
