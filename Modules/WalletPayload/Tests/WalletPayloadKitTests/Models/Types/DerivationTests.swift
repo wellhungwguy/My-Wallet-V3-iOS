@@ -8,9 +8,33 @@ import TestKit
 import ToolKit
 import XCTest
 
+// swiftlint:disable line_length
 final class DerivationTests: XCTestCase {
 
-    // swiftlint:disable line_length
+    func test_correctly_determines_when_needs_replenishment() {
+        let modelMissingXpriv = Derivation(
+            type: .segwit,
+            purpose: 0,
+            xpriv: nil,
+            xpub: "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj",
+            addressLabels: [],
+            cache: AddressCache.init(receiveAccount: "", changeAccount: "")
+        )
+
+        XCTAssertTrue(modelMissingXpriv.needsReplenishment)
+
+        let modelEmptyXpub = Derivation(
+            type: .segwit,
+            purpose: 0,
+            xpriv: "xprv9xpXFhFpqdQK3TmytPBqXtGSwS3DLjojFhTGht8gwAAii8py5X6pxeBnQ6ehJiyJ6nDjWGJfZ95WxByFXVkDxHXrqu53WCRGypk2ttuqncb",
+            xpub: "",
+            addressLabels: [],
+            cache: AddressCache.init(receiveAccount: "", changeAccount: "")
+        )
+
+        XCTAssertTrue(modelEmptyXpub.needsReplenishment)
+    }
+
     func test_can_create_correct_derivation_for_legacy_type() {
         let masterSeedHex = getHDWallet(
             from: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"

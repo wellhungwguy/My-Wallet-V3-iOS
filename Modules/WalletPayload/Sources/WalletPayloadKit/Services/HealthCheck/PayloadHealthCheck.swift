@@ -87,7 +87,7 @@ func defaultAccountIndexValidity(_ value: Int) -> Checker {
 
 func accountDerivationValidity(_ value: Account) -> Checker {
     {
-        if value.derivations.count != DerivationType.allCases.count {
+        if value.derivations.count != DerivationType.defaultDerivations.count {
             return "INCORRECT_NUMBER_OF_ACCOUNT_DERIVATIONS_\(value.derivations.count)"
         }
         return nil
@@ -96,9 +96,12 @@ func accountDerivationValidity(_ value: Account) -> Checker {
 
 func derivationPurposeValidity(_ value: Derivation) -> Checker {
     {
-        let possiblePurposes = DerivationType.allCases.map(\.purpose)
-        if !possiblePurposes.contains(value.purpose) {
-            return "INCORRECT_DERIVATION_PURPOSE_FOUND_\(value.purpose)"
+        let possiblePurposes = DerivationType.defaultDerivations.map(\.purpose)
+        if let purpose = value.purpose {
+            if !possiblePurposes.contains(purpose) {
+                return "INCORRECT_DERIVATION_PURPOSE_FOUND_\(purpose)"
+            }
+            return nil
         }
         return nil
     }

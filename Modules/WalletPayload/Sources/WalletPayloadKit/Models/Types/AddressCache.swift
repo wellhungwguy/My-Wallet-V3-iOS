@@ -4,12 +4,12 @@ import Foundation
 import MetadataKit
 
 public struct AddressCache: Equatable {
-    public let receiveAccount: String
-    public let changeAccount: String
+    public let receiveAccount: String?
+    public let changeAccount: String?
 
     public init(
-        receiveAccount: String,
-        changeAccount: String
+        receiveAccount: String?,
+        changeAccount: String?
     ) {
         self.receiveAccount = receiveAccount
         self.changeAccount = changeAccount
@@ -21,7 +21,7 @@ public struct AddressCache: Equatable {
 /// - Returns: An `AddressCache`
 func createAddressCache(from node: PrivateKey) -> AddressCache {
     AddressCache(
-        receiveAccount: node.derive(at: .hardened(0)).xpub,
-        changeAccount: node.derive(at: .hardened(1)).xpub
+        receiveAccount: node.derive(at: .normal(0)).xpub,
+        changeAccount: node.derive(at: .normal(1)).xpub
     )
 }

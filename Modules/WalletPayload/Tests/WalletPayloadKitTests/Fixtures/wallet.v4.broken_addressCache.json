@@ -12,35 +12,7 @@
   "address_book": [],
   "tx_notes": {},
   "tx_names": [],
-  "keys": [
-    {
-      "addr": "19XmKRY66VnUn5irHAafyoTfiwFuGLUxKF",
-      "priv": "38W3vsxt246Lhawvz81y2HQVnsJrBUX87jSTUUnixPsE",
-      "tag": 0,
-      "label": "",
-      "created_time": 1492721419269,
-      "created_device_name": "javascript_web",
-      "created_device_version": "3.0"
-    },
-    {
-      "addr": "14mQxLtEagsS8gYsdWJbzthFFuPDqDgtxQ",
-      "priv": "BpD2ZuJjZ8PJPpDX6ZmsKFsXHkL7XV3dt385zghMfF6C",
-      "tag": 0,
-      "label": "labeled_imported",
-      "created_time": 1492721432222,
-      "created_device_name": "javascript_web",
-      "created_device_version": "3.0"
-    },
-    {
-      "addr": "1JD73aGSdeqKUjJ4ntP4eCyUiuZ3ogJE1u",
-      "priv": null,
-      "tag": 0,
-      "label": "",
-      "created_time": 1492721461228,
-      "created_device_name": "javascript_web",
-      "created_device_version": "3.0"
-    }
-  ],
+  "keys": [],
   "hd_wallets": [
     {
       "seed_hex": "6a4d9524d413fdf69ca1b5664d1d6db0",
@@ -65,8 +37,8 @@
                 }
               ],
               "cache": {
-                "receiveAccount": "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
-                "changeAccount": "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
+                "receiveAccount": "xpub6F41z8MyiGqL5gxvKaWcLeedorjhZwfswGpSrXszBiE7n2k4JxAx2FkUbNwrf3Ya65adx4MuoTiR88iEKmfLzBXeJBDGbFxje6PAo51hgbY",
+                "changeAccount": "xpub6F41z8MyiGqL8CdvneKqcvjMkAFRr8T3USizhoz7XSjgn9rwWJRvGLnQ9XY2DJyewFX3SWdP5stAf2AxtwNSEmRL1QtDb9VhZkBb5FuRW3f"
               }
             },
             {
@@ -81,8 +53,8 @@
                 }
               ],
               "cache": {
-                "receiveAccount": "xpub6EMzXNjqSJ9cwWWPhVjN9EaRnjgaYXwg8WMRcXc9SgP5RpUCFFkDwbqJoAdzBkRCQZB5AA9qh3zk8uEpyzfUDGrXGE23GnCFGoPuYVMTN6C",
-                "changeAccount": "xpub6EMzXNjqSJ9czvz8pyajFSziPmvSFvhukW8T48jvWs1Zxq9aTDqhfbNzz6DnzkdnvRSxXBBcw4APsbEcsFbFF9zqU8cznBasHhijkrUVnnK"
+                "receiveAccount": "xpub6EMzXNjymxgb988A7TbC4vL8oKQdPBm6foMHGSKxmUumcy9LC1FmKDewP9ZboHa2oK23kxzDwM4h7hr14wVrGrG1eV33859qKev7SQv9fH6",
+                "changeAccount": "xpub6EMzXNjymxgbBahUDrykZ89ueENuztvfZ8zhLX1QcX1KbofHVC3zwvwvbXk8zoqNsVvU9Afbd63P44TTF4JLDZMPzrw8wKFeUQSJkcZeHWE"
               }
             }
           ]

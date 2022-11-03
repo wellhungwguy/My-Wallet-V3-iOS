@@ -6,7 +6,7 @@ public struct Options: Equatable {
     public let pbkdf2Iterations: Int
     public let feePerKB: Int?
     public let html5Notifications: Bool
-    public let logoutTime: Int
+    public let logoutTime: Int?
 
     static var `default` = Options(
         pbkdf2Iterations: 5000,
@@ -19,7 +19,7 @@ public struct Options: Equatable {
         pbkdf2Iterations: Int,
         feePerKB: Int?,
         html5Notifications: Bool,
-        logoutTime: Int
+        logoutTime: Int?
     ) {
         self.pbkdf2Iterations = pbkdf2Iterations
         self.feePerKB = feePerKB

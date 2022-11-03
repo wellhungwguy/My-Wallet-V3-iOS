@@ -22,8 +22,6 @@
       "accounts": [
         {
           "label": "BTC Private Key Wallet",
-          "archived": false,
-          "xpub": "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
           "address_labels": [
             {
               "index": 0,

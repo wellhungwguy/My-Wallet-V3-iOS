@@ -22,10 +22,11 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
     }
 
     func test_provides_correct_addresses_for_syncing() {
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         let mockMnemonicProvider: WalletMnemonicProvider = { () -> AnyPublisher<BitcoinChainKit.Mnemonic, Error> in
             .just(
                 BitcoinChainKit.Mnemonic(
-                    words: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+                    words: mnemonic
                 )
             )
         }
@@ -63,7 +64,6 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(
             addressProvider: receiveAddressProviderMock,
-            mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor
         )
 
@@ -98,6 +98,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         syncPubKeysProvider
             .provideAddresses(
+                mnemonic: mnemonic,
                 active: activeAddresses,
                 accounts: accounts
             )
@@ -119,10 +120,11 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
     }
 
     func test_provides_correct_addresses_for_syncing_a_different_multiAddress_index() {
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         let mockMnemonicProvider: WalletMnemonicProvider = { () -> AnyPublisher<BitcoinChainKit.Mnemonic, Error> in
             .just(
                 BitcoinChainKit.Mnemonic(
-                    words: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+                    words: mnemonic
                 )
             )
         }
@@ -160,7 +162,6 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(
             addressProvider: receiveAddressProviderMock,
-            mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor
         )
 
@@ -195,6 +196,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         syncPubKeysProvider
             .provideAddresses(
+                mnemonic: mnemonic,
                 active: activeAddresses,
                 accounts: accounts
             )
@@ -216,10 +218,11 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
     }
 
     func test_provides_correct_addresses_for_syncing_multiple_accounts() {
+        let mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         let mockMnemonicProvider: WalletMnemonicProvider = { () -> AnyPublisher<BitcoinChainKit.Mnemonic, Error> in
             .just(
                 BitcoinChainKit.Mnemonic(
-                    words: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+                    words: mnemonic
                 )
             )
         }
@@ -257,7 +260,6 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let syncPubKeysProvider = SyncPubKeysAddressesProvider(
             addressProvider: receiveAddressProviderMock,
-            mnemonicProvider: mockMnemonicProvider,
             fetchMultiAddressFor: mockFetchMultiAddressFor
         )
 
@@ -314,6 +316,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         syncPubKeysProvider
             .provideAddresses(
+                mnemonic: mnemonic,
                 active: activeAddresses,
                 accounts: accounts
             )

@@ -18,7 +18,6 @@
       "seed_hex": "6a4d9524d413fdf69ca1b5664d1d6db0",
       "passphrase": "",
       "mnemonic_verified": false,
-      "default_account_idx": 0,
       "accounts": [
         {
           "label": "Private Key Wallet",
@@ -27,9 +26,7 @@
           "derivations": [
             {
               "type": "legacy",
-              "purpose": 44,
-              
-              "xpub": "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3"
+              "purpose": 44
             }
           ]
         }

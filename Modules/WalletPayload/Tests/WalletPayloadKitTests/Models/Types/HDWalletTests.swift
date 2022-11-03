@@ -31,8 +31,8 @@ class HDWalletTests: XCTestCase {
                         xpub: "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj",
                         addressLabels: [],
                         cache: AddressCache(
-                            receiveAccount: "xpub6ELHKXNs6z8vXa6XbGJZvX8cJ7sSHG9HsSLEKDDy79VVjEeBJwHBomMMjVcZZxdKd1Xv24ikajY6rTEirQadVWoyctw1tfV8wV3FNDKY4rD",
-                            changeAccount: "xpub6ELHKXNs6z8vZcESyLipftAuxo5Q51z8twf5J2GNDMEVuiSLf5CR2DF94F7425dBbd8NVGy8sx6s62edGqiAmt6LmiDVjVwuWocm2nggSdQ"
+                            receiveAccount: "xpub6ELHKXNimKbxMCytPh7EdC2QXx46T9qLDJWGnTraz1H9kMMFdcduoU69wh9cxP12wDxqAAfbaESWGYt5rREsX1J8iR2TEunvzvddduAPYcY",
+                            changeAccount: "xpub6ELHKXNimKbxNg8CV7R31x98ZCPAAT2CrHnZ1ZovqMcvvjnnHmRvLtrpoAs8oBB5YghZf5vzjWURbUBqjXzN3RsEonB3LejZ8oHr3PEJnQj"
                         )
                     ),
                     Derivation(
@@ -42,8 +42,8 @@ class HDWalletTests: XCTestCase {
                         xpub: "xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V",
                         addressLabels: [],
                         cache: AddressCache(
-                            receiveAccount: "xpub6FPnz8nmUypv2k1tV1EdhXJ8FLeQZCMJmUxozcTCyRSoPW7xuYnMyTJ5VrmfS9fTBAViJ6HBrGMyRTWrTDxwKq8Gx1RMNEK7D3g8yHeDPHU",
-                            changeAccount: "xpub6FPnz8nmUypv56G7VP2zdPtyru9LKPBvLE6LeP8QKkyCGtDad6TqLoTJzg6GvnLt5VvTZHBvEuKE7Mnc6HSsGy1fLPL6skU7FMnH61qqNW2"
+                            receiveAccount: "xpub6FPnz8nd9KHwrramFPiKretTQ6o7o7JdjjjuVgm9ByvK69i9sfZsTgHSr59PqHcg5E4CmCDbpZ1azNws6XaVNs4Tc9cUwgKQqZmUBoK3xUt",
+                            changeAccount: "xpub6FPnz8nd9KHwvCk4KcS6RAqe3odF4cyUV1L2KsnzqyCRUxa7AmWobiftMY1zp1A59UcoVuty6RN4KpnFhCC3yfr1Zr9g3zj5mwpgCdBX6DC"
                         )
                     )
                 ]
@@ -63,6 +63,61 @@ class HDWalletTests: XCTestCase {
             XCTFail("should provide an hd wallet")
         }
     }
-}
 
-// swiftlint:enable line_length
+    func test_determines_when_account_needs_replenishment() {
+        // on empty accounts
+        let hdWalletEmptyAccounts = HDWallet(
+            seedHex: "00000000000000000000000000000000",
+            passphrase: "",
+            mnemonicVerified: false,
+            defaultAccountIndex: 0,
+            accounts: []
+        )
+
+        XCTAssertTrue(hdWalletEmptyAccounts.accountsNeedsReplenisment)
+
+        // on empty accounts
+        let hdWalletInvalidAccountWithDerivations = HDWallet(
+            seedHex: "00000000000000000000000000000000",
+            passphrase: "",
+            mnemonicVerified: false,
+            defaultAccountIndex: 0,
+            accounts: [
+                Account(
+                    index: 0,
+                    label: "Private Key Wallet",
+                    archived: false,
+                    defaultDerivation: .segwit,
+                    derivations: [
+                        .init(
+                            type: .segwit,
+                            purpose: 84,
+                            xpriv: nil,
+                            xpub: "",
+                            addressLabels: [],
+                            cache: .init(receiveAccount: "", changeAccount: "")
+                        )
+                    ]
+                ),
+                Account(
+                    index: 1,
+                    label: "Private Key Wallet",
+                    archived: false,
+                    defaultDerivation: .segwit,
+                    derivations: [
+                        .init(
+                            type: .segwit,
+                            purpose: 84,
+                            xpriv: "xprv",
+                            xpub: "xpub",
+                            addressLabels: [],
+                            cache: .init(receiveAccount: "", changeAccount: "")
+                        )
+                    ]
+                )
+            ]
+        )
+
+        XCTAssertTrue(hdWalletInvalidAccountWithDerivations.accountsNeedsReplenisment)
+    }
+}

@@ -164,10 +164,15 @@ private func saveOperations(
                 logger.log(message: "syncPubKeys not required", metadata: nil)
                 return .just((payload, nil))
             }
+            guard let mnemonic = getMnemonic(from: wrapper.wallet).success else {
+                logger.log(message: "syncPubKeys failed, couldn't retrieve mnemonic", metadata: nil)
+                return .failure(.mnemonicFailure)
+            }
             // To get notifications working we need to pass a list of lookahead addresses
             logger.log(message: "syncPubKeys required", metadata: nil)
             let accounts = wrapper.wallet.defaultHDWallet?.accounts ?? []
             return syncPubKeysAddressesProvider.provideAddresses(
+                mnemonic: mnemonic,
                 active: wrapper.wallet.spendableActiveAddresses,
                 accounts: accounts
             )

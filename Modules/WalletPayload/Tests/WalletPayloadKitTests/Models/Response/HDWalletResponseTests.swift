@@ -43,12 +43,6 @@ class HDWalletResponseTests: XCTestCase {
         XCTAssertEqual(hdWallet.accounts.first, expectedAccount)
     }
 
-    func test_it_should_throw_an_error_when_decoding_an_unknown_json() throws {
-        XCTAssertThrowsError(
-            try JSONDecoder().decode(HDWalletResponse.self, from: jsonUnknownAccount)
-        )
-    }
-
     func test_it_can_be_encoded_to_json() throws {
         let addressCache = AddressCacheResponse(
             receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",

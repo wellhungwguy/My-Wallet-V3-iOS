@@ -8,7 +8,7 @@ enum AccountWrapper {
         let label: String
         let archived: Bool
         let xpriv: String?
-        let xpub: String
+        let xpub: String?
         let addressLabels: [AddressLabelResponse]
         let cache: AddressCacheResponse
 
@@ -23,11 +23,11 @@ enum AccountWrapper {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            label = try container.decode(String.self, forKey: .label)
+            label = try container.decodeIfPresent(String.self, forKey: .label) ?? ""
             // some clients might not send the `archived` key/value, so we check this and default to `false`
             archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
             xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
-            xpub = try container.decode(String.self, forKey: .xpub)
+            xpub = try container.decodeIfPresent(String.self, forKey: .xpub)
             addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
             cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
         }
@@ -65,9 +65,10 @@ enum AccountWrapper {
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             label = try container.decode(String.self, forKey: .label)
-            // some clients might not send the `archived` key/value, so we check this and default to `false`
+            // some clients might not send various properties, so we check and provide a default value
             archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
-            defaultDerivation = try container.decode(String.self, forKey: .defaultDerivation)
+            let defaultDerivationFallback = DerivationResponse.Format.segwit.rawValue
+            defaultDerivation = try container.decodeIfPresent(String.self, forKey: .defaultDerivation) ?? defaultDerivationFallback
             derivations = try container.decode([DerivationResponse].self, forKey: .derivations)
         }
 

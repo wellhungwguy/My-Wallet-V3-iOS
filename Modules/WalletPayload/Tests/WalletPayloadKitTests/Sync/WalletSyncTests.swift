@@ -156,6 +156,8 @@ class WalletSyncTests: XCTestCase {
 
         saveWalletRepositoryMock.saveWalletResult = .success(())
 
+        let seedHex = "00000000000000000000000000000000"
+
         let wallet = NativeWallet(
             guid: "guid",
             sharedKey: "shared-key",
@@ -163,7 +165,7 @@ class WalletSyncTests: XCTestCase {
             doublePasswordHash: nil,
             metadataHDNode: nil,
             options: .default,
-            hdWallets: [],
+            hdWallets: [.init(seedHex: seedHex, passphrase: "", mnemonicVerified: false, defaultAccountIndex: 0, accounts: [])],
             addresses: [],
             txNotes: nil,
             addressBook: nil

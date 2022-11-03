@@ -93,7 +93,8 @@ extension DependencyContainer {
                 notificationCenter: .default,
                 logger: DIKit.resolve(),
                 payloadHealthChecker: walletPayloadHealthCheckProvider(tracer: traceMethod),
-                checkAndSaveWalletCredentials: credentialsSaveIfNeeded
+                checkAndSaveWalletCredentials: credentialsSaveIfNeeded,
+                derivationReplenishement: provideDerivationReplenishment(tracer: tracer)
             )
         }
 

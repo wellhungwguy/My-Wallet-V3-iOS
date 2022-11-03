@@ -48,7 +48,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
 
         let mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.unknown)))
@@ -114,7 +115,8 @@ class WalletRecoveryServiceTests: XCTestCase {
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
 
         let response = WalletPayloadClient.Response(

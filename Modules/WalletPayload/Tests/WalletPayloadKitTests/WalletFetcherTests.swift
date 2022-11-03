@@ -55,7 +55,8 @@ class WalletFetcherTests: XCTestCase {
             notificationCenter: notificationCenterSpy,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock,
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
@@ -169,7 +170,8 @@ class WalletFetcherTests: XCTestCase {
             notificationCenter: notificationCenterSpy,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock,
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,

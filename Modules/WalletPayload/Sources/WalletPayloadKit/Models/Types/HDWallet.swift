@@ -12,6 +12,10 @@ public struct HDWallet: Equatable {
     public let defaultAccountIndex: Int
     public let accounts: [Account]
 
+    var accountsNeedsReplenisment: Bool {
+        accounts.isEmpty || accounts.any(\.needsReplenishment)
+    }
+
     public init(
         seedHex: String,
         passphrase: String,

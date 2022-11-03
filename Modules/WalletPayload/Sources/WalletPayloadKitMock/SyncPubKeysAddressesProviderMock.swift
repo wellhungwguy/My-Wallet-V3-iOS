@@ -9,6 +9,7 @@ class SyncPubKeysAddressesProviderMock: SyncPubKeysAddressesProviderAPI {
     var provideAddressesResult = Result<String, SyncPubKeysAddressesProviderError>.success("")
 
     func provideAddresses(
+        mnemonic: String,
         active: [String],
         accounts: [Account]
     ) -> AnyPublisher<String, SyncPubKeysAddressesProviderError> {

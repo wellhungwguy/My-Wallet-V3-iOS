@@ -14,10 +14,15 @@ import XCTest
 class WalletLogicTests: XCTestCase {
 
     private let jsonV4 = Fixtures.loadJSONData(filename: "wallet.v4", in: .module)!
+    private let jsonV4Broken = Fixtures.loadJSONData(filename: "wallet.v4.broken", in: .module)!
+
+    private let jsonV4InvalidAddressCache = Fixtures.loadJSONData(filename: "wallet.v4.broken_addressCache", in: .module)!
 
     private let jsonV3 = Fixtures.loadJSONData(filename: "wallet.v3", in: .module)!
 
     private var cancellables: Set<AnyCancellable>!
+
+    private let walletHolder = WalletHolder()
 
     override func setUp() {
         super.setUp()
@@ -25,7 +30,7 @@ class WalletLogicTests: XCTestCase {
     }
 
     func test_wallet_logic_can_initialize_a_wallet() {
-        let walletHolder = WalletHolder()
+
         var decoderWalletCalled = false
         let decoder: WalletDecoding = { payload, data -> AnyPublisher<Wrapper, WalletError> in
             decoderWalletCalled = true
@@ -52,7 +57,8 @@ class WalletLogicTests: XCTestCase {
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock
+            checkAndSaveWalletCredentials: checkAndSaveWalletCredentialsMock,
+            derivationReplenishement: { wrapper, _ in .just(wrapper) }
         )
 
         let walletPayload = WalletPayload(
@@ -77,6 +83,183 @@ class WalletLogicTests: XCTestCase {
                 XCTAssertTrue(checkAndSaveWalletCredentialsCalled)
                 expectation.fulfill()
             }
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 10)
+
+        XCTAssertTrue(walletHolder.walletState.value!.isInitialised)
+    }
+
+    func test_broken_wallet_payload_can_be_decoded_replenished() {
+        let walletHolder = WalletHolder()
+        var decoderWalletCalled = false
+        let decoder: WalletDecoding = { payload, data -> AnyPublisher<Wrapper, WalletError> in
+            decoderWalletCalled = true
+            return WalletDecoder().createWallet(from: payload, decryptedData: data)
+        }
+        let metadataService = MetadataServiceMock()
+        let walletSyncMock = WalletSyncMock()
+
+        let upgrader = WalletUpgrader(workflows: [])
+
+        var runDerivationsReplenishementCalled = false
+        let runDerivationsReplenishementSpy: DerivationReplenishement = { wrapper, logger -> AnyPublisher<Wrapper, WalletError> in
+            runDerivationsReplenishementCalled = true
+            return runDerivationsReplenishement(wrapper: wrapper, logger: logger)
+        }
+
+        let walletLogic = WalletLogic(
+            holder: walletHolder,
+            decoder: decoder,
+            upgrader: upgrader,
+            metadata: metadataService,
+            walletSync: walletSyncMock,
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: runDerivationsReplenishementSpy
+        )
+
+        let walletPayload = WalletPayload(
+            guid: "guid",
+            authType: 0,
+            language: "en",
+            shouldSyncPubKeys: false,
+            time: Date(),
+            payloadChecksum: "",
+            payload: WalletPayloadWrapper(pbkdf2IterationCount: 5000, version: 3, payload: "") // we don't use this
+        )
+
+        metadataService.initializeValue = .just(MetadataState.mock)
+
+        walletSyncMock.syncResult = .success(.noValue)
+
+        let expectation = expectation(description: "wallet-fetching-expectation")
+
+        walletLogic.initialize(with: "password", payload: walletPayload, decryptedWallet: jsonV3)
+            .sink(
+                receiveCompletion: { completion in
+                    guard case .failure = completion else {
+                        return
+                    }
+                    XCTFail("should provide correct value")
+                },
+                receiveValue: { walletState in
+                    XCTAssertTrue(decoderWalletCalled)
+                    XCTAssertTrue(runDerivationsReplenishementCalled)
+
+                    XCTAssertTrue(walletState.wallet!.defaultHDWallet?.accounts.count == 1)
+                    XCTAssertTrue(
+                        walletState.wallet!.defaultHDWallet?.accounts.first?.derivations.count == DerivationType.defaultDerivations.count
+                    )
+                    XCTAssertTrue(walletState.isInitialised)
+                    expectation.fulfill()
+                }
+            )
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 10)
+
+        XCTAssertTrue(walletHolder.walletState.value!.isInitialised)
+    }
+
+    func test_broken_derivation_account_cache_can_be_replenished() {
+        let walletHolder = WalletHolder()
+        var decoderWalletCalled = false
+        let decoder: WalletDecoding = { payload, data -> AnyPublisher<Wrapper, WalletError> in
+            decoderWalletCalled = true
+            return WalletDecoder().createWallet(from: payload, decryptedData: data)
+        }
+        let metadataService = MetadataServiceMock()
+        let walletSyncMock = WalletSyncMock()
+
+        let upgrader = WalletUpgrader(workflows: [])
+
+        var runDerivationsReplenishementCalled = false
+        let runDerivationsReplenishementSpy: DerivationReplenishement = { wrapper, logger -> AnyPublisher<Wrapper, WalletError> in
+            runDerivationsReplenishementCalled = true
+            return runDerivationsReplenishement(wrapper: wrapper, logger: logger)
+        }
+
+        let walletLogic = WalletLogic(
+            holder: walletHolder,
+            decoder: decoder,
+            upgrader: upgrader,
+            metadata: metadataService,
+            walletSync: walletSyncMock,
+            notificationCenter: .default,
+            logger: NoopNativeWalletLogging(),
+            payloadHealthChecker: { .just($0) },
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: runDerivationsReplenishementSpy
+        )
+
+        let walletPayload = WalletPayload(
+            guid: "guid",
+            authType: 0,
+            language: "en",
+            shouldSyncPubKeys: false,
+            time: Date(),
+            payloadChecksum: "",
+            payload: WalletPayloadWrapper(pbkdf2IterationCount: 5000, version: 4, payload: "") // we don't use this
+        )
+
+        metadataService.initializeValue = .just(MetadataState.mock)
+
+        walletSyncMock.syncResult = .success(.noValue)
+
+        let expectation = expectation(description: "wallet-fetching-expectation")
+
+        let expectedDerivations = [
+            Derivation(
+                type: .legacy,
+                purpose: DerivationType.legacy.purpose,
+                xpriv: "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
+                xpub: "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
+                addressLabels: [.init(index: 0, label: "labeled_address")],
+                cache: AddressCache(
+                    receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
+                    changeAccount: "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
+                )
+            ),
+            Derivation(
+                type: .segwit,
+                purpose: DerivationType.segwit.purpose,
+                xpriv: "xprv9xyd6QiiJ9PHLpoaGZ1J2ZAit27rMoZBsg7pGfZu18Y9KYyeVsbF7fqFoKYD1yVvALxSUeLCD3LGxfk5kPPNQhx1P57ukDfoKRDqjEFTvYT",
+                xpub: "xpub6BxyVvFc8WwaZJt3NaYJPh7TS3xLmGH3Eu3R53yWZU58CMJo3QuVfU9jedpAuVA1idn7tJX6TrLVpeifbAySPewVEdH52tSQchLwSznnyCY",
+                addressLabels: [.init(index: 0, label: "labeled_address")],
+                cache: AddressCache(
+                    receiveAccount: "xpub6EMzXNjqSJ9cwWWPhVjN9EaRnjgaYXwg8WMRcXc9SgP5RpUCFFkDwbqJoAdzBkRCQZB5AA9qh3zk8uEpyzfUDGrXGE23GnCFGoPuYVMTN6C",
+                    changeAccount: "xpub6EMzXNjqSJ9czvz8pyajFSziPmvSFvhukW8T48jvWs1Zxq9aTDqhfbNzz6DnzkdnvRSxXBBcw4APsbEcsFbFF9zqU8cznBasHhijkrUVnnK"
+                )
+            )
+        ]
+
+        // given an with broken address cache on derivation, it should be replenished
+        walletLogic.initialize(with: "password", payload: walletPayload, decryptedWallet: jsonV4InvalidAddressCache)
+            .sink(
+                receiveCompletion: { completion in
+                    guard case .failure = completion else {
+                        return
+                    }
+                    XCTFail("should provide correct value")
+                },
+                receiveValue: { walletState in
+                    XCTAssertTrue(decoderWalletCalled)
+                    XCTAssertTrue(runDerivationsReplenishementCalled)
+
+                    XCTAssertTrue(walletState.wallet!.defaultHDWallet?.accounts.count == 1)
+                    XCTAssertNotNil(walletState.wallet!.defaultHDWallet)
+                    let account = walletState.wallet!.defaultHDWallet!.accounts.first
+                    XCTAssertNotNil(account)
+                    XCTAssertTrue(
+                        account!.derivations == expectedDerivations
+                    )
+                    XCTAssertTrue(walletState.isInitialised)
+                    expectation.fulfill()
+                }
+            )
             .store(in: &cancellables)
 
         wait(for: [expectation], timeout: 10)
@@ -109,7 +292,8 @@ class WalletLogicTests: XCTestCase {
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
 
         let walletPayload = WalletPayload(
@@ -179,7 +363,8 @@ class WalletLogicTests: XCTestCase {
             notificationCenter: .default,
             logger: NoopNativeWalletLogging(),
             payloadHealthChecker: { .just($0) },
-            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) }
+            checkAndSaveWalletCredentials: { _, _, _ in .just(.noValue) },
+            derivationReplenishement: { _, _ in .failure(.unknown) }
         )
 
         let walletPayload = WalletPayload(

@@ -18,10 +18,10 @@ struct DerivationResponse: Equatable, Codable {
         }
     }
 
-    let type: Format
-    let purpose: Int
+    let type: Format?
+    let purpose: Int?
     let xpriv: String?
-    let xpub: String
+    let xpub: String?
     let addressLabels: [AddressLabelResponse]
     let cache: AddressCacheResponse
 
@@ -36,19 +36,19 @@ struct DerivationResponse: Equatable, Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = try container.decode(Format.self, forKey: .type)
-        purpose = try container.decode(Int.self, forKey: .purpose)
+        type = try container.decodeIfPresent(Format.self, forKey: .type)
+        purpose = try container.decodeIfPresent(Int.self, forKey: .purpose)
         xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
-        xpub = try container.decode(String.self, forKey: .xpub)
+        xpub = try container.decodeIfPresent(String.self, forKey: .xpub)
         addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
         cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
     }
 
     init(
-        type: DerivationResponse.Format,
-        purpose: Int,
+        type: DerivationResponse.Format?,
+        purpose: Int?,
         xpriv: String?,
-        xpub: String,
+        xpub: String?,
         addressLabels: [AddressLabelResponse],
         cache: AddressCacheResponse
     ) {
@@ -62,7 +62,18 @@ struct DerivationResponse: Equatable, Codable {
 }
 
 extension DerivationResponse.Format {
-    static func create(from model: DerivationResponse.Format) -> DerivationType {
+
+    var toType: DerivationType {
+        switch self {
+        case .legacy:
+            return .legacy
+        case .segwit:
+            return .segwit
+        }
+    }
+
+    static func create(from model: DerivationResponse.Format?) -> DerivationType? {
+        guard let model else { return nil }
         switch model {
         case .legacy:
             return .legacy
@@ -71,8 +82,20 @@ extension DerivationResponse.Format {
         }
     }
 
-    static func create(type: DerivationType) -> DerivationResponse.Format {
+    static func create(type: DerivationType?) -> DerivationResponse.Format? {
+        guard let type else { return nil }
         switch type {
+        case .legacy:
+            return .legacy
+        case .segwit:
+            return .segwit
+        }
+    }
+}
+
+extension DerivationType {
+    var toDerivationFormat: DerivationResponse.Format {
+        switch self {
         case .legacy:
             return .legacy
         case .segwit:
@@ -98,7 +121,7 @@ extension WalletPayloadKit.Derivation {
     var derivationResponse: DerivationResponse {
         DerivationResponse(
             type: DerivationResponse.Format.create(type: type),
-            purpose: DerivationResponse.Format.create(type: type).purpose,
+            purpose: DerivationResponse.Format.create(type: type)?.purpose,
             xpriv: xpriv,
             xpub: xpub,
             addressLabels: addressLabels.map(\.toAddressLabelResponse),
