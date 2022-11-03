@@ -1,6 +1,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import DIKit
 import SwiftUI
 import UIKit
 
@@ -12,7 +13,7 @@ public final class MultiAppRootController: UIHostingController<MultiAppContainer
 
         self.global = ViewStore(global)
         // TODO: pass in state, this is just for demo purposes
-        super.init(rootView: MultiAppContainerChrome())
+        super.init(rootView: MultiAppContainerChrome(app: DIKit.resolve()))
     }
 
     @available(*, unavailable)

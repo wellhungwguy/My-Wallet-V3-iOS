@@ -16,6 +16,12 @@ public struct MultiAppContainerChrome: View {
     /// `True` when a pull to refresh is triggered, otherwise `false`
     @State private var isRefreshing: Bool = false
 
+    private var app: AppProtocol
+    
+    init(app: AppProtocol) {
+        self.app = app
+    }
+
     public var body: some View {
         if #available(iOS 16, *) {
             InteractiveMultiAppContent(
@@ -25,6 +31,7 @@ public struct MultiAppContainerChrome: View {
                 scrollOffset: $scrollOffset,
                 isRefreshing: $isRefreshing
             )
+            .app(app)
         } else if #available(iOS 15, *) {
             StaticMultiAppContent(
                 totalBalance: $totalBalance,

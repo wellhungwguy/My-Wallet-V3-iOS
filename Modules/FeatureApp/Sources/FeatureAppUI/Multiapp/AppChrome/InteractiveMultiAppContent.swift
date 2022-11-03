@@ -6,6 +6,7 @@ import SwiftUI
 
 @available(iOS 16.0, *)
 struct InteractiveMultiAppContent: View {
+    @BlockchainApp var app
     /// The current total balance
     @Binding var totalBalance: String
     /// The current selected app mode
@@ -19,6 +20,7 @@ struct InteractiveMultiAppContent: View {
     /// `True` when a pull to refresh is triggered, otherwise `false`
     @Binding var isRefreshing: Bool
 
+
     var body: some View {
         MultiAppHeaderView(
             totalBalance: $totalBalance,
@@ -27,6 +29,9 @@ struct InteractiveMultiAppContent: View {
             scrollOffset: $scrollOffset,
             isRefreshing: $isRefreshing
         )
+        .onChange(of: currentModeSelection, perform: { newValue in
+            app.post(value: newValue.rawValue, of: blockchain.app.mode)
+        })
         .refreshable {
             await tempAsyncDelayMethod()
         }
