@@ -35,9 +35,6 @@ let package = Package(
             ],
             resources: [
                 .copy("blockchain.lexicon")
-            ],
-            plugins: [
-                .plugin(name: "SwiftStandAloneGeneratorPlugin", package: "Lexicon")
             ]
         ),
         .target(
