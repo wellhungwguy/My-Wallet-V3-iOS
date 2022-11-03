@@ -164,7 +164,7 @@ extension Icon {
         return newIcon
     }
 
-    public func circle(backgroundColor: Color = .semantic.muted.opacity(0.15)) -> Icon {
+    public func circle(backgroundColor: Color? = nil) -> Icon {
         var newIcon = self
         newIcon.isCircle = true
         newIcon.circleColor = backgroundColor
