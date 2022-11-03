@@ -2068,6 +2068,7 @@ public final class L_blockchain_namespace: L, I_blockchain_namespace {
 public protocol I_blockchain_namespace: I {}
 public extension I_blockchain_namespace {
 	var `language`: L_blockchain_namespace_language { .init("\(__).language") }
+	var `test`: L_blockchain_namespace_test { .init("\(__).test") }
 }
 public final class L_blockchain_namespace_language: L, I_blockchain_namespace_language {
 	public override class var localized: String { NSLocalizedString("blockchain.namespace.language", comment: "") }
@@ -2102,6 +2103,57 @@ public final class L_blockchain_namespace_language_taskpaper: L, I_blockchain_na
 	public override class var localized: String { NSLocalizedString("blockchain.namespace.language.taskpaper", comment: "") }
 }
 public protocol I_blockchain_namespace_language_taskpaper: I_blockchain_db_type_any, I_blockchain_session_configuration_value {}
+public final class L_blockchain_namespace_test: L, I_blockchain_namespace_test {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test", comment: "") }
+}
+public protocol I_blockchain_namespace_test: I {}
+public extension I_blockchain_namespace_test {
+	var `session`: L_blockchain_namespace_test_session { .init("\(__).session") }
+}
+public final class L_blockchain_namespace_test_session: L, I_blockchain_namespace_test_session {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session: I {}
+public extension I_blockchain_namespace_test_session {
+	var `state`: L_blockchain_namespace_test_session_state { .init("\(__).state") }
+}
+public final class L_blockchain_namespace_test_session_state: L, I_blockchain_namespace_test_session_state {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state: I {}
+public extension I_blockchain_namespace_test_session_state {
+	var `stored`: L_blockchain_namespace_test_session_state_stored { .init("\(__).stored") }
+}
+public final class L_blockchain_namespace_test_session_state_stored: L, I_blockchain_namespace_test_session_state_stored {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state.stored", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state_stored: I {}
+public extension I_blockchain_namespace_test_session_state_stored {
+	var `shared`: L_blockchain_namespace_test_session_state_stored_shared { .init("\(__).shared") }
+	var `user`: L_blockchain_namespace_test_session_state_stored_user { .init("\(__).user") }
+}
+public final class L_blockchain_namespace_test_session_state_stored_shared: L, I_blockchain_namespace_test_session_state_stored_shared {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state.stored.shared", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state_stored_shared: I {}
+public extension I_blockchain_namespace_test_session_state_stored_shared {
+	var `value`: L_blockchain_namespace_test_session_state_stored_shared_value { .init("\(__).value") }
+}
+public final class L_blockchain_namespace_test_session_state_stored_shared_value: L, I_blockchain_namespace_test_session_state_stored_shared_value {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state.stored.shared.value", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state_stored_shared_value: I_blockchain_session_state_shared_value, I_blockchain_session_state_stored_value {}
+public final class L_blockchain_namespace_test_session_state_stored_user: L, I_blockchain_namespace_test_session_state_stored_user {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state.stored.user", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state_stored_user: I {}
+public extension I_blockchain_namespace_test_session_state_stored_user {
+	var `value`: L_blockchain_namespace_test_session_state_stored_user_value { .init("\(__).value") }
+}
+public final class L_blockchain_namespace_test_session_state_stored_user_value: L, I_blockchain_namespace_test_session_state_stored_user_value {
+	public override class var localized: String { NSLocalizedString("blockchain.namespace.test.session.state.stored.user.value", comment: "") }
+}
+public protocol I_blockchain_namespace_test_session_state_stored_user_value: I_blockchain_session_state_stored_value {}
 public final class L_blockchain_session: L, I_blockchain_session {
 	public override class var localized: String { NSLocalizedString("blockchain.session", comment: "") }
 }

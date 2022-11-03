@@ -22,6 +22,7 @@ let package = Package(
             from: "0.6.3"
         ),
         .package(path: "../Extensions"),
+        .package(path: "../Keychain"),
         .package(path: "../AnyCoding")
     ],
     targets: [
@@ -31,7 +32,8 @@ let package = Package(
                 .target(name: "FirebaseProtocol"),
                 .product(name: "Lexicon", package: "Lexicon"),
                 .product(name: "AnyCoding", package: "AnyCoding"),
-                .product(name: "Extensions", package: "Extensions")
+                .product(name: "Extensions", package: "Extensions"),
+                .product(name: "KeychainKit", package: "Keychain")
             ],
             resources: [
                 .copy("blockchain.lexicon")

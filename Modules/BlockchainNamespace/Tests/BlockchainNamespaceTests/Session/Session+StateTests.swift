@@ -1,17 +1,18 @@
 @testable import BlockchainNamespace
 import Combine
+import KeychainKit
 import XCTest
 
 final class SessionStateTests: XCTestCase {
 
-    var app = App()
+    var app: AppProtocol = App.test
     var state: Session.State { app.state }
 
     let userId = "160c4c417f8490658a8396d0283fb0d6fb98c327"
 
     override func setUp() {
         super.setUp()
-        app = App()
+        app = App.test
     }
 
     func test_set_computed_value() throws {
@@ -180,6 +181,71 @@ final class SessionStateTests: XCTestCase {
         app.signIn(userId: userId)
 
         XCTAssertEqual(string, "signed_in")
+    }
+
+    func test_keychain() throws {
+
+        app.state.data.keychainAccount.user.signIn("oliver")
+        _ = try app.state.data.keychain.user.write(
+            value: Data("\"user.oliver\"".utf8),
+            for: blockchain.namespace.test.session.state.stored.user.value(\.id)
+        )
+        .get()
+
+        app.state.data.keychainAccount.user.signIn("dimitris")
+        _ = try app.state.data.keychain.user.write(
+            value: Data("\"user.dimitris\"".utf8),
+            for: blockchain.namespace.test.session.state.stored.user.value(\.id)
+        )
+        .get()
+
+        app.state.data.keychainAccount.user.signOut()
+
+        _ = try app.state.data.keychain.shared.write(
+            value: Data("\"shared\"".utf8),
+            for: blockchain.namespace.test.session.state.stored.shared.value(\.id)
+        )
+        .get()
+
+        var value: String?
+        app.publisher(for: blockchain.namespace.test.session.state.stored.user.value)
+            .sink { result in value = result.value as? String }
+            .tearDown(after: self)
+
+        do {
+            let data = try app.state.data.keychain.shared.read(for: blockchain.namespace.test.session.state.stored.shared.value(\.id)).get()
+            try XCTAssertEqual(JSONDecoder().decode(String.self, from: data), "shared")
+        }
+
+        try XCTAssertEqual(app.state.get(blockchain.namespace.test.session.state.stored.shared.value), "shared")
+
+        app.state.set(blockchain.namespace.test.session.state.stored.shared.value, to: "test.shared")
+        try XCTAssertEqual(app.state.get(blockchain.namespace.test.session.state.stored.shared.value), "test.shared")
+
+        XCTAssertNil(value)
+
+        app.signIn(userId: "oliver")
+
+        XCTAssertEqual(value, "user.oliver")
+        try XCTAssertEqual(app.state.get(blockchain.namespace.test.session.state.stored.user.value), "user.oliver")
+
+        do {
+            let data = try app.state.data.keychain.user.read(for: blockchain.namespace.test.session.state.stored.user.value(\.id)).get()
+            try XCTAssertEqual(JSONDecoder().decode(String.self, from: data), "user.oliver")
+        }
+
+        app.state.set(blockchain.namespace.test.session.state.stored.user.value, to: "test.oliver")
+        try XCTAssertEqual(app.state.get(blockchain.namespace.test.session.state.stored.user.value), "test.oliver")
+
+        do {
+            let data = try app.state.data.keychain.user.read(for: blockchain.namespace.test.session.state.stored.user.value(\.id)).get()
+            try XCTAssertEqual(JSONDecoder().decode(String.self, from: data), "test.oliver")
+        }
+
+        app.signOut()
+        app.signIn(userId: "dimitris")
+
+        XCTAssertEqual(value, "user.dimitris")
     }
 
     func test_boolean_logic() {

@@ -513,6 +513,17 @@ blockchain:
 			taskpaper:
 			+ blockchain.db.type.any
 			+ blockchain.session.configuration.value
+		test:
+			session:
+				state:
+					stored:
+						shared:
+							value:
+							+ blockchain.session.state.shared.value
+							+ blockchain.session.state.stored.value
+						user:
+							value:
+							+ blockchain.session.state.stored.value
 	session:
 		configuration:
 			value:

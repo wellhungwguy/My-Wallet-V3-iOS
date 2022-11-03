@@ -353,7 +353,12 @@ extension App {
         scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.test.eraseToAnyScheduler()
     ) -> AppProtocol {
         App(
-            state: Session.State([:], preferences: preferences),
+            state: with(Session.State([:], preferences: preferences)) { state in
+                state.data.keychain = (
+                    user: Mock.Keychain(queryProvider: state.data.keychainAccount.user),
+                    shared: Mock.Keychain(queryProvider: state.data.keychainAccount.shared)
+                )
+            },
             remoteConfiguration: Session.RemoteConfiguration(
                 remote: Mock.RemoteConfiguration(),
                 session: session,
