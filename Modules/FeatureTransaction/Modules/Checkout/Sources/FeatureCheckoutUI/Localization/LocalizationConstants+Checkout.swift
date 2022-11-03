@@ -102,6 +102,16 @@ extension LocalizationConstants {
                 "Blockchain.com provides the best market price we receive and applies a spread.",
                 comment: ""
             )
+
+            static let availableToTrade = NSLocalizedString(
+                "Available to Trade (est.)",
+                comment: "Available to Trade (est.) field title"
+            )
+
+            static let availableToWithdraw = NSLocalizedString(
+                "Available to Withdraw or Send (est.)",
+                comment: "Available to Withdraw or Send (est.) field title"
+            )
         }
 
         enum Button {
@@ -115,5 +125,63 @@ extension LocalizationConstants {
             )
             static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
+    }
+}
+
+extension LocalizationConstants.Checkout {
+    enum AvailableToTradeInfo {
+        static let title = NSLocalizedString(
+            "Available to withdraw or send",
+            comment: "Available To Trade Info title"
+        )
+
+        static let description = NSLocalizedString(
+            "Withdrawal holds protect you from fraud and theft if your Blockchain.com account is compromised. The hold period starts once funds are received in your account.",
+            comment: "Available To Trade Info description"
+        )
+
+        static let learnMoreButton = NSLocalizedString(
+            "Learn More",
+            comment: "Available To Trade Info learn more button"
+        )
+    }
+
+    enum TermsInfo {
+        static let title = NSLocalizedString(
+            "Terms & Conditions",
+            comment: "Terms & Conditions title"
+        )
+
+        static let simpleBuyDescription = NSLocalizedString(
+            "You authorize Blockchain.com, Inc. to debit your %@ account for up to %@ via Bank Transfer (ACH) and, if necessary, to initiate credit entries/adjustments for any debits made in error to your account at the financial institution where you hold your account. You acknowledge that the origination of ACH transactions to your account complies with the provisions of U.S. law. You agree that this authorization cannot be revoked.\n\nYour deposit will be credited to your Blockchain.com account within 0-4 business days at the rate shown at the time of your purchase. You can withdraw these funds from your Blockchain.com account %@ after Blockchain.com receives funds from your financial institution.",
+            comment: "Terms & Conditions description"
+        )
+
+        static let recurringBuyDescription = NSLocalizedString(
+            "You authorize Blockchain.com, Inc. to debit your %@ account for up to %@ (the recurring purchase amount) via Bank Transfer (ACH) and, if necessary, to initiate credit entries/adjustments for any debits made in error to your account at the above Financial Institution. You acknowledge that the origination of ACH transactions to your account comply with the provisions of U.S. law. You agree that this authorization cannot be revoked.\n\nYour deposit will be credited to your Blockchain.com account within 0-4 business days at the rate shown at the time of your purchase. You can withdraw these funds from your Blockchain.com account %@ days after Blockchain.com receives funds from your Financial Institution.",
+            comment: "Terms & Conditions description"
+        )
+
+        static let doneButton = NSLocalizedString(
+            "OK",
+            comment: "Terms & Conditions done button"
+        )
+    }
+
+    enum AchTransferDisclaimer {
+        static let simpleBuyDescription = NSLocalizedString(
+            "By placing this order, you authorize Blockchain.com, Inc.to debit %@ from your bank account for a %@ purchase at a quoted price of %@.",
+            comment: "Terms & Conditions description"
+        )
+
+        static let recurringBuyDescription = NSLocalizedString(
+            "By placing this order, you authorize Blockchain.com, Inc. to debit your %@ account for up to %@ (the recurring purchase amount) via Bank Transfer (ACH).",
+            comment: "Terms & Conditions description"
+        )
+
+        static let readMoreButton = NSLocalizedString(
+            "Read More",
+            comment: "Terms & Conditions done button"
+        )
     }
 }

@@ -38,13 +38,15 @@ let app: AppProtocol = App(
             blockchain.app.configuration.stx.airdrop.users.is.enabled: false,
             blockchain.app.configuration.stx.all.users.is.enabled: false,
             blockchain.app.configuration.tabs: blockchain.app.configuration.tabs.json(in: .main),
+            blockchain.app.configuration.ui.payments.improvements.is.enabled: false,
             blockchain.app.configuration.unified.sign_in.is.enabled: false,
             blockchain.app.configuration.card.issuing.tokenise.is.enabled: true,
             blockchain.ux.transaction["swap"].checkout.is.enabled: BuildFlag.isInternal,
             blockchain.ux.transaction["buy"].checkout.is.enabled: BuildFlag.isInternal,
+            // swiftlint:disable line_length
+            blockchain.ux.transaction["buy"].checkout.terms.of.withdraw: "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds",
             blockchain.ux.transaction["swap"].checkout.exchange.rate.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360061672651",
-            blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees",
-            blockchain.ux.transaction["swap"].checkout.refund.policy.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/4417063009172"
+            blockchain.ux.transaction["swap"].checkout.fee.disclaimer.url: "https://support.blockchain.com/hc/en-us/articles/360000939903-Transaction-fees"
         ]
     )
 )

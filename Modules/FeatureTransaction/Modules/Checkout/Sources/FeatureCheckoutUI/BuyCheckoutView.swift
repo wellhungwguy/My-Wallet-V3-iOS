@@ -55,10 +55,19 @@ extension BuyCheckoutView {
 
     public struct Loaded: View {
 
+        enum BuyType {
+            case simpleBuy
+            case recurringBuy
+        }
+
         @BlockchainApp var app
         @Environment(\.context) var context
+        @Environment(\.openURL) var openURL
+        @State var isAvailableToTradeInfoPresented = false
+        @State var isTermsInfoPresented = false
 
         let checkout: BuyCheckout
+        let buyType: BuyType = .simpleBuy
 
         @State var information = (price: false, fee: false)
         @State var readyToRefresh = false
@@ -125,6 +134,7 @@ extension BuyCheckoutView.Loaded {
                             }
                         }
                     )
+                    availableDates()
                 }
                 PrimaryDivider()
                 disclaimer()
@@ -133,6 +143,96 @@ extension BuyCheckoutView.Loaded {
             footer()
         }
         .backgroundTexture(.semantic.background)
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .bottomSheet(
+            isPresented: $isAvailableToTradeInfoPresented
+        ) {
+            availableToTradeInfoSheet
+        }
+        .sheet(
+            isPresented: $isTermsInfoPresented
+        ) {
+            termsInfoSheet
+        }
+    }
+
+    @ViewBuilder var availableToTradeInfoSheet: some View {
+        VStack(alignment: .leading, spacing: 19) {
+            HStack {
+                Text(L10n.AvailableToTradeInfo.title)
+                    .typography(.body2)
+                    .foregroundTexture(.semantic.title)
+                Spacer()
+                IconButton(icon: .closeCirclev2) {
+                    isAvailableToTradeInfoPresented = false
+                }
+                .frame(width: 24.pt, height: 24.pt)
+            }
+
+            VStack(alignment: .leading, spacing: Spacing.padding2) {
+                Text(L10n.AvailableToTradeInfo.description)
+                    .typography(.body1)
+                    .foregroundTexture(.semantic.text)
+                SmallMinimalButton(title: L10n.AvailableToTradeInfo.learnMoreButton) {
+                    isAvailableToTradeInfoPresented = false
+                    Task { @MainActor in
+                        try await openURL(app.get(blockchain.ux.transaction["buy"].checkout.terms.of.withdraw))
+                    }
+                }
+            }
+        }
+        .padding(Spacing.padding3)
+    }
+
+    @ViewBuilder var termsInfoSheet: some View {
+        PrimaryNavigationView {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Spacing.padding2) {
+                        let description: String = {
+                            switch buyType {
+                            case .simpleBuy:
+                                return L10n.TermsInfo.simpleBuyDescription
+                            case .recurringBuy:
+                                return L10n.TermsInfo.recurringBuyDescription
+                            }
+                        }()
+                        Text(
+                            String(
+                                format: description,
+                                checkout.paymentMethod.name,
+                                checkout.fiat.displayString,
+                                formattedUpperRoundedDays(
+                                    minutes: checkout.depositTerms?.withdrawalLockMinutes,
+                                    defaultDays: 7
+                                )
+                            )
+                        )
+                        .fixedSize(horizontal: false, vertical: true)
+                        .typography(.body1)
+                        .foregroundTexture(.semantic.text)
+                    }
+                    .padding(Spacing.padding3)
+                    .primaryNavigation(
+                        title: L10n.TermsInfo.title,
+                        trailing: {
+                            IconButton(icon: .closeCirclev2) {
+                                isTermsInfoPresented = false
+                            }
+                            .frame(width: 24.pt, height: 24.pt)
+                        }
+                    )
+                }
+                .frame(width: geometry.size.width)
+                .frame(height: geometry.size.height)
+            }
+        }
+        PrimaryButton(title: L10n.TermsInfo.doneButton) {
+            isTermsInfoPresented = false
+        }
+        .frame(alignment: .bottom)
+        .padding([.horizontal, .bottom], Spacing.padding3)
     }
 
     @ViewBuilder func header() -> some View {
@@ -207,6 +307,34 @@ extension BuyCheckoutView.Loaded {
         }
     }
 
+    @ViewBuilder func availableDates() -> some View {
+        if isUIPaymentsImprovementsEnabled {
+            if let availableToTrade = checkout.depositTerms?.availableToTrade {
+                PrimaryDivider()
+                TableRow(
+                    title: .init(L10n.Label.availableToTrade),
+                    inlineTitleButton: IconButton(
+                        icon: question(information.fee),
+                        toggle: $isAvailableToTradeInfoPresented
+                    ),
+                    trailing: {
+                        TableRowTitle(availableToTrade)
+                    }
+                )
+            }
+
+            if let availableToWithdraw = checkout.depositTerms?.availableToWithdraw {
+                PrimaryDivider()
+                TableRow(
+                    title: .init(L10n.Label.availableToWithdraw),
+                    trailing: {
+                        TableRowTitle(availableToWithdraw)
+                    }
+                )
+            }
+        }
+    }
+
     @ViewBuilder
     func explain(_ content: some StringProtocol, action: @escaping () async throws -> Void) -> some View {
         VStack(alignment: .leading) {
@@ -232,11 +360,38 @@ extension BuyCheckoutView.Loaded {
 
     @ViewBuilder func disclaimer() -> some View {
         VStack(alignment: .leading) {
-            Text(L10n.Label.indicativeDisclaimer)
-                .multilineTextAlignment(.center)
-            Text(rich: L10n.Label.termsOfService)
-            .onTap(blockchain.ux.transaction.checkout.terms.of.service, \.then.launch.url) {
-                try await app.get(blockchain.ux.transaction.checkout.terms.of.service.url) as URL
+            if isUIPaymentsImprovementsEnabled && checkout.paymentMethod.isACH {
+                VStack(alignment: .leading, spacing: Spacing.padding2) {
+                    let description: String = {
+                        switch buyType {
+                        case .simpleBuy:
+                            return String(
+                                format: L10n.AchTransferDisclaimer.simpleBuyDescription,
+                                checkout.fiat.displayString,
+                                checkout.crypto.code,
+                                checkout.exchangeRate.displayString
+                            )
+                        case .recurringBuy:
+                            return String(
+                                format: L10n.AchTransferDisclaimer.recurringBuyDescription,
+                                checkout.paymentMethod.name,
+                                checkout.fiat.displayString
+                            )
+                        }
+                    }()
+                    Text(description)
+                    .multilineTextAlignment(.leading)
+                    SmallMinimalButton(title: L10n.AchTransferDisclaimer.readMoreButton) {
+                        isTermsInfoPresented = true
+                    }
+                }
+            } else {
+                Text(L10n.Label.indicativeDisclaimer)
+                    .multilineTextAlignment(.center)
+                Text(rich: L10n.Label.termsOfService)
+                .onTap(blockchain.ux.transaction.checkout.terms.of.service, \.then.launch.url) {
+                    try await app.get(blockchain.ux.transaction.checkout.terms.of.service.url) as URL
+                }
             }
         }
         .padding()
@@ -267,6 +422,35 @@ extension BuyCheckoutView.Loaded {
         }
         .padding()
         .backgroundWithShadow(.top)
+    }
+}
+
+extension BuyCheckoutView.Loaded {
+    /// This function converts minutes into days and does day upper rounding
+    /// Examples: 0m -> 0 days;  1m -> 1 day;  1440m -> 1 day;  1441m -> 2 days
+    private func formattedUpperRoundedDays(minutes: Int?, defaultDays: Int) -> String {
+        let roundedSeconds: TimeInterval = {
+            let minutesInDay = 24 * 60
+            let secondsInMinute = 60
+            guard let minutes = minutes
+            else { return TimeInterval(defaultDays * minutesInDay * secondsInMinute) }
+            let remainder: Int = minutes % minutesInDay
+            let add: Int = remainder == 0 ? 0 : minutesInDay
+            return TimeInterval((minutes + add) * secondsInMinute)
+        }()
+
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day]
+        formatter.unitsStyle = .full
+        return formatter.string(from: roundedSeconds) ?? ""
+    }
+}
+
+extension BuyCheckoutView.Loaded {
+    private var isUIPaymentsImprovementsEnabled: Bool {
+        app
+            .remoteConfiguration
+            .yes(if: blockchain.app.configuration.ui.payments.improvements.is.enabled)
     }
 }
 

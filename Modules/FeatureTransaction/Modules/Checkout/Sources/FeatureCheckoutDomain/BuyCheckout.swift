@@ -8,6 +8,7 @@ public struct BuyCheckout: Equatable {
     public var total: FiatValue
     public var paymentMethod: PaymentMethod
     public var quoteExpiration: Date?
+    public var depositTerms: DepositTerms?
 
     public init(
         input: MoneyValue,
@@ -15,7 +16,8 @@ public struct BuyCheckout: Equatable {
         fee: Fee?,
         total: FiatValue,
         paymentMethod: BuyCheckout.PaymentMethod,
-        quoteExpiration: Date?
+        quoteExpiration: Date?,
+        depositTerms: DepositTerms? = nil
     ) {
         self.input = input
         self.purchase = purchase
@@ -23,6 +25,27 @@ public struct BuyCheckout: Equatable {
         self.total = total
         self.paymentMethod = paymentMethod
         self.quoteExpiration = quoteExpiration
+        self.depositTerms = depositTerms
+    }
+}
+
+extension BuyCheckout {
+
+    public struct DepositTerms: Equatable {
+
+        public var availableToTrade: String?
+        public var availableToWithdraw: String?
+        public var withdrawalLockMinutes: Int?
+
+        public init(
+            availableToTrade: String?,
+            availableToWithdraw: String?,
+            withdrawalLockMinutes: Int?
+        ) {
+            self.availableToTrade = availableToTrade
+            self.availableToWithdraw = availableToWithdraw
+            self.withdrawalLockMinutes = withdrawalLockMinutes
+        }
     }
 }
 
@@ -38,11 +61,18 @@ extension BuyCheckout {
         public var name: String
         public var detail: String?
         public var isApplePay: Bool
+        public var isACH: Bool
 
-        public init(name: String, detail: String?, isApplePay: Bool) {
+        public init(
+            name: String,
+            detail: String?,
+            isApplePay: Bool,
+            isACH: Bool
+        ) {
             self.name = name
             self.detail = detail
             self.isApplePay = isApplePay
+            self.isACH = isACH
         }
     }
 
@@ -79,10 +109,12 @@ extension BuyCheckout {
             paymentMethod: .init(
                 name: "Chase Sapphire",
                 detail: "Visa 0392",
-                isApplePay: false
+                isApplePay: false,
+                isACH: false
             ),
             quoteExpiration: Date()
-                .addingTimeInterval(30)
+                .addingTimeInterval(30),
+            depositTerms: nil
         )
     }
 }

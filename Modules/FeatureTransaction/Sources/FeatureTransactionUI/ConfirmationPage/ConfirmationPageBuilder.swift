@@ -211,7 +211,12 @@ extension TransactionState {
                 fee: .init(value: fee.withoutPromotion, promotion: fee.value),
                 total: quote.amount.fiatValue.or(throw: "Expected fiat"),
                 paymentMethod: source.checkoutPaymentMethod(),
-                quoteExpiration: quote.date.expiresAt
+                quoteExpiration: quote.date.expiresAt,
+                depositTerms: .init(
+                    availableToTrade: quote.depositTerms?.formattedAvailableToTrade,
+                    availableToWithdraw: quote.depositTerms?.formattedAvailableToWithdraw,
+                    withdrawalLockMinutes: quote.depositTerms?.withdrawalLockMinutes
+                )
             )
         } catch {
             return nil
@@ -272,7 +277,8 @@ extension TransactionState {
                 paymentMethod: .init(
                     name: name,
                     detail: detail,
-                    isApplePay: paymentMethodAccount?.paymentMethod.type.isApplePay == true
+                    isApplePay: paymentMethodAccount?.paymentMethod.type.isApplePay == true,
+                    isACH: paymentMethodAccount?.paymentMethod.type.isACH == true
                 ),
                 quoteExpiration: pendingTransaction.confirmations.lazy
                     .filter(TransactionConfirmations.QuoteExpirationTimer.self).first?.expirationDate
@@ -327,38 +333,123 @@ extension TransactionState {
 
 extension BlockchainAccount {
 
+    var isACH: Bool {
+        (self as? PaymentMethodAccount)?.paymentMethod.type.isACH ?? false
+    }
+
     func checkoutPaymentMethod() -> BuyCheckout.PaymentMethod {
         switch (self as? PaymentMethodAccount)?.paymentMethodType {
         case .card(let card):
             return BuyCheckout.PaymentMethod(
                 name: card.type.name,
                 detail: card.displaySuffix,
-                isApplePay: false
+                isApplePay: false,
+                isACH: isACH
             )
         case .applePay(let apple):
             return BuyCheckout.PaymentMethod(
                 name: LocalizationConstants.Checkout.applePay,
                 detail: apple.displaySuffix,
-                isApplePay: true
+                isApplePay: true,
+                isACH: isACH
             )
         case .account:
             return BuyCheckout.PaymentMethod(
                 name: LocalizationConstants.Checkout.funds,
                 detail: nil,
-                isApplePay: false
+                isApplePay: false,
+                isACH: isACH
             )
         case .linkedBank(let bank):
             return BuyCheckout.PaymentMethod(
                 name: bank.account?.bankName ?? LocalizationConstants.Checkout.bank,
                 detail: bank.account?.number,
-                isApplePay: false
+                isApplePay: false,
+                isACH: isACH
             )
         case _:
             return BuyCheckout.PaymentMethod(
                 name: label,
                 detail: nil,
-                isApplePay: false
+                isApplePay: false,
+                isACH: isACH
             )
         }
     }
 }
+
+extension BrokerageQuote.Response.DepositTerms {
+
+    var formattedAvailableToTrade: String? {
+        formattedDepositTerms(
+            displayMode: availableToTradeDisplayMode,
+            min: availableToTradeMinutesMin,
+            max: availableToTradeMinutesMax
+        )
+    }
+
+    var formattedAvailableToWithdraw: String? {
+        formattedDepositTerms(
+            displayMode: availableToWithdrawDisplayMode,
+            min: availableToWithdrawMinutesMin,
+            max: availableToWithdrawMinutesMax
+        )
+    }
+
+    private func formattedDepositTerms(
+        displayMode: BrokerageQuote.Response.DisplayMode,
+        min: Int,
+        max: Int
+    ) -> String? {
+        let minDate = Date().addingTimeInterval(TimeInterval(min * 60))
+        let maxDate = Date().addingTimeInterval(TimeInterval(max * 60))
+
+        var dateFormatter: DateFormatter {
+            if Locale.current.identifier == Locale.US.identifier {
+                return usDateFormatter
+            } else {
+                return defaultDateFormatter
+            }
+        }
+
+        let loc = LocalizationConstants.Checkout.DepositTermsAvailableDisplayMode.self
+        switch displayMode {
+        case .immediately:
+            return loc.immediately
+        case .maxMinute:
+            let minutes = {
+                let formatter = DateComponentsFormatter()
+                formatter.allowedUnits = [.minute]
+                formatter.unitsStyle = .full
+                return formatter.string(from: TimeInterval(max * 60)) ?? ""
+            }()
+            return String(format: loc.maxMinute, "\(minutes)")
+        case .maxDay:
+            return dateFormatter.string(from: maxDate)
+        case .minuteRange:
+            return String(format: loc.minuteRange, "\(min)", "\(max)")
+        case .dayRange:
+            return String(
+                format: loc.dayRange,
+                dateFormatter.string(from: minDate),
+                dateFormatter.string(from: maxDate)
+            )
+        case .none:
+            return nil
+        default:
+            return nil
+        }
+    }
+}
+
+let defaultDateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "d MMMM"
+    return dateFormatter
+}()
+
+let usDateFormatter = {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMMM d"
+    return dateFormatter
+}()
