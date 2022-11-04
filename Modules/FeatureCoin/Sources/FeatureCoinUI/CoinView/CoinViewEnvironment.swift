@@ -15,7 +15,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
     public let accountsProvider: () -> AnyPublisher<[Account], Error>
     public let assetInformationService: AssetInformationService
     public let historicalPriceService: HistoricalPriceService
-    public let interestRatesRepository: RatesRepositoryAPI
+    public let earnRatesRepository: RatesRepositoryAPI
     public let explainerService: ExplainerService
     public let dismiss: () -> Void
 
@@ -28,7 +28,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         accountsProvider: @escaping () -> AnyPublisher<[Account], Error>,
         assetInformationService: AssetInformationService,
         historicalPriceService: HistoricalPriceService,
-        interestRatesRepository: RatesRepositoryAPI,
+        earnRatesRepository: RatesRepositoryAPI,
         explainerService: ExplainerService,
         watchlistService: WatchlistService,
         dismiss: @escaping () -> Void
@@ -39,7 +39,7 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         self.accountsProvider = accountsProvider
         self.assetInformationService = assetInformationService
         self.historicalPriceService = historicalPriceService
-        self.interestRatesRepository = interestRatesRepository
+        self.earnRatesRepository = earnRatesRepository
         self.explainerService = explainerService
         self.watchlistService = watchlistService
         self.dismiss = dismiss
@@ -53,7 +53,7 @@ extension CoinViewEnvironment {
         accountsProvider: { .empty() },
         assetInformationService: .preview,
         historicalPriceService: .preview,
-        interestRatesRepository: PreviewRatesRepository(.just(5 / 3)),
+        earnRatesRepository: PreviewRatesRepository(.just(EarnRates(stakingRate: 5 / 3, interestRate: 5 / 3))),
         explainerService: .preview,
         watchlistService: .preview,
         dismiss: {}
@@ -65,7 +65,7 @@ extension CoinViewEnvironment {
         accountsProvider: { .empty() },
         assetInformationService: .previewEmpty,
         historicalPriceService: .previewEmpty,
-        interestRatesRepository: PreviewRatesRepository(),
+        earnRatesRepository: PreviewRatesRepository(),
         explainerService: .preview,
         watchlistService: .previewEmpty,
         dismiss: {}

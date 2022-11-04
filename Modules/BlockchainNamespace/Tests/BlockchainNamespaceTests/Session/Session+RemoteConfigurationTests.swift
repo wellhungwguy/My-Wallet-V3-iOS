@@ -77,7 +77,9 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                                         ]
                                     ]
                                 ]
-                            ]
+                            ],
+                            "blockchain_ux_asset_ETH_account_CryptoStakingAccount_ETH_coming_soon_visit_learn_more_url":
+                                "https://www.blockchain.com/coming_soon"
                         ]
                     ]
                 ),
@@ -173,8 +175,20 @@ final class SessionRemoteConfigurationTests: XCTestCase {
                 "blockchain_app_configuration_deep_link_rules",
                 "blockchain_app_configuration_customer_support_is_enabled",
                 "blockchain_app_configuration_customer_support_url",
-                "blockchain_ux_onboarding_promotion_cowboys_verify_identity_announcement"
+                "blockchain_ux_onboarding_promotion_cowboys_verify_identity_announcement",
+                "blockchain_ux_asset_ETH_account_CryptoStakingAccount_ETH_coming_soon_visit_learn_more_url"
             ].set
+        )
+    }
+
+    func test_key_with_id_with_full_stop() async throws {
+        let url = try await app.get(
+            blockchain.ux.asset["ETH"].account["CryptoStakingAccount.ETH"].coming.soon.visit.learn.more.url
+        ) as String
+
+        XCTAssertEqual(
+            url,
+            "https://www.blockchain.com/coming_soon"
         )
     }
 

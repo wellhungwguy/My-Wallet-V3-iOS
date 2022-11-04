@@ -354,6 +354,7 @@ extension Icon {
     public static let `walletTrade` = Icon(name: "Wallet Trade")
     public static let `walletTransfer` = Icon(name: "Wallet Transfer")
     public static let `walletWithdraw` = Icon(name: "Wallet Withdraw")
+    public static let `walletStaking` = Icon(name: "Wallet Staking Circle")
 }
 
 extension Icon {

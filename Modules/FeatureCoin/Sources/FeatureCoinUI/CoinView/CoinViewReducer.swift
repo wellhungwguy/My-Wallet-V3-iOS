@@ -77,15 +77,15 @@ public let coinViewReducer = Reducer<
                 .map(CoinViewAction.update)
 
         case .fetchInterestRate:
-            return environment.interestRatesRepository
-                .fetchRate(code: state.currency.code)
+            return environment.earnRatesRepository
+                .fetchEarnRates(code: state.currency.code)
                 .result()
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map(CoinViewAction.fetchedInterestRate)
 
         case .fetchedInterestRate(let result):
-            state.interestRate = try? result.get()
+            state.earnRates = try? result.get()
             return .none
 
         case .fetchedAssetInformation(let result):
@@ -130,7 +130,7 @@ public let coinViewReducer = Reducer<
                         }
                     }
                 }
-                if accounts.contains(where: { $0.accountType == .interest }) {
+                if accounts.contains(where: { $0.accountType.supportRates }) {
                     return .merge(update, Effect(value: .fetchInterestRate))
                 } else {
                     return update
@@ -151,7 +151,9 @@ public let coinViewReducer = Reducer<
             }
             switch ref.tag {
             case blockchain.ux.asset.account.sheet:
-                if environment.explainerService.isAccepted(account) {
+                if account.isComingSoon {
+                    state.comingSoonAccount = account
+                } else if environment.explainerService.isAccepted(account) {
                     state.account = account
                 } else {
                     return .fireAndForget {

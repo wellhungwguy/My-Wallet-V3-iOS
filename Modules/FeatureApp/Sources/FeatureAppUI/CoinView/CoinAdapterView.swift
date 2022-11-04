@@ -90,7 +90,7 @@ public struct CoinAdapterView: View {
                     displayFiatCurrency: fiatCurrencyService.displayCurrencyPublisher,
                     historicalPriceRepository: historicalPriceRepository
                 ),
-                interestRatesRepository: ratesRepository,
+                earnRatesRepository: ratesRepository,
                 explainerService: .init(app: app),
                 watchlistService: WatchlistService(
                     base: cryptoCurrency,
@@ -425,6 +425,8 @@ extension FeatureCoinDomain.Account.AccountType {
             self = .exchange
         } else if account is InterestAccount {
             self = .interest
+        } else if account is StakingAccount {
+            self = .staking
         } else {
             self = .privateKey
         }

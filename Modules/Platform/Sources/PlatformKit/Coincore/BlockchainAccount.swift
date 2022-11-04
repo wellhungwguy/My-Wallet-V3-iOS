@@ -15,6 +15,8 @@ public protocol NonCustodialAccount {}
 
 public protocol InterestAccount {}
 
+public protocol StakingAccount {}
+
 public protocol BlockchainAccount: Account {
 
     /// A unique identifier for this `BlockchainAccount`.

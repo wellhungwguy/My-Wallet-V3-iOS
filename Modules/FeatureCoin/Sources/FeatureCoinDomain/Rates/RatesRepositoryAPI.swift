@@ -5,24 +5,24 @@ import Errors
 
 public protocol RatesRepositoryAPI {
 
-    func fetchRate(
+    func fetchEarnRates(
         code: String
-    ) -> AnyPublisher<Double, NetworkError>
+    ) -> AnyPublisher<EarnRates, NetworkError>
 }
 
 // MARK: - Preview Helper
 
 public struct PreviewRatesRepository: RatesRepositoryAPI {
 
-    private let rate: AnyPublisher<Double, NetworkError>
+    private let rate: AnyPublisher<EarnRates, NetworkError>
 
-    public init(_ rate: AnyPublisher<Double, NetworkError> = .empty()) {
+    public init(_ rate: AnyPublisher<EarnRates, NetworkError> = .empty()) {
         self.rate = rate
     }
 
-    public func fetchRate(
+    public func fetchEarnRates(
         code: String
-    ) -> AnyPublisher<Double, NetworkError> {
+    ) -> AnyPublisher<EarnRates, NetworkError> {
         rate
     }
 }
