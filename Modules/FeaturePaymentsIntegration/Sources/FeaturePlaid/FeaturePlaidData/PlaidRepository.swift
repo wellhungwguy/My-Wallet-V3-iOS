@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import FeaturePlaidDomain
+import MoneyKit
 
 public struct PlaidRepository: PlaidRepositoryAPI {
     private let client: PlaidClientAPI
@@ -110,12 +111,12 @@ public struct PlaidRepository: PlaidRepositoryAPI {
 
     public func getSettlementInfo(
         accountId: String,
-        amount: String
+        amount: MoneyValue
     ) -> AnyPublisher<SettlementInfo, NabuError> {
         client
             .getSettlementInfo(
                 accountId: accountId,
-                amount: amount
+                amount: amount.toDisplayString(includeSymbol: false, locale: .Posix)
             )
             .map { response in
                 let settlement = response.attributes.settlementResponse
