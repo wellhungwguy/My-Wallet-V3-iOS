@@ -33,7 +33,8 @@ final class ERC20Asset: CryptoAsset {
             walletAccountRepository.defaultAccount(erc20Token: erc20Token, network: network)
         },
         exchangeAccountsProvider: exchangeAccountProvider,
-        addressFactory: addressFactory
+        addressFactory: addressFactory,
+        featureFlag: featureFlag
     )
 
     private let addressFactory: ExternalAssetAddressFactory
@@ -43,6 +44,7 @@ final class ERC20Asset: CryptoAsset {
     private let kycTiersService: KYCTiersServiceAPI
     private let network: EVMNetwork
     private let walletAccountRepository: EthereumWalletAccountRepositoryAPI
+    private let featureFlag: FeatureFetching
 
     // MARK: - Setup
 
@@ -53,7 +55,8 @@ final class ERC20Asset: CryptoAsset {
         errorRecorder: ErrorRecording,
         exchangeAccountProvider: ExchangeAccountsProviderAPI,
         kycTiersService: KYCTiersServiceAPI,
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        featureFlag: FeatureFetching
     ) {
         asset = erc20Token.cryptoCurrency!
         addressFactory = ERC20ExternalAssetAddressFactory(
@@ -67,6 +70,7 @@ final class ERC20Asset: CryptoAsset {
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
         self.kycTiersService = kycTiersService
+        self.featureFlag = featureFlag
     }
 
     // MARK: - Asset

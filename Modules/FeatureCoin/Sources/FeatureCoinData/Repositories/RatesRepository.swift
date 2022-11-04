@@ -14,11 +14,21 @@ public struct RatesRepository: RatesRepositoryAPI {
         self.client = client
     }
 
-    public func fetchRate(
+    public func fetchEarnRates(
         code: String
-    ) -> AnyPublisher<Double, NetworkError> {
-        client.fetchInterestAccountRateForCurrencyCode(code)
+    ) -> AnyPublisher<EarnRates, NetworkError> {
+        let stakingRatePublisher = client.fetchStakingAccountRateForCurrencyCode()
+            .map { $0[code]?.rate ?? 0 }
+            .eraseToAnyPublisher()
+        return client.fetchInterestAccountRateForCurrencyCode(code)
             .map(\.rate)
+            .zip(stakingRatePublisher)
+            .map { interestRate, stakingRate in
+                EarnRates(
+                    stakingRate: stakingRate,
+                    interestRate: interestRate
+                )
+            }
             .eraseToAnyPublisher()
     }
 }

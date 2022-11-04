@@ -29,7 +29,8 @@ final class CustodialCryptoAsset: CryptoAsset {
             defaultAccount
         },
         exchangeAccountsProvider: exchangeAccountProvider,
-        addressFactory: addressFactory
+        addressFactory: addressFactory,
+        featureFlag: featureFlag
     )
 
     private let kycTiersService: KYCTiersServiceAPI
@@ -38,6 +39,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     private let addressFactory: ExternalAssetAddressFactory
     private let featureFetcher: FeatureFetching
     private let delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI
+    private let featureFlag: FeatureFetching
 
     // MARK: - Setup
 
@@ -47,7 +49,8 @@ final class CustodialCryptoAsset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI = resolve()
+        delegatedCustodyAccountRepository: DelegatedCustodyAccountRepositoryAPI = resolve(),
+        featureFlag: FeatureFetching = resolve()
     ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
@@ -56,6 +59,7 @@ final class CustodialCryptoAsset: CryptoAsset {
         self.featureFetcher = featureFetcher
         self.delegatedCustodyAccountRepository = delegatedCustodyAccountRepository
         addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
+        self.featureFlag = featureFlag
     }
 
     // MARK: - Asset
@@ -83,6 +87,10 @@ final class CustodialCryptoAsset: CryptoAsset {
 
         if filter.contains(.exchange) {
             groups.append(exchangeGroup)
+        }
+
+        if filter.contains(.staking) {
+            groups.append(stakingGroup)
         }
 
         return groups
@@ -123,7 +131,8 @@ final class CustodialCryptoAsset: CryptoAsset {
             nonCustodialGroup,
             custodialGroup,
             interestGroup,
-            exchangeGroup
+            exchangeGroup,
+            stakingGroup
         ]
         .zip()
         .eraseToAnyPublisher()
@@ -140,6 +149,10 @@ final class CustodialCryptoAsset: CryptoAsset {
 
     private var interestGroup: AnyPublisher<AccountGroup?, Never> {
         cryptoAssetRepository.interestGroup
+    }
+
+    private var stakingGroup: AnyPublisher<AccountGroup?, Never> {
+        cryptoAssetRepository.stakingGroup
     }
 
     private var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {

@@ -10,6 +10,8 @@ public protocol RatesClientAPI {
     func fetchInterestAccountRateForCurrencyCode(
         _ currencyCode: String
     ) -> AnyPublisher<InterestAccountRateResponse, NetworkError>
+
+    func fetchStakingAccountRateForCurrencyCode() -> AnyPublisher<StakingUserRatesResponse, NetworkError>
 }
 
 public struct RatesClient: RatesClientAPI {
@@ -40,6 +42,23 @@ public struct RatesClient: RatesClientAPI {
         ]
         let request = requestBuilder.get(
             path: "/savings/rates",
+            parameters: parameters,
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    public func fetchStakingAccountRateForCurrencyCode() -> AnyPublisher<StakingUserRatesResponse, NetworkError> {
+        let parameters = [
+            URLQueryItem(
+                name: "product",
+                value: "staking"
+            )
+        ]
+        let request = requestBuilder.get(
+            path: "/earn/rates-user",
             parameters: parameters,
             authenticated: true
         )!

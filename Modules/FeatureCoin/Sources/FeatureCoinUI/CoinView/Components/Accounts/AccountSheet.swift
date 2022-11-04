@@ -109,6 +109,8 @@ extension Account.Snapshot {
             return [.buy, .sell, .swap, .send, .receive, .activity]
         case .exchange:
             return [.exchange.withdraw, .exchange.deposit]
+        case .staking:
+            return []
         }
     }
 

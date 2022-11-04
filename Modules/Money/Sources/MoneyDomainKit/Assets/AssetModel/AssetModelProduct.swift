@@ -14,6 +14,8 @@ public enum AssetModelProduct: String, Hashable, CaseIterable {
     case interestBalance = "InterestBalance"
 
     case custodialWalletBalance = "CustodialWalletBalance"
+
+    case stakingBalance = "StakingBalance"
 }
 
 public struct EVMNetworkConfig: Hashable {

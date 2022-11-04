@@ -110,6 +110,8 @@ extension AnalyticsEvents.New {
                     self = .trading
                 case .exchange:
                     self = .exchange
+                case .staking:
+                    self = .rewards
                 }
             }
         }

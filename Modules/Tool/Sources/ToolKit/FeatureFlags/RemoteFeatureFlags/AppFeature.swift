@@ -93,6 +93,8 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - SKAdNetworkAttribution
 
     case skAdNetworkAttribution
+
+    case staking
 }
 
 extension AppFeature {
@@ -151,6 +153,8 @@ extension AppFeature {
             return "ios_ff_skAdNetwork_attribution"
         case .referral:
             return "ios_ff_referral"
+        case .staking:
+            return "ios_ff_staking_account"
         }
     }
 
@@ -209,6 +213,8 @@ extension AppFeature {
             return true
         case .referral:
             return true
+        case .staking:
+            return false
         }
     }
 }

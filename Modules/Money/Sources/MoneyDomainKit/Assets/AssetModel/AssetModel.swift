@@ -122,7 +122,7 @@ extension AssetModel {
         kind: .coin(minimumOnChainConfirmations: 30),
         name: "Ethereum",
         precision: 18,
-        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey],
+        products: [.custodialWalletBalance, .interestBalance, .mercuryDeposits, .mercuryWithdrawals, .privateKey, .stakingBalance],
         logoPngUrl: URL("https://raw.githubusercontent.com/blockchain/coin-definitions/master/extensions/blockchains/ethereum/info/logo.png"),
         spotColor: "473BCB",
         sortIndex: 2
