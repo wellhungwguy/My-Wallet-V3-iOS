@@ -1022,6 +1022,9 @@ blockchain:
 				seen:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.state.preference.value
+				switcher:
+					tapped:
+					+ blockchain.ux.type.action
 		asset:
 		+ blockchain.db.collection
 		+ blockchain.ux.type.story
