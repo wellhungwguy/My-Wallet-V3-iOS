@@ -2,6 +2,7 @@
 
 import Combine
 import Errors
+import MoneyKit
 
 public protocol PlaidRepositoryAPI {
     // MARK: - Get Link Token For Linking a Bank
@@ -31,6 +32,6 @@ public protocol PlaidRepositoryAPI {
 
     func getSettlementInfo(
         accountId: String,
-        amount: String
+        amount: MoneyValue
     ) -> AnyPublisher<SettlementInfo, NabuError>
 }

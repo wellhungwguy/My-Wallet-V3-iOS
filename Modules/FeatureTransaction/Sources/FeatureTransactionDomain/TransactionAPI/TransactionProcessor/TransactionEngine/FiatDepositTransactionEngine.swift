@@ -110,7 +110,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         return plaidRepository
             .getSettlementInfo(
                 accountId: accountId,
-                amount: pendingTransaction.amount.minorString
+                amount: pendingTransaction.amount
             )
             .asSingle()
             .flatMap { info in
