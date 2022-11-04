@@ -218,6 +218,28 @@ extension LocalizationConstants {
                     )
                 )
             }
+
+            enum ComingSoon {
+                static let title = NSLocalizedString(
+                    "Coming soon to mobile",
+                    comment: "Coming soon to mobile title"
+                )
+
+                static let subtitle = NSLocalizedString(
+                    "In the meantime, you can manage your %@ using our web app.",
+                    comment: "In the meantime, you can manage your [account name] using our web app."
+                )
+
+                static let learnMore = NSLocalizedString(
+                    "Learn More",
+                    comment: "Learn More"
+                )
+
+                static let goToWebApp = NSLocalizedString(
+                    "Go to Web App",
+                    comment: "Go to Web App"
+                )
+            }
         }
 
         enum Graph {

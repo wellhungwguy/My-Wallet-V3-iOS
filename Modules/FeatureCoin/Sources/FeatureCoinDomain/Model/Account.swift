@@ -16,6 +16,11 @@ public struct Account: Identifiable {
         case trading
         case interest
         case exchange
+        case staking
+
+        public var supportRates: Bool {
+            self == .interest || self == .staking
+        }
     }
 
     public var id: AnyHashable
@@ -27,6 +32,11 @@ public struct Account: Identifiable {
     public let actionsPublisher: () -> AnyPublisher<OrderedSet<Account.Action>, Error>
     public let cryptoBalancePublisher: AnyPublisher<MoneyValue, Never>
     public let fiatBalancePublisher: AnyPublisher<MoneyValue, Never>
+
+    /// `true` if the accountType is not fully supported
+    public var isComingSoon: Bool {
+        accountType == .staking
+    }
 
     public init(
         id: AnyHashable,
@@ -63,6 +73,7 @@ extension Account {
         public let actions: OrderedSet<Account.Action>
         public let crypto: MoneyValue?
         public let fiat: MoneyValue?
+        public let isComingSoon: Bool
 
         public init(
             id: AnyHashable,
@@ -72,7 +83,8 @@ extension Account {
             fiatCurrency: FiatCurrency,
             actions: OrderedSet<Account.Action>,
             crypto: MoneyValue?,
-            fiat: MoneyValue?
+            fiat: MoneyValue?,
+            isComingSoon: Bool
         ) {
             self.id = id
             self.name = name
@@ -82,6 +94,7 @@ extension Account {
             self.actions = actions
             self.crypto = crypto
             self.fiat = fiat
+            self.isComingSoon = isComingSoon
         }
     }
 }
@@ -197,7 +210,8 @@ extension Collection<Account> {
                         fiatCurrency: account.fiatCurrency,
                         actions: actions,
                         crypto: crypto,
-                        fiat: fiat
+                        fiat: fiat,
+                        isComingSoon: account.isComingSoon
                     )
                 }
                 .prepend(
@@ -209,7 +223,8 @@ extension Collection<Account> {
                         fiatCurrency: account.fiatCurrency,
                         actions: [],
                         crypto: nil,
-                        fiat: nil
+                        fiat: nil,
+                        isComingSoon: false
                     )
                 )
                 .eraseToAnyPublisher()
@@ -278,7 +293,8 @@ extension Account.Snapshot {
         receiveAddress: String = "0xadada0ada0d0a0d0ad13",
         actions: OrderedSet<Account.Action> = [.send, .receive],
         crypto: MoneyValue = .create(minor: BigInt(123000000), currency: .crypto(.bitcoin)),
-        fiat: MoneyValue = .create(minor: BigInt(4417223), currency: .fiat(.USD))
+        fiat: MoneyValue = .create(minor: BigInt(4417223), currency: .fiat(.USD)),
+        isComingSoon: Bool = false
     ) -> Account.Snapshot {
         Account.Snapshot(
             id: id,
@@ -288,7 +304,8 @@ extension Account.Snapshot {
             fiatCurrency: fiatCurrency,
             actions: actions,
             crypto: crypto,
-            fiat: fiat
+            fiat: fiat,
+            isComingSoon: isComingSoon
         )
     }
 }

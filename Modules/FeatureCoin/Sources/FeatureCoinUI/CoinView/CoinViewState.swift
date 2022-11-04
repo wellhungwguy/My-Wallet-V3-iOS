@@ -16,7 +16,7 @@ public struct CoinViewState: Equatable {
     public var accounts: [Account.Snapshot]
     public var error: CoinViewError?
     public var assetInformation: AssetInformation?
-    public var interestRate: Double?
+    public var earnRates: EarnRates?
     public var kycStatus: KYCStatus?
     public var isFavorite: Bool?
     public var graph: GraphViewState
@@ -33,6 +33,7 @@ public struct CoinViewState: Equatable {
         return action
     }
 
+    @BindableState public var comingSoonAccount: Account.Snapshot?
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
 
@@ -90,7 +91,7 @@ public struct CoinViewState: Equatable {
         kycStatus: KYCStatus? = nil,
         accounts: [Account.Snapshot] = [],
         assetInformation: AssetInformation? = nil,
-        interestRate: Double? = nil,
+        earnRates: EarnRates? = nil,
         error: CoinViewError? = nil,
         isFavorite: Bool? = nil,
         graph: GraphViewState = GraphViewState()
@@ -99,7 +100,7 @@ public struct CoinViewState: Equatable {
         self.kycStatus = kycStatus
         self.accounts = accounts
         self.assetInformation = assetInformation
-        self.interestRate = interestRate
+        self.earnRates = earnRates
         self.error = error
         self.isFavorite = isFavorite
         self.graph = graph

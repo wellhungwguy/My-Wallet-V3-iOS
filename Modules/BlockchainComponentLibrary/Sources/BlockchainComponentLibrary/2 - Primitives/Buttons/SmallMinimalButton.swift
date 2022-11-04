@@ -27,6 +27,16 @@ public struct SmallMinimalButton: View {
         self.action = action
     }
 
+    public init(
+        title: String,
+        isLoading: Bool = false,
+        action: @escaping () async -> Void
+    ) {
+        self.title = title
+        self.isLoading = isLoading
+        self.action = { Task(priority: .userInitiated) { @MainActor in await action() } }
+    }
+
     public var body: some View {
         MinimalButton(title: title, isLoading: isLoading, action: action)
             .pillButtonSize(.small)

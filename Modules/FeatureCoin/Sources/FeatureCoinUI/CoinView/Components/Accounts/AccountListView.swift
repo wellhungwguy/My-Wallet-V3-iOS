@@ -19,7 +19,7 @@ public struct AccountListView: View {
     let accounts: [Account.Snapshot]
     let currency: CryptoCurrency
 
-    let interestRate: Double?
+    let earnRates: EarnRates?
     let kycStatus: KYCStatus?
 
     var __accounts: [Account.Snapshot] {
@@ -44,7 +44,7 @@ public struct AccountListView: View {
                     AccountRow(
                         account: account,
                         assetColor: currency.color,
-                        interestRate: interestRate
+                        interestRate: earnRates?.rate(accountType: account.accountType)
                     )
                     .context(
                         [
@@ -100,7 +100,7 @@ public struct AccountListView: View {
         if currency.supports(product: .interestBalance) {
             LockedAccountRow(
                 title: Localization.rewardsAccountTitle,
-                subtitle: Localization.rewardsAccountSubtitle.interpolating(interestRate.or(0)),
+                subtitle: Localization.rewardsAccountSubtitle.interpolating(earnRates.or(.zero).interestRate.or(0)),
                 icon: .interestCircle
             )
             .context([blockchain.ux.asset.account.type: Account.AccountType.interest])
@@ -119,7 +119,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.rewards
             ],
             currency: .bitcoin,
-            interestRate: nil,
+            earnRates: nil,
             kycStatus: .gold
         )
         .previewDisplayName("Gold")
@@ -130,7 +130,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.rewards
             ],
             currency: .bitcoin,
-            interestRate: nil,
+            earnRates: nil,
             kycStatus: .silver
         )
         .previewDisplayName("Silver")
@@ -141,7 +141,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.rewards
             ],
             currency: .bitcoin,
-            interestRate: nil,
+            earnRates: nil,
             kycStatus: .unverified
         )
         .previewDisplayName("Unverified")
@@ -151,7 +151,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.privateKey
             ],
             currency: .bitcoin,
-            interestRate: nil,
+            earnRates: nil,
             kycStatus: .unverified
         )
         .previewDisplayName("Single Account Defi")
@@ -162,7 +162,7 @@ struct AccountListView_PreviewProvider: PreviewProvider {
                 .preview.privateKey
             ],
             currency: .bitcoin,
-            interestRate: nil,
+            earnRates: nil,
             kycStatus: .unverified
         )
         .previewDisplayName("Double Account Defi")

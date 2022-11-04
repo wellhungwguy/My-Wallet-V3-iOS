@@ -57,6 +57,24 @@ extension PrimaryButton where LeadingView == EmptyView {
             action: action
         )
     }
+
+    /// Create a primary button without a leading view.
+    /// - Parameters:
+    ///   - title: Centered title label
+    ///   - isLoading: True to display a loading indicator instead of the label.
+    ///   - action: Action to be triggered on tap wrapped in Task
+    public init(
+        title: String,
+        isLoading: Bool = false,
+        action: @escaping () async -> Void = {}
+    ) {
+        self.init(
+            title: title,
+            isLoading: isLoading,
+            leadingView: { EmptyView() },
+            action: { Task(priority: .userInitiated) { @MainActor in await action() } }
+        )
+    }
 }
 
 extension PillButtonStyle.ColorCombination {

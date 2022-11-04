@@ -264,6 +264,8 @@ packages:
     path: Modules/FeatureWithdrawalLocks
   FeatureWalletConnect:
     path: Modules/FeatureWalletConnect
+  FeatureStaking:
+    path: Modules/FeatureStaking
   FraudIntelligence:
     path: Modules/FraudIntelligence
   Keychain:
@@ -412,6 +414,8 @@ targets:
         product: FeatureUserDeletionUI
       - package: FeatureWithdrawalLocks
       - package: FeatureWalletConnect
+      - package: FeatureStaking
+        product: FeatureStaking
 
       - package: BigInt
       - package: ComposableArchitecture

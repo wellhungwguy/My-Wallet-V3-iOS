@@ -14,9 +14,10 @@ public struct AssetFilter: OptionSet, Hashable {
     public static let nonCustodial = AssetFilter(rawValue: 1 << 1)
     public static let interest = AssetFilter(rawValue: 1 << 2)
     public static let exchange = AssetFilter(rawValue: 1 << 3)
+    public static let staking = AssetFilter(rawValue: 1 << 4)
 
-    public static let all: AssetFilter = [.custodial, .nonCustodial, .interest, .exchange]
-    public static let allExcludingExchange: AssetFilter = [.custodial, .nonCustodial, .interest]
+    public static let all: AssetFilter = [.custodial, .nonCustodial, .interest, .exchange, .staking]
+    public static let allExcludingExchange: AssetFilter = [.custodial, .nonCustodial, .interest, .staking]
     public static let `default`: AssetFilter = [.allExcludingExchange]
 }
 
@@ -28,7 +29,7 @@ extension AppMode {
         case .pkw:
             return .nonCustodial
         case .trading:
-            return [.custodial, .interest]
+            return [.custodial, .interest, .staking]
         }
     }
 }

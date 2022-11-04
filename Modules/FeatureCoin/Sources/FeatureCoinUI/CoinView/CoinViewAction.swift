@@ -10,7 +10,7 @@ public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction
     case onDisappear
     case update(Result<(KYCStatus, [Account.Snapshot]), Error>)
     case fetchInterestRate
-    case fetchedInterestRate(Result<Double, NetworkError>)
+    case fetchedInterestRate(Result<EarnRates, NetworkError>)
     case fetchedAssetInformation(Result<AssetInformation, NetworkError>)
     case refresh
     case reset

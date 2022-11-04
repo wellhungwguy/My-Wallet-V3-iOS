@@ -303,7 +303,7 @@ extension Tag.Reference {
             else {
                 return [tag.name]
             }
-            return [tag.name, id.description]
+            return [tag.name, id.description.replacingOccurrences(of: ".", with: "_")]
         }
     }
 
