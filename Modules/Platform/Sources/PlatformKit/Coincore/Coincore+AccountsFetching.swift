@@ -199,13 +199,14 @@ extension CoincoreAPI {
         filter: AssetFilter = .allExcludingExchange
     ) -> AnyPublisher<[CryptoAccount], Error> {
         allAssets
-            .map { asset in
+            .publisher
+            .flatMap { asset -> AnyPublisher<[CryptoAccount], Error> in
                 asset.accountGroup(filter: filter)
                     .compactMap { $0 }
                     .eraseError()
                     .mapToCryptoAccounts(supporting: action)
             }
-            .zip()
+            .collect()
             .map { accountsMatrix in
                 // the result is an array of arrays of accounts, so flatten it to a single array of accounts
                 Array(accountsMatrix.joined())
