@@ -35,6 +35,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
     // MARK: Observers
 
     public func start() {
+
         app.on(blockchain.app.did.finish.launching)
             .combineLatest(client, session)
             .prefix(1)
@@ -58,8 +59,8 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             }
             .withLatestFrom(app.publisher(for: blockchain.app.fraud.sardine.supported.flows, as: Set<String>.self).compactMap(\.value)) { ($0, $1) }
             .sink { [app] flow, supported in
-                guard supported.contains(flow.name) else { return }
-                guard flow.start.or(.yes).check(in: app) else { return }
+                guard supported.contains(flow.name) else { flow.name.peek("🐟 ❌ Flow Blocked"); return }
+                guard flow.start.or(.yes).check(in: app) else { flow.name.peek("🐟 ⚠️ Flow Ignored"); return }
                 app.post(value: flow.name, of: blockchain.app.fraud.sardine.current.flow)
             }
             .store(in: &bag)

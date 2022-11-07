@@ -16,19 +16,18 @@ class EmbraceObserver: Session.Observer {
     var bag: Set<AnyCancellable> = []
 
     func start() {
+
         app.publisher(for: blockchain.user.id, as: String.self)
             .receive(on: DispatchQueue.main)
-            .compactMap{$0.value}
-            .sink(receiveValue:{[embrace] identifier in
-                embrace.setUserIdentifier(identifier)
-            })
+            .map(\.value)
+            .sink { [embrace] identifier in
+                if let identifier {
+                    embrace.setUserIdentifier(identifier)
+                } else {
+                    embrace.clearUserIdentifier()
+                }
+            }
             .store(in: &bag)
-
-        app.on(blockchain.session.event.did.sign.out) { [embrace] _ in
-            embrace.clearUserIdentifier()
-        }
-        .subscribe()
-        .store(in: &bag)
     }
 
     func stop() { bag.removeAll() }
