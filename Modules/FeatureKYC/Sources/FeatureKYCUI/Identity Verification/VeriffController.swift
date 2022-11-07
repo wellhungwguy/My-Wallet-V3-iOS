@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainComponentLibrary
 import Localization
 import PlatformKit
 import UIKit
@@ -34,7 +35,21 @@ extension VeriffController {
 
     func launchVeriffController(credentials: VeriffCredentials) {
         veriff.delegate = self
-        veriff.startAuthentication(sessionUrl: credentials.url)
+        let configuration = brandingConfiguration()
+        veriff.startAuthentication(sessionUrl: credentials.url, configuration: configuration)
+    }
+
+    private func brandingConfiguration() -> VeriffSdk.Configuration {
+        let themeColor = UIColor(Color.WalletSemantic.primary)
+        let logo = UIImage(named: "icon_logo", in: .module, with: nil)
+        let branding = VeriffSdk.Branding(themeColor: themeColor, logo: logo)
+        branding.buttonCornerRadius = 8
+        branding.buttonHeight = 48
+        let configuration = VeriffSdk.Configuration(
+            branding: branding,
+            languageLocale: .current
+        )
+        return configuration
     }
 }
 
