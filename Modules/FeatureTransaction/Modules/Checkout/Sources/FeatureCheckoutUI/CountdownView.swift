@@ -16,11 +16,11 @@ struct CountdownView: View {
     @State private var progress: Double = 0.0
     @State private var opacity: Double = 1
 
-    @Binding private var readyToRefresh: Bool
+    @Binding private var remainingTime: TimeInterval
 
-    init(deadline: Date, readyToRefresh: Binding<Bool> = .constant(false)) {
+    init(deadline: Date, remainingTime: Binding<TimeInterval> = .constant(Int.max.d)) {
         self.deadline = deadline
-        _readyToRefresh = readyToRefresh
+        _remainingTime = remainingTime
     }
 
     var body: some View {
@@ -35,7 +35,7 @@ struct CountdownView: View {
             ZStack(alignment: .leading) {
                 if let remaining {
                     Text(remaining)
-                        .foregroundColor(readyToRefresh ? .semantic.error : nil)
+                        .foregroundColor(remainingTime < 10 ? .semantic.error : nil)
                 }
                 Text("MM:SS").opacity(0) // hack to fix alignment of the counter
             }
@@ -44,18 +44,16 @@ struct CountdownView: View {
         .typography(.caption2)
         .task(id: deadline, priority: .userInitiated) {
             let start = deadline.timeIntervalSinceNow
-            readyToRefresh = false
+            remainingTime = start
             for seconds in stride(from: start, to: 0, by: -1) where seconds > 0 {
                 remaining = formatter.string(from: seconds)
+                remainingTime = deadline.timeIntervalSinceNow
                 withAnimation {
                     progress = min(1 - seconds / start, 1)
                 }
                 do {
                     try await scheduler.sleep(for: .seconds(1))
                 } catch /* a */ { break }
-                if seconds < 5 {
-                    readyToRefresh = true
-                }
             }
             remaining = LocalizationConstants.Checkout.Label.soon
         }

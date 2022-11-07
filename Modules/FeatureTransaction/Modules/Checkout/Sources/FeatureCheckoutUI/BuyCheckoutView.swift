@@ -46,7 +46,7 @@ extension BuyCheckoutView {
 
         public var body: some View {
             ZStack {
-                Loaded(checkout: .preview)
+                BuyCheckoutView.Loaded(checkout: .preview)
                     .redacted(reason: .placeholder)
                 ProgressView()
             }
@@ -70,7 +70,7 @@ extension BuyCheckoutView {
         let buyType: BuyType = .simpleBuy
 
         @State var information = (price: false, fee: false)
-        @State var readyToRefresh = false
+        @State var remaining: TimeInterval = Int.max.d
 
         public init(checkout: BuyCheckout) {
             self.checkout = checkout
@@ -90,7 +90,7 @@ extension BuyCheckoutView.Loaded {
             if let expiration = checkout.quoteExpiration {
                 CountdownView(
                     deadline: expiration,
-                    readyToRefresh: $readyToRefresh
+                    remainingTime: $remaining
                 )
                 .padding()
             }
@@ -128,10 +128,7 @@ extension BuyCheckoutView.Loaded {
                     TableRow(
                         title: L10n.Label.total,
                         trailing: {
-                            VStack(alignment: .trailing, spacing: .zero) {
-                                TableRowTitle(checkout.total.displayString)
-                                TableRowByline(checkout.crypto.displayString)
-                            }
+                            TableRowTitle(checkout.total.displayString)
                         }
                     )
                     availableDates()
@@ -236,13 +233,11 @@ extension BuyCheckoutView.Loaded {
     }
 
     @ViewBuilder func header() -> some View {
-        VStack {
-            Text(checkout.total.displayString)
+        HStack(spacing: .zero) {
+            Text(checkout.crypto.displayString)
                 .typography(.title1)
                 .foregroundTexture(.semantic.title)
-            Text(checkout.crypto.displayString)
-                .typography(.title3)
-                .foregroundTexture(.semantic.text)
+                .minimumScaleFactor(0.7)
         }
         .padding()
     }
@@ -275,13 +270,11 @@ extension BuyCheckoutView.Loaded {
                 title: .init(L10n.Label.blockchainFee),
                 inlineTitleButton: IconButton(icon: question(information.fee), toggle: $information.fee),
                 trailing: {
-                    if let promotion = fee.promotion {
+                    if let promotion = fee.promotion, promotion != fee.value {
                         HStack {
-                            if promotion.isZero {
-                                Text(rich: "~~\(fee.value.displayString)~~")
-                                    .typography(.paragraph1)
-                                    .foregroundColor(.semantic.text)
-                            }
+                            Text(rich: "~~\(fee.value.displayString)~~")
+                                .typography(.paragraph1)
+                                .foregroundColor(.semantic.text)
                             TagView(
                                 text: promotion.isZero ? L10n.Label.free : promotion.displayString,
                                 variant: .success,
@@ -337,19 +330,23 @@ extension BuyCheckoutView.Loaded {
 
     @ViewBuilder
     func explain(_ content: some StringProtocol, action: @escaping () async throws -> Void) -> some View {
-        VStack(alignment: .leading) {
-            Text(rich: content)
-                .foregroundColor(.semantic.text)
-            Button(L10n.Button.learnMore) {
-                Task(priority: .userInitiated) { [app] in
-                    do {
-                        try await action()
-                    } catch {
-                        app.post(error: error)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(rich: content)
+                    .foregroundColor(.semantic.text)
+                Button(L10n.Button.learnMore) {
+                    Task(priority: .userInitiated) { @MainActor [app] in
+                        do {
+                            try await action()
+                        } catch {
+                            app.post(error: error)
+                        }
                     }
                 }
             }
+            Spacer()
         }
+        .multilineTextAlignment(.leading)
         .typography(.caption1)
         .transition(.scale.combined(with: .opacity))
         .padding()
@@ -414,10 +411,10 @@ extension BuyCheckoutView.Loaded {
             } else {
                 PrimaryButton(
                     title: L10n.Button.buy(checkout.crypto.code),
-                    isLoading: readyToRefresh,
+                    isLoading: remaining <= 3,
                     action: confirmed
                 )
-                .disabled(readyToRefresh)
+                .disabled(remaining <= 3)
             }
         }
         .padding()
@@ -428,7 +425,7 @@ extension BuyCheckoutView.Loaded {
 extension BuyCheckoutView.Loaded {
     /// This function converts minutes into days and does day upper rounding
     /// Examples: 0m -> 0 days;  1m -> 1 day;  1440m -> 1 day;  1441m -> 2 days
-    private func formattedUpperRoundedDays(minutes: Int?, defaultDays: Int) -> String {
+    private func formattedUpperRoundedDays(minutes: Int?, defaultDays: Int, calendar: Calendar = .current) -> String {
         let roundedSeconds: TimeInterval = {
             let minutesInDay = 24 * 60
             let secondsInMinute = 60
@@ -438,7 +435,6 @@ extension BuyCheckoutView.Loaded {
             let add: Int = remainder == 0 ? 0 : minutesInDay
             return TimeInterval((minutes + add) * secondsInMinute)
         }()
-
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day]
         formatter.unitsStyle = .full
@@ -448,9 +444,7 @@ extension BuyCheckoutView.Loaded {
 
 extension BuyCheckoutView.Loaded {
     private var isUIPaymentsImprovementsEnabled: Bool {
-        app
-            .remoteConfiguration
-            .yes(if: blockchain.app.configuration.ui.payments.improvements.is.enabled)
+        app.remoteConfiguration.yes(if: blockchain.app.configuration.ui.payments.improvements.is.enabled)
     }
 }
 
@@ -462,7 +456,34 @@ struct BuyCheckoutView_Previews: PreviewProvider {
                 .primaryNavigation(title: "Checkout")
         }
         .app(App.preview)
+
+        PrimaryNavigationView {
+            BuyCheckoutView(.promotion)
+                .primaryNavigation(title: "Checkout")
+        }
+        .app(App.preview)
+
+        PrimaryNavigationView {
+            BuyCheckoutView(.free)
+                .primaryNavigation(title: "Checkout")
+        }
+        .app(App.preview)
     }
+}
+
+extension BuyCheckout {
+
+    static var promotion = { checkout in
+        var checkout = checkout
+        checkout.fee?.promotion = FiatValue.create(minor: "49", currency: .USD)
+        return checkout
+    }(BuyCheckout.preview)
+
+    static var free = { checkout in
+        var checkout = checkout
+        checkout.fee?.promotion = FiatValue.create(minor: "0", currency: .USD)
+        return checkout
+    }(BuyCheckout.preview)
 }
 
 #if canImport(PassKit)

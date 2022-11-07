@@ -56,11 +56,11 @@ final class BuyCheckoutViewTests: XCTestCase {
         let view = BuyCheckoutView(
             viewModel: preview { checkout in
                 checkout.fee = .init(
-                    value: .create(major: 2, currency: .USD),
+                    value: .create(major: 2 as Double, currency: .USD),
                     promotion: .zero(currency: .USD)
                 )
                 checkout.purchase = MoneyValuePair(
-                    fiatValue: .create(major: 100, currency: .USD),
+                    fiatValue: .create(major: 100 as Double, currency: .USD),
                     exchangeRate: .create(major: 47410.61, currency: .USD),
                     cryptoCurrency: .bitcoin,
                     usesFiatAsBase: false
@@ -81,7 +81,8 @@ final class BuyCheckoutViewTests: XCTestCase {
                 checkout.paymentMethod = .init(
                     name: "Apple Pay",
                     detail: nil,
-                    isApplePay: true
+                    isApplePay: true,
+                    isACH: false
                 )
             }
         )
