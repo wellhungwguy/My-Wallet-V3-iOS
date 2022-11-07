@@ -169,7 +169,9 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let sourceAccountLabel = sourceAccount.label
-        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
+        let isQuoteRefreshEnabled = app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled)
+        let isCheckoutEnabled = app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.is.enabled)
+        if isQuoteRefreshEnabled && isCheckoutEnabled {
             return .just(pendingTransaction)
         }
         return createOrder(pendingTransaction: pendingTransaction)
