@@ -85,6 +85,10 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             transactionModel.process(action: .modifyTransactionConfirmation(model))
         case .tappedHyperlink(let titledLink):
             router?.showWebViewWithTitledLink(titledLink)
+        case let .showACHDepositTerms(termsDescription):
+            router?.showACHDepositTerms(termsDescription: termsDescription)
+        case .showAvailableToWithdrawDateInfo:
+            router?.showAvailableToWithdrawDateInfo()
         }
     }
 }
@@ -102,5 +106,7 @@ extension ConfirmationPageInteractor {
         case tappedHyperlink(TitledLink)
         case toggleTermsOfServiceAgreement(Bool)
         case toggleHoldPeriodAgreement(Bool)
+        case showACHDepositTerms(termsDescription: String)
+        case showAvailableToWithdrawDateInfo
     }
 }

@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-extension MoneyValue: Decodable {
+extension MoneyValue: Codable {
 
     public enum MoneyValueCodingError: Error {
         case invalidMinorValue
@@ -20,5 +20,11 @@ extension MoneyValue: Decodable {
             throw MoneyValueCodingError.invalidMinorValue
         }
         self = moneyValue
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(minorString, forKey: .value)
+        try container.encode(code, forKey: .currency)
     }
 }

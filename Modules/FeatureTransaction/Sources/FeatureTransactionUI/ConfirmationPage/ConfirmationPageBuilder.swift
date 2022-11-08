@@ -7,6 +7,7 @@ import ComposableArchitecture
 import DIKit
 import Extensions
 import FeatureCheckoutUI
+import FeaturePlaidDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -206,6 +207,7 @@ extension TransactionState {
         do {
             let fee = try quote.fee
             return try BuyCheckout(
+                buyType: .simpleBuy,
                 input: quote.amount,
                 purchase: result,
                 fee: .init(value: fee.withoutPromotion, promotion: fee.value),
@@ -215,7 +217,7 @@ extension TransactionState {
                 depositTerms: .init(
                     availableToTrade: quote.depositTerms?.formattedAvailableToTrade,
                     availableToWithdraw: quote.depositTerms?.formattedAvailableToWithdraw,
-                    withdrawalLockMinutes: quote.depositTerms?.withdrawalLockMinutes
+                    withdrawalLockInDays: quote.depositTerms?.withdrawalLockDays.map { "\($0)" }
                 )
             )
         } catch {
@@ -262,6 +264,7 @@ extension TransactionState {
             }
 
             return try BuyCheckout(
+                buyType: .simpleBuy,
                 input: value.baseValue,
                 purchase: MoneyValuePair(
                     fiatValue: purchase.fiatValue.or(throw: "Amount is not fiat"),
@@ -377,79 +380,3 @@ extension BlockchainAccount {
         }
     }
 }
-
-extension BrokerageQuote.Response.DepositTerms {
-
-    var formattedAvailableToTrade: String? {
-        formattedDepositTerms(
-            displayMode: availableToTradeDisplayMode,
-            min: availableToTradeMinutesMin,
-            max: availableToTradeMinutesMax
-        )
-    }
-
-    var formattedAvailableToWithdraw: String? {
-        formattedDepositTerms(
-            displayMode: availableToWithdrawDisplayMode,
-            min: availableToWithdrawMinutesMin,
-            max: availableToWithdrawMinutesMax
-        )
-    }
-
-    private func formattedDepositTerms(
-        displayMode: BrokerageQuote.Response.DisplayMode,
-        min: Int,
-        max: Int
-    ) -> String? {
-        let minDate = Date().addingTimeInterval(TimeInterval(min * 60))
-        let maxDate = Date().addingTimeInterval(TimeInterval(max * 60))
-
-        var dateFormatter: DateFormatter {
-            if Locale.current.identifier == Locale.US.identifier {
-                return usDateFormatter
-            } else {
-                return defaultDateFormatter
-            }
-        }
-
-        let loc = LocalizationConstants.Checkout.DepositTermsAvailableDisplayMode.self
-        switch displayMode {
-        case .immediately:
-            return loc.immediately
-        case .maxMinute:
-            let minutes = {
-                let formatter = DateComponentsFormatter()
-                formatter.allowedUnits = [.minute]
-                formatter.unitsStyle = .full
-                return formatter.string(from: TimeInterval(max * 60)) ?? ""
-            }()
-            return String(format: loc.maxMinute, "\(minutes)")
-        case .maxDay:
-            return dateFormatter.string(from: maxDate)
-        case .minuteRange:
-            return String(format: loc.minuteRange, "\(min)", "\(max)")
-        case .dayRange:
-            return String(
-                format: loc.dayRange,
-                dateFormatter.string(from: minDate),
-                dateFormatter.string(from: maxDate)
-            )
-        case .none:
-            return nil
-        default:
-            return nil
-        }
-    }
-}
-
-let defaultDateFormatter = {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "d MMMM"
-    return dateFormatter
-}()
-
-let usDateFormatter = {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "MMMM d"
-    return dateFormatter
-}()

@@ -237,6 +237,7 @@ extension UIColor {
 
     public static let primaryButtonTitle = white
 
+    public static let iconLight = grey300
     public static let iconDefault = grey400
     public static let iconSelected = grey400
     public static let iconWarning = orange600

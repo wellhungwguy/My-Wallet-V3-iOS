@@ -132,4 +132,30 @@ public struct PlaidRepository: PlaidRepositoryAPI {
             }
             .eraseToAnyPublisher()
     }
+
+    public func getPaymentsDepositTerms(
+        amount: MoneyValue,
+        paymentMethodId: String
+    ) -> AnyPublisher<PaymentsDepositTerms, NabuError> {
+        client
+            .getPaymentsDepositTerms(
+                amount: amount,
+                paymentMethodId: paymentMethodId
+            )
+            .map { response in
+                PaymentsDepositTerms(
+                    creditCurrency: response.creditCurrency,
+                    availableToTradeMinutesMin: response.availableToTradeMinutesMin,
+                    availableToTradeMinutesMax: response.availableToTradeMinutesMax,
+                    availableToTradeDisplayMode: response.availableToTradeDisplayMode,
+                    availableToWithdrawMinutesMin: response.availableToWithdrawMinutesMin,
+                    availableToWithdrawMinutesMax: response.availableToWithdrawMinutesMax,
+                    availableToWithdrawDisplayMode: response.availableToWithdrawDisplayMode,
+                    settlementType: response.settlementType,
+                    settlementReason: response.settlementReason,
+                    withdrawalLockDays: response.withdrawalLockDays
+                )
+            }
+            .eraseToAnyPublisher()
+    }
 }

@@ -1,7 +1,13 @@
 import Blockchain
+import Localization
 
 public struct BuyCheckout: Equatable {
 
+    public enum BuyType {
+        case simpleBuy
+        case recurringBuy
+    }
+    public let buyType: BuyType
     public var input: MoneyValue
     public var purchase: MoneyValuePair
     public var fee: Fee?
@@ -11,6 +17,7 @@ public struct BuyCheckout: Equatable {
     public var depositTerms: DepositTerms?
 
     public init(
+        buyType: BuyType,
         input: MoneyValue,
         purchase: MoneyValuePair,
         fee: Fee?,
@@ -19,6 +26,7 @@ public struct BuyCheckout: Equatable {
         quoteExpiration: Date?,
         depositTerms: DepositTerms? = nil
     ) {
+        self.buyType = buyType
         self.input = input
         self.purchase = purchase
         self.fee = fee
@@ -35,16 +43,16 @@ extension BuyCheckout {
 
         public var availableToTrade: String?
         public var availableToWithdraw: String?
-        public var withdrawalLockMinutes: Int?
+        public var withdrawalLockInDays: String?
 
         public init(
             availableToTrade: String?,
             availableToWithdraw: String?,
-            withdrawalLockMinutes: Int?
+            withdrawalLockInDays: String?
         ) {
             self.availableToTrade = availableToTrade
             self.availableToWithdraw = availableToWithdraw
-            self.withdrawalLockMinutes = withdrawalLockMinutes
+            self.withdrawalLockInDays = withdrawalLockInDays
         }
     }
 }
@@ -92,6 +100,7 @@ extension BuyCheckout {
 
     public static var preview: BuyCheckout {
         .init(
+            buyType: .simpleBuy,
             input: .create(major: 0.0021037, currency: .crypto(.bitcoin)),
             purchase: MoneyValuePair(
                 fiatValue: .create(major: 98.00, currency: .USD),
