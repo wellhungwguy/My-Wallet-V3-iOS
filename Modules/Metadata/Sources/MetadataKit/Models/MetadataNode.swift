@@ -2,8 +2,15 @@
 
 import Foundation
 
-public enum MetadataNodeError: Error {
+public enum MetadataNodeError: LocalizedError {
     case typeIndexMustBePositive
+
+    public var errorDescription: String? {
+        switch self {
+        case .typeIndexMustBePositive:
+            return "Metadata Node failure,:type index must be a positive number"
+        }
+    }
 }
 
 struct MetadataNode: Equatable {

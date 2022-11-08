@@ -2,7 +2,7 @@
 
 import Foundation
 
-public protocol FromDecodingError: Error {
+public protocol FromDecodingError: LocalizedError {
 
     static func from(_ decodingError: DecodingError) -> Self
 }

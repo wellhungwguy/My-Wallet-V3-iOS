@@ -2,8 +2,15 @@
 
 import Foundation
 
-public enum RemoteMetadataNodesDecodingError: Error {
+public enum RemoteMetadataNodesDecodingError: LocalizedError {
     case invalidPayload
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidPayload:
+            return "Invalid JSON payload from remote node"
+        }
+    }
 }
 
 struct RemoteMetadataNodesPayload {

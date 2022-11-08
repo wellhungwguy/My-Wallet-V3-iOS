@@ -7,10 +7,21 @@ import Foundation
 typealias LoadRemoteMetadata =
     (MetadataNode) -> AnyPublisher<String, LoadRemoteMetadataError>
 
-public enum LoadRemoteMetadataError: Error {
+public enum LoadRemoteMetadataError: LocalizedError {
     case notYetCreated
     case networkError(NetworkError)
     case decryptionFailed(DecryptMetadataError)
+
+    public var errorDescription: String? {
+        switch self {
+        case .notYetCreated:
+            return "Metadata entry not yet created"
+        case .networkError(let networkError):
+            return networkError.description
+        case .decryptionFailed(let decryptMetadataError):
+            return decryptMetadataError.errorDescription
+        }
+    }
 }
 
 func provideLoadRemoteMetadata(

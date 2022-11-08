@@ -4,9 +4,18 @@ import Foundation
 import MetadataHDWalletKit
 import ToolKit
 
-public enum MnemonicError: Error, Equatable {
+public enum MnemonicError: LocalizedError, Equatable {
     case invalidLength
     case invalidWords
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidLength:
+            return "Mnemonic Failure: invalid length"
+        case .invalidWords:
+            return "Mnemonic Failure: invalid words"
+        }
+    }
 }
 
 struct Mnemonic {

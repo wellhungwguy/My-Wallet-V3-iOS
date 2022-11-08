@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum MetadataInitialisationError: Error, Equatable {
+public enum MetadataInitialisationError: LocalizedError, Equatable {
     case failedToDeriveSecondPasswordNode(DeriveSecondPasswordNodeError)
     case failedToLoadRemoteMetadataNode(LoadRemoteMetadataError)
     case failedToDecodeRemoteMetadataNode(DecodingError)
@@ -23,6 +23,21 @@ public enum MetadataInitialisationError: Error, Equatable {
             return leftError.localizedDescription == rightError.localizedDescription
         default:
             return false
+        }
+    }
+
+    public var errorDescription: String? {
+        switch self {
+        case .failedToDeriveSecondPasswordNode(let deriveSecondPasswordNodeError):
+            return deriveSecondPasswordNodeError.errorDescription
+        case .failedToLoadRemoteMetadataNode(let loadRemoteMetadataError):
+            return loadRemoteMetadataError.errorDescription
+        case .failedToDecodeRemoteMetadataNode(let decodingError):
+            return decodingError.formattedDescription
+        case .failedToDeriveRemoteMetadataNode(let metadataInitError):
+            return metadataInitError.errorDescription
+        case .failedToGenerateNodes(let error):
+            return error.localizedDescription
         }
     }
 }
