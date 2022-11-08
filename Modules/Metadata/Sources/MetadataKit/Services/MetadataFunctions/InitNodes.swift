@@ -2,9 +2,18 @@
 
 import Foundation
 
-public enum MetadataInitError: Error {
+public enum MetadataInitError: LocalizedError {
     case invalidPayload(RemoteMetadataNodesDecodingError)
     case failedToInitNodes
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidPayload(let remoteMetadataNodesDecodingError):
+            return remoteMetadataNodesDecodingError.errorDescription
+        case .failedToInitNodes:
+            return "Failure to initialize metadata nodes"
+        }
+    }
 }
 
 func initNodes(

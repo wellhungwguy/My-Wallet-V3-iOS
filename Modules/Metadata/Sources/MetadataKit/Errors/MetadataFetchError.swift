@@ -23,4 +23,15 @@ public enum MetadataFetchError: FromDecodingError, Equatable {
             return false
         }
     }
+
+    public var errorDescription: String? {
+        switch self {
+        case .loadMetadataError(let loadRemoteMetadataError):
+            return loadRemoteMetadataError.errorDescription
+        case .failedToDeriveMetadataNode(let metadataNodeError):
+            return metadataNodeError.localizedDescription
+        case .decodingError(let decodingError):
+            return decodingError.formattedDescription
+        }
+    }
 }

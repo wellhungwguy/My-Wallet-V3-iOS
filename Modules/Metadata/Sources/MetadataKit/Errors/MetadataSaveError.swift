@@ -9,4 +9,13 @@ public enum MetadataSaveError: FromEncodingError {
     public static func from(_ encodingError: EncodingError) -> Self {
         .encodingError(encodingError)
     }
+
+    public var errorDescription: String? {
+        switch self {
+        case .saveFailed(let saveMetadataError):
+            return saveMetadataError.errorDescription
+        case .encodingError(let encodingError):
+            return encodingError.formattedDescription
+        }
+    }
 }

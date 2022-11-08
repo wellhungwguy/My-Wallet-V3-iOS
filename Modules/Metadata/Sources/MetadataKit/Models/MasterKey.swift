@@ -3,13 +3,20 @@
 import Combine
 import Foundation
 
-public enum MasterKeyError: Error, Equatable {
+public enum MasterKeyError: LocalizedError, Equatable {
     case failedToInstantiate(Error)
 
     public static func == (lhs: MasterKeyError, rhs: MasterKeyError) -> Bool {
         switch (lhs, rhs) {
         case (.failedToInstantiate(let leftError), .failedToInstantiate(let rightError)):
             return leftError.localizedDescription == rightError.localizedDescription
+        }
+    }
+
+    public var errorDescription: String? {
+        switch self {
+        case .failedToInstantiate(let error):
+            return error.localizedDescription
         }
     }
 }

@@ -7,7 +7,7 @@ import Foundation
 import MetadataHDWalletKit
 import ToolKit
 
-public enum SaveMetadataError: Error {
+public enum SaveMetadataError: LocalizedError {
     case unableToParseRemotePayload
     case failedToDeriveNode(MetadataNodeError)
     case failedToCreateMessage(Error)
@@ -17,6 +17,29 @@ public enum SaveMetadataError: Error {
     case failedToEncryptPayload(Error)
     case failedToCreateMagicHash(Error)
     case network(NetworkError)
+
+    public var errorDescription: String? {
+        switch self {
+        case .unableToParseRemotePayload:
+            return "Parsing Remote payload failed"
+        case .failedToDeriveNode(let metadataNodeError):
+            return metadataNodeError.errorDescription
+        case .failedToCreateMessage(let error):
+            return error.localizedDescription
+        case .failedToSignMessage(let error):
+            return error.localizedDescription
+        case .failedToPutMetadata(let networkError):
+            return networkError.description
+        case .failedToValidateJSON:
+            return "Invalid JSON found"
+        case .failedToEncryptPayload(let error):
+            return error.localizedDescription
+        case .failedToCreateMagicHash(let error):
+            return error.localizedDescription
+        case .network(let networkError):
+            return networkError.description
+        }
+    }
 }
 
 struct SaveInput {

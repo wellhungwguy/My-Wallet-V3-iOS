@@ -2,7 +2,7 @@
 
 import Foundation
 
-public protocol FromEncodingError: Error {
+public protocol FromEncodingError: LocalizedError {
 
     static func from(_ encodingError: EncodingError) -> Self
 }

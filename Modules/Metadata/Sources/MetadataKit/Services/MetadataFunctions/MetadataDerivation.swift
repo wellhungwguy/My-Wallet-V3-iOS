@@ -6,8 +6,15 @@ import Foundation
 import MetadataHDWalletKit
 import ToolKit
 
-public enum MetadataDerivationError: Error, Equatable {
+public enum MetadataDerivationError: LocalizedError, Equatable {
     case derivationFailed
+
+    public var errorDescription: String? {
+        switch self {
+        case .derivationFailed:
+            return "Could not derive from given purpose"
+        }
+    }
 }
 
 struct MetadataDerivation {
