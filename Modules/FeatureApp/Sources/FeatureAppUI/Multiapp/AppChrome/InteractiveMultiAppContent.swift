@@ -2,6 +2,8 @@
 
 import BlockchainComponentLibrary
 import BlockchainNamespace
+import DIKit
+import FeatureDashboardUI
 import SwiftUI
 
 @available(iOS 16.0, *)
@@ -47,11 +49,10 @@ struct InteractiveMultiAppContent: View {
                     }
                 }
             )
-            .frame(maxWidth: .infinity)
             .background(
                 Color.semantic.light
-                    .ignoresSafeArea(edges: .bottom)
             )
+            .frame(maxWidth: .infinity)
             .presentationDetents(
                 [
                     .collapsed,
@@ -169,34 +170,19 @@ struct MultiAppTradingView: View {
 
     func dummyView(tabs: [BottomBarItem<_Tab>]) -> some View {
         ForEach(tabs) { tab in
-            DummyInnerContentView(tab: tab)
+            TradingDashboardView(store: .init(
+                initialState: .init(title: tab.title),
+                reducer: TradingDashboard(
+                    app: resolve(),
+                    allCryptoAssetsRepository: resolve(),
+                    allCryptoAssetService: resolve()
+                )
+            )
+            )
                 .tag(tab.id)
                 .id(tab.id)
                 .accessibilityIdentifier("tab.id.\(tab.id)")
-        }
-    }
-}
-
-struct DummyInnerContentView: View {
-    let tab: BottomBarItem<_Tab>
-
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 1) {
-                    ForEach(0..<20) { value in
-                        PrimaryRow(
-                            title: "\(tab.title) \(value)",
-                            subtitle: "Buy & Sell",
-                            action: {}
-                        )
-                    }
-                }
-                .padding(.bottom, Spacing.padding6)
-                .navigationTitle(tab.title)
-                .navigationBarTitleDisplayMode(.inline)
-                .frame(maxWidth: .infinity)
-            }
+                .background(Color.semantic.light)
         }
     }
 }
@@ -254,6 +240,33 @@ struct MultiAppDefiView: View {
                 .tag(tab.id)
                 .id(tab.id)
                 .accessibilityIdentifier("tab.id.\(tab.id)")
+        }
+    }
+}
+
+// DUMMY VIEW
+
+struct DummyInnerContentView: View {
+    let tab: BottomBarItem<_Tab>
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                LazyVStack(spacing: 1) {
+                    ForEach(0..<20) { value in
+                        PrimaryRow(
+                            title: "\(tab.title) \(value)",
+                            subtitle: "Buy & Sell",
+                            action: {}
+                        )
+                    }
+                }
+                .padding(.bottom, Spacing.padding6)
+                .navigationTitle(tab.title)
+                .navigationBarTitleDisplayMode(.inline)
+                .frame(maxWidth: .infinity)
+            }
+                .background(Color.semantic.light)
         }
     }
 }

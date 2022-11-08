@@ -12,13 +12,13 @@ import ToolKit
 public final class AllCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI {
     private struct Key: Hashable {}
 
-    public var assetsInfo: AnyPublisher<[CryptoAssetInfo], Error> {
+    public var assetsInfo: AnyPublisher<[AssetBalanceInfo], Error> {
         cachedValue.get(key: Key())
     }
 
     private let cachedValue: CachedValueNew<
         Key,
-        [CryptoAssetInfo],
+        [AssetBalanceInfo],
         Error
     >
     private let allCryptoAssetService: AllCryptoAssetsServiceAPI
@@ -28,15 +28,15 @@ public final class AllCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI {
     ) {
         self.allCryptoAssetService = allCryptoAssetService
 
-        let cache: AnyCache<Key, [CryptoAssetInfo]> = InMemoryCache(
-            configuration: .onLoginLogoutTransaction(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
+        let cache: AnyCache<Key, [AssetBalanceInfo]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 320)
         )
         .eraseToAnyCache()
 
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [allCryptoAssetService] _ -> AnyPublisher<[CryptoAssetInfo], Error> in
+            fetch: { [allCryptoAssetService] _ -> AnyPublisher<[AssetBalanceInfo], Error> in
                 allCryptoAssetService
                     .getAllCryptoAssetsInfoPublisher()
                     .eraseError()

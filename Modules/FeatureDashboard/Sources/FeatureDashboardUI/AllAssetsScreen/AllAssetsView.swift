@@ -15,37 +15,29 @@ public struct AllAssetsView: View {
     }
 
     public var body: some View {
-            PrimaryNavigationView {
-                VStack {
-                    searchBarSection
-                    allAssetsSection
-                }
-                .background(Color.WalletSemantic.light)
-                .primaryNavigation(leading: {
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Icon.closev2
-                    }
-                }, trailing: {
-                    Button {
-                        viewStore.send(.onFilterTapped)
-                    } label: {
-                        Icon.multiAppFilter
-                    }
-                    .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
-                })
-                .primaryNavigation(title: LocalizationConstants.MultiApp.AllAssets.title)
+        VStack {
+            searchBarSection
+            allAssetsSection
+        }
+        .background(Color.WalletSemantic.light)
+        .primaryNavigation(trailing: {
+            Button {
+                viewStore.send(.onFilterTapped)
+            } label: {
+                Icon.multiAppFilter
             }
-            .bottomSheet(
-                isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
-                content: {
+            .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
+        })
+        .primaryNavigation(title: LocalizationConstants.MultiApp.AllAssets.title)
+        .bottomSheet(
+            isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
+            content: {
                 filterSheet
-                }
-            )
-            .task {
-                await viewStore.send(.onAppear).finish()
             }
+        )
+        .task {
+            await viewStore.send(.onAppear).finish()
+        }
     }
 
     private var searchBarSection: some View {
@@ -66,31 +58,30 @@ public struct AllAssetsView: View {
                 if let searchResults = viewStore.searchResults {
                     if searchResults.isEmpty {
                         noResultsView
-                    } else
-                  {
-                    ForEach(searchResults) { info in
-                        SimpleBalanceRow(
-                            leadingTitle: info.currency.name,
-                            trailingTitle: info.fiatBalance?.quote.toDisplayString(includeSymbol: true),
-                            trailingDescription: info.priceChangeString,
-                            trailingDescriptionColor: info.priceChangeColor,
-                            action: {
-                                viewStore.send(.onAssetTapped(info))
-                            },
-                            leading: {
-                                AsyncMedia(
-                                    url: info.currency.assetModel.logoPngUrl
+                    } else {
+                        ForEach(searchResults) { info in
+                            SimpleBalanceRow(
+                                leadingTitle: info.currency.name,
+                                trailingTitle: info.fiatBalance?.quote.toDisplayString(includeSymbol: true),
+                                trailingDescription: info.priceChangeString,
+                                trailingDescriptionColor: info.priceChangeColor,
+                                action: {
+                                    viewStore.send(.onAssetTapped(info))
+                                },
+                                leading: {
+                                    AsyncMedia(
+                                        url: info.currency.cryptoCurrency?.assetModel.logoPngUrl
+                                    )
+                                    .resizingMode(.aspectFit)
+                                    .frame(width: 24.pt, height: 24.pt)
+                                }
                             )
-                            .resizingMode(.aspectFit)
-                            .frame(width: 24.pt, height: 24.pt)
+                            if info.id != viewStore.searchResults?.last?.id {
+                                Divider()
+                                    .foregroundColor(.WalletSemantic.light)
                             }
-                        )
-                        if info.id != viewStore.searchResults?.last?.id {
-                           Divider()
-                                .foregroundColor(.WalletSemantic.light)
                         }
                     }
-                  }
                 } else {
                     loadingSection
                 }
@@ -116,8 +107,8 @@ public struct AllAssetsView: View {
                         accessibilityLabel: "",
                         isOn: viewStore.binding(\.$showSmallBalancesFilterIsOn)
                     )
-                        .padding(.trailing, Spacing.padding2)
-                        .padding(.vertical, Spacing.padding2)
+                    .padding(.trailing, Spacing.padding2)
+                    .padding(.vertical, Spacing.padding2)
                 }
                 .background(Color.WalletSemantic.light)
                 .cornerRadius(16, corners: .allCorners)
@@ -146,10 +137,10 @@ public struct AllAssetsView: View {
         Group {
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
             Divider()
-                 .foregroundColor(.WalletSemantic.light)
+                .foregroundColor(.WalletSemantic.light)
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
             Divider()
-                 .foregroundColor(.WalletSemantic.light)
+                .foregroundColor(.WalletSemantic.light)
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
         }
     }
@@ -164,7 +155,7 @@ public struct AllAssetsView: View {
     }
 }
 
-extension CryptoAssetInfo {
+extension AssetBalanceInfo {
     var priceChangeString: String? {
         guard let delta else {
             return nil

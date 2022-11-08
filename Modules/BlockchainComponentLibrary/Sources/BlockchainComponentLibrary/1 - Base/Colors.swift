@@ -104,6 +104,7 @@ extension Color {
         public static let greenBG: Color = .palette.green100
         public static let orangeBG: Color = .palette.orange100
         public static let redBG: Color = .palette.red100
+        public static let fiatGreen: Color = .palette.green500
 
         public static let gold: Color = .palette.gold
         public static let silver: Color = .palette.silver
@@ -176,6 +177,7 @@ extension Color {
         // green
         static let green100: Color = Asset.green100.color()
         static let green400: Color = Asset.green400.color()
+        static let green500: Color = Asset.green500.color()
         static let green600: Color = Asset.green600.color()
         static let green700: Color = Asset.green700.color()
         // red
@@ -243,6 +245,7 @@ extension Color {
         // green
         case green100
         case green400
+        case green500
         case green600
         case green700
         // red

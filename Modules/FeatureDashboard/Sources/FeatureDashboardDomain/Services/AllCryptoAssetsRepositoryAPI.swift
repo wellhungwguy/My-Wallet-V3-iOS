@@ -4,5 +4,5 @@ import Combine
 import Foundation
 
 public protocol AllCryptoAssetsRepositoryAPI {
-    var assetsInfo: AnyPublisher<[CryptoAssetInfo], Error> { get }
+    var assetsInfo: AnyPublisher<[AssetBalanceInfo], Error> { get }
 }

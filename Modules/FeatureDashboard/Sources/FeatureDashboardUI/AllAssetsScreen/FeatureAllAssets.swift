@@ -19,22 +19,22 @@ public struct FeatureAllAssets: ReducerProtocol {
 
     public enum Action: Equatable, BindableAction {
         case onAppear
-        case onBalancesFetched(TaskResult<[CryptoAssetInfo]>)
+        case onBalancesFetched(TaskResult<[AssetBalanceInfo]>)
         case binding(BindingAction<State>)
         case onFilterTapped
         case onConfirmFilterTapped
         case onResetTapped
-        case onAssetTapped(CryptoAssetInfo)
+        case onAssetTapped(AssetBalanceInfo)
     }
 
     public struct State: Equatable {
-        var balanceInfo: [CryptoAssetInfo]?
+        var balanceInfo: [AssetBalanceInfo]?
         @BindableState var searchText: String = ""
         @BindableState var isSearching: Bool = false
         @BindableState var filterPresented: Bool = false
         @BindableState var showSmallBalancesFilterIsOn: Bool = false
 
-        var searchResults: [CryptoAssetInfo]? {
+        var searchResults: [AssetBalanceInfo]? {
             guard let balanceInfo else {
                 return nil
             }
@@ -105,7 +105,7 @@ public struct FeatureAllAssets: ReducerProtocol {
     }
 }
 
-extension [CryptoAssetInfo] {
+extension [AssetBalanceInfo] {
     func filtered(by searchText: String, using algorithm: StringDistanceAlgorithm = FuzzyAlgorithm(caseInsensitive: true)) -> [Element] {
         filter {
             $0.currency.name.distance(between: searchText, using: algorithm) == 0 ||

@@ -1,12 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-
-enum CryptoAssetLoadError {
-    case general
-}
+import MoneyKit
 
 public protocol AllCryptoAssetsServiceAPI {
-    func getAllCryptoAssetsInfo() async -> [CryptoAssetInfo]
-    func getAllCryptoAssetsInfoPublisher() -> AnyPublisher<[CryptoAssetInfo], Never>
+    func getAllCryptoAssetsInfo() async -> [AssetBalanceInfo]
+    func getAllCryptoAssetsInfoPublisher() -> AnyPublisher<[AssetBalanceInfo], Never>
+    func getFiatAssetsInfo() async -> AssetBalanceInfo?
 }

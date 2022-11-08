@@ -5,6 +5,7 @@ import Foundation
 extension LocalizationConstants {
     public enum MultiApp {
         public enum AppChrome {}
+        public enum Dashboard {}
         public enum AllAssets {
             public enum Filter {}
         }
@@ -70,5 +71,17 @@ extension LocalizationConstants.MultiApp.AllAssets.Filter {
     public static var resetButton = NSLocalizedString(
         "Reset",
         comment: "Reset"
+    )
+}
+
+extension LocalizationConstants.MultiApp.Dashboard {
+    public static let allAssetsLabel = NSLocalizedString(
+        "All assets",
+        comment: "All assets"
+    )
+
+    public static let seeAllLabel = NSLocalizedString(
+        "See all",
+        comment: "See all"
     )
 }
