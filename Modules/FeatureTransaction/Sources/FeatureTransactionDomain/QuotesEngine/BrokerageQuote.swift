@@ -1,5 +1,6 @@
 import BigInt
 import Blockchain
+import FeaturePlaidDomain
 
 @dynamicMemberLookup
 public struct BrokerageQuote: Hashable {
@@ -89,60 +90,7 @@ extension BrokerageQuote {
         public var networkFee, staticFee: String?
         public var fee: Fee
         public var settlementDetails: Settlement
-        public var depositTerms: DepositTerms?
-    }
-}
-
-extension BrokerageQuote.Response {
-
-    public struct DisplayMode: NewTypeString {
-
-        public private(set) var value: String
-
-        public init(_ value: String) { self.value = value }
-
-        public static let immediately: Self = "IMMEDIATELY"
-        public static let dayRange: Self = "DAY_RANGE"
-        public static let maxDay: Self = "MAX_DAY"
-        public static let minuteRange: Self = "MINUTE_RANGE"
-        public static let maxMinute: Self = "MAX_MINUTE"
-        public static let none: Self = "NONE"
-    }
-
-    public struct SettlementType: NewTypeString {
-
-        public private(set) var value: String
-
-        public init(_ value: String) { self.value = value }
-
-        public static let instant: Self = "INSTANT"
-        public static let regular: Self = "REGULAR"
-        public static let unavailable: Self = "UNAVAILABLE"
-    }
-
-    public struct SettlementReason: NewTypeString {
-
-        public private(set) var value: String
-
-        public init(_ value: String) { self.value = value }
-
-        public static let generic: Self = "GENERIC"
-        public static let insufficientBalance: Self = "INSUFFICIENT_BALANCE"
-        public static let staleBalance: Self = "STALE_BALANCE"
-        public static let requiresUpdate: Self = "REQUIRES_UPDATE"
-    }
-
-    public struct DepositTerms: Codable, Hashable {
-        public let creditCurrency: String
-        public let availableToTradeMinutesMin: Int
-        public let availableToTradeMinutesMax: Int
-        public let availableToTradeDisplayMode: DisplayMode
-        public let availableToWithdrawMinutesMin: Int
-        public let availableToWithdrawMinutesMax: Int
-        public let availableToWithdrawDisplayMode: DisplayMode
-        public let settlementType: SettlementType
-        public let settlementReason: SettlementReason?
-        public let withdrawalLockMinutes: Int?
+        public var depositTerms: PaymentsDepositTerms?
     }
 }
 

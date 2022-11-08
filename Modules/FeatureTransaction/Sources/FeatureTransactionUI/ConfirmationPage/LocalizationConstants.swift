@@ -26,24 +26,3 @@ extension LocalizationConstants {
         )
     }
 }
-
-extension LocalizationConstants.Checkout {
-    enum DepositTermsAvailableDisplayMode {
-        static let immediately = NSLocalizedString(
-            "Immediately",
-            comment: "Immediately Available To Withdraw or Trade Display Mode"
-        )
-        static let maxMinute = NSLocalizedString(
-            "In %@",
-            comment: "Max Minute Available To Withdraw or Trade Display Mode"
-        )
-        static let minuteRange = NSLocalizedString(
-            "Between %@ and %@ minutes",
-            comment: "Minute Range Available To Withdraw or Trade Display Mode"
-        )
-        static let dayRange = NSLocalizedString(
-            "Between %@ and %@",
-            comment: "Day Range Available To Withdraw or Trade Display Mode"
-        )
-    }
-}

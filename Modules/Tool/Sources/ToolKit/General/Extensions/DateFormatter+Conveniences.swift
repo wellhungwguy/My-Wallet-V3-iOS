@@ -28,6 +28,15 @@ extension DateFormatter {
         return formatter
     }()
 
+    public static let mediumWithoutYear: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.isLenient = true
+        formatter.setLocalizedDateFormatFromTemplate("MMMMd")
+        return formatter
+    }()
+
     public static var elegantDateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium

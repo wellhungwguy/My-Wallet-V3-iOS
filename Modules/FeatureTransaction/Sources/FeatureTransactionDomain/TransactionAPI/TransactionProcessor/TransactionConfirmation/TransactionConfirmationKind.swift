@@ -6,6 +6,7 @@ public enum TransactionConfirmationKind: Equatable {
     case description
     case agreementInterestTandC
     case agreementInterestTransfer
+    case depositACHTerms
     case readOnly
     case memo
     case largeTransactionWarning

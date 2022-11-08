@@ -102,6 +102,8 @@ public final class DetailsScreenViewController: BaseTableViewController {
         tableView.registerNibCell(LineItemTableViewCell.self, in: .module)
         tableView.register(SeparatorTableViewCell.self)
         tableView.register(CheckboxTableViewCell.self)
+        tableView.register(TermsTableViewCell.self)
+        tableView.register(LabelInfoTableViewCell.self)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
     }
 
@@ -179,7 +181,9 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
              .notice,
              .separator,
              .checkbox,
-             .textField:
+             .terms,
+             .textField,
+             .labelInfo:
             break
         case .lineItem(let presenter):
             presenter.tapRelay.accept(())
@@ -222,6 +226,10 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
             return textFieldCell(for: indexPath, viewModel: viewModel)
         case .checkbox(let viewModel):
             return checkBox(for: indexPath, model: viewModel)
+        case .terms(let viewModel):
+            return terms(for: indexPath, model: viewModel)
+        case .labelInfo(let viewModel):
+            return labelInfo(for: indexPath, model: viewModel)
         }
     }
 
@@ -252,6 +260,18 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
 
     private func checkBox(for indexPath: IndexPath, model: CheckboxViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(CheckboxTableViewCell.self, for: indexPath)
+        cell.viewModel = model
+        return cell
+    }
+
+    private func terms(for indexPath: IndexPath, model: TermsViewCellModel) -> UITableViewCell {
+        let cell = tableView.dequeue(TermsTableViewCell.self, for: indexPath)
+        cell.viewModel = model
+        return cell
+    }
+
+    private func labelInfo(for indexPath: IndexPath, model: LabelInfoViewCellModel) -> UITableViewCell {
+        let cell = tableView.dequeue(LabelInfoTableViewCell.self, for: indexPath)
         cell.viewModel = model
         return cell
     }

@@ -34,4 +34,9 @@ public protocol PlaidRepositoryAPI {
         accountId: String,
         amount: MoneyValue
     ) -> AnyPublisher<SettlementInfo, NabuError>
+
+    func getPaymentsDepositTerms(
+        amount: MoneyValue,
+        paymentMethodId: String
+    ) -> AnyPublisher<PaymentsDepositTerms, NabuError>
 }

@@ -1,4 +1,5 @@
 import BlockchainUI
+import Localization
 import SwiftUI
 
 typealias L10n = LocalizationConstants.Checkout
@@ -55,19 +56,13 @@ extension BuyCheckoutView {
 
     public struct Loaded: View {
 
-        enum BuyType {
-            case simpleBuy
-            case recurringBuy
-        }
-
         @BlockchainApp var app
         @Environment(\.context) var context
         @Environment(\.openURL) var openURL
         @State var isAvailableToTradeInfoPresented = false
-        @State var isTermsInfoPresented = false
+        @State var isACHTermsInfoPresented = false
 
         let checkout: BuyCheckout
-        let buyType: BuyType = .simpleBuy
 
         @State var information = (price: false, fee: false)
         @State var readyToRefresh = false
@@ -151,9 +146,9 @@ extension BuyCheckoutView.Loaded {
             availableToTradeInfoSheet
         }
         .sheet(
-            isPresented: $isTermsInfoPresented
+            isPresented: $isACHTermsInfoPresented
         ) {
-            termsInfoSheet
+            achTermsInfoSheet
         }
     }
 
@@ -185,54 +180,32 @@ extension BuyCheckoutView.Loaded {
         .padding(Spacing.padding3)
     }
 
-    @ViewBuilder var termsInfoSheet: some View {
+    @ViewBuilder var achTermsInfoSheet: some View {
         PrimaryNavigationView {
-            GeometryReader { geometry in
+            VStack() {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.padding2) {
-                        let description: String = {
-                            switch buyType {
-                            case .simpleBuy:
-                                return L10n.TermsInfo.simpleBuyDescription
-                            case .recurringBuy:
-                                return L10n.TermsInfo.recurringBuyDescription
-                            }
-                        }()
-                        Text(
-                            String(
-                                format: description,
-                                checkout.paymentMethod.name,
-                                checkout.fiat.displayString,
-                                formattedUpperRoundedDays(
-                                    minutes: checkout.depositTerms?.withdrawalLockMinutes,
-                                    defaultDays: 7
-                                )
-                            )
-                        )
+                    Text(checkout.achTermsInfoDescriptionText)
                         .fixedSize(horizontal: false, vertical: true)
                         .typography(.body1)
                         .foregroundTexture(.semantic.text)
-                    }
-                    .padding(Spacing.padding3)
-                    .primaryNavigation(
-                        title: L10n.TermsInfo.title,
-                        trailing: {
-                            IconButton(icon: .closeCirclev2) {
-                                isTermsInfoPresented = false
-                            }
-                            .frame(width: 24.pt, height: 24.pt)
-                        }
-                    )
                 }
-                .frame(width: geometry.size.width)
-                .frame(height: geometry.size.height)
+                PrimaryButton(title: L10n.ACHTermsInfo.doneButton) {
+                    isACHTermsInfoPresented = false
+                }
+                .frame(alignment: .bottom)
             }
+            .primaryNavigation(
+                title: L10n.ACHTermsInfo.title,
+                trailing: {
+                    IconButton(icon: .closeCirclev2) {
+                        isACHTermsInfoPresented = false
+                    }
+                    .frame(width: 24.pt, height: 24.pt)
+                }
+            )
+            .padding([.horizontal, .bottom], Spacing.padding3)
+            .padding(.top, Spacing.padding1)
         }
-        PrimaryButton(title: L10n.TermsInfo.doneButton) {
-            isTermsInfoPresented = false
-        }
-        .frame(alignment: .bottom)
-        .padding([.horizontal, .bottom], Spacing.padding3)
     }
 
     @ViewBuilder func header() -> some View {
@@ -312,11 +285,7 @@ extension BuyCheckoutView.Loaded {
             if let availableToTrade = checkout.depositTerms?.availableToTrade {
                 PrimaryDivider()
                 TableRow(
-                    title: .init(L10n.Label.availableToTrade),
-                    inlineTitleButton: IconButton(
-                        icon: question(information.fee),
-                        toggle: $isAvailableToTradeInfoPresented
-                    ),
+                    title: .init(LocalizationConstants.Transaction.Confirmation.availableToTrade),
                     trailing: {
                         TableRowTitle(availableToTrade)
                     }
@@ -326,7 +295,11 @@ extension BuyCheckoutView.Loaded {
             if let availableToWithdraw = checkout.depositTerms?.availableToWithdraw {
                 PrimaryDivider()
                 TableRow(
-                    title: .init(L10n.Label.availableToWithdraw),
+                    title: .init(LocalizationConstants.Transaction.Confirmation.availableToWithdraw),
+                    inlineTitleButton: IconButton(
+                        icon: question(information.fee),
+                        toggle: $isAvailableToTradeInfoPresented
+                    ),
                     trailing: {
                         TableRowTitle(availableToWithdraw)
                     }
@@ -362,27 +335,10 @@ extension BuyCheckoutView.Loaded {
         VStack(alignment: .leading) {
             if isUIPaymentsImprovementsEnabled && checkout.paymentMethod.isACH {
                 VStack(alignment: .leading, spacing: Spacing.padding2) {
-                    let description: String = {
-                        switch buyType {
-                        case .simpleBuy:
-                            return String(
-                                format: L10n.AchTransferDisclaimer.simpleBuyDescription,
-                                checkout.fiat.displayString,
-                                checkout.crypto.code,
-                                checkout.exchangeRate.displayString
-                            )
-                        case .recurringBuy:
-                            return String(
-                                format: L10n.AchTransferDisclaimer.recurringBuyDescription,
-                                checkout.paymentMethod.name,
-                                checkout.fiat.displayString
-                            )
-                        }
-                    }()
-                    Text(description)
+                    Text(checkout.achTransferDisclaimerText)
                     .multilineTextAlignment(.leading)
                     SmallMinimalButton(title: L10n.AchTransferDisclaimer.readMoreButton) {
-                        isTermsInfoPresented = true
+                        isACHTermsInfoPresented = true
                     }
                 }
             } else {
@@ -422,27 +378,6 @@ extension BuyCheckoutView.Loaded {
         }
         .padding()
         .backgroundWithShadow(.top)
-    }
-}
-
-extension BuyCheckoutView.Loaded {
-    /// This function converts minutes into days and does day upper rounding
-    /// Examples: 0m -> 0 days;  1m -> 1 day;  1440m -> 1 day;  1441m -> 2 days
-    private func formattedUpperRoundedDays(minutes: Int?, defaultDays: Int) -> String {
-        let roundedSeconds: TimeInterval = {
-            let minutesInDay = 24 * 60
-            let secondsInMinute = 60
-            guard let minutes = minutes
-            else { return TimeInterval(defaultDays * minutesInDay * secondsInMinute) }
-            let remainder: Int = minutes % minutesInDay
-            let add: Int = remainder == 0 ? 0 : minutesInDay
-            return TimeInterval((minutes + add) * secondsInMinute)
-        }()
-
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day]
-        formatter.unitsStyle = .full
-        return formatter.string(from: roundedSeconds) ?? ""
     }
 }
 
@@ -493,3 +428,44 @@ struct ApplePayButton: View {
     }
 }
 #endif
+
+extension BuyCheckout {
+    fileprivate var paymentMethodLabel: String {
+        [paymentMethod.name, paymentMethod.detail].compactMap { $0 }.joined(separator: " ")
+    }
+
+    fileprivate var achTermsInfoDescriptionText: String {
+        let description: String = {
+            switch buyType {
+            case .simpleBuy:
+                return L10n.ACHTermsInfo.simpleBuyDescription
+            case .recurringBuy:
+                return L10n.ACHTermsInfo.recurringBuyDescription
+            }
+        }()
+        return String(
+            format: description,
+            paymentMethodLabel,
+            total.displayString,
+            depositTerms?.withdrawalLockInDays ?? ""
+        )
+    }
+
+    fileprivate var achTransferDisclaimerText: String {
+        switch buyType {
+        case .simpleBuy:
+            return String(
+                format: L10n.AchTransferDisclaimer.simpleBuyDescription,
+                total.displayString,
+                crypto.code,
+                exchangeRate.displayString
+            )
+        case .recurringBuy:
+            return String(
+                format: L10n.AchTransferDisclaimer.recurringBuyDescription,
+                paymentMethodLabel,
+                total.displayString
+            )
+        }
+    }
+}

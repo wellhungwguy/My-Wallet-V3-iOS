@@ -522,7 +522,39 @@ extension TransactionConfirmations {
         }
 
         public var formatted: (title: String, subtitle: String)? {
-            (LocalizedString.fundsArrivalDate, "\(DateFormatter.medium.string(from: date))")
+            (LocalizedString.fundsArrivalDate, DateFormatter.mediumWithoutYear.string(from: date))
+        }
+    }
+
+    public struct AvailableToTradeDate: TransactionConfirmation {
+        public let id = UUID()
+
+        public let date: String?
+        public let type: TransactionConfirmationKind = .readOnly
+
+        public init(date: String?) {
+            self.date = date
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            guard let date = date else { return nil }
+            return (LocalizedString.availableToTrade, date)
+        }
+    }
+
+    public struct AvailableToWithdrawDate: TransactionConfirmation {
+        public let id = UUID()
+
+        public let date: String?
+        public let type: TransactionConfirmationKind = .readOnly
+
+        public init(date: String?) {
+            self.date = date
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            guard let date = date else { return nil }
+            return (LocalizedString.availableToWithdraw, date)
         }
     }
 
@@ -568,6 +600,33 @@ extension TransactionConfirmations {
                 String(format: LocalizedString.networkFee, primaryCurrencyFee.displayCode),
                 subtitle
             )
+        }
+    }
+
+    public struct DepositTerms: TransactionConfirmation {
+        private typealias Loc = LocalizationConstants.Transaction.Deposit.Confirmation.DepositACHTerms
+        public let id = UUID()
+        private let amount: MoneyValue
+        public var detailsDesription: String
+        public var readMoreButtonTitle: String { Loc.readMoreButton }
+        public var type: TransactionConfirmationKind = .depositACHTerms
+
+        public init(amount: MoneyValue, paymentMehtod: String, withdrawalLockInDays: String) {
+            self.amount = amount
+            self.detailsDesription = String(
+                format: LocalizationConstants.Transaction.Deposit.Confirmation.DepositACHTermsDetails.description,
+                paymentMehtod,
+                amount.displayString,
+                withdrawalLockInDays
+            )
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            let subtitle = String(
+                format: Loc.description,
+                amount.displayString
+            )
+            return ("", subtitle)
         }
     }
 

@@ -2,6 +2,7 @@
 
 import Combine
 import Errors
+import MoneyKit
 
 public protocol PlaidClientAPI {
 
@@ -39,10 +40,13 @@ public protocol PlaidClientAPI {
     func getLinkedBanks(
     ) -> AnyPublisher<[LinkedBankResponse], NabuError>
 
-    /// Get settlement info to see if account needs to be renewed/migrated
-
     func getSettlementInfo(
         accountId: String,
         amount: String
     ) -> AnyPublisher<SettlementInfoResponse, NabuError>
+
+    func getPaymentsDepositTerms(
+        amount: MoneyValue,
+        paymentMethodId: String
+    ) -> AnyPublisher<PaymentsDepositTermsResponse, NabuError>
 }
