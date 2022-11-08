@@ -63,6 +63,7 @@ struct RootView: View {
             tabs(in: viewStore)
         }
         .overlay(overlay, alignment: .bottom)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .bottomSheet(
             isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
             content: {
