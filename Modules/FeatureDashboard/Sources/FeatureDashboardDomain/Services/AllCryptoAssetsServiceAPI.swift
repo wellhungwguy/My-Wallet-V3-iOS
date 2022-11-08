@@ -5,6 +5,6 @@ import MoneyKit
 
 public protocol AllCryptoAssetsServiceAPI {
     func getAllCryptoAssetsInfo() async -> [AssetBalanceInfo]
-    func getAllCryptoAssetsInfoPublisher() -> AnyPublisher<[AssetBalanceInfo], Never>
     func getFiatAssetsInfo() async -> AssetBalanceInfo?
+    func getAllNonCustodialAssets() async -> [AssetBalanceInfo]
 }

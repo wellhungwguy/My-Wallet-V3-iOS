@@ -31,7 +31,7 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var isAppModeSwitcherPresented: Bool = false
     @BindableState var appModeSeen: Bool = false
 
-    @BindableState var multiAppIsEnabled: Bool = false
+    @BindableState var superAppIsEnabled: Bool = false
 
     var appSwitcherEnabled: Bool {
         appMode != .universal
@@ -224,7 +224,7 @@ let rootViewReducer = Reducer<
     case .onAppear:
         let tabsPublisher = app
             .modePublisher()
-            .combineLatest(app.publisher(for: blockchain.app.configuration.multiapp.is.enabled, as: Bool.self))
+            .combineLatest(app.publisher(for: blockchain.app.configuration.superapp.v1.is.enabled, as: Bool.self))
             .flatMap { appMode, multiAppEnabled -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 guard multiAppEnabled.value == true else {
                     if appMode == .pkw {
@@ -240,13 +240,13 @@ let rootViewReducer = Reducer<
                 if appMode == .pkw {
                     return environment
                         .app
-                        .publisher(for: blockchain.app.configuration.multiapp.defi.tabs, as: OrderedSet<Tab>.self)
+                        .publisher(for: blockchain.app.configuration.superapp.defi.tabs, as: OrderedSet<Tab>.self)
                 }
 
                 if appMode == .trading {
                     return environment
                         .app
-                        .publisher(for: blockchain.app.configuration.multiapp.brokerage.tabs, as: OrderedSet<Tab>.self)
+                        .publisher(for: blockchain.app.configuration.superapp.brokerage.tabs, as: OrderedSet<Tab>.self)
                 }
 
                 return environment
@@ -343,11 +343,11 @@ let rootViewReducer = Reducer<
                 .map { .binding(.set(\.$appModeSeen, $0)) },
 
             environment
-                .app.publisher(for: blockchain.app.configuration.multiapp.is.enabled, as: Bool.self)
+                .app.publisher(for: blockchain.app.configuration.superapp.v1.is.enabled, as: Bool.self)
                 .replaceError(with: false)
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()
-                .map { .binding(.set(\.$multiAppIsEnabled, $0)) }
+                .map { .binding(.set(\.$superAppIsEnabled, $0)) }
         )
 
     case .onDisappear:

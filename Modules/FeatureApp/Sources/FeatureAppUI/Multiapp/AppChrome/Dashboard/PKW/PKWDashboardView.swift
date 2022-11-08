@@ -6,10 +6,10 @@ import DIKit
 import FeatureDashboardUI
 import SwiftUI
 
-struct TradingDashboardView: View {
-    let store: StoreOf<TradingDashboard>
+struct PKWDashboardView: View {
+    let store: StoreOf<PKWDashboard>
 
-    public init(store: StoreOf<TradingDashboard>) {
+    public init(store: StoreOf<PKWDashboard>) {
         self.store = store
     }
 
@@ -18,15 +18,10 @@ struct TradingDashboardView: View {
             PrimaryNavigationView {
                 ScrollView {
                     VStack(spacing: 32) {
-                        DashboardAssetSectionView(
-                            store: self.store.scope(
-                                state: \.assetsState,
-                                action: TradingDashboard.Action.assetsAction
-                            )
+                        DashboardAssetSectionView(store: self.store.scope(
+                            state: \.assetsState,
+                            action: PKWDashboard.Action.assetsAction
                         )
-
-                        DashboardActivitySectionView(
-                            store: self.store.scope(state: \.activityState, action: TradingDashboard.Action.activityAction)
                         )
                     }
                     .navigationRoute(in: store)

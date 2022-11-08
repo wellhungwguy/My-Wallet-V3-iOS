@@ -685,16 +685,23 @@ extension DependencyContainer {
         }
 
         factory { () -> AllCryptoAssetsServiceAPI in
-            AllCryptoAssetsService(
+            AllCryptoAssetsBalanceService(
+                allCrypoBalanceRepository: DIKit.resolve(),
+                nonCustodialBalanceRepository: DIKit.resolve(),
+                priceService: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
+            ) as AllCryptoAssetsServiceAPI
+        }
+
+        single { () -> CustodialAssetsRepositoryAPI in
+            CustodialAssetsRepository(
                 coincore: DIKit.resolve(),
                 app: DIKit.resolve(),
                 fiatCurrencyService: DIKit.resolve(),
                 priceService: DIKit.resolve()
-            ) as AllCryptoAssetsServiceAPI
-        }
-
-        single { () -> AllCryptoAssetsRepositoryAPI in
-            AllCryptoAssetsRepository(allCryptoAssetService: DIKit.resolve())
+            )
         }
     }
 }

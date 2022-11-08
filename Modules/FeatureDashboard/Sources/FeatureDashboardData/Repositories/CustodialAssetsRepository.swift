@@ -9,16 +9,40 @@ import MoneyKit
 import PlatformKit
 import ToolKit
 
-public class AllCryptoAssetsService: AllCryptoAssetsServiceAPI {
+public final class CustodialAssetsRepository: CustodialAssetsRepositoryAPI {
+    private struct Key: Hashable {}
+
+    public var assetsInfo: AnyPublisher<[AssetBalanceInfo], Error> {
+        cachedValue.get(key: Key())
+    }
+
+    private let cache: AnyCache<Key, [AssetBalanceInfo]> = InMemoryCache(
+        configuration: .onLoginLogout(),
+        refreshControl: PeriodicCacheRefreshControl(refreshInterval: 320)
+    )
+    .eraseToAnyCache()
+
+    private lazy var cachedValue: CachedValueNew<
+        Key,
+        [AssetBalanceInfo],
+        Error
+    > = CachedValueNew(
+        cache: cache,
+        fetch: { [getAllCryptoAssetsInfo] _ -> AnyPublisher<[AssetBalanceInfo], Error> in
+                    self.getAllCryptoAssetsInfoPublisher()
+                    .eraseError()
+            }
+    )
+
     private let coincore: CoincoreAPI
     private let app: AppProtocol
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
 
     public init(
         coincore: CoincoreAPI,
         app: AppProtocol,
-        fiatCurrencyService: FiatCurrencyServiceAPI,
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI,
         priceService: PriceServiceAPI
     ) {
         self.coincore = coincore
@@ -27,7 +51,7 @@ public class AllCryptoAssetsService: AllCryptoAssetsServiceAPI {
         self.priceService = priceService
     }
 
-    public func getAllCryptoAssetsInfo() async -> [AssetBalanceInfo] {
+    private func getAllCryptoAssetsInfo() async -> [AssetBalanceInfo] {
         let assets = coincore.cryptoAssets
         let appMode = await app.mode()
         var assetsInfo: [AssetBalanceInfo] = []
@@ -45,7 +69,11 @@ public class AllCryptoAssetsService: AllCryptoAssetsServiceAPI {
             {
 
                 async let fiatBalance = try? await accountGroup.balancePair(fiatCurrency: fiatCurrency).await()
-                async let prices = try? await priceService.priceSeries(of: cryptoCurrency, in: fiatCurrency, within: .day()).await()
+                async let prices = try? await priceService.priceSeries(
+                    of: cryptoCurrency,
+                    in: fiatCurrency,
+                    within: .day()
+                ).await()
 
                 assetsInfo.append(await AssetBalanceInfo(
                     cryptoBalance: balance,
@@ -58,29 +86,7 @@ public class AllCryptoAssetsService: AllCryptoAssetsServiceAPI {
         return assetsInfo
     }
 
-    public func getFiatAssetsInfo() async -> AssetBalanceInfo? {
-        let asset = coincore.fiatAsset
-        if let accountGroup = try? await asset.accountGroup(filter: .all).await(),
-           let fiatCurrency = try? await fiatCurrencyService.displayCurrency.await(),
-           let account = accountGroup.accounts.first(where: { account in
-               account.currencyType.fiatCurrency == fiatCurrency
-           }),
-           let balance = try? await account.balance.await()
-        {
-
-            let fiatBalance = try? await account.balancePair(fiatCurrency: fiatCurrency).await()
-
-            return AssetBalanceInfo(
-                cryptoBalance: balance,
-                fiatBalance: fiatBalance,
-                currency: account.currencyType,
-                delta: nil
-            )
-        }
-        return nil
-    }
-
-    public func getAllCryptoAssetsInfoPublisher() -> AnyPublisher<[AssetBalanceInfo], Never> {
+    private func getAllCryptoAssetsInfoPublisher() -> AnyPublisher<[AssetBalanceInfo], Never> {
            Deferred { [self] in
                Future { promise in
                    Task {

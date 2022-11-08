@@ -7,13 +7,13 @@ import PlatformKit
 import SwiftExtensions
 
 public struct FeatureAllAssets: ReducerProtocol {
-    public let allCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI
+    public let allCrpyotService: AllCryptoAssetsServiceAPI
     public let app: AppProtocol
     public init(
-        allCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI,
+        allCryptoService: AllCryptoAssetsServiceAPI,
         app: AppProtocol
     ) {
-        self.allCryptoAssetsRepository = allCryptoAssetsRepository
+        allCrpyotService = allCryptoService
         self.app = app
     }
 
@@ -28,6 +28,7 @@ public struct FeatureAllAssets: ReducerProtocol {
     }
 
     public struct State: Equatable {
+        var presentedAssetType: PresentedAssetType
         var balanceInfo: [AssetBalanceInfo]?
         @BindableState var searchText: String = ""
         @BindableState var isSearching: Bool = false
@@ -49,7 +50,9 @@ public struct FeatureAllAssets: ReducerProtocol {
             }
         }
 
-        public init() {}
+        public init(with presentedAssetType: PresentedAssetType) {
+            self.presentedAssetType = presentedAssetType
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -57,10 +60,12 @@ public struct FeatureAllAssets: ReducerProtocol {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .task {
+                return .task { [assetType = state.presentedAssetType] in
                     await .onBalancesFetched(
                         TaskResult {
-                            try await self.allCryptoAssetsRepository.assetsInfo.await()
+                            assetType == .custodial ?
+                            await self.allCrpyotService.getAllCryptoAssetsInfo() :
+                            await self.allCrpyotService.getAllNonCustodialAssets()
                         }
                     )
                 }

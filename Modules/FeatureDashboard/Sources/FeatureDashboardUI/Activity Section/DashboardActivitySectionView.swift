@@ -54,7 +54,7 @@ public struct DashboardActivitySectionView: View {
                 Button {
                     viewStore.send(.onAllActivityTapped)
                 } label: {
-                    Text(LocalizationConstants.MultiApp.Dashboard.seeAllLabel)
+                    Text(LocalizationConstants.SuperApp.Dashboard.seeAllLabel)
                         .typography(.paragraph2)
                         .foregroundColor(.semantic.primary)
                 }

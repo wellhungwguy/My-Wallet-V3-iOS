@@ -9,7 +9,7 @@ import FeatureDashboardUI
 import Foundation
 import SwiftUI
 
-public struct TradingDashboard: ReducerProtocol {
+public struct PKWDashboard: ReducerProtocol {
     let app: AppProtocol
     let allCryptoAssetService: AllCryptoAssetsServiceAPI
 
@@ -27,16 +27,14 @@ public struct TradingDashboard: ReducerProtocol {
 
     public enum Action: Equatable, NavigationAction {
         case route(RouteIntent<Route>?)
-        case allAssetsAction(FeatureAllAssets.Action)
         case assetsAction(DashboardAssetsSection.Action)
-        case activityAction(DashboardActivitySection.Action)
+        case allAssetsAction(FeatureAllAssets.Action)
     }
 
     public struct State: Equatable, NavigationState {
         public var title: String
-        public var assetsState: DashboardAssetsSection.State = .init(presentedAssetsType: .custodial)
-        public var allAssetsState: FeatureAllAssets.State = .init(with: .custodial)
-        public var activityState: DashboardActivitySection.State = .init()
+        public var assetsState: DashboardAssetsSection.State = .init(presentedAssetsType: .nonCustodial)
+        public var allAssetsState: FeatureAllAssets.State = .init(with: .nonCustodial)
         public var route: RouteIntent<Route>?
 
         public init(title: String) {
@@ -46,10 +44,10 @@ public struct TradingDashboard: ReducerProtocol {
 
     public var body: some ReducerProtocol<State, Action> {
         Scope(state: \.assetsState, action: /Action.assetsAction) {
-            DashboardAssetsSection(
-                allCryptoAssetService: allCryptoAssetService,
-                app: app
-            )
+                DashboardAssetsSection(
+                    allCryptoAssetService: allCryptoAssetService,
+                    app: app
+                )
         }
 
         Scope(state: \.allAssetsState, action: /Action.allAssetsAction) {
@@ -59,16 +57,12 @@ public struct TradingDashboard: ReducerProtocol {
             )
         }
 
-        Scope(state: \.activityState, action: /Action.activityAction) {
-            DashboardActivitySection(
-                app: app
-            )
-        }
-
         Reduce { state, action in
             switch action {
             case .route(let routeIntent):
                 state.route = routeIntent
+                return .none
+            case .allAssetsAction:
                 return .none
             case .assetsAction(let action):
                 switch action {
@@ -78,10 +72,6 @@ public struct TradingDashboard: ReducerProtocol {
                 default:
                     return .none
                 }
-            case .allAssetsAction:
-                return .none
-            case .activityAction:
-                return .none
             }
         }
     }

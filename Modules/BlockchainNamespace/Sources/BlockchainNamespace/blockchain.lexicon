@@ -154,17 +154,6 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
-			multiapp:
-				brokerage:
-					tabs:
-					+ blockchain.app.configuration.tabs
-				defi:
-					tabs:
-					+ blockchain.app.configuration.tabs
-				is:
-					enabled:
-					+ blockchain.db.type.boolean
-					+ blockchain.session.configuration.value
 			outbound:
 				request:
 					interceptor:
@@ -220,6 +209,18 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+			superapp:
+				brokerage:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				defi:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				v1:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			swap:
 				search:
 					is:

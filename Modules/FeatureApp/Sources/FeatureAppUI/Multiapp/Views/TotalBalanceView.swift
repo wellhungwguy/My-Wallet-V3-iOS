@@ -9,7 +9,7 @@ struct TotalBalanceView: View {
 
     var body: some View {
         HStack {
-            Text(LocalizationConstants.MultiApp.AppChrome.totalBalance)
+            Text(LocalizationConstants.SuperApp.AppChrome.totalBalance)
                 .typography(.paragraph1)
                 .opacity(0.8)
             Text(balance)

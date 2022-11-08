@@ -3,6 +3,6 @@
 import Combine
 import Foundation
 
-public protocol AllCryptoAssetsRepositoryAPI {
+public protocol CustodialAssetsRepositoryAPI {
     var assetsInfo: AnyPublisher<[AssetBalanceInfo], Error> { get }
 }

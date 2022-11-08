@@ -28,7 +28,7 @@ public struct AllAssetsView: View {
             }
             .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
         })
-        .primaryNavigation(title: LocalizationConstants.MultiApp.AllAssets.title)
+        .primaryNavigation(title: LocalizationConstants.SuperApp.AllAssets.title)
         .bottomSheet(
             isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
             content: {
@@ -44,8 +44,8 @@ public struct AllAssetsView: View {
         SearchBar(
             text: viewStore.binding(\.$searchText),
             isFirstResponder: viewStore.binding(\.$isSearching),
-            cancelButtonText: LocalizationConstants.MultiApp.AllAssets.cancelButton,
-            placeholder: LocalizationConstants.MultiApp.AllAssets.searchPlaceholder
+            cancelButtonText: LocalizationConstants.SuperApp.AllAssets.cancelButton,
+            placeholder: LocalizationConstants.SuperApp.AllAssets.searchPlaceholder
         )
         .frame(height: 48)
         .padding(.horizontal, Spacing.padding2)
@@ -94,12 +94,12 @@ public struct AllAssetsView: View {
     private var filterSheet: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, content: {
-                Text(LocalizationConstants.MultiApp.AllAssets.Filter.title)
+                Text(LocalizationConstants.SuperApp.AllAssets.Filter.title)
                     .typography(.paragraph2)
                     .padding(.top, Spacing.padding1)
 
                 HStack {
-                    Text(LocalizationConstants.MultiApp.AllAssets.Filter.showSmallBalancesLabel)
+                    Text(LocalizationConstants.SuperApp.AllAssets.Filter.showSmallBalancesLabel)
                         .typography(.paragraph2)
                         .padding(.leading, Spacing.padding2)
                     Spacer()
@@ -114,7 +114,7 @@ public struct AllAssetsView: View {
                 .cornerRadius(16, corners: .allCorners)
                 .padding(.horizontal, Spacing.padding2)
 
-                PrimaryButton(title: LocalizationConstants.MultiApp.AllAssets.Filter.showButton) {
+                PrimaryButton(title: LocalizationConstants.SuperApp.AllAssets.Filter.showButton) {
                     viewStore.send(.onConfirmFilterTapped)
                 }
                 .padding(.horizontal, Spacing.padding2)
@@ -125,7 +125,7 @@ public struct AllAssetsView: View {
             Button {
                 viewStore.send(.onResetTapped)
             } label: {
-                Text(LocalizationConstants.MultiApp.AllAssets.Filter.resetButton)
+                Text(LocalizationConstants.SuperApp.AllAssets.Filter.resetButton)
             }
             .typography(.body2)
             .padding(.top, Spacing.padding1)
@@ -147,7 +147,7 @@ public struct AllAssetsView: View {
 
     private var noResultsView: some View {
         HStack(alignment: .center, content: {
-            Text(LocalizationConstants.MultiApp.AllAssets.noResults)
+            Text(LocalizationConstants.SuperApp.AllAssets.noResults)
                 .padding(.vertical, Spacing.padding2)
         })
         .frame(maxWidth: .infinity)

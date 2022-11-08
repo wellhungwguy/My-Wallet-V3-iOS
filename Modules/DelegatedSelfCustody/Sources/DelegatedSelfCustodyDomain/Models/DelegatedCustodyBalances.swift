@@ -3,10 +3,14 @@
 import MoneyKit
 
 public struct DelegatedCustodyBalances: Equatable {
-    public struct Balance: Equatable {
+    public struct Balance: Equatable, Identifiable {
+        public var id: Int {
+            index
+        }
+
         let index: Int
-        let name: String
-        let balance: MoneyValue
+        public let name: String
+        public let balance: MoneyValue
 
         public init(index: Int, name: String, balance: MoneyValue) {
             self.index = index

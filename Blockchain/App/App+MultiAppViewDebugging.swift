@@ -50,9 +50,9 @@ public final class MultiAppViewDebuggingObserver: Session.Observer {
 
     private func presentAllAssetsScreen() {
         let view = AllAssetsView(store: .init(
-            initialState: .init(),
+            initialState: .init(with: .custodial),
             reducer: FeatureAllAssets(
-                allCryptoAssetsRepository: resolve(),
+                allCryptoService: resolve(),
                 app: resolve()
             )
         ))

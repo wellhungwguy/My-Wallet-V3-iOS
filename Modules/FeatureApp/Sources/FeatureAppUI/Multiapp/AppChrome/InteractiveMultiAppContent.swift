@@ -174,7 +174,6 @@ struct MultiAppTradingView: View {
                 initialState: .init(title: tab.title),
                 reducer: TradingDashboard(
                     app: resolve(),
-                    allCryptoAssetsRepository: resolve(),
                     allCryptoAssetService: resolve()
                 )
             )
@@ -236,37 +235,17 @@ struct MultiAppDefiView: View {
 
     func dummyView(tabs: [BottomBarItem<_Tab>]) -> some View {
         ForEach(tabs) { tab in
-            DummyInnerContentView(tab: tab)
+            PKWDashboardView(store: .init(
+                initialState: .init(title: tab.title),
+                reducer: PKWDashboard(
+                    app: resolve(),
+                    allCryptoAssetService: resolve()
+                )
+            )
+            )
                 .tag(tab.id)
                 .id(tab.id)
                 .accessibilityIdentifier("tab.id.\(tab.id)")
-        }
-    }
-}
-
-// DUMMY VIEW
-
-struct DummyInnerContentView: View {
-    let tab: BottomBarItem<_Tab>
-
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 1) {
-                    ForEach(0..<20) { value in
-                        PrimaryRow(
-                            title: "\(tab.title) \(value)",
-                            subtitle: "Buy & Sell",
-                            action: {}
-                        )
-                    }
-                }
-                .padding(.bottom, Spacing.padding6)
-                .navigationTitle(tab.title)
-                .navigationBarTitleDisplayMode(.inline)
-                .frame(maxWidth: .infinity)
-            }
-                .background(Color.semantic.light)
         }
     }
 }
