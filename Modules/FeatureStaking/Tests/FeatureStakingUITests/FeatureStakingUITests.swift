@@ -1,8 +1,4 @@
 @testable import FeatureStakingUI
 import XCTest
 
-final class FeatureStakingUITests: XCTestCase {
-    func testExample() throws {
-        // soon...
-    }
-}
+final class FeatureStakingUITests: XCTestCase {}
