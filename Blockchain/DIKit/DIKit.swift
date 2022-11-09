@@ -445,7 +445,7 @@ extension DependencyContainer {
         }
 
         single { () -> HistoricalPriceRepositoryAPI in
-            HistoricalPriceRepository(DIKit.resolve())
+            HistoricalPriceRepository(DIKit.resolve(), prices: DIKit.resolve())
         }
 
         single { () -> RatesClientAPI in

@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Extensions
 import Foundation
 
 /// A networking error returned by the network layer, this can be mapped to user facing errors at a high level
-public struct NetworkError: Error {
+public struct NetworkError: Error, TimeoutFailure {
 
     public enum ErrorType {
         case urlError(URLError)
@@ -25,6 +26,7 @@ public struct NetworkError: Error {
 extension NetworkError: FromNetworkError {
 
     public static let unknown = NetworkError(request: nil, type: .serverError(.badResponse))
+    public static var timeout = NetworkError(request: nil, type: .urlError(.init(.timedOut)))
 
     public static func from(_ networkError: NetworkError) -> NetworkError {
         networkError
