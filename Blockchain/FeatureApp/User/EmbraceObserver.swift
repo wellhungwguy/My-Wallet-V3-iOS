@@ -18,16 +18,44 @@ class EmbraceObserver: Session.Observer {
     func start() {
         app.publisher(for: blockchain.user.id, as: String.self)
             .receive(on: DispatchQueue.main)
-            .compactMap{$0.value}
-            .sink(receiveValue:{[embrace] identifier in
-                embrace.setUserIdentifier(identifier)
-            })
+            .map(\.value)
+            .sink { [embrace] identifier in
+                if let identifier {
+                    embrace.setUserIdentifier(identifier)
+                } else {
+                    embrace.clearUserIdentifier()
+                }
+            }
             .store(in: &bag)
 
-        app.on(blockchain.session.event.did.sign.out) { [embrace] _ in
-            embrace.clearUserIdentifier()
+        app.on(blockchain.ux.type.analytics.state).receive(on: DispatchQueue.main).sink { [embrace] event in
+            embrace.logBreadcrumb(withMessage: event.reference.string)
         }
-        .subscribe()
+        .store(in: &bag)
+
+        app.on(blockchain.ux.type.analytics.event).receive(on: DispatchQueue.main).sink { [embrace] event in
+            embrace.logMessage(
+                event.reference.string,
+                with: .info,
+                properties: event.context.dictionary.mapKeysAndValues(
+                    key: { key in key.string.prefix(128).string },
+                    value: { value in value.description.prefix(256).string }
+                )
+            )
+        }
+        .store(in: &bag)
+
+        app.on(blockchain.ux.type.analytics.error).receive(on: DispatchQueue.main).sink { [embrace] event in
+            struct E: Error { let message: String }
+            embrace.logHandledError(
+                E(message: event.context[blockchain.ux.type.analytics.error.message].description),
+                screenshot: false,
+                properties: [
+                    "file": event.context[blockchain.ux.type.analytics.error.source.file].description.prefix(256).string,
+                    "line": event.context[blockchain.ux.type.analytics.error.source.line].description.prefix(256).string
+                ]
+            )
+        }
         .store(in: &bag)
     }
 
