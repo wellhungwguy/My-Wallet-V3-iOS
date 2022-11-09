@@ -36,6 +36,11 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					v1:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			apple:
 				pay:
 					is:
@@ -216,11 +221,6 @@ blockchain:
 				defi:
 					tabs:
 					+ blockchain.app.configuration.tabs
-				v1:
-					is:
-						enabled:
-						+ blockchain.db.type.boolean
-						+ blockchain.session.configuration.value
 			swap:
 				search:
 					is:

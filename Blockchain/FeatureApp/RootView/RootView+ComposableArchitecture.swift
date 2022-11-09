@@ -224,7 +224,7 @@ let rootViewReducer = Reducer<
     case .onAppear:
         let tabsPublisher = app
             .modePublisher()
-            .combineLatest(app.publisher(for: blockchain.app.configuration.superapp.v1.is.enabled, as: Bool.self))
+            .combineLatest(app.publisher(for: blockchain.app.configuration.app.superapp.v1.is.enabled, as: Bool.self))
             .flatMap { appMode, multiAppEnabled -> AnyPublisher<FetchResult.Value<OrderedSet<Tab>>, Never> in
                 guard multiAppEnabled.value == true else {
                     if appMode == .pkw {
@@ -343,7 +343,7 @@ let rootViewReducer = Reducer<
                 .map { .binding(.set(\.$appModeSeen, $0)) },
 
             environment
-                .app.publisher(for: blockchain.app.configuration.superapp.v1.is.enabled, as: Bool.self)
+                .app.publisher(for: blockchain.app.configuration.app.superapp.v1.is.enabled, as: Bool.self)
                 .replaceError(with: false)
                 .receive(on: DispatchQueue.main)
                 .eraseToEffect()

@@ -143,7 +143,7 @@ final class AppHostingController: UIViewController {
 
                 // for sanity reasons, let's for now skip this logic on release versions
                 if BuildFlag.isInternal {
-                    app.publisher(for: blockchain.app.configuration.superapp.v1.is.enabled, as: Bool.self)
+                    app.publisher(for: blockchain.app.configuration.app.superapp.v1.is.enabled, as: Bool.self)
                         .receive(on: DispatchQueue.main)
                         .sink { isMultiAppEnabled in
                             guard let value = isMultiAppEnabled.value else {
