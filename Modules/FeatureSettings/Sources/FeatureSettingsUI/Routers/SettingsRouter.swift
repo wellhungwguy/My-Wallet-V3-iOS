@@ -31,12 +31,10 @@ public enum CardOrderingResult {
     case cancelled
 }
 
-public protocol CardIssuingViewControllerAPI: AnyObject {
-    func makeIntroViewController(onComplete: @escaping (CardOrderingResult) -> Void) -> UIViewController
-    func makeManagementViewController(
-        openAddCardFlow: @escaping () -> Void,
-        onComplete: @escaping () -> Void
-    ) -> UIViewController
+public protocol CardIssuingRouterAPI: AnyObject {
+    func open(
+        with navigationController: NavigationControllerAPI
+    )
 }
 
 public protocol AuthenticationCoordinating: AnyObject {
@@ -90,7 +88,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let externalActionsProvider: ExternalActionsProviderAPI
     private let kycRouter: KYCRouterAPI
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-    private let cardIssuingAdapter: CardIssuingAdapterAPI
+    private let cardIssuingRouter: CardIssuingRouterAPI
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
@@ -124,7 +122,7 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         externalActionsProvider: ExternalActionsProviderAPI = resolve(),
-        cardIssuingAdapter: CardIssuingAdapterAPI = resolve(),
+        cardIssuingRouter: CardIssuingRouterAPI = resolve(),
         urlOpener: URLOpener = resolve(),
         exchangeUrlProvider: @escaping () -> String
     ) {
@@ -145,7 +143,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.externalActionsProvider = externalActionsProvider
-        self.cardIssuingAdapter = cardIssuingAdapter
+        self.cardIssuingRouter = cardIssuingRouter
         self.exchangeUrlProvider = exchangeUrlProvider
 
         self.urlOpener = urlOpener
@@ -343,51 +341,10 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showCardIssuingFlow() {
-        cardIssuingAdapter
-            .hasCard()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] hasCard in
-                if hasCard {
-                    self?.showCardManagementFlow()
-                } else {
-                    self?.showCardOrderingFlow()
-                }
-            }
-            .store(in: &cancellables)
-    }
-
-    private func showCardManagementFlow() {
-        let cardIssuing: CardIssuingViewControllerAPI = resolve()
-        let nav = navigationRouter.navigationControllerAPI
-        nav?.pushViewController(
-            cardIssuing.makeManagementViewController(
-                openAddCardFlow: { [weak self] in
-                    nav?.popToRootViewControllerAnimated(animated: true)
-                    self?.showCardOrderingFlow()
-                },
-                onComplete: {
-                    nav?.popToRootViewControllerAnimated(animated: true)
-                }
-            ),
-            animated: true
-        )
-    }
-
-    private func showCardOrderingFlow() {
-        let cardIssuing: CardIssuingViewControllerAPI = resolve()
-        let nav = navigationRouter.navigationControllerAPI
-        nav?.pushViewController(
-            cardIssuing.makeIntroViewController(onComplete: { [weak self] result in
-                nav?.popToRootViewControllerAnimated(animated: true)
-                switch result {
-                case .created:
-                    self?.showCardManagementFlow()
-                case .cancelled:
-                    break
-                }
-            }),
-            animated: true
-        )
+        guard let navigationController = navigationRouter.navigationControllerAPI else {
+            return
+        }
+        cardIssuingRouter.open(with: navigationController)
     }
 
     private func showCardLinkingFlow() {

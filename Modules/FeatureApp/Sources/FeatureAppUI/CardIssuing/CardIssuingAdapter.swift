@@ -22,23 +22,16 @@ import RxSwift
 import SwiftUI
 import UIComponentsKit
 
-final class CardIssuingAdapter: FeatureSettingsUI.CardIssuingViewControllerAPI {
+final class CardIssuingAddressProvider: AddressProviderAPI {
 
-    private let cardIssuingBuilder: CardIssuingBuilderAPI
     private let nabuUserService: NabuUserServiceAPI
 
-    init(
-        cardIssuingBuilder: CardIssuingBuilderAPI,
-        nabuUserService: NabuUserServiceAPI
-    ) {
-        self.cardIssuingBuilder = cardIssuingBuilder
+    init(nabuUserService: NabuUserServiceAPI) {
         self.nabuUserService = nabuUserService
     }
 
-    func makeIntroViewController(
-        onComplete: @escaping (FeatureSettingsUI.CardOrderingResult) -> Void
-    ) -> UIViewController {
-        let address = nabuUserService
+    var address: AnyPublisher<Card.Address, CardOrderingError> {
+        nabuUserService
             .user
             .mapError { _ in CardOrderingError.noAddress }
             .flatMap { user -> AnyPublisher<Card.Address, CardOrderingError> in
@@ -48,25 +41,35 @@ final class CardIssuingAdapter: FeatureSettingsUI.CardIssuingViewControllerAPI {
                 return .just(Card.Address(with: address))
             }
             .eraseToAnyPublisher()
+    }
+}
 
-        return cardIssuingBuilder.makeIntroViewController(address: address) { result in
-            switch result {
-            case .created:
-                onComplete(.created)
-            case .cancelled:
-                onComplete(.cancelled)
-            }
-        }
+final class CardIssuingAdapter: FeatureSettingsUI.CardIssuingRouterAPI, FeatureCardIssuingUI.NavigationControllerAPI {
+
+    private let router: FeatureCardIssuingUI.CardIssuingRouterAPI
+    private var navigationController: PlatformUIKit.NavigationControllerAPI?
+
+    init(
+        router: FeatureCardIssuingUI.CardIssuingRouterAPI
+    ) {
+        self.router = router
     }
 
-    func makeManagementViewController(
-        openAddCardFlow: @escaping () -> Void,
-        onComplete: @escaping () -> Void
-    ) -> UIViewController {
-        cardIssuingBuilder.makeManagementViewController(
-            openAddCardFlow: openAddCardFlow,
-            onComplete: onComplete
-        )
+    func open(with navigationController: PlatformUIKit.NavigationControllerAPI) {
+        self.navigationController = navigationController
+        router.open(with: self)
+    }
+
+    func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        navigationController?.pushViewController(viewController, animated: animated)
+    }
+
+    func popViewController(animated: Bool) -> UIViewController? {
+        navigationController?.popViewController(animated: animated)
+    }
+
+    func popToRootViewControllerAnimated(animated: Bool) {
+        navigationController?.popToRootViewControllerAnimated(animated: animated)
     }
 }
 

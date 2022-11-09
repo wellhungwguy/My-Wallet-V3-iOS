@@ -17,10 +17,9 @@ final class CardService: CardServiceAPI {
 
     func orderCard(
         product: Product,
-        at address: Card.Address,
-        with ssn: String
+        at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
-        repository.orderCard(product: product, at: address, with: ssn)
+        repository.orderCard(product: product, at: address)
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {

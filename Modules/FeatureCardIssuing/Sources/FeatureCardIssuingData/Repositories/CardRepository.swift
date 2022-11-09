@@ -76,12 +76,11 @@ final class CardRepository: CardRepositoryAPI {
 
     func orderCard(
         product: Product,
-        at address: Card.Address,
-        with ssn: String
+        at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
         client
             .orderCard(
-                with: .init(productCode: product.productCode, shippingAddress: address, ssn: ssn)
+                with: .init(productCode: product.productCode, shippingAddress: address)
             )
             .handleEvents(receiveOutput: { [weak self] _ in
                 self?.cachedCardValue.invalidateCache()

@@ -555,6 +555,7 @@ extension CardManagementState {
 class MockCardIssuingBuilder: CardIssuingBuilderAPI {
     func makeIntroViewController(
         address: AnyPublisher<FeatureCardIssuingDomain.Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> UIViewController {
         UIViewController()
@@ -562,6 +563,7 @@ class MockCardIssuingBuilder: CardIssuingBuilderAPI {
 
     func makeIntroView(
         address: AnyPublisher<FeatureCardIssuingDomain.Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> AnyView {
         AnyView(EmptyView())

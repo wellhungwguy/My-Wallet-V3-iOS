@@ -11,11 +11,13 @@ public protocol CardIssuingBuilderAPI: AnyObject {
 
     func makeIntroViewController(
         address: AnyPublisher<Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> UIViewController
 
     func makeIntroView(
         address: AnyPublisher<Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> AnyView
 
@@ -35,6 +37,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
     private let accountModelProvider: AccountProviderAPI
     private let app: AppProtocol
     private let cardService: CardServiceAPI
+    private let kycService: KYCServiceAPI
     private let legalService: LegalServiceAPI
     private let productService: ProductsServiceAPI
     private let residentialAddressService: CardIssuingAddressServiceAPI
@@ -50,6 +53,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         accountModelProvider: AccountProviderAPI,
         app: AppProtocol,
         cardService: CardServiceAPI,
+        kycService: KYCServiceAPI,
         legalService: LegalServiceAPI,
         productService: ProductsServiceAPI,
         residentialAddressService: CardIssuingAddressServiceAPI,
@@ -64,6 +68,7 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         self.accountModelProvider = accountModelProvider
         self.app = app
         self.cardService = cardService
+        self.kycService = kycService
         self.legalService = legalService
         self.productService = productService
         self.residentialAddressService = residentialAddressService
@@ -78,12 +83,14 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
     func makeIntroViewController(
         address: AnyPublisher<Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> UIViewController {
 
         UIHostingController(
             rootView: makeIntroView(
                 address: address,
+                kyc: kyc,
                 onComplete: onComplete
             )
         )
@@ -91,12 +98,14 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
 
     func makeIntroView(
         address: AnyPublisher<Card.Address, CardOrderingError>,
+        kyc: KYC,
         onComplete: @escaping (CardOrderingResult) -> Void
     ) -> AnyView {
 
         let env = CardOrderingEnvironment(
             mainQueue: .main,
             cardService: cardService,
+            kycService: kycService,
             legalService: legalService,
             productsService: productService,
             residentialAddressService: residentialAddressService,
@@ -109,12 +118,31 @@ final class CardIssuingBuilder: CardIssuingBuilderAPI {
         )
 
         let store = Store<CardOrderingState, CardOrderingAction>(
-            initialState: .init(),
+            initialState: .init(initialKyc: kyc),
             reducer: cardOrderingReducer,
             environment: env
         )
 
-        return AnyView(CardIssuingIntroView(store: store))
+        switch kyc.status {
+        case .success, .unverified:
+            return AnyView(CardIssuingIntroView(store: store))
+        case .failure, .pending:
+            guard let errorFields = kyc.errorFields, errorFields.isNotEmpty else {
+                let store = Store<CardOrderingState, CardOrderingAction>(
+                    initialState: .init(initialKyc: kyc, updatedKyc: kyc),
+                    reducer: cardOrderingReducer,
+                    environment: env
+                )
+                return AnyView(KYCPendingView(store: store))
+            }
+            if errorFields.contains(.residentialAddress) {
+                return AnyView(ResidentialAddressConfirmationView(store: store))
+            } else if errorFields.contains(.ssn) {
+                return AnyView(SSNInputView(store: store))
+            } else {
+                return AnyView(EmptyView())
+            }
+        }
     }
 
     func makeManagementViewController(

@@ -85,10 +85,15 @@ extension DependencyContainer {
         }
 
         factory {
-            CardIssuingAdapter(
-                cardIssuingBuilder: DIKit.resolve(),
+            CardIssuingAddressProvider(
                 nabuUserService: DIKit.resolve()
-            ) as FeatureSettingsUI.CardIssuingViewControllerAPI
+            ) as AddressProviderAPI
+        }
+
+        factory {
+            CardIssuingAdapter(
+                router: DIKit.resolve()
+            ) as FeatureSettingsUI.CardIssuingRouterAPI
         }
 
         factory {

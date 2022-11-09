@@ -15,6 +15,7 @@ struct SSNInputView: View {
     private typealias L10n = LocalizationConstants.CardIssuing.Order.KYC
 
     private let store: Store<CardOrderingState, CardOrderingAction>
+    @State private var isNextViewVisible = false
 
     init(store: Store<CardOrderingState, CardOrderingAction>) {
         self.store = store
@@ -69,7 +70,7 @@ struct SSNInputView: View {
                 .padding(.horizontal, Spacing.padding2)
                 Spacer()
                 PrimaryButton(title: L10n.Buttons.next) {
-                    viewStore.send(.binding(.set(\.$isProductSelectionVisible, true)))
+                    isNextViewVisible = true
                 }
                 .disabled(viewStore.state.ssn.count < 9)
                 .padding(Spacing.padding2)
@@ -78,10 +79,25 @@ struct SSNInputView: View {
             .primaryNavigation(title: L10n.SSN.Navigation.title)
 
             PrimaryNavigationLink(
-                destination: ProductSelectionView(store: store),
-                isActive: viewStore.binding(\.$isProductSelectionVisible),
+                destination: nextView(),
+                isActive: $isNextViewVisible,
                 label: EmptyView.init
             )
+        }
+    }
+}
+
+extension SSNInputView {
+
+    @ViewBuilder
+    private func nextView() -> some View {
+        WithViewStore(store) { viewStore in
+            switch viewStore.state.initialKyc.status {
+            case .failure:
+                KYCPendingView(store: store)
+            default:
+                ProductSelectionView(store: store)
+            }
         }
     }
 }
@@ -93,6 +109,7 @@ struct SSNInput_Previews: PreviewProvider {
             SSNInputView(
                 store: Store(
                     initialState: CardOrderingState(
+                        initialKyc: KYC(status: .success, errorFields: nil),
                         address: MockServices.address,
                         ssn: ""
                     ),

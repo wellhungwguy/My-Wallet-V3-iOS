@@ -12,6 +12,7 @@ struct ResidentialAddressConfirmationView: View {
     private typealias L10n = LocalizationConstants.CardIssuing.Order.KYC
 
     private let store: Store<CardOrderingState, CardOrderingAction>
+    @State private var isNextScreenVisible = false
 
     init(store: Store<CardOrderingState, CardOrderingAction>) {
         self.store = store
@@ -51,7 +52,7 @@ struct ResidentialAddressConfirmationView: View {
                     .multilineTextAlignment(.leading)
                 Spacer()
                 PrimaryButton(title: L10n.Buttons.next) {
-                    viewStore.send(.binding(.set(\.$isSSNInputVisible, true)))
+                    isNextScreenVisible = true
                 }
                 .disabled(!(viewStore.state.address?.hasAllRequiredInformation ?? false))
                 .padding(Spacing.padding2)
@@ -64,10 +65,26 @@ struct ResidentialAddressConfirmationView: View {
             }
 
             PrimaryNavigationLink(
-                destination: SSNInputView(store: store),
-                isActive: viewStore.binding(\.$isSSNInputVisible),
+                destination: nextView(),
+                isActive: $isNextScreenVisible,
                 label: EmptyView.init
             )
+        }
+    }
+}
+
+extension ResidentialAddressConfirmationView {
+
+    @ViewBuilder
+    private func nextView() -> some View {
+        WithViewStore(store) { viewStore in
+            switch viewStore.state.initialKyc.status {
+            case .failure where !viewStore.state.initialKyc.hasError(.ssn),
+                    .pending where !viewStore.state.initialKyc.hasError(.ssn):
+                KYCPendingView(store: store)
+            default:
+                SSNInputView(store: store)
+            }
         }
     }
 }
@@ -78,7 +95,10 @@ struct ResidentialAddressConfirmation_Previews: PreviewProvider {
         NavigationView {
             ResidentialAddressConfirmationView(
                 store: Store(
-                    initialState: CardOrderingState(address: MockServices.address),
+                    initialState: CardOrderingState(
+                        initialKyc: KYC(status: .success, errorFields: nil),
+                        address: MockServices.address
+                    ),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )

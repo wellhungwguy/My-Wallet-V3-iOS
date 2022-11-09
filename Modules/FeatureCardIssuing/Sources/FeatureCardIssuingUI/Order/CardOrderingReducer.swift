@@ -19,6 +19,7 @@ public enum CardOrderingError: Error, Equatable {
 
 public enum CardOrderingResult: Equatable {
     case created
+    case kyc
     case cancelled
 }
 
@@ -38,8 +39,11 @@ enum CardOrderingAction: Equatable, BindableAction {
     case displayEligibleCountryList
     case displayEligibleStateList
     case selectProduct(Product)
+    case onReviewAppear
     case fetchFullName
     case fetchFullNameResponse(Result<String, NabuNetworkError>)
+    case submitKyc
+    case kycResponse(Result<KYC, NabuNetworkError>)
     case editAddress
     case editAddressComplete(Result<CardAddressSearchResult, Never>)
     case editShippingAddress
@@ -77,9 +81,7 @@ struct CardOrderingState: Equatable {
     }
 
     @BindableState var isOrderProcessingVisible = false
-    @BindableState var isSSNInputVisible = false
     @BindableState var isAddressConfirmationVisible = false
-    @BindableState var isProductSelectionVisible = false
     @BindableState var isProductDetailsVisible = false
     @BindableState var isReviewVisible = false
     @BindableState var acceptLegalVisible = false
@@ -90,6 +92,8 @@ struct CardOrderingState: Equatable {
 
     var updatingAddress = false
     var products: [Product] = []
+    var initialKyc: KYC
+    var updatedKyc: KYC?
     var selectedProduct: Product?
     var address: Card.Address?
     var shippingAddress: Card.Address?
@@ -101,6 +105,8 @@ struct CardOrderingState: Equatable {
     init(
         products: [Product] = [],
         legalItems: [LegalItem] = [],
+        initialKyc: KYC,
+        updatedKyc: KYC? = nil,
         selectedProduct: Product? = nil,
         address: Card.Address? = nil,
         ssn: String = "",
@@ -110,6 +116,8 @@ struct CardOrderingState: Equatable {
         self.products = products
         self.selectedProduct = selectedProduct
         self.address = address
+        self.initialKyc = initialKyc
+        self.updatedKyc = updatedKyc
         self.ssn = ssn
         self.error = error
         self.orderProcessingState = orderProcessingState
@@ -136,6 +144,7 @@ struct CardOrderingEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let cardService: CardServiceAPI
+    let kycService: KYCServiceAPI
     let legalService: LegalServiceAPI
     let productsService: ProductsServiceAPI
     let residentialAddressService: CardIssuingAddressServiceAPI
@@ -149,6 +158,7 @@ struct CardOrderingEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         cardService: CardServiceAPI,
+        kycService: KYCServiceAPI,
         legalService: LegalServiceAPI,
         productsService: ProductsServiceAPI,
         residentialAddressService: CardIssuingAddressServiceAPI,
@@ -161,6 +171,7 @@ struct CardOrderingEnvironment {
     ) {
         self.mainQueue = mainQueue
         self.cardService = cardService
+        self.kycService = kycService
         self.legalService = legalService
         self.productsService = productsService
         self.residentialAddressService = residentialAddressService
@@ -188,6 +199,7 @@ let cardOrderingReducer: Reducer<
             )
         }
     ),
+    // swiftformat:disable closure_body_length
     Reducer<
         CardOrderingState,
         CardOrderingAction,
@@ -201,18 +213,30 @@ let cardOrderingReducer: Reducer<
                 state.orderProcessingState = .error(CardOrderingError.noProduct)
                 return .none
             }
-            guard let address = state.shippingAddress ?? state.address else {
-                state.orderProcessingState = .error(CardOrderingError.noAddress)
-                return .none
+            let address = state.shippingAddress ?? state.address
+            if state.initialKyc.status == .unverified, state.updatedKyc == nil {
+                return env.kycService
+                    .update(address: state.address, ssn: state.ssn)
+                    .flatMap { _ in
+                        env
+                            .cardService
+                            .orderCard(
+                                product: product,
+                                at: address
+                            )
+                    }
+                    .receive(on: env.mainQueue)
+                    .catchToEffect(CardOrderingAction.cardCreationResponse)
+            } else {
+                return env
+                    .cardService
+                    .orderCard(
+                        product: product,
+                        at: state.shippingAddress ?? state.address
+                    )
+                    .receive(on: env.mainQueue)
+                    .catchToEffect(CardOrderingAction.cardCreationResponse)
             }
-            guard !state.ssn.isEmpty else {
-                state.orderProcessingState = .error(CardOrderingError.noSsn)
-                return .none
-            }
-            return env.cardService
-                .orderCard(product: product, at: address, with: state.ssn)
-                .receive(on: env.mainQueue)
-                .catchToEffect(CardOrderingAction.cardCreationResponse)
         case .cardCreationResponse(.success(let card)):
             state.orderProcessingState = .success
             return .none
@@ -347,10 +371,42 @@ let cardOrderingReducer: Reducer<
             return .fireAndForget {
                 env.supportRouter.handleSupport()
             }
+        case .submitKyc:
+            return env.kycService
+                .update(
+                    address: state.initialKyc.hasError(.residentialAddress) ? state.address : nil,
+                    ssn: state.initialKyc.hasError(.ssn) ? state.ssn : nil
+                )
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardOrderingAction.kycResponse)
+        case .kycResponse(let result):
+            switch result {
+            case .success(let kyc):
+                state.updatedKyc = kyc
+            case .failure(let error):
+                state.error = error
+            }
+            return .none
+        case .onReviewAppear:
+            guard state.selectedProduct?.type == .physical,
+                  (state.shippingAddress ?? state.address) == nil else {
+                return Effect(value: .fetchFullName)
+            }
+            return Effect.merge(
+                Effect(value: .fetchFullName),
+                Effect(value: .fetchAddress)
+            )
         }
     }
     .binding()
 )
+
+extension KYC {
+
+    func hasError(_ field: KYC.Field) -> Bool {
+        (errorFields ?? []).contains(field)
+    }
+}
 
 #if DEBUG
 extension CardOrderingEnvironment {
@@ -358,6 +414,7 @@ extension CardOrderingEnvironment {
         CardOrderingEnvironment(
             mainQueue: .main,
             cardService: MockServices(),
+            kycService: MockServices(),
             legalService: MockServices(),
             productsService: MockServices(),
             residentialAddressService: MockServices(),
@@ -427,8 +484,7 @@ struct MockServices: CardServiceAPI,
 
     func orderCard(
         product: Product,
-        at address: Card.Address,
-        with ssn: String
+        at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
         .just(card)
     }
@@ -542,6 +598,17 @@ extension MockServices: TransactionServiceAPI {
 
     func fetchTransactions(for card: Card?) -> AnyPublisher<[Card.Transaction], NabuNetworkError> {
         .just([])
+    }
+}
+
+extension MockServices: KYCServiceAPI {
+
+    func update(address: FeatureCardIssuingDomain.Card.Address?, ssn: String?) -> AnyPublisher<FeatureCardIssuingDomain.KYC, Errors.NabuNetworkError> {
+        .just(KYC(status: .success, errorFields: nil))
+    }
+
+    func fetch() -> AnyPublisher<FeatureCardIssuingDomain.KYC, Errors.NabuNetworkError> {
+        .just(KYC(status: .success, errorFields: nil))
     }
 }
 
