@@ -9,9 +9,11 @@ import MoneyKit
 public struct HistoricalPriceRepository: HistoricalPriceRepositoryAPI {
 
     let client: HistoricalPriceClientAPI
+    let prices: PriceRepositoryAPI
 
-    public init(_ client: HistoricalPriceClientAPI) {
+    public init(_ client: HistoricalPriceClientAPI, prices: PriceRepositoryAPI) {
         self.client = client
+        self.prices = prices
     }
 
     public func fetchGraphData(
@@ -22,8 +24,12 @@ public struct HistoricalPriceRepository: HistoricalPriceRepositoryAPI {
     ) -> AnyPublisher<GraphData, NetworkError> {
 
         client.fetchPriceIndexes(base: base, quote: quote, series: series, relativeTo: relativeTo)
-            .flatMap { [client] data in
-                client.fetchPriceIndexes(base: base, quote: quote, series: .now, relativeTo: relativeTo)
+            .flatMap { [prices] data in
+                prices.prices(of: [base], in: quote, at: .now)
+                    .compactMap(\.["\(base.code)-\(quote.code)"])
+                    .map { price -> [PriceIndex] in
+                        [PriceIndex(price: price.moneyValue.displayMajorValue.doubleValue, timestamp: price.timestamp)]
+                    }
                     .map { today in data + today }
                     .eraseToAnyPublisher()
             }
