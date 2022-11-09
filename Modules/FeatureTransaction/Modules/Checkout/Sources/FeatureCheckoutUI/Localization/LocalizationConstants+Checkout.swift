@@ -67,7 +67,7 @@ extension LocalizationConstants {
                 comment: ""
             )
             static let custodialFeeDisclaimer = NSLocalizedString(
-                "Blockchain.com requires a fee when using this payment method.",
+                "Blockchain.com requires a fee for this payment method",
                 comment: ""
             )
             static let refundDisclaimer = NSLocalizedString(
