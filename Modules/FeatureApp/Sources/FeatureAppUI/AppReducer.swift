@@ -150,6 +150,12 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             return .none
         }
 
+        if environment.app.state.contains(
+            blockchain.ux.transaction.id
+        ) {
+            return .none
+        }
+
         return .merge(
             .fireAndForget {
                 environment.walletStateProvider.releaseState()
