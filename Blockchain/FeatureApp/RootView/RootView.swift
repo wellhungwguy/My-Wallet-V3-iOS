@@ -137,9 +137,9 @@ struct RootView: View {
             tabItem(tab) {
                 switch tab.tag {
                 case blockchain.ux.user.portfolio:
-                    PortfolioView(store: store.stateless)
+                    PortfolioView()
                 case blockchain.ux.prices:
-                    PricesView(store: store.stateless)
+                    PricesView()
                 case blockchain.ux.frequent.action:
                     Icon.blockchain
                         .frame(width: 32.pt, height: 32.pt)

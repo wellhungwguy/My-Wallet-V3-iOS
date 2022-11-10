@@ -26,6 +26,10 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			action:
+			+ blockchain.db.collection
+			+ blockchain.session.configuration.value
+			+ blockchain.ux.type.action
 			addresssearch:
 				kyc:
 					is:
@@ -701,6 +705,17 @@ blockchain:
 					static:
 			action:
 			+ blockchain.ux.type.analytics.action
+				policy:
+					discard:
+						if:
+						+ blockchain.db.type.boolean
+						when:
+						+ blockchain.db.type.boolean
+					perform:
+						if:
+						+ blockchain.db.type.boolean
+						when:
+						+ blockchain.db.type.boolean
 				then:
 					close:
 					+ blockchain.db.type.boolean
@@ -715,6 +730,13 @@ blockchain:
 					navigate:
 						to:
 						+ blockchain.db.type.tag
+					replace:
+						current:
+							stack:
+							+ blockchain.db.type.array.of.tags
+						root:
+							stack:
+							+ blockchain.db.type.array.of.tags
 					set:
 						session:
 							state:
@@ -724,6 +746,8 @@ blockchain:
 								+ blockchain.db.type.tag
 								value:
 								+ blockchain.db.type.any
+				was:
+					handled:
 			angle:
 				degrees:
 				+ blockchain.db.type.number
@@ -1600,8 +1624,11 @@ blockchain:
 						input:
 							amount:
 							+ blockchain.db.type.bigint
+							+ blockchain.session.state.value
 							currency:
-							+ blockchain.type.currency
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.value
 					input:
 					+ blockchain.ui.type.input
 					output:

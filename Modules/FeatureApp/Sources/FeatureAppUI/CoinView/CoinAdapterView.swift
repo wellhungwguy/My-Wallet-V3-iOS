@@ -174,38 +174,12 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event in
+    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event async throws in
         let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
         let origin = try event.context.decode(blockchain.ux.asset.select.origin) as String
         app.state.transaction { state in
             state.set(blockchain.ux.asset.id, to: cryptoCurrency.code)
             state.set(blockchain.ux.asset[cryptoCurrency.code].select.origin, to: origin)
-        }
-
-        let isColorEnabled: Bool = await (
-            try? app.get(blockchain.ux.asset.chart.asset.color.is.enabled)
-        ).or(
-            try? app.get(blockchain.app.configuration.asset.chart.asset.color.is.enabled)
-        ).or(false)
-
-        var vc: UIViewController?
-        vc = UIHostingController(
-            rootView: CoinAdapterView(
-                cryptoCurrency: cryptoCurrency,
-                app: app,
-                dismiss: {
-                    vc?.dismiss(animated: true)
-                }
-            )
-            .if(isColorEnabled) { coinView in
-                coinView.lineGraphColor(cryptoCurrency.color)
-            }
-        )
-        if let vc {
-            topViewController.topMostViewController?.present(
-                vc,
-                animated: true
-            )
         }
     }
 

@@ -21,6 +21,10 @@ let package = Package(
             url: "https://github.com/thousandyears/Lexicon.git",
             from: "0.6.3"
         ),
+        .package(
+            url: "https://github.com/thousandyears/OptionalSubscripts.git",
+            from: "0.1.0"
+        ),
         .package(path: "../Extensions"),
         .package(path: "../Keychain"),
         .package(path: "../AnyCoding")
@@ -31,6 +35,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FirebaseProtocol"),
                 .product(name: "Lexicon", package: "Lexicon"),
+                .product(name: "OptionalSubscripts", package: "OptionalSubscripts"),
                 .product(name: "AnyCoding", package: "AnyCoding"),
                 .product(name: "Extensions", package: "Extensions"),
                 .product(name: "KeychainKit", package: "Keychain")

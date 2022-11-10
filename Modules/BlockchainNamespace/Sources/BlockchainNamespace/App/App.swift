@@ -4,6 +4,7 @@ import Combine
 import Extensions
 import FirebaseProtocol
 import Foundation
+import OptionalSubscripts
 
 public protocol AppProtocol: AnyObject, CustomStringConvertible {
 
@@ -14,6 +15,7 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
     var observers: Session.Observers { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
     var deepLinks: App.DeepLink { get }
+    var local: Optional<Any>.Store { get }
 
     #if canImport(SwiftUI)
     var environmentObject: App.EnvironmentObject { get }
@@ -31,6 +33,8 @@ public class App: AppProtocol {
     #if canImport(SwiftUI)
     public lazy var environmentObject = App.EnvironmentObject(self)
     #endif
+
+    public let local = Any?.Store()
 
     public lazy var deepLinks = DeepLink(self)
 
@@ -72,6 +76,12 @@ public class App: AppProtocol {
         self.remoteConfiguration = remoteConfiguration
     }
 
+    deinit {
+        for o in __observers {
+            o.stop()
+        }
+    }
+
     private func start() {
         state.app = self
         deepLinks.start()
@@ -80,6 +90,9 @@ public class App: AppProtocol {
             #if DEBUG
             _ = logger
             #endif
+        }
+        for o in __observers {
+            o.start()
         }
     }
 
@@ -95,6 +108,52 @@ public class App: AppProtocol {
         } else {
             print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
+    }
+
+    private lazy var __observers = [
+        actions,
+        sets,
+        urls
+    ]
+
+    private lazy var actions = on(blockchain.ui.type.action) { [weak self] event async throws in
+        guard let self else { return }
+        try await self.handle(action: event)
+        let handled = try event.reference.tag.as(blockchain.ui.type.action).was.handled.key(to: event.reference.context)
+        self.post(event: handled, context: event.context, file: event.source.file, line: event.source.line)
+    }
+
+    private lazy var sets = on(blockchain.ui.type.action.then.set.session.state) { [weak self] event throws in
+        guard let self else { return }
+        guard let action = event.action else { return }
+        let data = try action.data.decode([String: AnyJSON].self).mapKeys { id in try Tag.Reference(id: id, in: self.language) }
+        self.state.transaction { state in
+            for (key, json) in data {
+                state.set(key, to: json.any)
+            }
+        }
+        for (key, json) in data {
+            self.post(event: key, context: event.context + [key: json], file: event.source.file, line: event.source.line)
+        }
+    }
+
+    private lazy var urls = on(blockchain.ui.type.action.then.launch.url) { [weak self] event throws in
+        guard let self else { return }
+        let url = try event.context.decode(blockchain.ui.type.action.then.launch.url, as: URL.self)
+        guard self.deepLinks.canProcess(url: url) else {
+            #if canImport(UIKit)
+            UIKit.UIApplication.shared.open(url)
+            #elseif canImport(AppKit)
+            AppKit.NSWorkspace.shared.open(url)
+            #endif
+            return
+        }
+        self.post(
+            event: blockchain.app.process.deep_link,
+            context: event.context + [blockchain.app.process.deep_link.url: url],
+            file: event.source.file,
+            line: event.source.line
+        )
     }
 }
 
@@ -233,10 +292,51 @@ extension AppProtocol {
     }
 
     public func on(
+        _ first: Tag.Event,
+        _ rest: Tag.Event...,
+        bufferingPolicy: AsyncStream<Session.Event>.Continuation.BufferingPolicy = .bufferingNewest(1)
+    ) -> AsyncStream<Session.Event> {
+        on([first] + rest, bufferingPolicy: bufferingPolicy)
+    }
+
+    public func on(
         _ tags: some Sequence<Tag.Event>,
         bufferingPolicy: AsyncStream<Session.Event>.Continuation.BufferingPolicy = .bufferingNewest(1)
     ) -> AsyncStream<Session.Event> {
         events.filter(tags.map { $0.key().in(self) }).stream(bufferingPolicy: bufferingPolicy)
+    }
+}
+
+extension AppProtocol {
+
+    public func post(
+        action event: Tag.Event,
+        value: some Any,
+        context: Tag.Context = [:],
+        file: String = #fileID,
+        line: Int = #line
+    ) {
+        do {
+            let id = try event[].lineage.first(where: { tag in tag.is(blockchain.ui.type.action) })
+                .or(throw: "\(event) is not an descendant of \(blockchain.ui.type.action)")
+                .as(blockchain.ui.type.action)
+            let ref = event.key().in(self)
+            post(
+                event: event,
+                reference: ref,
+                context: context + [
+                    blockchain.ui.type.action: Action(
+                        tag: id,
+                        event: ref,
+                        data: AnyJSON(value)
+                    )
+                ],
+                file: file,
+                line: line
+            )
+        } catch {
+            post(error: error, context: context, file: file, line: line)
+        }
     }
 }
 
@@ -274,8 +374,12 @@ extension AppProtocol {
             case blockchain.session.configuration.value:
                 return remoteConfiguration.publisher(for: ref)
             default:
-                return Just(.error(.keyDoesNotExist(ref), ref.metadata()))
-                    .eraseToAnyPublisher()
+                return Task<AnyPublisher<FetchResult, Never>, Error>.Publisher { [local] () async throws -> AnyPublisher<FetchResult, Never> in
+                    try await local.publisher(for: ref.route).map(FetchResult.create(ref.metadata(.app))).eraseToAnyPublisher()
+                }
+                .catch { error in .just(FetchResult.error(.other(error), ref.metadata(.app))) }
+                .switchToLatest()
+                .eraseToAnyPublisher()
             }
         }
 
@@ -325,12 +429,63 @@ extension AppProtocol {
         publisher(for: event).stream(bufferingPolicy: bufferingPolicy)
     }
 
+    @_disfavoredOverload
     public func stream<T: Decodable>(
         _ event: Tag.Event,
         as _: T.Type = T.self,
         bufferingPolicy: AsyncStream<FetchResult.Value<T>>.Continuation.BufferingPolicy = .bufferingNewest(1)
     ) -> AsyncStream<FetchResult.Value<T>> {
         publisher(for: event, as: T.self).stream(bufferingPolicy: bufferingPolicy)
+    }
+}
+
+extension AppProtocol {
+
+    public func set(_ event: Tag.Event, to value: Any?) async throws {
+        let reference = event.key().in(self)
+        switch reference.tag {
+        case blockchain.session.state.value, blockchain.db.collection.id:
+            state.set(reference, to: value)
+        case blockchain.session.configuration.value:
+            remoteConfiguration.override(reference, with: value as Any)
+        default:
+            if
+                let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
+                !reference.indices.map(\.key).contains(collectionId)
+            {
+                guard let map = value as? [String: Any] else { throw "Not a collection" }
+                var updates = Any?.Store.BatchUpdates()
+                for (key, value) in map {
+                    try updates.append((reference.key(to: [collectionId: key]).route, value))
+                }
+                await local.batch(updates)
+            } else {
+                try await local.set(reference.route, to: value)
+            }
+        }
+        #if DEBUG
+        if isInTest { await Task.megaYield(count: 20) }
+        #endif
+    }
+}
+
+extension Tag.Reference {
+
+    var route: Optional<Any>.Store.Route {
+        get throws {
+            try validated()
+                .tag.lineage
+                .reversed()
+                .flatMap { node -> [Optional<Any>.Store.Location] in
+                    guard
+                        let collectionId = node["id"],
+                        let id = indices[collectionId]
+                    else {
+                        return [.key(node.name)]
+                    }
+                    return [.key(node.name), .key(id)]
+                }
+        }
     }
 }
 
@@ -343,7 +498,7 @@ extension App {
     public static var preview: AppProtocol = debug()
 
 #if DEBUG
-    public static var test: AppProtocol { debug() }
+    public static var test: App.Test { App.Test() }
 #endif
 
     /// Creates a mocked AppProtocol instance.
@@ -366,5 +521,94 @@ extension App {
                 scheduler: scheduler
             )
         )
+    }
+}
+
+var isInTest: Bool { NSClassFromString("XCTestCase") != nil }
+
+extension App {
+
+    public class Test: AppProtocol {
+
+        private lazy var app: AppProtocol = App.debug(scheduler: scheduler.eraseToAnyScheduler())
+
+        public var language: Language { app.language }
+        public var events: Session.Events { app.events }
+        public var state: Session.State { app.state }
+        public var observers: Session.Observers { app.observers }
+        public var remoteConfiguration: Session.RemoteConfiguration { app.remoteConfiguration }
+        public var scheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
+        public var environmentObject: App.EnvironmentObject { app.environmentObject }
+        public var deepLinks: DeepLink { app.deepLinks }
+        public var local: Optional<Any>.Store { app.local }
+
+        public var description: String { "Test App" }
+
+        public func wait(
+            _ event: Tag.Event
+        ) async throws {
+            _ = try await on(event, bufferingPolicy: .unbounded).next()
+        }
+
+        public func wait<S: Scheduler>(
+            _ event: Tag.Event,
+            timeout: S.SchedulerTimeType.Stride,
+            scheduler: S = DispatchQueue.main
+        ) async throws {
+            _ = try await on(event).timeout(timeout, scheduler: scheduler).stream().next()
+            await Task.megaYield(count: 20)
+        }
+
+        public func post(
+            value: AnyHashable,
+            of event: Tag.Event,
+            file: String = #fileID,
+            line: Int = #line
+        ) async {
+            app.post(value: value, of: event, file: file, line: line)
+            await Task.megaYield(count: 20)
+        }
+
+        public func post(
+            event: Tag.Event,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) async {
+            app.post(event: event, context: context, file: file, line: line)
+            await Task.megaYield(count: 20)
+        }
+
+        public func post(
+            _ tag: L_blockchain_ux_type_analytics_error,
+            error: some Error,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) async {
+            app.post(tag, error: error, context: context, file: file, line: line)
+            await Task.megaYield(count: 20)
+        }
+
+        public func post(
+            error: some Error,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) async {
+            app.post(error: error, context: context, file: file, line: line)
+            await Task.megaYield(count: 20)
+        }
+
+        func post(
+            event: Tag.Event,
+            reference: Tag.Reference,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) async {
+            app.post(event: event, reference: reference, context: context, file: file, line: line)
+            await Task.megaYield(count: 20)
+        }
     }
 }

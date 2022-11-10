@@ -195,6 +195,8 @@ public final class BlockchainEventSubscription: Hashable {
 
     let file: String, line: Int
 
+    public private(set) var count: Int = 0
+
     deinit { stop() }
 
     @usableFromInline init(
@@ -235,7 +237,7 @@ public final class BlockchainEventSubscription: Hashable {
     @discardableResult
     public func start() -> Self {
         guard subscription == nil else { return self }
-        subscription = app.on(events).sink(
+        subscription = app.on(events).handleEvents(receiveOutput: { [weak self] _ in self?.count += 1 }).sink(
             receiveValue: { [weak self] event in
                 guard let self else { return }
                 switch self.action {

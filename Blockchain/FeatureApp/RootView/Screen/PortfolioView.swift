@@ -13,12 +13,6 @@ import ToolKit
 
 struct PortfolioView: UIViewControllerRepresentable {
 
-    let store: Store<Void, RootViewAction>
-
-    init(store: Store<Void, RootViewAction>) {
-        self.store = store
-    }
-
     private var onboardingViewsFactory = OnboardingViewsFactory()
     private var userAdapter: UserAdapterAPI = resolve()
 

@@ -221,7 +221,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     blockchain.app.configuration.transaction.should.prefill.with.previous.amount
                 ) else { throw "Should not pre-fill previous value" }
 
-                guard try await app.get(blockchain.ux.transaction.source.target.previous.did.error) else { return }
+                guard try await app.get(blockchain.ux.transaction.source.target.previous.did.error) else { throw "try default" }
 
                 try await amountViewInteractor.set(
                     amount: MoneyValue.create(
@@ -230,12 +230,25 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     )
                 )
             } catch {
-                try await amountViewInteractor.set(
-                    amount: MoneyValue.create(
-                        minor: app.get(blockchain.ux.transaction.enter.amount.default.input.amount) as String,
-                        currency: CurrencyType(code: app.get(blockchain.ux.transaction.enter.amount.default.input.currency.code))
-                    ).or(throw: "Failed to initialise MoneyValue")
-                )
+                do {
+                    var code = try? await app.get(blockchain.ux.transaction.enter.amount.default.input.currency.code, as: String.self)
+                    if code.isNilOrEmpty, action == .buy {
+                        code = try await app.get(blockchain.user.currency.preferred.fiat.trading.currency, as: String.self)
+                    }
+                    try await amountViewInteractor.set(
+                        amount: MoneyValue.create(
+                            minor: app.get(blockchain.ux.transaction.enter.amount.default.input.amount) as String,
+                            currency: CurrencyType(code: code.or(throw: "No input currency"))
+                        ).or(throw: "Failed to initialise MoneyValue")
+                    )
+                } catch {
+                    app.post(error: error)
+                }
+            }
+
+            app.state.transaction { state in
+                state.clear(blockchain.ux.transaction.enter.amount.default.input.amount)
+                state.clear(blockchain.ux.transaction.enter.amount.default.input.currency.code)
             }
         }
 

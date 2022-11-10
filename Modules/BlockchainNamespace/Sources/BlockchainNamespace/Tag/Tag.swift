@@ -13,7 +13,7 @@ public struct Tag {
     public let id: ID
     public var name: Name { node.name }
 
-    public let node: Lexicon.Graph.Node
+    public let node: Node
     public unowned let language: Language
 
     @inlinable public var parent: Tag? { lazy(\.parent) }
@@ -33,12 +33,21 @@ public struct Tag {
     init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
         parentID = parent
         id = parent?.dot(node.name) ?? node.name
-        self.node = node
+        self.node = .init(graph: node)
         self.language = language
     }
 }
 
 extension Tag {
+
+    @dynamicMemberLookup
+    public class Node {
+        let graph: Lexicon.Graph.Node
+        init(graph: Lexicon.Graph.Node) { self.graph = graph }
+        subscript<T>(dynamicMember keyPath: KeyPath<Lexicon.Graph.Node, T>) -> T {
+            graph[keyPath: keyPath]
+        }
+    }
 
     @usableFromInline var template: Tag.Reference.Template { lazy(\.template) }
 
@@ -303,14 +312,14 @@ extension Tag {
         if let protonym = tag.protonym {
             var children: [Name: Tag] = [:]
             for (name, child) in protonym.children {
-                children[name] = Tag.add(parent: tag.id, node: child.node, to: tag.language)
+                children[name] = Tag.add(parent: tag.id, node: child.node.graph, to: tag.language)
             }
             return children
         } else {
             var ownChildren = tag.ownChildren
             for (_, type) in tag.ownType {
                 for (name, child) in type.children {
-                    ownChildren[name] = Tag.add(parent: tag.id, node: child.node, to: tag.language)
+                    ownChildren[name] = Tag.add(parent: tag.id, node: child.node.graph, to: tag.language)
                 }
             }
             return ownChildren
@@ -343,6 +352,93 @@ extension Tag {
             type.merge(tag.type) { o, _ in o }
         }
         return type
+    }
+}
+
+extension Tag {
+
+    public func value<T>(
+        in data: AnyJSON,
+        at descendant: Tag,
+        as type: T.Type = AnyJSON.self
+    ) throws -> T {
+        try value(in: data.as([String: Any].self), at: descendant, as: type)
+    }
+
+    public func value<T>(
+        in data: [String: Any],
+        at descendant: Tag,
+        as type: T.Type = AnyJSON.self
+    ) throws -> T {
+        let path = try descendant.idRemainder(after: self).string
+        guard let any = data[dotPath: path] else {
+            throw error(message: "No value found at \(path) in \(self) data: \(data)")
+        }
+        switch type {
+        case is AnyJSON.Type:
+            return AnyJSON(any) as! T
+        default:
+            return try (any as? T).or(throw: error(message: "\(any) is not a \(T.self)"))
+        }
+    }
+
+    public enum DeclaredDescendantMultipleOptionsPolicy {
+        case any
+        case `throws`
+        case priority((_ tag: Tag, _ children: Set<Tag>) throws -> Tag)
+    }
+
+    public func lastDeclaredDescendant(
+        in data: AnyJSON,
+        policy: DeclaredDescendantMultipleOptionsPolicy
+    ) throws -> Tag {
+        try lastDeclaredDescendant(in: data.as([String: Any].self), policy: policy)
+    }
+
+    public func lastDeclaredDescendant(
+        in data: [String: Any],
+        policy: DeclaredDescendantMultipleOptionsPolicy
+    ) throws -> Tag {
+
+        var tag = self
+        var data = data
+
+        repeat {
+
+            let options = tag.node.children.keys.set
+                .intersection(data.keys.set)
+                .compactMap { name in
+                    tag[name].map { (name: name, child: $0) }
+                }
+
+            var name: String?
+
+            switch policy {
+            case .throws where options.count > 1:
+                throw error(message: "Multiple options breaks \(policy) policy for \(tag) in \(self) - options: \(options)")
+
+            case .priority(let ƒ) where options.count > 1:
+                tag = try ƒ(tag, options.map(\.1).set)
+                name = options.first(where: { $0.child == tag })?.name
+
+            case .any, .throws, .priority:
+                guard let any = options.first else {
+                    throw error(message: "None of \(data.keys.set) are uninherited children of \(tag)")
+                }
+                tag = any.child
+                name = any.name
+            }
+
+            guard
+                !tag.node.children.isEmpty,
+                let key = name,
+                let remainder = data[key] as? [String: Any]
+            else { break }
+
+            data = remainder
+        } while true
+
+        return tag
     }
 }
 

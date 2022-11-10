@@ -23,8 +23,20 @@ open class BlockchainNamespaceDecoder: AnyDecoder {
             return try Tag(id: string, in: language)
         case (let string as String, is Tag.Reference.Type):
             return try Tag.Reference(id: string, in: language)
+        case (let event as Tag.Event, is Tag.Reference.Type):
+            return event.key(to: context)
         default:
             return try super.convert(any, to: type)
         }
+    }
+}
+
+extension AnyJSON {
+
+    @inlinable public func decode<T: Decodable>(
+        _: T.Type = T.self,
+        using decoder: AnyDecoderProtocol = BlockchainNamespaceDecoder()
+    ) throws -> T {
+        try decoder.decode(T.self, from: wrapped)
     }
 }

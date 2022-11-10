@@ -158,10 +158,7 @@ final class PricesViewController: BaseScreenViewController {
                     if let customSelectionActionClosure = self?.customSelectionActionClosure {
                         customSelectionActionClosure(currency)
                     } else {
-                        self?.app.post(
-                            event: blockchain.ux.asset[currency.code].select,
-                            context: [blockchain.ux.asset.select.origin: "PRICES"]
-                        )
+                        self?.app.post(action: blockchain.ux.asset.select.then.enter.into, value: blockchain.ux.asset[currency.code], context: [blockchain.ux.asset.select.origin: "PRICES"])
                     }
                 }
             })

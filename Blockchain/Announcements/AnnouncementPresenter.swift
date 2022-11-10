@@ -385,8 +385,9 @@ extension AnnouncementPresenter {
 
     private func showCoinView(for currency: CryptoCurrency) {
         app.post(
-            event: blockchain.ux.asset[currency.code].select,
-            context: [blockchain.ux.asset.select.origin: "ANNOUNCEMENT"]
+            action: blockchain.ux.asset.select.then.enter.into,
+            value: blockchain.ux.asset[currency.code],
+            context: [blockchain.ux.asset.select.origin: "ANNOUNCEMENTS"]
         )
     }
 

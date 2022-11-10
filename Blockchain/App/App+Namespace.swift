@@ -59,7 +59,6 @@ extension AppProtocol {
         observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         observers.insert(MultiAppViewDebuggingObserver(app: self))
         #endif
-        observers.insert(ActionObserver(app: self, application: UIApplication.shared))
         observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 
         let intercom = (

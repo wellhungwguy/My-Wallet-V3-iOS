@@ -10,9 +10,14 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
 
     public private(set) var wrapped: Any
     public var thing: Any { wrapped }
+    public var any: Any { wrapped }
 
     internal var __unwrapped: Any {
         (wrapped as? AnyJSON)?.__unwrapped ?? wrapped
+    }
+
+    public init() {
+        self = nil
     }
 
     public init(_ any: Any) {
@@ -31,6 +36,11 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
 
     public subscript<T>(dynamicMember keyPath: KeyPath<Any?, T>) -> T? {
         __subscript[keyPath: keyPath]
+    }
+
+    public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
+        get { __subscript[[first] + rest] }
+        set { __subscript[[first] + rest] = newValue }
     }
 
     public subscript(path: some Collection<CodingKey>) -> Any? {
@@ -103,6 +113,10 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
         }
     }
 
+    public func `as`<T>(_ type: T.Type) throws -> T {
+        try (wrapped as? T).or(throw: Error(description: "Cannot cast \(Swift.type(of: wrapped)) to \(T.self)"))
+    }
+
     public var description: String {
         String(describing: __unwrapped)
     }
@@ -163,5 +177,13 @@ extension AnyJSON: AnyEquatable {
             (lhs as? AnyJSON)?.__unwrapped ?? lhs,
             (rhs as? AnyJSON)?.__unwrapped ?? rhs
         )
+    }
+}
+
+extension AnyJSON {
+
+    @_disfavoredOverload
+    @inlinable public func decode<T: Decodable>(_: T.Type = T.self, using decoder: AnyDecoderProtocol) throws -> T {
+        try decoder.decode(T.self, from: wrapped)
     }
 }

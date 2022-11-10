@@ -13,12 +13,6 @@ import ToolKit
 
 struct PricesView: UIViewControllerRepresentable {
 
-    let store: Store<Void, RootViewAction>
-
-    init(store: Store<Void, RootViewAction>) {
-        self.store = store
-    }
-
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
