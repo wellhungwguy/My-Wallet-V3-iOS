@@ -289,5 +289,20 @@ extension LocalizationConstants {
                 comment: "Claim free domain KYC annoucement card button"
             )
         }
+
+        public enum CardIssuingWaitlist {
+            public static let title = NSLocalizedString(
+                "Introducing the\nBlockchain.com Visa® Card",
+                comment: "Card Issuing Waitlist annoucement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Spend your crypto or cash without fees.\nEarn 1% back in crypto.",
+                comment: "Card Issuing Waitlist annoucement card description"
+            )
+            public static let button = NSLocalizedString(
+                "Join The Waitlist",
+                comment: "Card Issuing Waitlist annoucement card button"
+            )
+        }
     }
 }
