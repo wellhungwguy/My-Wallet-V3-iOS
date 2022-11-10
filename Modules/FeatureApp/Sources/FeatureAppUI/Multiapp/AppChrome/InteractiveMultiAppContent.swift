@@ -22,6 +22,10 @@ struct InteractiveMultiAppContent: View {
     /// `True` when a pull to refresh is triggered, otherwise `false`
     @Binding var isRefreshing: Bool
 
+    @State private var hideBalanceAfterRefresh = false
+
+    private let supportedDetents = AppChromeDetents.supportedDetents
+
     var body: some View {
         MultiAppHeaderView(
             totalBalance: $totalBalance,
@@ -33,6 +37,18 @@ struct InteractiveMultiAppContent: View {
         .onChange(of: currentModeSelection, perform: { newValue in
             app.post(value: newValue.rawValue, of: blockchain.app.mode)
         })
+        .onChange(of: isRefreshing, perform: { _ in
+            if !isRefreshing {
+                hideBalanceAfterRefresh.toggle()
+            }
+        })
+        .task(id: hideBalanceAfterRefresh) {
+            // run initial "animation" and select `semiCollapsed` detent after 3 second
+            do {
+                try await Task.sleep(until: .now + .seconds(3), clock: .continuous)
+                selectedDetent = .semiCollapsed
+            } catch {}
+        }
         .refreshable {
             await tempAsyncDelayMethod()
         }
@@ -54,15 +70,18 @@ struct InteractiveMultiAppContent: View {
             )
             .frame(maxWidth: .infinity)
             .presentationDetents(
-                [
-                    .collapsed,
-                    .expanded
-                ],
+                Set(supportedDetents.map(\.detent)),
                 selection: $selectedDetent
             )
             .presentationDragIndicator(.hidden)
-            // the "Custom:CollpsedDetent" is the name the system gives to a custom detent
-            .largestUndimmedDetentIdentifier("Custom:CollapsedDetent", modalOffset: $contentOffset)
+            .largestUndimmedDetentIdentifier(
+                AppChromeDetents.semiCollapsed.identifier,
+                modalOffset: $contentOffset
+            ) { identifier in
+                if let first = supportedDetents.first(where: { $0.identifier == identifier }) {
+                    selectedDetent = first.detent
+                }
+            }
             .interactiveDismissDisabled(true)
         })
     }

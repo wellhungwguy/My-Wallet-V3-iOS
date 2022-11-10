@@ -41,7 +41,7 @@ struct MultiAppHeaderView: View {
             VStack {
                 VStack(spacing: Spacing.padding2) {
                     TotalBalanceView(balance: .constant(totalBalance))
-                        .opacity(isRefreshing ? 0.0 : opacityForBalance(percentageOffset: 1.5))
+                        .opacity(isRefreshing ? 0.0 : opacityForBalance(percentageOffset: 2.0))
                     MultiAppSwitcherView(currentSelection: $currentSelection)
                 }
                 .frameGetter($contentFrame.frame)
@@ -110,7 +110,7 @@ struct MultiAppHeaderView: View {
         guard interactiveExperienceAvailable() else {
             return 1.0 - fallbackToScrollOffset()
         }
-        if contentOffset.progress > 1.1 {
+        if contentOffset.progress > 1.1 || contentOffset.progress < 0.8 {
             return 1.0 - reverseOpacity(percentageOffset: percentageOffset)
         }
         return opacity(percentageOffset: percentageOffset)
@@ -137,7 +137,9 @@ struct MultiAppHeaderView: View {
             }
             return contentOffset.offset.y - adjustedHeight
         }
-        return 0.0
+        let offset = contentOffset.offset.y - adjustedHeight
+        let max = -(adjustedHeight * 0.39)
+        return offset < max ? max : contentOffset.offset.y - adjustedHeight
     }
 }
 
