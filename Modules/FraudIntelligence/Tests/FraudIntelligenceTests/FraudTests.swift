@@ -22,7 +22,6 @@ final class FraudIntelligenceTests: XCTestCase {
     }
 
     func initialise() {
-
         app.post(event: blockchain.app.did.finish.launching)
         app.state.set(blockchain.api.nabu.gateway.generate.session.headers, to: ["X-Session-ID": "session-id"])
         app.remoteConfiguration.override(blockchain.app.fraud.sardine.client.identifier, with: "client-id")

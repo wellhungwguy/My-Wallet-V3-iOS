@@ -98,11 +98,23 @@ public final class L_blockchain_api_nabu_gateway_generate_session: L, I_blockcha
 public protocol I_blockchain_api_nabu_gateway_generate_session: I {}
 public extension I_blockchain_api_nabu_gateway_generate_session {
 	var `headers`: L_blockchain_api_nabu_gateway_generate_session_headers { .init("\(__).headers") }
+	var `is`: L_blockchain_api_nabu_gateway_generate_session_is { .init("\(__).is") }
 }
 public final class L_blockchain_api_nabu_gateway_generate_session_headers: L, I_blockchain_api_nabu_gateway_generate_session_headers {
 	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session.headers", comment: "") }
 }
 public protocol I_blockchain_api_nabu_gateway_generate_session_headers: I_blockchain_db_type_map, I_blockchain_session_state_value {}
+public final class L_blockchain_api_nabu_gateway_generate_session_is: L, I_blockchain_api_nabu_gateway_generate_session_is {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session.is", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_generate_session_is: I {}
+public extension I_blockchain_api_nabu_gateway_generate_session_is {
+	var `enabled`: L_blockchain_api_nabu_gateway_generate_session_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_api_nabu_gateway_generate_session_is_enabled: L, I_blockchain_api_nabu_gateway_generate_session_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session.is.enabled", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_generate_session_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app: L, I_blockchain_app {
 	public override class var localized: String { NSLocalizedString("blockchain.app", comment: "") }
 }
@@ -1480,7 +1492,7 @@ public protocol I_blockchain_app_fraud_sardine_flow: I_blockchain_db_type_any, I
 public final class L_blockchain_app_fraud_sardine_session: L, I_blockchain_app_fraud_sardine_session {
 	public override class var localized: String { NSLocalizedString("blockchain.app.fraud.sardine.session", comment: "") }
 }
-public protocol I_blockchain_app_fraud_sardine_session: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public protocol I_blockchain_app_fraud_sardine_session: I_blockchain_db_type_string, I_blockchain_session_state_shared_value, I_blockchain_session_state_value {}
 public final class L_blockchain_app_fraud_sardine_submit: L, I_blockchain_app_fraud_sardine_submit {
 	public override class var localized: String { NSLocalizedString("blockchain.app.fraud.sardine.submit", comment: "") }
 }

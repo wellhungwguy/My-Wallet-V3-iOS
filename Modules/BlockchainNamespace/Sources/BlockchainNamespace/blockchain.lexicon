@@ -7,6 +7,10 @@ blockchain:
 						headers:
 						+ blockchain.db.type.map
 						+ blockchain.session.state.value
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 	app:
 		configuration:
 			SSL:
@@ -351,6 +355,7 @@ blockchain:
 				+ blockchain.session.configuration.value
 				session:
 				+ blockchain.db.type.string
+				+ blockchain.session.state.shared.value
 				+ blockchain.session.state.value
 				submit:
 				+ blockchain.ux.type.analytics.event

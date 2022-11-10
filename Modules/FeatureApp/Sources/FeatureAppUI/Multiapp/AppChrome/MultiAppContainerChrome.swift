@@ -17,7 +17,7 @@ public struct MultiAppContainerChrome: View {
     @State private var isRefreshing: Bool = false
 
     private var app: AppProtocol
-    
+
     init(app: AppProtocol) {
         self.app = app
     }

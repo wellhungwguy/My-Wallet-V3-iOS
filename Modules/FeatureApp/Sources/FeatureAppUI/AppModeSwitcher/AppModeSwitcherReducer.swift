@@ -38,7 +38,6 @@ extension AppModeSwitcherModule {
                 return .merge(
                     .fireAndForget {
                         environment.app.post(value: AppMode.pkw.rawValue, of: blockchain.app.mode)
-
                     },
                     Effect(value: .dismiss)
                 )

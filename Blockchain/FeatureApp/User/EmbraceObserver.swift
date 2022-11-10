@@ -16,6 +16,7 @@ class EmbraceObserver: Session.Observer {
     var bag: Set<AnyCancellable> = []
 
     func start() {
+
         app.publisher(for: blockchain.user.id, as: String.self)
             .receive(on: DispatchQueue.main)
             .map(\.value)

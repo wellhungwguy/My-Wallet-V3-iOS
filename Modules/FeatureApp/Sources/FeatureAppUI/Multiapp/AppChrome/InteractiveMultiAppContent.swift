@@ -20,7 +20,6 @@ struct InteractiveMultiAppContent: View {
     /// `True` when a pull to refresh is triggered, otherwise `false`
     @Binding var isRefreshing: Bool
 
-
     var body: some View {
         MultiAppHeaderView(
             totalBalance: $totalBalance,
