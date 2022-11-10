@@ -84,6 +84,7 @@ public final class L_blockchain_api_nabu_gateway: L, I_blockchain_api_nabu_gatew
 public protocol I_blockchain_api_nabu_gateway: I {}
 public extension I_blockchain_api_nabu_gateway {
 	var `generate`: L_blockchain_api_nabu_gateway_generate { .init("\(__).generate") }
+	var `user`: L_blockchain_api_nabu_gateway_user { .init("\(__).user") }
 }
 public final class L_blockchain_api_nabu_gateway_generate: L, I_blockchain_api_nabu_gateway_generate {
 	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate", comment: "") }
@@ -115,6 +116,38 @@ public final class L_blockchain_api_nabu_gateway_generate_session_is_enabled: L,
 	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.generate.session.is.enabled", comment: "") }
 }
 public protocol I_blockchain_api_nabu_gateway_generate_session_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_api_nabu_gateway_user: L, I_blockchain_api_nabu_gateway_user {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.user", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_user: I {}
+public extension I_blockchain_api_nabu_gateway_user {
+	var `tag`: L_blockchain_api_nabu_gateway_user_tag { .init("\(__).tag") }
+}
+public final class L_blockchain_api_nabu_gateway_user_tag: L, I_blockchain_api_nabu_gateway_user_tag {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.user.tag", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_user_tag: I {}
+public extension I_blockchain_api_nabu_gateway_user_tag {
+	var `service`: L_blockchain_api_nabu_gateway_user_tag_service { .init("\(__).service") }
+}
+public final class L_blockchain_api_nabu_gateway_user_tag_service: L, I_blockchain_api_nabu_gateway_user_tag_service {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.user.tag.service", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_user_tag_service: I {}
+public extension I_blockchain_api_nabu_gateway_user_tag_service {
+	var `is`: L_blockchain_api_nabu_gateway_user_tag_service_is { .init("\(__).is") }
+}
+public final class L_blockchain_api_nabu_gateway_user_tag_service_is: L, I_blockchain_api_nabu_gateway_user_tag_service_is {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.user.tag.service.is", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_user_tag_service_is: I {}
+public extension I_blockchain_api_nabu_gateway_user_tag_service_is {
+	var `enabled`: L_blockchain_api_nabu_gateway_user_tag_service_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_api_nabu_gateway_user_tag_service_is_enabled: L, I_blockchain_api_nabu_gateway_user_tag_service_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.api.nabu.gateway.user.tag.service.is.enabled", comment: "") }
+}
+public protocol I_blockchain_api_nabu_gateway_user_tag_service_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app: L, I_blockchain_app {
 	public override class var localized: String { NSLocalizedString("blockchain.app", comment: "") }
 }
@@ -3775,6 +3808,7 @@ public final class L_blockchain_user_is: L, I_blockchain_user_is {
 public protocol I_blockchain_user_is: I {}
 public extension I_blockchain_user_is {
 	var `cowboy`: L_blockchain_user_is_cowboy { .init("\(__).cowboy") }
+	var `superapp`: L_blockchain_user_is_superapp { .init("\(__).superapp") }
 	var `tier`: L_blockchain_user_is_tier { .init("\(__).tier") }
 }
 public final class L_blockchain_user_is_cowboy: L, I_blockchain_user_is_cowboy {
@@ -3788,6 +3822,17 @@ public final class L_blockchain_user_is_cowboy_fan: L, I_blockchain_user_is_cowb
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.cowboy.fan", comment: "") }
 }
 public protocol I_blockchain_user_is_cowboy_fan: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
+public final class L_blockchain_user_is_superapp: L, I_blockchain_user_is_superapp {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.superapp", comment: "") }
+}
+public protocol I_blockchain_user_is_superapp: I {}
+public extension I_blockchain_user_is_superapp {
+	var `user`: L_blockchain_user_is_superapp_user { .init("\(__).user") }
+}
+public final class L_blockchain_user_is_superapp_user: L, I_blockchain_user_is_superapp_user {
+	public override class var localized: String { NSLocalizedString("blockchain.user.is.superapp.user", comment: "") }
+}
+public protocol I_blockchain_user_is_superapp_user: I_blockchain_session_state_value {}
 public final class L_blockchain_user_is_tier: L, I_blockchain_user_is_tier {
 	public override class var localized: String { NSLocalizedString("blockchain.user.is.tier", comment: "") }
 }

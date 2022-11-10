@@ -90,7 +90,7 @@ final class NabuUserSessionObserver: Session.Observer {
         app.state.transaction { state in
 
             state.set(blockchain.user.is.cowboy.fan, to: user.isCowboys)
-
+            state.set(blockchain.user.is.superapp.user, to: user.isSuperAppUser)
             state.set(blockchain.user.email.address, to: user.email.address)
             state.set(blockchain.user.email.is.verified, to: user.email.verified)
             state.set(blockchain.user.name.first, to: user.personalDetails.firstName)

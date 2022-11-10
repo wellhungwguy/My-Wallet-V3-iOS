@@ -312,6 +312,9 @@ packages:
     path: Modules/FeatureBackupRecoveryPhrase
   FeaturePaymentsIntegration:
     path: Modules/FeaturePaymentsIntegration
+  FeatureUserTagSync:
+    path: Modules/FeatureUserTagSync
+
 
 targets:
   BlockchainApp:
@@ -506,6 +509,9 @@ targets:
         product: MobileIntelligence
       - package: FeatureBackupRecoveryPhrase
         product: FeatureBackupRecoveryPhrase
+      - package: FeatureUserTagSync
+        product: FeatureUserTagSync
+
 
     platform: iOS
     postBuildScripts:

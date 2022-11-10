@@ -11,6 +11,13 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+				user:
+					tag:
+						service:
+							is:
+								enabled:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 	app:
 		configuration:
 			SSL:
@@ -984,6 +991,9 @@ blockchain:
 			cowboy:
 				fan:
 				+ blockchain.db.type.boolean
+				+ blockchain.session.state.value
+			superapp:
+				user:
 				+ blockchain.session.state.value
 			tier:
 				gold:

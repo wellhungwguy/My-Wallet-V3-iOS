@@ -8,6 +8,7 @@ import FeatureCoinUI
 import FeatureCustomerSupportUI
 import FeatureReferralDomain
 import FeatureReferralUI
+import FeatureUserTagSyncDomain
 import FirebaseCore
 import FirebaseInstallations
 import FirebaseProtocol
@@ -34,7 +35,8 @@ extension AppProtocol {
         referralService: ReferralServiceAPI = resolve(),
         attributionService: AttributionServiceAPI = resolve(),
         performanceTracing: PerformanceTracingServiceAPI = resolve(),
-        featureFlagService: FeatureFlagsServiceAPI = resolve()
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        userTagService: UserTagServiceAPI = resolve()
     ) {
         observers.insert(ApplicationStateObserver(app: self))
         observers.insert(AppHapticObserver(app: self))
@@ -46,6 +48,7 @@ extension AppProtocol {
         observers.insert(CoinViewObserver(app: self))
         observers.insert(ReferralAppObserver(app: self, referralService: referralService))
         observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
+        observers.insert(UserTagObserver(app: self, userTagSyncService: userTagService))
         observers.insert(SuperAppIntroObserver(app: self))
         observers.insert(EmbraceObserver(app: self))
         observers.insert(GenerateSession(app: self))

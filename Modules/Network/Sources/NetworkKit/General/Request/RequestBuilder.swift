@@ -192,6 +192,55 @@ public class RequestBuilder {
         )
     }
 
+
+    // MARK: - PATCH
+
+    public func patch(
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        baseRequestBuilder.patch(
+            networkConfig: networkConfig,
+            path: components,
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    public func patch(
+        path: String?,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        baseRequestBuilder.patch(
+            networkConfig: networkConfig,
+            path: path,
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
     // MARK: - Delete
 
     public func delete(
@@ -430,6 +479,57 @@ public final class BaseRequestBuilder {
             networkConfig: networkConfig,
             method: .delete,
             path: BaseRequestBuilder.path(from: components),
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    // MARK: - PATCH
+
+    public func patch(
+        networkConfig: Network.Config,
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        patch(
+            networkConfig: networkConfig,
+            path: BaseRequestBuilder.path(from: components),
+            parameters: parameters,
+            body: body,
+            headers: headers,
+            authenticated: authenticated,
+            contentType: contentType,
+            decoder: decoder,
+            recordErrors: recordErrors
+        )
+    }
+
+    public func patch(
+        networkConfig: Network.Config,
+        path: String?,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI? = nil,
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
+        buildRequest(
+            networkConfig: networkConfig,
+            method: .patch,
+            path: path,
             parameters: parameters,
             body: body,
             headers: headers,

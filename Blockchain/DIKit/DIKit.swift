@@ -48,6 +48,8 @@ import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureUserDeletionData
 import FeatureUserDeletionDomain
+import FeatureUserTagSyncData
+import FeatureUserTagSyncDomain
 import FeatureWalletConnectData
 import FirebaseDynamicLinks
 import FirebaseMessaging
@@ -702,6 +704,17 @@ extension DependencyContainer {
                 fiatCurrencyService: DIKit.resolve(),
                 priceService: DIKit.resolve()
             )
+        }
+
+        factory { () -> UserTagServiceAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+
+           return UserTagService(with: UserTagClient(
+               networkAdapter: networkAdapter,
+               requestBuilder: requestBuilder
+           )
+           ) as UserTagServiceAPI
         }
     }
 }
