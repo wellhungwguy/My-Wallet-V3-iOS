@@ -59,8 +59,7 @@ struct FormDateDropdownAnswersView: View {
             FormDatePickerView(
                 title: title,
                 answer: $answer,
-                selectionPanelOpened: $selectionPanelOpened,
-                showAnswerState: $showAnswerState
+                selectionPanelOpened: $selectionPanelOpened
             )
         }
     }
@@ -72,20 +71,18 @@ struct FormDatePickerView: View {
     @Binding var answer: FormAnswer
     @Binding var selectionPanelOpened: Bool
 
-    @Binding var showAnswerState: Bool
-
     private var minDate: Date {
         if let minValue = answer.validation?.metadata?[.minValue], let timeInterval = TimeInterval(minValue) {
             return Date(timeIntervalSince1970: timeInterval)
         }
-        return Date.distantPast
+        return .distantPast
     }
 
     private var maxDate: Date {
         if let maxValue = answer.validation?.metadata?[.maxValue], let timeInterval = TimeInterval(maxValue) {
             return Date(timeIntervalSince1970: timeInterval)
         }
-        return Date.distantFuture
+        return .distantFuture
     }
 
     var body: some View {
@@ -137,6 +134,9 @@ struct FormDatePickerView: View {
         PrimaryButton(
             title: LocalizationConstants.MultiSelection.Buttons.done
         ) {
+            if answer.input.isNilOrEmpty, maxDate != .distantFuture {
+                answer.input = String(maxDate.timeIntervalSince1970)
+            }
             selectionPanelOpened.toggle()
         }
         .frame(alignment: .bottom)
