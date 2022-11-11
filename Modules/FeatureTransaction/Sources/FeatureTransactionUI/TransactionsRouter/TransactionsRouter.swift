@@ -178,6 +178,9 @@ final class TransactionsRouter: TransactionsRouterAPI {
                     return .just(.abandoned)
                 }
             }
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.currentRIBRouter = nil
+            })
             .eraseToAnyPublisher()
     }
 

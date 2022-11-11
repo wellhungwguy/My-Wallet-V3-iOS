@@ -118,9 +118,13 @@ public class App: AppProtocol {
 
     private lazy var actions = on(blockchain.ui.type.action) { [weak self] event async throws in
         guard let self else { return }
-        try await self.handle(action: event)
-        let handled = try event.reference.tag.as(blockchain.ui.type.action).was.handled.key(to: event.reference.context)
-        self.post(event: handled, context: event.context, file: event.source.file, line: event.source.line)
+        do {
+            try await self.handle(action: event)
+            let handled = try event.reference.tag.as(blockchain.ui.type.action).was.handled.key(to: event.reference.context)
+            self.post(event: handled, context: event.context, file: event.source.file, line: event.source.line)
+        } catch FetchResult.Error.keyDoesNotExist {
+            return
+        }
     }
 
     private lazy var sets = on(blockchain.ui.type.action.then.set.session.state) { [weak self] event throws in
