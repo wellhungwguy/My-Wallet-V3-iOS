@@ -772,7 +772,7 @@ extension TransactionFlowRouter {
                     model.availableSources
                 },
                 flatMap: { accounts in
-                    Task<[BlockchainAccount], Never>.Publisher {
+                    Task<[BlockchainAccount], Error>.Publisher {
                         try await accounts.async.reduce(into: []) { accounts, account in
                             guard try await !account.hasSmallBalance().await() else { return }
                             accounts.append(account)
