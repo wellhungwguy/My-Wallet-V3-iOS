@@ -366,9 +366,10 @@ let rootViewReducer = Reducer<
 
     case .appModeSwitcherAction(let action):
         if action == .dismiss {
-            state.isAppModeSwitcherPresented.toggle()
+            state.isAppModeSwitcherPresented = false
         }
         return .none
+
     case .route, .binding:
         return .none
     }

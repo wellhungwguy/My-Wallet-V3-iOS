@@ -7,23 +7,22 @@ import SwiftUI
 
 public struct AppModeSwitcherView: View {
     let store: Store<AppModeSwitcherState, AppModeSwitcherAction>
-    @ObservedObject var viewStore: ViewStore<AppModeSwitcherState, AppModeSwitcherAction>
 
     public init(
         store: Store<AppModeSwitcherState, AppModeSwitcherAction>
     ) {
         self.store = store
-        viewStore = ViewStore(store)
-        viewStore.send(.onInit)
+        ViewStore(store).send(.onInit)
     }
 
     public var body: some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
         VStack {
             headerView
             selectionView
         }
         .sheet(
-            isPresented: viewStore.binding(\.$defiWalletState.isDefiIntroPresented),
+            isPresented: viewStore.binding(\.$isDefiIntroPresented),
             content: {
                 let store = store.scope(
                     state: \.defiWalletState,
@@ -36,6 +35,7 @@ public struct AppModeSwitcherView: View {
         )
         .background(Color.clear)
     }
+    }
 
     private var headerView: some View {
         HStack {
@@ -44,7 +44,7 @@ public struct AppModeSwitcherView: View {
                     .typography(.caption2)
                     .foregroundColor(.semantic.title)
 
-                Text(viewStore
+                Text(ViewStore(store)
                     .totalAccountBalance?
                     .toDisplayString(includeSymbol: true) ?? "")
                 .typography(.title2)
@@ -61,7 +61,7 @@ public struct AppModeSwitcherView: View {
             PrimaryRow(
                 title: AppMode.trading.displayName,
                 caption: nil,
-                subtitle: viewStore
+                subtitle: ViewStore(store)
                     .brokerageAccountBalance?
                     .toDisplayString(includeSymbol: true) ?? ""
             ) {
@@ -70,13 +70,13 @@ public struct AppModeSwitcherView: View {
                     .color(.semantic.primary)
                     .frame(width: 24, height: 24)
             } trailing: {
-                if viewStore.currentAppMode == .trading {
+                if ViewStore(store).currentAppMode == .trading {
                     checkMarkIcon
                 } else {
                     chevronIcon
                 }
             } action: {
-                viewStore.send(.onTradingTapped)
+                ViewStore(store).send(.onTradingTapped)
             }
 
             PrimaryRow(
@@ -91,14 +91,14 @@ public struct AppModeSwitcherView: View {
                         .frame(width: 24, height: 24)
                 },
                 trailing: {
-                    if viewStore.currentAppMode == .pkw {
+                    if ViewStore(store).currentAppMode == .pkw {
                         checkMarkIcon
                     } else {
                         chevronIcon
                     }
                 },
                 action: {
-                    viewStore.send(.onDefiTapped)
+                    ViewStore(store).send(.onDefiTapped)
                 }
             )
         }
@@ -106,8 +106,8 @@ public struct AppModeSwitcherView: View {
     }
 
     private var defiSubtitleString: String {
-        guard viewStore.shouldShowDefiModeIntro else {
-            return viewStore
+        guard ViewStore(store).shouldShowDefiModeIntro else {
+            return ViewStore(store)
                 .defiAccountBalance?
                 .toDisplayString(includeSymbol: true) ?? ""
         }
@@ -115,7 +115,7 @@ public struct AppModeSwitcherView: View {
     }
 
     private var defiDescriptionString: String? {
-        guard viewStore.shouldShowDefiModeIntro else {
+        guard ViewStore(store).shouldShowDefiModeIntro else {
             return nil
         }
         return LocalizationConstants.AppModeSwitcher.defiDescription

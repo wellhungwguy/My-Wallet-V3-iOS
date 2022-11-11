@@ -28,7 +28,7 @@ public class AllCryptoAssetsBalanceService: AllCryptoAssetsServiceAPI {
     ) {
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
-        self.custodialBalanceRepository = allCrypoBalanceRepository
+        custodialBalanceRepository = allCrypoBalanceRepository
         self.nonCustodialBalanceRepository = nonCustodialBalanceRepository
         self.coincore = coincore
         self.app = app

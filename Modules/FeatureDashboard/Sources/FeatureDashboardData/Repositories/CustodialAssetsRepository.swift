@@ -31,7 +31,7 @@ public final class CustodialAssetsRepository: CustodialAssetsRepositoryAPI {
         fetch: { [getAllCryptoAssetsInfo] _ -> AnyPublisher<[AssetBalanceInfo], Error> in
                     self.getAllCryptoAssetsInfoPublisher()
                     .eraseError()
-            }
+        }
     )
 
     private let coincore: CoincoreAPI

@@ -128,14 +128,15 @@ public class RecoveryPhraseBackupRouter: RecoveryPhraseBackupRouterAPI {
     }
 
     private func skipFlow() {
-        skipSubject.send(())
         topViewController
             .topMostViewController?
             .dismiss(animated: true, completion: { [weak self] in
                 self?
                 .topViewController
                 .topMostViewController?
-                .dismiss(animated: true)
+                .dismiss(animated: true, completion: {
+                    self?.skipSubject.send(())
+                })
         })
     }
 

@@ -7,7 +7,6 @@ import SwiftUI
 public struct DefiWalletIntroView: View {
     let store: Store<DefiWalletIntroState, DefiWalletIntroAction>
     @ObservedObject var viewStore: ViewStore<DefiWalletIntroState, DefiWalletIntroAction>
-    @Environment(\.presentationMode) private var presentationMode
 
     public init(store: Store<DefiWalletIntroState, DefiWalletIntroAction>) {
         self.store = store
@@ -58,7 +57,7 @@ public struct DefiWalletIntroView: View {
             .padding(.bottom, Spacing.padding2)
         }
         .trailingNavigationButton(.close) {
-            presentationMode.wrappedValue.dismiss()
+            viewStore.send(.onCloseTapped)
         }
         .ignoresSafeArea(.all, edges: .top)
     }

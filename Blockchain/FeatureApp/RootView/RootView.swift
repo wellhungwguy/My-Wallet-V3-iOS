@@ -59,6 +59,7 @@ struct RootView: View {
     }
 
     var body: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
         TabView(selection: viewStore.binding(\.$tab)) {
             tabs(in: viewStore)
         }
@@ -110,6 +111,7 @@ struct RootView: View {
         }
         .navigationRoute(in: store)
         .app(app)
+        }
     }
 
     @ViewBuilder var overlay: some View {
