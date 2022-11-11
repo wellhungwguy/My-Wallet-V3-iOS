@@ -187,19 +187,21 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
 
-        app.publisher(for: blockchain.ux.transaction.enter.amount)
+        app.on(blockchain.ux.transaction.enter.amount)
             .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-            .sink { [model = transactionModel] _ in
+            .asObservable()
+            .subscribe { [model = transactionModel] _ in
                 model.process(action: .refreshPendingTransaction)
             }
-            .store(withLifetimeOf: self)
+            .disposeOnDeactivate(interactor: self)
 
         Timer.publish(every: .seconds(5), on: .main, in: .default)
             .autoconnect()
-            .sink { [model = transactionModel] _ in
+            .asObservable()
+            .subscribe { [model = transactionModel] _ in
                 model.process(action: .refreshPendingTransaction)
             }
-            .store(withLifetimeOf: self)
+            .disposeOnDeactivate(interactor: self)
 
         transactionState
             .compactMap(\.initialAmountToSet)
