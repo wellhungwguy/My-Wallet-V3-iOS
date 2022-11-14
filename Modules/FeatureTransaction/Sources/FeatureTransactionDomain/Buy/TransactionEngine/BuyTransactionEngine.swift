@@ -40,6 +40,10 @@ final class BuyTransactionEngine: TransactionEngine {
     // Used to fetch account statuses via settlement API
     private let plaidRepository: PlaidRepositoryAPI
 
+    // Used as a workaround to show the correct total fee to the user during checkout.
+    // This won't be needed anymore once we migrate the quotes API to v2
+    private var pendingCheckoutData: CheckoutData?
+
     init(
         app: AppProtocol = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
@@ -217,6 +221,9 @@ final class BuyTransactionEngine: TransactionEngine {
         if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled), let quote = pendingTransaction.quote {
             return createOrder(quote: quote)
         } else {
+            guard pendingCheckoutData == nil else {
+                return .just(pendingCheckoutData?.order)
+            }
             return fetchQuote(for: pendingTransaction.amount)
                 .filter(\.quoteId.isNotNilOrEmpty)
                 .timeout(.seconds(5), scheduler: MainScheduler.asyncInstance)
@@ -253,8 +260,9 @@ final class BuyTransactionEngine: TransactionEngine {
         )
         return orderCreationService.create(using: orderDetails)
             .do(
-                onSuccess: { checkoutData in
+                onSuccess: { [weak self] checkoutData in
                     Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
+                    self?.pendingCheckoutData = checkoutData
                 },
                 onError: { error in
                     Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")

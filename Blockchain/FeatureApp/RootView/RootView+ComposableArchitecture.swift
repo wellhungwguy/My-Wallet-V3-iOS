@@ -211,6 +211,7 @@ let rootViewReducer = Reducer<
         state.isAppModeSwitcherPresented.toggle()
         return .fireAndForget {
             environment.app.post(value: true, of: blockchain.ux.app.mode.seen)
+            environment.app.post(event: blockchain.ux.app.mode.switcher.tapped)
         }
 
     case .onAccountTotalsFetched(let accountTotals):

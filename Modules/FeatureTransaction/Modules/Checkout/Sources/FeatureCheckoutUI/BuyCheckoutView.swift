@@ -379,6 +379,7 @@ extension BuyCheckoutView.Loaded {
 }
 
 extension BuyCheckoutView.Loaded {
+
     private var isUIPaymentsImprovementsEnabled: Bool {
         app.remoteConfiguration.yes(if: blockchain.app.configuration.ui.payments.improvements.is.enabled)
     }

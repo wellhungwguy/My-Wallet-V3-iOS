@@ -4086,11 +4086,23 @@ public final class L_blockchain_ux_app_mode: L, I_blockchain_ux_app_mode {
 public protocol I_blockchain_ux_app_mode: I {}
 public extension I_blockchain_ux_app_mode {
 	var `seen`: L_blockchain_ux_app_mode_seen { .init("\(__).seen") }
+	var `switcher`: L_blockchain_ux_app_mode_switcher { .init("\(__).switcher") }
 }
 public final class L_blockchain_ux_app_mode_seen: L, I_blockchain_ux_app_mode_seen {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.app.mode.seen", comment: "") }
 }
 public protocol I_blockchain_ux_app_mode_seen: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
+public final class L_blockchain_ux_app_mode_switcher: L, I_blockchain_ux_app_mode_switcher {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.app.mode.switcher", comment: "") }
+}
+public protocol I_blockchain_ux_app_mode_switcher: I {}
+public extension I_blockchain_ux_app_mode_switcher {
+	var `tapped`: L_blockchain_ux_app_mode_switcher_tapped { .init("\(__).tapped") }
+}
+public final class L_blockchain_ux_app_mode_switcher_tapped: L, I_blockchain_ux_app_mode_switcher_tapped {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.app.mode.switcher.tapped", comment: "") }
+}
+public protocol I_blockchain_ux_app_mode_switcher_tapped: I_blockchain_ux_type_action {}
 public final class L_blockchain_ux_asset: L, I_blockchain_ux_asset {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset", comment: "") }
 }
@@ -6171,7 +6183,14 @@ public protocol I_blockchain_ux_transaction_enter_amount_default_input_amount: I
 public final class L_blockchain_ux_transaction_enter_amount_default_input_currency: L, I_blockchain_ux_transaction_enter_amount_default_input_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default.input.currency", comment: "") }
 }
-public protocol I_blockchain_ux_transaction_enter_amount_default_input_currency: I_blockchain_type_currency, I_blockchain_session_state_value {}
+public protocol I_blockchain_ux_transaction_enter_amount_default_input_currency: I {}
+public extension I_blockchain_ux_transaction_enter_amount_default_input_currency {
+	var `code`: L_blockchain_ux_transaction_enter_amount_default_input_currency_code { .init("\(__).code") }
+}
+public final class L_blockchain_ux_transaction_enter_amount_default_input_currency_code: L, I_blockchain_ux_transaction_enter_amount_default_input_currency_code {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.default.input.currency.code", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_enter_amount_default_input_currency_code: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_enter_amount_input: L, I_blockchain_ux_transaction_enter_amount_input {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.enter.amount.input", comment: "") }
 }
