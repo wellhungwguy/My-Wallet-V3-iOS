@@ -20,7 +20,7 @@ final class TaskPublisherTests: XCTestCase {
 
     func test_task_throwing_publisher_emits_value() async throws {
 
-        let publisher = Task<String, Error>.Publisher {
+        let publisher = Task<String, Swift.Error>.Publisher {
             try await maybe_hello()
         }
 
@@ -31,7 +31,7 @@ final class TaskPublisherTests: XCTestCase {
 
     func test_task_throwing_publisher_emits_error() async {
 
-        let publisher = Task<String, Error>.Publisher {
+        let publisher = Task<String, Swift.Error>.Publisher {
             try await error()
         }
 
