@@ -31,7 +31,9 @@ public class UserTagClient: UserTagClientAPI {
     public func updateSuperAppTag(isEnabled: Bool) -> AnyPublisher<Void, NetworkError> {
         let networkRequest = requestBuilder.patch(
             path: Path.tags,
-            body: try? ["superapp_mvp": isEnabled].encode(),
+            body: try? [
+                "flags": ["superapp_mvp": isEnabled]
+                ].encode(),
             authenticated: true
         )!
 
