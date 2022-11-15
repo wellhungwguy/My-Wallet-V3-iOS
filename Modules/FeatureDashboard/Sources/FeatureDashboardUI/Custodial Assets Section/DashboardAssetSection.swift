@@ -37,7 +37,7 @@ public struct DashboardAssetsSection: ReducerProtocol {
         var fiatAssetInfo: AssetBalanceInfo?
         let presentedAssetsType: PresentedAssetType
         var assetRows: IdentifiedArrayOf<DashboardAssetRow.State> = []
-
+        var seeAllButtonHidden = true
         public init(presentedAssetsType: PresentedAssetType) {
             self.presentedAssetsType = presentedAssetsType
         }
@@ -70,8 +70,14 @@ public struct DashboardAssetsSection: ReducerProtocol {
             case .onBalancesFetched(.success(let balanceInfo)):
                 print("fetched \(state.presentedAssetsType) \(balanceInfo)")
                 state.isLoading = false
+                state.seeAllButtonHidden = balanceInfo
+                    .filter(\.cryptoBalance.hasPositiveDisplayableBalance)
+                    .count <= state.presentedAssetsType.assetDisplayLimit
+
                 if state.presentedAssetsType == .custodial {
-                    state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo.filter(\.cryptoBalance.hasPositiveDisplayableBalance).prefix(8)).map {
+                    state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo.filter(\.hasBalance)
+                        .prefix(state.presentedAssetsType.assetDisplayLimit))
+                        .map {
                         DashboardAssetRow.State(
                             type: state.presentedAssetsType,
                             isLastRow: $0.id == balanceInfo.last?.id,
@@ -79,7 +85,9 @@ public struct DashboardAssetsSection: ReducerProtocol {
                         )
                     })
                 } else {
-                    state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo.prefix(5)).map {
+                    state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo
+                        .prefix(state.presentedAssetsType.assetDisplayLimit))
+                        .map {
                         DashboardAssetRow.State(
                             type: state.presentedAssetsType,
                             isLastRow: $0.id == balanceInfo.last?.id,

@@ -9,6 +9,10 @@ import SwiftUI
 public enum PresentedAssetType {
     case custodial
     case nonCustodial
+
+    var assetDisplayLimit: Int {
+        self == .custodial ? 8 : 5
+    }
 }
 
 public struct DashboardAssetRow: ReducerProtocol {

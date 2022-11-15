@@ -8,7 +8,7 @@ public struct MultiAppContainerChrome: View {
     /// The current total balance
     @State private var totalBalance: String = "$278,031.12"
     /// The current selected app mode
-    @State private var currentModeSelection: AppMode = .trading
+    @State private var currentModeSelection: AppMode
     /// The content offset for the modal sheet
     @State private var contentOffset: ModalSheetContext = .init(progress: 1.0, offset: .zero)
     /// The scroll offset for the inner scroll view, not currently used...
@@ -20,6 +20,7 @@ public struct MultiAppContainerChrome: View {
 
     init(app: AppProtocol) {
         self.app = app
+        currentModeSelection = app.currentMode
     }
 
     public var body: some View {
