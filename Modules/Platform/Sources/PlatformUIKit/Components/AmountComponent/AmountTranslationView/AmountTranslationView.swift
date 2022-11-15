@@ -57,6 +57,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
     private let availableBalanceViewController: UIViewController?
     private let prefillViewController: UIViewController?
+    private let recurringBuyFrequencySelector: UIViewController?
     private let presenter: AmountTranslationPresenter
     private var labelsStackView: UIStackView!
 
@@ -80,7 +81,8 @@ public final class AmountTranslationView: UIView, AmountViewable {
         presenter: AmountTranslationPresenter,
         app: AppProtocol,
         prefillButtonsEnabled: Bool = false,
-        shouldShowAvailableBalanceView: Bool = false
+        shouldShowAvailableBalanceView: Bool = false,
+        shouldShowRecurringBuyFrequency: Bool = false
     ) {
         self.app = app
         self.presenter = presenter
@@ -125,6 +127,23 @@ public final class AmountTranslationView: UIView, AmountViewable {
                     )
                 )
             )
+        ) : nil
+
+        recurringBuyFrequencySelector = shouldShowRecurringBuyFrequency ? UIHostingController(
+            rootView: RecurringBuyButton(
+                store: .init(
+                    initialState: .init(),
+                    reducer: recurringBuyButtonReducer,
+                    environment: .init(
+                        app: app,
+                        recurringBuyButtonTapped: {
+                            presenter.interactor.recurringBuyButtonTapped()
+                        }
+                    )
+                ),
+                trailingView: { Icon.chevronDown }
+            )
+            .app(app)
         ) : nil
 
         super.init(frame: UIScreen.main.bounds)
@@ -181,6 +200,12 @@ public final class AmountTranslationView: UIView, AmountViewable {
             availableBalanceView.layoutToSuperview(.top, .leading, .trailing)
             availableBalanceView.heightAnchor.constraint(equalToConstant: 40).isActive = true
             availableBalanceViewController?.willMove(toParent: nil)
+        }
+        if let recurringBuyButtonView = recurringBuyFrequencySelector?.view {
+            addSubview(recurringBuyButtonView)
+            recurringBuyButtonView.layoutToSuperview(.top, .leading, .trailing)
+            recurringBuyButtonView.heightAnchor.constraint(equalToConstant: 32).isActive = true
+            recurringBuyFrequencySelector?.willMove(toParent: nil)
         }
         if let prefillView = prefillViewController?.view {
             addSubview(prefillView)

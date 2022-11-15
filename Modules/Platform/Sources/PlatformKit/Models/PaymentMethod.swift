@@ -5,7 +5,7 @@ import Localization
 import MoneyKit
 import ToolKit
 
-public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
+public enum PaymentMethodPayloadType: String, CaseIterable, Codable {
     case card = "PAYMENT_CARD"
     case bankAccount = "BANK_ACCOUNT"
     case bankTransfer = "BANK_TRANSFER"

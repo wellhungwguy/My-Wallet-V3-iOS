@@ -28,6 +28,7 @@ public struct BuyOrderDetails: Equatable {
     public let authorizationData: PartnerAuthorizationData?
     public let state: State
     public let paymentProcessorErrorType: PaymentProcessorErrorType?
+    public let recurringBuyId: String?
 
     // MARK: - Setup
 
@@ -70,6 +71,7 @@ public struct BuyOrderDetails: Equatable {
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
+        recurringBuyId = response.recurringBuyId
         paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
         paymentMethodId = response.paymentMethodId
         authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)

@@ -29,6 +29,7 @@ extension BuySellActivityItemEvent {
             isBuy: orderDetails.isBuy,
             isCancellable: orderDetails.isCancellable,
             paymentMethod: paymentMethod,
+            recurringBuyId: orderDetails.recurringBuyId,
             paymentProcessorErrorOccurred: orderDetails.paymentProccessorErrorOccurred
         )
     }

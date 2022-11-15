@@ -133,6 +133,30 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.push(viewController: viewControllable)
     }
 
+    func presentRecurringBuyFrequencySelectorWithTransactionModel(_ transactionModel: TransactionModel) {
+        let viewController = SelfSizingHostingController(
+            rootView: RecurringBuyFrequencySelectorView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: recurringBuyFrequencySelectorReducer,
+                    environment: .init(
+                        app: app,
+                        dismiss: {
+                            transactionModel.process(action: .returnToPreviousStep)
+                        }
+                    )
+                )
+            )
+        )
+
+        attachChild(Router<Interactor>(interactor: Interactor()))
+
+        viewController.transitioningDelegate = bottomSheetPresenter
+        viewController.modalPresentationStyle = .custom
+        let presenter = topMostViewControllerProvider.topMostViewController
+        presenter?.present(viewController, animated: true, completion: nil)
+    }
+
     func presentUXDialogFromErrorState(
         _ errorState: TransactionErrorState,
         transactionModel: TransactionModel

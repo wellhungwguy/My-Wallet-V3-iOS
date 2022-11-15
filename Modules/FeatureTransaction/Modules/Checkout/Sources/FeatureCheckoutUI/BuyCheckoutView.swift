@@ -92,42 +92,7 @@ extension BuyCheckoutView.Loaded {
             ScrollView {
                 header()
                 PrimaryDivider()
-                Group {
-                    price()
-                    PrimaryDivider()
-                    Group {
-                        TableRow(
-                            title: L10n.Label.paymentMethod,
-                            trailing: {
-                                VStack(alignment: .trailing, spacing: .zero) {
-                                    TableRowTitle(checkout.paymentMethod.name)
-                                    if let detail = checkout.paymentMethod.detail {
-                                        TableRowByline(detail)
-                                    }
-                                }
-                            }
-                        )
-                    }
-                    PrimaryDivider()
-                    TableRow(
-                        title: L10n.Label.purchase,
-                        trailing: {
-                            VStack(alignment: .trailing, spacing: .zero) {
-                                TableRowTitle(checkout.fiat.displayString)
-                                TableRowByline(checkout.crypto.displayString)
-                            }
-                        }
-                    )
-                    PrimaryDivider()
-                    fees()
-                    TableRow(
-                        title: L10n.Label.total,
-                        trailing: {
-                            TableRowTitle(checkout.total.displayString)
-                        }
-                    )
-                    availableDates()
-                }
+                checkoutLineItems
                 PrimaryDivider()
                 disclaimer()
             }
@@ -147,6 +112,57 @@ extension BuyCheckoutView.Loaded {
         ) {
             achTermsInfoSheet
         }
+    }
+
+    @ViewBuilder var checkoutLineItems: some View {
+        Group {
+            price()
+            Group {
+                paymentMethod()
+            }
+            PrimaryDivider()
+            purchaseAmount()
+            fees()
+            recurringBuyFrequency()
+            checkoutTotal()
+            availableDates()
+        }
+    }
+
+    @ViewBuilder func checkoutTotal() -> some View {
+        TableRow(
+            title: L10n.Label.total,
+            trailing: {
+                TableRowTitle(checkout.total.displayString)
+            }
+        )
+    }
+
+    @ViewBuilder func paymentMethod() -> some View {
+        TableRow(
+            title: L10n.Label.paymentMethod,
+            trailing: {
+                VStack(alignment: .trailing, spacing: .zero) {
+                    TableRowTitle(checkout.paymentMethod.name)
+                    if let detail = checkout.paymentMethod.detail {
+                        TableRowByline(detail)
+                    }
+                }
+            }
+        )
+    }
+
+    @ViewBuilder func purchaseAmount() -> some View {
+        TableRow(
+            title: L10n.Label.purchase,
+            trailing: {
+                VStack(alignment: .trailing, spacing: .zero) {
+                    TableRowTitle(checkout.fiat.displayString)
+                    TableRowByline(checkout.crypto.displayString)
+                }
+            }
+        )
+        PrimaryDivider()
     }
 
     @ViewBuilder var availableToTradeInfoSheet: some View {
@@ -231,6 +247,7 @@ extension BuyCheckoutView.Loaded {
                 )
             }
         }
+        PrimaryDivider()
     }
 
     func question(_ isOn: Bool) -> Icon {
@@ -269,6 +286,23 @@ extension BuyCheckoutView.Loaded {
                     )
                 }
             }
+            PrimaryDivider()
+        }
+    }
+
+    @ViewBuilder func recurringBuyFrequency() -> some View {
+        if let recurringBuyDetails = checkout.recurringBuyDetails, isRecurringBuyEnabled {
+            TableRow(
+                title: .init(LocalizationConstants.Transaction.Confirmation.frequency),
+                trailing: {
+                    VStack(alignment: .trailing, spacing: .zero) {
+                        TableRowTitle(recurringBuyDetails.frequency)
+                        if let description = recurringBuyDetails.description {
+                            TableRowByline(description)
+                        }
+                    }
+                }
+            )
             PrimaryDivider()
         }
     }
@@ -362,7 +396,14 @@ extension BuyCheckoutView.Loaded {
     @ViewBuilder
     func footer() -> some View {
         VStack(spacing: .zero) {
-            if checkout.paymentMethod.isApplePay {
+            if let recurringBuyDetails = checkout.recurringBuyDetails, isRecurringBuyEnabled {
+                PrimaryButton(
+                    title: L10n.Button.buy(checkout.crypto.code) + " \(recurringBuyDetails.frequency)",
+                    isLoading: remaining <= 3,
+                    action: confirmed
+                )
+                .disabled(remaining <= 3)
+            } else if checkout.paymentMethod.isApplePay {
                 ApplePayButton(action: confirmed)
             } else {
                 PrimaryButton(
@@ -379,6 +420,9 @@ extension BuyCheckoutView.Loaded {
 }
 
 extension BuyCheckoutView.Loaded {
+    private var isRecurringBuyEnabled: Bool {
+        app.remoteConfiguration.yes(if: blockchain.app.configuration.recurring.buy.is.enabled)
+    }
 
     private var isUIPaymentsImprovementsEnabled: Bool {
         app.remoteConfiguration.yes(if: blockchain.app.configuration.ui.payments.improvements.is.enabled)

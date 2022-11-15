@@ -131,6 +131,7 @@ public enum OrderPayload {
         let output: Output
         let paymentType: PaymentMethodPayloadType?
         let paymentMethodId: String?
+        let period: String?
 
         init(
             quoteId: String?,
@@ -139,10 +140,12 @@ public enum OrderPayload {
             fiatCurrency: FiatCurrency,
             cryptoValue: CryptoValue,
             paymentType: PaymentMethod.MethodType? = nil,
-            paymentMethodId: String? = nil
+            paymentMethodId: String? = nil,
+            period: String? = nil
         ) {
             self.quoteId = quoteId
             self.action = action
+            self.period = period
             if paymentType?.isApplePay == true
                 || paymentMethodId?.isEmpty == true
             {

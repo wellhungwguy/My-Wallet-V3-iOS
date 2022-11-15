@@ -74,11 +74,16 @@ public protocol AmountViewInteracting {
     /// Instead, the amount view displays the amount in a different style (e.g - red text).
     func set(auxiliaryViewEnabled: Bool)
 
+    /// Called when the user taps the recurring buy frequency button in the buy flow
+    func recurringBuyButtonTapped()
+
     var auxiliaryViewEnabledRelay: PublishRelay<Bool> { get }
 
     var minAmountSelected: Observable<Void> { get }
 
     var maxAmountSelected: Observable<Void> { get }
+
+    var recurringBuyFrequencySelected: Observable<Void> { get }
 
     /// When the `AvailableBalanceView` is tapped.
     /// Once tapped the `AvailableBalanceDetailView` is shown.
@@ -107,6 +112,10 @@ extension AmountViewInteracting {
     }
 
     public func updateTxFeeLessState(_ isTxFeeLess: Bool) {
+        unimplemented("Only implemented in AmountViewInteractor")
+    }
+
+    public func recurringBuyButtonTapped() {
         unimplemented("Only implemented in AmountViewInteractor")
     }
 }

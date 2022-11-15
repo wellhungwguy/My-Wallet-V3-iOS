@@ -181,6 +181,10 @@ final class TransactionModel {
             return nil
         case .updateTransactionComplete:
             return nil
+        case .updateRecurringBuyFrequency(let frequency):
+            return processRecurringBuyFrequencyUpdated(frequency)
+        case .showRecurringBuyFrequencySelector:
+            return nil
         case .fetchTransactionExchangeRates:
             return processFetchExchangeRates()
         case .transactionExchangeRatesFetched:
@@ -468,6 +472,25 @@ final class TransactionModel {
             Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
             self?.process(action: .fatalTransactionError(error))
         }
+    }
+
+    private func processRecurringBuyFrequencyUpdated(_ frequency: RecurringBuy.Frequency) -> Disposable {
+        guard app.remoteConfiguration.yes(if: blockchain.app.configuration.recurring.buy.is.enabled) else {
+            Logger.shared.debug("!TRANSACTION!> Recurring buy feature flag disabled.")
+            return Disposables.create()
+        }
+        return interactor
+            .updateRecurringBuyFrequency(frequency)
+            .subscribe { [app] _ in
+                app.state.transaction { state in
+                    state.set(blockchain.ux.transaction.checkout.recurring.buy.frequency.localized, to: frequency.description)
+                    state.set(blockchain.ux.transaction.checkout.recurring.buy.frequency, to: frequency.rawValue)
+                }
+                Logger.shared.debug("!TRANSACTION!> Tx recurringBuyFrequency complete")
+            } onFailure: { [weak self] error in
+                Logger.shared.error("!TRANSACTION!> Unable to set recurringBuyFrequency: \(String(describing: error))")
+                self?.process(action: .fatalTransactionError(error))
+            }
     }
 
     private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {

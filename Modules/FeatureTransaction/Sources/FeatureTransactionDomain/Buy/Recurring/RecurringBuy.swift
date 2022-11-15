@@ -11,13 +11,17 @@ public struct RecurringBuy {
         case uninitialised
     }
 
-    public enum Frequency: String {
-        case once = "ONE_TIME"
-        case daily
-        case weekly
-        case biweekly = "BI_WEEKLY"
-        case monthly
+    public enum Frequency: String, CaseIterable, Identifiable, Decodable {
         case unknown
+        case once = "ONE_TIME"
+        case daily = "DAILY"
+        case weekly = "WEEKLY"
+        case biweekly = "BI_WEEKLY"
+        case monthly = "MONTHLY"
+
+        public var id: String {
+            rawValue
+        }
     }
 
     public let id: String

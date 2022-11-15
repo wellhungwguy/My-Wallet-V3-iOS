@@ -13,6 +13,7 @@ public struct BuyCheckout: Equatable {
     public var fee: Fee?
     public var total: FiatValue
     public var paymentMethod: PaymentMethod
+    public var recurringBuyDetails: RecurringBuyDetails?
     public var quoteExpiration: Date?
     public var depositTerms: DepositTerms?
 
@@ -24,6 +25,7 @@ public struct BuyCheckout: Equatable {
         total: FiatValue,
         paymentMethod: BuyCheckout.PaymentMethod,
         quoteExpiration: Date?,
+        recurringBuyDetails: RecurringBuyDetails? = nil,
         depositTerms: DepositTerms? = nil
     ) {
         self.buyType = buyType
@@ -31,6 +33,7 @@ public struct BuyCheckout: Equatable {
         self.purchase = purchase
         self.fee = fee
         self.total = total
+        self.recurringBuyDetails = recurringBuyDetails
         self.paymentMethod = paymentMethod
         self.quoteExpiration = quoteExpiration
         self.depositTerms = depositTerms
@@ -53,6 +56,21 @@ extension BuyCheckout {
             self.availableToTrade = availableToTrade
             self.availableToWithdraw = availableToWithdraw
             self.withdrawalLockInDays = withdrawalLockInDays
+        }
+    }
+}
+
+extension BuyCheckout {
+    public struct RecurringBuyDetails: Equatable {
+        public let frequency: String
+        public let description: String?
+
+        public init(
+            frequency: String,
+            description: String? = nil
+        ) {
+            self.frequency = frequency
+            self.description = description
         }
     }
 }

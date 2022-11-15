@@ -46,6 +46,9 @@ extension LocalizationConstants {
         }
 
         public enum Buy {
+            public enum Recurring {
+                public enum FrequencySelector {}
+            }
             public enum AmountPresenter {
                 public enum LimitView {}
             }
@@ -181,6 +184,23 @@ extension LocalizationConstants.Transaction.Notices {
             maxTransactions
         )
     }
+}
+
+extension LocalizationConstants.Transaction.Buy.Recurring {
+    public static let oneTimeBuy = NSLocalizedString("One time buy", comment: "")
+    public static let daily = NSLocalizedString("Daily", comment: "")
+    public static let weekly = NSLocalizedString("Weekly", comment: "")
+    public static let monthly = NSLocalizedString("Monthly", comment: "")
+    public static let twiceAMonth = NSLocalizedString("Twice a month", comment: "")
+    public static let everyOther = NSLocalizedString("Every other", comment: "Every other")
+    public static let onThe = NSLocalizedString("On the", comment: "On the")
+    public static let on = NSLocalizedString("On", comment: "On")
+    public static let recurringBuyUnavailable = NSLocalizedString("Recurring buy unavailable", comment: "Recurring buy unavailable")
+    public static let recurringBuyUnavailableDescription = NSLocalizedString("Please use a different payment method to setup recurring buy", comment: "Please use a different payment method to setup recurring buy")
+}
+
+extension LocalizationConstants.Transaction.Buy.Recurring.FrequencySelector {
+    public static let title = NSLocalizedString("Select a frequency", comment: "")
 }
 
 extension LocalizationConstants.Transaction.Buy.AmountPresenter {
@@ -1184,6 +1204,10 @@ extension LocalizationConstants.Transaction.Confirmation {
     public static let from = NSLocalizedString(
         "From",
         comment: "From"
+    )
+    public static let frequency = NSLocalizedString(
+        "Frequency",
+        comment: "Frequency"
     )
     public static let transactionFee = NSLocalizedString(
         "Transaction Fee",

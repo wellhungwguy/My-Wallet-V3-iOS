@@ -106,6 +106,9 @@ protocol TransactionFlowRouting: Routing {
         transactionModel: TransactionModel
     )
 
+    /// Present the `RecurringBuy` frequency selector over the enter amount screen as a bottom sheet.
+    func presentRecurringBuyFrequencySelectorWithTransactionModel(_ transactionModel: TransactionModel)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -456,6 +459,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 transactionModel: transactionModel,
                 action: action
             )
+
+        case .recurringBuyFrequencySelector:
+            router?.presentRecurringBuyFrequencySelectorWithTransactionModel(transactionModel)
 
         case .linkPaymentMethod:
             router?.presentLinkPaymentMethod(transactionModel: transactionModel)

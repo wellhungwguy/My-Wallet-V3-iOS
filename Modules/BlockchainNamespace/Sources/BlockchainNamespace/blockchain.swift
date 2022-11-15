@@ -197,6 +197,7 @@ public extension I_blockchain_app_configuration {
 	var `prefill`: L_blockchain_app_configuration_prefill { .init("\(__).prefill") }
 	var `profile`: L_blockchain_app_configuration_profile { .init("\(__).profile") }
 	var `pubkey`: L_blockchain_app_configuration_pubkey { .init("\(__).pubkey") }
+	var `recurring`: L_blockchain_app_configuration_recurring { .init("\(__).recurring") }
 	var `referral`: L_blockchain_app_configuration_referral { .init("\(__).referral") }
 	var `remote`: L_blockchain_app_configuration_remote { .init("\(__).remote") }
 	var `request`: L_blockchain_app_configuration_request { .init("\(__).request") }
@@ -832,6 +833,31 @@ public final class L_blockchain_app_configuration_pubkey_service_auth: L, I_bloc
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.pubkey.service.auth", comment: "") }
 }
 public protocol I_blockchain_app_configuration_pubkey_service_auth: I_blockchain_db_type_array_of_strings, I_blockchain_session_state_preference_value {}
+public final class L_blockchain_app_configuration_recurring: L, I_blockchain_app_configuration_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.recurring", comment: "") }
+}
+public protocol I_blockchain_app_configuration_recurring: I {}
+public extension I_blockchain_app_configuration_recurring {
+	var `buy`: L_blockchain_app_configuration_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_app_configuration_recurring_buy: L, I_blockchain_app_configuration_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_app_configuration_recurring_buy: I {}
+public extension I_blockchain_app_configuration_recurring_buy {
+	var `is`: L_blockchain_app_configuration_recurring_buy_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_recurring_buy_is: L, I_blockchain_app_configuration_recurring_buy_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.recurring.buy.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_recurring_buy_is: I {}
+public extension I_blockchain_app_configuration_recurring_buy_is {
+	var `enabled`: L_blockchain_app_configuration_recurring_buy_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_recurring_buy_is_enabled: L, I_blockchain_app_configuration_recurring_buy_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.recurring.buy.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_recurring_buy_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_referral: L, I_blockchain_app_configuration_referral {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.referral", comment: "") }
 }
@@ -1096,6 +1122,7 @@ public final class L_blockchain_app_configuration_transaction: L, I_blockchain_a
 public protocol I_blockchain_app_configuration_transaction: I_blockchain_db_collection {}
 public extension I_blockchain_app_configuration_transaction {
 	var `quickfill`: L_blockchain_app_configuration_transaction_quickfill { .init("\(__).quickfill") }
+	var `recurring`: L_blockchain_app_configuration_transaction_recurring { .init("\(__).recurring") }
 	var `should`: L_blockchain_app_configuration_transaction_should { .init("\(__).should") }
 }
 public final class L_blockchain_app_configuration_transaction_quickfill: L, I_blockchain_app_configuration_transaction_quickfill {
@@ -1131,6 +1158,31 @@ public final class L_blockchain_app_configuration_transaction_quickfill_type: L,
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.quickfill.type", comment: "") }
 }
 public protocol I_blockchain_app_configuration_transaction_quickfill_type: I_blockchain_db_type_string {}
+public final class L_blockchain_app_configuration_transaction_recurring: L, I_blockchain_app_configuration_transaction_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.recurring", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_recurring: I {}
+public extension I_blockchain_app_configuration_transaction_recurring {
+	var `buy`: L_blockchain_app_configuration_transaction_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_app_configuration_transaction_recurring_buy: L, I_blockchain_app_configuration_transaction_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_recurring_buy: I {}
+public extension I_blockchain_app_configuration_transaction_recurring_buy {
+	var `is`: L_blockchain_app_configuration_transaction_recurring_buy_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_transaction_recurring_buy_is: L, I_blockchain_app_configuration_transaction_recurring_buy_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.recurring.buy.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_recurring_buy_is: I {}
+public extension I_blockchain_app_configuration_transaction_recurring_buy_is {
+	var `enabled`: L_blockchain_app_configuration_transaction_recurring_buy_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_transaction_recurring_buy_is_enabled: L, I_blockchain_app_configuration_transaction_recurring_buy_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.recurring.buy.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_transaction_recurring_buy_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_transaction_should: L, I_blockchain_app_configuration_transaction_should {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.transaction.should", comment: "") }
 }
@@ -5872,6 +5924,7 @@ public final class L_blockchain_ux_transaction_action_select: L, I_blockchain_ux
 public protocol I_blockchain_ux_transaction_action_select: I {}
 public extension I_blockchain_ux_transaction_action_select {
 	var `payment`: L_blockchain_ux_transaction_action_select_payment { .init("\(__).payment") }
+	var `recurring`: L_blockchain_ux_transaction_action_select_recurring { .init("\(__).recurring") }
 }
 public final class L_blockchain_ux_transaction_action_select_payment: L, I_blockchain_ux_transaction_action_select_payment {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.payment", comment: "") }
@@ -5891,6 +5944,31 @@ public final class L_blockchain_ux_transaction_action_select_payment_method_id: 
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.payment.method.id", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_action_select_payment_method_id: I_blockchain_db_type_string {}
+public final class L_blockchain_ux_transaction_action_select_recurring: L, I_blockchain_ux_transaction_action_select_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_select_recurring: I {}
+public extension I_blockchain_ux_transaction_action_select_recurring {
+	var `buy`: L_blockchain_ux_transaction_action_select_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_action_select_recurring_buy: L, I_blockchain_ux_transaction_action_select_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_select_recurring_buy: I {}
+public extension I_blockchain_ux_transaction_action_select_recurring_buy {
+	var `frequency`: L_blockchain_ux_transaction_action_select_recurring_buy_frequency { .init("\(__).frequency") }
+}
+public final class L_blockchain_ux_transaction_action_select_recurring_buy_frequency: L, I_blockchain_ux_transaction_action_select_recurring_buy_frequency {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.recurring.buy.frequency", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_select_recurring_buy_frequency: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public extension I_blockchain_ux_transaction_action_select_recurring_buy_frequency {
+	var `localized`: L_blockchain_ux_transaction_action_select_recurring_buy_frequency_localized { .init("\(__).localized") }
+}
+public final class L_blockchain_ux_transaction_action_select_recurring_buy_frequency_localized: L, I_blockchain_ux_transaction_action_select_recurring_buy_frequency_localized {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.select.recurring.buy.frequency.localized", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_select_recurring_buy_frequency_localized: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_action_show: L, I_blockchain_ux_transaction_action_show {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show", comment: "") }
 }
@@ -5926,6 +6004,7 @@ public extension I_blockchain_ux_transaction_checkout {
 	var `fee`: L_blockchain_ux_transaction_checkout_fee { .init("\(__).fee") }
 	var `is`: L_blockchain_ux_transaction_checkout_is { .init("\(__).is") }
 	var `quote`: L_blockchain_ux_transaction_checkout_quote { .init("\(__).quote") }
+	var `recurring`: L_blockchain_ux_transaction_checkout_recurring { .init("\(__).recurring") }
 	var `refund`: L_blockchain_ux_transaction_checkout_refund { .init("\(__).refund") }
 	var `terms`: L_blockchain_ux_transaction_checkout_terms { .init("\(__).terms") }
 }
@@ -6024,6 +6103,31 @@ public final class L_blockchain_ux_transaction_checkout_quote_refresh_max_durati
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.quote.refresh.max.duration", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_checkout_quote_refresh_max_duration: I_blockchain_db_type_number, I_blockchain_session_configuration_value {}
+public final class L_blockchain_ux_transaction_checkout_recurring: L, I_blockchain_ux_transaction_checkout_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_recurring: I {}
+public extension I_blockchain_ux_transaction_checkout_recurring {
+	var `buy`: L_blockchain_ux_transaction_checkout_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_checkout_recurring_buy: L, I_blockchain_ux_transaction_checkout_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_recurring_buy: I {}
+public extension I_blockchain_ux_transaction_checkout_recurring_buy {
+	var `frequency`: L_blockchain_ux_transaction_checkout_recurring_buy_frequency { .init("\(__).frequency") }
+}
+public final class L_blockchain_ux_transaction_checkout_recurring_buy_frequency: L, I_blockchain_ux_transaction_checkout_recurring_buy_frequency {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.recurring.buy.frequency", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_recurring_buy_frequency: I_blockchain_db_type_string, I_blockchain_session_state_value {}
+public extension I_blockchain_ux_transaction_checkout_recurring_buy_frequency {
+	var `localized`: L_blockchain_ux_transaction_checkout_recurring_buy_frequency_localized { .init("\(__).localized") }
+}
+public final class L_blockchain_ux_transaction_checkout_recurring_buy_frequency_localized: L, I_blockchain_ux_transaction_checkout_recurring_buy_frequency_localized {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.recurring.buy.frequency.localized", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_checkout_recurring_buy_frequency_localized: I_blockchain_db_type_string, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_checkout_refund: L, I_blockchain_ux_transaction_checkout_refund {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.checkout.refund", comment: "") }
 }
@@ -6301,6 +6405,7 @@ public final class L_blockchain_ux_transaction_event_did: L, I_blockchain_ux_tra
 public protocol I_blockchain_ux_transaction_event_did: I {}
 public extension I_blockchain_ux_transaction_event_did {
 	var `error`: L_blockchain_ux_transaction_event_did_error { .init("\(__).error") }
+	var `fetch`: L_blockchain_ux_transaction_event_did_fetch { .init("\(__).fetch") }
 	var `finish`: L_blockchain_ux_transaction_event_did_finish { .init("\(__).finish") }
 	var `go`: L_blockchain_ux_transaction_event_did_go { .init("\(__).go") }
 	var `link`: L_blockchain_ux_transaction_event_did_link { .init("\(__).link") }
@@ -6311,6 +6416,31 @@ public final class L_blockchain_ux_transaction_event_did_error: L, I_blockchain_
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.error", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_event_did_error: I_blockchain_ux_type_analytics_event {}
+public final class L_blockchain_ux_transaction_event_did_fetch: L, I_blockchain_ux_transaction_event_did_fetch {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.fetch", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_did_fetch: I {}
+public extension I_blockchain_ux_transaction_event_did_fetch {
+	var `recurring`: L_blockchain_ux_transaction_event_did_fetch_recurring { .init("\(__).recurring") }
+}
+public final class L_blockchain_ux_transaction_event_did_fetch_recurring: L, I_blockchain_ux_transaction_event_did_fetch_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.fetch.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_did_fetch_recurring: I {}
+public extension I_blockchain_ux_transaction_event_did_fetch_recurring {
+	var `buy`: L_blockchain_ux_transaction_event_did_fetch_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_event_did_fetch_recurring_buy: L, I_blockchain_ux_transaction_event_did_fetch_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.fetch.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_did_fetch_recurring_buy: I {}
+public extension I_blockchain_ux_transaction_event_did_fetch_recurring_buy {
+	var `frequencies`: L_blockchain_ux_transaction_event_did_fetch_recurring_buy_frequencies { .init("\(__).frequencies") }
+}
+public final class L_blockchain_ux_transaction_event_did_fetch_recurring_buy_frequencies: L, I_blockchain_ux_transaction_event_did_fetch_recurring_buy_frequencies {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_event_did_fetch_recurring_buy_frequencies: I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_event_did_finish: L, I_blockchain_ux_transaction_event_did_finish {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.event.did.finish", comment: "") }
 }
@@ -6563,6 +6693,7 @@ public final class L_blockchain_ux_transaction_payment_method_is: L, I_blockchai
 public protocol I_blockchain_ux_transaction_payment_method_is: I {}
 public extension I_blockchain_ux_transaction_payment_method_is {
 	var `ApplePay`: L_blockchain_ux_transaction_payment_method_is_ApplePay { .init("\(__).ApplePay") }
+	var `available`: L_blockchain_ux_transaction_payment_method_is_available { .init("\(__).available") }
 	var `bank`: L_blockchain_ux_transaction_payment_method_is_bank { .init("\(__).bank") }
 	var `card`: L_blockchain_ux_transaction_payment_method_is_card { .init("\(__).card") }
 	var `funds`: L_blockchain_ux_transaction_payment_method_is_funds { .init("\(__).funds") }
@@ -6572,6 +6703,31 @@ public final class L_blockchain_ux_transaction_payment_method_is_ApplePay: L, I_
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.ApplePay", comment: "") }
 }
 public protocol I_blockchain_ux_transaction_payment_method_is_ApplePay: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
+public final class L_blockchain_ux_transaction_payment_method_is_available: L, I_blockchain_ux_transaction_payment_method_is_available {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.available", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_payment_method_is_available: I {}
+public extension I_blockchain_ux_transaction_payment_method_is_available {
+	var `for`: L_blockchain_ux_transaction_payment_method_is_available_for { .init("\(__).for") }
+}
+public final class L_blockchain_ux_transaction_payment_method_is_available_for: L, I_blockchain_ux_transaction_payment_method_is_available_for {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.available.for", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_payment_method_is_available_for: I {}
+public extension I_blockchain_ux_transaction_payment_method_is_available_for {
+	var `recurring`: L_blockchain_ux_transaction_payment_method_is_available_for_recurring { .init("\(__).recurring") }
+}
+public final class L_blockchain_ux_transaction_payment_method_is_available_for_recurring: L, I_blockchain_ux_transaction_payment_method_is_available_for_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.available.for.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_payment_method_is_available_for_recurring: I {}
+public extension I_blockchain_ux_transaction_payment_method_is_available_for_recurring {
+	var `buy`: L_blockchain_ux_transaction_payment_method_is_available_for_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_payment_method_is_available_for_recurring_buy: L, I_blockchain_ux_transaction_payment_method_is_available_for_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.available.for.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_payment_method_is_available_for_recurring_buy: I_blockchain_db_type_boolean, I_blockchain_session_state_value {}
 public final class L_blockchain_ux_transaction_payment_method_is_bank: L, I_blockchain_ux_transaction_payment_method_is_bank {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.payment.method.is.bank", comment: "") }
 }

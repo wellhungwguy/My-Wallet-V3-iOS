@@ -134,6 +134,36 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor
+            .recurringBuyFrequencySelected
+            .flatMap { [app] _ -> Single<Bool> in
+                app
+                    .publisher(
+                        for: blockchain.ux.transaction.payment.method.is.available.for.recurring.buy,
+                        as: Bool.self
+                    )
+                    .compactMap(\.value)
+                    .asSingle()
+            }
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe(
+                onNext: { [transactionModel] isRecurringBuyAvailableForPaymentType in
+                    if isRecurringBuyAvailableForPaymentType {
+                        transactionModel.process(action: .showRecurringBuyFrequencySelector)
+                    } else {
+                        transactionModel.process(
+                            action: .showUxDialogSuggestion(
+                                UX.Dialog(
+                                    title: LocalizationConstants.Transaction.Buy.Recurring.recurringBuyUnavailable,
+                                    message: LocalizationConstants.Transaction.Buy.Recurring.recurringBuyUnavailableDescription
+                                )
+                            )
+                        )
+                    }
+                }
+            )
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor
             .auxiliaryButtonTappedRelay
             .asObservable()
             .subscribe(on: MainScheduler.asyncInstance)
@@ -464,6 +494,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .connect(state: interactorState)
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
+
+        app.publisher(for: blockchain.ux.transaction.action.select.recurring.buy.frequency, as: String.self)
+            .compactMap(\.value)
+            .compactMap(RecurringBuy.Frequency.init(rawValue: ))
+            .removeDuplicates()
+            .sink { [model = transactionModel] frequency in
+                model.process(action: .updateRecurringBuyFrequency(frequency))
+            }
+            .store(withLifetimeOf: self)
 
         spendable
             .map(\.cryptoMax)

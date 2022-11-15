@@ -31,6 +31,7 @@ public struct BuySellActivityItemEvent {
     public let paymentProcessorErrorOccurred: Bool
     public let status: EventStatus
     public let paymentMethod: PaymentMethod
+    public let recurringBuyId: String?
 
     public let identifier: String
 
@@ -50,6 +51,7 @@ public struct BuySellActivityItemEvent {
         isBuy: Bool,
         isCancellable: Bool,
         paymentMethod: PaymentMethod,
+        recurringBuyId: String? = nil,
         paymentProcessorErrorOccurred: Bool = false
     ) {
         self.isBuy = isBuy
@@ -62,6 +64,7 @@ public struct BuySellActivityItemEvent {
         self.fee = fee
         self.paymentMethod = paymentMethod
         self.paymentProcessorErrorOccurred = paymentProcessorErrorOccurred
+        self.recurringBuyId = recurringBuyId
     }
 }
 
@@ -95,6 +98,7 @@ extension BuySellActivityItemEvent {
         fee = swapActivityItemEvent.amounts.withdrawalFee
         paymentMethod = .funds
         paymentProcessorErrorOccurred = false
+        recurringBuyId = nil
 
         switch swapActivityItemEvent.status {
         case .complete:

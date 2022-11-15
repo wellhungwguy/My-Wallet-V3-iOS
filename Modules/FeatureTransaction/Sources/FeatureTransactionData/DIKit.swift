@@ -41,6 +41,12 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> EligiblePaymentMethodRecurringBuyRepositoryAPI in
+            EligiblePaymentMethodRecurringBuyRepository(
+                client: DIKit.resolve()
+            )
+        }
+
         factory { () -> WithdrawalLocksCheckRepositoryAPI in
             WithdrawalLocksCheckRepository(
                 client: DIKit.resolve()
@@ -62,6 +68,11 @@ extension DependencyContainer {
         factory { () -> OrderCreationClientAPI in
             let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
             return client as OrderCreationClientAPI
+        }
+
+        factory { () -> EligiblePaymentMethodRecurringBuyClientAPI in
+            let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
+            return client as EligiblePaymentMethodRecurringBuyClientAPI
         }
 
         factory { () -> OrderUpdateClientAPI in

@@ -70,6 +70,8 @@ enum TransactionAction: MviAction {
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
     case fatalTransactionError(Error)
+    case updateRecurringBuyFrequency(RecurringBuy.Frequency)
+    case showRecurringBuyFrequencySelector
     /// Shows a `UX.Dialog` that is from user interaction and not
     /// from an `errorState`. This `UX.Dialog` is a property on `TransactionState`
     /// Both this event and `showErrorRecoverySuggestion`
@@ -323,6 +325,14 @@ extension TransactionAction {
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
             return newState
+
+        case .updateRecurringBuyFrequency:
+            var newState = oldState
+            newState.nextEnabled = false
+            return newState
+
+        case .showRecurringBuyFrequencySelector:
+            return oldState.stateForMovingForward(to: .recurringBuyFrequencySelector)
 
         case .createOrder:
             return oldState

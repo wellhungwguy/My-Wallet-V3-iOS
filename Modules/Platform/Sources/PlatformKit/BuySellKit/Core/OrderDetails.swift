@@ -66,6 +66,15 @@ public struct OrderDetails: Equatable {
         _value.isBuy
     }
 
+    public var recurringBuyId: String? {
+        switch _value {
+        case .buy(let buy):
+            return buy.recurringBuyId
+        case .sell:
+            return nil
+        }
+    }
+
     public var isSell: Bool {
         !isBuy
     }

@@ -193,6 +193,12 @@ blockchain:
 					auth:
 					+ blockchain.db.type.array.of.strings
 					+ blockchain.session.state.preference.value
+			recurring:
+				buy:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			referral:
 				is:
 					enabled:
@@ -267,6 +273,12 @@ blockchain:
 						+ blockchain.session.configuration.value
 					type:
 					+ blockchain.db.type.string
+				recurring:
+					buy:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				should:
 					prefill:
 						with:
@@ -1557,7 +1569,18 @@ blockchain:
 						+ blockchain.ux.type.action
 							id:
 							+ blockchain.db.type.string
+					recurring:
+						buy:
+							frequency:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+								localized:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.value
 				show:
+					recurring:
+						buy:
+							unavailable:
 					wire:
 						transfer:
 							instructions:
@@ -1592,6 +1615,14 @@ blockchain:
 							duration:
 							+ blockchain.db.type.number
 							+ blockchain.session.configuration.value
+				recurring:
+					buy:
+						frequency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.value
+							localized:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
 				refund:
 					policy:
 						disclaimer:
@@ -1663,6 +1694,11 @@ blockchain:
 				did:
 					error:
 					+ blockchain.ux.type.analytics.event
+					fetch:
+						recurring:
+							buy:
+								frequencies:
+								+ blockchain.session.state.value
 					finish:
 					+ blockchain.ux.type.analytics.event
 					go:
@@ -1741,6 +1777,12 @@ blockchain:
 						GooglePay:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.state.value
+						available:
+							for:
+								recurring:
+									buy:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.state.value
 						bank:
 							ACH:
 							+ blockchain.db.type.boolean

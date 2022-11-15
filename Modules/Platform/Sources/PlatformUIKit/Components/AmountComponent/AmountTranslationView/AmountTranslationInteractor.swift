@@ -515,9 +515,16 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         availableBalanceViewSelectedRelay.asObservable()
     }
 
+    private let recurringBuyFrequencySelectedRelay = PublishRelay<Void>()
+    public var recurringBuyFrequencySelected: Observable<Void> {
+        recurringBuyFrequencySelectedRelay
+            .asObservable()
+    }
+
     private let maxAmountSelectedRelay = PublishRelay<Void>()
     public var maxAmountSelected: Observable<Void> {
-        maxAmountSelectedRelay.asObservable()
+        maxAmountSelectedRelay
+            .asObservable()
     }
 
     public func availableBalanceViewTapped() {
@@ -538,6 +545,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
     public func set(auxiliaryViewEnabled: Bool) {
         auxiliaryViewEnabledRelay.accept(auxiliaryViewEnabled)
+    }
+
+    public func recurringBuyButtonTapped() {
+        recurringBuyFrequencySelectedRelay.accept(())
     }
 
     private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {

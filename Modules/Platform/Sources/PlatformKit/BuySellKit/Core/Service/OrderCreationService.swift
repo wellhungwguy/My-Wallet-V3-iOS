@@ -42,7 +42,8 @@ final class OrderCreationService: OrderCreationServiceAPI {
             fiatCurrency: candidateOrderDetails.fiatCurrency,
             cryptoValue: candidateOrderDetails.cryptoValue,
             paymentType: candidateOrderDetails.paymentMethod?.method,
-            paymentMethodId: candidateOrderDetails.paymentMethodId
+            paymentMethodId: candidateOrderDetails.paymentMethodId,
+            period: candidateOrderDetails.recurringBuyFrequency
         )
         let creation = client
             .create(
