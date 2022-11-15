@@ -4,7 +4,7 @@ import Foundation
 import ToolKit
 import UIKit
 
-final class ApplicationStateObserver: Session.Observer {
+final class ApplicationStateObserver: Client.Observer {
 
     unowned let app: AppProtocol
     let notificationCenter: NotificationCenter

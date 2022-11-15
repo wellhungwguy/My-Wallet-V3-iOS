@@ -5,7 +5,7 @@ import Combine
 import DIKit
 import Foundation
 
-public final class AttributionAppObserver: Session.Observer {
+public final class AttributionAppObserver: Client.Observer {
     let app: AppProtocol
     let attributionService: AttributionServiceAPI
     private var cancellables: Set<AnyCancellable> = []

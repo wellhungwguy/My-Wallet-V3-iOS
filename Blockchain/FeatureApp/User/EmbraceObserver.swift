@@ -3,7 +3,7 @@
 import Blockchain
 import Embrace
 
-class EmbraceObserver: Session.Observer {
+class EmbraceObserver: Client.Observer {
 
     unowned let app: AppProtocol
     unowned let embrace: Embrace

@@ -22,7 +22,7 @@ import ToolKit
 import UIComponentsKit
 import UIKit
 
-public final class DeepLinkCoordinator: Session.Observer {
+public final class DeepLinkCoordinator: Client.Observer {
 
     private let app: AppProtocol
     private let coincore: CoincoreAPI

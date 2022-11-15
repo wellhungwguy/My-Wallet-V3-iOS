@@ -5,7 +5,7 @@
 import Blockchain
 import Combine
 
-public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Observer {
+public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Client.Observer {
 
     struct Flow: Decodable, Hashable {
         let name: String

@@ -7,7 +7,7 @@ import MoneyKit
 import PlatformKit
 import ToolKit
 
-final class NabuUserSessionObserver: Session.Observer {
+final class NabuUserSessionObserver: Client.Observer {
 
     unowned let app: AppProtocol
 

@@ -549,4 +549,11 @@ extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
     public subscript() -> Tag {
         id[]
     }
+
+    public func callAsFunction<Value>(
+        _ keyPath: KeyPath<Tag.Reference, Value>,
+        in context: Tag.Context = [:]
+    ) -> Value {
+        key(to: context)[keyPath: keyPath]
+    }
 }

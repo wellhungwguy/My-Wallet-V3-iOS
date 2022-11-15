@@ -5,7 +5,7 @@ import Combine
 import DIKit
 import Foundation
 
-public final class UserTagObserver: Session.Observer {
+public final class UserTagObserver: Client.Observer {
     let app: AppProtocol
     let userTagSyncService: UserTagServiceAPI
     private var cancellables: Set<AnyCancellable> = []

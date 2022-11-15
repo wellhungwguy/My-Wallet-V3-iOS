@@ -111,7 +111,7 @@ public struct CoinAdapterView: View {
     }
 }
 
-public final class CoinViewObserver: Session.Observer {
+public final class CoinViewObserver: Client.Observer {
 
     let app: AppProtocol
     let transactionsRouter: TransactionsRouterAPI

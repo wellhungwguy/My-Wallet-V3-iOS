@@ -156,6 +156,7 @@ public extension I_blockchain_app {
 	var `configuration`: L_blockchain_app_configuration { .init("\(__).configuration") }
 	var `deep_link`: L_blockchain_app_deep__link { .init("\(__).deep_link") }
 	var `did`: L_blockchain_app_did { .init("\(__).did") }
+	var `dynamic`: L_blockchain_app_dynamic { .init("\(__).dynamic") }
 	var `enter`: L_blockchain_app_enter { .init("\(__).enter") }
 	var `environment`: L_blockchain_app_environment { .init("\(__).environment") }
 	var `fraud`: L_blockchain_app_fraud { .init("\(__).fraud") }
@@ -1460,6 +1461,41 @@ public final class L_blockchain_app_did_update: L, I_blockchain_app_did_update {
 	public override class var localized: String { NSLocalizedString("blockchain.app.did.update", comment: "") }
 }
 public protocol I_blockchain_app_did_update: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value, I_blockchain_session_state_shared_value {}
+public final class L_blockchain_app_dynamic: L, I_blockchain_app_dynamic {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic", comment: "") }
+}
+public protocol I_blockchain_app_dynamic: I_blockchain_db_collection {}
+public extension I_blockchain_app_dynamic {
+	var `session`: L_blockchain_app_dynamic_session { .init("\(__).session") }
+	var `ux`: L_blockchain_app_dynamic_ux { .init("\(__).ux") }
+}
+public final class L_blockchain_app_dynamic_session: L, I_blockchain_app_dynamic_session {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic.session", comment: "") }
+}
+public protocol I_blockchain_app_dynamic_session: I {}
+public extension I_blockchain_app_dynamic_session {
+	var `state`: L_blockchain_app_dynamic_session_state { .init("\(__).state") }
+}
+public final class L_blockchain_app_dynamic_session_state: L, I_blockchain_app_dynamic_session_state {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic.session.state", comment: "") }
+}
+public protocol I_blockchain_app_dynamic_session_state: I_blockchain_session_state {}
+public final class L_blockchain_app_dynamic_ux: L, I_blockchain_app_dynamic_ux {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic.ux", comment: "") }
+}
+public protocol I_blockchain_app_dynamic_ux: I {}
+public extension I_blockchain_app_dynamic_ux {
+	var `action`: L_blockchain_app_dynamic_ux_action { .init("\(__).action") }
+	var `analytics`: L_blockchain_app_dynamic_ux_analytics { .init("\(__).analytics") }
+}
+public final class L_blockchain_app_dynamic_ux_action: L, I_blockchain_app_dynamic_ux_action {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic.ux.action", comment: "") }
+}
+public protocol I_blockchain_app_dynamic_ux_action: I_blockchain_session_configuration_value, I_blockchain_ux_type_action {}
+public final class L_blockchain_app_dynamic_ux_analytics: L, I_blockchain_app_dynamic_ux_analytics {
+	public override class var localized: String { NSLocalizedString("blockchain.app.dynamic.ux.analytics", comment: "") }
+}
+public protocol I_blockchain_app_dynamic_ux_analytics: I_blockchain_ux_type_analytics {}
 public final class L_blockchain_app_enter: L, I_blockchain_app_enter {
 	public override class var localized: String { NSLocalizedString("blockchain.app.enter", comment: "") }
 }

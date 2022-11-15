@@ -3,7 +3,7 @@ import Combine
 import Extensions
 import Foundation
 
-public final class CustomerSupportObserver<Intercom: Intercom_p>: Session.Observer {
+public final class CustomerSupportObserver<Intercom: Intercom_p>: Client.Observer {
 
     unowned let app: AppProtocol
     let notificationCenter: NotificationCenter

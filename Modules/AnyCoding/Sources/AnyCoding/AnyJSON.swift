@@ -53,7 +53,11 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        isEqual(lhs.__unwrapped, rhs.__unwrapped)
+        if let lhs = lhs.__unwrapped as? AnyEquatable {
+            return isEqual(lhs, rhs.__unwrapped as? AnyEquatable as Any)
+        } else {
+            return isEqual(lhs.__unwrapped, rhs.__unwrapped)
+        }
     }
 
     public init(from decoder: Decoder) throws {

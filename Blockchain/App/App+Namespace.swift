@@ -38,28 +38,28 @@ extension AppProtocol {
         featureFlagService: FeatureFlagsServiceAPI = resolve(),
         userTagService: UserTagServiceAPI = resolve()
     ) {
-        observers.insert(ApplicationStateObserver(app: self))
-        observers.insert(AppHapticObserver(app: self))
-        observers.insert(AppAnalyticsObserver(app: self))
-        observers.insert(resolve() as AppAnalyticsTraitRepository)
-        observers.insert(KYCExtraQuestionsObserver(app: self))
-        observers.insert(NabuUserSessionObserver(app: self))
-        observers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
-        observers.insert(CoinViewObserver(app: self))
-        observers.insert(ReferralAppObserver(app: self, referralService: referralService))
-        observers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
-        observers.insert(UserTagObserver(app: self, userTagSyncService: userTagService))
-        observers.insert(SuperAppIntroObserver(app: self))
-        observers.insert(EmbraceObserver(app: self))
-        observers.insert(GenerateSession(app: self))
-        observers.insert(PlaidLinkObserver(app: self))
+        clientObservers.insert(ApplicationStateObserver(app: self))
+        clientObservers.insert(AppHapticObserver(app: self))
+        clientObservers.insert(AppAnalyticsObserver(app: self))
+        clientObservers.insert(resolve() as AppAnalyticsTraitRepository)
+        clientObservers.insert(KYCExtraQuestionsObserver(app: self))
+        clientObservers.insert(NabuUserSessionObserver(app: self))
+        clientObservers.insert(CoinViewAnalyticsObserver(app: self, analytics: recorder))
+        clientObservers.insert(CoinViewObserver(app: self))
+        clientObservers.insert(ReferralAppObserver(app: self, referralService: referralService))
+        clientObservers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
+        clientObservers.insert(UserTagObserver(app: self, userTagSyncService: userTagService))
+        clientObservers.insert(SuperAppIntroObserver(app: self))
+        clientObservers.insert(EmbraceObserver(app: self))
+        clientObservers.insert(GenerateSession(app: self))
+        clientObservers.insert(PlaidLinkObserver(app: self))
         // observers.insert(EmbraceObserver(app: self))
-        observers.insert(deepLink)
+        clientObservers.insert(deepLink)
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-        observers.insert(PulseBlockchainNamespaceEventLogger(app: self))
-        observers.insert(MultiAppViewDebuggingObserver(app: self))
+        clientObservers.insert(PulseBlockchainNamespaceEventLogger(app: self))
+        clientObservers.insert(MultiAppViewDebuggingObserver(app: self))
         #endif
-        observers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
+        clientObservers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
 
         let intercom = (
             apiKey: Bundle.main.plist.intercomAPIKey[] as String?,
@@ -67,7 +67,7 @@ extension AppProtocol {
         )
 
         if let apiKey = intercom.apiKey, let appId = intercom.appId {
-            observers.insert(
+            clientObservers.insert(
                 CustomerSupportObserver<Intercom>(
                     app: self,
                     apiKey: apiKey,
@@ -79,7 +79,7 @@ extension AppProtocol {
         }
 
         #if canImport(MobileIntelligence)
-        observers.insert(Sardine<MobileIntelligence>(self))
+        clientObservers.insert(Sardine<MobileIntelligence>(self))
         #endif
 
         Task {

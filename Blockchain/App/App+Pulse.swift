@@ -12,7 +12,7 @@ import NetworkKit
 import SwiftUI
 
 #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-final class PulseBlockchainNamespaceEventLogger: Session.Observer {
+final class PulseBlockchainNamespaceEventLogger: Client.Observer {
 
     typealias Logger = Pulse.LoggerStore
 

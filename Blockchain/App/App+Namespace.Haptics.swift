@@ -2,7 +2,7 @@ import BlockchainNamespace
 import Combine
 import UIKit
 
-final class AppHapticObserver: Session.Observer {
+final class AppHapticObserver: Client.Observer {
 
     unowned let app: AppProtocol
 

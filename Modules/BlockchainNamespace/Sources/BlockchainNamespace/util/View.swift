@@ -13,7 +13,8 @@ extension App {
         public var language: Language { app.language }
         public var events: Session.Events { app.events }
         public var state: Session.State { app.state }
-        public var observers: Session.Observers { app.observers }
+        public var clientObservers: Client.Observers { app.clientObservers }
+        public var sessionObservers: Session.Observers { app.sessionObservers }
         public var remoteConfiguration: Session.RemoteConfiguration { app.remoteConfiguration }
         public var environmentObject: App.EnvironmentObject { self }
         public var deepLinks: DeepLink { app.deepLinks }

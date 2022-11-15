@@ -89,6 +89,13 @@ extension Tag.Reference {
     }
 }
 
+extension String {
+
+    var tagReference: Tag.Reference? {
+        get { try? Tag.Reference(id: self, in: .root.language) }
+    }
+}
+
 extension Tag.Reference {
 
     // swiftlint:disable:next force_try

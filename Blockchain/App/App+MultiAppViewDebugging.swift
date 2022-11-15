@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 import UIComponentsKit
 
-public final class MultiAppViewDebuggingObserver: Session.Observer {
+public final class MultiAppViewDebuggingObserver: Client.Observer {
     unowned let app: AppProtocol
     let topViewController: TopMostViewControllerProviding
 

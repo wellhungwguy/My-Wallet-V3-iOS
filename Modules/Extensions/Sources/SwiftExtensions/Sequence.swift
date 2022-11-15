@@ -36,3 +36,12 @@ extension Sequence where Iterator.Element: Hashable {
         return filter { seen.insert($0).inserted }
     }
 }
+
+extension Sequence where Element: Hashable {
+
+    public var set: Set<Element> { Set(self) }
+
+    public func diff<Old>(from old: Old) -> (enter: [Element], exit: [Element]) where Old: Sequence, Old.Element == Element {
+        (enter: filter(old.set.doesNotContain), exit: old.filter(set.doesNotContain))
+    }
+}

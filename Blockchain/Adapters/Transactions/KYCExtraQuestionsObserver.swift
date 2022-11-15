@@ -6,7 +6,7 @@ import FeatureFormDomain
 import FeatureKYCDomain
 import ToolKit
 
-final class KYCExtraQuestionsObserver: Session.Observer {
+final class KYCExtraQuestionsObserver: Client.Observer {
 
     private var defaultContext = "TIER_TWO_VERIFICATION"
 

@@ -6,16 +6,22 @@ import FirebaseProtocol
 import Foundation
 import OptionalSubscripts
 
+#if canImport(AppKit)
+import AppKit
+#endif
+
 public protocol AppProtocol: AnyObject, CustomStringConvertible {
 
     var language: Language { get }
 
     var events: Session.Events { get }
     var state: Session.State { get }
-    var observers: Session.Observers { get }
     var remoteConfiguration: Session.RemoteConfiguration { get }
     var deepLinks: App.DeepLink { get }
     var local: Optional<Any>.Store { get }
+
+    var clientObservers: Client.Observers { get }
+    var sessionObservers: Session.Observers { get }
 
     #if canImport(SwiftUI)
     var environmentObject: App.EnvironmentObject { get }
@@ -23,11 +29,11 @@ public protocol AppProtocol: AnyObject, CustomStringConvertible {
 }
 
 public class App: AppProtocol {
+
     public let language: Language
 
     public let events: Session.Events
     public let state: Session.State
-    public let observers: Session.Observers
     public let remoteConfiguration: Session.RemoteConfiguration
 
     #if canImport(SwiftUI)
@@ -37,6 +43,9 @@ public class App: AppProtocol {
     public let local = Any?.Store()
 
     public lazy var deepLinks = DeepLink(self)
+
+    public let clientObservers: Client.Observers
+    public lazy var sessionObservers: Session.Observers = .init(app: self)
 
     public convenience init(
         language: Language = Language.root.language,
@@ -65,14 +74,14 @@ public class App: AppProtocol {
         language: Language = Language.root.language,
         events: Session.Events = .init(),
         state: Session.State = .init(),
-        observers: Session.Observers = .init(),
+        clientObservers: Client.Observers = .init(),
         remoteConfiguration: Session.RemoteConfiguration
     ) {
         defer { start() }
         self.language = language
         self.events = events
         self.state = state
-        self.observers = observers
+        self.clientObservers = clientObservers
         self.remoteConfiguration = remoteConfiguration
     }
 
@@ -85,6 +94,7 @@ public class App: AppProtocol {
     private func start() {
         state.app = self
         deepLinks.start()
+        sessionObservers.subscribe()
         remoteConfiguration.start(app: self)
         do {
             #if DEBUG
@@ -146,9 +156,9 @@ public class App: AppProtocol {
         let url = try event.context.decode(blockchain.ui.type.action.then.launch.url, as: URL.self)
         guard self.deepLinks.canProcess(url: url) else {
             #if canImport(UIKit)
-            UIKit.UIApplication.shared.open(url)
+            UIApplication.shared.open(url)
             #elseif canImport(AppKit)
-            AppKit.NSWorkspace.shared.open(url)
+            NSWorkspace.shared.open(url)
             #endif
             return
         }
@@ -169,6 +179,7 @@ extension AppProtocol {
             state.set(blockchain.user.id, to: userId)
         }
         post(event: blockchain.session.event.did.sign.in)
+        sessionObservers.reset()
     }
 
     public func signOut() {
@@ -539,7 +550,8 @@ extension App {
         public var language: Language { app.language }
         public var events: Session.Events { app.events }
         public var state: Session.State { app.state }
-        public var observers: Session.Observers { app.observers }
+        public var clientObservers: Client.Observers { app.clientObservers }
+        public var sessionObservers: Session.Observers { app.sessionObservers }
         public var remoteConfiguration: Session.RemoteConfiguration { app.remoteConfiguration }
         public var scheduler: TestSchedulerOf<DispatchQueue> = DispatchQueue.test
         public var environmentObject: App.EnvironmentObject { app.environmentObject }

@@ -344,6 +344,17 @@ blockchain:
 			+ blockchain.db.type.boolean
 			+ blockchain.session.state.preference.value
 			+ blockchain.session.state.shared.value
+		dynamic:
+		+ blockchain.db.collection
+			session:
+				state:
+				+ blockchain.session.state
+			ux:
+				action:
+				+ blockchain.session.configuration.value
+				+ blockchain.ux.type.action
+				analytics:
+				+ blockchain.ux.type.analytics
 		enter:
 			into:
 			+ blockchain.ux.type.story
