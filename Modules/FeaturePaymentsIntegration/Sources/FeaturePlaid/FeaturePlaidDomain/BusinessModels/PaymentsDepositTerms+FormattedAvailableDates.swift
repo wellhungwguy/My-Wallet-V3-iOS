@@ -57,4 +57,17 @@ extension PaymentsDepositTerms {
             return nil
         }
     }
+
+    public var formattedWithdrawalLockDays: String? {
+        guard let days = withdrawalLockDays else { return nil }
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day]
+        formatter.unitsStyle = .full
+
+        guard let future = Calendar.current.date(byAdding: .day, value: days, to: Date()),
+              let futureResult = Calendar.current.date(byAdding: .second, value: 1, to: future)
+        else { return nil }
+
+        return formatter.string(from: futureResult.timeIntervalSinceNow)
+    }
 }

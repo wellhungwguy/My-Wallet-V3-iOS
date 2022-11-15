@@ -228,7 +228,7 @@ extension TransactionState {
                 depositTerms: .init(
                     availableToTrade: quote.depositTerms?.formattedAvailableToTrade,
                     availableToWithdraw: quote.depositTerms?.formattedAvailableToWithdraw,
-                    withdrawalLockInDays: quote.depositTerms?.withdrawalLockDays.map { "\($0)" }
+                    withdrawalLockInDays: quote.depositTerms?.formattedWithdrawalLockDays
                 )
             )
         } catch {
