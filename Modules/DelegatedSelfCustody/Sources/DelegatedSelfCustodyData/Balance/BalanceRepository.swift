@@ -14,7 +14,7 @@ final class BalanceRepository: DelegatedCustodyBalanceRepositoryAPI {
     }
 
     private let client: AccountDataClientAPI
-    private let authenticationDataRepository: AuthenticationDataRepositoryAPI
+    private let authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: DelegatedCustodyFiatCurrencyServiceAPI
     private let cachedValue: CachedValueNew<
@@ -25,7 +25,7 @@ final class BalanceRepository: DelegatedCustodyBalanceRepositoryAPI {
 
     init(
         client: AccountDataClientAPI,
-        authenticationDataRepository: AuthenticationDataRepositoryAPI,
+        authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI,
         fiatCurrencyService: DelegatedCustodyFiatCurrencyServiceAPI
     ) {

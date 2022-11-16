@@ -14,6 +14,10 @@ let package = Package(
         .library(
             name: "DelegatedSelfCustodyKit",
             targets: ["DelegatedSelfCustodyDomain", "DelegatedSelfCustodyData"]
+        ),
+        .library(
+            name: "DelegatedSelfCustodyDomain",
+            targets: ["DelegatedSelfCustodyDomain"]
         )
     ],
     dependencies: [

@@ -9,7 +9,7 @@ import ToolKit
 final class ActivityRepository: DelegatedCustodyActivityRepositoryAPI {
 
     private let client: AccountDataClientAPI
-    private let authenticationDataRepository: AuthenticationDataRepositoryAPI
+    private let authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     private let cachedValue: CachedValueNew<
         CryptoCurrency,
         [DelegatedCustodyActivity],
@@ -18,7 +18,7 @@ final class ActivityRepository: DelegatedCustodyActivityRepositoryAPI {
 
     init(
         client: AccountDataClientAPI,
-        authenticationDataRepository: AuthenticationDataRepositoryAPI
+        authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     ) {
         self.client = client
         self.authenticationDataRepository = authenticationDataRepository

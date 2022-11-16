@@ -5,19 +5,7 @@ import CryptoSwift
 import DelegatedSelfCustodyDomain
 import Foundation
 
-typealias InitialAuthenticationDataPayload = (guid: String, sharedKeyHash: String)
-typealias AuthenticationDataPayload = (guidHash: String, sharedKeyHash: String)
-
-protocol AuthenticationDataRepositoryAPI {
-
-    /// Streams authentication data to be used on the initial auth call.
-    var initialAuthenticationData: AnyPublisher<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError> { get }
-
-    /// Streams authentication data to be used on endpoint calls.
-    var authenticationData: AnyPublisher<AuthenticationDataPayload, AuthenticationDataRepositoryError> { get }
-}
-
-final class AuthenticationDataRepository: AuthenticationDataRepositoryAPI {
+final class AuthenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI {
 
     private let guidService: DelegatedCustodyGuidServiceAPI
     private let sharedKeyService: DelegatedCustodySharedKeyServiceAPI

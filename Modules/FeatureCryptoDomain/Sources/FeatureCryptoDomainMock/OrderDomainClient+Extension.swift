@@ -9,7 +9,7 @@ extension OrderDomainClient {
 
     static let mock = OrderDomainClient(
         networkAdapter: NetworkAdapter(
-            communicator: EphemeralNetworkCommunicator()
+            communicator: EphemeralNetworkCommunicator(session: .shared)
         ),
         requestBuilder: RequestBuilder(
             config: Network.Config(

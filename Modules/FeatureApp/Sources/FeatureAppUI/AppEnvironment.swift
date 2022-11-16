@@ -20,6 +20,7 @@ import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
 import ToolKit
+import UnifiedActivityDomain
 import WalletPayloadKit
 
 public struct AppEnvironment {
@@ -28,6 +29,7 @@ public struct AppEnvironment {
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var app: AppProtocol
     var appStoreOpener: AppStoreOpening
+    var assetsRemoteService: AssetsRemoteServiceAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var blockchainSettings: BlockchainSettingsAppAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
@@ -61,17 +63,17 @@ public struct AppEnvironment {
     var performanceTracing: PerformanceTracingServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var reactiveWallet: ReactiveWalletAPI
+    var recaptchaService: GoogleRecaptchaServiceAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var resetPasswordService: ResetPasswordServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var assetsRemoteService: AssetsRemoteServiceAPI
+    var unifiedActivityRepository: UnifiedActivityRepositoryAPI
     var urlSession: URLSession
     var walletPayloadService: WalletPayloadServiceAPI
     var walletRepoPersistence: WalletRepoPersistenceAPI
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
-    var recaptchaService: GoogleRecaptchaServiceAPI
 
     public init(
         accountRecoveryService: AccountRecoveryServiceAPI,
@@ -79,6 +81,7 @@ public struct AppEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI,
         app: AppProtocol,
         appStoreOpener: AppStoreOpening,
+        assetsRemoteService: AssetsRemoteServiceAPI,
         backgroundAppHandler: BackgroundAppHandlerAPI,
         blockchainSettings: BlockchainSettingsAppAPI,
         blurEffectHandler: BlurVisualEffectHandlerAPI,
@@ -112,23 +115,24 @@ public struct AppEnvironment {
         performanceTracing: PerformanceTracingServiceAPI,
         pushNotificationsRepository: PushNotificationsRepositoryAPI,
         reactiveWallet: ReactiveWalletAPI,
+        recaptchaService: GoogleRecaptchaServiceAPI,
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
         resetPasswordService: ResetPasswordServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
         siftService: FeatureAuthenticationDomain.SiftServiceAPI,
-        assetsRemoteService: AssetsRemoteServiceAPI,
+        unifiedActivityRepository: UnifiedActivityRepositoryAPI,
         urlSession: URLSession,
         walletPayloadService: WalletPayloadServiceAPI,
         walletRepoPersistence: WalletRepoPersistenceAPI,
         walletService: WalletService,
-        walletStateProvider: WalletStateProvider,
-        recaptchaService: GoogleRecaptchaServiceAPI
+        walletStateProvider: WalletStateProvider
     ) {
         self.accountRecoveryService = accountRecoveryService
         self.alertViewPresenter = alertViewPresenter
         self.analyticsRecorder = analyticsRecorder
         self.app = app
         self.appStoreOpener = appStoreOpener
+        self.assetsRemoteService = assetsRemoteService
         self.backgroundAppHandler = backgroundAppHandler
         self.blockchainSettings = blockchainSettings
         self.blurEffectHandler = blurEffectHandler
@@ -162,16 +166,16 @@ public struct AppEnvironment {
         self.performanceTracing = performanceTracing
         self.pushNotificationsRepository = pushNotificationsRepository
         self.reactiveWallet = reactiveWallet
+        self.recaptchaService = recaptchaService
         self.remoteNotificationServiceContainer = remoteNotificationServiceContainer
         self.resetPasswordService = resetPasswordService
         self.sharedContainer = sharedContainer
         self.siftService = siftService
-        self.assetsRemoteService = assetsRemoteService
+        self.unifiedActivityRepository = unifiedActivityRepository
         self.urlSession = urlSession
         self.walletPayloadService = walletPayloadService
         self.walletRepoPersistence = walletRepoPersistence
         self.walletService = walletService
         self.walletStateProvider = walletStateProvider
-        self.recaptchaService = recaptchaService
     }
 }

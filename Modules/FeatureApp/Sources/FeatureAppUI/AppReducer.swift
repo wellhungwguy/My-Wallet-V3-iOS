@@ -114,14 +114,15 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     performanceTracing: env.performanceTracing,
                     pushNotificationsRepository: env.pushNotificationsRepository,
                     reactiveWallet: env.reactiveWallet,
+                    recaptchaService: env.recaptchaService,
                     remoteNotificationServiceContainer: env.remoteNotificationServiceContainer,
                     resetPasswordService: env.resetPasswordService,
                     sharedContainer: env.sharedContainer,
                     siftService: env.siftService,
+                    unifiedActivityRepository: env.unifiedActivityRepository,
                     walletPayloadService: env.walletPayloadService,
                     walletService: env.walletService,
-                    walletStateProvider: env.walletStateProvider,
-                    recaptchaService: env.recaptchaService
+                    walletStateProvider: env.walletStateProvider
                 )
             }
         ),

@@ -18,6 +18,7 @@ extension AppEnvironment {
             analyticsRecorder: resolve(),
             app: resolve(),
             appStoreOpener: resolve(),
+            assetsRemoteService: resolve(),
             backgroundAppHandler: resolve(),
             blockchainSettings: resolve(),
             blurEffectHandler: resolve(),
@@ -53,11 +54,12 @@ extension AppEnvironment {
             performanceTracing: resolve(),
             pushNotificationsRepository: resolve(),
             reactiveWallet: resolve(),
+            recaptchaService: resolve(),
             remoteNotificationServiceContainer: resolve(),
             resetPasswordService: resolve(),
             sharedContainer: .default,
             siftService: resolve(),
-            assetsRemoteService: resolve(),
+            unifiedActivityRepository: resolve(),
             urlSession: resolve(),
             walletPayloadService: resolve(),
             walletRepoPersistence: resolve(),
@@ -67,8 +69,7 @@ extension AppEnvironment {
             ),
             walletStateProvider: .live(
                 holder: DIKit.resolve()
-            ),
-            recaptchaService: resolve()
+            )
         )
     }
 }

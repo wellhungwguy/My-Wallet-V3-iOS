@@ -13,6 +13,7 @@ import PlatformUIKit
 import RemoteNotificationsKit
 import RxSwift
 import ToolKit
+import UnifiedActivityDomain
 import WalletPayloadKit
 
 struct LoggedInIdentifier: Hashable {}
@@ -64,6 +65,7 @@ public enum LoggedIn {
         var reactiveWallet: ReactiveWalletAPI
         var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
         var remoteNotificationTokenSender: RemoteNotificationTokenSending
+        var unifiedActivityRepository: UnifiedActivityRepositoryAPI
     }
 
     public enum WalletAction: Equatable {
@@ -82,6 +84,11 @@ let loggedInReducer = Reducer<
             .fireAndForget {
                 environment.app.post(event: blockchain.ux.user.event.signed.in)
             },
+            environment.unifiedActivityRepository
+                .connect
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .fireAndForget(),
             environment.exchangeRepository
                 .syncDepositAddressesIfLinked()
                 .receive(on: environment.mainQueue)

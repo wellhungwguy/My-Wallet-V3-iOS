@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureWithdrawalLocksDomain
 import Foundation
 import MoneyKit
@@ -14,7 +13,7 @@ final class FiatCurrencyCodeProviderAdapter: FiatCurrencyCodeProviderAPI {
 
     private let fiatCurrencyPublisher: FiatCurrencyServiceAPI
 
-    init(fiatCurrencyPublisher: FiatCurrencyServiceAPI = resolve()) {
+    init(fiatCurrencyPublisher: FiatCurrencyServiceAPI) {
         self.fiatCurrencyPublisher = fiatCurrencyPublisher
     }
 }

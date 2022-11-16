@@ -571,10 +571,6 @@ extension DependencyContainer {
             )
         }
 
-        // MARK: - Websocket
-
-        single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
-
         // MARK: Feature Attribution
 
         single { () -> AttributionServiceAPI in

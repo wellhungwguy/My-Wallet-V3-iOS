@@ -21,6 +21,7 @@ import PlatformUIKit
 import RemoteNotificationsKit
 import ToolKit
 import UIKit
+import UnifiedActivityDomain
 import WalletPayloadKit
 
 // swiftformat:disable indent
@@ -130,14 +131,15 @@ struct CoreAppEnvironment {
     var performanceTracing: PerformanceTracingServiceAPI
     var pushNotificationsRepository: PushNotificationsRepositoryAPI
     var reactiveWallet: ReactiveWalletAPI
+    var recaptchaService: GoogleRecaptchaServiceAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var resetPasswordService: ResetPasswordServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
+    var unifiedActivityRepository: UnifiedActivityRepositoryAPI
     var walletPayloadService: WalletPayloadServiceAPI
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
-    var recaptchaService: GoogleRecaptchaServiceAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -188,7 +190,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     performanceTracing: environment.performanceTracing,
                     reactiveWallet: environment.reactiveWallet,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
-                    remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender
+                    remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
+                    unifiedActivityRepository: environment.unifiedActivityRepository
                 )
             }
         ),

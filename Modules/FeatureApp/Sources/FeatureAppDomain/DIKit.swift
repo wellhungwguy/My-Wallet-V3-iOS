@@ -49,7 +49,7 @@ extension DependencyContainer {
         }
 
         factory {
-            FiatCurrencyCodeProviderAdapter() as FiatCurrencyCodeProviderAPI
+            FiatCurrencyCodeProviderAdapter(fiatCurrencyPublisher: DIKit.resolve()) as FiatCurrencyCodeProviderAPI
         }
 
         factory {

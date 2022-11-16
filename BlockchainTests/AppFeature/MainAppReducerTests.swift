@@ -176,14 +176,15 @@ final class MainAppReducerTests: XCTestCase {
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 reactiveWallet: mockReactiveWallet,
+                recaptchaService: MockRecaptchaService(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
+                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
-                walletStateProvider: mockWalletStateProvider,
-                recaptchaService: MockRecaptchaService()
+                walletStateProvider: mockWalletStateProvider
             )
         )
     }
@@ -326,14 +327,15 @@ final class MainAppReducerTests: XCTestCase {
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 reactiveWallet: mockReactiveWallet,
+                recaptchaService: MockRecaptchaService(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
+                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: failingWalletService,
-                walletStateProvider: mockWalletStateProvider,
-                recaptchaService: MockRecaptchaService()
+                walletStateProvider: mockWalletStateProvider
             )
         )
 

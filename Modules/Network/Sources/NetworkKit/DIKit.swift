@@ -55,6 +55,14 @@ extension DependencyContainer {
 
         single { NetworkCommunicator.defaultCommunicator() as NetworkCommunicatorAPI }
 
+        // MARK: - Websocket
+
+        single(tag: DIKitContext.websocket) {
+            RequestBuilder(
+                config: Network.Config.websocketConfig
+            )
+        }
+
         // MARK: - Explorer
 
         single(tag: DIKitContext.explorer) {

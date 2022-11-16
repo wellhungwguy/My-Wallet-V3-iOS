@@ -8,7 +8,7 @@ import ToolKit
 final class AddressesRepository: DelegatedCustodyAddressesRepositoryAPI {
 
     private let client: AccountDataClientAPI
-    private let authenticationDataRepository: AuthenticationDataRepositoryAPI
+    private let authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     private let cachedValue: CachedValueNew<
         String,
         [DelegatedCustodyAddress],
@@ -17,7 +17,7 @@ final class AddressesRepository: DelegatedCustodyAddressesRepositoryAPI {
 
     init(
         client: AccountDataClientAPI,
-        authenticationDataRepository: AuthenticationDataRepositoryAPI
+        authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     ) {
         self.client = client
         self.authenticationDataRepository = authenticationDataRepository

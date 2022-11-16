@@ -9,7 +9,7 @@ extension SearchDomainClient {
 
     static let mock = SearchDomainClient(
         networkAdapter: NetworkAdapter(
-            communicator: EphemeralNetworkCommunicator()
+            communicator: EphemeralNetworkCommunicator(session: .shared)
         ),
         requestBuilder: RequestBuilder(
             config: Network.Config(

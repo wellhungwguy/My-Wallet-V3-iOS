@@ -192,7 +192,6 @@ public class RequestBuilder {
         )
     }
 
-
     // MARK: - PATCH
 
     public func patch(
