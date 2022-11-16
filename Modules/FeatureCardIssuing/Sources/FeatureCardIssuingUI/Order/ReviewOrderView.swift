@@ -102,7 +102,7 @@ struct ReviewOrderView: View {
                             send: CardOrderingAction.setLegalAccepted
                         )
                     )
-                    Text(LocalizationConstants.CardIssuing.Legal.Item.title)
+                    RichText(LocalizationConstants.CardIssuing.Legal.Item.title)
                         .foregroundColor(.WalletSemantic.body)
                         .typography(.caption1)
                         .onTapGesture {

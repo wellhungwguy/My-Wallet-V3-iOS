@@ -34,6 +34,7 @@ enum CardOrderingAction: Equatable, BindableAction {
     case fetchLegalItems
     case fetchLegalItemsResponse(Result<[LegalItem], NabuNetworkError>)
     case setLegalAccepted
+    case setLegalAcceptedResponse(Result<[LegalItem], NabuNetworkError>)
     case acceptLegalAction(AcceptLegalAction)
     case close(CardOrderingResult)
     case displayEligibleCountryList
@@ -199,12 +200,8 @@ let cardOrderingReducer: Reducer<
             )
         }
     ),
-    // swiftformat:disable closure_body_length
-    Reducer<
-        CardOrderingState,
-        CardOrderingAction,
-        CardOrderingEnvironment
-    > { state, action, env in
+    // swiftlint:disable closure_body_length
+    Reducer<CardOrderingState, CardOrderingAction, CardOrderingEnvironment> { state, action, env in
         switch action {
         case .createCard:
             state.orderProcessingState = .processing
@@ -343,11 +340,23 @@ let cardOrderingReducer: Reducer<
                 state.acceptLegalState.accepted = .loaded(next: false)
             } else {
                 if state.acceptLegalState.items.contains(where: { $0.acceptedVersion != $0.version }) {
-                    state.acceptLegalVisible = true
+                    return env
+                        .legalService
+                        .setAccepted(legalItems: state.acceptLegalState.items)
+                        .receive(on: env.mainQueue)
+                        .catchToEffect(CardOrderingAction.setLegalAcceptedResponse)
                 } else {
                     state.acceptLegalState.accepted = .loaded(next: true)
                 }
             }
+            return .none
+        case .setLegalAcceptedResponse(.success(let items)):
+            state.acceptLegalState.accepted = .loaded(next: true)
+            state.acceptLegalState.items = items
+            return .none
+        case .setLegalAcceptedResponse(.failure(let error)):
+            state.acceptLegalState.accepted = .loaded(next: false)
+            state.acceptLegalState.error = error
             return .none
         case .fetchFullName:
             return env.userInfoProvider.fullName

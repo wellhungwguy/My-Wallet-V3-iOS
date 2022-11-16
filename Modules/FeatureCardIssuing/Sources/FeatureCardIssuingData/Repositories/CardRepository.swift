@@ -211,7 +211,7 @@ final class CardRepository: CardRepositoryAPI {
     ) -> URL {
         let nameParam = name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "-"
         return URL(
-            string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)/\(nameParam)"
+            string: "\(base)\(Self.marqetaPath)?token=\(token)&last4=\(card.last4)&fullName=\(nameParam)&cardType=\(card.type.rawValue)"
         )!
     }
 }

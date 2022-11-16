@@ -72,8 +72,8 @@ extension ActivityRow {
 
     init(_ transaction: Card.Transaction, action: @escaping () -> Void) {
         merchant = transaction.displayTitle
-        amount = transaction.originalAmountDisplayString
-        counterAmount = transaction.counterAmountDisplayString
+        amount = transaction.displayString(for: transaction.displayAmount)
+        counterAmount = transaction.displayString(for: transaction.counterAmount)
         date = transaction.displayDate
         icon = transaction.icon
         tag = transaction.tag
@@ -83,24 +83,15 @@ extension ActivityRow {
 
 extension Card.Transaction {
 
-    var originalAmountDisplayString: String {
-        switch transactionType {
-        case .funding, .payment, .atmWithdrawal:
-            return "-" + originalAmount.displayString
-        case .refund, .chargeback, .paymentWithCashback:
-            return "+" + originalAmount.displayString
-        }
-    }
-
-    var counterAmountDisplayString: String {
-        guard let counterAmount else {
+    func displayString(for amount: Money?) -> String {
+        guard let amount else {
             return ""
         }
         switch transactionType {
         case .funding, .payment, .atmWithdrawal:
-            return "-" + counterAmount.displayString
+            return "-" + amount.displayString
         case .refund, .chargeback, .paymentWithCashback:
-            return "+" + counterAmount.displayString
+            return "+" + amount.displayString
         }
     }
 }
@@ -115,6 +106,7 @@ extension Card.Transaction {
         type: .payment,
         state: .completed,
         originalAmount: Money(value: "100.000000", symbol: "USD"),
+        displayAmount: Money(value: "100.000000", symbol: "USD"),
         fundingAmount: Money(value: "100.000000", symbol: "USD"),
         reversedAmount: Money(value: "0.000000", symbol: "USD"),
         clearedFundingAmount: Money(value: "0.000000", symbol: "USD"),
@@ -129,6 +121,7 @@ extension Card.Transaction {
         type: .payment,
         state: .pending,
         originalAmount: Money(value: "100.000000", symbol: "USD"),
+        displayAmount: Money(value: "100.000000", symbol: "USD"),
         fundingAmount: Money(value: "100.000000", symbol: "USD"),
         reversedAmount: Money(value: "100.000000", symbol: "USD"),
         clearedFundingAmount: Money(value: "100.000000", symbol: "USD"),
@@ -143,6 +136,7 @@ extension Card.Transaction {
         type: .payment,
         state: .declined,
         originalAmount: Money(value: "100.000000", symbol: "USD"),
+        displayAmount: Money(value: "100.000000", symbol: "USD"),
         fundingAmount: Money(value: "100.000000", symbol: "USD"),
         reversedAmount: Money(value: "100.000000", symbol: "USD"),
         clearedFundingAmount: Money(value: "100.000000", symbol: "USD"),
