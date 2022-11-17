@@ -29,6 +29,7 @@ extension Card {
             case transactionType = "type"
             case state
             case originalAmount
+            case displayAmount
             case fundingAmount
             case reversedAmount
             case counterAmount
@@ -45,6 +46,7 @@ extension Card {
         public let transactionType: TransactionType
         public let state: State
         public let originalAmount: Money
+        public let displayAmount: Money
         public let fundingAmount: Money
         public let reversedAmount: Money
         public let counterAmount: Money?
@@ -61,6 +63,7 @@ extension Card {
             type: TransactionType,
             state: State,
             originalAmount: Money,
+            displayAmount: Money,
             fundingAmount: Money,
             reversedAmount: Money,
             counterAmount: Money? = nil,
@@ -76,6 +79,7 @@ extension Card {
             transactionType = type
             self.state = state
             self.originalAmount = originalAmount
+            self.displayAmount = displayAmount
             self.fundingAmount = fundingAmount
             self.reversedAmount = reversedAmount
             self.counterAmount = counterAmount
@@ -99,6 +103,7 @@ extension Card.Transaction: Decodable {
         transactionType = try values.decode(TransactionType.self, forKey: .transactionType)
         state = try values.decode(State.self, forKey: .state)
         originalAmount = try values.decode(Money.self, forKey: .originalAmount)
+        displayAmount = try values.decode(Money.self, forKey: .displayAmount)
         fundingAmount = try values.decode(Money.self, forKey: .fundingAmount)
         reversedAmount = try values.decode(Money.self, forKey: .reversedAmount)
         counterAmount = try values.decodeIfPresent(Money.self, forKey: .counterAmount)

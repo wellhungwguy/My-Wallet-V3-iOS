@@ -56,11 +56,11 @@ extension LocalizationConstants {
                 comment: "Card Issuing: Card Status Active"
             )
             static let terminated = NSLocalizedString(
-                "Terminated",
+                "Closed",
                 comment: "Card Issuing: Card Status Terminated"
             )
             static let suspended = NSLocalizedString(
-                "Locked",
+                "Suspended",
                 comment: "Card Issuing: Card Status Suspended"
             )
             static let unsupported = NSLocalizedString(
@@ -179,7 +179,7 @@ extension LocalizationConstants.CardIssuing {
 
             static let title = NSLocalizedString(
                 """
-                I understand and accept the terms and conditions of the Blockchain.com Visa Card Program, \
+                I understand and accept the [terms and conditions](#) of the Blockchain.com Visa Card Program, \
                 the Pathward Bank Cardholder Agreement, the Pathward Bank E-Sign Agreement and \
                 the Pathward Bank Privacy Policy. I also understand and accept that these terms operate in addition \
                 to the Blockchain.com Terms of Service and Blockchain.com Privacy Policy.
