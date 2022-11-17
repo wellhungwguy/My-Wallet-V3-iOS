@@ -8,6 +8,8 @@ extension DependencyContainer {
 
     public static var featureWalletConnectDomain = module {
 
+        factory { WalletConnectConsoleLogger() as WalletConnectConsoleLoggerAPI }
+
         factory { WalletConnectAccountProvider() as WalletConnectAccountProviderAPI }
 
         factory { WalletConnectAccountProvider() as WalletConnectPublicKeyProviderAPI }

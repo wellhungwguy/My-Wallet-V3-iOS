@@ -26,6 +26,7 @@ final class WalletConnectService {
     private let sessionRepository: SessionRepositoryAPI
     private let publicKeyProvider: WalletConnectPublicKeyProviderAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let walletConnectConsoleLogger: WalletConnectConsoleLoggerAPI
 
     private let featureFlagService: FeatureFlagsServiceAPI
 
@@ -36,15 +37,18 @@ final class WalletConnectService {
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
         sessionRepository: SessionRepositoryAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        walletConnectConsoleLogger: WalletConnectConsoleLoggerAPI = resolve()
     ) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.publicKeyProvider = publicKeyProvider
         self.sessionRepository = sessionRepository
         self.featureFlagService = featureFlagService
         self.enabledCurrenciesService = enabledCurrenciesService
+        self.walletConnectConsoleLogger = walletConnectConsoleLogger
         server = Server(delegate: self)
         configureServer()
+        disableConsoleLogsForDebugBuilds()
     }
 
     // MARK: - Private Methods
@@ -145,6 +149,10 @@ final class WalletConnectService {
             )
             .subscribe()
             .store(in: &cancellables)
+    }
+
+    private func disableConsoleLogsForDebugBuilds() {
+        walletConnectConsoleLogger.disableConsoleLogsForDebugBuilds()
     }
 
     private func addOrUpdateSession(session: Session) {
