@@ -26,7 +26,7 @@ final class CardService: CardServiceAPI {
         repository.fetchCards()
     }
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
         repository.fetchCard(with: id)
     }
 

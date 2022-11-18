@@ -502,7 +502,7 @@ struct MockServices: CardServiceAPI,
         .just([card])
     }
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
         .just(card)
     }
 
