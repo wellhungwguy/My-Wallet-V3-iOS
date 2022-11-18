@@ -164,6 +164,17 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         )
     }
 
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     func invalidateAccountBalance() {
         accountDetailsService.invalidateCache()
     }

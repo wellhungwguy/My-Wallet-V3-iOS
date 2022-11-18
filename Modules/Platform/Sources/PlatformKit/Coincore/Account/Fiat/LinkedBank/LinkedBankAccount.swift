@@ -100,4 +100,11 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     ) -> AnyPublisher<MoneyValuePair, Error> {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
+
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
+    }
 }

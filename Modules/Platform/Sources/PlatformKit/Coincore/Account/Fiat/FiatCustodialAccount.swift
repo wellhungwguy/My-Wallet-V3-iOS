@@ -59,6 +59,13 @@ final class FiatCustodialAccount: FiatAccount {
             .eraseError()
     }
 
+    var mainBalanceToDisplay: AnyPublisher<MoneyValue, Error> {
+        balances
+            .map(\.balance?.mainBalanceToDisplay)
+            .replaceNil(with: .zero(currency: currencyType))
+            .eraseError()
+    }
+
     var actionableBalance: AnyPublisher<MoneyValue, Error> {
         balance
     }
@@ -129,6 +136,17 @@ final class FiatCustodialAccount: FiatAccount {
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

@@ -118,6 +118,36 @@ extension AccountGroup {
             .eraseToAnyPublisher()
     }
 
+    public func fiatMainBalanceToDisplay(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        guard accounts.isNotEmpty else {
+            let logService: LogMessageServiceAPI = DIKit.resolve()
+            logService.logError(
+                message: "No accounts error - \(#function)",
+                properties: [
+                    "currency": fiatCurrency.code,
+                    "time": time.timestamp ?? ""
+                ]
+            )
+            return .failure(AccountGroupError.noAccounts)
+        }
+        return accounts
+            .chunks(ofCount: 100)
+            .map { accounts in
+                accounts
+                    .map { account in
+                        account.fiatMainBalanceToDisplay(fiatCurrency: fiatCurrency, at: time)
+                            .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
+                    }
+                    .zip()
+            }
+            .zip()
+            .tryMap { (balances: [[MoneyValue]]) -> MoneyValue in
+                try balances.flatMap { $0 }
+                    .reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            }
+            .eraseToAnyPublisher()
+    }
+
     public func balancePair(
         fiatCurrency: FiatCurrency,
         at time: PriceTime
@@ -140,6 +170,51 @@ extension AccountGroup {
                 accounts
                     .map { account in
                         account.balancePair(fiatCurrency: fiatCurrency, at: time)
+                            .replaceError(
+                                with: .zero(
+                                    baseCurrency: account.currencyType,
+                                    quoteCurrency: fiatCurrency.currencyType
+                                )
+                            )
+                    }
+                    .zip()
+            }
+            .zip()
+            .tryMap { (balancePairs: [[MoneyValuePair]]) in
+                try balancePairs.flatMap { $0 }
+                    .reduce(
+                        .zero(
+                            baseCurrency: currencyType,
+                            quoteCurrency: fiatCurrency.currencyType
+                        ),
+                        +
+                    )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        guard accounts.isNotEmpty else {
+            let logService: LogMessageServiceAPI = DIKit.resolve()
+            logService.logError(
+                message: "No accounts error - \(#function)",
+                properties: [
+                    "currency": fiatCurrency.code,
+                    "time": time.timestamp ?? ""
+                ]
+            )
+            return .failure(AccountGroupError.noAccounts)
+        }
+
+        return accounts
+            .chunks(ofCount: 100)
+            .map { accounts in
+                accounts
+                    .map { account in
+                        account.mainBalanceToDisplayPair(fiatCurrency: fiatCurrency, at: time)
                             .replaceError(
                                 with: .zero(
                                     baseCurrency: account.currencyType,

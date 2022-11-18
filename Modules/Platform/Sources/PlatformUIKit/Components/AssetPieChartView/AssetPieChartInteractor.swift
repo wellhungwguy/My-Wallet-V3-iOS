@@ -39,7 +39,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 fiatCurrency,
                 app.modePublisher().asObservable()
             )
-            .flatMapLatest { [coincore] _, fiatCurrency, appMode -> Observable<AssetPieChart.State.Interaction> in
+            .flatMapLatest { [coincore, app] _, fiatCurrency, appMode -> Observable<AssetPieChart.State.Interaction> in
                 guard appMode != .pkw else {
                     return Observable.just(.loaded(next: []))
                 }
@@ -49,7 +49,13 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                         .accountGroup(filter: .allExcludingExchange)
                         .compactMap({ $0 })
                         .flatMap { accountGroup in
-                            accountGroup.balancePair(fiatCurrency: fiatCurrency)
+                            if app.remoteConfiguration.yes(
+                                if: blockchain.app.configuration.ui.payments.improvements.wallet.balances.is.enabled
+                            ) {
+                                return accountGroup.mainBalanceToDisplayPair(fiatCurrency: fiatCurrency)
+                            } else {
+                                return accountGroup.balancePair(fiatCurrency: fiatCurrency)
+                            }
                         }
                         .asObservable()
                 }
@@ -57,8 +63,15 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                     .accountGroup(filter: .allExcludingExchange)
                     .compactMap({ $0 })
                     .flatMap { accountGroup in
-                        accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
-                            .map { MoneyValuePair(base: $0, quote: $0) }
+                        if app.remoteConfiguration.yes(
+                            if: blockchain.app.configuration.ui.payments.improvements.wallet.balances.is.enabled
+                        ) {
+                            return accountGroup.fiatMainBalanceToDisplay(fiatCurrency: fiatCurrency)
+                                .map { MoneyValuePair(base: $0, quote: $0) }
+                        } else {
+                            return accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
+                                .map { MoneyValuePair(base: $0, quote: $0) }
+                        }
                     }
                     .asObservable()
 

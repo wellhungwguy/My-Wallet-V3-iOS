@@ -80,6 +80,7 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
+        .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "Modules/BIND"),
         .package(path: "Modules/Checkout")
     ],
@@ -131,6 +132,7 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "RIBs", package: "RIBs"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxDataSources", package: "RxDataSources"),

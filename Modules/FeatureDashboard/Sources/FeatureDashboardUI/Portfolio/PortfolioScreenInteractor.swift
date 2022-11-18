@@ -85,18 +85,35 @@ public final class PortfolioScreenInteractor {
                                 return .just(false)
                                     .eraseToAnyPublisher()
                             }
-                            return group
-                                .balance
-                                .combineLatest(!group.hasSmallBalance())
-                                .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
-                                    let appMode = self?.app.currentMode
-                                    if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
-                                        return .just(true)
-                                    } else {
-                                        return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)
+                            if app.remoteConfiguration.yes(
+                                if: blockchain.app.configuration.ui.payments.improvements.assets.balances.is.enabled
+                            ) {
+                                return group
+                                    .mainBalanceToDisplay
+                                    .combineLatest(!group.hasSmallMainBalanceToDisplay())
+                                    .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
+                                        let appMode = self?.app.currentMode
+                                        if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
+                                            return .just(true)
+                                        } else {
+                                            return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)
+                                        }
                                     }
-                                }
-                                .eraseError()
+                                    .eraseError()
+                            } else {
+                                return group
+                                    .balance
+                                    .combineLatest(!group.hasSmallBalance())
+                                    .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
+                                        let appMode = self?.app.currentMode
+                                        if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
+                                            return .just(true)
+                                        } else {
+                                            return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)
+                                        }
+                                    }
+                                    .eraseError()
+                            }
                         }
                         .map { hasPositiveDisplayableBalance -> CurrencyBalance in
                             (currency, hasPositiveDisplayableBalance)

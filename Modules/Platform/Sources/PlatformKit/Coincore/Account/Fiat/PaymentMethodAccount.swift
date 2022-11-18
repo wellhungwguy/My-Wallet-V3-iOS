@@ -87,6 +87,17 @@ public final class PaymentMethodAccount: FiatAccount {
         )
     }
 
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     public func invalidateAccountBalance() {
         // NO-OP
     }

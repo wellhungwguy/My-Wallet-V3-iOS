@@ -111,6 +111,17 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
         )
     }
 
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     public func invalidateAccountBalance() {
         earn.invalidateBalances()
     }
@@ -126,7 +137,8 @@ extension CustodialAccountBalance {
             currency: balance.currencyType,
             available: balance.moneyValue,
             withdrawable: (try? balance.moneyValue - locked).or(zero),
-            pending: (account.pendingDeposit?.moneyValue).or(zero)
+            pending: (account.pendingDeposit?.moneyValue).or(zero),
+            mainBalanceToDisplay: balance.moneyValue
         )
     }
 }

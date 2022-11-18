@@ -286,6 +286,17 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         )
     }
 
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     func invalidateAccountBalance() {
         erc20TokenAccountsRepository.invalidateCache(for: ethereumAddress, network: network.networkConfig)
     }

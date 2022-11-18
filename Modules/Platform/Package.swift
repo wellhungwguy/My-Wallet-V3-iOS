@@ -66,7 +66,6 @@ let package = Package(
         .package(path: "../FeatureCardPayment"),
         .package(path: "../FeatureForm"),
         .package(path: "../FeatureOpenBanking"),
-        .package(path: "../FeatureWithdrawalLocks"),
         .package(path: "../FeatureStaking"),
         .package(path: "../Localization"),
         .package(path: "../Money"),
@@ -136,7 +135,6 @@ let package = Package(
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "BlockchainComponentLibrary", package: "BlockchainComponentLibrary"),
                 .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
-                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
                 .product(name: "FeatureCardPaymentDomain", package: "FeatureCardPayment")
             ],
             resources: [

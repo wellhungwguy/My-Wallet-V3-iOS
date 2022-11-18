@@ -182,6 +182,17 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
         )
     }
 
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     func updateLabel(_ newLabel: String) -> Completable {
         // TODO: @native-wallet allow BTC accounts to be renamed.
         .empty()

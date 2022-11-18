@@ -176,6 +176,17 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         )
     }
 
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
     private func canPerformInterestWithdraw() -> AnyPublisher<Bool, Never> {
         isInterestWithdrawAndDepositEnabled.setFailureType(to: Error.self)
             .zip(actionableBalance.map(\.isPositive))

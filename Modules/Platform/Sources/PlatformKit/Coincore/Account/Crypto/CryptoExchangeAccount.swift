@@ -92,6 +92,14 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        /// Exchange API does not return a balance.
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
+    }
+
     public func invalidateAccountBalance() {
         // NO-OP
     }

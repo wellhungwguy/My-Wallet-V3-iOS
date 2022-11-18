@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-import FeatureWithdrawalLocksUI
 import PlatformKit
 import RIBs
 import RxCocoa

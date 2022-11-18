@@ -42,6 +42,13 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         .just(.zero(baseCurrency: asset.currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        .just(.zero(baseCurrency: asset.currencyType, quoteCurrency: fiatCurrency.currencyType))
+    }
+
     func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         .just(true)
     }
