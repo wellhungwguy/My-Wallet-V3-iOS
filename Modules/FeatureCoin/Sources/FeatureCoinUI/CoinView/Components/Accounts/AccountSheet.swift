@@ -45,18 +45,10 @@ struct AccountSheet: View {
             }
             .padding([.leading, .trailing])
             Group {
-                if let fiat = account.fiat, let crypto = account.crypto {
-                    BalanceSectionHeader(
-                        title: fiat.displayString,
-                        subtitle: crypto.displayString
-                    )
-                } else {
-                    BalanceSectionHeader(
-                        title: "......",
-                        subtitle: "............"
-                    )
-                    .redacted(reason: .placeholder)
-                }
+                BalanceSectionHeader(
+                    title: account.fiat?.displayString ?? "",
+                    subtitle: account.crypto?.displayString ?? ""
+                )
             }
             .padding([.top, .bottom], 8.pt)
             let resolved = isNotVerified && account.isPrivateKey
