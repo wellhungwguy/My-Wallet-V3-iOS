@@ -1093,6 +1093,7 @@ blockchain:
 		+ blockchain.ux.type.story
 			account:
 			+ blockchain.db.collection
+			+ blockchain.ux.type.analytics.privacy.policy.obfuscate
 			+ blockchain.ux.type.story
 				activity:
 				+ blockchain.ux.type.action
@@ -1917,6 +1918,17 @@ blockchain:
 					source:
 						file:
 						line:
+				privacy:
+					policy:
+						exclude:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
+						include:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
+						obfuscate:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:

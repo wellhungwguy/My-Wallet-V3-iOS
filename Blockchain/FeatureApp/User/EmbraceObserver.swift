@@ -29,22 +29,27 @@ class EmbraceObserver: Client.Observer {
             }
             .store(in: &bag)
 
-        app.on(blockchain.ux.type.analytics.state).receive(on: DispatchQueue.main).sink { [embrace] event in
-            embrace.logBreadcrumb(withMessage: event.reference.string)
-        }
-        .store(in: &bag)
+        app.on(blockchain.ux.type.analytics.state)
+            .receive(on: DispatchQueue.main)
+            .sink { [embrace] event in
+                embrace.logBreadcrumb(withMessage: event.reference.sanitised().string)
+            }
+            .store(in: &bag)
 
-        app.on(blockchain.ux.type.analytics.event).receive(on: DispatchQueue.main).sink { [embrace] event in
-            embrace.logMessage(
-                event.reference.string,
-                with: .info,
-                properties: event.context.dictionary.mapKeysAndValues(
-                    key: { key in key.string.prefix(128).string },
-                    value: { value in value.description.prefix(256).string }
+        app.on(blockchain.ux.type.analytics.event)
+            .receive(on: DispatchQueue.main)
+            .sink { [embrace] event in
+                guard event.tag.isNot(blockchain.ux.type.analytics.state) else { return }
+                embrace.logMessage(
+                    event.reference.sanitised().string,
+                    with: .info,
+                    properties: event.context.sanitised().dictionary.mapKeysAndValues(
+                        key: { key in key.string.prefix(128).string },
+                        value: { value in value.description.prefix(256).string }
+                    )
                 )
-            )
-        }
-        .store(in: &bag)
+            }
+            .store(in: &bag)
 
         app.on(blockchain.ux.type.analytics.error).receive(on: DispatchQueue.main).sink { [embrace] event in
             struct E: Error { let message: String }

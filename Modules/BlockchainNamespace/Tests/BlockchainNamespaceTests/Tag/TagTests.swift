@@ -157,4 +157,41 @@ final class TagBlockchainSchemaTests: XCTestCase {
             XCTAssertEqual(ref.tag.id, "blockchain.ux.transaction.enter.amount.button.confirm.event.select")
         }
     }
+
+    func test_privacy_policy() throws {
+
+        do {
+            let context: Tag.Context = [
+                blockchain.ux.type.analytics.privacy.policy.obfuscate: "obfuscate",
+                blockchain.ux.type.analytics.privacy.policy.exclude: "exclude",
+                blockchain.ux.type.analytics.privacy.policy.include: "include"
+            ]
+
+            XCTAssertEqual(context.sanitised(), [
+                blockchain.ux.type.analytics.privacy.policy.obfuscate: "******",
+                blockchain.ux.type.analytics.privacy.policy.include: "include"
+            ])
+        }
+
+        do {
+
+            // blockchain.ux.asset.account -> blockchain.ux.type.analytics.privacy.policy.obfuscate
+
+            XCTAssertTrue(blockchain.ux.asset.account[].privacyPolicy.is(blockchain.ux.type.analytics.privacy.policy.obfuscate))
+            XCTAssertTrue(blockchain.ux.asset.account.id[].privacyPolicy.is(blockchain.ux.type.analytics.privacy.policy.obfuscate))
+            XCTAssertTrue(blockchain.ux.asset.account.rewards.deposit[].privacyPolicy.is(blockchain.ux.type.analytics.privacy.policy.obfuscate))
+
+            let context: Tag.Context = [
+                blockchain.ux.asset.account.id: "children are obfuscated",
+                blockchain.ux.asset.account.rewards.deposit: "children are obfuscated"
+            ]
+
+            XCTAssertEqual(
+                context.sanitised(), [
+                    blockchain.ux.asset.account.id: "******",
+                    blockchain.ux.asset.account.rewards.deposit: "******"
+                ]
+            )
+        }
+    }
 }
