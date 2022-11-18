@@ -26,6 +26,7 @@ public struct Tag {
     @inlinable public var children: [Name: Tag] { lazy(\.children) }
     @inlinable public var ownType: [ID: Tag] { lazy(\.ownType) }
     @inlinable public var type: [ID: Tag] { lazy(\.type) }
+    @inlinable public var privacyPolicy: Tag { lazy(\.privacyPolicy) }
     @inlinable public var lineage: UnfoldFirstSequence<Tag> { lazy(\.lineage) }
 
     private var lazy = Lazy()
@@ -84,6 +85,7 @@ extension Tag {
         @usableFromInline lazy var ownType: [ID: Tag] = Tag.ownType(my)
         @usableFromInline lazy var ownChildren: [Name: Tag] = Tag.ownChildren(of: my)
         @usableFromInline lazy var type: [ID: Tag] = Tag.type(of: my)
+        @usableFromInline lazy var privacyPolicy: Tag = Tag.privacyPolicy(of: my)
         @usableFromInline lazy var lineage: UnfoldFirstSequence<Tag> = Tag.lineage(of: my)
 
         @usableFromInline lazy var template: Tag.Reference.Template = .init(my)
@@ -264,6 +266,36 @@ extension Tag {
     static func isLeafDescendant(_ tag: Tag) -> Bool {
         guard let parent = tag.parent else { return false }
         return parent.isLeafDescendant || parent.isLeaf
+    }
+
+    static func privacyPolicy(of tag: Tag) -> Tag {
+        tag.lineage.first(where: { tag in tag.is(blockchain.ux.type.analytics.privacy.policy) })
+            ?? blockchain.ux.type.analytics.privacy.policy.include[]
+    }
+}
+
+extension Tag {
+
+    public var analytics: Analytics { Analytics(privacyPolicy) }
+
+    public struct Analytics {
+
+        let policy: Tag
+        init(_ policy: Tag) {
+            self.policy = policy
+        }
+
+        public var isIncluded: Bool {
+            policy.is(blockchain.ux.type.analytics.privacy.policy.include)
+        }
+
+        public var isExcluded: Bool {
+            policy.is(blockchain.ux.type.analytics.privacy.policy.exclude)
+        }
+
+        public var isObfuscated: Bool {
+            policy.is(blockchain.ux.type.analytics.privacy.policy.obfuscate)
+        }
     }
 }
 

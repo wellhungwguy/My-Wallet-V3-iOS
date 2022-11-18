@@ -2570,14 +2570,7 @@ public extension I_blockchain_type {
 public final class L_blockchain_type_currency: L, I_blockchain_type_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.type.currency", comment: "") }
 }
-public protocol I_blockchain_type_currency: I {}
-public extension I_blockchain_type_currency {
-	var `code`: L_blockchain_type_currency_code { .init("\(__).code") }
-}
-public final class L_blockchain_type_currency_code: L, I_blockchain_type_currency_code {
-	public override class var localized: String { NSLocalizedString("blockchain.type.currency.code", comment: "") }
-}
-public protocol I_blockchain_type_currency_code: I_blockchain_db_type_string {}
+public protocol I_blockchain_type_currency: I_blockchain_db_type_string {}
 public final class L_blockchain_type_key: L, I_blockchain_type_key {
 	public override class var localized: String { NSLocalizedString("blockchain.type.key", comment: "") }
 }
@@ -2613,8 +2606,6 @@ public protocol I_blockchain_type_money: I {}
 public extension I_blockchain_type_money {
 	var `amount`: L_blockchain_type_money_amount { .init("\(__).amount") }
 	var `currency`: L_blockchain_type_money_currency { .init("\(__).currency") }
-	var `display`: L_blockchain_type_money_display { .init("\(__).display") }
-	var `precision`: L_blockchain_type_money_precision { .init("\(__).precision") }
 }
 public final class L_blockchain_type_money_amount: L, I_blockchain_type_money_amount {
 	public override class var localized: String { NSLocalizedString("blockchain.type.money.amount", comment: "") }
@@ -2624,43 +2615,6 @@ public final class L_blockchain_type_money_currency: L, I_blockchain_type_money_
 	public override class var localized: String { NSLocalizedString("blockchain.type.money.currency", comment: "") }
 }
 public protocol I_blockchain_type_money_currency: I_blockchain_type_currency {}
-public final class L_blockchain_type_money_display: L, I_blockchain_type_money_display {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display", comment: "") }
-}
-public protocol I_blockchain_type_money_display: I {}
-public extension I_blockchain_type_money_display {
-	var `code`: L_blockchain_type_money_display_code { .init("\(__).code") }
-	var `string`: L_blockchain_type_money_display_string { .init("\(__).string") }
-	var `symbol`: L_blockchain_type_money_display_symbol { .init("\(__).symbol") }
-}
-public final class L_blockchain_type_money_display_code: L, I_blockchain_type_money_display_code {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.code", comment: "") }
-}
-public protocol I_blockchain_type_money_display_code: I_blockchain_db_type_string {}
-public final class L_blockchain_type_money_display_string: L, I_blockchain_type_money_display_string {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string", comment: "") }
-}
-public protocol I_blockchain_type_money_display_string: I {}
-public extension I_blockchain_type_money_display_string {
-	var `major`: L_blockchain_type_money_display_string_major { .init("\(__).major") }
-	var `minor`: L_blockchain_type_money_display_string_minor { .init("\(__).minor") }
-}
-public final class L_blockchain_type_money_display_string_major: L, I_blockchain_type_money_display_string_major {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string.major", comment: "") }
-}
-public protocol I_blockchain_type_money_display_string_major: I_blockchain_db_type_string {}
-public final class L_blockchain_type_money_display_string_minor: L, I_blockchain_type_money_display_string_minor {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string.minor", comment: "") }
-}
-public protocol I_blockchain_type_money_display_string_minor: I_blockchain_db_type_string {}
-public final class L_blockchain_type_money_display_symbol: L, I_blockchain_type_money_display_symbol {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.symbol", comment: "") }
-}
-public protocol I_blockchain_type_money_display_symbol: I_blockchain_db_type_string {}
-public final class L_blockchain_type_money_precision: L, I_blockchain_type_money_precision {
-	public override class var localized: String { NSLocalizedString("blockchain.type.money.precision", comment: "") }
-}
-public protocol I_blockchain_type_money_precision: I_blockchain_db_type_integer {}
 public final class L_blockchain_ui: L, I_blockchain_ui {
 	public override class var localized: String { NSLocalizedString("blockchain.ui", comment: "") }
 }
@@ -6391,8 +6345,27 @@ public final class L_blockchain_ux_transaction_action_show: L, I_blockchain_ux_t
 }
 public protocol I_blockchain_ux_transaction_action_show: I {}
 public extension I_blockchain_ux_transaction_action_show {
+	var `recurring`: L_blockchain_ux_transaction_action_show_recurring { .init("\(__).recurring") }
 	var `wire`: L_blockchain_ux_transaction_action_show_wire { .init("\(__).wire") }
 }
+public final class L_blockchain_ux_transaction_action_show_recurring: L, I_blockchain_ux_transaction_action_show_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring: I {}
+public extension I_blockchain_ux_transaction_action_show_recurring {
+	var `buy`: L_blockchain_ux_transaction_action_show_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_action_show_recurring_buy: L, I_blockchain_ux_transaction_action_show_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring_buy: I {}
+public extension I_blockchain_ux_transaction_action_show_recurring_buy {
+	var `unavailable`: L_blockchain_ux_transaction_action_show_recurring_buy_unavailable { .init("\(__).unavailable") }
+}
+public final class L_blockchain_ux_transaction_action_show_recurring_buy_unavailable: L, I_blockchain_ux_transaction_action_show_recurring_buy_unavailable {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring.buy.unavailable", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring_buy_unavailable: I {}
 public final class L_blockchain_ux_transaction_action_show_wire: L, I_blockchain_ux_transaction_action_show_wire {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.wire", comment: "") }
 }
@@ -7575,6 +7548,7 @@ public extension I_blockchain_ux_type_analytics {
 	var `current`: L_blockchain_ux_type_analytics_current { .init("\(__).current") }
 	var `error`: L_blockchain_ux_type_analytics_error { .init("\(__).error") }
 	var `event`: L_blockchain_ux_type_analytics_event { .init("\(__).event") }
+	var `privacy`: L_blockchain_ux_type_analytics_privacy { .init("\(__).privacy") }
 	var `state`: L_blockchain_ux_type_analytics_state { .init("\(__).state") }
 }
 public final class L_blockchain_ux_type_analytics_action: L, I_blockchain_ux_type_analytics_action {
@@ -7680,6 +7654,34 @@ public final class L_blockchain_ux_type_analytics_event_source_line: L, I_blockc
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.event.source.line", comment: "") }
 }
 public protocol I_blockchain_ux_type_analytics_event_source_line: I {}
+public final class L_blockchain_ux_type_analytics_privacy: L, I_blockchain_ux_type_analytics_privacy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.privacy", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_privacy: I {}
+public extension I_blockchain_ux_type_analytics_privacy {
+	var `policy`: L_blockchain_ux_type_analytics_privacy_policy { .init("\(__).policy") }
+}
+public final class L_blockchain_ux_type_analytics_privacy_policy: L, I_blockchain_ux_type_analytics_privacy_policy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.privacy.policy", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_privacy_policy: I {}
+public extension I_blockchain_ux_type_analytics_privacy_policy {
+	var `exclude`: L_blockchain_ux_type_analytics_privacy_policy_exclude { .init("\(__).exclude") }
+	var `include`: L_blockchain_ux_type_analytics_privacy_policy_include { .init("\(__).include") }
+	var `obfuscate`: L_blockchain_ux_type_analytics_privacy_policy_obfuscate { .init("\(__).obfuscate") }
+}
+public final class L_blockchain_ux_type_analytics_privacy_policy_exclude: L, I_blockchain_ux_type_analytics_privacy_policy_exclude {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.privacy.policy.exclude", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_privacy_policy_exclude: I_blockchain_ux_type_analytics_privacy_policy {}
+public final class L_blockchain_ux_type_analytics_privacy_policy_include: L, I_blockchain_ux_type_analytics_privacy_policy_include {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.privacy.policy.include", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_privacy_policy_include: I_blockchain_ux_type_analytics_privacy_policy {}
+public final class L_blockchain_ux_type_analytics_privacy_policy_obfuscate: L, I_blockchain_ux_type_analytics_privacy_policy_obfuscate {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.privacy.policy.obfuscate", comment: "") }
+}
+public protocol I_blockchain_ux_type_analytics_privacy_policy_obfuscate: I_blockchain_ux_type_analytics_privacy_policy {}
 public final class L_blockchain_ux_type_analytics_state: L, I_blockchain_ux_type_analytics_state {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.type.analytics.state", comment: "") }
 }

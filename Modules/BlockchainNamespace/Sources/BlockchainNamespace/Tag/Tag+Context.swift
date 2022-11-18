@@ -72,6 +72,28 @@ extension Tag.Context {
 
 extension Tag.Context {
 
+    public func sanitised() -> Tag.Context {
+        reduce(into: [:]) { a, e in
+            if e.key.tag.analytics.isExcluded {
+                return
+            } else if e.key.tag.analytics.isObfuscated {
+                a[e.key] = "******"
+            } else if e.key.tag.analytics.isIncluded {
+                a[e.key] = e.value
+            }
+        }
+    }
+}
+
+extension Tag.Reference {
+
+    public func sanitised() -> Tag.Reference {
+        key(to: context.sanitised())
+    }
+}
+
+extension Tag.Context {
+
     public static func == (lhs: Tag.Context, rhs: Tag.Context) -> Bool { lhs.dictionary == rhs.dictionary }
     public static func == (lhs: Tag.Context, rhs: [L: Wrapped.Value]) -> Bool { lhs == Tag.Context(rhs) }
     public static func == (lhs: Tag.Context, rhs: [Tag: Wrapped.Value]) -> Bool { lhs == Tag.Context(rhs) }

@@ -474,6 +474,9 @@ extension TransactionEngine {
     }
 
     public func defaultValidateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        guard pendingTransaction.amount.isNotZero else {
+            return .just(pendingTransaction)
+        }
         guard let sourceAccount, transactionTarget != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
