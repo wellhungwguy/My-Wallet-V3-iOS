@@ -81,9 +81,6 @@ let loggedInReducer = Reducer<
     switch action {
     case .start(let context):
         return .merge(
-            .fireAndForget {
-                environment.app.post(event: blockchain.ux.user.event.signed.in)
-            },
             environment.unifiedActivityRepository
                 .connect
                 .receive(on: environment.mainQueue)
@@ -106,9 +103,6 @@ let loggedInReducer = Reducer<
                 .fireAndForget(),
             .fireAndForget {
                 NotificationCenter.default.post(name: .login, object: nil)
-                environment.analyticsRecorder.record(
-                    event: AnalyticsEvents.New.Navigation.signedIn
-                )
             },
             handleStartup(
                 context: context

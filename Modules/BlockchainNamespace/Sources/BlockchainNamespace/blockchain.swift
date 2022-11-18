@@ -5974,8 +5974,27 @@ public final class L_blockchain_ux_transaction_action_show: L, I_blockchain_ux_t
 }
 public protocol I_blockchain_ux_transaction_action_show: I {}
 public extension I_blockchain_ux_transaction_action_show {
+	var `recurring`: L_blockchain_ux_transaction_action_show_recurring { .init("\(__).recurring") }
 	var `wire`: L_blockchain_ux_transaction_action_show_wire { .init("\(__).wire") }
 }
+public final class L_blockchain_ux_transaction_action_show_recurring: L, I_blockchain_ux_transaction_action_show_recurring {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring: I {}
+public extension I_blockchain_ux_transaction_action_show_recurring {
+	var `buy`: L_blockchain_ux_transaction_action_show_recurring_buy { .init("\(__).buy") }
+}
+public final class L_blockchain_ux_transaction_action_show_recurring_buy: L, I_blockchain_ux_transaction_action_show_recurring_buy {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring.buy", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring_buy: I {}
+public extension I_blockchain_ux_transaction_action_show_recurring_buy {
+	var `unavailable`: L_blockchain_ux_transaction_action_show_recurring_buy_unavailable { .init("\(__).unavailable") }
+}
+public final class L_blockchain_ux_transaction_action_show_recurring_buy_unavailable: L, I_blockchain_ux_transaction_action_show_recurring_buy_unavailable {
+	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.recurring.buy.unavailable", comment: "") }
+}
+public protocol I_blockchain_ux_transaction_action_show_recurring_buy_unavailable: I {}
 public final class L_blockchain_ux_transaction_action_show_wire: L, I_blockchain_ux_transaction_action_show_wire {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.transaction.action.show.wire", comment: "") }
 }
@@ -7780,7 +7799,6 @@ public final class L_blockchain_ux_user_event: L, I_blockchain_ux_user_event {
 public protocol I_blockchain_ux_user_event: I {}
 public extension I_blockchain_ux_user_event {
 	var `authenticated`: L_blockchain_ux_user_event_authenticated { .init("\(__).authenticated") }
-	var `signed`: L_blockchain_ux_user_event_signed { .init("\(__).signed") }
 }
 public final class L_blockchain_ux_user_event_authenticated: L, I_blockchain_ux_user_event_authenticated {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.authenticated", comment: "") }
@@ -7793,17 +7811,6 @@ public final class L_blockchain_ux_user_event_authenticated_pin: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.authenticated.pin", comment: "") }
 }
 public protocol I_blockchain_ux_user_event_authenticated_pin: I_blockchain_ux_type_analytics_event {}
-public final class L_blockchain_ux_user_event_signed: L, I_blockchain_ux_user_event_signed {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.signed", comment: "") }
-}
-public protocol I_blockchain_ux_user_event_signed: I {}
-public extension I_blockchain_ux_user_event_signed {
-	var `in`: L_blockchain_ux_user_event_signed_in { .init("\(__).in") }
-}
-public final class L_blockchain_ux_user_event_signed_in: L, I_blockchain_ux_user_event_signed_in {
-	public override class var localized: String { NSLocalizedString("blockchain.ux.user.event.signed.in", comment: "") }
-}
-public protocol I_blockchain_ux_user_event_signed_in: I_blockchain_ux_type_analytics_event {}
 public final class L_blockchain_ux_user_experiments: L, I_blockchain_ux_user_experiments {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.user.experiments", comment: "") }
 }

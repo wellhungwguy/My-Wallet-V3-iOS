@@ -495,13 +495,6 @@ final class MainAppReducerTests: XCTestCase {
         assertDidPerformSignIn()
         logout()
 
-        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
-        XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(
-            mockAnalyticsRecorder.recordEventCalled.event!.name,
-            AnalyticsEvents.New.Navigation.signedOut.name
-        )
-
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
 
@@ -534,12 +527,6 @@ final class MainAppReducerTests: XCTestCase {
             )
         }
 
-        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
-        XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(
-            mockAnalyticsRecorder.recordEventCalled.event!.name,
-            AnalyticsEvents.New.Navigation.signedOut.name
-        )
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
