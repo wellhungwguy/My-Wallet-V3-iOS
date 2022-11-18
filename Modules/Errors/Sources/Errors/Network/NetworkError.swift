@@ -43,6 +43,10 @@ extension NetworkError: Equatable {
 
 extension NetworkError: CustomStringConvertible {
 
+    public var label: String {
+        Mirror(reflecting: self).children.first?.label ?? String(describing: self)
+    }
+
     public var endpoint: String? {
         request?.url?.path
     }
@@ -85,7 +89,14 @@ extension NetworkError: CustomStringConvertible {
         case .authentication(let error), .urlError(let error as Error):
             return error.localizedDescription
         case .payloadError(let error as Error, _), .serverError(let error as Error):
-            return String(describing: error)
+            #if DEBUG
+            return """
+            request: \(endpoint ?? "nil")
+            error: \(error)
+            """
+            #else
+            return label
+            #endif
         case .rawServerError(let error):
             do {
                 guard let payload = error.payload else { throw error }

@@ -111,6 +111,7 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
              .deposit,
              .interestTransfer,
              .interestWithdraw,
+             .stakingDeposit,
              .sell,
              .sign,
              .swap,

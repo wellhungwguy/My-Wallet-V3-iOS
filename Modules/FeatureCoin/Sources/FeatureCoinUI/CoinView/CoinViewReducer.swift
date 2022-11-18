@@ -151,9 +151,7 @@ public let coinViewReducer = Reducer<
             }
             switch ref.tag {
             case blockchain.ux.asset.account.sheet:
-                if account.isComingSoon {
-                    state.comingSoonAccount = account
-                } else if environment.explainerService.isAccepted(account) {
+                if environment.explainerService.isAccepted(account) {
                     state.account = account
                 } else {
                     return .fireAndForget {

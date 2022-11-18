@@ -154,6 +154,7 @@ public final class CoinViewObserver: Client.Observer {
             rewardsDeposit,
             rewardsSummary,
             rewardsWithdraw,
+            stakingDeposit,
             select,
             sell,
             send,
@@ -174,8 +175,10 @@ public final class CoinViewObserver: Client.Observer {
         }
     }
 
-    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event async throws in
-        let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
+    lazy var select = app.on(blockchain.ux.asset.select.then.enter.into) { @MainActor [unowned self] event async throws in
+        guard let action = event.action else { return }
+        let destination = try action.data.decode(Tag.Reference.self)
+        let cryptoCurrency = try destination.context.decode(blockchain.ux.asset.id) as CryptoCurrency
         let origin = try event.context.decode(blockchain.ux.asset.select.origin) as String
         app.state.transaction { state in
             state.set(blockchain.ux.asset.id, to: cryptoCurrency.code)
@@ -239,6 +242,16 @@ public final class CoinViewObserver: Client.Observer {
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
         let controller = InterestAccountDetailsViewController(presenter: presenter)
         topViewController.topMostViewController?.present(controller, animated: true, completion: nil)
+    }
+
+    lazy var stakingDeposit = app.on(blockchain.ux.asset.account.staking.deposit) { @MainActor [unowned self] event in
+        switch try await cryptoAccount(from: event) {
+        case let account as CryptoStakingAccount:
+            await transactionsRouter.presentTransactionFlow(to: .stakingDeposit(account))
+        default:
+            throw blockchain.ux.asset.account.error[]
+                .error(message: "Transferring to rewards requires CryptoInterestAccount")
+        }
     }
 
     lazy var exchangeWithdraw = app.on(blockchain.ux.asset.account.exchange.withdraw) { @MainActor [unowned self] event in
@@ -370,6 +383,8 @@ extension FeatureCoinDomain.Account.Action {
             self = .rewards.deposit
         case .interestWithdraw:
             self = .rewards.withdraw
+        case .stakingDeposit:
+            self = .staking.deposit
         case .receive:
             self = .receive
         case .sell:

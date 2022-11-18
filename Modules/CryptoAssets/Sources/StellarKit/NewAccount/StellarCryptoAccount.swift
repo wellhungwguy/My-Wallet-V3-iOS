@@ -140,6 +140,9 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
+        case .stakingDeposit:
+            guard asset.supports(product: .stakingBalance) else { return .just(false) }
+            return isFunded
         case .sell, .swap:
             return hasPositiveDisplayableBalance
         }

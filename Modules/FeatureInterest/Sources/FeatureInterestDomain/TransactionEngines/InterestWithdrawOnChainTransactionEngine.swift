@@ -126,7 +126,8 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
                     maximumDaily: nil,
                     maximumAnnual: nil,
                     effectiveLimit: nil,
-                    suggestedUpgrade: nil
+                    suggestedUpgrade: nil,
+                    earn: nil
                 )
             )
         }

@@ -121,6 +121,14 @@ extension Heading {
         case 2: return .title2
         case 3: return .title3
         case 4: return .subheading
+        case 5: return .body1
+        case 6: return .body2
+        case 7: return .paragraph1
+        case 8: return .paragraph2
+        case 9: return .caption1
+        case 10: return .caption2
+        case 11: return .overline
+        case 12: return .micro
         case _: return .body1
         }
     }

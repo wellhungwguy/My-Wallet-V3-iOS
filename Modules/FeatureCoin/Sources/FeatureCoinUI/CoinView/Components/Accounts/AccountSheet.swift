@@ -102,7 +102,7 @@ extension Account.Snapshot {
         case .exchange:
             return [.exchange.withdraw, .exchange.deposit]
         case .staking:
-            return []
+            return [.staking.deposit, .activity]
         }
     }
 
@@ -110,6 +110,8 @@ extension Account.Snapshot {
         switch accountType {
         case .interest:
             return [.rewards.withdraw, .rewards.deposit, .rewards.summary]
+        case .staking:
+            return [.staking.deposit, .staking.summary]
         default:
             return []
         }

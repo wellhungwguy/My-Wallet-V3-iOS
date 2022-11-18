@@ -163,6 +163,9 @@ final class BitcoinCashCryptoAccount: BitcoinChainCryptoAccount {
              .withdraw,
              .interestWithdraw:
             return .just(false)
+        case .stakingDeposit:
+            guard asset.supports(product: .stakingBalance) else { return .just(false) }
+            return isFunded
         case .interestTransfer:
             return isInterestTransferAvailable
                 .flatMap { [isFunded] isEnabled in

@@ -542,12 +542,18 @@ extension Tag {
 extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
 
     public var description: String { id(\.id) }
-    public func key(to context: Tag.Context) -> Tag.Reference {
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)
     }
 
     public subscript() -> Tag {
         id[]
+    }
+
+    public func callAsFunction(
+        in context: Tag.Context = [:]
+    ) -> Tag.Reference {
+        key(to: context)
     }
 
     public func callAsFunction<Value>(

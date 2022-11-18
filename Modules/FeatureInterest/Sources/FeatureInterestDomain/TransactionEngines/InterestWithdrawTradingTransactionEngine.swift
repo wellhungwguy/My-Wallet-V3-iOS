@@ -129,7 +129,8 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
                     maximumDaily: nil,
                     maximumAnnual: nil,
                     effectiveLimit: nil,
-                    suggestedUpgrade: nil
+                    suggestedUpgrade: nil,
+                    earn: nil
                 )
             )
         }

@@ -10,17 +10,31 @@ extension DependencyContainer {
 
     public static var featureStakingDataKit = module {
 
-        single { () -> StakingAPIClient in
-            StakingAPIClientProvider.provideClient(
+        single(tag: EarnProduct.savings) { () -> EarnClient in
+            EarnClient(
+                product: "savings",
                 networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                 requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
             )
         }
 
-        single { () -> StakingBalanceRepositoryAPI in
-            let client: StakingAPIClient = DIKit.resolve()
-            return StakingBalanceRepository(
-                balanceProvider: client.getAllBalances
+        single(tag: EarnProduct.savings) { () -> EarnRepositoryAPI in
+            EarnRepository(
+                client: DIKit.resolve(tag: EarnProduct.savings)
+            )
+        }
+
+        single(tag: EarnProduct.staking) { () -> EarnClient in
+            EarnClient(
+                product: "staking",
+                networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                requestBuilder: DIKit.resolve(tag: DIKitContext.retail)
+            )
+        }
+
+        single(tag: EarnProduct.staking) { () -> EarnRepositoryAPI in
+            EarnRepository(
+                client: DIKit.resolve(tag: EarnProduct.staking)
             )
         }
     }

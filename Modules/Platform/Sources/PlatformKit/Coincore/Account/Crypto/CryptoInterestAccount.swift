@@ -153,6 +153,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         case .buy,
              .deposit,
              .interestTransfer,
+             .stakingDeposit,
              .receive,
              .sell,
              .send,

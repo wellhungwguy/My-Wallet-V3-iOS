@@ -35,7 +35,7 @@ public struct Account: Identifiable {
 
     /// `true` if the accountType is not fully supported
     public var isComingSoon: Bool {
-        accountType == .staking
+        false // accountType == .staking
     }
 
     public init(
@@ -146,6 +146,21 @@ extension Account.Action {
         title: L10n.Title.swap,
         description: L10n.Description.swap,
         icon: .walletSwap
+    )
+
+    public static let staking = (
+        deposit: Account.Action(
+            id: blockchain.ux.asset.account.staking.deposit,
+            title: L10n.Title.deposit,
+            description: L10n.Description.Staking.deposit,
+            icon: .walletDeposit
+        ),
+        summary: Account.Action(
+            id: blockchain.ux.asset.account.staking.summary,
+            title: L10n.Title.Rewards.summary,
+            description: L10n.Description.Staking.summary,
+            icon: .walletPercent
+        )
     )
 
     public static let rewards = (

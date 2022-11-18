@@ -33,7 +33,6 @@ public struct CoinViewState: Equatable {
         return action
     }
 
-    @BindableState public var comingSoonAccount: Account.Snapshot?
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
 

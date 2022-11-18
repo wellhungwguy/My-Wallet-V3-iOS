@@ -88,9 +88,13 @@ extension AppProtocol {
             }
         }
 
-        if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
-            state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+        on(blockchain.session.event.did.sign.in) { [state] _ in
+            if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
+                state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+            }
         }
+        .subscribe()
+        .store(withLifetimeOf: self)
     }
 }
 

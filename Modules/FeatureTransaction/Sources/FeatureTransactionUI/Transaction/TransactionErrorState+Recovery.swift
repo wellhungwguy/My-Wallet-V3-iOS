@@ -451,7 +451,8 @@ extension TransactionErrorState {
                 balance.displayString
             )
         case .send,
-             .interestTransfer:
+             .interestTransfer,
+             .stakingDeposit:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryMessage_send,
                 sourceCurrency.code,
@@ -496,7 +497,8 @@ extension TransactionErrorState {
                 minimum.displayString
             )
         case .send,
-             .interestTransfer:
+                .interestTransfer,
+                .stakingDeposit:
             text = String.localizedStringWithFormat(
                 Localization.belowMinimumLimitRecoveryMessage_send,
                 minimum.displayString
@@ -574,6 +576,7 @@ extension TransactionErrorState {
         case .receive,
              .interestTransfer,
              .interestWithdraw,
+             .stakingDeposit,
              .linkToDebitCard,
              .sign,
              .viewActivity:
@@ -620,6 +623,7 @@ extension TransactionErrorState {
         case .receive,
              .deposit,
              .interestTransfer,
+             .stakingDeposit,
              .linkToDebitCard,
              .interestWithdraw,
              .sign,
@@ -781,7 +785,7 @@ extension AssetAction {
         switch self {
         case .buy:
             return LocalizationConstants.WalletAction.Default.Buy.title
-        case .deposit:
+        case .deposit, .stakingDeposit:
             return LocalizationConstants.WalletAction.Default.Deposit.title
         case .interestTransfer:
             return LocalizationConstants.WalletAction.Default.Interest.title

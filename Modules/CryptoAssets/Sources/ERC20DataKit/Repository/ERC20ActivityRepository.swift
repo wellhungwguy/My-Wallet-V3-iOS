@@ -72,7 +72,7 @@ extension ERC20HistoricalTransaction {
         source: EthereumAddress
     ) {
         let createdAt: Date = Double(response.timestamp)
-            .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
+            .flatMap(Date.init(timeIntervalSince1970:)) ?? .distantPast
         let fromAddress = EthereumAddress(address: response.from, network: .ethereum)!
         let amount = CryptoValue.create(
             minor: response.value,

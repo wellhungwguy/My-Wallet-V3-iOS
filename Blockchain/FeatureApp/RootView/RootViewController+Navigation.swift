@@ -99,7 +99,9 @@ extension RootViewController {
         in context: Tag.Context
     ) throws -> some UIViewController {
         try UIHostingController(
-            rootView: siteMap.view(for: story, in: context)
+            rootView: siteMap.view(for: story.in(app), in: context)
+                .app(app)
+                .context(context)
                 .onAppear { [app] in
                     app.post(event: story, context: context)
                 }

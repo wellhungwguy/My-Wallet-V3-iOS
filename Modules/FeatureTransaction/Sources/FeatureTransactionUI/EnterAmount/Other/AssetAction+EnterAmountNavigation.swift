@@ -16,7 +16,8 @@ extension AssetAction {
              .viewActivity,
              .linkToDebitCard,
              .interestWithdraw,
-             .interestTransfer:
+             .interestTransfer,
+             .stakingDeposit:
             return true
         case .sign:
             return false

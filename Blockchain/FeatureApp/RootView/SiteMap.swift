@@ -1,6 +1,8 @@
 import BlockchainUI
 import FeatureAppUI
+import FeatureStakingUI
 
+@MainActor
 struct SiteMap {
 
     let app: AppProtocol
@@ -27,6 +29,24 @@ struct SiteMap {
                     app.post(value: true, of: story.article.plain.navigation.bar.button.close.tap.then.close.key(to: ref.context))
                 }
             )
+        case isDescendant(of: blockchain.ux.transaction):
+            try transaction(for: ref, in: context)
+        default:
+            throw Error(message: "No view", tag: ref, context: context)
+        }
+    }
+}
+
+extension SiteMap {
+
+    @ViewBuilder func transaction(
+        for ref: Tag.Reference,
+        in context: Tag.Context = [:]
+    ) throws -> some View {
+        switch ref.tag {
+        case blockchain.ux.transaction.disclaimer:
+            StakingConsiderationsView()
+                .context([blockchain.user.earn.product.id: "staking"])
         default:
             throw Error(message: "No view", tag: ref, context: context)
         }

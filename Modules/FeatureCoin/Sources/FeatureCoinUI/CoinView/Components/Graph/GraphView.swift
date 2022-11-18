@@ -68,8 +68,12 @@ public struct GraphView: View {
                             selectionTitle: { i, _ in
                                 timestamp(value.series[i])
                             },
-                            minimumTitle: amount(quote: value.quote),
-                            maximumTitle: amount(quote: value.quote),
+                            minimumTitle: {
+                                amount(quote: value.quote, $0, $1)
+                            },
+                            maximumTitle: {
+                                amount(quote: value.quote, $0, $1)
+                            },
                             data: value.series.map(\.price),
                             tolerance: viewStore.tolerance,
                             density: viewStore.density
@@ -93,7 +97,7 @@ public struct GraphView: View {
                                     }
                                 }
                             }
-                            .animation(.linear)
+                            .animation(.linear, value: animation)
                         )
                         .typography(.caption2)
                         .foregroundColor(.semantic.title)
@@ -154,8 +158,14 @@ public struct GraphView: View {
         Text("\(Self.dateFormatter.string(from: index.timestamp))")
     }
 
-    private func amount(quote: FiatCurrency) -> (_ index: Int, _ value: Double) -> Text {
-        { _, value in Text(amount: value, currency: quote) }
+    private func amount(quote: FiatCurrency, _ index: Int, _ value: Double) -> some View {
+        Text(amount: value, currency: quote)
+            .padding(2.pt)
+            .background(
+                RoundedRectangle(cornerSize: .init(length: 4))
+                    .fill(Color.semantic.background.opacity(0.75))
+                    .shadow(color: .semantic.background, radius: 3)
+            )
     }
 
     private func balance(

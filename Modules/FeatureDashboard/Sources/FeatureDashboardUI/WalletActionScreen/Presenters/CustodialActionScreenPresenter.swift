@@ -146,7 +146,8 @@ extension AssetAction {
         case .interestTransfer,
              .interestWithdraw,
              .linkToDebitCard,
-             .sign:
+             .sign,
+             .stakingDeposit:
             return nil
         case .viewActivity:
             return .activity

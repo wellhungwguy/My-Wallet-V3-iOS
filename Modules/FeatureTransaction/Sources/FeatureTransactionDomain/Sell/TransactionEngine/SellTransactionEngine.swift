@@ -264,7 +264,8 @@ extension TransactionLimits {
             maximumDaily: maximumDaily,
             maximumAnnual: maximumAnnual,
             effectiveLimit: effectiveLimit,
-            suggestedUpgrade: suggestedUpgrade
+            suggestedUpgrade: suggestedUpgrade,
+            earn: nil
         )
     }
 

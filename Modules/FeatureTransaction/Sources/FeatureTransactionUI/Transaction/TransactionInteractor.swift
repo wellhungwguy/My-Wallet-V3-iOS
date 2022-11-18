@@ -5,6 +5,7 @@ import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
+import FeatureStakingDomain
 import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
@@ -43,6 +44,7 @@ final class TransactionInteractor {
     private var cancellables: Set<AnyCancellable> = []
     private var transactionProcessor: TransactionProcessor?
     private var quoteService: BrokerageQuoteService
+    private var stakingAccountService: EarnAccountService
 
     /// Used to invalidate the transaction processor chain.
     private let invalidate = PublishSubject<Void>()
@@ -58,7 +60,8 @@ final class TransactionInteractor {
         ordersService: OrdersServiceAPI = resolve(),
         orderFetchingRepository: OrderFetchingRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        quoteService: BrokerageQuoteService = resolve()
+        quoteService: BrokerageQuoteService = resolve(),
+        stakingAccountService: EarnAccountService = resolve(tag: EarnProduct.staking)
     ) {
         self.app = app
         self.coincore = coincore
@@ -71,6 +74,7 @@ final class TransactionInteractor {
         self.ordersService = ordersService
         self.orderFetchingRepository = orderFetchingRepository
         self.quoteService = quoteService
+        self.stakingAccountService = stakingAccountService
     }
 
     func initializeTransaction(
@@ -176,6 +180,17 @@ final class TransactionInteractor {
                     accounts.filter { $0.currencyType == account.currencyType }
                 }
 
+        case .stakingDeposit:
+            guard let account = transactionTarget as? BlockchainAccount else {
+                impossible("A target account is required for this.")
+            }
+            return coincore
+                .cryptoAccounts(supporting: .stakingDeposit)
+                .asSingle()
+                .map { accounts in
+                    accounts.filter { $0.currencyType == account.currencyType }
+                }
+
         case .buy:
             // TODO: the new limits API will require an amount
             return fetchPaymentAccounts(for: .bitcoin, amount: nil)
@@ -213,6 +228,11 @@ final class TransactionInteractor {
                 fatalError("Expected a CryptoAccount.")
             }
             return interestWithdrawTargets(sourceAccount: cryptoAccount)
+        case .stakingDeposit:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return stakingDepositTargets(sourceAccount: cryptoAccount)
         case .send:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount.")
@@ -381,6 +401,15 @@ final class TransactionInteractor {
             .getTransactionTargets(
                 sourceAccount: sourceAccount,
                 action: .interestTransfer
+            )
+            .asSingle()
+    }
+
+    private func stakingDepositTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .stakingDeposit
             )
             .asSingle()
     }

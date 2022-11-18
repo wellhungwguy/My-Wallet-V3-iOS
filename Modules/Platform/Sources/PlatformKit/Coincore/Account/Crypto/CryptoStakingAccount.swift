@@ -2,14 +2,21 @@
 
 import Combine
 import DIKit
+import FeatureStakingDomain
 import Localization
 import MoneyKit
 import RxSwift
 import ToolKit
 
 public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
+
     public var activity: AnyPublisher<[ActivityItemEvent], Error> {
-        .just([])
+        earn.activity(currency: asset)
+            .map { activity in
+                activity.map(ActivityItemEvent.staking)
+            }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
     public var balance: AnyPublisher<MoneyValue, Error> {
@@ -41,11 +48,16 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
     public var accountType: AccountType = .trading
 
     public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        .failure(ReceiveAddressError.notSupported)
-    }
-
-    public var firstReceiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        .failure(ReceiveAddressError.notSupported)
+        earn.address(currency: asset)
+            .tryMap { [asset, cryptoReceiveAddressFactory, onTxCompleted] address throws -> ReceiveAddress in
+                try cryptoReceiveAddressFactory.makeExternalAssetAddress(
+                    address: address.accountRef,
+                    label: "\(asset.code) \(LocalizationConstants.stakingAccount)",
+                    onTxCompleted: onTxCompleted
+                )
+                .get() as ReceiveAddress
+            }
+            .eraseToAnyPublisher()
     }
 
     public var isFunded: AnyPublisher<Bool, Error> {
@@ -55,25 +67,37 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
     }
 
     private let priceService: PriceServiceAPI
-    private let balanceService: StakingAccountOverviewAPI
+    private let earn: EarnAccountService
+    private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
+
     private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
-        balanceService.balance(for: asset)
+        earn.balances()
+            .map(CustodialAccountBalanceStates.init(accounts:))
+            .map(\.[asset.currencyType])
+            .replaceError(with: CustodialAccountBalanceState.absent)
+            .eraseToAnyPublisher()
     }
 
     public init(
         asset: CryptoCurrency,
-        balanceService: StakingAccountOverviewAPI = resolve(),
-        priceService: PriceServiceAPI = resolve()
+        earn: EarnAccountService = resolve(tag: EarnProduct.staking),
+        priceService: PriceServiceAPI = resolve(),
+        cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = asset.defaultStakingWalletName
         self.asset = asset
-        self.balanceService = balanceService
+        self.earn = earn
         self.priceService = priceService
+        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
-        // no-op on staking at the moment, only activity
-        .just(false)
+        switch action {
+        case .viewActivity:
+            return .just(true)
+        case _:
+            return .just(false)
+        }
     }
 
     public func balancePair(
@@ -88,6 +112,33 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
     }
 
     public func invalidateAccountBalance() {
-        balanceService.invalidateAccountBalances()
+        earn.invalidateBalances()
+    }
+}
+
+extension CustodialAccountBalance {
+
+    init?(account: EarnAccount) {
+        guard let balance = account.balance else { return nil }
+        let zero: MoneyValue = .zero(currency: balance.currency)
+        let locked = account.locked?.moneyValue ?? zero
+        self.init(
+            currency: balance.currencyType,
+            available: balance.moneyValue,
+            withdrawable: (try? balance.moneyValue - locked).or(zero),
+            pending: (account.pendingDeposit?.moneyValue).or(zero)
+        )
+    }
+}
+
+extension CustodialAccountBalanceStates {
+
+    init(accounts: EarnAccounts) {
+        let balances = accounts.reduce(into: [CurrencyType: CustodialAccountBalanceState]()) { result, item in
+            guard let currency = CryptoCurrency(code: item.key) else { return }
+            guard let account = CustodialAccountBalance(account: item.value) else { return }
+            result[currency.currencyType] = .present(account)
+        }
+        self = .init(balances: balances)
     }
 }

@@ -18,7 +18,7 @@ class EmbraceObserver: Client.Observer {
     func start() {
         #if DEBUG
         return
-        #endif
+        #else
 
         app.publisher(for: blockchain.user.id, as: String.self)
             .receive(on: DispatchQueue.main)
@@ -67,6 +67,7 @@ class EmbraceObserver: Client.Observer {
                 )
             }
             .store(in: &bag)
+        #endif
     }
 
     func stop() { bag.removeAll() }

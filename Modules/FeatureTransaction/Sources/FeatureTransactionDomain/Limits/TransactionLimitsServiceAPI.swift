@@ -275,7 +275,8 @@ extension TransactionLimits {
             maximumDaily: tradeLimits.daily?.limit ?? tradeLimits.maxPossibleOrder,
             maximumAnnual: tradeLimits.annual?.limit ?? tradeLimits.maxPossibleOrder,
             effectiveLimit: .init(timeframe: .single, value: tradeLimits.maxPossibleOrder),
-            suggestedUpgrade: nil
+            suggestedUpgrade: nil,
+            earn: nil
         )
     }
 
@@ -287,7 +288,8 @@ extension TransactionLimits {
             maximumDaily: paymentMethod.maxDaily.moneyValue,
             maximumAnnual: paymentMethod.maxAnnual.moneyValue,
             effectiveLimit: .init(timeframe: .single, value: paymentMethod.max.moneyValue),
-            suggestedUpgrade: nil
+            suggestedUpgrade: nil,
+            earn: nil
         )
     }
 
@@ -305,7 +307,8 @@ extension TransactionLimits {
             maximumDaily: crossBorderLimits.currentLimits?.daily?.limit,
             maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit,
             effectiveLimit: effectiveLimit,
-            suggestedUpgrade: crossBorderLimits.suggestedUpgrade
+            suggestedUpgrade: crossBorderLimits.suggestedUpgrade,
+            earn: nil
         )
     }
 
@@ -335,7 +338,8 @@ extension TransactionLimits {
             maximumDaily: (try? .min(limits.maximumDaily, maximumDaily)) ?? defaultMaxDaily,
             maximumAnnual: (try? .min(limits.maximumAnnual, maximumAnnual)) ?? defaultMaxAnnual,
             effectiveLimit: effectiveLimit,
-            suggestedUpgrade: suggestedUpgrade
+            suggestedUpgrade: suggestedUpgrade,
+            earn: limits.earn
         )
     }
 
@@ -361,7 +365,8 @@ extension TransactionLimits {
             maximumDaily: maxCrossBorderDailyLimit,
             maximumAnnual: maxCrossBorderAnnualLimit,
             effectiveLimit: effectiveLimit,
-            suggestedUpgrade: crossBorderLimits.suggestedUpgrade
+            suggestedUpgrade: crossBorderLimits.suggestedUpgrade,
+            earn: nil
         )
     }
 }

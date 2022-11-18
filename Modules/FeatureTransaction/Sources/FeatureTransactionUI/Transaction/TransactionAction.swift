@@ -2,6 +2,7 @@
 
 import Errors
 import FeatureCardPaymentDomain
+import FeatureStakingDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit

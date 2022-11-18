@@ -237,7 +237,9 @@ extension Tag.Reference {
         func indices(from ids: Tag.Context, in app: AppProtocol?) throws -> [String] {
             let ids = ids.mapKeysAndValues(
                 key: \.description,
-                value: String.init(describing:)
+                value: { value in
+                    value as? String ?? String(describing: value)
+                }
             )
             return try indices.map { id in
                 if let value = ids[id], value.isNotEmpty {

@@ -17,7 +17,7 @@ extension AssetAction {
             return LocalizationIds.linkToDebitCard
         case .interestTransfer:
             return LocalizationIds.transfer
-        case .deposit:
+        case .deposit, .stakingDeposit:
             return LocalizationIds.deposit
         case .sell:
             return LocalizationIds.sell

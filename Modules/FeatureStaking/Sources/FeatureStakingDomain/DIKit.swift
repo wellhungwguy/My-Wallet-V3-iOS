@@ -1,26 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import PlatformKit
 
 extension DependencyContainer {
 
-    // MARK: - FeatureInterestData Module
+    // MARK: - FeatureStakingDomain Module
 
     public static var featureStakingDomainKit = module {
 
-        single { () -> StakingAccountServiceAPI in
-            StakingAccountService(
-                balanceRepository: DIKit.resolve(),
-                fiatCurrencyService: DIKit.resolve(),
-                kycTiersService: DIKit.resolve(),
-                priceService: DIKit.resolve()
-            )
+        single(tag: EarnProduct.savings) { () -> EarnAccountService in
+            EarnAccountService(app: DIKit.resolve(), repository: DIKit.resolve(tag: EarnProduct.savings))
         }
 
-        factory { () -> StakingAccountOverviewAPI in
-            let service: StakingAccountServiceAPI = DIKit.resolve()
-            return service as StakingAccountOverviewAPI
+        single(tag: EarnProduct.staking) { () -> EarnAccountService in
+            EarnAccountService(app: DIKit.resolve(), repository: DIKit.resolve(tag: EarnProduct.staking))
         }
     }
 }

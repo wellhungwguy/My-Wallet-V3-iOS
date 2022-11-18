@@ -175,7 +175,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         maximumDaily: transactionLimits.maximumDaily,
                         maximumAnnual: transactionLimits.maximumAnnual,
                         effectiveLimit: transactionLimits.effectiveLimit,
-                        suggestedUpgrade: transactionLimits.suggestedUpgrade
+                        suggestedUpgrade: transactionLimits.suggestedUpgrade,
+                        earn: transactionLimits.earn
                     )
                     return pendingTransaction
                 }

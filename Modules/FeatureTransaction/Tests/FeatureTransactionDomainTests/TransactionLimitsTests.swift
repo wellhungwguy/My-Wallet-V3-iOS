@@ -30,7 +30,8 @@ class TransactionLimitsTests: XCTestCase {
                     limit: MoneyValue.create(minor: 1_000_000_00, currency: .fiat(.USD)),
                     effective: false
                 )
-            )
+            ),
+            earn: nil
         )
         let convertedLimit = startingLimit.convert(using: .one(currency: .fiat(.USD)))
         XCTAssertEqual(startingLimit, convertedLimit)
@@ -62,7 +63,8 @@ class TransactionLimitsTests: XCTestCase {
                     limit: MoneyValue.create(minor: 1_000_000_00, currency: .fiat(.USD)),
                     effective: false
                 )
-            )
+            ),
+            earn: nil
         )
         let expectedLimit = TransactionLimits(
             currencyType: .fiat(.GBP),
@@ -89,7 +91,8 @@ class TransactionLimitsTests: XCTestCase {
                     limit: MoneyValue.create(minor: 2_000_000_00, currency: .fiat(.GBP)),
                     effective: false
                 )
-            )
+            ),
+            earn: nil
         )
         let convertedLimit = startingLimit.convert(using: MoneyValue.create(minor: 2_00, currency: .fiat(.GBP)))
         XCTAssertEqual(expectedLimit, convertedLimit)

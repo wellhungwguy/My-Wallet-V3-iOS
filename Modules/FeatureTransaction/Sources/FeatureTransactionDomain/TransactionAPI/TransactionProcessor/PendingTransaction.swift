@@ -228,7 +228,8 @@ extension PendingTransaction {
             maximumDaily: maxDailyLimit,
             maximumAnnual: maxAnnualLimit,
             effectiveLimit: limits?.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
-            suggestedUpgrade: limits?.suggestedUpgrade
+            suggestedUpgrade: limits?.suggestedUpgrade,
+            earn: limits?.earn
         )
     }
 

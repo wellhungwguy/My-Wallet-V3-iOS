@@ -273,9 +273,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                             currency: CurrencyType(code: code.or(throw: "No input currency"))
                         ).or(throw: "Failed to initialise MoneyValue")
                     )
-                } catch {
-                    app.post(error: error)
-                }
+                } catch { /* ignore */ }
             }
 
             app.state.transaction { state in
@@ -328,7 +326,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 switch state.action {
                 case .buy,
                      .deposit,
-                     .interestTransfer:
+                     .interestTransfer,
+                     .stakingDeposit:
                     return state.source
                 case .sell,
                      .withdraw,

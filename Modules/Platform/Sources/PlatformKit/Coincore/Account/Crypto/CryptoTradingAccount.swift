@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureStakingDomain
 import MoneyKit
 import RxSwift
 import ToolKit
@@ -172,6 +173,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
+    private let stakingService: EarnAccountService
     private let priceService: PriceServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
@@ -192,6 +194,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         errorRecorder: ErrorRecording = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
+        stakingService: EarnAccountService = resolve(tag: EarnProduct.staking),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
@@ -209,6 +212,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.buySellActivity = buySellActivity
         self.priceService = priceService
         self.balanceService = balanceService
+        self.stakingService = stakingService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
@@ -256,6 +260,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .eraseToAnyPublisher()
         case .interestTransfer:
             return canPerformInterestTransfer
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        case .stakingDeposit:
+            return canPerformStakingDeposit
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         }
@@ -322,6 +330,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private var canPerformStakingDeposit: AnyPublisher<Bool, Never> {
+        stakingService.eligibility()
+            .map(\.[currencyType.code]?.eligible)
+            .replaceNil(with: false)
+            .eraseError()
+            .zip(isFunded)
+            .map { $0 && $1 }
             .replaceError(with: false)
             .eraseToAnyPublisher()
     }

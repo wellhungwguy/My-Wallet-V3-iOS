@@ -49,27 +49,6 @@ public struct CoinView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisappear) }
-        .sheet(
-            item: viewStore.binding(\.$comingSoonAccount),
-            onDismiss: {
-                viewStore.send(.set(\.$comingSoonAccount, nil))
-            },
-            content: { account in
-                ComingSoonView(
-                    account: account,
-                    assetLogoUrl: viewStore.currency.assetModel.logoPngUrl,
-                    assetColor: viewStore.currency.color,
-                    onClose: {
-                        viewStore.send(.set(\.$comingSoonAccount, nil))
-                    }
-                )
-                .context(
-                    [
-                        blockchain.ux.asset.account.id: account.id
-                    ]
-                )
-            }
-        )
         .bottomSheet(
             item: viewStore.binding(\.$account).animation(.spring()),
             content: { account in

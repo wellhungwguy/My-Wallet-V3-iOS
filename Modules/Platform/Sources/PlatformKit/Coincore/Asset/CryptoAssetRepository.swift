@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Blockchain
 import Combine
+import DIKit
 import Localization
 import MoneyKit
 import RxSwift
@@ -150,7 +152,8 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             CryptoAccountCustodialGroup(
                 asset: asset,
                 account: CryptoStakingAccount(
-                    asset: asset
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
                 )
             )
         )
@@ -173,6 +176,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     // MARK: - Private properties
 
+    private let app: AppProtocol
     private let asset: CryptoCurrency
     private let errorRecorder: ErrorRecording
     private let kycTiersService: KYCTiersServiceAPI
@@ -184,6 +188,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     // MARK: - Setup
 
     public init(
+        app: AppProtocol = resolve(),
         asset: CryptoCurrency,
         errorRecorder: ErrorRecording,
         kycTiersService: KYCTiersServiceAPI,
@@ -192,6 +197,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         addressFactory: ExternalAssetAddressFactory,
         featureFlag: FeatureFetching
     ) {
+        self.app = app
         self.asset = asset
         self.errorRecorder = errorRecorder
         self.kycTiersService = kycTiersService
@@ -260,17 +266,17 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     public var stakingAccount: AnyPublisher<SingleAccount?, Never> {
-        featureFlag.isEnabled(.staking)
-            .flatMap { [asset] isEnabled -> AnyPublisher<SingleAccount?, Never> in
-                guard isEnabled else {
-                    return .just(nil)
-                }
-                guard asset.supports(product: .stakingBalance) else {
-                    return .just(nil)
-                }
+        guard asset.supports(product: .stakingBalance) else {
+            return .just(nil)
+        }
+        return app.publisher(for: blockchain.app.configuration.staking.is.enabled, as: Bool.self)
+            .replaceError(with: false)
+            .flatMap { [asset, addressFactory] isEnabled -> AnyPublisher<SingleAccount?, Never> in
+                guard isEnabled else { return .just(nil) }
                 return .just(
                     CryptoStakingAccount(
-                        asset: asset
+                        asset: asset,
+                        cryptoReceiveAddressFactory: addressFactory
                     )
                 )
             }

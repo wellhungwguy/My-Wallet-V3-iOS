@@ -51,6 +51,17 @@ extension LocalizationConstants {
 
             enum Description {
 
+                enum Staking {
+                    static let summary = NSLocalizedString(
+                        "View Staked %@",
+                        comment: "Account Actions: Rewards summary CTA description"
+                    )
+                    static let deposit = NSLocalizedString(
+                        "Stake %@",
+                        comment: "Account Actions: Rewards deposit CTA description"
+                    )
+                }
+
                 enum Rewards {
                     static let summary = NSLocalizedString(
                         "View Accrued %@ Rewards",

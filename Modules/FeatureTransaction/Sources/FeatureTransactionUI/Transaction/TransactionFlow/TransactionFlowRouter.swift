@@ -11,6 +11,7 @@ import ErrorsUI
 import FeatureCardPaymentDomain
 import FeatureOpenBankingUI
 import FeaturePlaidUI
+import FeatureStakingUI
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -42,13 +43,19 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 
     var viewControllers: [UIViewController] { get }
 
-    func present(viewController: ViewControllable?, animated: Bool)
+    func present(viewController: ViewControllable?, animated: Bool, completion: (() -> Void)?)
     func replaceRoot(viewController: ViewControllable?, animated: Bool)
     func push(viewController: ViewControllable?)
     func dismiss()
     func pop()
     func popToRoot()
     func setViewControllers(_ viewControllers: [UIViewController], animated: Bool)
+}
+
+extension TransactionFlowViewControllable {
+    func present(viewController: ViewControllable?, animated: Bool) {
+        present(viewController: viewController, animated: animated, completion: nil)
+    }
 }
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
@@ -72,6 +79,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let bindRepository: BINDWithdrawRepositoryProtocol
+    private let stakingAccountService: EarnAccountService
 
     private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
@@ -95,7 +103,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         cacheSuite: CacheSuite = resolve(),
-        bindRepository: BINDWithdrawRepositoryProtocol = resolve()
+        bindRepository: BINDWithdrawRepositoryProtocol = resolve(),
+        stakingAccountService: EarnAccountService = resolve(tag: EarnProduct.staking)
     ) {
         self.app = app
         self.paymentMethodLinker = paymentMethodLinker
@@ -109,6 +118,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         self.analyticsRecorder = analyticsRecorder
         self.cacheSuite = cacheSuite
         self.bindRepository = bindRepository
+        self.stakingAccountService = stakingAccountService
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -344,7 +354,22 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             action: action,
             canAddMoreSources: canAddMoreSources
         )
-        attachAndPresent(router, transitionType: transitionType)
+        attachAndPresent(router, transitionType: transitionType, completion: { [app, stakingAccountService] in
+            Task {
+                let state = try await transactionModel.state.await()
+                guard let crypto = state.destination?.currencyType.code else { return }
+                guard try await stakingAccountService.limits().await()[crypto]?.disabledWithdrawals == true else { return }
+                switch state.action {
+                case .stakingDeposit:
+                    app.post(
+                        event: blockchain.ux.transaction.event.should.show.disclaimer,
+                        context: [blockchain.user.earn.product.asset.id: crypto]
+                    )
+                case _:
+                    break
+                }
+            }
+        })
     }
 
     func routeToDestinationAccountPicker(
@@ -763,21 +788,23 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
 extension TransactionFlowRouter {
 
-    private func present(_ viewControllerToPresent: UIViewController, transitionType: TransitionType) {
+    private func present(_ viewControllerToPresent: UIViewController, transitionType: TransitionType, completion: (() -> Void)? = nil) {
         switch transitionType {
         case .modal:
             viewControllerToPresent.isModalInPresentation = true
-            viewController.present(viewController: viewControllerToPresent, animated: true)
+            viewController.present(viewController: viewControllerToPresent, animated: true, completion: completion)
         case .push:
             viewController.push(viewController: viewControllerToPresent)
+            completion?()
         case .replaceRoot:
             viewController.replaceRoot(viewController: viewControllerToPresent, animated: false)
+            completion?()
         }
     }
 
-    private func attachAndPresent(_ router: ViewableRouting, transitionType: TransitionType) {
+    private func attachAndPresent(_ router: ViewableRouting, transitionType: TransitionType, completion: (() -> Void)? = nil) {
         attachChild(router)
-        present(router.viewControllable.uiviewController, transitionType: transitionType)
+        present(router.viewControllable.uiviewController, transitionType: transitionType, completion: completion)
     }
 }
 
@@ -880,7 +907,8 @@ extension AssetAction {
              .viewActivity,
              .interestWithdraw,
              .linkToDebitCard,
-             .interestTransfer:
+             .interestTransfer,
+             .stakingDeposit:
             return false
         }
     }

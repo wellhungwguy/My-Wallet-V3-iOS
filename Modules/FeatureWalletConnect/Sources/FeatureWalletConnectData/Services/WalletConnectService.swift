@@ -13,6 +13,10 @@ import WalletConnectSwift
 
 final class WalletConnectService {
 
+    struct Nope: WalletConnectSwift.Logger {
+        func log(_ message: String) { }
+    }
+
     // MARK: - Private Properties
 
     private var server: Server!

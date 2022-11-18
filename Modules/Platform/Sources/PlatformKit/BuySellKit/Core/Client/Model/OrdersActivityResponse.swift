@@ -37,6 +37,6 @@ extension OrdersActivityResponse.Item {
     var insertedAtDate: Date {
         DateFormatter.sessionDateFormat.date(from: insertedAt)
             ?? DateFormatter.iso8601Format.date(from: insertedAt)
-            ?? Date()
+            ?? .distantPast
     }
 }

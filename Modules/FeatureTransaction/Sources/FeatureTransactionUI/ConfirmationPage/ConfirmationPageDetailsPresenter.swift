@@ -89,7 +89,8 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
                 }
             }
 
-        details.map(\.nextEnabled)
+        Driver.combineLatest(details.map(\.nextEnabled), details.map(\.termsAndAgreementsAreValid))
+            .map { $0 && $1 }
             .drive(contentReducer.continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 

@@ -101,7 +101,8 @@ final class FiatCustodialAccount: FiatAccount {
              .sign,
              .receive,
              .interestTransfer,
-             .interestWithdraw:
+             .interestWithdraw,
+             .stakingDeposit:
             return .just(false)
         case .deposit:
             return paymentMethodService

@@ -67,6 +67,7 @@ let package = Package(
         .package(path: "../FeatureForm"),
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../FeatureWithdrawalLocks"),
+        .package(path: "../FeatureStaking"),
         .package(path: "../Localization"),
         .package(path: "../Money"),
         .package(path: "../Network"),
@@ -92,6 +93,7 @@ let package = Package(
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
                 .product(name: "FeatureAuthenticationData", package: "FeatureAuthentication"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
+                .product(name: "FeatureStakingDomain", package: "FeatureStaking"),
                 .product(name: "FeatureFormDomain", package: "FeatureForm"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
