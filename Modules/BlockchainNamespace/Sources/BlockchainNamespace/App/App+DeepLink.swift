@@ -85,6 +85,11 @@ extension App {
                 return
             }
             let context = Tag.Context(match.parameters())
+            app.state.transaction { state in
+                for (tag, value) in context {
+                    state.set(tag.in(app), to: value)
+                }
+            }
             app.post(event: match.rule.event.ref(to: context), context: context)
         }
     }
@@ -141,13 +146,15 @@ extension App.DeepLink {
 extension App.DeepLink.Rule {
 
     public struct Parameter: Codable, Equatable {
-        public init(name: String, alias: Tag) {
+        public init(name: String? = nil, value: AnyJSON? = nil, alias: Tag.Event) {
             self.name = name
-            self.alias = alias
+            self.value = value
+            self.alias = alias.key(to: [:])
         }
 
-        public let name: String
-        public let alias: Tag
+        public let name: String?
+        public let value: AnyJSON?
+        public let alias: Tag.Reference
     }
 
     public struct Match {
@@ -158,16 +165,20 @@ extension App.DeepLink.Rule {
 }
 
 extension App.DeepLink.Rule.Match {
-    public func parameters() -> [Tag: String] {
+    public func parameters() -> [Tag.Reference: AnyHashable] {
 
         let items = url.queryItems()
 
         return rule.parameters
             .reduce(into: [:]) { rules, parameter in
-                let range = result.range(withName: parameter.name)
-                rules[parameter.alias] = range.location == NSNotFound
-                    ? items[named: parameter.name]?.value
-                    : NSString(string: url.absoluteString).substring(with: range)
+                if let name = parameter.name {
+                    let range = result.range(withName: name)
+                    rules[parameter.alias] = range.location == NSNotFound
+                        ? items[named: name]?.value
+                        : NSString(string: url.absoluteString).substring(with: range)
+                } else if let value = parameter.value {
+                    rules[parameter.alias] = value
+                }
             }
     }
 }

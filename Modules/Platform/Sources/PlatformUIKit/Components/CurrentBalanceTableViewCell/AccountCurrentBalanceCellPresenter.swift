@@ -142,6 +142,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
+        case is CryptoStakingAccount:
+            model = .template(
+                image: .local(name: "ic-interest-account", bundle: .platformUIKit),
+                templateColor: account.currencyType.brandUIColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         case is ExchangeAccount:
             model = .template(
                 image: .local(name: "ic-exchange-account", bundle: .platformUIKit),
