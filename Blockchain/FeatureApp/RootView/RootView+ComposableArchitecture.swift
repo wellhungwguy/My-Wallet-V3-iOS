@@ -274,20 +274,27 @@ let rootViewReducer = Reducer<
             }
             .compactMap(\.value)
 
-        let totalsPublishers = Publishers.CombineLatest3(
-            environment
-                .fetchTotalBalance(filter: .allExcludingExchange),
-            environment
-                .fetchTotalBalance(filter: .nonCustodial),
-            environment
-                .fetchTotalBalance(filter: [.custodial, .interest])
-        )
-            .map { RootViewState.AccountTotals(
-                totalBalance: $0,
-                defiWalletBalance: $1,
-                brokerageBalance: $2
-            )
+        let totalsPublishers = app.on(blockchain.ux.home.event.did.pull.to.refresh)
+            .receive(on: DispatchQueue.main)
+            .flatMap { _ -> AnyPublisher<RootViewState.AccountTotals, Never> in
+                Publishers.CombineLatest3(
+                    environment
+                        .fetchTotalBalance(filter: .allExcludingExchange),
+                    environment
+                        .fetchTotalBalance(filter: .nonCustodial),
+                    environment
+                        .fetchTotalBalance(filter: [.custodial, .interest, .staking])
+                )
+                .map {
+                    RootViewState.AccountTotals(
+                        totalBalance: $0,
+                        defiWalletBalance: $1,
+                        brokerageBalance: $2
+                    )
+                }
+                .eraseToAnyPublisher()
             }
+            .eraseToAnyPublisher()
 
         return Effect<RootViewAction, Never>.merge(
             .fireAndForget {
