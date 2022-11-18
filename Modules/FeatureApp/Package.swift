@@ -30,7 +30,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/embrace-io/embrace-spm",
-            from: "5.8.0"
+            from: "5.12.3"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
