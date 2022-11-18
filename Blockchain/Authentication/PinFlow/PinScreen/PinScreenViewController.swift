@@ -407,7 +407,7 @@ extension PinScreenViewController {
             if let sheet = controller.sheetPresentationController {
                 if #available(iOS 16.0, *) {
                     sheet.detents = [
-                        .custom { context in context.maximumDetentValue * 0.42 }
+                        .custom { _ in 360 }
                     ]
                 } else {
                     sheet.detents = [
