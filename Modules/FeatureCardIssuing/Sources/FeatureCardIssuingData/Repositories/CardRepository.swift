@@ -92,8 +92,25 @@ final class CardRepository: CardRepositoryAPI {
         cachedCardValue.get(key: #file)
     }
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
-        client.fetchCard(with: id)
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
+        Publishers.CombineLatest(
+            client.fetchCard(with: id),
+            cachedCardValue.get(key: #file)
+        )
+        .flatMap { [cardCache] (card, cards) -> AnyPublisher<Card?, NabuNetworkError> in
+            var cards = cards
+            if let index = cards.firstIndex(where: { $0.id == card.id }) {
+                cards[index] = card
+            } else {
+                cards.append(card)
+            }
+            return cardCache
+                .set(cards, for: #file)
+                .map { _ in card }
+                .setFailureType(to: NabuNetworkError.self)
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {

@@ -286,6 +286,9 @@ let cardManagementReducer: Reducer<
         guard let card else {
             return .none
         }
+        if let row = state.cards.firstIndex(where: { $0.id == card.id }) {
+            state.cards[row] = card
+        }
         state.selectedCard = card
         state.isLocked = card.isLocked
         return Effect.merge(
@@ -457,8 +460,11 @@ let cardManagementReducer: Reducer<
             env.openAddCardFlow()
         }
     case .getActivationUrl:
-        guard state.activationUrl == nil, let card = state.selectedCard else {
-            return .none
+        guard state.activationUrl == nil,
+             let card = state.selectedCard,
+             let fulfillment = state.fulfillment,
+             fulfillment.status.canActivate else {
+           return .none
         }
         state.activationUrl = .loading
         return env.cardService
@@ -478,7 +484,6 @@ let cardManagementReducer: Reducer<
         }
         return env.cardService
             .fetchCard(with: card.id)
-            .optional()
             .receive(on: env.mainQueue)
             .catchToEffect(CardManagementAction.getCardResponse)
     case .binding:
@@ -536,6 +541,12 @@ extension CardManagementEnvironment {
             openAddCardFlow: {},
             close: {}
         )
+    }
+}
+
+extension Card.Fulfillment.Status {
+    fileprivate var canActivate: Bool {
+        self == .shipped || self == .delivered
     }
 }
 

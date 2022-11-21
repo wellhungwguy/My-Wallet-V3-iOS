@@ -11,7 +11,7 @@ public protocol CardRepositoryAPI {
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError>
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError>
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError>
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 
