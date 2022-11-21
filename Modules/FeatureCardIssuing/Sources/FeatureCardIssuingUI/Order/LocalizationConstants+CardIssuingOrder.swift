@@ -189,6 +189,54 @@ extension LocalizationConstants.CardIssuing {
                 )
             }
         }
+
+        enum PatriotAct {
+
+            static let navigationTitle = NSLocalizedString(
+                "US Patriot Act",
+                comment: "Card Issuing: Patriot Act Navigation title"
+            )
+
+            static let title = NSLocalizedString(
+                "US Patriot Act Disclosure",
+                comment: "Card Issuing: Patriot Act title"
+            )
+
+            static let button = NSLocalizedString(
+                "Why Do I Need To Do This",
+                comment: "Card Issuing: Patriot Act Button title"
+            )
+
+            enum Article1 {
+                static let title = NSLocalizedString(
+                    "USA PATRIOT ACT Section 326 - Customer Identification Program",
+                    comment: "Card Issuing: Patriot Act Article 1 title"
+                )
+                static let description = NSLocalizedString(
+                    """
+                    To help the government fight the funding of terrorism and money laundering activities, \
+                    Federal law requires all financial institutions to obtain, verify, \
+                    and record information that identifies each person who opens an account.
+                    """,
+                    comment: "Card Issuing: Patriot Act Article 1 description"
+                )
+            }
+
+            enum Article2 {
+                static let title = NSLocalizedString(
+                    "What this means for you",
+                    comment: "Card Issuing: Patriot Act Article 2 title"
+                )
+                static let description = NSLocalizedString(
+                    """
+                    When you open an account, we will ask for your name, address, date of birth, \
+                    and other information that will allow us to identify you. \
+                    We may also ask to see your driver's license or other identifying documents.
+                    """,
+                    comment: "Card Issuing: Patriot Act Article 2 description"
+                )
+            }
+        }
     }
 }
 
