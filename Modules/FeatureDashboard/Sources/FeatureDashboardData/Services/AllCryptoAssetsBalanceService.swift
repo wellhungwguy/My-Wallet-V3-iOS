@@ -63,19 +63,30 @@ public class AllCryptoAssetsBalanceService: AllCryptoAssetsServiceAPI {
     public func getAllNonCustodialAssets() async -> [AssetBalanceInfo] {
         var assetsInfo: [AssetBalanceInfo] = []
         if let balanceInfo = try? await nonCustodialBalanceRepository.balances.await() {
-            for balance in balanceInfo.balances {
+            let groupedDictionary = Dictionary(grouping: balanceInfo.balances, by: {$0.balance.currency.name})
+            var groupedTotalBalances: [MoneyValue] = []
+            groupedDictionary.forEach { (key, balances) in
+                if let firstBalance = balances.first?.balance,
+                   let cryptoCurrency = firstBalance.currencyType.cryptoCurrency {
+                    let balanceSum =  balances.reduce(into: MoneyValue.zero(currency: cryptoCurrency)) { partialResult, element in
+                        try? partialResult += element.balance
+                    }
+                    groupedTotalBalances.append(balanceSum)
+                }
+            }
+
+            for balance in groupedTotalBalances {
                 async let fiatCurrency = try? await fiatCurrencyService.currency.await()
-                let currencyType = balance.balance.currencyType
+                let currencyType = balance.currencyType
                 if let cryptoCurrency = currencyType.cryptoCurrency,
                    let fiatCurrency = await fiatCurrency,
                    let fiatBalance = try? await priceService
                     .price(of: cryptoCurrency, in: fiatCurrency, at: .now)
                     .await()
                 {
-
                     assetsInfo.append(AssetBalanceInfo(
-                        cryptoBalance: balance.balance,
-                        fiatBalance: MoneyValuePair(base: balance.balance, exchangeRate: fiatBalance.moneyValue),
+                        cryptoBalance: balance,
+                        fiatBalance: MoneyValuePair(base: balance, exchangeRate: fiatBalance.moneyValue),
                         currency: currencyType,
                         delta: nil
                     ))
