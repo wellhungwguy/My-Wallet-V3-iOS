@@ -7,8 +7,8 @@ extension LocalizationConstants.CardIssuing {
     public enum Manage {
 
         static let title = NSLocalizedString(
-            "My Cards",
-            comment: "Card Issuing: title My Cards"
+            "My Card",
+            comment: "Card Issuing: title My Card"
         )
 
         static let disclaimer = NSLocalizedString(
