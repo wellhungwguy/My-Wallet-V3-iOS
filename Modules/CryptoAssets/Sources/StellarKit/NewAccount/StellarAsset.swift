@@ -39,8 +39,10 @@ final class StellarAsset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [defaultAccount] in
+        nonCustodialAccountsProvider: { [defaultAccount] in
             defaultAccount
+                .map { [$0] }
+                .eraseToAnyPublisher()
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,
