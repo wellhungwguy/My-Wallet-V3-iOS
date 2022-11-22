@@ -10,7 +10,11 @@ import ToolKit
 final class CustodialCryptoAsset: CryptoAsset {
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        .failure(.noDefaultAccount)
+        delegatedCustodyAccount
+            .map { $0 as? SingleAccount }
+            .setFailureType(to: CryptoAssetError.self)
+            .onNil(CryptoAssetError.noDefaultAccount)
+            .eraseToAnyPublisher()
     }
 
     let asset: CryptoCurrency
@@ -25,8 +29,10 @@ final class CustodialCryptoAsset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [defaultAccount] in
+        nonCustodialAccountsProvider: { [defaultAccount] in
             defaultAccount
+                .map { [$0] }
+                .eraseToAnyPublisher()
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,
@@ -71,32 +77,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
-        var groups: [AnyPublisher<AccountGroup?, Never>] = []
-
-        if filter.contains(.custodial) {
-            groups.append(custodialGroup)
-        }
-
-        if filter.contains(.interest) {
-            groups.append(interestGroup)
-        }
-
-        if filter.contains(.nonCustodial) {
-            groups.append(nonCustodialGroup)
-        }
-
-        if filter.contains(.exchange) {
-            groups.append(exchangeGroup)
-        }
-
-        if filter.contains(.staking) {
-            groups.append(stakingGroup)
-        }
-
-        return groups
-        .zip()
-        .eraseToAnyPublisher()
-        .flatMapAllAccountGroup()
+        cryptoAssetRepository.accountGroup(filter: filter)
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
@@ -124,67 +105,6 @@ final class CustodialCryptoAsset: CryptoAsset {
             label: label,
             onTxCompleted: onTxCompleted
         )
-    }
-
-    private var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            nonCustodialGroup,
-            custodialGroup,
-            interestGroup,
-            exchangeGroup,
-            stakingGroup
-        ]
-        .zip()
-        .eraseToAnyPublisher()
-        .flatMapAllAccountGroup()
-    }
-
-    private var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.exchangeGroup
-    }
-
-    private var custodialGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.custodialGroup
-    }
-
-    private var interestGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.interestGroup
-    }
-
-    private var stakingGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.stakingGroup
-    }
-
-    private var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            custodialGroup,
-            interestGroup
-        ]
-        .zip()
-        .eraseToAnyPublisher()
-        .flatMapAllAccountGroup()
-    }
-
-    private var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
-        delegatedCustodyAccount
-            .map { [asset, addressFactory] delegatedCustodyAccount in
-                guard let delegatedCustodyAccount else {
-                    return nil
-                }
-                let account = CryptoDelegatedCustodyAccount(
-                    activityRepository: resolve(),
-                    addressesRepository: resolve(),
-                    addressFactory: addressFactory,
-                    balanceRepository: resolve(),
-                    priceService: resolve(),
-                    delegatedCustodyAccount: delegatedCustodyAccount
-                )
-                return CryptoAccountNonCustodialGroup(
-                    asset: asset,
-                    accounts: [account]
-                )
-            }
-            .eraseToAnyPublisher()
     }
 
     private var delegatedCustodyAccount: AnyPublisher<DelegatedCustodyAccount?, Never> {

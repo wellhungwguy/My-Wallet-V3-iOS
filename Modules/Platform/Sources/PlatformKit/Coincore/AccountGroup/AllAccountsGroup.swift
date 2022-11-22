@@ -12,73 +12,14 @@ public final class AllAccountsGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
     public let identifier: AnyHashable = "AllAccountsGroup"
-    public var label: String {
-        if accounts.filter({ $0.accountType == .nonCustodial }).isNotEmpty {
+    public lazy var label: String = {
+        if accounts.contains(where: { $0.accountType == .nonCustodial }) {
             return LocalizedString.allWallets
         }
         return LocalizedString.allAccounts
-    }
+    }()
 
-    let actions: AvailableActions = [.viewActivity]
-
-    public var accountType: AccountType = .group
-
-    public var isFunded: AnyPublisher<Bool, Error> {
-        guard !accounts.isEmpty else {
-            return .just(false)
-        }
-        return accounts
-            .map(\.isFunded)
-            .zip()
-            .map { values -> Bool in
-                values.contains(true)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
-        guard !accounts.isEmpty else {
-            return .failure(AccountGroupError.noAccounts)
-        }
-        return accounts
-            .map(\.pendingBalance)
-            .zip()
-            .tryMap { [currencyType] values -> MoneyValue in
-                try values.reduce(.zero(currency: currencyType), +)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    public var balance: AnyPublisher<MoneyValue, Error> {
-        guard !accounts.isEmpty else {
-            return .failure(AccountGroupError.noAccounts)
-        }
-        return accounts
-            .map(\.balance)
-            .zip()
-            .tryMap { [currencyType] values -> MoneyValue in
-                try values.reduce(.zero(currency: currencyType), +)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
-        guard !accounts.isEmpty else {
-            return .failure(AccountGroupError.noAccounts)
-        }
-        return accounts
-            .map(\.actionableBalance)
-            .zip()
-            .tryMap { [currencyType] values -> MoneyValue in
-                try values.reduce(.zero(currency: currencyType), +)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
-        .failure(ReceiveAddressError.notSupported)
-    }
-
+    /// Optional initializer that returns nil if accounts array is empty.
     public init?(accounts: [SingleAccount]) {
         if accounts.isEmpty {
             return nil

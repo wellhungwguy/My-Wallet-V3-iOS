@@ -9,11 +9,6 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-private struct AccountsPayload {
-    let defaultAccount: BitcoinCashWalletAccount
-    let accounts: [BitcoinCashWalletAccount]
-}
-
 final class BitcoinCashAsset: CryptoAsset {
 
     // MARK: - Properties
@@ -22,7 +17,6 @@ final class BitcoinCashAsset: CryptoAsset {
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultAccount
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account in
                 BitcoinCashCryptoAccount(
                     xPub: account.publicKey,
@@ -31,6 +25,7 @@ final class BitcoinCashAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()
     }
 
@@ -44,8 +39,8 @@ final class BitcoinCashAsset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [defaultAccount] in
-            defaultAccount
+        nonCustodialAccountsProvider: { [nonCustodialAccounts] in
+            nonCustodialAccounts
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,
@@ -108,6 +103,24 @@ final class BitcoinCashAsset: CryptoAsset {
         onTxCompleted: @escaping (TransactionResult) -> Completable
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
+    }
+
+    private var nonCustodialAccounts: AnyPublisher<[SingleAccount], CryptoAssetError> {
+        repository.activeAccounts
+            .zip(repository.defaultAccount)
+            .map { activeAccounts, defaultAccount -> [SingleAccount] in
+                activeAccounts.map { account in
+                    BitcoinCashCryptoAccount(
+                        xPub: account.publicKey,
+                        label: account.label,
+                        isDefault: account.publicKey == defaultAccount.publicKey,
+                        hdAccountIndex: account.index
+                    )
+                }
+            }
+            .recordErrors(on: errorRecorder)
+            .replaceError(with: CryptoAssetError.noDefaultAccount)
+            .eraseToAnyPublisher()
     }
 }
 

@@ -187,12 +187,70 @@ extension AccountGroup {
             .flatMapConcatFirst()
             .eraseToAnyPublisher()
     }
+
+    public var accountType: AccountType { .group }
+
+    public var isFunded: AnyPublisher<Bool, Error> {
+        guard !accounts.isEmpty else {
+            return .just(false)
+        }
+        return accounts
+            .map(\.isFunded)
+            .zip()
+            .map { values -> Bool in
+                values.contains(true)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public var pendingBalance: AnyPublisher<MoneyValue, Error> {
+        guard !accounts.isEmpty else {
+            return .failure(AccountGroupError.noAccounts)
+        }
+        return accounts
+            .map(\.pendingBalance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
+                try values.reduce(.zero(currency: currencyType), +)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public var balance: AnyPublisher<MoneyValue, Error> {
+        guard !accounts.isEmpty else {
+            return .failure(AccountGroupError.noAccounts)
+        }
+        return accounts
+            .map(\.balance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
+                try values.reduce(.zero(currency: currencyType), +)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public var actionableBalance: AnyPublisher<MoneyValue, Error> {
+        guard !accounts.isEmpty else {
+            return .failure(AccountGroupError.noAccounts)
+        }
+        return accounts
+            .map(\.actionableBalance)
+            .zip()
+            .tryMap { [currencyType] values -> MoneyValue in
+                try values.reduce(.zero(currency: currencyType), +)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public var receiveAddress: AnyPublisher<ReceiveAddress, Error> {
+        .failure(ReceiveAddressError.notSupported)
+    }
 }
 
 extension AnyPublisher where Output == [AccountGroup?] {
     public func flatMapAllAccountGroup() -> AnyPublisher<AccountGroup?, Failure> {
         map { groups in
-            let compactedGroup = groups.compactMap({ $0 })
+            let compactedGroup = groups.compactMap { $0 }
 
             guard compactedGroup.isEmpty == false else {
                 return nil

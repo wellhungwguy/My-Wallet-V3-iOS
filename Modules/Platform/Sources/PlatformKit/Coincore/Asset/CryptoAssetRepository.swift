@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Blockchain
 import Combine
+import DIKit
 import Localization
 import MoneyKit
 import RxSwift
@@ -8,21 +10,7 @@ import ToolKit
 
 public protocol CryptoAssetRepositoryAPI {
 
-    var allAccountsGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var allExcludingExchangeAccountsGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var custodialGroup: AnyPublisher<AccountGroup?, Never> { get }
-
     var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var exchangeGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var interestGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var stakingGroup: AnyPublisher<AccountGroup?, Never> { get }
-
-    var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> { get }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> { get }
 
@@ -43,17 +31,15 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     // MARK: - Types
 
-    public typealias DefaultAccountProvider = () -> AnyPublisher<SingleAccount, CryptoAssetError>
+    public typealias NonCustodialAccountsProvider = () -> AnyPublisher<[SingleAccount], CryptoAssetError>
 
     public typealias ExchangeAccountProvider = () -> AnyPublisher<CryptoExchangeAccount?, Never>
 
     // MARK: - Properties
 
     public var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
-        defaultAccountProvider()
-            .map { [asset] account -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
-            }
+        nonCustodialAccountsProvider()
+            .map(AllAccountsGroup.init(accounts:))
             .recordErrors(on: errorRecorder)
             .replaceError(with: nil)
             .eraseToAnyPublisher()
@@ -68,115 +54,13 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             .eraseToAnyPublisher()
     }
 
-    public var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            nonCustodialGroup,
-            custodialGroup,
-            interestGroup,
-            stakingGroup,
-            exchangeGroup
-        ]
-            .zip()
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-            .flatMapAllAccountGroup()
-    }
-
-    public var allExcludingExchangeAccountsGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            nonCustodialGroup,
-            custodialGroup,
-            interestGroup,
-            stakingGroup
-        ]
-            .zip()
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-            .flatMapAllAccountGroup()
-    }
-
-    public var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            custodialGroup,
-            interestGroup,
-            stakingGroup
-        ]
-            .zip()
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-            .flatMapAllAccountGroup()
-    }
-
-    public var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
-        guard asset.supports(product: .mercuryDeposits) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return exchangeAccountsProvider
-            .account(
-                for: asset,
-                externalAssetAddressFactory: addressFactory
-            )
-            .optional()
-            .replaceError(with: nil)
-            .map { [asset] account -> CryptoAccountCustodialGroup in
-                guard let account else {
-                    return CryptoAccountCustodialGroup(asset: asset)
-                }
-                return CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    public var interestGroup: AnyPublisher<AccountGroup?, Never> {
-        guard asset.supports(product: .interestBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(
-                asset: asset,
-                account: CryptoInterestAccount(
-                    asset: asset,
-                    cryptoReceiveAddressFactory: addressFactory
-                )
-            )
-        )
-    }
-
-    public var stakingGroup: AnyPublisher<AccountGroup?, Never> {
-        guard asset.supports(product: .stakingBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(
-                asset: asset,
-                account: CryptoStakingAccount(
-                    asset: asset
-                )
-            )
-        )
-    }
-
-    public var custodialGroup: AnyPublisher<AccountGroup?, Never> {
-        guard asset.supports(product: .custodialWalletBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(
-                asset: asset,
-                account: CryptoTradingAccount(
-                    asset: asset,
-                    cryptoReceiveAddressFactory: addressFactory
-                )
-            )
-        )
-    }
-
     // MARK: - Private properties
 
+    private let app: AppProtocol
     private let asset: CryptoCurrency
     private let errorRecorder: ErrorRecording
     private let kycTiersService: KYCTiersServiceAPI
-    private let defaultAccountProvider: DefaultAccountProvider
+    private let nonCustodialAccountsProvider: NonCustodialAccountsProvider
     private let exchangeAccountsProvider: ExchangeAccountsProviderAPI
     private let addressFactory: ExternalAssetAddressFactory
     private let featureFlag: FeatureFetching
@@ -184,18 +68,20 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     // MARK: - Setup
 
     public init(
+        app: AppProtocol = resolve(),
         asset: CryptoCurrency,
         errorRecorder: ErrorRecording,
         kycTiersService: KYCTiersServiceAPI,
-        defaultAccountProvider: @escaping DefaultAccountProvider,
+        nonCustodialAccountsProvider: @escaping NonCustodialAccountsProvider,
         exchangeAccountsProvider: ExchangeAccountsProviderAPI,
         addressFactory: ExternalAssetAddressFactory,
         featureFlag: FeatureFetching
     ) {
+        self.app = app
         self.asset = asset
         self.errorRecorder = errorRecorder
         self.kycTiersService = kycTiersService
-        self.defaultAccountProvider = defaultAccountProvider
+        self.nonCustodialAccountsProvider = nonCustodialAccountsProvider
         self.exchangeAccountsProvider = exchangeAccountsProvider
         self.addressFactory = addressFactory
         self.featureFlag = featureFlag
@@ -203,37 +89,39 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     // MARK: - Public methods
 
+    /// For each option in the `filter: AssetFilter` option set, we will gather the correct accounts and add to the result AllAccountsGroup.
     public func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
-        var stream: [AnyPublisher<SingleAccount?, Never>] = []
+
+        var stream: [AnyPublisher<[SingleAccount], Never>] = []
+
         if filter.contains(.custodial) {
-            stream.append(custodialAccount)
+            stream.append(custodialAccounts)
         }
 
         if filter.contains(.interest) {
-            stream.append(interestAccount)
+            stream.append(interestAccounts)
         }
 
         if filter.contains(.nonCustodial) {
-            let publisher = defaultAccountProvider()
-                .map { $0 as SingleAccount? }
-                .replaceError(with: nil)
+            let publisher: AnyPublisher<[SingleAccount], Never> = nonCustodialAccountsProvider()
+                .recordErrors(on: errorRecorder)
+                .replaceError(with: [])
                 .eraseToAnyPublisher()
             stream.append(publisher)
         }
 
         if filter.contains(.staking) {
-            stream.append(stakingAccount)
+            stream.append(stakingAccounts)
         }
 
         if filter.contains(.exchange) {
-            stream.append(exchangeAccount)
+            stream.append(exchangeAccounts)
         }
 
         return stream
             .zip()
-            .map { accounts in
-                AllAccountsGroup(accounts: accounts.compactMap { $0 })
-            }
+            .map { $0.flatMap { $0 } }
+            .map(AllAccountsGroup.init(accounts:))
             .eraseToAnyPublisher()
     }
 
@@ -259,60 +147,62 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         )
     }
 
-    public var stakingAccount: AnyPublisher<SingleAccount?, Never> {
-        featureFlag.isEnabled(.staking)
-            .flatMap { [asset] isEnabled -> AnyPublisher<SingleAccount?, Never> in
+    private var stakingAccounts: AnyPublisher<[SingleAccount], Never> {
+        guard asset.supports(product: .stakingBalance) else {
+            return .just([])
+        }
+        return featureFlag.isEnabled(.staking)
+            .map { [asset] isEnabled -> [SingleAccount] in
                 guard isEnabled else {
-                    return .just(nil)
+                    return []
                 }
-                guard asset.supports(product: .stakingBalance) else {
-                    return .just(nil)
-                }
-                return .just(
-                    CryptoStakingAccount(
-                        asset: asset
-                    )
-                )
+                let account = CryptoStakingAccount(
+                    asset: asset
+                ) as SingleAccount
+                return [account]
             }
             .eraseToAnyPublisher()
     }
 
-    public var exchangeAccount: AnyPublisher<SingleAccount?, Never> {
+    private var exchangeAccounts: AnyPublisher<[SingleAccount], Never> {
         guard asset.supports(product: .mercuryDeposits) else {
-            return .just(nil)
+            return .just([])
         }
         return exchangeAccountsProvider
             .account(
                 for: asset,
                 externalAssetAddressFactory: addressFactory
             )
-            .optional()
-            .replaceError(with: nil)
-            .map { $0 as SingleAccount? }
+            .map { [$0 as SingleAccount] }
+            .replaceError(with: [])
             .eraseToAnyPublisher()
     }
 
-    public var interestAccount: AnyPublisher<SingleAccount?, Never> {
+    private var interestAccounts: AnyPublisher<[SingleAccount], Never> {
         guard asset.supports(product: .interestBalance) else {
-            return .just(nil)
+            return .just([])
         }
         return .just(
-            CryptoInterestAccount(
-                asset: asset,
-                cryptoReceiveAddressFactory: addressFactory
-            )
+            [
+                CryptoInterestAccount(
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
+                )
+            ]
         )
     }
 
-    public var custodialAccount: AnyPublisher<SingleAccount?, Never> {
+    private var custodialAccounts: AnyPublisher<[SingleAccount], Never> {
         guard asset.supports(product: .custodialWalletBalance) else {
-            return .just(nil)
+            return .just([])
         }
         return .just(
-            CryptoTradingAccount(
-                asset: asset,
-                cryptoReceiveAddressFactory: addressFactory
-            )
+            [
+                CryptoTradingAccount(
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
+                )
+            ]
         )
     }
 }
