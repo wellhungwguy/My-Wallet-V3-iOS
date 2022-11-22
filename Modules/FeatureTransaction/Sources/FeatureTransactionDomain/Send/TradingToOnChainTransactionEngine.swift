@@ -253,28 +253,46 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         from pendingTransaction: PendingTransaction
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
-            sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceCryptoCurrency)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: sourceCryptoCurrency))
+            convertAmountIntoTradingCurrency(pendingTransaction.amount),
+            convertAmountIntoTradingCurrency(pendingTransaction.feeAmount)
         )
-        .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
-        .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
-            let fiatAmount = amount.convert(using: quote)
-            let fiatFees = fees.convert(using: quote)
-            return (fiatAmount, fiatFees)
-        }
         .map { (amount: $0.0, fees: $0.1) }
     }
 
-    private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        walletCurrencyService
-            .displayCurrency
-            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency in
-                currencyConversionService
-                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
-                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
-            }
+    private var fiatExchangeRatePairsSingle: Single<TransactionMoneyValuePairs> {
+        fiatExchangeRatePairs
+            .take(1)
             .asSingle()
+    }
+
+    private func convertAmountIntoTradingCurrency(_ amount: MoneyValue) -> Single<FiatValue> {
+        fiatExchangeRatePairsSingle
+            .map { moneyPair in
+                guard !amount.isFiat else {
+                    return amount.fiatValue!
+                }
+                return try amount
+                    .convert(using: moneyPair.source)
+                    .fiatValue!
+            }
+    }
+
+    private var sourceExchangeRatePair: Observable<MoneyValuePair> {
+        let cryptoCurrency = transactionTarget.currencyType
+        return walletCurrencyService
+            .tradingCurrencyPublisher
+            .map(\.currencyType)
+            .flatMap { [currencyConversionService] tradingCurrency in
+                currencyConversionService
+                    .conversionRate(from: cryptoCurrency, to: tradingCurrency)
+                    .map { quote in
+                        MoneyValuePair(
+                            base: .one(currency: cryptoCurrency),
+                            quote: quote
+                        )
+                    }
+            }
+            .asObservable()
     }
 }
 
