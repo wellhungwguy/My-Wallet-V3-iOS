@@ -545,7 +545,7 @@ extension CardManagementEnvironment {
 }
 
 extension Card.Fulfillment.Status {
-    fileprivate var canActivate: Bool {
+    var canActivate: Bool {
         self == .shipped || self == .delivered
     }
 }
