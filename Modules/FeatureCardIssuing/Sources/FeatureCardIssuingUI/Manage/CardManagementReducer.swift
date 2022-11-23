@@ -522,6 +522,12 @@ let cardManagementReducer: Reducer<
 }
 .binding()
 
+extension Card.Fulfillment.Status {
+    var canActivate: Bool {
+        self == .shipped || self == .delivered
+    }
+}
+
 #if DEBUG
 extension CardManagementEnvironment {
     static var preview: CardManagementEnvironment {
@@ -541,12 +547,6 @@ extension CardManagementEnvironment {
             openAddCardFlow: {},
             close: {}
         )
-    }
-}
-
-extension Card.Fulfillment.Status {
-    var canActivate: Bool {
-        self == .shipped || self == .delivered
     }
 }
 
