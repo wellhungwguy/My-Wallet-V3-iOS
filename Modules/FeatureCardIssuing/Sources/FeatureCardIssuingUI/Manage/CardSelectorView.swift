@@ -40,8 +40,10 @@ struct CardSelectorView: View {
                             Text(L10n.Selector.myCards)
                                 .typography(.subheading)
                             Spacer()
-                            SmallMinimalButton(title: L10n.Button.addCard) {
-                                viewStore.send(CardManagementAction.openAddCardFlow)
+                            if viewStore.state.canAddCards {
+                                SmallMinimalButton(title: L10n.Button.addCard) {
+                                    viewStore.send(CardManagementAction.openAddCardFlow)
+                                }
                             }
                         }
                         .padding(.horizontal, Spacing.padding3)

@@ -47,7 +47,7 @@ final class CardRepository: CardRepositoryAPI {
 
         let cardCache: AnyCache<String, [Card]> = InMemoryCache(
             configuration: .onLoginLogout(),
-            refreshControl: PerpetualCacheRefreshControl()
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
         cachedCardValue = CachedValueNew(

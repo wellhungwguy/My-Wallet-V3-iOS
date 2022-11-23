@@ -247,8 +247,8 @@ let cardOrderingReducer: Reducer<
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardOrderingAction.productsResponse)
         case .productsResponse(.success(let products)):
-            state.products = products
-            state.selectedProduct = products[safe: 0]
+            state.products = products.filter(\.hasRemainingCards)
+            state.selectedProduct = state.products[safe: 0]
             return .none
         case .productsResponse(.failure(let error)):
             state.error = error
@@ -528,8 +528,8 @@ struct MockServices: CardServiceAPI,
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
         .just([
-            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual),
-            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical)
+            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual, remainingCards: 1),
+            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical, remainingCards: 1)
         ])
     }
 

@@ -22,7 +22,7 @@ final class ProductsRepository: ProductsRepositoryAPI {
 
         let cache: AnyCache<Key, [Product]> = InMemoryCache(
             configuration: .onLoginLogout(),
-            refreshControl: PerpetualCacheRefreshControl()
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(
