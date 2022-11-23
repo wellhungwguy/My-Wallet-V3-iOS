@@ -106,6 +106,7 @@ struct ImportWalletView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
+                    signUpCountriesService: NoSignUpCountriesService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     recaptchaService: NoOpGoogleRecatpchaService()
                 )

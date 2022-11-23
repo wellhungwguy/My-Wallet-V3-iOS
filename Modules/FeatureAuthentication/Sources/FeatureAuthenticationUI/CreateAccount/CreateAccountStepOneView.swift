@@ -201,6 +201,7 @@ struct CreateAccountStepOneView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
+                    signUpCountriesService: NoSignUpCountriesService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     recaptchaService: NoOpGoogleRecatpchaService()
                 )
@@ -208,4 +209,14 @@ struct CreateAccountStepOneView_Previews: PreviewProvider {
         )
     }
 }
+
+class NoSignUpCountriesService: SignUpCountriesServiceAPI {
+
+    init() {}
+
+    var countries: AnyPublisher<[Country], Error> {
+        .empty()
+    }
+}
+
 #endif

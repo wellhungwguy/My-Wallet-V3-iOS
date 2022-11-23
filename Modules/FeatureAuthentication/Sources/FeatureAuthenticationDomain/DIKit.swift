@@ -130,6 +130,12 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> SignUpCountriesServiceAPI in
+            SignUpCountriesService(
+                client: DIKit.resolve()
+            )
+        }
+
         factory { () -> DeviceVerificationServiceAPI in
             DeviceVerificationService(
                 deviceVerificationRepository: DIKit.resolve(),

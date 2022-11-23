@@ -44,8 +44,6 @@ public struct CreateAccountStepTwoState: Equatable, NavigationState {
     public enum InputValidationError: Equatable {
         case invalidEmail
         case weakPassword
-        case noCountrySelected
-        case noCountryStateSelected
         case termsNotAccepted
     }
 

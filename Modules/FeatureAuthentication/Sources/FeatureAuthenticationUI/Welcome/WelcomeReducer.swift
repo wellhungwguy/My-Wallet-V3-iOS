@@ -86,6 +86,7 @@ public struct WelcomeEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let signUpCountriesService: SignUpCountriesServiceAPI
     let recaptchaService: GoogleRecaptchaServiceAPI
     let checkReferralClient: CheckReferralClientAPI
 
@@ -104,6 +105,7 @@ public struct WelcomeEnvironment {
         walletRecoveryService: WalletRecoveryService = DIKit.resolve(),
         walletCreationService: WalletCreationService = DIKit.resolve(),
         walletFetcherService: WalletFetcherService = DIKit.resolve(),
+        signUpCountriesService: SignUpCountriesServiceAPI = DIKit.resolve(),
         accountRecoveryService: AccountRecoveryServiceAPI = DIKit.resolve(),
         checkReferralClient: CheckReferralClientAPI = DIKit.resolve()
     ) {
@@ -120,6 +122,7 @@ public struct WelcomeEnvironment {
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
+        self.signUpCountriesService = signUpCountriesService
         self.accountRecoveryService = accountRecoveryService
         self.checkReferralClient = checkReferralClient
         self.recaptchaService = recaptchaService
@@ -141,6 +144,7 @@ public let welcomeReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
+                    signUpCountriesService: $0.signUpCountriesService,
                     featureFlagsService: $0.featureFlagsService,
                     recaptchaService: $0.recaptchaService,
                     checkReferralClient: $0.checkReferralClient,

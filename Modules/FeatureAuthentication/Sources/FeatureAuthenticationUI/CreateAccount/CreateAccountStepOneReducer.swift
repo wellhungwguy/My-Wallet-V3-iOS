@@ -29,7 +29,10 @@ public enum CreateAccountStepOneRoute: NavigationRoute {
                     subtitle: LocalizedStrings.countriesPickerSubtitle,
                     onClose: { viewStore.send(.set(\.$selectedAddressSegmentPicker, nil)) },
                     content: {
-                        CountryPickerView(selectedItem: viewStore.binding(\.$country))
+                        CountryPickerView(
+                            selectedItem: viewStore.binding(\.$country),
+                            items: viewStore.binding(\.$countries)
+                        )
                     }
                 )
             }
@@ -102,6 +105,8 @@ public struct CreateAccountStepOneState: Equatable, NavigationState {
     @BindableState public var country: SearchableItem<String>?
     @BindableState public var countryState: SearchableItem<String>?
 
+    @BindableState public var countries: [SearchableItem<String>]
+
     // Form interaction
     @BindableState public var passwordFieldTextVisible: Bool = false
     @BindableState public var selectedInputField: Field?
@@ -131,6 +136,7 @@ public struct CreateAccountStepOneState: Equatable, NavigationState {
         states: [SearchableItem<String>] = StatePickerView.usaStates
     ) {
         self.context = context
+        self.countries = countries
         referralCode = ""
         inputValidationState = .unknown
         referralCodeValidationState = .unknown
@@ -161,6 +167,7 @@ public enum CreateAccountStepOneAction: Equatable, NavigationAction, BindableAct
     case accountCreationCancelled
     case route(RouteIntent<CreateAccountStepOneRoute>?)
     case accountRecoveryFailed(WalletRecoveryError)
+    case signUpCountriesFetched([Country])
     case accountCreation(Result<WalletCreatedContext, WalletCreationServiceError>)
     case accountImported(Result<Either<WalletCreatedContext, EmptyValue>, WalletCreationServiceError>)
     case walletFetched(Result<Either<EmptyValue, WalletFetchedContext>, WalletFetcherServiceError>)
@@ -178,6 +185,7 @@ struct CreateAccountStepOneEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
+    let signUpCountriesService: SignUpCountriesServiceAPI
     let checkReferralClient: CheckReferralClientAPI?
     let featureFlagsService: FeatureFlagsServiceAPI
     let recaptchaService: GoogleRecaptchaServiceAPI
@@ -191,6 +199,7 @@ struct CreateAccountStepOneEnvironment {
         walletRecoveryService: WalletRecoveryService,
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
+        signUpCountriesService: SignUpCountriesServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         recaptchaService: GoogleRecaptchaServiceAPI,
         checkReferralClient: CheckReferralClientAPI? = nil,
@@ -203,6 +212,7 @@ struct CreateAccountStepOneEnvironment {
         self.walletRecoveryService = walletRecoveryService
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
+        self.signUpCountriesService = signUpCountriesService
         self.checkReferralClient = checkReferralClient
         self.featureFlagsService = featureFlagsService
         self.recaptchaService = recaptchaService
@@ -212,6 +222,7 @@ struct CreateAccountStepOneEnvironment {
 
 typealias CreateAccountStepOneLocalization = LocalizationConstants.FeatureAuthentication.CreateAccount
 
+// swiftlint:disable closure_body_length
 let createAccountStepOneReducer = Reducer.combine(
     createAccountStepTwoReducer
         .optional()
@@ -438,8 +449,33 @@ let createAccountStepOneReducer = Reducer.combine(
                     .isEnabled(.referral)
                     .map(CreateAccountStepOneAction.referralFieldIsEnabled)
                     .receive(on: environment.mainQueue)
+                    .eraseToEffect(),
+                environment
+                    .signUpCountriesService
+                    .countries
+                    .replaceError(with: [])
+                    .map(CreateAccountStepOneAction.signUpCountriesFetched)
+                    .receive(on: environment.mainQueue)
                     .eraseToEffect()
             )
+
+        case let .signUpCountriesFetched(countries):
+            if countries.isNotEmpty {
+                state.countries = countries
+                    .compactMap { country -> SearchableItem? in
+                        guard let countryName = Locale.current.localizedString(
+                            forRegionCode: country.code
+                        ) else { return nil }
+                        return SearchableItem(
+                            id: country.code,
+                            title: countryName
+                        )
+                    }
+                    .sorted {
+                        $0.title.localizedCompare($1.title) == .orderedAscending
+                    }
+            }
+            return .none
 
         case .informWalletFetched:
             return .none
