@@ -217,7 +217,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(from: event) {
+        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
         default:
@@ -227,7 +227,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(from: event) {
+        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
         default:
@@ -245,7 +245,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var stakingDeposit = app.on(blockchain.ux.asset.account.staking.deposit) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(from: event) {
+        switch try await cryptoAccount(for: .stakingDeposit, from: event) {
         case let account as CryptoStakingAccount:
             await transactionsRouter.presentTransactionFlow(to: .stakingDeposit(account))
         default:
@@ -327,6 +327,7 @@ public final class CoinViewObserver: Client.Observer {
             case .universal:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
+                           ?? accounts.first
                 )
                 .or(
                     throw: blockchain.ux.asset.error[]
@@ -334,11 +335,15 @@ public final class CoinViewObserver: Client.Observer {
                 )
 
             case .trading:
-                return try(accounts.first(where: { account in account is TradingAccount }))
-                    .or(
-                        throw: blockchain.ux.asset.error[]
-                            .error(message: "\(event) has no valid accounts for \(String(describing: action))")
-                    )
+                return try(
+                    accounts.first(where: { account in account is TradingAccount })
+                        ?? accounts.first(where: { account in account is InterestAccount })
+                        ?? accounts.first(where: { account in account is StakingAccount })
+                )
+                .or(
+                    throw: blockchain.ux.asset.error[]
+                        .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                )
 
             case .pkw:
                 return try(accounts.first(where: { account in account is NonCustodialAccount }))

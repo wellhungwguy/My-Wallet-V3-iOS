@@ -359,6 +359,12 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+			settings:
+				add:
+					payment:
+						method:
+							bank:
+							card:
 			walletconnect:
 				uri:
 				+ blockchain.db.type.string
