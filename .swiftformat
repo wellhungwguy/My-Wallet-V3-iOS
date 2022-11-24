@@ -2,6 +2,7 @@
 --disable blankLinesAtStartOfScope
 --disable spaceAroundParens
 --disable redundanttype
+--disable typeSugar
 --disable redundantvoidreturntype
 --disable indent
 --allman false
@@ -51,7 +52,6 @@
 --self remove
 --selfrequired 
 --semicolons inline
---shortoptionals always
 --smarttabs enabled
 --stripunusedargs closure-only
 --structthreshold 0

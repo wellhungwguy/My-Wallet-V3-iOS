@@ -90,7 +90,6 @@ only_rules:
 - statement_position
 - superfluous_disable_command
 - switch_case_alignment
-- syntactic_sugar
 - toggle_bool
 - trailing_comma
 - trailing_newline
