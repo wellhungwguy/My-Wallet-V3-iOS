@@ -211,6 +211,7 @@ public extension I_blockchain_app_configuration {
 	var `transaction`: L_blockchain_app_configuration_transaction { .init("\(__).transaction") }
 	var `ui`: L_blockchain_app_configuration_ui { .init("\(__).ui") }
 	var `unified`: L_blockchain_app_configuration_unified { .init("\(__).unified") }
+	var `unspent`: L_blockchain_app_configuration_unspent { .init("\(__).unspent") }
 	var `wallet`: L_blockchain_app_configuration_wallet { .init("\(__).wallet") }
 }
 public final class L_blockchain_app_configuration_action: L, I_blockchain_app_configuration_action {
@@ -1272,6 +1273,31 @@ public final class L_blockchain_app_configuration_unified_sign__in_is_enabled: L
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unified.sign_in.is.enabled", comment: "") }
 }
 public protocol I_blockchain_app_configuration_unified_sign__in_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_unspent: L, I_blockchain_app_configuration_unspent {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unspent", comment: "") }
+}
+public protocol I_blockchain_app_configuration_unspent: I {}
+public extension I_blockchain_app_configuration_unspent {
+	var `outputs`: L_blockchain_app_configuration_unspent_outputs { .init("\(__).outputs") }
+}
+public final class L_blockchain_app_configuration_unspent_outputs: L, I_blockchain_app_configuration_unspent_outputs {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unspent.outputs", comment: "") }
+}
+public protocol I_blockchain_app_configuration_unspent_outputs: I {}
+public extension I_blockchain_app_configuration_unspent_outputs {
+	var `cache`: L_blockchain_app_configuration_unspent_outputs_cache { .init("\(__).cache") }
+}
+public final class L_blockchain_app_configuration_unspent_outputs_cache: L, I_blockchain_app_configuration_unspent_outputs_cache {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unspent.outputs.cache", comment: "") }
+}
+public protocol I_blockchain_app_configuration_unspent_outputs_cache: I {}
+public extension I_blockchain_app_configuration_unspent_outputs_cache {
+	var `config`: L_blockchain_app_configuration_unspent_outputs_cache_config { .init("\(__).config") }
+}
+public final class L_blockchain_app_configuration_unspent_outputs_cache_config: L, I_blockchain_app_configuration_unspent_outputs_cache_config {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.unspent.outputs.cache.config", comment: "") }
+}
+public protocol I_blockchain_app_configuration_unspent_outputs_cache_config: I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_wallet: L, I_blockchain_app_configuration_wallet {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.wallet", comment: "") }
 }
@@ -2570,7 +2596,14 @@ public extension I_blockchain_type {
 public final class L_blockchain_type_currency: L, I_blockchain_type_currency {
 	public override class var localized: String { NSLocalizedString("blockchain.type.currency", comment: "") }
 }
-public protocol I_blockchain_type_currency: I_blockchain_db_type_string {}
+public protocol I_blockchain_type_currency: I {}
+public extension I_blockchain_type_currency {
+	var `code`: L_blockchain_type_currency_code { .init("\(__).code") }
+}
+public final class L_blockchain_type_currency_code: L, I_blockchain_type_currency_code {
+	public override class var localized: String { NSLocalizedString("blockchain.type.currency.code", comment: "") }
+}
+public protocol I_blockchain_type_currency_code: I_blockchain_db_type_string {}
 public final class L_blockchain_type_key: L, I_blockchain_type_key {
 	public override class var localized: String { NSLocalizedString("blockchain.type.key", comment: "") }
 }
@@ -2606,6 +2639,8 @@ public protocol I_blockchain_type_money: I {}
 public extension I_blockchain_type_money {
 	var `amount`: L_blockchain_type_money_amount { .init("\(__).amount") }
 	var `currency`: L_blockchain_type_money_currency { .init("\(__).currency") }
+	var `display`: L_blockchain_type_money_display { .init("\(__).display") }
+	var `precision`: L_blockchain_type_money_precision { .init("\(__).precision") }
 }
 public final class L_blockchain_type_money_amount: L, I_blockchain_type_money_amount {
 	public override class var localized: String { NSLocalizedString("blockchain.type.money.amount", comment: "") }
@@ -2615,6 +2650,43 @@ public final class L_blockchain_type_money_currency: L, I_blockchain_type_money_
 	public override class var localized: String { NSLocalizedString("blockchain.type.money.currency", comment: "") }
 }
 public protocol I_blockchain_type_money_currency: I_blockchain_type_currency {}
+public final class L_blockchain_type_money_display: L, I_blockchain_type_money_display {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display", comment: "") }
+}
+public protocol I_blockchain_type_money_display: I {}
+public extension I_blockchain_type_money_display {
+	var `code`: L_blockchain_type_money_display_code { .init("\(__).code") }
+	var `string`: L_blockchain_type_money_display_string { .init("\(__).string") }
+	var `symbol`: L_blockchain_type_money_display_symbol { .init("\(__).symbol") }
+}
+public final class L_blockchain_type_money_display_code: L, I_blockchain_type_money_display_code {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.code", comment: "") }
+}
+public protocol I_blockchain_type_money_display_code: I_blockchain_db_type_string {}
+public final class L_blockchain_type_money_display_string: L, I_blockchain_type_money_display_string {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string", comment: "") }
+}
+public protocol I_blockchain_type_money_display_string: I {}
+public extension I_blockchain_type_money_display_string {
+	var `major`: L_blockchain_type_money_display_string_major { .init("\(__).major") }
+	var `minor`: L_blockchain_type_money_display_string_minor { .init("\(__).minor") }
+}
+public final class L_blockchain_type_money_display_string_major: L, I_blockchain_type_money_display_string_major {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string.major", comment: "") }
+}
+public protocol I_blockchain_type_money_display_string_major: I_blockchain_db_type_string {}
+public final class L_blockchain_type_money_display_string_minor: L, I_blockchain_type_money_display_string_minor {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.string.minor", comment: "") }
+}
+public protocol I_blockchain_type_money_display_string_minor: I_blockchain_db_type_string {}
+public final class L_blockchain_type_money_display_symbol: L, I_blockchain_type_money_display_symbol {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.display.symbol", comment: "") }
+}
+public protocol I_blockchain_type_money_display_symbol: I_blockchain_db_type_string {}
+public final class L_blockchain_type_money_precision: L, I_blockchain_type_money_precision {
+	public override class var localized: String { NSLocalizedString("blockchain.type.money.precision", comment: "") }
+}
+public protocol I_blockchain_type_money_precision: I_blockchain_db_type_integer {}
 public final class L_blockchain_ui: L, I_blockchain_ui {
 	public override class var localized: String { NSLocalizedString("blockchain.ui", comment: "") }
 }
@@ -4166,7 +4238,7 @@ public extension I_blockchain_ux_asset {
 public final class L_blockchain_ux_asset_account: L, I_blockchain_ux_asset_account {
 	public override class var localized: String { NSLocalizedString("blockchain.ux.asset.account", comment: "") }
 }
-public protocol I_blockchain_ux_asset_account: I_blockchain_db_collection, I_blockchain_ux_type_story {}
+public protocol I_blockchain_ux_asset_account: I_blockchain_db_collection, I_blockchain_ux_type_story, I_blockchain_ux_type_analytics_privacy_policy_obfuscate {}
 public extension I_blockchain_ux_asset_account {
 	var `activity`: L_blockchain_ux_asset_account_activity { .init("\(__).activity") }
 	var `buy`: L_blockchain_ux_asset_account_buy { .init("\(__).buy") }

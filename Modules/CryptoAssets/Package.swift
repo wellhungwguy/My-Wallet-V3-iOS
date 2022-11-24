@@ -50,6 +50,7 @@ let package = Package(
             url: "https://github.com/paulo-bc/YenomBitcoinKit.git",
             branch: "paulo/dust-mixing-crypto-swift"
         ),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../Metadata"),
         .package(path: "../Network"),
         .package(path: "../Errors"),
@@ -78,6 +79,7 @@ let package = Package(
         .target(
             name: "BitcoinChainKit",
             dependencies: [
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
