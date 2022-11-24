@@ -38,13 +38,13 @@ public struct MinimalDoubleButton<LeadingLeadingView: View, TrailingLeadingView:
         @ViewBuilder trailingLeadingView: @escaping () -> TrailingLeadingView,
         trailingAction: @escaping () -> Void
     ) {
-        leadingButton = ButtonData(
+        self.leadingButton = ButtonData(
             title: leadingTitle,
             isLoading: leadingIsLoading,
             leadingView: leadingLeadingView,
             action: leadingAction
         )
-        trailingButton = ButtonData(
+        self.trailingButton = ButtonData(
             title: trailingTitle,
             isLoading: trailingIsLoading,
             leadingView: trailingLeadingView,

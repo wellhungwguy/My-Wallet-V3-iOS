@@ -17,7 +17,7 @@ public struct OnboardingChecklistView: View {
 
     public init(store: Store<OnboardingChecklist.State, OnboardingChecklist.Action>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {

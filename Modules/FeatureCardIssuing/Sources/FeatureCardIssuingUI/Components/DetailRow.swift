@@ -162,7 +162,7 @@ extension DetailsRow where Leading == EmptyView {
         self.trailingTitle = trailingTitle
         self.leadingSubtitle = leadingSubtitle
         self.trailingSubtitle = trailingSubtitle
-        leading = { EmptyView() }
+        self.leading = { EmptyView() }
         self.trailing = trailing
         self.action = action
     }
@@ -179,7 +179,7 @@ extension DetailsRow where Leading == EmptyView {
         self.trailingTitle = .title(trailingTitle)
         self.leadingSubtitle = .caption(leadingSubtitle)
         self.trailingSubtitle = .subtitle(trailingSubtitle)
-        leading = { EmptyView() }
+        self.leading = { EmptyView() }
         self.trailing = trailing
         self.action = action
     }
@@ -200,7 +200,7 @@ extension DetailsRow where Trailing == EmptyView {
         self.leadingSubtitle = leadingSubtitle
         self.trailingSubtitle = trailingSubtitle
         self.leading = leading
-        trailing = { EmptyView() }
+        self.trailing = { EmptyView() }
         self.action = action
     }
 
@@ -217,7 +217,7 @@ extension DetailsRow where Trailing == EmptyView {
         self.leadingSubtitle = .caption(leadingSubtitle)
         self.trailingSubtitle = .subtitle(trailingSubtitle)
         self.leading = leading
-        trailing = { EmptyView() }
+        self.trailing = { EmptyView() }
         self.action = action
     }
 }
@@ -235,8 +235,8 @@ extension DetailsRow where Trailing == EmptyView, Leading == EmptyView {
         self.trailingTitle = trailingTitle
         self.leadingSubtitle = leadingSubtitle
         self.trailingSubtitle = trailingSubtitle
-        leading = { EmptyView() }
-        trailing = { EmptyView() }
+        self.leading = { EmptyView() }
+        self.trailing = { EmptyView() }
         self.action = action
     }
 
@@ -251,8 +251,8 @@ extension DetailsRow where Trailing == EmptyView, Leading == EmptyView {
         self.trailingTitle = .title(trailingTitle)
         self.leadingSubtitle = .caption(leadingSubtitle)
         self.trailingSubtitle = .subtitle(trailingSubtitle)
-        leading = { EmptyView() }
-        trailing = { EmptyView() }
+        self.leading = { EmptyView() }
+        self.trailing = { EmptyView() }
         self.action = action
     }
 }

@@ -39,7 +39,7 @@ final class UpdateMobileScreenSetupInteractor {
     private let disposeBag = DisposeBag()
 
     init(service: SettingsServiceAPI) {
-        serviceAPI = service
+        self.serviceAPI = service
         setupTrigger
             .bindAndCatch(weak: self) { (self) in
                 self.setup()

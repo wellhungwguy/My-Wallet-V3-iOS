@@ -43,17 +43,17 @@ final class SelectionItemViewPresenter {
     init(interactor: SelectionItemViewInteractor) {
         self.interactor = interactor
         let item = interactor.item
-        accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
+        self.accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
         switch item.thumb {
         case .image(let imageResource):
-            thumb = .image(
+            self.thumb = .image(
                 ImageViewContent(
                     imageResource: imageResource,
                     accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
                 )
             )
         case .emoji(let value):
-            thumb = .label(
+            self.thumb = .label(
                 LabelContent(
                     text: value,
                     font: .main(.medium, 30),
@@ -62,16 +62,16 @@ final class SelectionItemViewPresenter {
                 )
             )
         case .none:
-            thumb = .none
+            self.thumb = .none
         }
 
-        title = LabelContent(
+        self.title = LabelContent(
             text: item.title,
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.titleLabelPrefix)\(item.accessibilityId)")
         )
-        description = LabelContent(
+        self.description = LabelContent(
             text: item.subtitle,
             font: .main(.medium, 14),
             color: .titleText,

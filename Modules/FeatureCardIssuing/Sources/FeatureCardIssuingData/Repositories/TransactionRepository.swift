@@ -28,7 +28,7 @@ final class TransactionRepository: TransactionRepositoryAPI {
 
         self.cache = cache
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 client.fetchTransactions(

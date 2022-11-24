@@ -16,7 +16,7 @@ final class TargetSelectionPageModel {
 
     init(initialState: TargetSelectionPageState = .empty, interactor: TargetSelectionInteractor) {
         self.interactor = interactor
-        mviModel = MviModel(
+        self.mviModel = MviModel(
             initialState: initialState,
             performAction: { [unowned self] state, action -> Disposable? in
                 self.perform(previousState: state, action: action)

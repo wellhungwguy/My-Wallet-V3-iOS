@@ -54,7 +54,7 @@ final class DashboardFiatBalancesPresenter {
         interactor: FiatBalanceCollectionViewInteractor
     ) {
         self.interactor = interactor
-        presenter = FiatBalanceCollectionViewPresenter(interactor: interactor)
+        self.presenter = FiatBalanceCollectionViewPresenter(interactor: interactor)
 
         presenter
             .tap

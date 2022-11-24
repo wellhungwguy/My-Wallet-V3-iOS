@@ -90,8 +90,8 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnoun
         action: @escaping CardAnnouncementAction
     ) {
         self.isKycSupported = isKycSupported
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
-        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

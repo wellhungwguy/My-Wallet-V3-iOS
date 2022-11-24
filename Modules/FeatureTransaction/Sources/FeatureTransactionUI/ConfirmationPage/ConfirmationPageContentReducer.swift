@@ -87,9 +87,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         self.messageRecorder = messageRecorder
         self.withdrawalLocksCheckRepository = withdrawalLocksCheckRepository
         self.analyticsRecorder = analyticsRecorder
-        cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
-        continueButtonViewModel = .primary(with: "")
-        memoModel = TextFieldViewModel(
+        self.cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
+        self.continueButtonViewModel = .primary(with: "")
+        self.memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder

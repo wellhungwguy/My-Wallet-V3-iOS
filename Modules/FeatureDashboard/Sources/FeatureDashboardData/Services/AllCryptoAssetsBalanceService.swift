@@ -28,7 +28,7 @@ public class AllCryptoAssetsBalanceService: AllCryptoAssetsServiceAPI {
     ) {
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
-        custodialBalanceRepository = allCrypoBalanceRepository
+        self.custodialBalanceRepository = allCrypoBalanceRepository
         self.nonCustodialBalanceRepository = nonCustodialBalanceRepository
         self.coincore = coincore
         self.app = app
@@ -63,12 +63,13 @@ public class AllCryptoAssetsBalanceService: AllCryptoAssetsServiceAPI {
     public func getAllNonCustodialAssets() async -> [AssetBalanceInfo] {
         var assetsInfo: [AssetBalanceInfo] = []
         if let balanceInfo = try? await nonCustodialBalanceRepository.balances.await() {
-            let groupedDictionary = Dictionary(grouping: balanceInfo.balances, by: {$0.balance.currency.name})
+            let groupedDictionary = Dictionary(grouping: balanceInfo.balances, by: { $0.balance.currency.name })
             var groupedTotalBalances: [MoneyValue] = []
-            groupedDictionary.forEach { (key, balances) in
+            groupedDictionary.forEach { _, balances in
                 if let firstBalance = balances.first?.balance,
-                   let cryptoCurrency = firstBalance.currencyType.cryptoCurrency {
-                    let balanceSum =  balances.reduce(into: MoneyValue.zero(currency: cryptoCurrency)) { partialResult, element in
+                   let cryptoCurrency = firstBalance.currencyType.cryptoCurrency
+                {
+                    let balanceSum = balances.reduce(into: MoneyValue.zero(currency: cryptoCurrency)) { partialResult, element in
                         try? partialResult += element.balance
                     }
                     groupedTotalBalances.append(balanceSum)

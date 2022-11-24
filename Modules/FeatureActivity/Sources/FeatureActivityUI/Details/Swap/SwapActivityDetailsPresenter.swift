@@ -63,7 +63,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         event: SwapActivityItemEvent,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amounts.withdrawal.displayString,
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
@@ -96,67 +96,67 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             )
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.date)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let amountFrom = event.amounts.withdrawal.displayString
-        amountFromPresenter = TransactionalLineItem.amount(amountFrom).defaultPresenter(
+        self.amountFromPresenter = TransactionalLineItem.amount(amountFrom).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let amountFor = event.amounts.deposit.displayString
-        amountForPresenter = TransactionalLineItem.for(amountFor).defaultPresenter(
+        self.amountForPresenter = TransactionalLineItem.for(amountFor).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let pair = MoneyValuePair(base: event.amounts.withdrawal, quote: event.amounts.deposit)
         let exchangeRate = pair.exchangeRate
         let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
-        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+        self.exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let total = event.amounts.fiatValue.displayString
-        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         switch event.isNonCustodial {
         case true:
             let destination = event.kind.withdrawalAddress
-            toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
                 analyticsRecorder: analyticsRecorder,
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
 
             if let source = event.depositTxHash {
-                fromPresenter = TransactionalLineItem.from(source).defaultCopyablePresenter(
+                self.fromPresenter = TransactionalLineItem.from(source).defaultCopyablePresenter(
                     analyticsRecorder: analyticsRecorder,
                     accessibilityIdPrefix: AccessibilityId.lineItemPrefix
                 )
             } else {
-                fromPresenter = nil
+                self.fromPresenter = nil
             }
         case false:
             let destination = "\(event.pair.outputCurrencyType.displayCode) \(LocalizedString.wallet)"
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
 
             let source = "\(event.pair.inputCurrencyType.displayCode) \(LocalizedString.wallet)"
-            fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+            self.fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         }
 
-        cells = [
+        self.cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,

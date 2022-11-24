@@ -80,15 +80,15 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     let presenter: Presenter
 
     init(cardView: TargetSelectionCardModel) {
-        account = nil
-        presenter = .cardView(cardView)
+        self.account = nil
+        self.presenter = .cardView(cardView)
     }
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
         case .singleAccountAvailableTarget(let interactor):
-            account = interactor.account
-            presenter = .radioSelection(
+            self.account = interactor.account
+            self.presenter = .radioSelection(
                 RadioAccountCellPresenter(
                     interactor: interactor,
                     accessibilityPrefix: assetAction.accessibilityPrefix
@@ -96,7 +96,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             )
         case .singleAccount(let account, let interactor):
             self.account = account
-            presenter = .singleAccount(
+            self.presenter = .singleAccount(
                 AccountCurrentBalanceCellPresenter(
                     account: account,
                     assetAction: assetAction,
@@ -106,7 +106,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             )
         case .walletInputField(let account, let viewModel):
             self.account = account
-            presenter = .walletInputField(viewModel)
+            self.presenter = .walletInputField(viewModel)
         }
     }
 

@@ -76,7 +76,7 @@ extension Card {
         ) {
             self.id = id
             self.cardId = cardId
-            transactionType = type
+            self.transactionType = type
             self.state = state
             self.originalAmount = originalAmount
             self.displayAmount = displayAmount

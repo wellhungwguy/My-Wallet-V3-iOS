@@ -17,7 +17,7 @@ final class UpdateMobileRouter {
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         service: MobileSettingsServiceAPI = resolve()
     ) {
-        serviceProvider = service
+        self.serviceProvider = service
         self.navigationRouter = navigationRouter
     }
 

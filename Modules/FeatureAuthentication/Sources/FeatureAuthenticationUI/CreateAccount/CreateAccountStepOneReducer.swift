@@ -137,9 +137,9 @@ public struct CreateAccountStepOneState: Equatable, NavigationState {
     ) {
         self.context = context
         self.countries = countries
-        referralCode = ""
-        inputValidationState = .unknown
-        referralCodeValidationState = .unknown
+        self.referralCode = ""
+        self.inputValidationState = .unknown
+        self.referralCodeValidationState = .unknown
     }
 }
 
@@ -459,7 +459,7 @@ let createAccountStepOneReducer = Reducer.combine(
                     .eraseToEffect()
             )
 
-        case let .signUpCountriesFetched(countries):
+        case .signUpCountriesFetched(let countries):
             if countries.isNotEmpty {
                 state.countries = countries
                     .compactMap { country -> SearchableItem? in

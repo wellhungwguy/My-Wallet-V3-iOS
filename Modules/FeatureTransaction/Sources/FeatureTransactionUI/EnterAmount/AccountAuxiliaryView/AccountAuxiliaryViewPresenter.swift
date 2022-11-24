@@ -32,21 +32,21 @@ final class AccountAuxiliaryViewPresenter {
             .emit(to: interactor.auxiliaryViewTappedRelay)
             .disposed(by: disposeBag)
 
-        buttonEnabled = interactor
+        self.buttonEnabled = interactor
             .state
             .map(\.isEnabled)
 
-        badgeViewVisiblity = interactor
+        self.badgeViewVisiblity = interactor
             .state
             .map(\.badgeViewModel)
             .map { $0.isNil ? .hidden : .visible }
 
-        badgeViewModel = interactor
+        self.badgeViewModel = interactor
             .state
             .map(\.badgeViewModel)
             .map { $0.isNil ? .default(with: "") : $0! }
 
-        badgeImageViewModel = interactor
+        self.badgeImageViewModel = interactor
             .state
             .map {
                 ($0.imageResource, $0.imageBackgroundColor)
@@ -60,7 +60,7 @@ final class AccountAuxiliaryViewPresenter {
                 )
             }
 
-        titleLabel = interactor
+        self.titleLabel = interactor
             .state
             .map(\.title)
             .map {
@@ -73,7 +73,7 @@ final class AccountAuxiliaryViewPresenter {
                 )
             }
 
-        subtitleLabel = interactor
+        self.subtitleLabel = interactor
             .state
             .map(\.subtitle)
             .map {

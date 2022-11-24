@@ -68,18 +68,18 @@ public enum OrderPayload {
                 callback: String?,
                 applePay: ApplePayToken? = nil
             ) {
-                everypay = redirectURL.map(EveryPay.init)
+                self.everypay = redirectURL.map(EveryPay.init)
 
                 if let applePay,
                    let encoded = try? JSONEncoder().encode(applePay)
                 {
-                    applePayPaymentToken = String(data: encoded, encoding: .utf8)
+                    self.applePayPaymentToken = String(data: encoded, encoding: .utf8)
                 } else {
-                    applePayPaymentToken = nil
+                    self.applePayPaymentToken = nil
                 }
 
                 self.redirectURL = redirectURL
-                paymentContact = .init(contact: applePay?.billingPaymentContact)
+                self.paymentContact = .init(contact: applePay?.billingPaymentContact)
                 self.callback = callback
             }
         }
@@ -91,19 +91,19 @@ public enum OrderPayload {
         init(partner: Partner, action: CreateActionType, paymentMethodId: String?) {
             switch partner {
             case .card(redirectURL: let url):
-                attributes = Attributes(
+                self.attributes = Attributes(
                     redirectURL: url,
                     callback: nil
                 )
             case .bank:
-                attributes = Attributes(
+                self.attributes = Attributes(
                     redirectURL: nil,
                     callback: Callback.url.absoluteString
                 )
             case .funds:
-                attributes = nil
+                self.attributes = nil
             case .applePay(let params):
-                attributes = Attributes(
+                self.attributes = Attributes(
                     redirectURL: PartnerAuthorizationData.exitLink,
                     callback: nil,
                     applePay: params
@@ -156,19 +156,19 @@ public enum OrderPayload {
             self.paymentType = paymentType?.requestType
             switch action {
             case .buy:
-                input = Input(
+                self.input = Input(
                     symbol: fiatValue.code,
                     amount: fiatValue.minorString
                 )
-                output = Output(symbol: cryptoValue.code)
-                pair = "\(output.symbol)-\(input.symbol)"
+                self.output = Output(symbol: cryptoValue.code)
+                self.pair = "\(output.symbol)-\(input.symbol)"
             case .sell:
-                input = Input(
+                self.input = Input(
                     symbol: cryptoValue.code,
                     amount: cryptoValue.minorString
                 )
-                output = Output(symbol: fiatCurrency.code)
-                pair = "\(input.symbol)-\(output.symbol)"
+                self.output = Output(symbol: fiatCurrency.code)
+                self.pair = "\(input.symbol)-\(output.symbol)"
             }
         }
     }

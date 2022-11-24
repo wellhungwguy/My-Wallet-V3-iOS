@@ -26,10 +26,10 @@ final class LoginService: LoginServiceAPI {
     ) {
         self.payloadService = payloadService
         self.twoFAPayloadService = twoFAPayloadService
-        guidRepository = repository
+        self.guidRepository = repository
 
-        authenticatorSubject = CurrentValueSubject(WalletAuthenticatorType.standard)
-        authenticator = authenticatorSubject.eraseToAnyPublisher()
+        self.authenticatorSubject = CurrentValueSubject(WalletAuthenticatorType.standard)
+        self.authenticator = authenticatorSubject.eraseToAnyPublisher()
     }
 
     // MARK: - API

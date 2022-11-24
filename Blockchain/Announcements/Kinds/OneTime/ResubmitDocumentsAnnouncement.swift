@@ -85,7 +85,7 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement, ActionableAnnoun
         action: @escaping CardAnnouncementAction
     ) {
         self.needsDocumentResubmission = needsDocumentResubmission
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

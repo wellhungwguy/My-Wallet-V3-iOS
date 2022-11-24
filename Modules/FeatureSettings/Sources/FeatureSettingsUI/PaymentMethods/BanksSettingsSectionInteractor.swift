@@ -52,7 +52,7 @@ final class BanksSettingsSectionInteractor {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
 
-        addPaymentMethodInteractors = enabledCurrenciesService.allEnabledFiatCurrencies
+        self.addPaymentMethodInteractors = enabledCurrenciesService.allEnabledFiatCurrencies
             .map {
                 AddPaymentMethodInteractor(
                     paymentMethod: .bank($0),

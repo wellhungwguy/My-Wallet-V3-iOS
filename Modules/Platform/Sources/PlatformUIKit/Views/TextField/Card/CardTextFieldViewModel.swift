@@ -71,7 +71,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
         validator: CardNumberValidator,
         messageRecorder: MessageRecording
     ) {
-        cardNumberValidator = validator
+        self.cardNumberValidator = validator
         super.init(
             with: .cardNumber,
             returnKeyType: .default,

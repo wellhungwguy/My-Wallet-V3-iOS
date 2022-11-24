@@ -18,7 +18,7 @@ final class DerivationTests: XCTestCase {
             xpriv: nil,
             xpub: "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj",
             addressLabels: [],
-            cache: AddressCache.init(receiveAccount: "", changeAccount: "")
+            cache: AddressCache(receiveAccount: "", changeAccount: "")
         )
 
         XCTAssertTrue(modelMissingXpriv.needsReplenishment)
@@ -29,7 +29,7 @@ final class DerivationTests: XCTestCase {
             xpriv: "xprv9xpXFhFpqdQK3TmytPBqXtGSwS3DLjojFhTGht8gwAAii8py5X6pxeBnQ6ehJiyJ6nDjWGJfZ95WxByFXVkDxHXrqu53WCRGypk2ttuqncb",
             xpub: "",
             addressLabels: [],
-            cache: AddressCache.init(receiveAccount: "", changeAccount: "")
+            cache: AddressCache(receiveAccount: "", changeAccount: "")
         )
 
         XCTAssertTrue(modelEmptyXpub.needsReplenishment)

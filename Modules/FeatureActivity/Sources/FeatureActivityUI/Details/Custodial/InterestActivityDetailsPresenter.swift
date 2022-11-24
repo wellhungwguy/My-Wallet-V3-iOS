@@ -64,10 +64,10 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .withdraw:
             title = LocalizedString.Title.withdrawal
             let from = event.cryptoCurrency.code + " \(LocalizedString.rewardsAccount)"
-            fromPresenter = TransactionalLineItem.from(from).defaultPresenter(
+            self.fromPresenter = TransactionalLineItem.from(from).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            toPresenter = DefaultLineItemCellPresenter(
+            self.toPresenter = DefaultLineItemCellPresenter(
                 interactor: DefaultLineItemCellInteractor(
                     title: DefaultLabelContentInteractor(
                         knownValue: LocalizationConstants.LineItem.Transactional.to
@@ -82,10 +82,10 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .interestEarned:
             title = LocalizedString.Title.rewardsEarned
             let destination = event.cryptoCurrency.code + " \(LocalizedString.rewardsAccount)"
-            fromPresenter = TransactionalLineItem.from(LocalizedString.companyName).defaultPresenter(
+            self.fromPresenter = TransactionalLineItem.from(LocalizedString.companyName).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .transfer:
@@ -94,17 +94,17 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
             let name = crypto.name
             let destination = event.cryptoCurrency.code + " \(LocalizedString.rewardsAccount)"
 
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
             if event.isInternalTransfer {
-                fromPresenter = TransactionalLineItem
+                self.fromPresenter = TransactionalLineItem
                     .from(name + " \(crypto.defaultTradingWalletName)")
                     .defaultPresenter(
                         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
                     )
             } else {
-                fromPresenter = TransactionalLineItem
+                self.fromPresenter = TransactionalLineItem
                     .from(name + " \(crypto.defaultWalletName)")
                     .defaultPresenter(
                         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
@@ -115,7 +115,7 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.value.displayString,
             descriptors: .h1(accessibilityIdPrefix: "")
         )
@@ -152,17 +152,17 @@ final class InterestActivityDetailsPresenter: DetailsScreenPresenterAPI {
             )
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.insertedAt)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        cells = [
+        self.cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,
@@ -275,10 +275,10 @@ final class StakingActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .withdraw:
             title = LocalizedString.Title.withdrawal
             let from = event.currency.code + " \(LocalizedString.stakingAccount)"
-            fromPresenter = TransactionalLineItem.from(from).defaultPresenter(
+            self.fromPresenter = TransactionalLineItem.from(from).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            toPresenter = DefaultLineItemCellPresenter(
+            self.toPresenter = DefaultLineItemCellPresenter(
                 interactor: DefaultLineItemCellInteractor(
                     title: DefaultLabelContentInteractor(
                         knownValue: LocalizationConstants.LineItem.Transactional.to
@@ -293,10 +293,10 @@ final class StakingActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .interestEarned:
             title = LocalizedString.Title.rewardsEarned
             let destination = event.currency.code + " \(LocalizedString.stakingAccount)"
-            fromPresenter = TransactionalLineItem.from(LocalizedString.companyName).defaultPresenter(
+            self.fromPresenter = TransactionalLineItem.from(LocalizedString.companyName).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .deposit:
@@ -305,17 +305,17 @@ final class StakingActivityDetailsPresenter: DetailsScreenPresenterAPI {
             let name = crypto.name
             let destination = event.currency.code + " \(LocalizedString.stakingAccount)"
 
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
             if event.extraAttributes?.isInternalTransfer == true {
-                fromPresenter = TransactionalLineItem
+                self.fromPresenter = TransactionalLineItem
                     .from(name + " \(crypto.defaultTradingWalletName)")
                     .defaultPresenter(
                         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
                     )
             } else {
-                fromPresenter = TransactionalLineItem
+                self.fromPresenter = TransactionalLineItem
                     .from(name + " \(crypto.defaultWalletName)")
                     .defaultPresenter(
                         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
@@ -326,7 +326,7 @@ final class StakingActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.value.displayString,
             descriptors: .h1(accessibilityIdPrefix: "")
         )
@@ -362,17 +362,17 @@ final class StakingActivityDetailsPresenter: DetailsScreenPresenterAPI {
             )
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.id).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.id).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.date.insertedAt)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        cells = [
+        self.cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,

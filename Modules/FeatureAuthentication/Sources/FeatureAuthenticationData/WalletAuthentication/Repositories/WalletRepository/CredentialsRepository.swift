@@ -19,10 +19,10 @@ final class CredentialsRepository: CredentialsRepositoryAPI {
         self.guidRepository = guidRepository
         self.sharedKeyRepository = sharedKeyRepository
 
-        guid = guidRepository
+        self.guid = guidRepository
             .guid
 
-        sharedKey = sharedKeyRepository
+        self.sharedKey = sharedKeyRepository
             .sharedKey
     }
 

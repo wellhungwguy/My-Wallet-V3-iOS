@@ -40,7 +40,7 @@ final class RemovePaymentMethodScreenPresenter {
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
 
-        titleLabelContent = LabelContent(
+        self.titleLabelContent = LabelContent(
             text: interactor.data.title,
             font: .main(.semibold, 20),
             color: .titleText,
@@ -48,7 +48,7 @@ final class RemovePaymentMethodScreenPresenter {
             accessibility: .id(AccessibilityIDs.title)
         )
 
-        descriptionLabelContent = LabelContent(
+        self.descriptionLabelContent = LabelContent(
             text: interactor.data.description,
             font: .main(.medium, 14),
             color: .descriptionText,
@@ -63,13 +63,13 @@ final class RemovePaymentMethodScreenPresenter {
         case .card(let type):
             imageResource = type.thumbnail ?? .local(name: "icon-card", bundle: .platformUIKit)
         }
-        badgeImageViewModel = BadgeImageViewModel.default(
+        self.badgeImageViewModel = BadgeImageViewModel.default(
             image: imageResource,
             accessibilityIdSuffix: AccessibilityIDs.badge
         )
         badgeImageViewModel.marginOffsetRelay.accept(Spacing.standard)
 
-        removeButtonViewModel = .destructive(with: buttonLocalizedString)
+        self.removeButtonViewModel = .destructive(with: buttonLocalizedString)
     }
 
     func viewDidLoad() {

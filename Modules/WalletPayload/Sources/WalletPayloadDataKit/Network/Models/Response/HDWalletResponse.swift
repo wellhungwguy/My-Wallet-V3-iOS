@@ -35,23 +35,23 @@ struct HDWalletResponse: Equatable, Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        seedHex = try container.decode(String.self, forKey: .seedHex)
-        passphrase = try container.decode(String.self, forKey: .passphrase)
-        mnemonicVerified = try container.decodeIfPresent(Bool.self, forKey: .mnemonicVerified) ?? false
+        self.seedHex = try container.decode(String.self, forKey: .seedHex)
+        self.passphrase = try container.decode(String.self, forKey: .passphrase)
+        self.mnemonicVerified = try container.decodeIfPresent(Bool.self, forKey: .mnemonicVerified) ?? false
         // default to `0` is `default_account_idx` is missing
-        defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
+        self.defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
 
         // attempt to decode version4 first and then version3, if both fail then an error will be thrown
         do {
             let accountsVersion4 = try container.decode([AccountWrapper.Version4].self, forKey: .accounts)
-            accounts = try decodeAccounts(
+            self.accounts = try decodeAccounts(
                 using: accountWrapperDecodingStrategy(version4:),
                 value: accountsVersion4
             )
             .get()
         } catch is DecodingError {
             let accountsVersion3 = try container.decode([AccountWrapper.Version3].self, forKey: .accounts)
-            accounts = try decodeAccounts(
+            self.accounts = try decodeAccounts(
                 using: accountWrapperDecodingStrategy(version3:),
                 value: accountsVersion3
             )

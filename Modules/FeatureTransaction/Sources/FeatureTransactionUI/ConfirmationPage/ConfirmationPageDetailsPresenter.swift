@@ -71,8 +71,8 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
 
-        navigationBarTrailingButtonAction = .default
-        navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
+        self.navigationBarTrailingButtonAction = .default
+        self.navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
             backButtonPressed.accept(())
         }
     }

@@ -26,7 +26,7 @@ final class ActivityRepository: DelegatedCustodyActivityRepositoryAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [authenticationDataRepository, client] key in
                 authenticationDataRepository.authenticationData

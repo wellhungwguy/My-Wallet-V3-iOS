@@ -20,8 +20,8 @@ final class NabuAuthenticationErrorBroadcaster: NabuAuthenticationErrorReceiverA
     private var userAlreadyRestoredSubject: PassthroughSubject<String, Never>
 
     init() {
-        userAlreadyRestoredSubject = PassthroughSubject<String, Never>()
-        userAlreadyRestored = userAlreadyRestoredSubject.eraseToAnyPublisher()
+        self.userAlreadyRestoredSubject = PassthroughSubject<String, Never>()
+        self.userAlreadyRestored = userAlreadyRestoredSubject.eraseToAnyPublisher()
         NotificationCenter.when(.logout) { [weak self] _ in
             self?.reset()
         }

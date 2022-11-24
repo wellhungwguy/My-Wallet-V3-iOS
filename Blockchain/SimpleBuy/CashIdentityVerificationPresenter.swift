@@ -33,7 +33,7 @@ final class CashIdentityVerificationPresenter {
 
     init(router: CashIdentityVerificationRouter = CashIdentityVerificationRouter()) {
         self.router = router
-        badgeNumberedItemViewModels = [
+        self.badgeNumberedItemViewModels = [
             .init(
                 number: 1,
                 title: LocalizationId.List.First.title,
@@ -53,7 +53,7 @@ final class CashIdentityVerificationPresenter {
                 descriptors: .dashboard(badgeAccessibilitySuffix: "3")
             )
         ]
-        announcement = .init(
+        self.announcement = .init(
             badgeImage: .init(
                 image: .local(name: "icon-gbp", bundle: .platformUIKit),
                 contentColor: .white,
@@ -67,11 +67,11 @@ final class CashIdentityVerificationPresenter {
             dismissState: .undismissible
         )
 
-        notNowButtonViewModel = .secondary(with: LocalizationId.notNow)
-        verifyIdentityButtonViewModel = .primary(with: LocalizationId.verifyIdentity)
+        self.notNowButtonViewModel = .secondary(with: LocalizationId.notNow)
+        self.verifyIdentityButtonViewModel = .primary(with: LocalizationId.verifyIdentity)
 
         let badgedNumberedItems: [CellType] = badgeNumberedItemViewModels.map { .numberedItem($0) }
-        cellArrangement =
+        self.cellArrangement =
             [.announcement(announcement)]
                 + badgedNumberedItems
                 + [.buttons([notNowButtonViewModel, verifyIdentityButtonViewModel])]

@@ -34,6 +34,7 @@ public struct PendingTransaction: Equatable {
         eligibilityAndNextPaymentMethodRecurringBuys
             .first(where: { $0.frequency == recurringBuyFrequency }) ?? .oneTime
     }
+
     /// The list of `TransactionConfirmation`.
     /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
     public private(set) var confirmations: [TransactionConfirmation] = []
@@ -73,7 +74,7 @@ public struct PendingTransaction: Equatable {
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
         self.paymentsDepositTerms = paymentsDepositTerms
-        _limits = Reference(limits)
+        self._limits = Reference(limits)
     }
 
     public func update(validationState: TransactionValidationState) -> PendingTransaction {

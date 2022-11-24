@@ -46,7 +46,7 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
-        account = .asset(cryptoAsset)
+        self.account = .asset(cryptoAsset)
         self.fiatCurrencyService = fiatCurrencyService
         self.app = app
     }

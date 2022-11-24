@@ -28,6 +28,6 @@ struct StellarReceiveAddress: CryptoReceiveAddress, QRCodeMetadataProvider {
         self.label = label
         self.memo = memo
         self.onTxCompleted = onTxCompleted
-        sep7URI = SEP7URI(address: address, amount: nil, memo: memo)
+        self.sep7URI = SEP7URI(address: address, amount: nil, memo: memo)
     }
 }

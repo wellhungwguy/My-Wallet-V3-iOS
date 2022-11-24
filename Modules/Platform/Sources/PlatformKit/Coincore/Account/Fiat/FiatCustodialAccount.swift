@@ -87,7 +87,7 @@ final class FiatCustodialAccount: FiatAccount {
         priceService: PriceServiceAPI = resolve(),
         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
-        label = fiatCurrency.defaultWalletName
+        self.label = fiatCurrency.defaultWalletName
         self.interestEligibilityRepository = interestEligibilityRepository
         self.fiatCurrency = fiatCurrency
         self.activityFetcher = activityFetcher

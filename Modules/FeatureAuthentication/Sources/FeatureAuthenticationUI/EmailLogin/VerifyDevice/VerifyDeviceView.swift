@@ -77,9 +77,9 @@ struct VerifyDeviceView: View {
         if let mailAppURL = URL(string: "message://"),
            UIApplication.shared.canOpenURL(mailAppURL)
         {
-            showOpenMailAppButton = true
+            self.showOpenMailAppButton = true
         } else {
-            showOpenMailAppButton = false
+            self.showOpenMailAppButton = false
         }
     }
 

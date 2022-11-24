@@ -53,7 +53,7 @@ public final class CryptoFeeRepository<FeeType: TransactionFee & Decodable>: Cry
         )
         .eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: feeCache,
             fetch: { [client] _ in
                 client.fees
@@ -76,6 +76,6 @@ public struct AnyCryptoFeeRepository<FeeType: CryptoFeeType>: CryptoFeeRepositor
     private let _fees: () -> AnyPublisher<FeeType, Never>
 
     public init<API: CryptoFeeRepositoryAPI>(repository: API) where API.FeeType == FeeType {
-        _fees = { repository.fees }
+        self._fees = { repository.fees }
     }
 }

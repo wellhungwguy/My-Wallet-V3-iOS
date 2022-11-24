@@ -41,6 +41,6 @@ public struct Step: Identifiable, Equatable, Hashable, Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        text = try container.decode(String.self)
+        self.text = try container.decode(String.self)
     }
 }

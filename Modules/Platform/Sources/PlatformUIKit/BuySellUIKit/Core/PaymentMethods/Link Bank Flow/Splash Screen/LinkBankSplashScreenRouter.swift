@@ -27,7 +27,7 @@ final class LinkBankSplashScreenRouter: ViewableRouter<LinkBankSplashScreenInter
         viewController: LinkBankSplashScreenViewControllable,
         webViewServiceAPI: WebViewServiceAPI = resolve()
     ) {
-        webViewService = webViewServiceAPI
+        self.webViewService = webViewServiceAPI
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }

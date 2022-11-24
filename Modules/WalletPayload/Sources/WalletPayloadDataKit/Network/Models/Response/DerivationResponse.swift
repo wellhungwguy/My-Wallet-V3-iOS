@@ -36,12 +36,12 @@ struct DerivationResponse: Equatable, Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = try container.decodeIfPresent(Format.self, forKey: .type)
-        purpose = try container.decodeIfPresent(Int.self, forKey: .purpose)
-        xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
-        xpub = try container.decodeIfPresent(String.self, forKey: .xpub)
-        addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
-        cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
+        self.type = try container.decodeIfPresent(Format.self, forKey: .type)
+        self.purpose = try container.decodeIfPresent(Int.self, forKey: .purpose)
+        self.xpriv = try container.decodeIfPresent(String.self, forKey: .xpriv)
+        self.xpub = try container.decodeIfPresent(String.self, forKey: .xpub)
+        self.addressLabels = try container.decodeIfPresent([AddressLabelResponse].self, forKey: .addressLabels) ?? []
+        self.cache = try container.decodeIfPresent(AddressCacheResponse.self, forKey: .cache) ?? AddressCacheResponse.empty
     }
 
     init(

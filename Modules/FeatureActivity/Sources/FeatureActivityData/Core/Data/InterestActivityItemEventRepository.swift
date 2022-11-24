@@ -26,7 +26,7 @@ final class InterestActivityItemEventRepository: InterestActivityItemEventReposi
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
         )
         .eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 client

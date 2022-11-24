@@ -18,7 +18,7 @@ public final class InterestAccountListHostingController: UIViewController, Inter
     private let contentView: UIHostingController<InterestAccountListView>
 
     public init(embeddedInNavigationView: Bool) {
-        contentView = UIHostingController(
+        self.contentView = UIHostingController(
             rootView: InterestAccountListView(
                 store: .init(
                     initialState: InterestAccountListState(

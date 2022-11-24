@@ -8,7 +8,7 @@ public protocol WalletConnectConsoleLoggerAPI {
 class WalletConnectConsoleLogger: WalletConnectConsoleLoggerAPI {
 
     struct Nope: WalletConnectSwift.Logger {
-        func log(_ message: String) { }
+        func log(_ message: String) {}
     }
 
     func disableConsoleLogsForDebugBuilds() {

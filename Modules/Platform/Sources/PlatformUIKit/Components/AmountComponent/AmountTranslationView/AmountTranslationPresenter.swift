@@ -31,8 +31,8 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             public let maxTappedAnalyticsEvent: AnalyticsEvent
 
             public init(min: AnalyticsEvent, max: AnalyticsEvent) {
-                minTappedAnalyticsEvent = min
-                maxTappedAnalyticsEvent = max
+                self.minTappedAnalyticsEvent = min
+                self.maxTappedAnalyticsEvent = max
             }
         }
 
@@ -137,8 +137,8 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         self.app = app
 
         swapButtonVisibilityRelay.accept(inputTypeToggleVisibility)
-        fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
-        cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
+        self.fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
+        self.cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
 
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)

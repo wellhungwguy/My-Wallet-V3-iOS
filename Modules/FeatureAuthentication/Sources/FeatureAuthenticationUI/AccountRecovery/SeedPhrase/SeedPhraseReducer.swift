@@ -106,15 +106,15 @@ public struct SeedPhraseState: Equatable {
         self.context = context
         self.emailAddress = emailAddress
         self.nabuInfo = nabuInfo
-        seedPhrase = ""
-        seedPhraseScore = .none
-        isResetPasswordScreenVisible = false
-        isResetAccountBottomSheetVisible = false
-        isLostFundsWarningScreenVisible = false
-        isImportWalletScreenVisible = false
-        isSecondPasswordNoticeVisible = false
-        failureAlert = nil
-        isLoading = false
+        self.seedPhrase = ""
+        self.seedPhraseScore = .none
+        self.isResetPasswordScreenVisible = false
+        self.isResetAccountBottomSheetVisible = false
+        self.isLostFundsWarningScreenVisible = false
+        self.isImportWalletScreenVisible = false
+        self.isSecondPasswordNoticeVisible = false
+        self.failureAlert = nil
+        self.isLoading = false
     }
 }
 

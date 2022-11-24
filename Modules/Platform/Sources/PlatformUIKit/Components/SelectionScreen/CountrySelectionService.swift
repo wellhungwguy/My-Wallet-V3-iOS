@@ -17,7 +17,7 @@ public final class CountrySelectionService: SelectionServiceAPI {
     }
 
     public init(defaultSelectedData: Country) {
-        selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 
     public func set(country: Country) {

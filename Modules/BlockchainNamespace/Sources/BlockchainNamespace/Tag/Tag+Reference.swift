@@ -51,9 +51,9 @@ extension Tag {
         @usableFromInline init(unchecked tag: Tag, context: Tag.Context) {
             self.tag = tag
             self.context = context
-            indices = [:]
-            string = tag.id
-            error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
+            self.indices = [:]
+            self.string = tag.id
+            self.error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
                 ? tag.error(message: "Missing indices for ref to \(tag.id)")
                 : nil
         }
@@ -70,7 +70,7 @@ extension Tag {
             )
             self.app = app.map(ObjectIdentifier.init)
             self.indices = indices
-            string = Self.id(
+            self.string = Self.id(
                 tag: tag,
                 to: indices
             )
@@ -91,9 +91,7 @@ extension Tag.Reference {
 
 extension String {
 
-    var tagReference: Tag.Reference? {
-        get { try? Tag.Reference(id: self, in: .root.language) }
-    }
+    var tagReference: Tag.Reference? { try? Tag.Reference(id: self, in: .root.language) }
 }
 
 extension Tag.Reference {
@@ -220,7 +218,7 @@ extension Tag.Reference {
         public private(set) var indices: [String] = []
 
         init(_ tag: Tag) {
-            tagId = tag.id
+            self.tagId = tag.id
             var id = ""
             for crumb in tag.breadcrumb {
                 if crumb.name == crumb.id {

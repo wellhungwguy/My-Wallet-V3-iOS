@@ -13,7 +13,7 @@ public struct DashboardActivitySectionView: View {
 
     public init(store: StoreOf<DashboardActivitySection>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {

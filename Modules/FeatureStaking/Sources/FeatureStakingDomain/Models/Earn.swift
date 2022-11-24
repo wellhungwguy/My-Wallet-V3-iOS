@@ -61,14 +61,14 @@ extension EarnAccount {
                 )
             )
         }
-        balance = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "balance").or("0"), currency: currency)
-        pendingDeposit = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingDeposit").or("0"), currency: currency)
-        pendingWithdrawal = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingWithdrawal").or("0"), currency: currency)
-        totalRewards = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "totalRewards").or("0"), currency: currency)
-        pendingRewards = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingRewards").or("0"), currency: currency)
-        bondingDeposits = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "bondingDeposits").or("0"), currency: currency)
-        unbondingWithdrawals = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "unbondingWithdrawals").or("0"), currency: currency)
-        locked = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "locked").or("0"), currency: currency)
+        self.balance = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "balance").or("0"), currency: currency)
+        self.pendingDeposit = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingDeposit").or("0"), currency: currency)
+        self.pendingWithdrawal = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingWithdrawal").or("0"), currency: currency)
+        self.totalRewards = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "totalRewards").or("0"), currency: currency)
+        self.pendingRewards = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "pendingRewards").or("0"), currency: currency)
+        self.bondingDeposits = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "bondingDeposits").or("0"), currency: currency)
+        self.unbondingWithdrawals = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "unbondingWithdrawals").or("0"), currency: currency)
+        self.locked = try CryptoValue.create(minor: container.decodeIfPresent(String.self, forKey: "locked").or("0"), currency: currency)
     }
 }
 
@@ -138,7 +138,7 @@ public struct EarnActivity: Hashable, Decodable {
 
     private static let iso8601Format: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds ]
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
     }()
 }

@@ -110,10 +110,10 @@ public struct CreateAccountStepTwoState: Equatable, NavigationState {
         self.country = country
         self.countryState = countryState
         self.referralCode = referralCode
-        emailAddress = ""
-        password = ""
-        passwordStrength = .none
-        inputValidationState = .unknown
+        self.emailAddress = ""
+        self.password = ""
+        self.passwordStrength = .none
+        self.inputValidationState = .unknown
     }
 }
 

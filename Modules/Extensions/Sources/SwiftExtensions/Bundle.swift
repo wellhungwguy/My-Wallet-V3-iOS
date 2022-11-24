@@ -34,15 +34,15 @@ public struct InfoPlist {
 
     public init(source: [String: Any]) throws {
         self.source = source
-        version = try Version(
+        self.version = try Version(
             string: source["CFBundleShortVersionString"]
                 .as(String.self)
                 .or(throw: Error.missing(key: "CFBundleShortVersionString"))
         )
-        build = try source["CFBundleVersion"]
+        self.build = try source["CFBundleVersion"]
             .as(String.self)
             .or(throw: Error.missing(key: "CFBundleVersion"))
-        name = try source["CFBundleDisplayName"]
+        self.name = try source["CFBundleDisplayName"]
             .as(String.self)
             .or(throw: Error.missing(key: "CFBundleDisplayName"))
     }

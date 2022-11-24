@@ -20,16 +20,16 @@ struct StellarActivityDetailsViewModel: Equatable {
     let memo: String
 
     init(with details: StellarActivityItemEventDetails, price: FiatValue?) {
-        statusBadge = .init(type: .verified, description: LocalizedString.completed)
-        dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
-        to = details.to
-        from = details.from
+        self.statusBadge = .init(type: .verified, description: LocalizedString.completed)
+        self.dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
+        self.to = details.to
+        self.from = details.from
 
-        cryptoAmount = details.cryptoAmount.displayString
+        self.cryptoAmount = details.cryptoAmount.displayString
         if let price {
-            value = details.cryptoAmount.convert(using: price).displayString
+            self.value = details.cryptoAmount.convert(using: price).displayString
         } else {
-            value = ""
+            self.value = ""
         }
 
         if let fee = details.fee {
@@ -39,9 +39,9 @@ struct StellarActivityDetailsViewModel: Equatable {
                 self.fee = fee.displayString
             }
         } else {
-            fee = nil
+            self.fee = nil
         }
 
-        memo = details.memo ?? LocalizedString.noDescription
+        self.memo = details.memo ?? LocalizedString.noDescription
     }
 }

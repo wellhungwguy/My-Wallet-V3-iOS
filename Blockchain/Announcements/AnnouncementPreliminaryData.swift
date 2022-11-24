@@ -84,7 +84,7 @@ struct AnnouncementPreliminaryData {
         tiers: KYC.UserTiers,
         user: NabuUser
     ) {
-        country = countries.first { $0.code == user.address?.countryCode }
+        self.country = countries.first { $0.code == user.address?.countryCode }
         self.assetRename = assetRename
         self.authenticatorType = authenticatorType
         self.claimFreeDomainEligible = claimFreeDomainEligible

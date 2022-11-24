@@ -64,15 +64,15 @@ public enum BadgeAsset {
                 public init(with value: Interaction.BadgeItem) {
                     switch value.type {
                     case .default(accessibilitySuffix: let suffix):
-                        viewModel = .default(with: value.description, accessibilityId: suffix)
+                        self.viewModel = .default(with: value.description, accessibilityId: suffix)
                     case .destructive:
-                        viewModel = .destructive(with: value.description)
+                        self.viewModel = .destructive(with: value.description)
                     case .verified:
-                        viewModel = .affirmative(with: value.description)
+                        self.viewModel = .affirmative(with: value.description)
                     case .progress(let model):
-                        viewModel = .progress(with: value.description, model: model)
+                        self.viewModel = .progress(with: value.description, model: model)
                     case .warning:
-                        viewModel = .warning(with: value.description)
+                        self.viewModel = .warning(with: value.description)
                     }
                 }
             }

@@ -81,7 +81,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.transactionSigningService = transactionSigningService
         self.pendingTransactionRepository = pendingTransactionRepository
         self.walletCurrencyService = walletCurrencyService
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 90,
                 schedulerIdentifier: "WalletConnectTransactionEngine"

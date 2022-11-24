@@ -14,7 +14,7 @@ import WalletConnectSwift
 final class WalletConnectService {
 
     struct Nope: WalletConnectSwift.Logger {
-        func log(_ message: String) { }
+        func log(_ message: String) {}
     }
 
     // MARK: - Private Properties
@@ -50,7 +50,7 @@ final class WalletConnectService {
         self.featureFlagService = featureFlagService
         self.enabledCurrenciesService = enabledCurrenciesService
         self.walletConnectConsoleLogger = walletConnectConsoleLogger
-        server = Server(delegate: self)
+        self.server = Server(delegate: self)
         configureServer()
         disableConsoleLogsForDebugBuilds()
     }

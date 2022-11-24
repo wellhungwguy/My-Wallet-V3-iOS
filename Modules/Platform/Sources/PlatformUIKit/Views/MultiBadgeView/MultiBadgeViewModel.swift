@@ -38,9 +38,9 @@ public struct MultiBadgeViewModel {
         height: CGFloat = 32,
         badges: [BadgeAssetPresenting] = []
     ) {
-        isEmpty = badges.isEmpty
-        layoutMarginsRelay = BehaviorRelay<UIEdgeInsets>(value: layoutMargins)
-        heightRelay = BehaviorRelay<CGFloat>(value: height)
+        self.isEmpty = badges.isEmpty
+        self.layoutMarginsRelay = BehaviorRelay<UIEdgeInsets>(value: layoutMargins)
+        self.heightRelay = BehaviorRelay<CGFloat>(value: height)
         badgesRelay.accept(badges)
     }
 }

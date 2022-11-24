@@ -20,7 +20,7 @@ struct ImportWalletState: Equatable {
 
     init(mnemonic: String) {
         self.mnemonic = mnemonic
-        isCreateAccountScreenVisible = false
+        self.isCreateAccountScreenVisible = false
     }
 }
 

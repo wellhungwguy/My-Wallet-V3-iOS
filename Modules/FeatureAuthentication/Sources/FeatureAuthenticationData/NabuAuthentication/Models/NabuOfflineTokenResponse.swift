@@ -37,11 +37,11 @@ public struct NabuOfflineTokenResponse: Decodable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        userId = try container.decode(String.self, forKey: .userId)
-        token = try container.decode(String.self, forKey: .token)
-        created = try container.decodeIfPresent(Bool.self, forKey: .created)
-        userCredentialsId = try container.decodeIfPresent(String.self, forKey: .userCredentialsId)
-        mercuryLifetimeToken = try container.decodeIfPresent(String.self, forKey: .mercuryLifetimeToken)
+        self.userId = try container.decode(String.self, forKey: .userId)
+        self.token = try container.decode(String.self, forKey: .token)
+        self.created = try container.decodeIfPresent(Bool.self, forKey: .created)
+        self.userCredentialsId = try container.decodeIfPresent(String.self, forKey: .userCredentialsId)
+        self.mercuryLifetimeToken = try container.decodeIfPresent(String.self, forKey: .mercuryLifetimeToken)
     }
 
     public init(from token: NabuOfflineToken) {

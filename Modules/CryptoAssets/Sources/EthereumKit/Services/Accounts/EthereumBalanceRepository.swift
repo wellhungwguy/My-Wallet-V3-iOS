@@ -43,7 +43,7 @@ final class EthereumBalanceRepository: EthereumBalanceRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] key in
                 client

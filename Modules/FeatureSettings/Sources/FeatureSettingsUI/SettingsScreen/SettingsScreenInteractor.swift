@@ -63,32 +63,32 @@ final class SettingsScreenInteractor {
         self.cardIssuingAdapter = cardIssuingAdapter
         self.referralAdapter = referralAdapter
 
-        cardSectionInteractor = CardSettingsSectionInteractor(
+        self.cardSectionInteractor = CardSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
 
-        bankSectionInteractor = BanksSettingsSectionInteractor(
+        self.bankSectionInteractor = BanksSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
 
-        emailVerificationBadgeInteractor = EmailVerificationBadgeInteractor(
+        self.emailVerificationBadgeInteractor = EmailVerificationBadgeInteractor(
             service: settingsService
         )
-        mobileVerificationBadgeInteractor = MobileVerificationBadgeInteractor(
+        self.mobileVerificationBadgeInteractor = MobileVerificationBadgeInteractor(
             service: settingsService
         )
-        twoFactorVerificationBadgeInteractor = TwoFactorVerificationBadgeInteractor(
+        self.twoFactorVerificationBadgeInteractor = TwoFactorVerificationBadgeInteractor(
             service: settingsService
         )
-        preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor()
-        preferredTradingCurrencyBadgeInteractor = PreferredTradingCurrencyBadgeInteractor()
-        cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
+        self.preferredCurrencyBadgeInteractor = PreferredCurrencyBadgeInteractor()
+        self.preferredTradingCurrencyBadgeInteractor = PreferredTradingCurrencyBadgeInteractor()
+        self.cardIssuingBadgeInteractor = CardIssuingBadgeInteractor(
             service: settingsService
         )
 
-        biometryProviding = BiometryProvider(settings: settingsAuthenticating)
+        self.biometryProviding = BiometryProvider(settings: settingsAuthenticating)
         self.blockchainDomainsAdapter = blockchainDomainsAdapter
         self.settingsAuthenticating = settingsAuthenticating
         self.recoveryPhraseStatusProvider = recoveryPhraseStatusProvider

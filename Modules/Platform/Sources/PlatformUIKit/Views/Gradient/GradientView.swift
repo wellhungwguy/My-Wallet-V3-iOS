@@ -7,8 +7,8 @@ public struct Gradient {
     let endColor: UIColor
 
     init(start: UIColor, end: UIColor) {
-        startColor = start
-        endColor = end
+        self.startColor = start
+        self.endColor = end
     }
 }
 

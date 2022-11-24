@@ -52,10 +52,10 @@ public struct WalletCredentials: Equatable, Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        guid = try container.decode(String.self, forKey: .guid)
-        sharedKey = try container.decode(String.self, forKey: .sharedKey)
-        sessionToken = try container.decode(String.self, forKey: .sessionToken)
-        password = "" // we can't decode this since we don't encode it
+        self.guid = try container.decode(String.self, forKey: .guid)
+        self.sharedKey = try container.decode(String.self, forKey: .sharedKey)
+        self.sessionToken = try container.decode(String.self, forKey: .sessionToken)
+        self.password = "" // we can't decode this since we don't encode it
     }
 
     public func encode(to encoder: Encoder) throws {

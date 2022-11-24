@@ -373,7 +373,7 @@ extension ReceiveScreenViewController {
             separator.layoutToSuperview(.trailing)
             separator.layout(edge: .bottom, to: .lastBaseline, of: headerLabel)
 
-            zeroHeightConstraint = layout(dimension: .height, to: 0, activate: false)
+            self.zeroHeightConstraint = layout(dimension: .height, to: 0, activate: false)
             verticalContentHuggingPriority = .required
         }
 

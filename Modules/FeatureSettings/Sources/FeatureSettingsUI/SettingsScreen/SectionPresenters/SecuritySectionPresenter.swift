@@ -41,20 +41,20 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
         authenticationCoordinator: AuthenticationCoordinating,
         cloudSettings: CloudBackupConfiguring = resolve()
     ) {
-        smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
+        self.smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
             service: smsTwoFactorService
         )
-        bioAuthenticationCellPresenter = BioAuthenticationSwitchCellPresenter(
+        self.bioAuthenticationCellPresenter = BioAuthenticationSwitchCellPresenter(
             biometryProviding: biometryProvider,
             appSettingsAuthenticating: settingsAuthenticater,
             authenticationCoordinator: authenticationCoordinator
         )
-        recoveryCellPresenter = DefaultBadgeCellPresenter(
+        self.recoveryCellPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.BackupPhrase.title),
             interactor: RecoveryPhraseBadgeInteractor(provider: recoveryPhraseStatusProvider),
             title: LocalizationConstants.Settings.Badge.recoveryPhrase
         )
-        cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
+        self.cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
             cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )

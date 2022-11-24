@@ -32,7 +32,7 @@ public struct InterestAccountBalanceDetails: Equatable {
         self.totalInterest = totalInterest
         self.pendingWithdrawal = pendingWithdrawal
         self.mainBalanceToDisplay = mainBalanceToDisplay
-        currencyCode = code
+        self.currencyCode = code
     }
 }
 

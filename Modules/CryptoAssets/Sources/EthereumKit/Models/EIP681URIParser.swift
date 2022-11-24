@@ -92,8 +92,8 @@ struct EIP681URIParser {
             return nil
         }
         self.address = address
-        chainID = entries[3]?.removing(prefix: "@")
-        method = Self.method(for: entries[4])
+        self.chainID = entries[3]?.removing(prefix: "@")
+        self.method = Self.method(for: entries[4])
     }
 
     /// Returns a `Method` for a given EIP681 query param.

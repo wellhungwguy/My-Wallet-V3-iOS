@@ -25,15 +25,16 @@ public struct BitcoinEntry: Equatable {
 
     init(payload: BitcoinEntryPayload, wallet: NativeWallet) {
         self.payload = payload
-        defaultAccountIndex = wallet.defaultHDWallet?.defaultAccountIndex ?? 0
+        self.defaultAccountIndex = wallet.defaultHDWallet?.defaultAccountIndex ?? 0
         let hdWalletAccounts = wallet.defaultHDWallet?.accounts ?? []
 
-        accounts = hdWalletAccounts
+        self.accounts = hdWalletAccounts
             .enumerated()
             .map { index, account in
                 let xpubs = account.derivations.compactMap { derivation -> XPub? in
                     guard let xpub = derivation.xpub,
-                          let type = derivation.type else {
+                          let type = derivation.type
+                    else {
                         return nil
                     }
                     return XPub(address: xpub, type: type)

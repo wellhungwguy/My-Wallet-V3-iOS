@@ -86,7 +86,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
     ) {
         self.app = app
         self.presenter = presenter
-        availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
+        self.availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
             rootView: AvailableBalanceView(
                 store: .init(
                     initialState: .init(),
@@ -104,7 +104,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                 )
             )
         ) : nil
-        prefillViewController = prefillButtonsEnabled ? UIHostingController(
+        self.prefillViewController = prefillButtonsEnabled ? UIHostingController(
             rootView: PrefillButtonsView(
                 store: .init(
                     initialState: .init(),
@@ -129,7 +129,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
             )
         ) : nil
 
-        recurringBuyFrequencySelector = shouldShowRecurringBuyFrequency ? UIHostingController(
+        self.recurringBuyFrequencySelector = shouldShowRecurringBuyFrequency ? UIHostingController(
             rootView: RecurringBuyButton(
                 store: .init(
                     initialState: .init(),
@@ -149,9 +149,9 @@ public final class AmountTranslationView: UIView, AmountViewable {
         super.init(frame: UIScreen.main.bounds)
 
         if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
-            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, quickPriceViewController.view])
+            self.labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, quickPriceViewController.view])
         } else {
-            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
+            self.labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
         }
         labelsStackView.axis = .vertical
 

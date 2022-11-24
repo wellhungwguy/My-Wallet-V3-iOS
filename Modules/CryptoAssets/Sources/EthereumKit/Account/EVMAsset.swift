@@ -59,7 +59,7 @@ final class EVMAsset: CryptoAsset {
         featureFlag: FeatureFetching
     ) {
         self.network = network
-        asset = network.nativeAsset
+        self.asset = network.nativeAsset
         self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository

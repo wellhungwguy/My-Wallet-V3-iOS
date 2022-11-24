@@ -58,7 +58,7 @@ public final class LinkViewModel {
         textColor: Color = .mutedText,
         linkColor: Color = .primaryButton
     ) {
-        textViewModel = InteractableTextViewModel(
+        self.textViewModel = InteractableTextViewModel(
             inputs: [],
             textStyle: .init(color: textColor, font: font),
             linkStyle: .init(color: linkColor, font: font)

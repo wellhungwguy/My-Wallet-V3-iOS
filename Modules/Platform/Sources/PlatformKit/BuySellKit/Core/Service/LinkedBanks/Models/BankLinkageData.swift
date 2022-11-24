@@ -28,13 +28,13 @@ public struct BankLinkageData {
         guard let attributes = response.attributes else {
             return nil
         }
-        token = attributes.token
-        fastlinkUrl = attributes.fastlinkUrl
-        fastlinkParams = FastlinkConfiguration(config: attributes.fastlinkParams?.configName)
-        partner = Partner(from: response.partner)
-        id = response.id
-        entity = attributes.entity
-        institutions = attributes.institutions
+        self.token = attributes.token
+        self.fastlinkUrl = attributes.fastlinkUrl
+        self.fastlinkParams = FastlinkConfiguration(config: attributes.fastlinkParams?.configName)
+        self.partner = Partner(from: response.partner)
+        self.id = response.id
+        self.entity = attributes.entity
+        self.institutions = attributes.institutions
     }
 }
 

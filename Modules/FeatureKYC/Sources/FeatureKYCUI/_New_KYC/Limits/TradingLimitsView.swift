@@ -145,7 +145,7 @@ struct TradingLimitsView: View {
 
     init(store: Store<TradingLimitsState, TradingLimitsAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

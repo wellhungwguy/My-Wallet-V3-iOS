@@ -119,7 +119,7 @@ struct ComingSoonPreviewProvider: PreviewProvider {
             account: .preview.trading,
             assetLogoUrl: nil,
             assetColor: .primary,
-            onClose: { }
+            onClose: {}
         )
     }
 }

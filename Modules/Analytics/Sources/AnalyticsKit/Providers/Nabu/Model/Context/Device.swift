@@ -16,11 +16,11 @@ import UIKit
 extension Device {
 
     init(device: UIDevice = UIDevice.current) {
-        id = device.identifierForVendor?.uuidString
-        manufacturer = "Apple"
-        model = device.model
-        name = device.name
-        type = "ios"
+        self.id = device.identifierForVendor?.uuidString
+        self.manufacturer = "Apple"
+        self.model = device.model
+        self.name = device.name
+        self.type = "ios"
     }
 }
 
@@ -46,11 +46,11 @@ extension Device {
             )
             return (serialNumber?.takeUnretainedValue() as? String) ?? "<anonymous>"
         }
-        id = serialNumber()
-        manufacturer = "Apple"
-        model = "mac"
-        name = host.localizedName ?? "<anonymous>"
-        type = "macos"
+        self.id = serialNumber()
+        self.manufacturer = "Apple"
+        self.model = "mac"
+        self.name = host.localizedName ?? "<anonymous>"
+        self.type = "macos"
     }
 }
 

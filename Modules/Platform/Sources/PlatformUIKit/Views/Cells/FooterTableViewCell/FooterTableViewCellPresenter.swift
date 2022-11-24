@@ -12,7 +12,7 @@ public final class FooterTableViewCellPresenter {
         text: String,
         accessibility: Accessibility
     ) {
-        content = .init(
+        self.content = .init(
             text: text,
             font: .main(.medium, 14.0),
             color: .descriptionText,

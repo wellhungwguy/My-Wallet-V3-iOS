@@ -17,7 +17,7 @@ public struct AnyActivityItemEventDetailsFetcher<Model> {
     private let detailsObservable: (String, CryptoCurrency) -> Observable<Model>
 
     public init<API: ActivityItemEventDetailsFetcherAPI>(api: API) where API.Model == Model {
-        detailsObservable = api.details
+        self.detailsObservable = api.details
     }
 
     public func details(

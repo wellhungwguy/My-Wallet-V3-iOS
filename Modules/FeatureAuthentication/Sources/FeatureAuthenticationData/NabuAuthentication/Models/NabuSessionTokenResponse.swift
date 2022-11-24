@@ -38,12 +38,12 @@ extension NabuSessionTokenResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try values.decode(String.self, forKey: .identifier)
-        userId = try values.decode(String.self, forKey: .userId)
-        token = try values.decode(String.self, forKey: .token)
-        isActive = try values.decode(Bool.self, forKey: .isActive)
+        self.identifier = try values.decode(String.self, forKey: .identifier)
+        self.userId = try values.decode(String.self, forKey: .userId)
+        self.token = try values.decode(String.self, forKey: .token)
+        self.isActive = try values.decode(Bool.self, forKey: .isActive)
         let expiresAtString = try values.decode(String.self, forKey: .expiresAt)
-        expiresAt = DateFormatter.sessionDateFormat.date(from: expiresAtString)
+        self.expiresAt = DateFormatter.sessionDateFormat.date(from: expiresAtString)
     }
 }
 

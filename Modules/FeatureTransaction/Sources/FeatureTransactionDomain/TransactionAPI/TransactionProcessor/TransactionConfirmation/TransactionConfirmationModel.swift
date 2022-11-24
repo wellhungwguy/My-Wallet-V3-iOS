@@ -397,7 +397,7 @@ extension TransactionConfirmations {
         }
 
         public init(textMemo: String?, required: Bool) {
-            value = textMemo.flatMap { Value.text($0) }
+            self.value = textMemo.flatMap { Value.text($0) }
             self.required = required
         }
     }
@@ -537,7 +537,7 @@ extension TransactionConfirmations {
         }
 
         public var formatted: (title: String, subtitle: String)? {
-            guard let date = date else { return nil }
+            guard let date else { return nil }
             return (LocalizedString.availableToTrade, date)
         }
     }
@@ -553,7 +553,7 @@ extension TransactionConfirmations {
         }
 
         public var formatted: (title: String, subtitle: String)? {
-            guard let date = date else { return nil }
+            guard let date else { return nil }
             return (LocalizedString.availableToWithdraw, date)
         }
     }

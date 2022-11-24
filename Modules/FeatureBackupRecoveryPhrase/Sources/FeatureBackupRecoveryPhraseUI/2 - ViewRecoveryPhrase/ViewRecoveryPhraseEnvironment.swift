@@ -27,7 +27,7 @@ public struct ViewRecoveryPhraseEnvironment {
     ) {
         self.mainQueue = mainQueue
         self.cloudBackupService = cloudBackupService
-        recoveryPhraseVerifyingService = recoveryPhraseService
+        self.recoveryPhraseVerifyingService = recoveryPhraseService
         self.recoveryPhraseRepository = recoveryPhraseRepository
         self.onNext = onNext
         self.onDone = onDone

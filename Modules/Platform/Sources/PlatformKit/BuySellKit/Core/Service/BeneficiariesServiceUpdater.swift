@@ -26,7 +26,7 @@ final class BeneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI {
     private let shouldRefreshRelay = BehaviorRelay<Bool>(value: false)
 
     init() {
-        shouldRefresh = shouldRefreshRelay
+        self.shouldRefresh = shouldRefreshRelay
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
     }

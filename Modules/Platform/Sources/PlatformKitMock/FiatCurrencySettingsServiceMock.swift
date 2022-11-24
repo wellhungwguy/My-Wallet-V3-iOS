@@ -47,7 +47,7 @@ final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
     }
 
     init(expectedCurrency: FiatCurrency, expectedTradingCurrency: FiatCurrency? = nil) {
-        displayCurrencyRelay = BehaviorRelay(value: expectedCurrency)
-        tradingCurrencyRelay = BehaviorRelay(value: expectedTradingCurrency ?? expectedCurrency)
+        self.displayCurrencyRelay = BehaviorRelay(value: expectedCurrency)
+        self.tradingCurrencyRelay = BehaviorRelay(value: expectedTradingCurrency ?? expectedCurrency)
     }
 }

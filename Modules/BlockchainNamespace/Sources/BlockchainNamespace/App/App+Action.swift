@@ -51,7 +51,7 @@ extension AppProtocol {
         var json = data.then
         var emit: (tag: Tag, value: Tag)?
         defer {
-            if let emit = emit {
+            if let emit {
                 let key = emit.value.key(to: event.reference.context)
                 post(
                     event: key,

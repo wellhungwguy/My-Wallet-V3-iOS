@@ -78,7 +78,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
         self.interestAccountWithdrawRepository = interestAccountWithdrawRepository
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
                 schedulerIdentifier: "InterestWithdrawOnChainTransactionEngine"

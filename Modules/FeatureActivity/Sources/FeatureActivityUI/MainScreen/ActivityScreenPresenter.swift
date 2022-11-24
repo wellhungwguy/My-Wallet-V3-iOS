@@ -115,7 +115,7 @@ final class ActivityScreenPresenter {
         self.router = router
         self.interactor = interactor
 
-        selectionButtonViewModel = SelectionButtonViewModel()
+        self.selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
         selectionButtonViewModel.accessibilityContentRelay.accept(
             .init(id: AccessibilityId.WalletSelectorView.button, label: "")

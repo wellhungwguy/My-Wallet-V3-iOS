@@ -155,14 +155,14 @@ final class KYCTiersService: KYCTiersServiceAPI {
             configuration: .onLoginLogoutKYCChanged(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
         ).eraseToAnyCache()
-        cachedTiers = CachedValueNew(
+        self.cachedTiers = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client.tiers()
             }
         )
 
-        sddCache = CachedValueNew(
+        self.sddCache = CachedValueNew(
             cache: InMemoryCache<KYC.Tier, SimplifiedDueDiligenceResponse>(
                 configuration: .onLoginLogoutKYCChanged(),
                 refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
@@ -175,7 +175,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
             }
         )
 
-        sddVerificationCache = CachedValueNew(
+        self.sddVerificationCache = CachedValueNew(
             cache: InMemoryCache<KYC.Tier, SimplifiedDueDiligenceVerificationResponse>(
                 configuration: .onLoginLogoutKYCChanged(),
                 refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)

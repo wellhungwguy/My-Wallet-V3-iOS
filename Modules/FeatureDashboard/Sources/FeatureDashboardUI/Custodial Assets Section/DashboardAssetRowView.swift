@@ -9,7 +9,7 @@ import SwiftUI
 struct DashboardAssetRowView: View {
     let store: StoreOf<DashboardAssetRow>
 
-    public init(store: StoreOf<DashboardAssetRow>) {
+    init(store: StoreOf<DashboardAssetRow>) {
         self.store = store
     }
 

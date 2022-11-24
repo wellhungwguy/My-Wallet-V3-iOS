@@ -33,7 +33,7 @@ final class ActivityMessageViewModel {
             imageName = "receive-icon"
         }
 
-        sharedWithLabelContent = .init(
+        self.sharedWithLabelContent = .init(
             text: LocalizationConstants.Activity.MainScreen.MessageView.sharedWithBlockchain,
             font: .main(.semibold, 8.0),
             color: .descriptionText,
@@ -41,7 +41,7 @@ final class ActivityMessageViewModel {
             accessibility: .none
         )
 
-        badgeImageViewModel = .template(
+        self.badgeImageViewModel = .template(
             image: .local(name: imageName, bundle: .platformUIKit),
             templateColor: currency.brandUIColor,
             backgroundColor: currency.accentColor,
@@ -50,7 +50,7 @@ final class ActivityMessageViewModel {
         )
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
 
-        titleLabelContent = .init(
+        self.titleLabelContent = .init(
             text: title,
             font: .main(.semibold, 16.0),
             color: .textFieldText,
@@ -58,7 +58,7 @@ final class ActivityMessageViewModel {
             accessibility: .none
         )
 
-        descriptionLabelContent = .init(
+        self.descriptionLabelContent = .init(
             text: DateFormatter.medium.string(from: event.creationDate),
             font: .main(.medium, 14.0),
             color: .descriptionText,
@@ -71,14 +71,14 @@ final class ActivityMessageViewModel {
             for: transactionHash,
             cryptoCurrency: transaction.currency
         ) else { return nil }
-        image = QRCode(string: url)?.image
+        self.image = QRCode(string: url)?.image
 
-        logoImage = .init(
+        self.logoImage = .init(
             imageResource: .local(name: "logo-blockchain", bundle: .main),
             accessibility: .none,
             renderingMode: .normal
         )
-        cryptoAmountLabelContent = .init(
+        self.cryptoAmountLabelContent = .init(
             text: event.inputAmount.toDisplayString(includeSymbol: true),
             font: .main(.semibold, 14.0),
             color: .descriptionText,

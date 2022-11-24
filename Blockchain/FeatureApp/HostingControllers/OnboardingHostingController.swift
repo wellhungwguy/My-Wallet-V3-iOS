@@ -40,7 +40,7 @@ final class OnboardingHostingController: UIViewController {
     ) {
         self.app = app
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
         self.webViewService = webViewService
         self.featureFlagService = featureFlagService

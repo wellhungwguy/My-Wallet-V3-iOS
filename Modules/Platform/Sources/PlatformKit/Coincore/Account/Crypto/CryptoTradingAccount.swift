@@ -212,7 +212,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve()
     ) {
         self.asset = asset
-        label = asset.defaultTradingWalletName
+        self.label = asset.defaultTradingWalletName
         self.interestEligibilityRepository = interestEligibilityRepository
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity

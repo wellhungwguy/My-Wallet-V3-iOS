@@ -70,7 +70,7 @@ public final class SVG: Codable {
         guard let document = CGSVGDocumentCreateFromData(data as CFData, nil)?.takeUnretainedValue() else { return nil }
         guard CGSVGDocumentGetCanvasSize(document) != .zero else { return nil }
         self.document = document
-        string = String(decoding: data, as: UTF8.self)
+        self.string = String(decoding: data, as: UTF8.self)
     }
 
     public init(from decoder: Decoder) throws {
@@ -78,8 +78,8 @@ public final class SVG: Codable {
         guard let svg = try Self(Data(container.decode(String.self).utf8)) else {
             throw DecodingError.valueNotFound(String.self, .init(codingPath: decoder.codingPath, debugDescription: "SVG expected String"))
         }
-        document = svg.document
-        string = svg.string
+        self.document = svg.document
+        self.string = svg.string
     }
 
     public func encode(to encoder: Encoder) throws {

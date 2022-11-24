@@ -130,7 +130,8 @@ struct WithdrawalLockItemView: View {
         HStack(spacing: 2) {
             HStack {
                 if let boughtCryptoCurrency = item.boughtCryptoCurrency,
-                   let boughtCryptoCurrencyType = try? CurrencyType(code: boughtCryptoCurrency) {
+                   let boughtCryptoCurrencyType = try? CurrencyType(code: boughtCryptoCurrency)
+                {
                     boughtCryptoCurrencyType.image
                         .resizable()
                         .frame(width: 26, height: 26)

@@ -34,8 +34,8 @@ public final class InteractableTextTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         contentView.addSubview(instructionTextView)
-        horizontalConstraints = instructionTextView.layoutToSuperview(axis: .horizontal)
-        verticalConstraints = instructionTextView.layoutToSuperview(axis: .vertical)
+        self.horizontalConstraints = instructionTextView.layoutToSuperview(axis: .horizontal)
+        self.verticalConstraints = instructionTextView.layoutToSuperview(axis: .vertical)
     }
 
     @available(*, unavailable)

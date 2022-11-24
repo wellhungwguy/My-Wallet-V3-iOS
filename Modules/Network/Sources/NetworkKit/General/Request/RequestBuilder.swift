@@ -36,8 +36,8 @@ public class RequestBuilder {
         resolveHeaders headers: @escaping () -> HTTPHeaders,
         queryParameters: RequestBuilderQueryParameters = .init(Just(nil))
     ) {
-        networkConfig = config
-        baseRequestBuilder = BaseRequestBuilder(
+        self.networkConfig = config
+        self.baseRequestBuilder = BaseRequestBuilder(
             decoder: decoder,
             resolveHeaders: headers,
             queryParameters: queryParameters
@@ -48,7 +48,7 @@ public class RequestBuilder {
         config: Network.Config,
         baseRequestBuilder: BaseRequestBuilder
     ) {
-        networkConfig = config
+        self.networkConfig = config
         self.baseRequestBuilder = baseRequestBuilder
     }
 
@@ -306,7 +306,7 @@ public final class BaseRequestBuilder {
         self.decoder = decoder
         self.headers = headers
         if BuildFlag.isInternal {
-            subscription = queryParameters.publisher.sink { [weak self] parameters in
+            self.subscription = queryParameters.publisher.sink { [weak self] parameters in
                 self?.queryParameters = parameters
             }
         }

@@ -53,7 +53,7 @@ final class UserCredentialsFetcher: UserCredentialsFetcherAPI {
         )
         .eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [metadataEntryService] _ in
                 doFetchUserCredentialsEntry(

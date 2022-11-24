@@ -17,6 +17,6 @@ public struct AnnouncementsMetadata: Decodable {
         let order = try container.decode([String].self, forKey: .order)
         self.order = order.compactMap { AnnouncementType(rawValue: $0) }
         let days = try container.decode(Int.self, forKey: .interval)
-        interval = TimeInterval(days) * .day
+        self.interval = TimeInterval(days) * .day
     }
 }

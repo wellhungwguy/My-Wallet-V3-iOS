@@ -52,7 +52,7 @@ final class FiatCustodialBalancesTableViewCell: UITableViewCell {
     // MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        collectionView = FiatBalanceCollectionView()
+        self.collectionView = FiatBalanceCollectionView()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
         collectionView.fillSuperview()

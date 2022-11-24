@@ -83,7 +83,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             }
         }
 
-        assetBalanceViewPresenter = CurrentBalanceCellPresenter(
+        self.assetBalanceViewPresenter = CurrentBalanceCellPresenter(
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,

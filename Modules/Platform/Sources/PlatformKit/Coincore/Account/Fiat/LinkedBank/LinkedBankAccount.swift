@@ -78,7 +78,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.accountId = accountId
         self.bankAccountType = bankAccountType
         self.accountNumber = accountNumber
-        fiatCurrency = currency
+        self.fiatCurrency = currency
         self.paymentType = paymentType
         self.partner = partner
         self.data = data

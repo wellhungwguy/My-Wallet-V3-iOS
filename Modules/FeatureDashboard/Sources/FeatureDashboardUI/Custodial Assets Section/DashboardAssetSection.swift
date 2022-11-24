@@ -78,22 +78,24 @@ public struct DashboardAssetsSection: ReducerProtocol {
                     state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo.filter(\.hasBalance)
                         .prefix(state.presentedAssetsType.assetDisplayLimit))
                         .map {
-                        DashboardAssetRow.State(
-                            type: state.presentedAssetsType,
-                            isLastRow: $0.id == balanceInfo.last?.id,
-                            asset: $0
-                        )
-                    })
+                            DashboardAssetRow.State(
+                                type: state.presentedAssetsType,
+                                isLastRow: $0.id == balanceInfo.last?.id,
+                                asset: $0
+                            )
+                        }
+                    )
                 } else {
                     state.assetRows = IdentifiedArrayOf(uniqueElements: Array(balanceInfo
                         .prefix(state.presentedAssetsType.assetDisplayLimit))
                         .map {
-                        DashboardAssetRow.State(
-                            type: state.presentedAssetsType,
-                            isLastRow: $0.id == balanceInfo.last?.id,
-                            asset: $0
-                        )
-                    })
+                            DashboardAssetRow.State(
+                                type: state.presentedAssetsType,
+                                isLastRow: $0.id == balanceInfo.last?.id,
+                                asset: $0
+                            )
+                        }
+                    )
                 }
 
                 return .none

@@ -31,7 +31,7 @@ struct PaymentAccountGBP: PaymentAccountDescribing, Equatable {
         self.accountNumber = accountNumber
         self.sortCode = sortCode
         self.recipientName = recipientName
-        identifier = response.id
-        state = response.state
+        self.identifier = response.id
+        self.state = response.state
     }
 }

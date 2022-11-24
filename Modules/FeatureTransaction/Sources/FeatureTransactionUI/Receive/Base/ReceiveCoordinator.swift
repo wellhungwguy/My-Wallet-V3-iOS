@@ -44,7 +44,7 @@ public class ReceiveCoordinator {
         self.kycStatusChecker = kycStatusChecker
         self.analyticsHook = analyticsHook
         self.receiveSelectionService = receiveSelectionService
-        builder = ReceiveRootBuilder(
+        self.builder = ReceiveRootBuilder(
             receiveSelectionService: receiveSelectionService
         )
 

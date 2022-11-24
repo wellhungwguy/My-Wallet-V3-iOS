@@ -57,7 +57,7 @@ final class RootViewController: UIHostingController<RootView> {
             environment: environment
         )
 
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
 
         super.init(rootView: RootView(store: store))
 

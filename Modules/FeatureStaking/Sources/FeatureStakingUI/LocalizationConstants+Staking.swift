@@ -9,35 +9,35 @@ extension LocalizationConstants {
 
         static let page = (
             NSLocalizedString(
-            """
-            The Ethereum roadmap involves several upgrades that will make the network more scalable, more secure, and more sustainable.
+                """
+                The Ethereum roadmap involves several upgrades that will make the network more scalable, more secure, and more sustainable.
 
-            Recently, Ethereum has completed what is called The Merge, meaning that
-            """,
-            comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 1 of 3"
+                Recently, Ethereum has completed what is called The Merge, meaning that
+                """,
+                comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 1 of 3"
             ),
             NSLocalizedString(
-            """
-            Once staked, ETH funds can’t be unstaked or transferred for an unspecified period of time.
+                """
+                Once staked, ETH funds can’t be unstaked or transferred for an unspecified period of time.
 
-            This may be up to 6 - 12 months away, but could be even longer.
+                This may be up to 6 - 12 months away, but could be even longer.
 
-            Your ETH will also be subject to a bonding period of %@ before it generates rewards.
+                Your ETH will also be subject to a bonding period of %@ before it generates rewards.
 
-            These rules are not specific to Blockchain.com. They’re features of the Ethereum network.
-            """,
-            comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 2 of 3"
+                These rules are not specific to Blockchain.com. They’re features of the Ethereum network.
+                """,
+                comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 2 of 3"
             ), NSLocalizedString(
-            """
-            Once staked, ETH funds can’t be unstaked or transferred for an unspecified period of time.
+                """
+                Once staked, ETH funds can’t be unstaked or transferred for an unspecified period of time.
 
-            This may be up to 6 - 12 months away, but could be even longer.
+                This may be up to 6 - 12 months away, but could be even longer.
 
-            Your ETH will also be subject to a bonding period of %@ before it generates rewards.
+                Your ETH will also be subject to a bonding period of %@ before it generates rewards.
 
-            These rules are not specific to Blockchain.com. They’re features of the Ethereum network.
-            """,
-            comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 3 of 3"
+                These rules are not specific to Blockchain.com. They’re features of the Ethereum network.
+                """,
+                comment: "Staking: Explain to users their funds will be locked when staking their balance, until ETH implements withdraw. Page 3 of 3"
             )
         )
 

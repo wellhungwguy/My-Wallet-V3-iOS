@@ -10,7 +10,7 @@ public final class LabelInfoTableViewCell: UITableViewCell {
     private let infoButton: UIButton = UIButton()
 
     public var viewModel: LabelInfoViewCellModel! {
-        willSet { }
+        willSet {}
         didSet {
             guard let viewModel else {
                 return

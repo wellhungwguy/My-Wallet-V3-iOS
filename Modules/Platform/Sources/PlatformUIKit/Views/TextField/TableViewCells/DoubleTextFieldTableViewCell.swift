@@ -39,7 +39,7 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
 
         stackView.layoutToSuperview(axis: .horizontal, offset: 24)
         let verticalConstraints = stackView.layoutToSuperview(axis: .vertical)
-        bottomInsetConstraint = verticalConstraints?.trailing
+        self.bottomInsetConstraint = verticalConstraints?.trailing
 
         stackView.addArrangedSubview(leadingTextFieldView)
         stackView.addArrangedSubview(trailingTextFieldView)

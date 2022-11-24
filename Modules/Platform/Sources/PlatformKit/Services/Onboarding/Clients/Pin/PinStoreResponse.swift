@@ -51,12 +51,12 @@ extension PinStoreResponse {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        statusCode = try values.decode(StatusCode.self, forKey: .code)
-        pinDecryptionValue = try values.decodeIfPresent(String.self, forKey: .pinDecryptionValue)
-        key = try values.decodeIfPresent(String.self, forKey: .key)
-        value = try values.decodeIfPresent(String.self, forKey: .value)
-        error = try values.decodeIfPresent(String.self, forKey: .error)
-        remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
+        self.statusCode = try values.decode(StatusCode.self, forKey: .code)
+        self.pinDecryptionValue = try values.decodeIfPresent(String.self, forKey: .pinDecryptionValue)
+        self.key = try values.decodeIfPresent(String.self, forKey: .key)
+        self.value = try values.decodeIfPresent(String.self, forKey: .value)
+        self.error = try values.decodeIfPresent(String.self, forKey: .error)
+        self.remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
     }
 
     public func toPinError() -> PinError {

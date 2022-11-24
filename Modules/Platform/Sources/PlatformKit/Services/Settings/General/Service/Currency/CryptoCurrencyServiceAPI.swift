@@ -44,6 +44,6 @@ public class DefaultCryptoCurrencyService: CryptoCurrencyServiceAPI {
     private let value: CurrencyType
 
     public init(currencyType: CurrencyType) {
-        value = currencyType
+        self.value = currencyType
     }
 }

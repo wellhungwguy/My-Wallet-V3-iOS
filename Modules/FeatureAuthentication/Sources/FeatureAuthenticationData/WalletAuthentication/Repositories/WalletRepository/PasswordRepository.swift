@@ -18,7 +18,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
         self.walletRepo = walletRepo
         self.changePasswordService = changePasswordService
 
-        password = Deferred { [walletRepo] in
+        self.password = Deferred { [walletRepo] in
             walletRepo
                 .get()
                 .map(\.credentials.password)
@@ -26,7 +26,7 @@ final class PasswordRepository: PasswordRepositoryAPI {
         }
         .eraseToAnyPublisher()
 
-        hasPassword = Deferred { [walletRepo] in
+        self.hasPassword = Deferred { [walletRepo] in
             walletRepo
                 .get()
                 .map(\.credentials.password)

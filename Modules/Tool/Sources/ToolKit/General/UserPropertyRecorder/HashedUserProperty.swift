@@ -11,7 +11,7 @@ public struct HashedUserProperty: UserProperty {
 
     public init(key: Key, valueHash: String, truncatesValueIfNeeded: Bool = true) {
         self.key = key
-        value = valueHash
+        self.value = valueHash
         self.truncatesValueIfNeeded = truncatesValueIfNeeded
     }
 }

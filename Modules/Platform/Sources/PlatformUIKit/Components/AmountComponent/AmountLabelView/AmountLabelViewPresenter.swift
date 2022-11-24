@@ -174,17 +174,17 @@ extension AmountLabelViewPresenter {
                 color: .titleText
             )
 
-            accessibility = .init(
+            self.accessibility = .init(
                 id: AccessibilityId.amountLabel,
                 label: amount
             )
 
             guard let padding = input.padding else {
-                placeholder = nil
+                self.placeholder = nil
                 return
             }
 
-            placeholder = LabelContent(
+            self.placeholder = LabelContent(
                 text: padding,
                 font: font,
                 color: .mutedText

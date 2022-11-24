@@ -21,7 +21,7 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
     // MARK: - Setup
 
     public init(activityItemBalanceFetching: ActivityItemBalanceFetching) {
-        balanceFetch = activityItemBalanceFetching
+        self.balanceFetch = activityItemBalanceFetching
         activityItemBalanceFetching
             .calculationState
             .map { state -> InteractionState in

@@ -7,7 +7,7 @@ public final class UnfairLock {
     @usableFromInline let lock: UnsafeMutablePointer<os_unfair_lock>
 
     public init() {
-        lock = .allocate(capacity: 1)
+        self.lock = .allocate(capacity: 1)
         lock.initialize(to: os_unfair_lock())
     }
 
@@ -55,7 +55,7 @@ extension UnfairLock {
         private var _owner: UnfairLock
 
         init(owner: UnfairLock) {
-            _owner = owner
+            self._owner = owner
             os_unfair_lock_lock(owner.lock)
         }
 

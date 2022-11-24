@@ -62,7 +62,7 @@ final class ChangePasswordScreenInteractor {
         passwordAPI: PasswordRepositoryAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        passwordRepository = passwordAPI
+        self.passwordRepository = passwordAPI
         self.analyticsRecorder = analyticsRecorder
 
         passwordRepository.hasPassword.asSingle()

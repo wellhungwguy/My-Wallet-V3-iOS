@@ -64,10 +64,10 @@ struct AddressModificationState: Equatable {
     ) {
         self.addressDetailsId = addressDetailsId
         self.isPresentedFromSearchView = isPresentedFromSearchView
-        shouldFetchPrefilledAddress = !isPresentedFromSearchView
+        self.shouldFetchPrefilledAddress = !isPresentedFromSearchView
         self.error = error
         self.state = state
-        stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
+        self.stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
         self.country = country ?? ""
     }
 }

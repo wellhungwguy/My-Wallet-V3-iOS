@@ -131,9 +131,9 @@ final class BitcoinCryptoAccount: BitcoinChainCryptoAccount {
             tag: BitcoinChainKit.BitcoinChainCoin.bitcoin
         )
     ) {
-        xPub = walletAccount.publicKeys.default
-        hdAccountIndex = walletAccount.index
-        label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
+        self.xPub = walletAccount.publicKeys.default
+        self.hdAccountIndex = walletAccount.index
+        self.label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.balanceService = balanceService
         self.priceService = priceService

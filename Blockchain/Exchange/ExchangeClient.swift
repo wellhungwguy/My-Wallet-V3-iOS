@@ -42,7 +42,7 @@ private struct SyncDepositAddressRequest: Encodable {
     let addresses: [String: String]
 
     init(accounts: [CryptoReceiveAddress]) {
-        addresses = accounts
+        self.addresses = accounts
             .reduce(into: [String: String]()) { result, receiveAddress in
                 result[receiveAddress.asset.code] = receiveAddress.address
             }

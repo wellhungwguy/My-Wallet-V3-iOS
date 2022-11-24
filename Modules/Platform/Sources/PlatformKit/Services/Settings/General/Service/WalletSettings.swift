@@ -27,16 +27,16 @@ public struct WalletSettings: Equatable {
     }
 
     init(response: SettingsResponse) {
-        rawDisplayCurrency = response.currency
-        countryCode = response.countryCode
-        language = response.language
-        email = response.email
-        smsNumber = response.smsNumber
-        isSMSVerified = response.smsVerified
-        isEmailVerified = response.emailVerified
-        isEmailNotificationsEnabled = response.emailNotificationsEnabled
-        authenticator = WalletAuthenticatorType(rawValue: response.authenticator) ?? .standard
-        features = response.invited.reduce(into: [Feature: Bool]()) { result, data in
+        self.rawDisplayCurrency = response.currency
+        self.countryCode = response.countryCode
+        self.language = response.language
+        self.email = response.email
+        self.smsNumber = response.smsNumber
+        self.isSMSVerified = response.smsVerified
+        self.isEmailVerified = response.emailVerified
+        self.isEmailNotificationsEnabled = response.emailNotificationsEnabled
+        self.authenticator = WalletAuthenticatorType(rawValue: response.authenticator) ?? .standard
+        self.features = response.invited.reduce(into: [Feature: Bool]()) { result, data in
             guard let key = Feature(rawValue: data.key.rawValue) else {
                 return
             }

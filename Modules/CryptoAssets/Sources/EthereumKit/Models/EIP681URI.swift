@@ -46,8 +46,8 @@ public struct EIP681URI {
         network: EVMNetwork
     ) {
         self.address = address
-        method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
-        cryptoCurrency = network.nativeAsset
+        self.method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
+        self.cryptoCurrency = network.nativeAsset
     }
 
     public init?(
@@ -60,13 +60,13 @@ public struct EIP681URI {
         }
         if let erc20ContractAddress = cryptoCurrency.assetModel.kind.erc20ContractAddress {
             self.address = erc20ContractAddress
-            method = .transfer(
+            self.method = .transfer(
                 destination: address,
                 amount: nil
             )
         } else if Self.isNativeAsset(cryptoCurrency: cryptoCurrency, enabledCurrenciesService: enabledCurrenciesService) {
             self.address = address
-            method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
+            self.method = .send(amount: nil, gasLimit: nil, gasPrice: nil)
         } else {
             return nil
         }

@@ -100,11 +100,11 @@ public final class AnyCache<Key: Hashable, Value: Equatable>: CacheAPI {
     public init<Cache: CacheAPI>(
         _ cache: Cache
     ) where Cache.Key == Key, Cache.Value == Value {
-        getKey = cache.get
-        streamKey = cache.stream
-        setKey = cache.set
-        removeKey = cache.remove
-        removeAllKeys = cache.removeAll
+        self.getKey = cache.get
+        self.streamKey = cache.stream
+        self.setKey = cache.set
+        self.removeKey = cache.remove
+        self.removeAllKeys = cache.removeAll
     }
 
     // MARK: - Public Methods

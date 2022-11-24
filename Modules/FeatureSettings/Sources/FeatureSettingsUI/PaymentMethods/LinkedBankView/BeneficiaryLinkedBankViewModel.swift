@@ -42,7 +42,7 @@ final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
         self.data = data
 
         if let icon = data.icon {
-            badgeImageViewModel = .template(
+            self.badgeImageViewModel = .template(
                 image: .remote(url: icon),
                 templateColor: .secondary,
                 backgroundColor: .clear,
@@ -50,7 +50,7 @@ final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
                 accessibilityIdSuffix: data.identifier
             )
         } else {
-            badgeImageViewModel = .template(
+            self.badgeImageViewModel = .template(
                 image: .local(name: Icon.bank.name, bundle: .componentLibrary),
                 templateColor: .secondary,
                 backgroundColor: .lightBlueBackground,
@@ -60,7 +60,7 @@ final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
             badgeImageViewModel.marginOffsetRelay.accept(4)
         }
 
-        nameLabelContent = LabelContent(
+        self.nameLabelContent = LabelContent(
             text: data.name,
             font: .main(.semibold, 16),
             color: .titleText,
@@ -72,14 +72,14 @@ final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
             limitText = "\(limit.displayString) \(LocalizationConstants.Settings.Bank.dailyLimit)"
         }
 
-        limitLabelContent = LabelContent(
+        self.limitLabelContent = LabelContent(
             text: limitText,
             font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.limits)\(data.identifier)")
         )
 
-        accountLabelContent = LabelContent(
+        self.accountLabelContent = LabelContent(
             text: data.account,
             font: .main(.semibold, 16),
             color: .titleText,

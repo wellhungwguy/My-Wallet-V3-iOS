@@ -25,7 +25,7 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
         case let thing as AnyJSON:
             self = thing
         default:
-            wrapped = any as Any
+            self.wrapped = any as Any
         }
     }
 

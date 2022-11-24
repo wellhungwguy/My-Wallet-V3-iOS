@@ -166,7 +166,7 @@ public final class AppDeeplinkHandler: AppDeeplinkHandlerAPI {
         blockchainHandler: URIHandlingAPI,
         firebaseHandler: URIHandlingAPI
     ) {
-        coreDeeplinkHandler = deeplinkHandler
+        self.coreDeeplinkHandler = deeplinkHandler
         self.blockchainHandler = blockchainHandler
         self.firebaseHandler = firebaseHandler
     }

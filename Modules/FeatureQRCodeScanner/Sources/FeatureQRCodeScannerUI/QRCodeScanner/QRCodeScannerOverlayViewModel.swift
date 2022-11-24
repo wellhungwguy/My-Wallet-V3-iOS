@@ -144,7 +144,7 @@ final class QRCodeScannerOverlayViewModel {
             }
             .store(in: &cancellables)
 
-        connectedDAppsTapped = {
+        self.connectedDAppsTapped = {
             analyticsEventRecorder.record(event: AnalyticsEvents
                 .New
                 .WalletConnect

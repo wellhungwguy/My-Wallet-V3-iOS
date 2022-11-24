@@ -25,7 +25,7 @@ final class ProductsRepository: ProductsRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client.fetchProducts()

@@ -40,14 +40,14 @@ final class ApplePayRepository: ApplePayRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
 
-        cachedEligibleValue = CachedValueNew(
+        self.cachedEligibleValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 eligibleService.isBackendEnabled()
             }
         )
 
-        cachedInfoValue = CachedValueNew(
+        self.cachedInfoValue = CachedValueNew(
             cache: infoCache,
             fetch: { currency in
                 client.applePayInfo(for: currency)

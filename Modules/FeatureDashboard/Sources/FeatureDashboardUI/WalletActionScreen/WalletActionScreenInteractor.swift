@@ -35,8 +35,8 @@ final class WalletActionScreenInteractor: WalletActionScreenInteracting {
 
     init(account: BlockchainAccount) {
         self.account = account
-        currency = account.currencyType
-        balanceCellInteractor = CurrentBalanceCellInteractor(
+        self.currency = account.currencyType
+        self.balanceCellInteractor = CurrentBalanceCellInteractor(
             account: account
         )
     }

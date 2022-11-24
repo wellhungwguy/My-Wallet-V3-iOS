@@ -27,9 +27,9 @@ public struct CustodialAccountBalance: Equatable {
     init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
         let zero: MoneyValue = .zero(currency: currency)
         self.currency = currency
-        available = MoneyValue.create(minor: response.available, currency: currency) ?? zero
-        pending = MoneyValue.create(minor: response.pending, currency: currency) ?? zero
-        withdrawable = MoneyValue.create(minor: response.withdrawable, currency: currency) ?? zero
+        self.available = MoneyValue.create(minor: response.available, currency: currency) ?? zero
+        self.pending = MoneyValue.create(minor: response.pending, currency: currency) ?? zero
+        self.withdrawable = MoneyValue.create(minor: response.withdrawable, currency: currency) ?? zero
         if let mainBalanceToDisplay = response.mainBalanceToDisplay {
             self.mainBalanceToDisplay = MoneyValue.create(
                 minor: mainBalanceToDisplay,

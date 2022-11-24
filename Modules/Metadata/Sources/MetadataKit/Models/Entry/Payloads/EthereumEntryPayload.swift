@@ -34,10 +34,10 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                address = try container.decode(String.self, forKey: .address)
-                archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
-                correct = try container.decodeIfPresent(Bool.self, forKey: .correct) ?? true
-                label = try container.decode(String.self, forKey: .label)
+                self.address = try container.decode(String.self, forKey: .address)
+                self.archived = try container.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+                self.correct = try container.decodeIfPresent(Bool.self, forKey: .correct) ?? true
+                self.label = try container.decode(String.self, forKey: .label)
             }
         }
 
@@ -69,10 +69,10 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                contract = try container.decode(String.self, forKey: .contract)
-                hasSeen = try container.decodeIfPresent(Bool.self, forKey: .hasSeen) ?? false
-                label = try container.decode(String.self, forKey: .label)
-                txNotes = try container.decodeIfPresent([String: String].self, forKey: .txNotes) ?? [:]
+                self.contract = try container.decode(String.self, forKey: .contract)
+                self.hasSeen = try container.decodeIfPresent(Bool.self, forKey: .hasSeen) ?? false
+                self.label = try container.decode(String.self, forKey: .label)
+                self.txNotes = try container.decodeIfPresent([String: String].self, forKey: .txNotes) ?? [:]
             }
         }
 
@@ -110,12 +110,12 @@ public struct EthereumEntryPayload: MetadataNodeEntry, Hashable {
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            accounts = try container.decode([Account].self, forKey: .accounts)
-            defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
-            erc20 = try container.decodeIfPresent([String: ERC20].self, forKey: .erc20) ?? [:]
-            hasSeen = try container.decode(Bool.self, forKey: .hasSeen)
-            lastTxTimestamp = try container.decodeIfPresent(Int.self, forKey: .lastTxTimestamp)
-            transactionNotes = try container.decodeIfPresent([String: String].self, forKey: .transactionNotes) ?? [:]
+            self.accounts = try container.decode([Account].self, forKey: .accounts)
+            self.defaultAccountIndex = try container.decodeIfPresent(Int.self, forKey: .defaultAccountIndex) ?? 0
+            self.erc20 = try container.decodeIfPresent([String: ERC20].self, forKey: .erc20) ?? [:]
+            self.hasSeen = try container.decode(Bool.self, forKey: .hasSeen)
+            self.lastTxTimestamp = try container.decodeIfPresent(Int.self, forKey: .lastTxTimestamp)
+            self.transactionNotes = try container.decodeIfPresent([String: String].self, forKey: .transactionNotes) ?? [:]
         }
     }
 

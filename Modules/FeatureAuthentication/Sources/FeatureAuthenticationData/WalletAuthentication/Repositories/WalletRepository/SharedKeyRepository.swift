@@ -18,7 +18,7 @@ final class SharedKeyRepository: SharedKeyRepositoryAPI {
         self.legacySharedKeyRepository = legacySharedKeyRepository
         self.walletRepo = walletRepo
 
-        sharedKey = Deferred { [walletRepo, legacySharedKeyRepository] in
+        self.sharedKey = Deferred { [walletRepo, legacySharedKeyRepository] in
             walletRepo
                 .get()
                 .map(\.credentials.sharedKey)

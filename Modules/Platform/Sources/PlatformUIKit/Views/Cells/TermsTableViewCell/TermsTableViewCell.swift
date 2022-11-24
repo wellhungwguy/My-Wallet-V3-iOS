@@ -8,7 +8,7 @@ public final class TermsTableViewCell: UITableViewCell {
     private let textView = UITextView(frame: .zero)
     private var readMoreButtonTitle = ""
     private lazy var readMoreButton: UIView = { [weak self] in
-        guard let self = self else { return .init() }
+        guard let self else { return .init() }
         let button = SmallMinimalButton(
             title: .init(
                 get: { self.readMoreButtonTitle },
@@ -22,7 +22,7 @@ public final class TermsTableViewCell: UITableViewCell {
     }()
 
     public var viewModel: TermsViewCellModel! {
-        willSet { }
+        willSet {}
         didSet {
             guard let viewModel else {
                 return

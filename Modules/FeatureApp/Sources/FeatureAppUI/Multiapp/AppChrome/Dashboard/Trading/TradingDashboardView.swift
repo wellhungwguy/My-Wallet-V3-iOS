@@ -9,7 +9,7 @@ import SwiftUI
 struct TradingDashboardView: View {
     let store: StoreOf<TradingDashboard>
 
-    public init(store: StoreOf<TradingDashboard>) {
+    init(store: StoreOf<TradingDashboard>) {
         self.store = store
     }
 

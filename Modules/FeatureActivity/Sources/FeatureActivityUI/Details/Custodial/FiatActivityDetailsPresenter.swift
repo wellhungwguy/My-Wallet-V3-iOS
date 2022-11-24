@@ -74,7 +74,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        fiatAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.fiatAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amount.displayString,
             descriptors: .h1(accessibilityIdPrefix: "")
         )
@@ -102,29 +102,29 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             )
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.date)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let destination = event.amount.currency.defaultWalletName
         switch event.type {
         case .deposit:
-            destinationPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.destinationPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .withdrawal:
-            destinationPresenter = TransactionalLineItem.from(destination).defaultPresenter(
+            self.destinationPresenter = TransactionalLineItem.from(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         }
 
-        cells = [
+        self.cells = [
             .label(fiatAmountLabelPresenter),
             .badges(badgesModel),
             .separator,

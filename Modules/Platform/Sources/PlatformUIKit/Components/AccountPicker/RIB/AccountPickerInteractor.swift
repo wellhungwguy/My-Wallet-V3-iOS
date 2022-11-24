@@ -55,7 +55,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             self.didSelect = didSelect
             self.listener = nil
         case .listener(let listener):
-            didSelect = nil
+            self.didSelect = nil
             self.listener = listener
         }
         super.init(presenter: presenter)

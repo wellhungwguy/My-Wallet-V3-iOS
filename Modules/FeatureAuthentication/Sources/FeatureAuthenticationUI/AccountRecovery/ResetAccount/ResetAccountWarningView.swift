@@ -28,7 +28,7 @@ struct ResetAccountWarningView: View {
 
     init(store: Store<ResetAccountWarningState, ResetAccountWarningAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

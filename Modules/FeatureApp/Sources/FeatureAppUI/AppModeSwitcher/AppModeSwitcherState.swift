@@ -28,6 +28,6 @@ public struct AppModeSwitcherState: Equatable {
         self.brokerageAccountBalance = brokerageAccountBalance
         self.currentAppMode = currentAppMode
 
-        defiWalletState = DefiWalletIntroState()
+        self.defiWalletState = DefiWalletIntroState()
     }
 }

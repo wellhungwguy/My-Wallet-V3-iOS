@@ -43,7 +43,7 @@ public struct CoinAdapterView: View {
     ) {
         self.cryptoCurrency = cryptoCurrency
         self.app = app
-        store = Store<CoinViewState, CoinViewAction>(
+        self.store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
                 currency: cryptoCurrency
             ),

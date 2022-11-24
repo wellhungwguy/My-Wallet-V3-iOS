@@ -57,7 +57,7 @@ final class CloudBackupSwitchViewPresenter: SwitchViewPresenting {
         analyticsRecording: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.analyticsRecording = analyticsRecording
-        interactor = CloudBackupSwitchViewInteractor(
+        self.interactor = CloudBackupSwitchViewInteractor(
             cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )

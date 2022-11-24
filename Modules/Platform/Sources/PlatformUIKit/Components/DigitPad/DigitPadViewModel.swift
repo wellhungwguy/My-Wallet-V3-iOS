@@ -78,18 +78,18 @@ public final class DigitPadViewModel {
         let buttonBackground = DigitPadButtonViewModel.Background(highlightColor: buttonHighlightColor)
 
         // Initialize all buttons
-        digitButtonViewModelArray = (0...9).map {
+        self.digitButtonViewModelArray = (0...9).map {
             DigitPadButtonViewModel(content: .label(text: "\($0)", tint: contentTint), background: buttonBackground)
         }
 
-        backspaceButtonViewModel = DigitPadButtonViewModel(
+        self.backspaceButtonViewModel = DigitPadButtonViewModel(
             content: .image(type: .backspace, tint: contentTint),
             background: buttonBackground
         )
         self.customButtonViewModel = customButtonViewModel
 
         // Digit count of the value
-        valueLengthObservable = valueRelay.map(\.count).share(replay: 1)
+        self.valueLengthObservable = valueRelay.map(\.count).share(replay: 1)
 
         // Bind backspace to an action
         backspaceButtonViewModel.tapObservable

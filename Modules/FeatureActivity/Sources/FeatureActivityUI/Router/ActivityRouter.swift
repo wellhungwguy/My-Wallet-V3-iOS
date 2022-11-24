@@ -24,7 +24,7 @@ final class ActivityRouter: ActivityRouterAPI {
         transactionDetailService: TransactionDetailServiceAPI = resolve()
     ) {
         self.navigationRouter = navigationRouter
-        serviceContainer = container
+        self.serviceContainer = container
         self.enabledCurrenciesService = enabledCurrenciesService
         self.transactionDetailService = transactionDetailService
     }

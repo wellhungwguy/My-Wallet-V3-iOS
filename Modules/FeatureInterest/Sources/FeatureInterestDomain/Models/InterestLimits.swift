@@ -21,13 +21,13 @@ public struct InterestLimits: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
         let currencyValue = try values.decode(String.self, forKey: .currency)
-        currency = FiatCurrency(code: currencyValue) ?? .USD
-        lockUpDuration = try values.decode(Double.self, forKey: .lockUpDuration)
+        self.currency = FiatCurrency(code: currencyValue) ?? .USD
+        self.lockUpDuration = try values.decode(Double.self, forKey: .lockUpDuration)
         let withdrawal = try values.decode(String.self, forKey: .maxWithdrawalAmount)
         let deposit = try values.decode(String.self, forKey: .minDepositAmount)
         let zero: FiatValue = .zero(currency: currency)
-        maxWithdrawalAmount = FiatValue.create(minor: withdrawal, currency: currency) ?? zero
-        minDepositAmount = FiatValue.create(minor: deposit, currency: currency) ?? zero
+        self.maxWithdrawalAmount = FiatValue.create(minor: withdrawal, currency: currency) ?? zero
+        self.minDepositAmount = FiatValue.create(minor: deposit, currency: currency) ?? zero
     }
 }
 

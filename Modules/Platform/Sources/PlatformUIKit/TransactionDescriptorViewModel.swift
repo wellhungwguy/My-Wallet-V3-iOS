@@ -18,9 +18,9 @@ struct BadgeImageAttributes {
     )
 
     init(_ currencyType: CurrencyType) {
-        imageResource = currencyType.logoResource
-        brandColor = currencyType.brandUIColor
-        isFiat = currencyType.isFiatCurrency
+        self.imageResource = currencyType.logoResource
+        self.brandColor = currencyType.brandUIColor
+        self.isFiat = currencyType.isFiatCurrency
     }
 
     init(imageResource: ImageResource, brandColor: UIColor, isFiat: Bool) {

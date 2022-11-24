@@ -20,7 +20,7 @@ struct WalletInfoPollResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        responseType = try container.decode(ResponseType.self, forKey: .responseType)
+        self.responseType = try container.decode(ResponseType.self, forKey: .responseType)
     }
 }
 

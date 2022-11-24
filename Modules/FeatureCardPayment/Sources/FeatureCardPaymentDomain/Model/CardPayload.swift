@@ -83,22 +83,22 @@ extension CardPayload: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try values.decode(String.self, forKey: .identifier)
+        self.identifier = try values.decode(String.self, forKey: .identifier)
 
         let partnerString = try values.decode(String.self, forKey: .partner)
-        partner = Partner(rawValue: partnerString) ?? .unknown
+        self.partner = Partner(rawValue: partnerString) ?? .unknown
 
-        address = try values.decodeIfPresent(BillingAddress.self, forKey: .address)
-        currency = try values.decode(String.self, forKey: .currency)
+        self.address = try values.decodeIfPresent(BillingAddress.self, forKey: .address)
+        self.currency = try values.decode(String.self, forKey: .currency)
 
-        state = try values.decodeIfPresent(State.self, forKey: .state) ?? .none
+        self.state = try values.decodeIfPresent(State.self, forKey: .state) ?? .none
 
-        additionDate = try values.decode(String.self, forKey: .additionDate)
+        self.additionDate = try values.decode(String.self, forKey: .additionDate)
 
-        block = try values.decodeIfPresent(Bool.self, forKey: .block) ?? false
-        card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
-        lastError = try? values.decodeIfPresent(String.self, forKey: .lastError)
-        ux = try? values.decodeIfPresent(UX.Dialog.self, forKey: .ux)
+        self.block = try values.decodeIfPresent(Bool.self, forKey: .block) ?? false
+        self.card = try values.decodeIfPresent(CardDetails.self, forKey: .card)
+        self.lastError = try? values.decodeIfPresent(String.self, forKey: .lastError)
+        self.ux = try? values.decodeIfPresent(UX.Dialog.self, forKey: .ux)
     }
 }
 

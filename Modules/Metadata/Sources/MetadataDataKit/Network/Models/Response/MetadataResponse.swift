@@ -27,14 +27,14 @@ struct MetadataResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        payload = try values.decode(String.self, forKey: .payload)
-        version = try values.decode(Int.self, forKey: .version)
-        typeId = try values.decode(Int.self, forKey: .typeId)
-        signature = try values.decode(String.self, forKey: .signature)
-        prevMagicHash = try values.decodeIfPresent(String.self, forKey: .prevMagicHash)
-        createdAt = try values.decode(Int.self, forKey: .createdAt)
-        updatedAt = try values.decode(Int.self, forKey: .updatedAt)
-        address = try values.decode(String.self, forKey: .address)
+        self.payload = try values.decode(String.self, forKey: .payload)
+        self.version = try values.decode(Int.self, forKey: .version)
+        self.typeId = try values.decode(Int.self, forKey: .typeId)
+        self.signature = try values.decode(String.self, forKey: .signature)
+        self.prevMagicHash = try values.decodeIfPresent(String.self, forKey: .prevMagicHash)
+        self.createdAt = try values.decode(Int.self, forKey: .createdAt)
+        self.updatedAt = try values.decode(Int.self, forKey: .updatedAt)
+        self.address = try values.decode(String.self, forKey: .address)
     }
 }
 

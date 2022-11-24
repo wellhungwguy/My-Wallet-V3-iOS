@@ -31,15 +31,15 @@ final class ActivityItemPresenter: IdentifiableType {
     private let descriptionRelay = BehaviorRelay<LabelContent>(value: .empty)
 
     init(interactor: ActivityItemInteractor) {
-        viewModel = ActivityItemViewModel(event: interactor.event)
-        badgeImageViewModel = .template(
+        self.viewModel = ActivityItemViewModel(event: interactor.event)
+        self.badgeImageViewModel = .template(
             image: viewModel.imageResource,
             templateColor: viewModel.eventColor,
             backgroundColor: viewModel.backgroundColor,
             cornerRadius: .round,
             accessibilityIdSuffix: AccessibilityId.ActivityCell.badge
         )
-        assetBalanceViewPresenter = AssetBalanceViewPresenter(
+        self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .trailing,
             interactor: interactor.balanceViewInteractor,
             descriptors: viewModel.descriptors

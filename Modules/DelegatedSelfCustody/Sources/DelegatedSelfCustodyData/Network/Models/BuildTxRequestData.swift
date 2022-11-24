@@ -16,15 +16,15 @@ struct BuildTxRequestData: Encodable {
 
 extension BuildTxRequestData {
     public init(input: DelegatedCustodyTransactionInput) {
-        account = input.account
-        amount = input.amount.stringValue
-        currency = input.currency
-        destination = input.destination
-        fee = input.fee.stringValue
-        feeCurrency = input.feeCurrency
-        maxVerificationVersion = input.maxVerificationVersion
-        memo = input.memo
-        type = input.type
+        self.account = input.account
+        self.amount = input.amount.stringValue
+        self.currency = input.currency
+        self.destination = input.destination
+        self.fee = input.fee.stringValue
+        self.feeCurrency = input.feeCurrency
+        self.maxVerificationVersion = input.maxVerificationVersion
+        self.memo = input.memo
+        self.type = input.type
     }
 }
 

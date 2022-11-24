@@ -49,6 +49,7 @@ extension LocalizationConstants {
             public enum Recurring {
                 public enum FrequencySelector {}
             }
+
             public enum AmountPresenter {
                 public enum LimitView {}
             }
@@ -87,6 +88,7 @@ extension LocalizationConstants {
                 public enum Success {}
                 public enum Failure {}
             }
+
             public enum Confirmation {
                 public enum DepositACHTerms {}
                 public enum DepositACHTermsDetails {}

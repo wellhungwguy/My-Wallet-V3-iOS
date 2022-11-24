@@ -31,10 +31,10 @@ public final class RadioAccountCellPresenter: IdentifiableType {
                 accessibilityPrefix: accessibilityPrefix
             )
         )
-        viewModel = .just(model)
-        identity = model.identifier
+        self.viewModel = .just(model)
+        self.identity = model.identifier
 
-        imageContent = interactor
+        self.imageContent = interactor
             .isSelected
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)

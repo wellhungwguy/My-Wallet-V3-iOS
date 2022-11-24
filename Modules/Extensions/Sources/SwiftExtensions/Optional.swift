@@ -188,9 +188,9 @@ extension Optional where Wrapped: Swift.Codable {
         public init(from decoder: Decoder) throws {
             do {
                 let container = try decoder.singleValueContainer()
-                wrappedValue = try container.decode(Wrapped.self)
+                self.wrappedValue = try container.decode(Wrapped.self)
             } catch {
-                wrappedValue = try? Wrapped(from: decoder)
+                self.wrappedValue = try? Wrapped(from: decoder)
             }
         }
 

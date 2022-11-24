@@ -43,7 +43,7 @@ public class FiatAccountGroup: AccountGroup {
     }
 
     public init(accounts: [SingleAccount]) {
-        label = "Fiat Accounts"
+        self.label = "Fiat Accounts"
         self.accounts = accounts
     }
 }

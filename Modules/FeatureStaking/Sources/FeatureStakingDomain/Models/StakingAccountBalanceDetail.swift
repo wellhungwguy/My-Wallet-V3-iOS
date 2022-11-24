@@ -36,7 +36,7 @@ public struct StakingAccountBalanceDetail: Equatable {
         self.unbondingWithdrawals = unbondingWithdrawals
         self.locked = locked
         self.mainBalanceToDisplay = mainBalanceToDisplay
-        currencyCode = code
+        self.currencyCode = code
     }
 }
 

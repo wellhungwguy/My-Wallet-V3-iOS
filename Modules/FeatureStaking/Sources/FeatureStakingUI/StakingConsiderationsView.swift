@@ -27,7 +27,7 @@ public struct StakingConsiderationsView: View {
     public init?(pages: [Page]) {
         self.pages = pages
         guard let first = pages.first else { return nil }
-        self._current = .init(wrappedValue: first.id)
+        _current = .init(wrappedValue: first.id)
     }
 
     public var body: some View {

@@ -152,7 +152,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            dictionary = try (decoder.value as? [String: Any])
+            self.dictionary = try (decoder.value as? [String: Any])
                 .or(throw: Error(message: "Expected a [String: Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
 
@@ -201,7 +201,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            value = decoder.value
+            self.value = decoder.value
         }
     }
 }
@@ -235,7 +235,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            array = try (decoder.value as? [Any])
+            self.array = try (decoder.value as? [Any])
                 .or(throw: Error(message: "Expected a [Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
     }

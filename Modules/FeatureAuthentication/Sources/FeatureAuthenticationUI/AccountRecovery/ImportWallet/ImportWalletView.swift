@@ -28,7 +28,7 @@ struct ImportWalletView: View {
 
     init(store: Store<ImportWalletState, ImportWalletAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

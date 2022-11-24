@@ -176,9 +176,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         precondition(erc20Token.kind.isERC20)
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        asset = erc20Token.cryptoCurrency!
+        self.asset = erc20Token.cryptoCurrency!
         self.network = network
-        label = asset.defaultWalletName
+        self.label = asset.defaultWalletName
         self.balanceService = balanceService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
         self.ethereumBalanceRepository = ethereumBalanceRepository

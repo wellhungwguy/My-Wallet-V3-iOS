@@ -45,7 +45,7 @@ final class AppHostingController: UIViewController {
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
         self.loggedInDependencyBridge = loggedInDependencyBridge
         self.featureFlagsService = featureFlagsService
         super.init(nibName: nil, bundle: nil)

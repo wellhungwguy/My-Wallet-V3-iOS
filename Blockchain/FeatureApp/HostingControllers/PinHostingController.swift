@@ -22,7 +22,7 @@ final class PinHostingController: UIViewController {
 
     init(store: Store<PinCore.State, PinCore.Action>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
         super.init(nibName: nil, bundle: nil)
     }
 

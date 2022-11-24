@@ -10,7 +10,7 @@ public struct UnspentOutputs: Equatable {
 
 extension UnspentOutputs {
     init(networkResponse: UnspentOutputsResponse, coin: BitcoinChainCoin) {
-        outputs = networkResponse
+        self.outputs = networkResponse
             .unspent_outputs
             .map { UnspentOutput(response: $0, coin: coin) }
     }

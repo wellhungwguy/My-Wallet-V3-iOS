@@ -6,12 +6,12 @@ public struct TitledSeparatorViewModel {
     let accessibility: Accessibility
 
     public init(title: String = "", separatorColor: Color = .clear, accessibilityId: String = "") {
-        titleLabelContent = LabelContent(
+        self.titleLabelContent = LabelContent(
             text: title,
             font: .main(.semibold, 12),
             color: .titleText
         )
         self.separatorColor = separatorColor
-        accessibility = .id(accessibilityId)
+        self.accessibility = .id(accessibilityId)
     }
 }

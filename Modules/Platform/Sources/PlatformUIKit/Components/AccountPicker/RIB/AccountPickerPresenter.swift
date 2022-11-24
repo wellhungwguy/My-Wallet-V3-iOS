@@ -41,7 +41,7 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
         showWithdrawalLocks: Bool = false
     ) {
         self.action = action
-        button = buttonViewModel
+        self.button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
         self.showWithdrawalLocks = showWithdrawalLocks

@@ -62,36 +62,36 @@ public struct AccountPickerCellItem: IdentifiableType {
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
         case .emptyState:
-            account = nil
+            self.account = nil
             let labelContent = LabelContent(
                 text: LocalizationConstants.Dashboard.Prices.noResults,
                 font: .main(.medium, 16),
                 color: .darkTitleText,
                 alignment: .center
             )
-            presenter = .emptyState(labelContent)
+            self.presenter = .emptyState(labelContent)
         case .withdrawalLocks:
-            account = nil
-            presenter = .withdrawalLocks
+            self.account = nil
+            self.presenter = .withdrawalLocks
         case .button(let viewModel):
-            account = nil
-            presenter = .button(viewModel)
+            self.account = nil
+            self.presenter = .button(viewModel)
 
         case .linkedBankAccount(let account):
             self.account = account
-            presenter = .linkedBankAccount(
+            self.presenter = .linkedBankAccount(
                 .init(account: account, action: assetAction)
             )
 
         case .paymentMethodAccount(let account):
             self.account = account
-            presenter = .paymentMethodAccount(
+            self.presenter = .paymentMethodAccount(
                 .init(account: account, action: assetAction)
             )
 
         case .singleAccount(let account, let interactor):
             self.account = account
-            presenter = .singleAccount(
+            self.presenter = .singleAccount(
                 AccountCurrentBalanceCellPresenter(
                     account: account,
                     assetAction: assetAction,
@@ -101,7 +101,7 @@ public struct AccountPickerCellItem: IdentifiableType {
 
         case .accountGroup(let account, let interactor):
             self.account = account
-            presenter = .accountGroup(
+            self.presenter = .accountGroup(
                 AccountGroupBalanceCellPresenter(
                     account: account,
                     interactor: interactor

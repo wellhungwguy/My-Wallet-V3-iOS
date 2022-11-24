@@ -42,7 +42,7 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     public init(interactor: SingleAmountInteractor) {
         self.interactor = interactor
 
-        amountPresenter = InputAmountLabelPresenter(
+        self.amountPresenter = InputAmountLabelPresenter(
             interactor: interactor.currencyInteractor,
             currencyCodeSide: .leading,
             /// There is only one amount,

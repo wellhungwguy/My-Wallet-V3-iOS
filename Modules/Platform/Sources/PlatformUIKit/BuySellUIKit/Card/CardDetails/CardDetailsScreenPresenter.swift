@@ -128,7 +128,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
         // Setup of the stored properties
 
         let cardCVVValidator = TextValidationFactory.Card.cvv
-        cardNumberValidator = TextValidationFactory.Card.number
+        self.cardNumberValidator = TextValidationFactory.Card.number
 
         let cvvToCardNumberMatcher = CVVToCreditCardMatchValidator(
             cvvTextSource: cardCVVValidator,
@@ -160,23 +160,23 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
         cardNumberTextFieldViewModel.set(next: cardExpiryTextFieldViewModel)
         cardExpiryTextFieldViewModel.set(next: cardCVVTextFieldViewModel)
 
-        textFieldViewModelByType = [
+        self.textFieldViewModelByType = [
             .cardholderName: cardholderNameTextFieldViewModel,
             .expirationDate: cardExpiryTextFieldViewModel,
             .cardNumber: cardNumberTextFieldViewModel,
             .cardCVV: cardCVVTextFieldViewModel
         ]
 
-        textFieldViewModels = [
+        self.textFieldViewModels = [
             textFieldViewModelByType[.cardholderName]!,
             textFieldViewModelByType[.cardNumber]!,
             textFieldViewModelByType[.expirationDate]!,
             textFieldViewModelByType[.cardCVV]!
         ]
 
-        buttonViewModel = .primary(with: LocalizedString.button)
+        self.buttonViewModel = .primary(with: LocalizedString.button)
 
-        noticeViewModel = NoticeViewModel(
+        self.noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageResource: .local(name: "lock-icon", bundle: .platformUIKit),
                 accessibility: .id(AccessibilityId.noticeImage)

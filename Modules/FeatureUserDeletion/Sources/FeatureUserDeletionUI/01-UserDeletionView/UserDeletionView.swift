@@ -19,7 +19,7 @@ public struct UserDeletionView: View {
 
     public init(store: Store<UserDeletionState, UserDeletionAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {

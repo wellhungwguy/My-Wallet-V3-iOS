@@ -82,8 +82,8 @@ public struct Quote {
         value: MoneyValue,
         response: QuoteResponse
     ) throws {
-        quoteId = response.quoteId
-        settlementDetails = response.settlementDetails
+        self.quoteId = response.quoteId
+        self.settlementDetails = response.settlementDetails
 
         // formatting dates
         guard let quoteCreatedDate = dateFormatter.date(from: response.quoteCreatedAt),
@@ -91,8 +91,8 @@ public struct Quote {
         else {
             throw SetupError.dateFormatting
         }
-        quoteCreatedAt = quoteCreatedDate
-        quoteExpiresAt = quoteExpiresDate
+        self.quoteCreatedAt = quoteCreatedDate
+        self.quoteExpiresAt = quoteExpiresDate
 
         // parsing fee (source currency)
         guard let feeMinor = Decimal(string: response.feeDetails.fee) else {
@@ -120,10 +120,10 @@ public struct Quote {
                 major: estimatedFiatAmount.minorAmount.decimalDivision(by: fiatRate.minorAmount),
                 currency: destination
             )
-            estimatedSourceAmount = estimatedFiatAmount.moneyValue
-            estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
-            rate = fiatRate.moneyValue
-            fee = MoneyValue.create(minor: feeMinor, currency: .fiat(source))
+            self.estimatedSourceAmount = estimatedFiatAmount.moneyValue
+            self.estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
+            self.rate = fiatRate.moneyValue
+            self.fee = MoneyValue.create(minor: feeMinor, currency: .fiat(source))
 
         // sell flow
         case (let source as CryptoCurrency, let destination as FiatCurrency):
@@ -140,10 +140,10 @@ public struct Quote {
                 major: estimatedCryptoAmount.minorAmount.decimalDivision(by: cryptoRate.minorAmount),
                 currency: destination
             )
-            estimatedSourceAmount = estimatedCryptoAmount.moneyValue
-            estimatedDestinationAmount = estimatedFiatAmount.moneyValue
-            rate = cryptoRate.moneyValue
-            fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
+            self.estimatedSourceAmount = estimatedCryptoAmount.moneyValue
+            self.estimatedDestinationAmount = estimatedFiatAmount.moneyValue
+            self.rate = cryptoRate.moneyValue
+            self.fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
 
         // swap flow
         case (let source as CryptoCurrency, let destination as CryptoCurrency):
@@ -160,10 +160,10 @@ public struct Quote {
                 major: fromTokenAmount.minorAmount.decimalDivision(by: fromTokenRate.minorAmount),
                 currency: destination
             )
-            estimatedSourceAmount = fromTokenAmount.moneyValue
-            estimatedDestinationAmount = toTokenAmount.moneyValue
-            rate = fromTokenRate.moneyValue
-            fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
+            self.estimatedSourceAmount = fromTokenAmount.moneyValue
+            self.estimatedDestinationAmount = toTokenAmount.moneyValue
+            self.rate = fromTokenRate.moneyValue
+            self.fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
 
         default:
             fatalError("Unsupported source and destination currency pair")

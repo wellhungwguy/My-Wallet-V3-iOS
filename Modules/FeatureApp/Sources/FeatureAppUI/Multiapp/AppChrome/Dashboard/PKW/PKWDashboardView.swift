@@ -9,7 +9,7 @@ import SwiftUI
 struct PKWDashboardView: View {
     let store: StoreOf<PKWDashboard>
 
-    public init(store: StoreOf<PKWDashboard>) {
+    init(store: StoreOf<PKWDashboard>) {
         self.store = store
     }
 

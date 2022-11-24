@@ -65,7 +65,7 @@ public final class SelectionScreenPresenter {
     ) {
         self.shouldPreselect = shouldPreselect
         preselectionSupportedRelay.accept(shouldPreselect)
-        tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
+        self.tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
         self.searchBarPlaceholder = searchBarPlaceholder
         self.title = title
         self.interactor = interactor

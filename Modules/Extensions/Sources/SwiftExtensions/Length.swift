@@ -60,8 +60,8 @@ public struct Size: Hashable {
     }
 
     public init(length: Length) {
-        width = length
-        height = length
+        self.width = length
+        self.height = length
     }
 }
 

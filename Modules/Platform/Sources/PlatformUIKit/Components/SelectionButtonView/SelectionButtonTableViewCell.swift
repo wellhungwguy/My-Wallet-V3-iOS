@@ -29,7 +29,7 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
 
         contentView.addSubview(selectionButtonView)
         selectionButtonView.layoutToSuperview(axis: .horizontal)
-        verticalConstraints = selectionButtonView.layoutToSuperview(axis: .vertical, priority: .penultimateHigh)
+        self.verticalConstraints = selectionButtonView.layoutToSuperview(axis: .vertical, priority: .penultimateHigh)
         verticalConstraints.trailing.constant = -bottomSpace
     }
 

@@ -27,7 +27,7 @@ class StaticUbiquitousKeyValueStore: UbiquitousKeyValueStore {
 
     private init(userDefaults: UserDefaults = StaticUbiquitousKeyValueStore.userDefaults) {
         self.userDefaults = userDefaults
-        data = userDefaults.dictionary(forKey: StaticUbiquitousKeyValueStore.userDefaultsKey) as? DataFormat ?? [:]
+        self.data = userDefaults.dictionary(forKey: StaticUbiquitousKeyValueStore.userDefaultsKey) as? DataFormat ?? [:]
     }
 
     func set(_ aDictionary: [String: Any]?, forKey aKey: String) {

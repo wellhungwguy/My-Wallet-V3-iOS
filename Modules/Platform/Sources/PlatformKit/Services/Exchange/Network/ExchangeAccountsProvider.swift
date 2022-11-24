@@ -37,7 +37,7 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
             configuration: .onLoginLogout(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [statusService, client] key in
                 statusService

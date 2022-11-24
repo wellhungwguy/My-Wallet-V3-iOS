@@ -30,7 +30,7 @@ final class ERC20ActivityRepository: ERC20ActivityRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] key -> AnyPublisher<[ERC20HistoricalTransaction], NetworkError> in
                 guard let contractAddress = key.erc20Asset.kind.erc20ContractAddress else {

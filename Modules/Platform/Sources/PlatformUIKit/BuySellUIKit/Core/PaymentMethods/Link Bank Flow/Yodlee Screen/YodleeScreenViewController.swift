@@ -20,8 +20,8 @@ final class YodleeScreenViewController: BaseScreenViewController,
     private let pendingView: YodleePendingView
 
     init(webConfiguration: WKWebViewConfiguration) {
-        webview = WKWebView(frame: .zero, configuration: webConfiguration)
-        pendingView = YodleePendingView()
+        self.webview = WKWebView(frame: .zero, configuration: webConfiguration)
+        self.pendingView = YodleePendingView()
         super.init(nibName: nil, bundle: nil)
     }
 

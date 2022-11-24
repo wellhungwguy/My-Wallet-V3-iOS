@@ -44,9 +44,9 @@ public enum AssetPieChart {
             let percentage: Decimal
 
             public init(value: Interaction) {
-                debugDescription = value.asset.displayCode
-                color = value.asset.brandUIColor
-                percentage = value.percentage
+                self.debugDescription = value.asset.displayCode
+                self.color = value.asset.brandUIColor
+                self.percentage = value.percentage
             }
         }
     }

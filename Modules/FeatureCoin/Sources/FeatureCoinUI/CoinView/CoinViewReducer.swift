@@ -130,7 +130,7 @@ public let coinViewReducer = Reducer<
                         }
                     }
                 }
-                if accounts.contains(where: { $0.accountType.supportRates }) {
+                if accounts.contains(where: \.accountType.supportRates) {
                     return .merge(update, Effect(value: .fetchInterestRate))
                 } else {
                     return update

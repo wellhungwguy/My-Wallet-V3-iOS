@@ -37,7 +37,7 @@ public final class UserAdapter: UserAdapterAPI {
             )
             .combineLatest(productsService.productsStream)
 
-        userState = streams
+        self.userState = streams
             .map { results -> Result<RawUserData, UserStateError> in
                 let (r1, r2) = results
                 let (kycStatusResult, paymentMethodsResult, hasEverPurchasedCryptoResult) = r1

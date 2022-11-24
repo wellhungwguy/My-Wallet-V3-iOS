@@ -48,7 +48,7 @@ struct RootView: View {
 
     init(store: Store<RootViewState, RootViewAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
         setupApperance()
     }
 

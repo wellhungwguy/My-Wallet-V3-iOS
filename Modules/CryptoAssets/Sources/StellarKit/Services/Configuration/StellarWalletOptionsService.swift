@@ -13,7 +13,7 @@ final class StellarWalletOptionsService: StellarWalletOptionsBridgeAPI {
     private let walletOptionsService: WalletOptionsAPI
 
     init(walletOptions: WalletOptionsAPI) {
-        walletOptionsService = walletOptions
+        self.walletOptionsService = walletOptions
     }
 
     var stellarConfigurationDomain: AnyPublisher<String?, Never> {

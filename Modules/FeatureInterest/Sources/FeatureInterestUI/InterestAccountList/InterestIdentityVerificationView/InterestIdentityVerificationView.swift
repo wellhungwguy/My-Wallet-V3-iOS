@@ -14,7 +14,7 @@ struct InterestIdentityVerificationView: View {
     private let buttonTapped: () -> Void
 
     init(action: @escaping () -> Void) {
-        buttonTapped = action
+        self.buttonTapped = action
     }
 
     var body: some View {

@@ -120,10 +120,10 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         self.messageRecorder = messageRecorder
         self.userDataRepository = userDataRepository
 
-        selectionButtonViewModel = SelectionButtonViewModel()
+        self.selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
 
-        buttonViewModel = .primary(with: LocalizedString.button)
+        self.buttonViewModel = .primary(with: LocalizedString.button)
 
         super.init(interactable: interactor)
     }

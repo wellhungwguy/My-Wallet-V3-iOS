@@ -55,7 +55,7 @@ public struct SeedPhraseView: View {
 
     public init(store: Store<SeedPhraseState, SeedPhraseAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     // MARK: - SwiftUI

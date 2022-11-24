@@ -102,40 +102,40 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         )
 
         let amount = event.isBuy ? event.outputValue : event.inputValue
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         if event.isBuy {
-            exchangeRatePresenter = TransactionalLineItem.exchangeRate().defaultPresenter(
+            self.exchangeRatePresenter = TransactionalLineItem.exchangeRate().defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         } else {
             let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
             let exchangeRate = pair.exchangeRate
             let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
-            exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+            self.exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         }
 
         let total = event.isBuy ? event.inputValue.displayString : event.outputValue.displayString
-        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        feePresenter = TransactionalLineItem.fee(event.fee.displayString).defaultPresenter(
+        self.feePresenter = TransactionalLineItem.fee(event.fee.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -152,7 +152,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .funds:
             paymentMethod = event.inputValue.currency.name
         }
-        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
+        self.paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -170,7 +170,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         let source = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
-        fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+        self.fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -181,13 +181,13 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .fiat(let fiat):
             destination = fiat.defaultWalletName
         }
-        toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+        self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         switch event.isBuy {
         case true:
-            cells = [
+            self.cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .lineItem(orderIDPresenter),
@@ -203,7 +203,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .lineItem(paymentMethodPresenter)
             ]
         case false:
-            cells = [
+            self.cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .lineItem(orderIDPresenter),

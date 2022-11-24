@@ -13,8 +13,8 @@ import UIKit
 extension OperatingSystem {
 
     init(device: UIDevice = UIDevice.current) {
-        name = device.systemName
-        version = device.systemVersion
+        self.name = device.systemName
+        self.version = device.systemVersion
     }
 }
 
@@ -26,8 +26,8 @@ import AppKit
 extension OperatingSystem {
 
     init() {
-        name = "macos"
-        version = ProcessInfo.processInfo.operatingSystemVersionString
+        self.name = "macos"
+        self.version = ProcessInfo.processInfo.operatingSystemVersionString
     }
 }
 

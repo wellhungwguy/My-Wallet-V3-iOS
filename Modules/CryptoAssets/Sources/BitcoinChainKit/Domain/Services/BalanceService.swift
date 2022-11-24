@@ -39,7 +39,7 @@ final class BalanceService: BalanceServiceAPI {
             configuration: .onLoginLogout(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 client.balances(for: key.map(\.self))

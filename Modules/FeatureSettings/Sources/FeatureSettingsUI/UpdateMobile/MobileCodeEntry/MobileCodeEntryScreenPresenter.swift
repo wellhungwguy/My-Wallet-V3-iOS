@@ -45,15 +45,15 @@ final class MobileCodeEntryScreenPresenter {
         service: MobileSettingsServiceAPI,
         loadingViewPresenting: LoadingViewPresenting = resolve()
     ) {
-        interactor = MobileCodeEntryInteractor(service: service)
+        self.interactor = MobileCodeEntryInteractor(service: service)
         self.stateService = stateService
-        codeEntryTextFieldModel = .init(
+        self.codeEntryTextFieldModel = .init(
             with: .oneTimeCode,
             validator: TextValidationFactory.General.notEmpty,
             messageRecorder: resolve()
         )
 
-        descriptionContent = .init(
+        self.descriptionContent = .init(
             text: LocalizationIDs.description,
             font: .main(.medium, 14.0),
             color: .textFieldText,
@@ -61,9 +61,9 @@ final class MobileCodeEntryScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
 
-        changeNumberViewModel = .secondary(with: LocalizationIDs.changeNumber, accessibilityId: AccessibilityIDs.changeNumberButton)
-        resendCodeViewModel = .secondary(with: LocalizationIDs.resendCode, accessibilityId: AccessibilityIDs.resendCodeButton)
-        confirmViewModel = .primary(with: LocalizationIDs.confirm, accessibilityId: AccessibilityIDs.confirmButton)
+        self.changeNumberViewModel = .secondary(with: LocalizationIDs.changeNumber, accessibilityId: AccessibilityIDs.changeNumberButton)
+        self.resendCodeViewModel = .secondary(with: LocalizationIDs.resendCode, accessibilityId: AccessibilityIDs.resendCodeButton)
+        self.confirmViewModel = .primary(with: LocalizationIDs.confirm, accessibilityId: AccessibilityIDs.confirmButton)
 
         codeEntryTextFieldModel.state
             .compactMap(\.value)

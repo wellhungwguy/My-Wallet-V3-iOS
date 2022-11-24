@@ -24,14 +24,14 @@ public final class TodayAssetPriceViewPresenter {
 
         init(with value: DashboardAsset.Value.Interaction.AssetPrice) {
             let fiatPrice = value.currentPrice.toDisplayString(includeSymbol: true)
-            price = LabelContent(
+            self.price = LabelContent(
                 text: fiatPrice,
                 font: .systemFont(ofSize: 16.0, weight: .semibold),
                 color: .white,
                 accessibility: .none
             )
 
-            change = value.historicalPrice
+            self.change = value.historicalPrice
                 .flatMap(Self.changeAttributeString(with:))
                 ?? NSAttributedString()
         }
@@ -116,7 +116,7 @@ public final class TodayAssetPriceViewPresenter {
         alignment: UIStackView.Alignment = .fill
     ) {
         self.interactor = interactor
-        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }
 

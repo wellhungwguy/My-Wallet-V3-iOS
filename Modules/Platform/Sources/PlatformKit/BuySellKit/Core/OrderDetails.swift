@@ -250,10 +250,10 @@ public struct OrderDetails: Equatable {
         switch response.side {
         case .buy:
             guard let buy = BuyOrderDetails(recorder: recorder, response: response) else { return nil }
-            _value = .buy(buy)
+            self._value = .buy(buy)
         case .sell:
             guard let sell = SellOrderDetails(recorder: recorder, response: response) else { return nil }
-            _value = .sell(sell)
+            self._value = .sell(sell)
         }
     }
 }

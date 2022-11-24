@@ -52,7 +52,7 @@ final class CardSettingsSectionInteractor {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
 
-        addPaymentMethodInteractor = AddPaymentMethodInteractor(
+        self.addPaymentMethodInteractor = AddPaymentMethodInteractor(
             paymentMethod: .card,
             addNewInteractor: AddCardInteractor(
                 paymentMethodTypesService: paymentMethodTypesService

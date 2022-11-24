@@ -127,27 +127,27 @@ extension CardData {
         guard let billingAddress = response.address else { return nil }
         guard response.partner.isKnown else { return nil }
 
-        type = CardType(rawValue: response.card?.type ?? "") ?? .unknown
-        identifier = response.identifier
-        ownerName = ""
-        number = response.card?.number ?? ""
+        self.type = CardType(rawValue: response.card?.type ?? "") ?? .unknown
+        self.identifier = response.identifier
+        self.ownerName = ""
+        self.number = response.card?.number ?? ""
         if let label = response.card?.label, !label.isEmpty {
             self.label = label
         } else {
-            label = type.name
+            self.label = type.name
         }
-        month = response.card?.month ?? ""
-        year = response.card?.year ?? ""
-        cvv = ""
+        self.month = response.card?.month ?? ""
+        self.year = response.card?.year ?? ""
+        self.cvv = ""
 
-        topLimit = .zero(currency: currency)
-        state = response.state
+        self.topLimit = .zero(currency: currency)
+        self.state = response.state
         self.currency = currency
-        partner = response.partner
+        self.partner = response.partner
         self.billingAddress = BillingAddress(response: billingAddress)
-        block = response.block
-        ux = response.ux
-        lastError = response.lastError
+        self.block = response.block
+        self.ux = response.ux
+        self.lastError = response.lastError
     }
 }
 
@@ -192,22 +192,22 @@ extension CardData {
         number.removeAll { CharacterSet.whitespaces.contains($0) }
         self.number = number
 
-        month = String(dateComponents[0])
+        self.month = String(dateComponents[0])
 
-        year = "20\(dateComponents[1])"
+        self.year = "20\(dateComponents[1])"
         self.cvv = cvv
 
-        type = CardType.determineType(from: number)
+        self.type = CardType.determineType(from: number)
 
-        state = .none
-        partner = .unknown
-        currency = nil
-        label = "\(type.name) \(number.suffix(4))"
-        identifier = ""
-        topLimit = .zero(currency: .USD)
-        ux = nil
-        block = false
-        lastError = nil
+        self.state = .none
+        self.partner = .unknown
+        self.currency = nil
+        self.label = "\(type.name) \(number.suffix(4))"
+        self.identifier = ""
+        self.topLimit = .zero(currency: .USD)
+        self.ux = nil
+        self.block = false
+        self.lastError = nil
     }
 }
 

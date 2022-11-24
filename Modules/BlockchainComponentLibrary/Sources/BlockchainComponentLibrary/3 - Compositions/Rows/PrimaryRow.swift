@@ -90,7 +90,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         self.description = description
         self.tags = tags
         self.highlight = highlight
-        isSelectable = action != nil
+        self.isSelectable = action != nil
         self.leading = leading()
         self.trailing = trailing()
         self.action = action
@@ -113,7 +113,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         self.description = description
         self.tags = tags
         self.highlight = highlight
-        isSelectable = action != nil
+        self.isSelectable = action != nil
         self.leading = leading()
         self.trailing = trailing()
         self.action = action

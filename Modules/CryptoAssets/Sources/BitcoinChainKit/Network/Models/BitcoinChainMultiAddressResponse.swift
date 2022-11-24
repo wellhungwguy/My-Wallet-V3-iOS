@@ -31,14 +31,14 @@ public struct BitcoinChainMultiAddressResponse<T: BitcoinChainHistoricalTransact
         let values = try decoder.container(keyedBy: RootCodingKeys.self)
         let info = try values.nestedContainer(keyedBy: InfoCodingKeys.self, forKey: .info)
         let latestBlock = try info.nestedContainer(keyedBy: LatestBlockCodingKeys.self, forKey: .latestBlock)
-        addresses = try values.decode([BitcoinChainAddressResponse].self, forKey: .addresses)
+        self.addresses = try values.decode([BitcoinChainAddressResponse].self, forKey: .addresses)
 
         let _latestBlockHeight = try latestBlock.decode(Int.self, forKey: .height)
-        latestBlockHeight = _latestBlockHeight
+        self.latestBlockHeight = _latestBlockHeight
 
         let txs = try values.decode([T].self, forKey: .txs)
 
-        transactions = txs.map { transaction in
+        self.transactions = txs.map { transaction in
             transaction.applying(latestBlockHeight: _latestBlockHeight)
         }
     }

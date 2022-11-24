@@ -173,7 +173,7 @@ public struct CheckoutData {
         self.order = order
         self.paymentAccount = paymentAccount
         self.linkedBankData = linkedBankData
-        isPaymentMethodFinalized = (paymentAccount != nil || order.paymentMethodId != nil)
+        self.isPaymentMethodFinalized = (paymentAccount != nil || order.paymentMethodId != nil)
     }
 
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {

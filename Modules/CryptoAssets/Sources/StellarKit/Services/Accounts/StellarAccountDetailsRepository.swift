@@ -26,7 +26,7 @@ final class StellarAccountDetailsRepository: StellarAccountDetailsRepositoryAPI 
             configuration: .onLoginLogout(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 20)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { accountID -> AnyPublisher<StellarAccountDetails, StellarNetworkError> in
                 horizonProxy

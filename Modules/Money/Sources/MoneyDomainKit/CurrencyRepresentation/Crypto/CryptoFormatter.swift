@@ -120,7 +120,7 @@ public final class CryptoFormatter {
         minFractionDigits: Int,
         withPrecision precision: CryptoPrecision
     ) {
-        formatter = .cryptoFormatter(
+        self.formatter = .cryptoFormatter(
             locale: locale,
             minFractionDigits: minFractionDigits,
             maxFractionDigits: precision.maxFractionDigits(for: cryptoCurrency)

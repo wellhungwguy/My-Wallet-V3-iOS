@@ -29,7 +29,7 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
 
     override init() {
         super.init()
-        motion = notificationCenter.publisher(for: UIDevice.deviceDidShakeNotification)
+        self.motion = notificationCenter.publisher(for: UIDevice.deviceDidShakeNotification)
             .sink(to: DebugCoordinator.shake, on: self)
     }
 

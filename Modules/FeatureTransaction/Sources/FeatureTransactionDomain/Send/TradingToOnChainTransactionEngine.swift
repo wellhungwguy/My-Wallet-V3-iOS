@@ -63,7 +63,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
         self.transactionLimitsService = transactionLimitsService
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
                 schedulerIdentifier: "TradingToOnChainTransactionEngine"

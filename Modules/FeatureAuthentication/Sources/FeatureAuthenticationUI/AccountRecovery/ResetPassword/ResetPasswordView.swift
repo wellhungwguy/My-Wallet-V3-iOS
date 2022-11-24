@@ -41,7 +41,7 @@ struct ResetPasswordView: View {
         store: Store<ResetPasswordState, ResetPasswordAction>
     ) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

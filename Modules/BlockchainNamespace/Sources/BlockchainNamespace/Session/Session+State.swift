@@ -478,7 +478,7 @@ class SessionStateKeychainQueryProvider: KeychainQueryProvider {
 
     init(service: String?) {
         if let service {
-            generic = GenericPasswordQuery(service: service)
+            self.generic = GenericPasswordQuery(service: service)
         }
     }
 

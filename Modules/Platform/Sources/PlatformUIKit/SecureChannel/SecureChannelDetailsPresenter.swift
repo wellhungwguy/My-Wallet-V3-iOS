@@ -36,7 +36,7 @@ final class SecureChannelDetailsPresenter: DetailsScreenPresenterAPI {
 
     init(candidate: SecureChannelConnectionCandidate, didAcceptSecureChannel: @escaping (Bool) -> Void) {
         self.didAcceptSecureChannel = didAcceptSecureChannel
-        contentReducer = ContentReducer(candidate: candidate)
+        self.contentReducer = ContentReducer(candidate: candidate)
 
         contentReducer.approveTapped
             .bind(

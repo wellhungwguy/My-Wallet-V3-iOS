@@ -122,55 +122,55 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         self.interactor = interactor
         self.alertViewPresenter = alertViewPresenter
 
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.transactionHash).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.transactionHash).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        totalPresenter = TransactionalLineItem.total().defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
+        self.networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+        self.toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+        self.fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        memoPresenter = TransactionalLineItem.memo().defaultPresenter(
+        self.memoPresenter = TransactionalLineItem.memo().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
+        self.explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
 
         switch event.type {
         case .receive:
-            buttons = []
+            self.buttons = []
         case .send:
-            buttons = [explorerButton]
+            self.buttons = [explorerButton]
         }
 
         switch event.type {
         case .send:
-            cells = sendCells
+            self.cells = sendCells
         case .receive:
-            cells = receiveCells
+            self.cells = receiveCells
         }
 
         bindAll(with: event)

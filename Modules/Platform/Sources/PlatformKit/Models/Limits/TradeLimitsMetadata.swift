@@ -27,12 +27,12 @@ public struct TradeLimitsMetadata: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        currency = try values.decode(String.self, forKey: .currency)
-        minOrder = try values.decodeDecimalFromString(forKey: .minOrder)
-        maxOrder = try values.decodeDecimalFromString(forKey: .maxOrder)
-        maxPossibleOrder = try values.decodeDecimalFromString(forKey: .maxPossibleOrder)
-        daily = try values.decodeIfPresent(Limit.self, forKey: .daily)
-        weekly = try values.decodeIfPresent(Limit.self, forKey: .weekly)
-        annual = try values.decodeIfPresent(Limit.self, forKey: .annual)
+        self.currency = try values.decode(String.self, forKey: .currency)
+        self.minOrder = try values.decodeDecimalFromString(forKey: .minOrder)
+        self.maxOrder = try values.decodeDecimalFromString(forKey: .maxOrder)
+        self.maxPossibleOrder = try values.decodeDecimalFromString(forKey: .maxPossibleOrder)
+        self.daily = try values.decodeIfPresent(Limit.self, forKey: .daily)
+        self.weekly = try values.decodeIfPresent(Limit.self, forKey: .weekly)
+        self.annual = try values.decodeIfPresent(Limit.self, forKey: .annual)
     }
 }

@@ -7,7 +7,7 @@ extension AnalyticsEvents.New {
 
     enum OnboardingChecklist: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
+        var type: AnalyticsEventType {
             .nabu
         }
 

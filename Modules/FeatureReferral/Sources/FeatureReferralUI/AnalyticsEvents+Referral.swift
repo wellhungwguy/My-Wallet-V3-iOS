@@ -5,7 +5,7 @@ import Foundation
 
 extension AnalyticsEvents.New {
     enum Referral: AnalyticsEvent, Equatable {
-        public var type: AnalyticsEventType { .nabu }
+        var type: AnalyticsEventType { .nabu }
 
         case viewReferralsPage(campaign_id: String)
         case shareReferralsCode(campaign_id: String)

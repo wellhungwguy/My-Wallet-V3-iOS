@@ -50,11 +50,11 @@ public final class AccountGroupBalanceCellPresenter {
     init(account: AccountGroup, interactor: AccountGroupBalanceCellInteractor) {
         self.account = account
         self.interactor = interactor
-        walletBalanceViewPresenter = WalletBalanceViewPresenter(
+        self.walletBalanceViewPresenter = WalletBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor
         )
 
-        badgeImageViewModel = .primary(
+        self.badgeImageViewModel = .primary(
             image: .local(name: "icon-wallet", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: "walletBalance"

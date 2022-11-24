@@ -31,8 +31,8 @@ enum DashboardTotalBalance {
             let price: DashboardAsset.Value.Presentation.AssetPrice
 
             init(with value: Interaction) {
-                chart = PieChartData(with: value.chart)
-                price = .init(with: value.price, descriptors: .balance)
+                self.chart = PieChartData(with: value.chart)
+                self.price = .init(with: value.price, descriptors: .balance)
             }
         }
     }

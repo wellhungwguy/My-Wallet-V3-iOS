@@ -45,16 +45,16 @@ final class LinkedCardViewModel {
         let nameText: String
 
         init(theme: Theme) {
-            limitText = theme.limit
-            nameText = theme.cardName
-            nameContent = .init(
+            self.limitText = theme.limit
+            self.nameText = theme.cardName
+            self.nameContent = .init(
                 text: theme.cardName,
                 font: theme.cardNameFont,
                 color: theme.cardNameContentColor,
                 alignment: .left,
                 accessibility: .id(AccessibilityIDs.name)
             )
-            limitContent = .init(
+            self.limitContent = .init(
                 text: theme.limit,
                 font: theme.limitFont,
                 color: theme.limitContentColor,
@@ -102,7 +102,7 @@ final class LinkedCardViewModel {
     private let limitTextRelay = BehaviorRelay(value: "")
 
     init(type: CardType) {
-        badgeImageViewModel = .default(
+        self.badgeImageViewModel = .default(
             image: type.thumbnail,
             cornerRadius: .roundedLow,
             accessibilityIdSuffix: type.name

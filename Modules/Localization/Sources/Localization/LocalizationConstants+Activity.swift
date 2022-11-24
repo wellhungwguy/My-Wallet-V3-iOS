@@ -114,7 +114,6 @@ extension LocalizationConstants.Activity.Details {
         public static let rewardsEarned = NSLocalizedString("Rewards Earned", comment: "Rewards Earned")
         public static let added = NSLocalizedString("Added", comment: "Added")
         public static let staked = NSLocalizedString("Staked", comment: "Staked")
-
     }
 
     public enum Button {

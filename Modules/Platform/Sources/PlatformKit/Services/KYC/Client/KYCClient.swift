@@ -189,7 +189,7 @@ final class KYCClient: KYCClientAPI {
 
             init(applicantId: String) {
                 self.applicantId = applicantId
-                clientType = HttpHeaderValue.clientTypeApp
+                self.clientType = HttpHeaderValue.clientTypeApp
             }
         }
 
@@ -255,7 +255,7 @@ final class KYCClient: KYCClientAPI {
 
             init(jwt: String, country: String, state: String?, notifyWhenAvailable: Bool) {
                 self.jwt = jwt
-                countryCode = country
+                self.countryCode = country
                 self.state = state
                 self.notifyWhenAvailable = "\(notifyWhenAvailable)"
             }

@@ -38,10 +38,10 @@ public struct BitcoinCashEntry: Equatable {
         wallet: NativeWallet
     ) {
         self.payload = payload
-        txNotes = payload.txNotes
+        self.txNotes = payload.txNotes
         let accountsData = payload.accounts
         let hdWalletAccounts = wallet.defaultHDWallet?.accounts ?? []
-        accounts = hdWalletAccounts
+        self.accounts = hdWalletAccounts
             .enumerated()
             .map { index, btcAccount -> AccountEntry in
                 let accountData = index < accountsData.count ? accountsData[index] : nil

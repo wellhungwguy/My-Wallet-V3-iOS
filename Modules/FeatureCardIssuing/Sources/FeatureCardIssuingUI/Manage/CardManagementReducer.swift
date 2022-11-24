@@ -105,7 +105,7 @@ public struct CardManagementState: Equatable {
         isTokenisationEnabled: Bool = true,
         tokenisationCoordinator: PassTokenisationCoordinator
     ) {
-        selectedCard = card
+        self.selectedCard = card
         self.cardholderName = cardholderName
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
@@ -467,7 +467,8 @@ let cardManagementReducer: Reducer<
         guard state.activationUrl == nil,
              let card = state.selectedCard,
              let fulfillment = state.fulfillment,
-             fulfillment.status.canActivate else {
+             fulfillment.status.canActivate
+        else {
            return .none
         }
         state.activationUrl = .loading

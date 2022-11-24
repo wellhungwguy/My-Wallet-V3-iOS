@@ -14,8 +14,8 @@ public struct NFTAssetPage: Equatable {
     public let cursor: String?
 
     init(_ response: AssetPageResponse) {
-        assets = response.assets
-        cursor = response.next
+        self.assets = response.assets
+        self.cursor = response.next
     }
 }
 

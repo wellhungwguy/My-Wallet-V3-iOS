@@ -45,7 +45,7 @@ struct TiersStatusView: View {
 
     init(store: Store<KYC.UserTiers, TiersStatusViewAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

@@ -19,7 +19,7 @@ public final class ThumbnailView: UIView {
     // MARK: - Setup
 
     public init(edge: CGFloat) {
-        imageView = UIImageView()
+        self.imageView = UIImageView()
         let size = CGSize(edge: edge)
         super.init(frame: .init(origin: .zero, size: size))
         clipsToBounds = true

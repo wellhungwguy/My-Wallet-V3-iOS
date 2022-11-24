@@ -21,8 +21,8 @@ struct KYCUserTiersBadgeModel {
         guard locked == false else { return nil }
 
         let currentTier = tier2.state != .none ? tier2 : tier1
-        color = KYCUserTiersBadgeModel.badgeColor(for: currentTier)
-        text = KYCUserTiersBadgeModel.badgeText(for: currentTier)
+        self.color = KYCUserTiersBadgeModel.badgeColor(for: currentTier)
+        self.text = KYCUserTiersBadgeModel.badgeText(for: currentTier)
     }
 
     private static func badgeColor(for tier: KYC.UserTier) -> UIColor {

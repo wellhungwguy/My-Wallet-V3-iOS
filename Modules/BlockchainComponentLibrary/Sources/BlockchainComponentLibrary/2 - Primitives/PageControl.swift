@@ -35,7 +35,7 @@ public struct PageControl<Selection: Hashable>: View {
         controls: [Selection],
         selection: Binding<Selection>
     ) {
-        items = controls.map { Item(identifier: $0) }
+        self.items = controls.map { Item(identifier: $0) }
         _selection = selection
     }
 

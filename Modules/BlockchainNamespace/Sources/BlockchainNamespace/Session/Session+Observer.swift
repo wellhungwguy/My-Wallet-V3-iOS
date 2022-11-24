@@ -52,7 +52,7 @@ extension Session {
                 for binding in list.filter(\.event.is.binding) {
                     let context = Tag.Context(binding.event.context?.compactMapKeys(\.tagReference) ?? [:])
                     let value = Value(bindings[binding]?.current) { [weak self] value in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         self.app?.post(event: binding.action.ref(to: context), context: [binding.event.tag: value])
                     }
                     bindings[binding] = value
@@ -65,7 +65,7 @@ extension Session {
                 for added in added.filter(\.event.is.notification) {
                     let context = Tag.Context(added.event.context?.compactMapKeys(\.tagReference) ?? [:])
                     events[added] = app?.on(added.event.tag) { [weak self] event in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         self.app?.post(event: added.action.ref(to: context), context: event.context + context)
                     }
                     .start()

@@ -194,7 +194,7 @@ struct AccountKeyContext {
         self.wallet = wallet
         self.coin = coin
         self.accountIndex = accountIndex
-        derivations = .create(
+        self.derivations = .create(
             wallet: wallet,
             coin: coin,
             accountIndex: accountIndex,

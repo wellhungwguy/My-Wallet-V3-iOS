@@ -142,7 +142,7 @@ extension Task {
                     do {
                         let value = try await yield()
                         await self.receive(value)
-                    } catch let error {
+                    } catch {
                         await self.receive(error: error)
                     }
                 }

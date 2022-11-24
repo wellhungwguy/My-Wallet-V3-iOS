@@ -73,18 +73,18 @@ public class TextFieldViewModel {
             self.subtitle = subtitle
             if shouldShowHint, !hint.isEmpty {
                 self.title = hint
-                borderColor = caution ? .warning : .destructive
-                titleColor = caution ? .warning : .destructive
-                cursorColor = caution ? .warning : .destructive
+                self.borderColor = caution ? .warning : .destructive
+                self.titleColor = caution ? .warning : .destructive
+                self.cursorColor = caution ? .warning : .destructive
             } else {
                 self.title = title
-                titleColor = .descriptionText
+                self.titleColor = .descriptionText
                 if isFocused {
-                    borderColor = .primaryButton
-                    cursorColor = .primaryButton
+                    self.borderColor = .primaryButton
+                    self.cursorColor = .primaryButton
                 } else {
-                    borderColor = .mediumBorder
-                    cursorColor = .mediumBorder
+                    self.borderColor = .mediumBorder
+                    self.cursorColor = .mediumBorder
                 }
             }
         }
@@ -259,18 +259,18 @@ public class TextFieldViewModel {
             ]
         )
 
-        autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
-        placeholderRelay = BehaviorRelay(value: placeholder)
-        titleRelay = BehaviorRelay(value: type.title)
-        subtitleRelay = BehaviorRelay(value: "")
-        contentTypeRelay = BehaviorRelay(value: type.contentType)
-        keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
+        self.autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
+        self.placeholderRelay = BehaviorRelay(value: placeholder)
+        self.titleRelay = BehaviorRelay(value: type.title)
+        self.subtitleRelay = BehaviorRelay(value: "")
+        self.contentTypeRelay = BehaviorRelay(value: type.contentType)
+        self.keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)
 
         if let suffix = accessibilitySuffix {
-            accessibility = type.accessibility.with(idSuffix: ".\(suffix)")
+            self.accessibility = type.accessibility.with(idSuffix: ".\(suffix)")
         } else {
-            accessibility = type.accessibility
+            self.accessibility = type.accessibility
         }
 
         self.returnKeyType = returnKeyType

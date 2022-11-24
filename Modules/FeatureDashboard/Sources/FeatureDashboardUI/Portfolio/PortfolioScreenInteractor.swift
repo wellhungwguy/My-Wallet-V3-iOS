@@ -52,7 +52,7 @@ public final class PortfolioScreenInteractor {
         self.historicalProvider = historicalProvider
         self.reactiveWallet = reactiveWallet
         self.userPropertyInteractor = userPropertyInteractor
-        fiatBalancesInteractor = FiatBalanceCollectionViewInteractor()
+        self.fiatBalancesInteractor = FiatBalanceCollectionViewInteractor()
         self.app = app
 
         NotificationCenter
@@ -93,7 +93,7 @@ public final class PortfolioScreenInteractor {
                                     .combineLatest(!group.hasSmallMainBalanceToDisplay())
                                     .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
                                         let appMode = self?.app.currentMode
-                                        if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
+                                        if appMode == .pkw, case .crypto(let crypto) = group.currencyType, crypto.isCoin {
                                             return .just(true)
                                         } else {
                                             return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)
@@ -106,7 +106,7 @@ public final class PortfolioScreenInteractor {
                                     .combineLatest(!group.hasSmallBalance())
                                     .flatMap { [weak self] moneyValue, isNotSmall -> AnyPublisher<Bool, Error> in
                                         let appMode = self?.app.currentMode
-                                        if appMode == .pkw, case let .crypto(crypto) = group.currencyType, crypto.isCoin {
+                                        if appMode == .pkw, case .crypto(let crypto) = group.currencyType, crypto.isCoin {
                                             return .just(true)
                                         } else {
                                             return .just(moneyValue.hasPositiveDisplayableBalance && isNotSmall)

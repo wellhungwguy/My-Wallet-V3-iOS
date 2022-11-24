@@ -45,8 +45,8 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
     init(text: String, interactionText: String, interactionDuration: Int) {
 
         let originalValue: InteractionState = .loaded(next: .init(text: text))
-        stateRelay = .init(value: originalValue)
-        originalValueStateRelay = .init(value: originalValue)
+        self.stateRelay = .init(value: originalValue)
+        self.originalValueStateRelay = .init(value: originalValue)
 
         stateRelay
             .filter { $0.value?.text != interactionText }

@@ -16,8 +16,8 @@ struct BrowserIdentity: Codable {
 
     init(pubKey: String) {
         self.pubKey = pubKey
-        lastUsed = nil
-        creation = UInt64(Date().timeIntervalSince1970 * 1000)
-        authorized = false
+        self.lastUsed = nil
+        self.creation = UInt64(Date().timeIntervalSince1970 * 1000)
+        self.authorized = false
     }
 }

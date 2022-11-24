@@ -9,6 +9,6 @@ struct EstimateGasRequest: Encodable {
     let params: [EthereumJsonRpcTransaction]
 
     init(transaction: EthereumJsonRpcTransaction) {
-        params = [transaction]
+        self.params = [transaction]
     }
 }

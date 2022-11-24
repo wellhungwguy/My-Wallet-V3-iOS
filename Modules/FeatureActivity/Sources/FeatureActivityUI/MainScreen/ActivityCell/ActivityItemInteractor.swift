@@ -9,25 +9,25 @@ final class ActivityItemInteractor {
     let balanceViewInteractor: AssetBalanceViewInteracting
 
     init(activityItemEvent: ActivityItemEvent, pairExchangeService: PairExchangeServiceAPI) {
-        event = activityItemEvent
+        self.event = activityItemEvent
         switch activityItemEvent {
         case .buySell(let buySellActivityItem) where buySellActivityItem.isBuy:
-            balanceViewInteractor = SimpleBalanceViewInteractor(
+            self.balanceViewInteractor = SimpleBalanceViewInteractor(
                 fiatValue: activityItemEvent.inputAmount,
                 cryptoValue: buySellActivityItem.outputValue
             )
         case .buySell(let buySellActivityItem) where !buySellActivityItem.isBuy:
-            balanceViewInteractor = SimpleBalanceViewInteractor(
+            self.balanceViewInteractor = SimpleBalanceViewInteractor(
                 fiatValue: buySellActivityItem.outputValue,
                 cryptoValue: activityItemEvent.inputAmount
             )
         case .fiat(let fiatActivityItem):
-            balanceViewInteractor = SimpleBalanceViewInteractor(
+            self.balanceViewInteractor = SimpleBalanceViewInteractor(
                 fiatValue: .init(fiatValue: fiatActivityItem.amount),
                 cryptoValue: nil
             )
         default:
-            balanceViewInteractor = ActivityItemBalanceViewInteractor(
+            self.balanceViewInteractor = ActivityItemBalanceViewInteractor(
                 activityItemBalanceFetching: ActivityItemBalanceFetcher(
                     pairExchangeService: pairExchangeService,
                     moneyValue: activityItemEvent.inputAmount,

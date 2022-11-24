@@ -114,7 +114,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         self.pendingAccessibilitySuffix = pendingAccessibilitySuffix
         separatorVisibilityRelay.accept(separatorVisibility)
         self.interactor = interactor
-        assetBalanceViewPresenter = AssetBalanceViewPresenter(
+        self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .trailing,
             interactor: interactor.assetBalanceViewInteractor,
             descriptors: descriptors

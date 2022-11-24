@@ -122,7 +122,7 @@ struct CardOrderingState: Equatable {
         self.ssn = ssn
         self.error = error
         self.orderProcessingState = orderProcessingState
-        acceptLegalState = AcceptLegalState(items: legalItems)
+        self.acceptLegalState = AcceptLegalState(items: legalItems)
     }
 }
 
@@ -398,7 +398,8 @@ let cardOrderingReducer: Reducer<
             return .none
         case .onReviewAppear:
             guard state.selectedProduct?.type == .physical,
-                  (state.shippingAddress ?? state.address) == nil else {
+                  (state.shippingAddress ?? state.address) == nil
+            else {
                 return Effect(value: .fetchFullName)
             }
             return Effect.merge(

@@ -32,8 +32,8 @@ public struct Tag {
     private var lazy = Lazy()
 
     init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
-        parentID = parent
-        id = parent?.dot(node.name) ?? node.name
+        self.parentID = parent
+        self.id = parent?.dot(node.name) ?? node.name
         self.node = .init(graph: node)
         self.language = language
     }

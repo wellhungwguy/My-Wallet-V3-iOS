@@ -41,7 +41,7 @@ public struct CustodialBalanceResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        balances = try container.decode([String: Balance].self)
+        self.balances = try container.decode([String: Balance].self)
     }
 
     // MARK: - Subscript

@@ -109,7 +109,7 @@ public enum AssetBalanceViewModel {
                 default:
                     textAlignment = .natural
                 }
-                primaryBalance = LabelContent(
+                self.primaryBalance = LabelContent(
                     text: value.primaryValue.toDisplayString(includeSymbol: true, locale: .current),
                     font: descriptors.primaryFont,
                     color: descriptors.primaryTextColor,
@@ -119,7 +119,7 @@ public enum AssetBalanceViewModel {
                 )
 
                 if let cryptoValue = value.secondaryValue, value.secondaryValue != value.primaryValue {
-                    secondaryBalance = LabelContent(
+                    self.secondaryBalance = LabelContent(
                         text: cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.secondaryFont,
                         color: descriptors.secondaryTextColor,
@@ -128,12 +128,12 @@ public enum AssetBalanceViewModel {
                         accessibility: descriptors.secondaryAccessibility.with(idSuffix: cryptoValue.code)
                     )
                 } else {
-                    secondaryBalance = .empty
+                    self.secondaryBalance = .empty
                 }
 
                 if let pendingValue = value.pendingValue, !pendingValue.isZero {
-                    pendingBalanceVisibility = .visible
-                    pendingBalance = LabelContent(
+                    self.pendingBalanceVisibility = .visible
+                    self.pendingBalance = LabelContent(
                         text: pendingValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.secondaryFont,
                         color: descriptors.pendingTextColor,
@@ -141,8 +141,8 @@ public enum AssetBalanceViewModel {
                         accessibility: descriptors.secondaryAccessibility.with(idSuffix: pendingValue.code)
                     )
                 } else {
-                    pendingBalanceVisibility = .hidden
-                    pendingBalance = .empty
+                    self.pendingBalanceVisibility = .hidden
+                    self.pendingBalance = .empty
                 }
             }
         }

@@ -49,7 +49,7 @@
 --organizetypes class,enum,struct
 --patternlet inline
 --ranges spaced
---self remove
+--self init-only
 --selfrequired 
 --semicolons inline
 --smarttabs enabled

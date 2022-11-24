@@ -63,7 +63,7 @@ final class ERC20BalancesRepository: ERC20BalancesRepositoryAPI {
     ) {
         let mapper = ERC20TokenAccountsMapper(enabledCurrenciesService: enabledCurrenciesService)
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key -> AnyPublisher<ERC20TokenAccounts, ERC20TokenAccountsError> in
                 switch key.network {

@@ -40,7 +40,7 @@ public final class CheckboxViewModel: IdentifiableType {
     // MARK: - Init
 
     public init(inputs: Inputs = []) {
-        interactableTextViewModel = .init(
+        self.interactableTextViewModel = .init(
             inputs: inputs,
             textStyle: .init(
                 color: .textFieldText,
@@ -52,7 +52,7 @@ public final class CheckboxViewModel: IdentifiableType {
             )
         )
 
-        image = selectedRelay
+        self.image = selectedRelay
             .asObservable()
             .map { $0 ? "checkbox-on" : "checkbox-off" }
             .asDriver(onErrorJustReturn: nil)

@@ -64,21 +64,21 @@ final class SettingsService: SettingsServiceAPI {
         self.supportedPairsService = supportedPairsService
         self.userService = userService
 
-        tradingCurrencyPublisher = Deferred {
+        self.tradingCurrencyPublisher = Deferred {
             app.publisher(for: blockchain.user.currency.preferred.fiat.trading.currency)
                 .compactMap(\.value)
                 .shareReplay()
         }
         .eraseToAnyPublisher()
 
-        displayCurrencyPublisher = Deferred {
+        self.displayCurrencyPublisher = Deferred {
             app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency)
                 .compactMap(\.value)
                 .shareReplay()
         }
         .eraseToAnyPublisher()
 
-        supportedFiatCurrencies = Deferred {
+        self.supportedFiatCurrencies = Deferred {
             app.publisher(for: blockchain.user.currency.available.currencies)
                 .replaceError(with: Set(FiatCurrency.allEnabledFiatCurrencies))
                 .shareReplay()

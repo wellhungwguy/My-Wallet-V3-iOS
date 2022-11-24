@@ -19,7 +19,7 @@ public struct Pin {
     // MARK: - Initializers
 
     public init(code: UInt) {
-        pinCode = code
+        self.pinCode = code
     }
 
     public init?(string: String) {

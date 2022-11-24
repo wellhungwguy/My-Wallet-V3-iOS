@@ -82,38 +82,38 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
         self.interactor = interactor
         self.alertViewPresenter = alertViewPresenter
 
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        totalPresenter = TransactionalLineItem.total().defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
+        self.networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+        self.toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+        self.fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        cells = [
+        self.cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,
@@ -130,13 +130,13 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .lineItem(fromPresenter)
         ]
 
-        explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
+        self.explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
 
         switch event.type {
         case .receive:
-            buttons = []
+            self.buttons = []
         case .send:
-            buttons = [explorerButton]
+            self.buttons = [explorerButton]
         }
 
         bindAll(event: event)

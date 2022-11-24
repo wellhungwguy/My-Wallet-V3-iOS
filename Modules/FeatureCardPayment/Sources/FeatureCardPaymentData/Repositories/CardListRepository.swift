@@ -39,7 +39,7 @@ class CardListRepository: CardListRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 featureFlagsService.isEnabled(.newCardAcquirers)

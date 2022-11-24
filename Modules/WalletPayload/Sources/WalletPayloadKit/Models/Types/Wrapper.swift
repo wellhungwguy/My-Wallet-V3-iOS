@@ -35,11 +35,11 @@ public struct Wrapper: Equatable {
         walletPayload: WalletPayload,
         wallet: NativeWallet
     ) {
-        version = walletPayload.payloadWrapper?.version ?? 4
-        pbkdf2Iterations = walletPayload.payloadWrapper?.pbkdf2IterationCount ?? 5000
-        payloadChecksum = walletPayload.payloadChecksum ?? ""
-        language = walletPayload.language
-        syncPubKeys = walletPayload.shouldSyncPubKeys
+        self.version = walletPayload.payloadWrapper?.version ?? 4
+        self.pbkdf2Iterations = walletPayload.payloadWrapper?.pbkdf2IterationCount ?? 5000
+        self.payloadChecksum = walletPayload.payloadChecksum ?? ""
+        self.language = walletPayload.language
+        self.syncPubKeys = walletPayload.shouldSyncPubKeys
         self.wallet = wallet
     }
 }

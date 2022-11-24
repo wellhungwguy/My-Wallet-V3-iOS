@@ -49,13 +49,13 @@ public struct WalletCreationPayload: Equatable {
         wrapper: Wrapper,
         applyChecksum: (Data) -> String
     ) {
-        innerPayload = data
-        checksum = applyChecksum(data)
-        length = data.count
-        guid = wrapper.wallet.guid
-        sharedKey = wrapper.wallet.sharedKey
-        language = wrapper.language
-        oldChecksum = wrapper.payloadChecksum
+        self.innerPayload = data
+        self.checksum = applyChecksum(data)
+        self.length = data.count
+        self.guid = wrapper.wallet.guid
+        self.sharedKey = wrapper.wallet.sharedKey
+        self.language = wrapper.language
+        self.oldChecksum = wrapper.payloadChecksum
     }
 }
 

@@ -50,8 +50,8 @@ final class TransactionModel {
         self.app = app
         self.analyticsHook = analyticsHook
         self.sendEmailNotificationService = sendEmailNotificationService
-        interactor = transactionInteractor
-        mviModel = MviModel(
+        self.interactor = transactionInteractor
+        self.mviModel = MviModel(
             initialState: initialState,
             performAction: { [weak self] state, action -> Disposable? in
                 self?.perform(previousState: state, action: action)

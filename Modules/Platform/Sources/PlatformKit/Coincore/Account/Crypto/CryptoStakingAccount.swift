@@ -84,7 +84,7 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
         priceService: PriceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
-        label = asset.defaultStakingWalletName
+        self.label = asset.defaultStakingWalletName
         self.asset = asset
         self.earn = earn
         self.priceService = priceService

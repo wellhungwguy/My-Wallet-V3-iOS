@@ -58,7 +58,7 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
             pairsRelay?.accept(nil)
         }
 
-        onTradingCurrency = app.on(blockchain.user.currency.preferred.fiat.trading.currency) { [weak pairsRelay] _ in
+        self.onTradingCurrency = app.on(blockchain.user.currency.preferred.fiat.trading.currency) { [weak pairsRelay] _ in
             pairsRelay?.accept(nil)
         }
         .subscribe()

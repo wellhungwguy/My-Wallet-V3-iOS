@@ -25,8 +25,8 @@ public final class WebView: NSObject, UIViewRepresentable, WKScriptMessageHandle
         messageHandlers: [String: ((String) -> Void)?]
     ) {
         _currentMessage = currentMessage
-        request = URLRequest(url: url)
-        webView = WKWebView(
+        self.request = URLRequest(url: url)
+        self.webView = WKWebView(
             frame: .zero,
             configuration: {
                 let configuration = WKWebViewConfiguration()

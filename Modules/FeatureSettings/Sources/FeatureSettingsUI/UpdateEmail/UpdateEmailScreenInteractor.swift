@@ -72,7 +72,7 @@ final class UpdateEmailScreenInteractor {
         emailVerificationService: EmailVerificationServiceAPI = resolve()
     ) {
         self.emailSettingsService = emailSettingsService
-        verificationService = emailVerificationService
+        self.verificationService = emailVerificationService
 
         Observable.combineLatest(emailSettingsService.valueObservable, interactionStateRelay)
             .map {

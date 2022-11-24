@@ -15,8 +15,7 @@ var rules: [App.DeepLink.Rule] = [
             .init(
                 name: "amount",
                 alias: blockchain.ux.transaction.enter.amount.default.input.amount[].ref(to: [blockchain.ux.transaction.id: "buy"])
-            )
-            ,
+            ),
             .init(
                 value: "test",
                 alias: blockchain.namespace.test.session.state.stored.shared.value[]

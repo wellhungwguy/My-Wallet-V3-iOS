@@ -185,7 +185,7 @@ final class PortfolioScreenPresenter {
         self.drawerRouter = drawerRouter
         self.interactor = interactor
 
-        fiatBalancePresenter = DashboardFiatBalancesPresenter(
+        self.fiatBalancePresenter = DashboardFiatBalancesPresenter(
             interactor: interactor.fiatBalancesInteractor
         )
         let totalBalancePresenter = TotalBalanceViewPresenter(
@@ -197,7 +197,7 @@ final class PortfolioScreenPresenter {
             .reduce(into: [CryptoCurrency: LoadingState<Bool>]()) { result, cryptoCurrency in
                 result[cryptoCurrency] = .loading
             }
-        model = Model(
+        self.model = Model(
             totalBalancePresenter: totalBalancePresenter,
             cryptoCurrencies: enabledCryptoCurrencies,
             app: app

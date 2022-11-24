@@ -36,7 +36,7 @@ public final class MultiAddressRepository<T: BitcoinChainHistoricalTransactionRe
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 client.multiAddress(for: key.map(\.self))

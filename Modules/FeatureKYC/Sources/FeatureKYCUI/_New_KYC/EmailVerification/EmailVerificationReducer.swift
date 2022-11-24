@@ -30,11 +30,11 @@ struct EmailVerificationState: Equatable {
     var emailVerificationFailedAlert: AlertState<EmailVerificationAction>?
 
     init(emailAddress: String) {
-        verifyEmail = VerifyEmailState(emailAddress: emailAddress)
-        editEmailAddress = EditEmailState(emailAddress: emailAddress)
-        emailVerificationHelp = EmailVerificationHelpState(emailAddress: emailAddress)
-        emailVerified = EmailVerifiedState()
-        flowStep = .verifyEmailPrompt
+        self.verifyEmail = VerifyEmailState(emailAddress: emailAddress)
+        self.editEmailAddress = EditEmailState(emailAddress: emailAddress)
+        self.emailVerificationHelp = EmailVerificationHelpState(emailAddress: emailAddress)
+        self.emailVerified = EmailVerifiedState()
+        self.flowStep = .verifyEmailPrompt
     }
 }
 

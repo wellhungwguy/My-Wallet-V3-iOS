@@ -35,7 +35,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
         analyticsRecording: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.alertPresenter = alertPresenter
-        interactor = BiometrySwitchViewInteractor(
+        self.interactor = BiometrySwitchViewInteractor(
             provider: provider,
             authenticationCoordinator: authenticationCoordinator,
             settingsAuthenticating: settingsAuthenticating

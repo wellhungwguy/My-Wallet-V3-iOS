@@ -71,7 +71,7 @@ final class FiatCustodialBalanceViewPresenter: Equatable {
         self.interactor = interactor
         self.respondsToTaps = respondsToTaps
         self.presentationStyle = presentationStyle
-        fiatBalanceViewPresenter = FiatBalanceViewPresenter(
+        self.fiatBalanceViewPresenter = FiatBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor,
             descriptors: descriptors.balanceViewDescriptors
         )

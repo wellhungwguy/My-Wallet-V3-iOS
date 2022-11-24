@@ -102,7 +102,7 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
         self.balanceRepository = balanceRepository
         self.priceService = priceService
         self.delegatedCustodyAccount = delegatedCustodyAccount
-        asset = delegatedCustodyAccount.coin
+        self.asset = delegatedCustodyAccount.coin
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {

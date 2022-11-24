@@ -5,7 +5,7 @@ import AnalyticsKit
 extension AnalyticsEvents.New {
     enum SignUpFlow: AnalyticsEvent {
 
-        public var type: AnalyticsEventType { .nabu }
+        var type: AnalyticsEventType { .nabu }
 
         case walletSignedUp
     }

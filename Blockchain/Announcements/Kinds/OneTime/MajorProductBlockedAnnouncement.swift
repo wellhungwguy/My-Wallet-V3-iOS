@@ -87,7 +87,7 @@ final class MajorProductBlockedAnnouncement: OneTimeAnnouncement, ActionableAnno
         action: @escaping CardAnnouncementAction,
         showLearnMoreButton: Bool
     ) {
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.announcementMessage = announcementMessage
         self.dismiss = dismiss

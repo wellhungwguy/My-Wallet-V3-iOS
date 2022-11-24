@@ -109,7 +109,7 @@ public final class MoneyValueInputScanner {
 
         public init(string: String) {
             self.string = string
-            caretIndex = string.count
+            self.caretIndex = string.count
         }
 
         public init(decimal: Decimal) {
@@ -161,7 +161,7 @@ public final class MoneyValueInputScanner {
     // MARK: - Setup
 
     public init(maxDigits: MaxDigits) {
-        maxDigitsRelay = BehaviorRelay(value: maxDigits)
+        self.maxDigitsRelay = BehaviorRelay(value: maxDigits)
 
         actionRelay
             .map(weak: self) { (self, action) in

@@ -8,8 +8,8 @@ public struct NonRandomNumberGenerator: RandomNumberGenerator {
     private var iterator: AnyIterator<UInt64>
 
     public init(_ s: some Sequence<UInt64>) {
-        sequence = AnySequence(s)
-        iterator = sequence.makeIterator()
+        self.sequence = AnySequence(s)
+        self.iterator = sequence.makeIterator()
     }
 
     public mutating func next() -> UInt64 {

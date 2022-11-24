@@ -5,18 +5,18 @@ public struct AnyCodingKey: CodingKey {
     public var stringValue: String, intValue: Int?
 
     public init?(intValue: Int) {
-        (self.intValue, stringValue) = (intValue, intValue.description)
+        (self.intValue, self.stringValue) = (intValue, intValue.description)
     }
 
     public init?(stringValue: String) {
-        (intValue, self.stringValue) = (nil, stringValue)
+        (self.intValue, self.stringValue) = (nil, stringValue)
     }
 }
 
 extension AnyCodingKey {
 
     public init(_ key: some CodingKey) {
-        (intValue, stringValue) = (key.intValue, key.stringValue)
+        (self.intValue, self.stringValue) = (key.intValue, key.stringValue)
     }
 
     public init(_ int: Int) {

@@ -19,13 +19,13 @@ final class FiatCustodialBalanceViewInteractor {
     }
 
     init(account: SingleAccount) {
-        currencyType = account.currencyType
-        balanceViewInteractor = FiatBalanceViewInteractor(account: account)
+        self.currencyType = account.currencyType
+        self.balanceViewInteractor = FiatBalanceViewInteractor(account: account)
     }
 
     init(balance: MoneyValue) {
-        currencyType = balance.currency
-        balanceViewInteractor = FiatBalanceViewInteractor(balance: balance)
+        self.currencyType = balance.currency
+        self.balanceViewInteractor = FiatBalanceViewInteractor(balance: balance)
     }
 }
 

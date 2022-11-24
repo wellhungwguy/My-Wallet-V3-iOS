@@ -34,11 +34,11 @@ final class TotalBalanceViewPresenter {
             fiatCurrencyService: fiatCurrencyService,
             app: app
         )
-        pieChartPresenter = AssetPieChartPresenter(
+        self.pieChartPresenter = AssetPieChartPresenter(
             edge: 88,
             interactor: chartInteractor
         )
-        balancePresenter = AssetPriceViewPresenter(
+        self.balancePresenter = AssetPriceViewPresenter(
             interactor: balanceInteractor,
             descriptors: .balance
         )
@@ -47,7 +47,7 @@ final class TotalBalanceViewPresenter {
             ? LocalizationConstants.Dashboard.Portfolio.totalBalance
             : LocalizationConstants.Dashboard.Portfolio.balance
 
-        titleContent = LabelContent(
+        self.titleContent = LabelContent(
             text: titleString,
             font: .main(.medium, 16),
             color: .mutedText,

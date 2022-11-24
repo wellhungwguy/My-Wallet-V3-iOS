@@ -61,13 +61,13 @@ public struct WelcomeState: Equatable, NavigationState {
     public var manualCredentialsState: CredentialsState?
 
     public init() {
-        buildVersion = ""
-        route = nil
-        createWalletState = nil
-        restoreWalletState = nil
-        emailLoginState = nil
-        manualPairingEnabled = false
-        manualCredentialsState = nil
+        self.buildVersion = ""
+        self.route = nil
+        self.createWalletState = nil
+        self.restoreWalletState = nil
+        self.emailLoginState = nil
+        self.manualPairingEnabled = false
+        self.manualCredentialsState = nil
     }
 }
 

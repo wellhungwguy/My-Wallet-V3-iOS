@@ -40,7 +40,7 @@ public struct AccountPickerView<
         self.iconView = iconView
         self.multiBadgeView = multiBadgeView
         self.withdrawalLocksView = withdrawalLocksView
-        toggleIsOn = false
+        self.toggleIsOn = false
     }
 
     public init(

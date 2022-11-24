@@ -47,14 +47,14 @@ public struct ExplainedActionViewModel {
         thumbRenderDefault: Bool = false
     ) {
         if thumbRenderDefault {
-            thumbBadgeImageViewModel = .default(
+            self.thumbBadgeImageViewModel = .default(
                 image: .local(name: thumbImage, bundle: .platformUIKit),
                 backgroundColor: .clear,
                 cornerRadius: .none,
                 accessibilityIdSuffix: uniqueAccessibilityIdentifier
             )
         } else {
-            thumbBadgeImageViewModel = .primary(
+            self.thumbBadgeImageViewModel = .primary(
                 image: .local(name: thumbImage, bundle: .platformUIKit),
                 cornerRadius: .round,
                 accessibilityIdSuffix: uniqueAccessibilityIdentifier
@@ -62,13 +62,13 @@ public struct ExplainedActionViewModel {
             thumbBadgeImageViewModel.marginOffsetRelay.accept(6)
         }
 
-        titleLabelContent = .init(
+        self.titleLabelContent = .init(
             text: title,
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id(uniqueAccessibilityIdentifier + AccessibilityId.titleLabel)
         )
-        descriptionLabelContents = descriptions
+        self.descriptionLabelContents = descriptions
             .enumerated()
             .map { payload in
                 .init(
@@ -82,12 +82,12 @@ public struct ExplainedActionViewModel {
             }
 
         if let badgeTitle {
-            badgeViewModel = .affirmative(
+            self.badgeViewModel = .affirmative(
                 with: badgeTitle,
                 accessibilityId: uniqueAccessibilityIdentifier + AccessibilityId.badgeView
             )
         } else { // hide badge
-            badgeViewModel = nil
+            self.badgeViewModel = nil
         }
     }
 }

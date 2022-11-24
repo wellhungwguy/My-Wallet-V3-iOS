@@ -64,11 +64,11 @@ public final class EarnRepository: EarnRepositoryAPI {
 
 extension EarnRepository {
 
-    fileprivate func cache<Value>(_ publisher: @escaping () -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Int, Value, Nabu.Error> {
-        cache { _  in publisher() }
+    private func cache<Value>(_ publisher: @escaping () -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Int, Value, Nabu.Error> {
+        cache { _ in publisher() }
     }
 
-    fileprivate func cache<Key, Value>(_ publisher: @escaping (Key) -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Key, Value, Nabu.Error> {
+    private func cache<Key, Value>(_ publisher: @escaping (Key) -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Key, Value, Nabu.Error> {
         CachedValueNew(
             cache: InMemoryCache(
                 configuration: .onLoginLogoutTransactionAndDashboardRefresh(),
