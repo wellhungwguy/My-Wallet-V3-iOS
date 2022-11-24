@@ -3,7 +3,7 @@
 import Foundation
 
 extension ActivityItem {
-    public struct ImageSmallTag: Equatable, Decodable {
+    public struct ImageSmallTag: Equatable, Codable {
         public let main: String?
         public let tag: String?
     }

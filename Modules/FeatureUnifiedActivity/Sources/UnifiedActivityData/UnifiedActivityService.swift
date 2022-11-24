@@ -8,9 +8,13 @@ import NetworkKit
 import ToolKit
 import UnifiedActivityDomain
 
-final class UnifiedActivityService {
+protocol UnifiedActivityServiceAPI {
 
-    private struct Key: Hashable {}
+    var connect: AnyPublisher<WebSocketConnection.Event, Never> { get }
+    var subscribeToActivity: AnyPublisher<Void, Never> { get }
+}
+
+final class UnifiedActivityService: UnifiedActivityServiceAPI {
 
     private let webSocketService: WebSocketService
     private let requestBuilder: RequestBuilder
@@ -65,8 +69,8 @@ final class UnifiedActivityService {
             .tryMap { payload in
                 try payload.encodeToString(encoding: .utf8)
             }
-            .handleEvents(receiveOutput: { string in
-                self.webSocketService.send(url: self.url, message: .string(string))
+            .handleEvents(receiveOutput: { [webSocketService, url] string in
+                webSocketService.send(url: url, message: .string(string))
             })
             .mapToVoid()
             .replaceError(with: ())

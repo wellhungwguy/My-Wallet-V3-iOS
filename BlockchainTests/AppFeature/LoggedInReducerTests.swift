@@ -82,7 +82,7 @@ final class LoggedInReducerTests: XCTestCase {
                 reactiveWallet: mockReactiveWallet,
                 remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
                 remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
-                unifiedActivityRepository: UnifiedActivityRepositoryMock()
+                unifiedActivityService: UnifiedActivityPersistenceServiceMock()
             )
         )
     }

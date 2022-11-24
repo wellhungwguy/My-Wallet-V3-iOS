@@ -136,7 +136,7 @@ struct CoreAppEnvironment {
     var resetPasswordService: ResetPasswordServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var unifiedActivityRepository: UnifiedActivityRepositoryAPI
+    var unifiedActivityService: UnifiedActivityPersistenceServiceAPI
     var walletPayloadService: WalletPayloadServiceAPI
     var walletService: WalletService
     var walletStateProvider: WalletStateProvider
@@ -191,7 +191,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     reactiveWallet: environment.reactiveWallet,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
                     remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
-                    unifiedActivityRepository: environment.unifiedActivityRepository
+                    unifiedActivityService: environment.unifiedActivityService
                 )
             }
         ),

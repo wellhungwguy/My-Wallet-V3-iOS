@@ -3,8 +3,8 @@
 import Foundation
 
 extension ActivityItem {
-    public struct Text: Equatable, Decodable {
-        public struct Style: Equatable, Decodable {
+    public struct Text: Equatable, Codable {
+        public struct Style: Equatable, Codable {
             public let style: String
             public let color: String
         }

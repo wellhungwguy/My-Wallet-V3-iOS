@@ -2,9 +2,11 @@
 
 import Foundation
 
-public enum DetailType: Equatable, Codable {
+public enum LeafItemType: Equatable, Codable {
 
-    case groupedItems(ActivityDetail.GroupedItems)
+    case text(ActivityItem.Text)
+    case button(ActivityItem.Button)
+    case badge(ActivityItem.Badge)
 
     enum CodingKeys: CodingKey {
         case type
@@ -14,8 +16,12 @@ public enum DetailType: Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let name = try container.decode(String.self, forKey: .type)
         switch name {
-        case "GROUPED_ITEMS":
-            self = .groupedItems(try ActivityDetail.GroupedItems(from: decoder))
+        case "TEXT":
+            self = .text(try ActivityItem.Text(from: decoder))
+        case "BUTTON":
+            self = .button(try ActivityItem.Button(from: decoder))
+        case "BADGE":
+            self = .badge(try ActivityItem.Badge(from: decoder))
         default:
             throw DecodingError.dataCorruptedError(
                 forKey: .type,
@@ -28,8 +34,14 @@ public enum DetailType: Equatable, Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .groupedItems(let content):
-            try container.encode("GROUPED_ITEMS", forKey: .type)
+        case .text(let content):
+            try container.encode("TEXT", forKey: .type)
+            try content.encode(to: encoder)
+        case .button(let content):
+            try container.encode("BUTTON", forKey: .type)
+            try content.encode(to: encoder)
+        case .badge(let content):
+            try container.encode("BADGE", forKey: .type)
             try content.encode(to: encoder)
         }
     }

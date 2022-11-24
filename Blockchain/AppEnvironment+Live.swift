@@ -59,7 +59,7 @@ extension AppEnvironment {
             resetPasswordService: resolve(),
             sharedContainer: .default,
             siftService: resolve(),
-            unifiedActivityRepository: resolve(),
+            unifiedActivityService: resolve(),
             urlSession: resolve(),
             walletPayloadService: resolve(),
             walletRepoPersistence: resolve(),

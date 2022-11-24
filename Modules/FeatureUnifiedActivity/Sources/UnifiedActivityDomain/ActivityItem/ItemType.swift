@@ -2,12 +2,10 @@
 
 import Foundation
 
-public enum ItemType: Equatable, Decodable {
+public enum ItemType: Equatable, Codable {
 
-    case stackView(ActivityItem.StackView)
-    case text(ActivityItem.Text)
-    case button(ActivityItem.Button)
-    case badge(ActivityItem.Badge)
+    case compositionView(ActivityItem.CompositionView)
+    case leaf(LeafItemType)
 
     enum CodingKeys: CodingKey {
         case type
@@ -18,19 +16,20 @@ public enum ItemType: Equatable, Decodable {
         let name = try container.decode(String.self, forKey: .type)
         switch name {
         case "STACK_VIEW":
-            self = .stackView(try ActivityItem.StackView(from: decoder))
-        case "TEXT":
-            self = .text(try ActivityItem.Text(from: decoder))
-        case "BUTTON":
-            self = .button(try ActivityItem.Button(from: decoder))
-        case "BADGE":
-            self = .badge(try ActivityItem.Badge(from: decoder))
+            self = .compositionView(try ActivityItem.CompositionView(from: decoder))
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unkown type \(name)"
-            )
+            self = .leaf(try LeafItemType(from: decoder))
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .compositionView(let content):
+            try container.encode("STACK_VIEW", forKey: .type)
+            try content.encode(to: encoder)
+        case .leaf(let content):
+            try content.encode(to: encoder)
         }
     }
 }

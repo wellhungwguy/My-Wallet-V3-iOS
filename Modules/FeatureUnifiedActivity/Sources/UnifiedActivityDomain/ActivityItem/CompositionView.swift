@@ -3,10 +3,10 @@
 import Foundation
 
 extension ActivityItem {
-    public struct StackView: Equatable, Decodable {
+    public struct CompositionView: Equatable, Codable {
         public let leadingImage: ImageType?
-        public let leading: [ItemType]
-        public let trailing: [ItemType]
+        public let leading: [LeafItemType]
+        public let trailing: [LeafItemType]
         public let trailingImage: ImageType?
     }
 }

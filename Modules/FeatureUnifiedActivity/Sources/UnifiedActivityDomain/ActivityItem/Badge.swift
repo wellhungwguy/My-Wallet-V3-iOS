@@ -3,8 +3,8 @@
 import Foundation
 
 extension ActivityItem {
-    public struct Badge: Equatable, Decodable {
+    public struct Badge: Equatable, Codable {
         public let value: String
-        public let style: String // blueBadge
+        public let style: String
     }
 }

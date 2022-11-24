@@ -68,7 +68,7 @@ public struct AppEnvironment {
     var resetPasswordService: ResetPasswordServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
-    var unifiedActivityRepository: UnifiedActivityRepositoryAPI
+    var unifiedActivityService: UnifiedActivityPersistenceServiceAPI
     var urlSession: URLSession
     var walletPayloadService: WalletPayloadServiceAPI
     var walletRepoPersistence: WalletRepoPersistenceAPI
@@ -120,7 +120,7 @@ public struct AppEnvironment {
         resetPasswordService: ResetPasswordServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
         siftService: FeatureAuthenticationDomain.SiftServiceAPI,
-        unifiedActivityRepository: UnifiedActivityRepositoryAPI,
+        unifiedActivityService: UnifiedActivityPersistenceServiceAPI,
         urlSession: URLSession,
         walletPayloadService: WalletPayloadServiceAPI,
         walletRepoPersistence: WalletRepoPersistenceAPI,
@@ -171,7 +171,7 @@ public struct AppEnvironment {
         self.resetPasswordService = resetPasswordService
         self.sharedContainer = sharedContainer
         self.siftService = siftService
-        self.unifiedActivityRepository = unifiedActivityRepository
+        self.unifiedActivityService = unifiedActivityService
         self.urlSession = urlSession
         self.walletPayloadService = walletPayloadService
         self.walletRepoPersistence = walletRepoPersistence
