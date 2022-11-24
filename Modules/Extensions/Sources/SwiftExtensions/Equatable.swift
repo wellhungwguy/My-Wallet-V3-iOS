@@ -51,13 +51,6 @@ extension Array: AnyEquatable {
     }
 }
 
-extension Optional: AnyEquatable {
-
-    public static func isAnyEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-        isEqual(recursiveFlatMapOptional(lhs) as Any, recursiveFlatMapOptional(rhs) as Any)
-    }
-}
-
 extension NSNull: AnyEquatable {}
 public let null = NSNull()
 

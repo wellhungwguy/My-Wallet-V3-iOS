@@ -20,12 +20,12 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
         self = nil
     }
 
-    public init(_ any: Any) {
+    public init(_ any: Any?) {
         switch any {
         case let thing as AnyJSON:
             self = thing
         default:
-            wrapped = any
+            wrapped = any as Any
         }
     }
 

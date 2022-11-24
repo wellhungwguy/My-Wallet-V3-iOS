@@ -1338,6 +1338,7 @@ public extension I_blockchain_app_deep__link {
 	var `qr`: L_blockchain_app_deep__link_qr { .init("\(__).qr") }
 	var `referral`: L_blockchain_app_deep__link_referral { .init("\(__).referral") }
 	var `send`: L_blockchain_app_deep__link_send { .init("\(__).send") }
+	var `settings`: L_blockchain_app_deep__link_settings { .init("\(__).settings") }
 	var `walletconnect`: L_blockchain_app_deep__link_walletconnect { .init("\(__).walletconnect") }
 }
 public final class L_blockchain_app_deep__link_activity: L, I_blockchain_app_deep__link_activity {
@@ -1505,6 +1506,43 @@ public final class L_blockchain_app_deep__link_send_destination: L, I_blockchain
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.send.destination", comment: "") }
 }
 public protocol I_blockchain_app_deep__link_send_destination: I_blockchain_db_type_string {}
+public final class L_blockchain_app_deep__link_settings: L, I_blockchain_app_deep__link_settings {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings: I {}
+public extension I_blockchain_app_deep__link_settings {
+	var `add`: L_blockchain_app_deep__link_settings_add { .init("\(__).add") }
+}
+public final class L_blockchain_app_deep__link_settings_add: L, I_blockchain_app_deep__link_settings_add {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings.add", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings_add: I {}
+public extension I_blockchain_app_deep__link_settings_add {
+	var `payment`: L_blockchain_app_deep__link_settings_add_payment { .init("\(__).payment") }
+}
+public final class L_blockchain_app_deep__link_settings_add_payment: L, I_blockchain_app_deep__link_settings_add_payment {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings.add.payment", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings_add_payment: I {}
+public extension I_blockchain_app_deep__link_settings_add_payment {
+	var `method`: L_blockchain_app_deep__link_settings_add_payment_method { .init("\(__).method") }
+}
+public final class L_blockchain_app_deep__link_settings_add_payment_method: L, I_blockchain_app_deep__link_settings_add_payment_method {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings.add.payment.method", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings_add_payment_method: I {}
+public extension I_blockchain_app_deep__link_settings_add_payment_method {
+	var `bank`: L_blockchain_app_deep__link_settings_add_payment_method_bank { .init("\(__).bank") }
+	var `card`: L_blockchain_app_deep__link_settings_add_payment_method_card { .init("\(__).card") }
+}
+public final class L_blockchain_app_deep__link_settings_add_payment_method_bank: L, I_blockchain_app_deep__link_settings_add_payment_method_bank {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings.add.payment.method.bank", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings_add_payment_method_bank: I {}
+public final class L_blockchain_app_deep__link_settings_add_payment_method_card: L, I_blockchain_app_deep__link_settings_add_payment_method_card {
+	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.settings.add.payment.method.card", comment: "") }
+}
+public protocol I_blockchain_app_deep__link_settings_add_payment_method_card: I {}
 public final class L_blockchain_app_deep__link_walletconnect: L, I_blockchain_app_deep__link_walletconnect {
 	public override class var localized: String { NSLocalizedString("blockchain.app.deep_link.walletconnect", comment: "") }
 }

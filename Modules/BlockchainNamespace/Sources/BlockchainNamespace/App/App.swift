@@ -519,6 +519,7 @@ extension App {
     /// Creates a mocked AppProtocol instance.
     public static func debug(
         preferences: Preferences = Mock.Preferences(),
+        remoteConfiguration: some RemoteConfiguration_p = Mock.RemoteConfiguration(),
         session: URLSessionProtocol = URLSession.test,
         scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.test.eraseToAnyScheduler()
     ) -> AppProtocol {
@@ -530,7 +531,7 @@ extension App {
                 )
             },
             remoteConfiguration: Session.RemoteConfiguration(
-                remote: Mock.RemoteConfiguration(),
+                remote: remoteConfiguration,
                 session: session,
                 preferences: preferences,
                 scheduler: scheduler

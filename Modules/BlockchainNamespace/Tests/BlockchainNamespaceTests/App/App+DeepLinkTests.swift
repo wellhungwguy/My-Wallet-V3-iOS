@@ -5,57 +5,66 @@ import XCTest
 
 var rules: [App.DeepLink.Rule] = [
     .init(
-        pattern: "/app/asset/buy(.*?)",
+        pattern: "/app/asset/buy",
         event: blockchain.app.deep_link.buy[].reference,
         parameters: [
             .init(
                 name: "code",
-                alias: blockchain.app.deep_link.buy.crypto[]
+                alias: blockchain.app.deep_link.buy.crypto[].ref()
+            ),
+            .init(
+                name: "amount",
+                alias: blockchain.ux.transaction.enter.amount.default.input.amount[].ref(to: [blockchain.ux.transaction.id: "buy"])
+            )
+            ,
+            .init(
+                value: "test",
+                alias: blockchain.namespace.test.session.state.stored.shared.value[]
             )
         ]
     ),
     .init(
-        pattern: "/app/asset/(?<code>.*[^/?])/buy(.*?)",
+        pattern: "/app/asset/(?<code>.*[^/?])/buy",
         event: blockchain.app.deep_link.buy[].reference,
         parameters: [
             .init(
                 name: "code",
-                alias: blockchain.app.deep_link.buy.crypto[]
+                alias: blockchain.app.deep_link.buy.crypto[].ref()
             )
         ]
     ),
     .init(
-        pattern: "/app/asset/(?<code>.*[^/?])(.*?)",
+        pattern: "/app/asset/(?<code>.*[^/?])",
         event: blockchain.app.deep_link.asset[].reference,
         parameters: [
             .init(
                 name: "code",
-                alias: blockchain.app.deep_link.asset.code[]
+                alias: blockchain.app.deep_link.asset.code[].ref()
             )
         ]
     ),
     .init(
-        pattern: "/app/qr/scan(.*?)",
+        pattern: "/app/qr/scan",
         event: blockchain.app.deep_link.qr[].reference,
         parameters: []
     ),
     .init(
-        pattern: "/app/kyc(.*?)",
+        pattern: "/app/kyc",
         event: blockchain.app.deep_link.kyc[].reference,
         parameters: [
             .init(
                 name: "tier",
-                alias: blockchain.app.deep_link.kyc.tier[]
+                alias: blockchain.app.deep_link.kyc.tier[].ref()
             )
         ]
     ),
     .init(
-        pattern: "/app/asset(.*?)",
+        pattern: "/app/asset",
         event: blockchain.app.deep_link.asset[].reference,
         parameters: [
             .init(
                 name: "code",
-                alias: blockchain.app.deep_link.asset.code[]
+                alias: blockchain.app.deep_link.asset.code[].ref()
             )
         ]
     )
@@ -64,20 +73,20 @@ var rules: [App.DeepLink.Rule] = [
 var remoteRules: Mock.RemoteConfigurationValue {
     Mock.RemoteConfigurationValue(
         // swiftlint:disable force_try
-        dataValue: try! JSONEncoder().encode(rules)
+        dataValue: try! JSONSerialization.data(withJSONObject: AnyEncoder().encode(rules) as Any)
     )
 }
 
 final class AppDeepLinkTests: XCTestCase {
 
-    var app: App = .init()
+    var app: AppProtocol = App.test
     var bag: Set<AnyCancellable> = []
     var count: [Tag: UInt] = [:]
 
     override func setUp() {
         super.setUp()
-        app = .init(
-            remote: Mock.RemoteConfiguration(
+        app = App.debug(
+            remoteConfiguration: Mock.RemoteConfiguration(
                 [
                     .remote: [
                         "blockchain_app_configuration_deep_link_rules": remoteRules
@@ -137,6 +146,36 @@ final class AppDeepLinkTests: XCTestCase {
         try XCTAssertEqual(app.state.get(blockchain.db.type.string), "test")
     }
 
+    func test_buy_deep_link() throws {
+
+        app.state.set(blockchain.app.is.ready.for.deep_link, to: true)
+        XCTAssertThrowsError(try app.state.get(blockchain.namespace.test.session.state.stored.shared.value))
+
+        let promise = expectation(description: #function)
+        var event: Session.Event! {
+            didSet { promise.fulfill() }
+        }
+
+        let observer = app.on(blockchain.app.deep_link.buy) { event = $0 }.start()
+
+        XCTAssertNil(event)
+
+        app.post(
+            event: blockchain.app.process.deep_link,
+            context: [
+                blockchain.app.process.deep_link.url: URL(
+                    string: "https://blockchain.com/app/asset/buy?code=BTC&amount=1000&currency=GBP"
+                )!
+            ]
+        )
+
+        wait(for: [promise], timeout: 0.1)
+
+        XCTAssertEqual(observer.count, 1)
+        XCTAssertNotNil(event)
+        try XCTAssertEqual(app.state.get(blockchain.namespace.test.session.state.stored.shared.value), "test")
+    }
+
     func test_deep_link_rules() throws {
         let scanUrl = URL(string: "https://blockchain.com/app/qr/scan/")!
         XCTAssertNotNil(rules.match(for: scanUrl))
@@ -154,7 +193,7 @@ final class AppDeepLinkTests: XCTestCase {
         let buyUrl = URL(string: "https://blockchain.com/app/asset/buy?codeCrypto=BTC")!
         let buyMatch = rules.match(for: buyUrl)
         XCTAssertEqual(buyMatch?.rule.event, blockchain.app.deep_link.buy[].reference)
-        XCTAssertEqual(buyMatch?.parameters().count, 0)
+        XCTAssertEqual(buyMatch?.parameters().count, 1)
 
         let buyUrl2 = URL(string: "https://login.blockchain.com/#/app/asset/BTC/buy/foo?tag=123")!
         let buyMatch2 = rules.match(for: buyUrl2)
