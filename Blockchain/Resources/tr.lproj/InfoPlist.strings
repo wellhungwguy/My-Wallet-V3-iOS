@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Bu, uygulamanın QR kodlarını taraması için gereklidir.";
-"NSMicrophoneUsageDescription" = "Video çekimi için gerekli.";
-"NSFaceIDUsageDescription" = "Face ID'nin etkinleştirilmesi, cüzdanınıza güvenli bir şekilde erişmenizi sağlar.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain'in, Bitcoin'i kabul eden yakındaki işletmeleri size göstermek için konumunuza erişmesi gerekir.";
-"NSPhotoLibraryUsageDescription" = "Fotoğraf kitaplığınızdan doküman yüklemek için izniniz gerekiyor.";
