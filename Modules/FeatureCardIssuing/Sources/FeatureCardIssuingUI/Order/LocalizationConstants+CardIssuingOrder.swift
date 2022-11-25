@@ -66,6 +66,11 @@ extension LocalizationConstants.CardIssuing {
                         "Continue",
                         comment: "Card Issuing: Continue button"
                     )
+
+                    static let currentlyActive = NSLocalizedString(
+                        "Currently Active",
+                        comment: "Card Issuing: Currently Active button"
+                    )
                 }
             }
         }
@@ -99,15 +104,32 @@ extension LocalizationConstants.CardIssuing {
 
         enum Processing {
             enum Success {
-                static let title = NSLocalizedString(
-                    "Card Successfully Created!",
-                    comment: "Card Issuing: Card Successfully Created!"
-                )
+                enum Virtual {
+                    static let title = NSLocalizedString(
+                        "Card Successfully Created!",
+                        comment: "Card Issuing: Card Successfully virtual created!"
+                    )
 
-                static let caption = NSLocalizedString(
-                    "Welcome to the club, to view your card dashboard please press Continue below.",
-                    comment: "Card Issuing: Order success caption"
-                )
+                    static let caption = NSLocalizedString(
+                        "Continue to view your card dashboard.",
+                        comment: "Card Issuing: Order success virtual caption"
+                    )
+                }
+
+                enum Physical {
+                    static let title = NSLocalizedString(
+                        "Card Successfully Ordered!",
+                        comment: "Card Issuing: Card Successfully physical ordered!"
+                    )
+
+                    static let caption = NSLocalizedString(
+                        """
+                        You are done! We are getting your card shipped out. \
+                        In the mean time, spend using your card details or via Apple Pay.
+                        """,
+                        comment: "Card Issuing: Order success physical caption"
+                    )
+                }
 
                 static let goToDashboard = NSLocalizedString(
                     "Go To Dashboard",
