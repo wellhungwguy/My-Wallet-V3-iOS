@@ -2,6 +2,7 @@
 
 @testable import BitcoinChainKit
 @testable import BitcoinChainKitMock
+import BlockchainNamespace
 import Combine
 import Errors
 import TestKit
@@ -39,7 +40,7 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin, app: App.test)
 
         let sut = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
@@ -92,7 +93,7 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin, app: App.test)
 
         let sut = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
@@ -134,7 +135,7 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoinCash)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoinCash, app: App.test)
 
         let sut = BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
             mnemonicProvider: mockMnemonicProvider,
@@ -187,7 +188,7 @@ class BitcoinChainReceiveAddressProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoinCash)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoinCash, app: App.test)
 
         let sut = BitcoinChainReceiveAddressProvider<BitcoinCashToken>(
             mnemonicProvider: mockMnemonicProvider,

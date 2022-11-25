@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 
 /// A cache refresh control.
@@ -43,5 +44,52 @@ public final class PeriodicCacheRefreshControl: CacheRefreshControl {
 
     public func shouldRefresh(lastRefresh: Date) -> Bool {
         lastRefresh < Date(timeIntervalSinceNow: -refreshInterval)
+    }
+}
+
+// MARK: Remote RefreshControl
+
+/// Used with `RemotePeriodicCacheRefreshControl`
+public struct RemoteCacheConfig: Decodable {
+    // The amount of time of expiration for this cache
+    let interval: Int
+    // When `true` disables the cache, ignores `interval`
+    let disable: Bool
+
+    public init(interval: Int, disable: Bool) {
+        self.interval = interval
+        self.disable = disable
+    }
+}
+
+/// A convenient `CacheRerfresh` that loads a remote configuration of type `RemoteRefreshControlConfig`
+public final class RemotePeriodicCacheRefreshControl: CacheRefreshControl {
+
+    private var config: RemoteCacheConfig
+
+    private var cancellables: Set<AnyCancellable> = []
+
+    public init(
+        defaultConfig: RemoteCacheConfig,
+        fetch: @escaping () -> AnyPublisher<RemoteCacheConfig?, Error>
+    )  {
+        config = defaultConfig
+        // Fetch the remote config
+        fetch()
+            .replaceError(with: defaultConfig)
+            .sink(
+                receiveValue: { [weak self, defaultConfig] remoteConfig in
+                    self?.config = remoteConfig ?? defaultConfig
+                }
+            )
+            .store(in: &cancellables)
+    }
+
+    public func shouldRefresh(lastRefresh: Date) -> Bool {
+        if config.disable {
+            return true
+        } else {
+            return lastRefresh < Date(timeIntervalSinceNow: -Double(config.interval))
+        }
     }
 }
