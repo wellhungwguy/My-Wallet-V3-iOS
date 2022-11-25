@@ -15,6 +15,7 @@ struct CardSelectorView: View {
     private typealias L10n = LocalizationConstants.CardIssuing.Manage
 
     private let store: Store<CardManagementState, CardManagementAction>
+    @State private var cantOrderCardToasterVisible = false
 
     init(store: Store<CardManagementState, CardManagementAction>) {
         self.store = store
@@ -40,11 +41,14 @@ struct CardSelectorView: View {
                             Text(L10n.Selector.myCards)
                                 .typography(.subheading)
                             Spacer()
-                            if viewStore.state.canAddCards {
-                                SmallMinimalButton(title: L10n.Button.addCard) {
-                                    viewStore.send(CardManagementAction.openAddCardFlow)
+                            SmallMinimalButton(title: L10n.Button.addCard) {
+                                guard viewStore.state.canAddCards else {
+                                    cantOrderCardToasterVisible = true
+                                    return
                                 }
+                                viewStore.send(CardManagementAction.openAddCardFlow)
                             }
+                            .disabled(cantOrderCardToasterVisible)
                         }
                         .padding(.horizontal, Spacing.padding3)
                         ForEach(viewStore.state.cards) { card in
@@ -60,6 +64,17 @@ struct CardSelectorView: View {
                             )
                         }
                     }
+                }
+                if cantOrderCardToasterVisible {
+                    AlertCard(
+                        title: L10n.Selector.MaxCardNumber.title,
+                        message: L10n.Selector.MaxCardNumber.message,
+                        variant: .default,
+                        onCloseTapped: {
+                            cantOrderCardToasterVisible = false
+                        }
+                    )
+                    .padding(Spacing.padding3)
                 }
             }
         }
@@ -146,7 +161,12 @@ struct CardSelectorView_Previews: PreviewProvider {
     static var previews: some View {
         CardSelectorView(
             store: .init(
-                initialState: .preview,
+                initialState: .init(
+                    cards: [
+                        MockServices.card
+                    ],
+                    tokenisationCoordinator: .init(service: MockServices())
+                ),
                 reducer: cardManagementReducer,
                 environment: .preview
             )

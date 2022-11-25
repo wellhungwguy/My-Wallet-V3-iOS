@@ -465,7 +465,7 @@ struct MockServices: CardServiceAPI,
     )
 
     let error = NabuError(id: "mock", code: .stateNotEligible, type: .unknown, description: "")
-    let card = Card(
+    static let card = Card(
         id: "",
         type: .virtual,
         last4: "1234",
@@ -503,19 +503,19 @@ struct MockServices: CardServiceAPI,
         product: Product,
         at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {
-        .just([card])
+        .just([Self.card])
     }
 
     func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
@@ -554,11 +554,11 @@ struct MockServices: CardServiceAPI,
     }
 
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func openBuyFlow(for currency: CryptoCurrency?) {}

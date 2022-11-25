@@ -99,6 +99,7 @@ public struct CardManagementState: Equatable {
         isLocked: Bool = false,
         cardHelperUrl: URL? = nil,
         error: NabuNetworkError? = nil,
+        cards: [Card] = [],
         legalItems: [LegalItem] = [],
         statements: [Statement] = [],
         transactions: [Card.Transaction] = [],
@@ -106,6 +107,7 @@ public struct CardManagementState: Equatable {
         tokenisationCoordinator: PassTokenisationCoordinator
     ) {
         self.selectedCard = card
+        self.cards = cards
         self.cardholderName = cardholderName
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
