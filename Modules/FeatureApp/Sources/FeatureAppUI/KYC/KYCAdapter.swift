@@ -5,6 +5,8 @@ import DIKit
 import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureOnboardingUI
+import FeatureProveDomain
+import FeatureProveUI
 import FeatureSettingsUI
 import PlatformKit
 import PlatformUIKit
@@ -213,9 +215,54 @@ extension KYCAdapter: FeatureOnboardingUI.KYCRouterAPI {
     }
 }
 
+final class FlowKYCInfoService: FeatureKYCDomain.FlowKYCInfoServiceAPI {
+
+    private let flowKYCInfoService: FeatureProveDomain.FlowKYCInfoServiceAPI
+
+    init(flowKYCInfoService: FeatureProveDomain.FlowKYCInfoServiceAPI = resolve()) {
+        self.flowKYCInfoService = flowKYCInfoService
+    }
+
+    func isProveFlow() async throws -> Bool? {
+        let flowKYCInfo = try await flowKYCInfoService.getFlowKYCInfo()
+        return flowKYCInfo?.nextFlow == .prove
+    }
+}
+
 extension KYCAdapter: FeatureSettingsUI.KYCRouterAPI {
 
     public func presentLimitsOverview(from presenter: UIViewController) {
         router.presentLimitsOverview(from: presenter)
+    }
+}
+
+final class KYCProveFlowPresenter: FeatureKYCUI.KYCProveFlowPresenterAPI {
+
+    private let router: FeatureProveDomain.ProveRouterAPI
+
+    init(
+        router: FeatureProveDomain.ProveRouterAPI
+    ) {
+        self.router = router
+    }
+
+    func presentKYCProveFlow(
+    ) -> AnyPublisher<KYCProveResult, Never> {
+        router.presentProveFlow()
+            .map { KYCProveResult(result: $0) }
+            .eraseToAnyPublisher()
+    }
+}
+
+extension KYCProveResult {
+    fileprivate init(result: VerificationResult) {
+        switch result {
+        case .abandoned:
+            self = .abandoned
+        case .failure:
+            self = .failure
+        case .success:
+            self = .success
+        }
     }
 }

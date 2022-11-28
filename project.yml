@@ -316,6 +316,8 @@ packages:
     path: Modules/FeaturePaymentsIntegration
   FeatureUserTagSync:
     path: Modules/FeatureUserTagSync
+  FeatureKYCIntegration:
+    path: Modules/FeatureKYCIntegration
 
 targets:
   BlockchainApp:
@@ -393,6 +395,12 @@ targets:
       - package: FeatureInterest
       - package: FeatureNotificationPreferences
       - package: FeatureKYC
+      - package: FeatureKYCIntegration
+        product: FeatureProveData
+      - package: FeatureKYCIntegration
+        product: FeatureProveDomain
+      - package: FeatureKYCIntegration
+        product: FeatureProveUI
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding

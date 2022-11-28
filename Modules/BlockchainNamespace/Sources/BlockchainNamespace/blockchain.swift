@@ -664,8 +664,60 @@ public final class L_blockchain_app_configuration_kyc: L, I_blockchain_app_confi
 }
 public protocol I_blockchain_app_configuration_kyc: I {}
 public extension I_blockchain_app_configuration_kyc {
+	var `integration`: L_blockchain_app_configuration_kyc_integration { .init("\(__).integration") }
 	var `sdd`: L_blockchain_app_configuration_kyc_sdd { .init("\(__).sdd") }
 }
+public final class L_blockchain_app_configuration_kyc_integration: L, I_blockchain_app_configuration_kyc_integration {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration: I {}
+public extension I_blockchain_app_configuration_kyc_integration {
+	var `prove`: L_blockchain_app_configuration_kyc_integration_prove { .init("\(__).prove") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove: L, I_blockchain_app_configuration_kyc_integration_prove {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove: I {}
+public extension I_blockchain_app_configuration_kyc_integration_prove {
+	var `begin`: L_blockchain_app_configuration_kyc_integration_prove_begin { .init("\(__).begin") }
+	var `is`: L_blockchain_app_configuration_kyc_integration_prove_is { .init("\(__).is") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove_begin: L, I_blockchain_app_configuration_kyc_integration_prove_begin {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.begin", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_begin: I {}
+public extension I_blockchain_app_configuration_kyc_integration_prove_begin {
+	var `verification`: L_blockchain_app_configuration_kyc_integration_prove_begin_verification { .init("\(__).verification") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove_begin_verification: L, I_blockchain_app_configuration_kyc_integration_prove_begin_verification {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.begin.verification", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_begin_verification: I {}
+public extension I_blockchain_app_configuration_kyc_integration_prove_begin_verification {
+	var `privacy`: L_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy { .init("\(__).privacy") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy: L, I_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.begin.verification.privacy", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy: I {}
+public extension I_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy {
+	var `url`: L_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy_url { .init("\(__).url") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy_url: L, I_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy_url {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.begin.verification.privacy.url", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_begin_verification_privacy_url: I_blockchain_db_type_url, I_blockchain_session_configuration_value {}
+public final class L_blockchain_app_configuration_kyc_integration_prove_is: L, I_blockchain_app_configuration_kyc_integration_prove_is {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.is", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_is: I {}
+public extension I_blockchain_app_configuration_kyc_integration_prove_is {
+	var `enabled`: L_blockchain_app_configuration_kyc_integration_prove_is_enabled { .init("\(__).enabled") }
+}
+public final class L_blockchain_app_configuration_kyc_integration_prove_is_enabled: L, I_blockchain_app_configuration_kyc_integration_prove_is_enabled {
+	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.integration.prove.is.enabled", comment: "") }
+}
+public protocol I_blockchain_app_configuration_kyc_integration_prove_is_enabled: I_blockchain_db_type_boolean, I_blockchain_session_configuration_value {}
 public final class L_blockchain_app_configuration_kyc_sdd: L, I_blockchain_app_configuration_kyc_sdd {
 	public override class var localized: String { NSLocalizedString("blockchain.app.configuration.kyc.sdd", comment: "") }
 }
