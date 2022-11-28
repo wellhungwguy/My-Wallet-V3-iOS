@@ -69,6 +69,7 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
     private let priceService: PriceServiceAPI
     private let earn: EarnAccountService
     private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
+    private let subscription: AnyCancellable
 
     private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         earn.balances()
@@ -89,6 +90,16 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
         self.earn = earn
         self.priceService = priceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
+
+        subscription = [
+            earn.limits().mapToVoid(),
+            earn.eligibility().mapToVoid(),
+            earn.userRates().mapToVoid(),
+            earn.balances().mapToVoid(),
+            earn.activity(currency: asset).mapToVoid()
+        ]
+        .combineLatest()
+        .subscribe()
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {

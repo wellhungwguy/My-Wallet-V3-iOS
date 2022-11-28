@@ -89,7 +89,7 @@ struct RootView: View {
                 }
             }
         }
-        .onReceive(app.on(blockchain.ux.home.tab.select)) { event in
+        .onReceive(app.on(blockchain.ux.home.tab.select).receive(on: DispatchQueue.main)) { event in
             do {
                 try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
             } catch {

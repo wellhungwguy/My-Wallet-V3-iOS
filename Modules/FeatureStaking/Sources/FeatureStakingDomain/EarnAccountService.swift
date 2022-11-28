@@ -52,12 +52,12 @@ public final class EarnAccountService {
                     try await app.batch(
                         updates: balances.reduce(into: [(Tag.Event, Any?)]()) { data, next in
                             data.append((id[next.key].account.balance, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.bonding.deposits, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.locked, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.pending.deposit, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.pending.withdrawal, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.total.rewards, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.unbonding.withdrawals, next.value.balance?.moneyValue.data))
+                            data.append((id[next.key].account.bonding.deposits, next.value.bondingDeposits?.moneyValue.data))
+                            data.append((id[next.key].account.locked, next.value.locked?.moneyValue.data))
+                            data.append((id[next.key].account.pending.deposit, next.value.pendingDeposit?.moneyValue.data))
+                            data.append((id[next.key].account.pending.withdrawal, next.value.pendingWithdrawal?.moneyValue.data))
+                            data.append((id[next.key].account.total.rewards, next.value.totalRewards?.moneyValue.data))
+                            data.append((id[next.key].account.unbonding.withdrawals, next.value.unbondingWithdrawals?.moneyValue.data))
                         },
                         in: context
                     )
@@ -97,8 +97,8 @@ public final class EarnAccountService {
                     Task {
                         try await app.batch(
                             updates: user.rates.reduce(into: [(Tag.Event, Any?)]()) { data, next in
-                                data.append((id[next.key].rates.comission, next.value.commission))
-                                data.append((id[next.key].rates.rate, next.value.rate))
+                                data.append((id[next.key].rates.commission, next.value.commission.map { $0 / 100 }))
+                                data.append((id[next.key].rates.rate, next.value.rate / 100))
                             },
                             in: context
                         )
@@ -116,10 +116,18 @@ public final class EarnAccountService {
                     Task {
                         try await app.batch(
                             updates: limits.reduce(into: [(Tag.Event, Any?)]()) { data, next in
-                                data.append((id[next.key].limit.days.bonding, next.value.bondingDays))
-                                data.append((id[next.key].limit.days.unbonding, next.value.unbondingDays))
+                                data.append((id[next.key].limit.days.bonding, next.value.bondingDays ?? 0))
+                                data.append((id[next.key].limit.days.unbonding, next.value.unbondingDays ?? 0))
                                 data.append((id[next.key].limit.minimum.deposit.value, next.value.minDepositValue))
                                 data.append((id[next.key].limit.withdraw.is.disabled, next.value.disabledWithdrawals ?? false))
+                                data.append((id[next.key].limit.reward.frequency, { () -> Tag? in
+                                    switch next.value.rewardFrequency?.uppercased() {
+                                    case "DAILY": return id.limit.reward.frequency.daily[]
+                                    case "WEEKLY": return id.limit.reward.frequency.weekly[]
+                                    case "MONTHLY": return id.limit.reward.frequency.monthly[]
+                                    case _: return nil
+                                    }
+                                }()))
                             },
                             in: context
                         )
@@ -144,7 +152,16 @@ public final class EarnAccountService {
     }
 
     public func activity(currency: CryptoCurrency) -> AnyPublisher<[EarnActivity], UX.Error> {
-        repository.activity(currency: currency).mapError(UX.Error.init).eraseToAnyPublisher()
+        repository.activity(currency: currency)
+            .handleEvents(
+                receiveOutput: { [app, context] activity in
+                    Task {
+                        try await app.set(id[currency.code].activity.key(to: context), to: activity.json())
+                    }
+                }
+            )
+            .mapError(UX.Error.init)
+            .eraseToAnyPublisher()
     }
 
     public func deposit(amount: MoneyValue) -> AnyPublisher<Void, UX.Error> {

@@ -10,13 +10,18 @@ public struct EarnCurrencyEligibility: Hashable, Decodable {
 // earn/eligible
 
 public struct EarnUserRates: Hashable, Decodable {
+    public var rates: [String: EarnRate]
+}
 
-    public struct Rate: Hashable, Decodable {
-        public var commission: Double?
-        public var rate: Double
+public struct EarnRate: Hashable, Decodable {
+
+    public init(commission: Double? = nil, rate: Double) {
+        self.commission = commission
+        self.rate = rate
     }
 
-    public var rates: [String: Rate]
+    public var commission: Double?
+    public var rate: Double
 }
 
 // earn/limits
@@ -27,6 +32,7 @@ public struct EarnCurrencyLimit: Hashable, Decodable {
     public var bondingDays: Int?
     public var unbondingDays: Int?
     public var disabledWithdrawals: Bool?
+    public var rewardFrequency: String?
 }
 
 // payments/accounts/(staking|savings)
@@ -78,7 +84,7 @@ public struct EarnActivityList: Hashable, Decodable {
     public let items: [EarnActivity]
 }
 
-public struct EarnActivity: Hashable, Decodable {
+public struct EarnActivity: Hashable, Codable {
 
     public struct State: NewTypeString {
         public var value: String
@@ -90,9 +96,9 @@ public struct EarnActivity: Hashable, Decodable {
         public init(_ value: String) { self.value = value }
     }
 
-    public struct ExtraAttributes: Hashable, Decodable {
+    public struct ExtraAttributes: Hashable, Codable {
 
-        public struct Beneficiary: Hashable, Decodable {
+        public struct Beneficiary: Hashable, Codable {
             public let user: String
             public let accountRef: String
         }
@@ -111,7 +117,7 @@ public struct EarnActivity: Hashable, Decodable {
         }
     }
 
-    public struct Amount: Hashable, Decodable {
+    public struct Amount: Hashable, Codable {
         public let symbol: String
         public let value: String
     }
@@ -161,4 +167,146 @@ extension EarnActivity.ActivityType {
     public static let deposit: Self = "DEPOSIT"
     public static let withdraw: Self = "WITHDRAWAL"
     public static let interestEarned: Self = "INTEREST_OUTGOING"
+}
+
+public struct EarnModel: Decodable, Hashable {
+
+    public init(
+        rates: EarnModel.Rates,
+        account: EarnModel.Account,
+        limit: EarnModel.Limit,
+        activity: [EarnActivity]
+    ) {
+        self.rates = rates
+        self.account = account
+        self.limit = limit
+        self.activity = activity
+    }
+
+    public let rates: Rates
+    public let account: Account
+    public let limit: Limit
+    public let activity: [EarnActivity]
+
+    public var currency: CryptoCurrency {
+        account.balance.currency.cryptoCurrency!
+    }
+}
+
+extension EarnModel {
+
+    public typealias Rates = EarnRate
+
+    public struct Account: Decodable, Hashable {
+
+        public init(
+            balance: MoneyValue,
+            bonding: EarnModel.Account.Bonding,
+            locked: MoneyValue,
+            pending: EarnModel.Account.Pending,
+            total: EarnModel.Account.Total,
+            unbonding: EarnModel.Account.Unbonding
+        ) {
+            self.balance = balance
+            self.bonding = bonding
+            self.locked = locked
+            self.pending = pending
+            self.total = total
+            self.unbonding = unbonding
+        }
+
+        public struct Bonding: Decodable, Hashable {
+
+            public init(deposits: MoneyValue) {
+                self.deposits = deposits
+            }
+
+            public let deposits: MoneyValue
+        }
+
+        public struct Pending: Decodable, Hashable {
+
+            public init(deposit: MoneyValue, withdrawal: MoneyValue) {
+                self.deposit = deposit
+                self.withdrawal = withdrawal
+            }
+
+            public let deposit: MoneyValue
+            public let withdrawal: MoneyValue
+        }
+
+        public struct Total: Decodable, Hashable {
+
+            public init(rewards: MoneyValue) {
+                self.rewards = rewards
+            }
+
+            public let rewards: MoneyValue
+        }
+
+        public struct Unbonding: Decodable, Hashable {
+
+            public init(withdrawals: MoneyValue) {
+                self.withdrawals = withdrawals
+            }
+
+            public let withdrawals: MoneyValue
+        }
+
+        public let balance: MoneyValue
+        public let bonding: Bonding
+        public let locked: MoneyValue
+        public let pending: Pending
+        public let total: Total
+        public let unbonding: Unbonding
+    }
+
+    public struct Limit: Decodable, Hashable {
+
+        public init(days: Days, withdraw: Withdraw, reward: Reward) {
+            self.days = days
+            self.withdraw = withdraw
+            self.reward = reward
+        }
+
+        public struct Reward: Decodable, Hashable {
+
+            public init(frequency: Tag?) {
+                self.frequency = frequency
+            }
+
+            public let frequency: Tag?
+        }
+
+        public struct Days: Decodable, Hashable {
+
+            public init(bonding: Int, unbonding: Int) {
+                self.bonding = bonding
+                self.unbonding = unbonding
+            }
+
+            public let bonding: Int
+            public let unbonding: Int
+        }
+
+        public struct Withdraw: Decodable, Hashable {
+
+            public init(`is`: EarnModel.Limit.Withdraw.Is) {
+                self.`is` = `is`
+            }
+
+            public let `is`: Is; public struct Is: Decodable, Hashable {
+
+                public init(disabled: Bool) {
+                    self.disabled = disabled
+                }
+
+                public let disabled: Bool
+            }
+        }
+
+        public let days: Days
+        public let withdraw: Withdraw
+        public let reward: Reward
+    }
 }

@@ -146,7 +146,7 @@ extension Money {
     }
 
     public var description: String {
-        "\(code) \(displayString)"
+        displayString
     }
 
     public var debugDescription: String {

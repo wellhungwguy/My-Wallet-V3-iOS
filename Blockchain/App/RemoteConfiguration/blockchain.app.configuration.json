@@ -116,5 +116,6 @@
     "blockchain.app.configuration.ui.payments.improvements.is.enabled": false,
     "blockchain.app.configuration.ui.payments.improvements.wallet.balances.is.enabled": false,
     "blockchain.app.configuration.ui.payments.improvements.assets.balances.is.enabled": false,
-    "blockchain.ux.transaction[buy].checkout.terms.of.withdraw": "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds"
+    "blockchain.ux.transaction[buy].checkout.terms.of.withdraw": "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds",
+    "blockchain.ux.earn.staking[ETH].summary.learn.more.url": "https://support.blockchain.com"
 }

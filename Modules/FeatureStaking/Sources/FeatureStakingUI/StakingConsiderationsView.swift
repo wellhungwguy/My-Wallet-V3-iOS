@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import _Concurrency
 import Blockchain
 import BlockchainUI
 import FeatureStakingDomain

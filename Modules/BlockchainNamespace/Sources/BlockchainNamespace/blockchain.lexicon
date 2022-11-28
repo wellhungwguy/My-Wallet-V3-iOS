@@ -828,6 +828,13 @@ blockchain:
 				+ blockchain.ui.type.control
 				secondary:
 				+ blockchain.ui.type.control
+				small:
+					minimal:
+					+ blockchain.ui.type.control
+					primary:
+					+ blockchain.ui.type.control
+					secondary:
+					+ blockchain.ui.type.control
 			color:
 				hsb:
 					alpha:
@@ -953,6 +960,20 @@ blockchain:
 				+ blockchain.ui.type.task.section.stack.vertical
 				plain:
 				+ blockchain.ui.type.task.section.stack.vertical
+			row:
+			+ blockchain.ui.type.control
+				byline:
+				+ blockchain.ui.type.text
+				footer:
+				+ blockchain.ui.type.task
+				leading:
+				+ blockchain.ui.type.task
+				style:
+				+ blockchain.ui.type.style
+				title:
+				+ blockchain.ui.type.text
+				trailing:
+				+ blockchain.ui.type.task
 			state:
 			+ blockchain.ui.type.element
 			+ blockchain.ux.type.analytics.state
@@ -994,6 +1015,8 @@ blockchain:
 					+ blockchain.ui.type.media
 					reference:
 					+ blockchain.db.type.tag
+					row:
+					+ blockchain.ui.type.row
 				section:
 				+ blockchain.db.field
 					reference:
@@ -1113,12 +1136,12 @@ blockchain:
 				fiat:
 					display:
 						currency:
-						+ blockchain.db.type.string
 						+ blockchain.session.state.value
+						+ blockchain.type.currency
 					trading:
 						currency:
-						+ blockchain.db.type.string
 						+ blockchain.session.state.value
+						+ blockchain.type.currency
 		earn:
 			product:
 			+ blockchain.db.collection
@@ -1143,6 +1166,8 @@ blockchain:
 						unbonding:
 							withdrawals:
 							+ blockchain.type.money
+					activity:
+					+ blockchain.db.type.array.of.maps
 					address:
 					+ blockchain.db.type.string
 					is:
@@ -1158,12 +1183,18 @@ blockchain:
 							deposit:
 								value:
 								+ blockchain.db.type.integer
+						reward:
+							frequency:
+							+ blockchain.db.type.enum
+								daily:
+								monthly:
+								weekly:
 						withdraw:
 							is:
 								disabled:
 								+ blockchain.db.type.boolean
 					rates:
-						comission:
+						commission:
 						+ blockchain.db.type.number
 						rate:
 						+ blockchain.db.type.number
@@ -1375,6 +1406,24 @@ blockchain:
 					count:
 					+ blockchain.db.type.integer
 					+ blockchain.session.state.value
+		earn:
+			staking:
+			+ blockchain.db.collection
+				summary:
+				+ blockchain.ux.type.story
+					add:
+					+ blockchain.ux.type.task
+					learn:
+						more:
+						+ blockchain.ux.type.task
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
+					view:
+						activity:
+						+ blockchain.ux.type.task
+					withdraw:
+					+ blockchain.ux.type.task
 		error:
 		+ blockchain.ui.device.haptic.feedback.notification.error
 		+ blockchain.ux.type.action
@@ -2099,6 +2148,8 @@ blockchain:
 			+ blockchain.ui.type.story
 			+ blockchain.ux.type.analytics.state
 				entry:
+			task:
+			+ blockchain.ui.type.task
 		user:
 			KYC:
 			+ blockchain.ux.type.story

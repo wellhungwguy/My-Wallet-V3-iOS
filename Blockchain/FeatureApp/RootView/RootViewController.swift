@@ -170,7 +170,7 @@ extension RootViewController {
 
     func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
         viewStore.publisher.tab.sink { [weak self] _ in
-            self?.presentedViewController?.dismiss(animated: true)
+            self?.dismiss(animated: true)
         }
         .store(in: &bag)
     }

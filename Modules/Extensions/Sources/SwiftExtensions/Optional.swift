@@ -48,6 +48,10 @@ infix operator ??^: AssignmentPrecedence
 
 extension Optional {
 
+    public enum GetError: Error {
+        case isNil
+    }
+
     @discardableResult
     public func or(throw error: @autoclosure () -> some Error) throws -> Wrapped {
         guard let value = self else { throw error() }

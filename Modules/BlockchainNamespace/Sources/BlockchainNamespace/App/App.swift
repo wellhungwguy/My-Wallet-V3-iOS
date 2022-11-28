@@ -153,13 +153,20 @@ public class App: AppProtocol {
 
     private lazy var urls = on(blockchain.ui.type.action.then.launch.url) { [weak self] event throws in
         guard let self else { return }
-        let url = try event.context.decode(blockchain.ui.type.action.then.launch.url, as: URL.self)
+        let url: URL
+        do {
+            url = try event.context.decode(blockchain.ui.type.action.then.launch.url)
+        } catch {
+            url = try event.action.or(throw: "No action").data.decode()
+        }
         guard self.deepLinks.canProcess(url: url) else {
-            #if canImport(UIKit)
-            UIApplication.shared.open(url)
-            #elseif canImport(AppKit)
-            NSWorkspace.shared.open(url)
-            #endif
+            DispatchQueue.main.async {
+                #if canImport(UIKit)
+                    UIApplication.shared.open(url)
+                #elseif canImport(AppKit)
+                    NSWorkspace.shared.open(url)
+                #endif
+            }
             return
         }
         self.post(
