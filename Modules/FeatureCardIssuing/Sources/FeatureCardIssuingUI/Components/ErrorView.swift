@@ -151,93 +151,103 @@ extension ErrorView {
 extension NabuNetworkError {
 
     var displayTitle: String {
-        switch code {
-        case .cardIssuingKycFailed:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .KycFailed
-                .title
-        case .cardIssuingSsnInvalid:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .InvalidSsn
-                .title
-        case .tierTooLow:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .TierTooLow
-                .title
-        case .countryNotEligible:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .CountryNotEligible
-                .title
-        case .stateNotEligible:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .StateNotEligible
-                .title
-        case .notFound:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .NotFound
-                .title
-        default:
-            return ux?.title ?? LocalizationConstants
-                .Errors
-                .error
+        guard let title = ux?.title,
+              title.isNotEmpty
+        else {
+            switch code {
+            case .cardIssuingKycFailed:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .KycFailed
+                    .title
+            case .cardIssuingSsnInvalid:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .InvalidSsn
+                    .title
+            case .tierTooLow:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .TierTooLow
+                    .title
+            case .countryNotEligible:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .CountryNotEligible
+                    .title
+            case .stateNotEligible:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .StateNotEligible
+                    .title
+            case .notFound:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .NotFound
+                    .title
+            default:
+                return LocalizationConstants
+                    .Errors
+                    .error
+            }
         }
+        return title
     }
 
     var displayDescription: String {
-        switch code {
-        case .cardIssuingKycFailed:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .KycFailed
-                .description
-        case .cardIssuingSsnInvalid:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .InvalidSsn
-                .description
-        case .tierTooLow:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .TierTooLow
-                .description
-        case .countryNotEligible:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .CountryNotEligible
-                .description
-        case .stateNotEligible:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .StateNotEligible
-                .description
-        case .notFound:
-            return LocalizationConstants
-                .CardIssuing
-                .Errors
-                .NotFound
-                .description
-        default:
-            return ux?.message ?? LocalizationConstants
-                .Errors
-                .genericError
+        guard let message = ux?.message,
+              message.isNotEmpty
+        else {
+            switch code {
+            case .cardIssuingKycFailed:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .KycFailed
+                    .description
+            case .cardIssuingSsnInvalid:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .InvalidSsn
+                    .description
+            case .tierTooLow:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .TierTooLow
+                    .description
+            case .countryNotEligible:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .CountryNotEligible
+                    .description
+            case .stateNotEligible:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .StateNotEligible
+                    .description
+            case .notFound:
+                return LocalizationConstants
+                    .CardIssuing
+                    .Errors
+                    .NotFound
+                    .description
+            default:
+                return LocalizationConstants
+                    .Errors
+                    .genericError
+            }
         }
+        return message
     }
 
     var retryTitle: String {

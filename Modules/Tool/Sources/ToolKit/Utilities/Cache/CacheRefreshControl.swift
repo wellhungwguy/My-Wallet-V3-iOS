@@ -72,8 +72,8 @@ public final class RemotePeriodicCacheRefreshControl: CacheRefreshControl {
     public init(
         defaultConfig: RemoteCacheConfig,
         fetch: @escaping () -> AnyPublisher<RemoteCacheConfig?, Error>
-    )  {
-        config = defaultConfig
+    ) {
+        self.config = defaultConfig
         // Fetch the remote config
         fetch()
             .replaceError(with: defaultConfig)
