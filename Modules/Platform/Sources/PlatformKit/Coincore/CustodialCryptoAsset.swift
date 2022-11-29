@@ -10,8 +10,8 @@ import ToolKit
 final class CustodialCryptoAsset: CryptoAsset {
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        delegatedCustodyAccount
-            .map { $0 as? SingleAccount }
+        cryptoDelegatedCustodyAccount
+            .map { $0 as SingleAccount? }
             .setFailureType(to: CryptoAssetError.self)
             .onNil(CryptoAssetError.noDefaultAccount)
             .eraseToAnyPublisher()
@@ -105,6 +105,24 @@ final class CustodialCryptoAsset: CryptoAsset {
             label: label,
             onTxCompleted: onTxCompleted
         )
+    }
+
+    private var cryptoDelegatedCustodyAccount: AnyPublisher<CryptoDelegatedCustodyAccount?, Never> {
+        delegatedCustodyAccount
+            .map { [addressFactory] delegatedCustodyAccount in
+                guard let delegatedCustodyAccount else {
+                    return nil
+                }
+                return CryptoDelegatedCustodyAccount(
+                    activityRepository: resolve(),
+                    addressesRepository: resolve(),
+                    addressFactory: addressFactory,
+                    balanceRepository: resolve(),
+                    priceService: resolve(),
+                    delegatedCustodyAccount: delegatedCustodyAccount
+                )
+            }
+            .eraseToAnyPublisher()
     }
 
     private var delegatedCustodyAccount: AnyPublisher<DelegatedCustodyAccount?, Never> {
