@@ -55,9 +55,12 @@ final class ActivityRouter: ActivityRouterAPI {
     }
 
     func showTransactionScreen(with event: ActivityItemEvent) {
-        let controller = DetailsScreenViewController(
-            presenter: ActivityDetailsPresenterFactory.presenter(for: event, router: self)
+        let presenter = ActivityDetailsPresenterFactory.presenter(
+            for: event,
+            router: self,
+            enabledCurrenciesService: enabledCurrenciesService
         )
+        let controller = DetailsScreenViewController(presenter: presenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
 

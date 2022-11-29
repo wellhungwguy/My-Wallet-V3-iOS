@@ -18,6 +18,7 @@ extension LocalizationConstants {
 
         public enum Confirmation {
             public enum Error {}
+            public enum DepositTermsAvailableDisplayMode {}
         }
 
         public enum Receive {
@@ -82,6 +83,11 @@ extension LocalizationConstants {
                 public enum Pending {}
                 public enum Success {}
                 public enum Failure {}
+            }
+            public enum Confirmation {
+                public enum DepositACHTerms {}
+                public enum DepositACHTermsDetails {}
+                public enum AvailableWithdrawalDatesInfo {}
             }
         }
 
@@ -726,6 +732,49 @@ extension LocalizationConstants.Transaction.Deposit.Completion.Success {
     )
 }
 
+// MARK: - Deposit Terms
+
+extension LocalizationConstants.Transaction.Deposit.Confirmation.DepositACHTerms {
+    public static let description = NSLocalizedString(
+        "By placing this order, you authorize Blockchain.com, Inc. to debit %@ from your bank account.",
+        comment: "Terms located in the bottom of the deposit confirmation screen"
+    )
+    public static let readMoreButton = NSLocalizedString(
+        "Read more",
+        comment: "Read More Button to open details of terms and conditions from Deposit Screen"
+    )
+}
+
+extension LocalizationConstants.Transaction.Deposit.Confirmation.DepositACHTermsDetails {
+    public static let title = NSLocalizedString(
+        "Terms & Conditions",
+        comment: "Deposit Terms Details title"
+    )
+    public static let description = NSLocalizedString(
+        "You authorize Blockchain.com, Inc. to debit your %@ account for up to %@ via Bank Transfer (ACH) and, if necessary, to initiate credit entries/adjustments for any debits made in error to your account at the financial institution where you hold your account. You acknowledge that the origination of ACH transactions to your account complies with the provisions of U.S. law. You agree that this authorization cannot be revoked.\n\nYour deposit will be credited to your Blockchain.com account within 2-4 business days. You can withdraw these funds from your Blockchain.com account %@ after Blockchain.com receives funds from your Financial Institution.",
+        comment: "Deposit Terms Details description"
+    )
+    public static let doneButton = NSLocalizedString(
+        "OK",
+        comment: "Deposit Terms Details close button"
+    )
+}
+
+extension LocalizationConstants.Transaction.Deposit.Confirmation.AvailableWithdrawalDatesInfo {
+    public static let title = NSLocalizedString(
+        "Available to withdraw or send",
+        comment: "Available Withdrawal Dates Info title"
+    )
+    public static let description = NSLocalizedString(
+        "Withdrawal holds protect you from fraud and theft if your Blockchain.com account is compromised. The hold period starts once funds are received in your account.",
+        comment: "Available Withdrawal Dates Info description"
+    )
+    public static let readMoreButton = NSLocalizedString(
+        "Read more",
+        comment: "Available Withdrawal Dates Info read more button"
+    )
+}
+
 // MARK: - Send Pending
 
 extension LocalizationConstants.Transaction.Send.Completion.Pending {
@@ -1156,6 +1205,14 @@ extension LocalizationConstants.Transaction.Confirmation {
         "Funds Will Arrive",
         comment: "Funds Will Arrive"
     )
+    public static let availableToTrade = NSLocalizedString(
+        "Available to Trade (est.)",
+        comment: "Available to Trade (est.)"
+    )
+    public static let availableToWithdraw = NSLocalizedString(
+        "Available to Withdraw or Send (est.)",
+        comment: "Available to Withdraw or Send (est.)"
+    )
     public static let description = NSLocalizedString(
         "Description",
         comment: "Description"
@@ -1209,6 +1266,25 @@ extension LocalizationConstants.Transaction.Confirmation {
     public static let network = NSLocalizedString(
         "Network",
         comment: "Network"
+    )
+}
+
+extension LocalizationConstants.Transaction.Confirmation.DepositTermsAvailableDisplayMode {
+    public static let immediately = NSLocalizedString(
+        "Immediately",
+        comment: "Immediately Available To Withdraw or Trade Display Mode"
+    )
+    public static let maxMinute = NSLocalizedString(
+        "In %@",
+        comment: "Max Minute Available To Withdraw or Trade Display Mode"
+    )
+    public static let minuteRange = NSLocalizedString(
+        "Between %@ and %@ minutes",
+        comment: "Minute Range Available To Withdraw or Trade Display Mode"
+    )
+    public static let dayRange = NSLocalizedString(
+        "Between %@ and %@",
+        comment: "Day Range Available To Withdraw or Trade Display Mode"
     )
 }
 

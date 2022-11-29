@@ -10,6 +10,7 @@ project "Blockchain.xcodeproj"
 
 for_lane :alpha do
     scheme "Blockchain (Alpha)"
+    export_method "app-store"
 end
 
 for_lane :dev do
@@ -22,6 +23,7 @@ end
 
 for_lane :staging do
     scheme "Blockchain (Staging)"
+    export_method "app-store"
 end
 
 for_lane :release do

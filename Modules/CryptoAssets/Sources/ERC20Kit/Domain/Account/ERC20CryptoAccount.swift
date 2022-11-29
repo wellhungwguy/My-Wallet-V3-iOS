@@ -27,7 +27,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     var balance: AnyPublisher<MoneyValue, Error> {
         balanceService
-            .balance(for: ethereumAddress, cryptoCurrency: asset)
+            .balance(for: ethereumAddress, cryptoCurrency: asset, network: network.networkConfig)
             .map(\.moneyValue)
             .eraseError()
     }
@@ -97,12 +97,10 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 }
                 .replaceError(with: [])
                 .eraseToAnyPublisher()
-        case .avalanceCChain,
-             .binanceSmartChain,
-             .polygon:
+        default:
             // Use EVM repository
             return evmActivityRepository
-                .transactions(cryptoCurrency: asset, address: publicKey)
+                .transactions(network: network, cryptoCurrency: asset, address: publicKey)
                 .map { [publicKey] transactions in
                     transactions
                         .map { item in
@@ -124,7 +122,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     /// Stream a boolean indicating if this ERC20 token has ever been transacted,
     private var hasHistory: AnyPublisher<Bool, Never> {
         erc20TokenAccountsRepository
-            .tokens(for: ethereumAddress, network: network)
+            .tokens(for: ethereumAddress, network: network.networkConfig)
             .map { [asset] tokens in
                 tokens[asset] != nil
             }
@@ -133,7 +131,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     private var ethereumAddress: EthereumAddress {
-        EthereumAddress(address: publicKey)!
+        EthereumAddress(address: publicKey, network: network)!
     }
 
     private var erc20ReceiveAddress: ERC20ReceiveAddress {
@@ -141,7 +139,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             asset: asset,
             address: publicKey,
             label: label,
-            onTxCompleted: onTxCompleted
+            onTxCompleted: onTxCompleted,
+            enabledCurrenciesService: DIKit.resolve()
         )!
     }
 
@@ -161,6 +160,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     init(
         publicKey: String,
         erc20Token: AssetModel,
+        network: EVMNetwork,
         balanceService: ERC20BalanceServiceAPI = resolve(),
         erc20TokenAccountsRepository: ERC20BalancesRepositoryAPI = resolve(),
         ethereumBalanceRepository: EthereumBalanceRepositoryAPI = resolve(),
@@ -177,7 +177,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
         asset = erc20Token.cryptoCurrency!
-        network = erc20Token.evmNetwork!
+        self.network = network
         label = asset.defaultWalletName
         self.balanceService = balanceService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
@@ -284,6 +284,6 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     func invalidateAccountBalance() {
-        erc20TokenAccountsRepository.invalidateCache(for: ethereumAddress, network: network)
+        erc20TokenAccountsRepository.invalidateCache(for: ethereumAddress, network: network.networkConfig)
     }
 }

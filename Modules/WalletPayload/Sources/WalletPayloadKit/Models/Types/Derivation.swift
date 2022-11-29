@@ -15,21 +15,29 @@ public enum DerivationType: String, Equatable, CaseIterable {
             return 84
         }
     }
+
+    /// Returns the default derivations, `legacy` and `segwit`
+    public static var defaultDerivations: [DerivationType] = [.legacy, .segwit]
 }
 
 public struct Derivation: Equatable {
-    public let type: DerivationType
-    public let purpose: Int
+    public let type: DerivationType?
+    public let purpose: Int?
     public let xpriv: String?
-    public let xpub: String
+    public let xpub: String?
     public let addressLabels: [AddressLabel]
     public let cache: AddressCache
 
+    /// Returns `true` if important properties are missing, otherwise false
+    public var needsReplenishment: Bool {
+        xpub.isNilOrEmpty || xpriv.isNilOrEmpty || type.isNil || purpose.isNil
+    }
+
     public init(
-        type: DerivationType,
-        purpose: Int,
+        type: DerivationType?,
+        purpose: Int?,
         xpriv: String?,
-        xpub: String,
+        xpub: String?,
         addressLabels: [AddressLabel],
         cache: AddressCache
     ) {
@@ -72,7 +80,7 @@ func generateDerivations(
     masterNode: String,
     index: Int
 ) -> [Derivation] {
-    DerivationType.allCases
+    DerivationType.defaultDerivations
         .map { type in
             generateDerivation(type: type, index: index, masterNode: masterNode)
         }

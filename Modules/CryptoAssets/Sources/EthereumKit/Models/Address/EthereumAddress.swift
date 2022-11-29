@@ -7,12 +7,12 @@ public struct EthereumAddress: Hashable {
     public let publicKey: String
     public let network: EVMNetwork
     public var cryptoCurrency: CryptoCurrency {
-        network.cryptoCurrency
+        network.nativeAsset
     }
 
     public init(
         string address: String,
-        network: EVMNetwork = .ethereum
+        network: EVMNetwork
     ) throws {
         try EthereumAddressValidator.validate(address: address)
         guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
@@ -24,8 +24,8 @@ public struct EthereumAddress: Hashable {
 
     public init?(
         address: String,
-        network: EVMNetwork = .ethereum
+        network: EVMNetwork
     ) {
-        try? self.init(string: address)
+        try? self.init(string: address, network: network)
     }
 }

@@ -21,6 +21,23 @@ extension Session {
 
         init(
             date: Date = Date(),
+            _ event: Tag.Event,
+            context: Tag.Context = [:],
+            file: String = #fileID,
+            line: Int = #line
+        ) {
+            self.init(
+                date: date,
+                origin: event,
+                reference: event.key(to: [:]),
+                context: context,
+                file: file,
+                line: line
+            )
+        }
+
+        init(
+            date: Date = Date(),
             origin: Tag.Event,
             reference: Tag.Reference,
             context: Tag.Context = [:],
@@ -259,6 +276,14 @@ extension BlockchainEventSubscription {
     @inlinable public func subscribe() -> AnyCancellable {
         start()
         return AnyCancellable { [self] in stop() }
+    }
+
+    @inlinable public func store(in set: inout Set<AnyCancellable>) {
+        subscribe().store(in: &set)
+    }
+
+    @inlinable public func store<C>(in collection: inout C) where C: RangeReplaceableCollection, C.Element == AnyCancellable {
+        subscribe().store(in: &collection)
     }
 
     private static var count: UInt = 0

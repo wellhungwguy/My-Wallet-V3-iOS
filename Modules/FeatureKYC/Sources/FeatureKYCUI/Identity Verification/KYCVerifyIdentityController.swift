@@ -6,6 +6,7 @@ import DIKit
 import Errors
 import FeatureKYCDomain
 import Localization
+import PermissionsKit
 import PlatformKit
 import PlatformUIKit
 import SafariServices

@@ -20,6 +20,7 @@ final class ERC20ActivityDetailsInteractor {
     private let detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     private let evmActivityRepository: EVMActivityRepositoryAPI
     private let cryptoCurrency: CryptoCurrency
+    private let network: EVMNetwork
 
     // MARK: - Init
 
@@ -28,9 +29,11 @@ final class ERC20ActivityDetailsInteractor {
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
         evmActivityRepository: EVMActivityRepositoryAPI = resolve(),
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetwork
     ) {
         self.cryptoCurrency = cryptoCurrency
+        self.network = network
         self.detailsService = detailsService
         self.evmActivityRepository = evmActivityRepository
         self.fiatCurrencySettings = fiatCurrencySettings
@@ -42,15 +45,11 @@ final class ERC20ActivityDetailsInteractor {
     func details(
         event: TransactionalActivityItemEvent
     ) -> AnyPublisher<ERC20ActivityDetailsViewModel, Error> {
-        switch cryptoCurrency.assetModel.evmNetwork {
+        switch network {
         case .ethereum:
             return ethereumTransaction(event: event)
-        case .avalanceCChain,
-             .binanceSmartChain,
-             .polygon:
+        default:
             return evmTransaction(event: event)
-        case nil:
-            fatalError("Currency \(cryptoCurrency.code) not supported.")
         }
     }
 
@@ -67,6 +66,7 @@ final class ERC20ActivityDetailsInteractor {
         }
         let transaction: AnyPublisher<EVMHistoricalTransaction, Error> = evmActivityRepository
             .transactions(
+                network: network,
                 cryptoCurrency: cryptoCurrency,
                 address: sourceIdentifier
             )
@@ -83,7 +83,7 @@ final class ERC20ActivityDetailsInteractor {
         .replaceError(with: nil)
         .eraseError()
         let feePrice = self.price(
-            of: cryptoCurrency.feeCryptoCurrency,
+            of: feeCryptoCurrency,
             at: event.creationDate
         )
         .replaceError(with: nil)
@@ -119,7 +119,7 @@ final class ERC20ActivityDetailsInteractor {
         .replaceError(with: nil)
         .eraseError()
         let feePrice = self.price(
-            of: cryptoCurrency.feeCryptoCurrency,
+            of: feeCryptoCurrency,
             at: event.creationDate
         )
         .replaceError(with: nil)
@@ -156,15 +156,8 @@ final class ERC20ActivityDetailsInteractor {
             }
             .eraseToAnyPublisher()
     }
-}
 
-extension CryptoCurrency {
     var feeCryptoCurrency: CryptoCurrency {
-        switch assetModel.kind {
-        case .erc20(contractAddress: _, parentChain: let chain):
-            return chain.evmNetwork.cryptoCurrency
-        default:
-            return self
-        }
+        network.nativeAsset
     }
 }

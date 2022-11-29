@@ -89,7 +89,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService
-                .fees(cryptoCurrency: self.sourceCryptoCurrency)
+                .fees(network: self.network, cryptoCurrency: self.sourceCryptoCurrency)
                 .asSingle()
         }
     }
@@ -104,7 +104,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     private func isCurrencyTypeValid(_ value: CurrencyType) -> Bool {
-        value == .crypto(network.cryptoCurrency)
+        value == .crypto(network.nativeAsset)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -198,12 +198,12 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         pendingTransaction: PendingTransaction
     ) -> Single<TransactionResult> {
         guard isCurrencyTypeValid(pendingTransaction.amount.currencyType) else {
-            preconditionFailure("Not an \(network.rawValue) value.")
+            preconditionFailure("Not an \(network.networkConfig.name) value.")
         }
         let address = walletConnectTarget.transaction.to
-            .flatMap { EthereumAddress(address: $0) }
+            .flatMap { EthereumAddress(address: $0, network: network) }
 
-        let chainID = evmCryptoAccount.network.chainID
+        let chainID = evmCryptoAccount.network.networkConfig.chainID
         let transactionPublisher = evmCryptoAccount.nonce
             .eraseError()
             .flatMap { [transactionBuildingService, walletConnectTarget] nonce in
@@ -242,7 +242,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 .flatMap { [network, ethereumTransactionDispatcher] candidate in
                     ethereumTransactionDispatcher.send(
                         transaction: candidate,
-                        network: network
+                        network: network.networkConfig
                     )
                 }
                 .map(\.transactionHash)
@@ -372,7 +372,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                     gasPrice,
                     CryptoValue.create(
                         minor: BigInt(gasLimit * gasPrice),
-                        currency: network.cryptoCurrency
+                        currency: network.nativeAsset
                     )
                 )
             }
@@ -393,7 +393,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         pendingTransactionRepository
             .isWaitingOnTransaction(
-                network: evmCryptoAccount.network,
+                network: evmCryptoAccount.network.networkConfig,
                 address: evmCryptoAccount.publicKey
             )
             .replaceError(with: true)
@@ -434,8 +434,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.cryptoCurrency)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.cryptoCurrency))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: network.nativeAsset)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: network.nativeAsset))
         )
         .map { sourceExchangeRatePair, amount, feeAmount in
             (
@@ -469,10 +469,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
 extension EthereumSendTransactionTarget {
     func pendingTransacation(fiatCurrency: FiatCurrency) -> PendingTransaction {
-        let zeroMoneyValue: MoneyValue = .zero(currency: network.cryptoCurrency)
+        let zeroMoneyValue: MoneyValue = .zero(currency: network.nativeAsset)
         let amount: MoneyValue = transaction.value
             .flatMap { BigInt($0.withoutHex, radix: 16) }
-            .flatMap { MoneyValue.create(minor: $0, currency: .crypto(network.cryptoCurrency)) }
+            .flatMap { MoneyValue.create(minor: $0, currency: .crypto(network.nativeAsset)) }
             ?? zeroMoneyValue
         return PendingTransaction(
             amount: amount,
@@ -482,7 +482,7 @@ extension EthereumSendTransactionTarget {
             feeSelection: .init(
                 selectedLevel: .priority,
                 availableLevels: [.priority],
-                asset: .crypto(network.cryptoCurrency)
+                asset: .crypto(network.nativeAsset)
             ),
             selectedFiatCurrency: fiatCurrency
         )

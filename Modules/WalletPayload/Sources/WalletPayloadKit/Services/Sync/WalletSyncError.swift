@@ -11,6 +11,7 @@ public enum WalletSyncError: LocalizedError, Equatable {
     case verificationFailure(EncryptAndVerifyError)
     case networkFailure(NetworkError)
     case syncPubKeysFailure(SyncPubKeysAddressesProviderError)
+    case mnemonicFailure
 
     public var errorDescription: String? {
         switch self {
@@ -24,6 +25,8 @@ public enum WalletSyncError: LocalizedError, Equatable {
             return networkError.description
         case .syncPubKeysFailure(let error):
             return error.localizedDescription
+        case .mnemonicFailure:
+            return WalletError.initialization(.missingSeedHex).localizedDescription
         }
     }
 }

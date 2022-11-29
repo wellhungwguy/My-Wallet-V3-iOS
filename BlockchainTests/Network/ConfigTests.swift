@@ -16,9 +16,9 @@ class ConfigTests: XCTestCase {
     func testAllKeysPresentAndNotEmpty() {
         let keys: [String] = [
             "API_URL",
+            "WEBSOCKET_SERVER",
             "EXCHANGE_URL",
             "EXPLORER_SERVER",
-            "RETAIL_CORE_SOCKET_URL",
             "RETAIL_CORE_URL",
             "WALLET_SERVER",
             "WALLET_HELPER"

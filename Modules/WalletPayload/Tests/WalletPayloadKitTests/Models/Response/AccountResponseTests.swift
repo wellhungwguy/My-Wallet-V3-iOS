@@ -6,7 +6,7 @@ import Foundation
 import TestKit
 import XCTest
 
-class AccountTests: XCTestCase {
+class AccountResponseTests: XCTestCase {
 
     let jsonV3 = Fixtures.loadJSONData(filename: "hdaccount.v3", in: .module)!
     let jsonV4 = Fixtures.loadJSONData(filename: "hdaccount.v4", in: .module)!
@@ -53,11 +53,6 @@ class AccountTests: XCTestCase {
         XCTAssertFalse(accountVersion3.archived)
 
         XCTAssertEqual(
-            accountVersion3.xpub,
-            "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3"
-        )
-
-        XCTAssertEqual(
             accountVersion3.addressLabels,
             []
         )
@@ -100,7 +95,7 @@ class AccountTests: XCTestCase {
     }
 
     func test_broken_version4_account_can_be_decoded() throws {
-        let accountVersion4 = try JSONDecoder().decode(AccountWrapper.Version4.self, from: jsonV4)
+        let accountVersion4 = try JSONDecoder().decode(AccountWrapper.Version4.self, from: brokenJsonV4)
 
         XCTAssertEqual(accountVersion4.label, "BTC Private Key Wallet")
         // this should default to `false` for broken accounts
@@ -110,7 +105,6 @@ class AccountTests: XCTestCase {
         XCTAssertFalse(accountVersion4.derivations.isEmpty)
         XCTAssertEqual(accountVersion4.derivations.count, 1)
 
-        let addressLabel = AddressLabelResponse(index: 0, label: "labeled_address")
         let addressCache = AddressCacheResponse(
             receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
             changeAccount: "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
@@ -118,9 +112,9 @@ class AccountTests: XCTestCase {
         let expectedDerivation = DerivationResponse(
             type: .legacy,
             purpose: DerivationResponse.Format.legacy.purpose,
-            xpriv: "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
-            xpub: "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
-            addressLabels: [addressLabel],
+            xpriv: nil,
+            xpub: nil,
+            addressLabels: [],
             cache: addressCache
         )
 

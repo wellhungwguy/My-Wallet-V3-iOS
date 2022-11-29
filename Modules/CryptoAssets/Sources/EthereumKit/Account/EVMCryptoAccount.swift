@@ -78,7 +78,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
     }
 
     private var nonCustodialActivity: AnyPublisher<[TransactionalActivityItemEvent], Never> {
-        switch network {
+        switch network.networkConfig {
         case .ethereum:
             // Use old repository
             return activityRepository
@@ -88,12 +88,10 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
                 }
                 .replaceError(with: [])
                 .eraseToAnyPublisher()
-        case .avalanceCChain,
-             .binanceSmartChain,
-             .polygon:
+        default:
             // Use EVM repository
             return evmActivityRepository
-                .transactions(cryptoCurrency: asset, address: publicKey)
+                .transactions(network: network, cryptoCurrency: asset, address: publicKey)
                 .map { [publicKey] transactions in
                     transactions
                         .map { item in
@@ -155,7 +153,7 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         nonceRepository: EthereumNonceRepositoryAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
-        let asset = network.cryptoCurrency
+        let asset = network.nativeAsset
         self.asset = asset
         self.network = network
         self.publicKey = publicKey

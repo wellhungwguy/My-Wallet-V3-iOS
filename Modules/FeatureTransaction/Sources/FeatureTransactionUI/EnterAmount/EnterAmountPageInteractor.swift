@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftlint:disable type_body_length
+
 import BlockchainNamespace
 import Combine
 import DIKit
@@ -113,8 +115,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let transactionState: Observable<TransactionState> = transactionModel
-            .state
+        let transactionState: Observable<TransactionState> = Observable.combineLatest(transactionModel.state, transactionModel.actions)
+            .map(\.0)
             .share(replay: 1, scope: .whileConnected)
 
         amountViewInteractor
@@ -182,6 +184,22 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                         app.state.clear(blockchain.ux.transaction.enter.amount.output.value)
                     }
                 }
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        app.on(blockchain.ux.transaction.enter.amount)
+            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
+            .asObservable()
+            .subscribe { [model = transactionModel] _ in
+                model.process(action: .refreshPendingTransaction)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        Timer.publish(every: .seconds(5), on: .main, in: .default)
+            .autoconnect()
+            .asObservable()
+            .subscribe { [model = transactionModel] _ in
+                model.process(action: .refreshPendingTransaction)
             }
             .disposeOnDeactivate(interactor: self)
 
@@ -407,6 +425,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     updater: updater
                 )
             }
+            .distinctUntilChanged()
             .asDriverCatchError()
 
         presenter

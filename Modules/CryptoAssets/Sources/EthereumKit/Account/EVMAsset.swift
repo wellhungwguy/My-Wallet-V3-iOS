@@ -32,7 +32,8 @@ final class EVMAsset: CryptoAsset {
             repository.defaultSingleAccount(network: network)
         },
         exchangeAccountsProvider: exchangeAccountProvider,
-        addressFactory: addressFactory
+        addressFactory: addressFactory,
+        featureFlag: featureFlag
     )
 
     private let addressFactory: EthereumExternalAssetAddressFactory
@@ -41,6 +42,7 @@ final class EVMAsset: CryptoAsset {
     private let kycTiersService: KYCTiersServiceAPI
     private let network: EVMNetwork
     private let repository: EthereumWalletAccountRepositoryAPI
+    private let featureFlag: FeatureFetching
 
     // MARK: - Setup
 
@@ -50,15 +52,17 @@ final class EVMAsset: CryptoAsset {
         addressFactory: EthereumExternalAssetAddressFactory,
         errorRecorder: ErrorRecording,
         exchangeAccountProvider: ExchangeAccountsProviderAPI,
-        kycTiersService: KYCTiersServiceAPI
+        kycTiersService: KYCTiersServiceAPI,
+        featureFlag: FeatureFetching
     ) {
         self.network = network
-        asset = network.cryptoCurrency
+        asset = network.nativeAsset
         self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.kycTiersService = kycTiersService
+        self.featureFlag = featureFlag
     }
 
     // MARK: - Methods

@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import KeychainKit
 import SwiftExtensions
 
 extension Session {
@@ -33,6 +34,16 @@ extension Session.State {
 
         var preferences: Preferences
 
+        var keychain: (
+            user: KeychainAccessAPI,
+            shared: KeychainAccessAPI
+        )
+
+        let keychainAccount = (
+            user: SessionStateKeychainQueryProvider(service: nil),
+            shared: SessionStateKeychainQueryProvider(service: "com.blockchain.session.state[shared]")
+        )
+
         private let shared = Tag.Context.genericIndex
         private var user: String? {
             sync { store[blockchain.user.id.key()] } as? String
@@ -40,6 +51,10 @@ extension Session.State {
 
         init(preferences: Preferences) {
             self.preferences = preferences
+            self.keychain = (
+                user: KeychainAccess(queryProvider: keychainAccount.user),
+                shared: KeychainAccess(queryProvider: keychainAccount.shared)
+            )
         }
     }
 
@@ -55,11 +70,11 @@ extension Session.State {
         public let id: UUID = UUID()
         public let call: () throws -> Any?
 
-        public init<T>(_ call: @escaping () -> T) {
+        public init(_ call: @escaping () -> some Any) {
             self.call = call as () throws -> Any?
         }
 
-        public init<T>(_ call: @escaping () throws -> T) {
+        public init(_ call: @escaping () throws -> some Any) {
             self.call = call as () throws -> Any?
         }
 
@@ -115,10 +130,12 @@ extension Session.State {
                 let user = key
                 for key in data.store.keys where key.tag.isNot(blockchain.session.state.shared.value) {
                     guard key.tag.isNot(blockchain.session.state.preference.value) else { continue }
+                    guard key.tag.isNot(blockchain.session.state.stored.value) else { continue }
                     guard key != user else { continue }
                     state.clear(key)
                 }
             }
+            data.keychainAccount.user.signOut()
         }
         data.clear(key)
     }
@@ -238,26 +255,37 @@ extension Session.State.Data {
             }
             set(key, to: value)
             return value
+        case blockchain.session.state.stored.value:
+            guard let value = stored(key) else {
+                throw FetchResult.Error.keyDoesNotExist(key)
+            }
+            set(key, to: value)
+            return value
         default:
             throw FetchResult.Error.keyDoesNotExist(key)
         }
     }
 
     func set(_ key: Tag.Reference, to value: Any) {
-        sync { dirty.data[key] = value }
-        if isNotInTransaction {
+        if isInTransaction {
+            sync { dirty.data[key] = value }
+        } else {
             update([key: value])
         }
         if key.tag == blockchain.user.id[], let id = value as? String {
             beginTransaction()
+            keychainAccount.user.signIn(id)
             let user = key
             let keys = sync { subjects.keys }
             for key in keys {
                 guard key != user else { continue }
-                guard key.tag.is(blockchain.session.state.preference.value) else { continue }
                 guard key.tag.isNot(blockchain.session.state.shared.value) else { continue }
-                guard let value = preference(key, in: id) else { continue }
-                set(key, to: value)
+                if key.tag.is(blockchain.session.state.preference.value), let value = preference(key, in: id) {
+                    set(key, to: value)
+                }
+                if key.tag.is(blockchain.session.state.stored.value), let value = stored(key) {
+                    set(key, to: value)
+                }
             }
             endTransaction()
         }
@@ -265,6 +293,21 @@ extension Session.State.Data {
 
     private func preference(_ key: Tag.Reference, in scope: String) -> Any? {
         preferences.object(forKey: blockchain.session.state(\.id))[scope, key.string]
+    }
+
+    private func secure(_ key: Tag.Reference) throws -> KeychainAccessAPI {
+        switch key.tag {
+        case blockchain.session.state.shared.value:
+            return keychain.shared
+        case blockchain.session.state.stored.value:
+            return keychain.user
+        default:
+            throw "No keychain for \(key)"
+        }
+    }
+
+    private func stored(_ key: Tag.Reference) -> Any? {
+        try? secure(key).read(for: key.string).get().json()
     }
 
     func clear(_ key: Tag.Reference) {
@@ -327,6 +370,29 @@ extension Session.State.Data {
                 sync { store.removeValue(forKey: key) }
             default:
                 sync { store[key] = value }
+            }
+        }
+        for (key, value) in data where key.tag.is(blockchain.session.state.stored.value) {
+            do {
+                let keychain = try secure(key)
+                switch value {
+                case is Tombstone.Type:
+                    try? keychain.remove(for: key.string).get()
+                    if key.tag.reference != key {
+                        try? keychain.remove(for: key.tag.id).get()
+                    }
+                default:
+                    guard JSONSerialization.isValidJSONObject([value]) else { throw "\(value) is not a valid JSON value" }
+                    let value = try JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed)
+                    try keychain.write(value: value, for: key.string).get()
+                }
+            } catch {
+                print(
+                    """
+                    ⚠️ Failed to write stored value \(key)
+                    \(error)
+                    """
+                )
             }
         }
         preferences.transaction(blockchain.session.state(\.id)) { object in
@@ -402,4 +468,37 @@ extension Session.State.Data {
 
 extension Session.State {
     public typealias Subject = PassthroughSubject<FetchResult, Never>
+}
+
+class SessionStateKeychainQueryProvider: KeychainQueryProvider {
+
+    var permission: KeychainKit.KeychainPermission { .whenUnlocked }
+
+    var generic: GenericPasswordQuery?
+
+    init(service: String?) {
+        if let service {
+            generic = GenericPasswordQuery(service: service)
+        }
+    }
+
+    func signIn(_ user: String) {
+        generic = GenericPasswordQuery(service: "com.blockchain.session.state[\(user)]")
+    }
+
+    func signOut() {
+        generic = nil
+    }
+
+    func commonQuery(key: String?, data: Data?) -> [String: Any] {
+        generic?.commonQuery(key: key, data: data) ?? [:]
+    }
+
+    func writeQuery(key: String, data: Data) -> [String: Any] {
+        generic?.writeQuery(key: key, data: data) ?? [:]
+    }
+
+    func readOneQuery(key: String) -> [String: Any] {
+        generic?.readOneQuery(key: key) ?? [:]
+    }
 }

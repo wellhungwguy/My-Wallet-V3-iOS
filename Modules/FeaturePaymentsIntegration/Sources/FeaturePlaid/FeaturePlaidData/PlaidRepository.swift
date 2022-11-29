@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import FeaturePlaidDomain
+import MoneyKit
 
 public struct PlaidRepository: PlaidRepositoryAPI {
     private let client: PlaidClientAPI
@@ -110,12 +111,12 @@ public struct PlaidRepository: PlaidRepositoryAPI {
 
     public func getSettlementInfo(
         accountId: String,
-        amount: String
+        amount: MoneyValue
     ) -> AnyPublisher<SettlementInfo, NabuError> {
         client
             .getSettlementInfo(
                 accountId: accountId,
-                amount: amount
+                amount: amount.toDisplayString(includeSymbol: false, locale: .Posix)
             )
             .map { response in
                 let settlement = response.attributes.settlementResponse
@@ -127,6 +128,32 @@ public struct PlaidRepository: PlaidRepositoryAPI {
                         settlementType: settlement.settlementType,
                         reason: settlement.reason
                     )
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func getPaymentsDepositTerms(
+        amount: MoneyValue,
+        paymentMethodId: String
+    ) -> AnyPublisher<PaymentsDepositTerms, NabuError> {
+        client
+            .getPaymentsDepositTerms(
+                amount: amount,
+                paymentMethodId: paymentMethodId
+            )
+            .map { response in
+                PaymentsDepositTerms(
+                    creditCurrency: response.creditCurrency,
+                    availableToTradeMinutesMin: response.availableToTradeMinutesMin,
+                    availableToTradeMinutesMax: response.availableToTradeMinutesMax,
+                    availableToTradeDisplayMode: response.availableToTradeDisplayMode,
+                    availableToWithdrawMinutesMin: response.availableToWithdrawMinutesMin,
+                    availableToWithdrawMinutesMax: response.availableToWithdrawMinutesMax,
+                    availableToWithdrawDisplayMode: response.availableToWithdrawDisplayMode,
+                    settlementType: response.settlementType,
+                    settlementReason: response.settlementReason,
+                    withdrawalLockDays: response.withdrawalLockDays
                 )
             }
             .eraseToAnyPublisher()

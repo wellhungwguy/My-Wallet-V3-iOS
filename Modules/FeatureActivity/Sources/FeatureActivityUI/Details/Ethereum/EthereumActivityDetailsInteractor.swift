@@ -22,6 +22,7 @@ final class EthereumActivityDetailsInteractor {
     private let evmActivityRepository: EVMActivityRepositoryAPI
     private let txNotesStrategy: EthereumTxNotesStrategyAPI
     private let cryptoCurrency: CryptoCurrency
+    private let network: EVMNetwork
 
     // MARK: - Init
 
@@ -31,7 +32,8 @@ final class EthereumActivityDetailsInteractor {
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
         evmActivityRepository: EVMActivityRepositoryAPI = resolve(),
-        cryptoCurrency: CryptoCurrency
+        cryptoCurrency: CryptoCurrency,
+        network: EVMNetwork
     ) {
         self.cryptoCurrency = cryptoCurrency
         self.detailsService = detailsService
@@ -39,6 +41,7 @@ final class EthereumActivityDetailsInteractor {
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.txNotesStrategy = txNotesStrategy
+        self.network = network
     }
 
     // MARK: - Public Functions
@@ -65,10 +68,8 @@ final class EthereumActivityDetailsInteractor {
         switch cryptoCurrency {
         case .ethereum:
             return ethereumTransaction(event: event)
-        case .polygon:
-            return evmTransaction(event: event)
         default:
-            fatalError("Currency \(cryptoCurrency.code) not supported.")
+            return evmTransaction(event: event)
         }
     }
 
@@ -84,10 +85,7 @@ final class EthereumActivityDetailsInteractor {
             return .failure(DetailsError.failed)
         }
         let transaction = evmActivityRepository
-            .transactions(
-                cryptoCurrency: cryptoCurrency,
-                address: sourceIdentifier
-            )
+            .transactions(network: network, cryptoCurrency: cryptoCurrency, address: sourceIdentifier)
             .map { transactions in
                 transactions
                     .first(where: { $0.identifier == event.identifier })

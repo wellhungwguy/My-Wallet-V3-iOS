@@ -1,0 +1,39 @@
+name: Multiapp
+
+options:
+
+  bundleIDPrefix: com.rainydayapps
+  deploymentTarget:
+    iOS: 15.0
+
+packages:
+  BlockchainComponentLibrary:
+    path: ../../Modules/BlockchainComponentLibrary
+
+targets:
+
+  MultiappExample:
+  
+    platform: iOS
+    type: application
+    info:
+      path: ./Info.plist
+      properties:
+            UILaunchScreen:
+    sources:
+      - path: Multiapp
+    dependencies: 
+      - package: BlockchainComponentLibrary
+        product: BlockchainComponentLibrary
+
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+schemes:
+        
+  MultiappExample:
+    build:
+      targets:
+        MultiappExample: all

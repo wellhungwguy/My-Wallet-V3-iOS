@@ -3,12 +3,13 @@
 import Combine
 import Errors
 import EthereumKit
+import MoneyKit
 import ToolKit
 
 final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
 
     private struct Key: Hashable {
-        let network: EVMNetwork
+        let network: EVMNetworkConfig
         let address: String
     }
 
@@ -46,9 +47,7 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
                             )
                         }
                         .eraseToAnyPublisher()
-                case .avalanceCChain,
-                     .binanceSmartChain,
-                     .polygon:
+                default:
                     return evmClient
                         .evmActivity(
                             address: key.address,
@@ -68,7 +67,7 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
     }
 
     func isWaitingOnTransaction(
-        network: EVMNetwork,
+        network: EVMNetworkConfig,
         address: String
     ) -> AnyPublisher<Bool, NetworkError> {
         cachedValue.get(

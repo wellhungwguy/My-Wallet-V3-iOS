@@ -40,13 +40,17 @@ extension DependencyContainer {
             ) as RewardsRepositoryAPI
         }
 
-        single {
+        single(tag: CardIssuingTag.residentialAddress) {
             ResidentialAddressRepository(
                 client: ResidentialAddressClient(
                     networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
                     requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
                 )
-            ) as ResidentialAddressRepositoryAPI
+            ) as AddressRepositoryAPI
+        }
+
+        single(tag: CardIssuingTag.shippingAddress) {
+            ShippingAddressRepository() as AddressRepositoryAPI
         }
 
         single {

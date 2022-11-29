@@ -36,29 +36,9 @@ struct ProductSelectionView: View {
                     }
                     .tabViewStyle(PageTabViewStyle())
                 }
-                HStack {
-                    Checkbox(
-                        isOn: viewStore.binding(
-                            get: { state in
-                                state.acceptLegalState.accepted.value ?? false
-                            },
-                            send: CardOrderingAction.setLegalAccepted
-                        )
-                    )
-                    Text(LocalizationConstants.CardIssuing.Legal.Item.title)
-                        .foregroundColor(.WalletSemantic.body)
-                        .typography(.caption1)
-                        .onTapGesture {
-                            viewStore.send(.binding(.set(\.$acceptLegalVisible, true)))
-                        }
+                PrimaryButton(title: L10n.Selection.Button.Title.continue) {
+                    viewStore.send(.binding(.set(\.$isReviewVisible, true)))
                 }
-                PrimaryButton(title: L10n.Selection.Button.Title.create) {
-                    viewStore.send(.createCard)
-                }
-                .disabled(
-                    !(viewStore.state.acceptLegalState.accepted.value ?? false)
-                    || viewStore.state.products.isEmpty
-                )
             }
             .padding(Spacing.padding3)
             .bottomSheet(isPresented: viewStore.binding(\.$isProductDetailsVisible)) {
@@ -84,8 +64,8 @@ struct ProductSelectionView: View {
                 )
             }
             PrimaryNavigationLink(
-                destination: OrderProcessingView(store: store),
-                isActive: viewStore.binding(\.$isOrderProcessingVisible),
+                destination: ReviewOrderView(store: store),
+                isActive: viewStore.binding(\.$isReviewVisible),
                 label: EmptyView.init
             )
         }

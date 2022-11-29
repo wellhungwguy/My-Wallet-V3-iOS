@@ -183,7 +183,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisibility: .visible,
+                inputTypeToggleVisibility: .hidden,
                 app: app,
                 maxLimitPublisher: maxLimitPublisher
             )

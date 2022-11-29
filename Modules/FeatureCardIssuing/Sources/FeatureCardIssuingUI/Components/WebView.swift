@@ -7,8 +7,19 @@ import WebKit
 struct WebView: UIViewRepresentable {
 
     enum CallbackUrl {
-        static let activate = "https://blockchain.com/en/app/card-issuing/activated"
-        static let pin = "https://blockchain.com/en/app/card-issuing/pinset"
+        static let activate = "https://blockchain.com/app/card-issuing/activated"
+        static let pin = "https://blockchain.com/app/card-issuing/pinset"
+    }
+
+    static let listenerName = "actions"
+    struct Event: Decodable {
+
+        enum EventType: String, Decodable {
+            case view = "VIEW"
+            case manage = "MANAGE"
+        }
+
+        let type: EventType
     }
 
     @Binding var loading: Bool
@@ -16,6 +27,7 @@ struct WebView: UIViewRepresentable {
     private let url: URL
     let finishUrl: String?
     let forceFullScreen: Bool
+    let callback: ((Event) -> Void)?
     let onFinish: (() -> Void)?
 
     init(
@@ -23,12 +35,14 @@ struct WebView: UIViewRepresentable {
         loading: Binding<Bool>? = nil,
         finishUrl: String? = nil,
         forceFullScreen: Bool = false,
+        callback: ((Event) -> Void)? = nil,
         onFinish: (() -> Void)? = nil
     ) {
         self.url = url
         self.finishUrl = finishUrl
         self.forceFullScreen = forceFullScreen
         self.onFinish = onFinish
+        self.callback = callback
         _loading = loading ?? .constant(false)
     }
 
@@ -50,6 +64,7 @@ struct WebView: UIViewRepresentable {
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
         webView.navigationDelegate = context.coordinator
+        webView.configuration.userContentController.add(context.coordinator, name: WebView.listenerName)
 
         return webView
     }
@@ -63,7 +78,6 @@ struct WebView: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {}
 
         enum State {
             case loading(URL)
@@ -128,12 +142,24 @@ struct WebView: UIViewRepresentable {
             guard let finishUrl = parent.finishUrl,
                   let loadingUrl = navigationAction.request.url,
                   loadingUrl.absoluteString.contains(finishUrl),
-                  let onFinish = parent.onFinish else {
+                  let onFinish = parent.onFinish
+            else {
                 decisionHandler(.allow)
                 return
             }
 
             onFinish()
+        }
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard let event = message.body as? [String: AnyObject],
+                  let data = try? JSONSerialization.data(withJSONObject: event),
+                  let event = try? JSONDecoder().decode(WebView.Event.self, from: data)
+            else {
+                return
+            }
+
+            parent.callback?(event)
         }
     }
 }

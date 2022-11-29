@@ -17,7 +17,7 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
     public let onTxCompleted: TxCompleted
     public let onTransactionRejected: () -> AnyPublisher<Void, Never>
     public var currencyType: CurrencyType {
-        network.cryptoCurrency.currencyType
+        network.nativeAsset.currencyType
     }
 
     public var label: String {

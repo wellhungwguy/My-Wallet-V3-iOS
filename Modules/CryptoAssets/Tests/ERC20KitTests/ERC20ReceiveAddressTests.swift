@@ -4,6 +4,7 @@
 @testable import EthereumKit
 @testable import MoneyDomainKitMock
 import MoneyKit
+import PlatformKit
 import RxSwift
 import XCTest
 
@@ -30,11 +31,14 @@ final class ERC20ReceiveAddressTests: XCTestCase {
             sortIndex: 0
         )
         let currenciesService = MockEnabledCurrenciesService()
+        currenciesService.allEnabledEVMNetworks = [.ethereum]
         currenciesService.allEnabledCryptoCurrencies = [
+            .ethereum,
             asset
         ]
         factory = ERC20ExternalAssetAddressFactory(
             asset: asset,
+            network: .ethereum,
             enabledCurrenciesService: currenciesService
         )
     }
@@ -44,31 +48,33 @@ final class ERC20ReceiveAddressTests: XCTestCase {
         super.tearDown()
     }
 
-    func testQRCodeMetadataTransfer() {
-        let receiveAddress = receiveAddress(TestCase.transferString)!
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.content, TestCase.address)
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.title, TestCase.address)
+    func testQRCodeMetadataTransfer() throws {
+        try runTest(address: TestCase.transferString, content: TestCase.address, title: TestCase.address)
     }
 
-    func testQRCodeMetadataSend() {
-        let receiveAddress = receiveAddress(TestCase.sendString)!
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.content, TestCase.address)
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.title, TestCase.address)
+    func testQRCodeMetadataSend() throws {
+        try runTest(address: TestCase.sendString, content: TestCase.address, title: TestCase.address)
     }
 
-    func testQRCodeMetadataPaySend() {
-        let receiveAddress = receiveAddress(TestCase.paySendString)!
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.content, TestCase.address)
-        XCTAssertEqual(receiveAddress.qrCodeMetadata.title, TestCase.address)
+    func testQRCodeMetadataPaySend() throws {
+        try runTest(address: TestCase.paySendString, content: TestCase.address, title: TestCase.address)
     }
 
-    private func receiveAddress(_ address: String) -> ERC20ReceiveAddress? {
-        try? factory
+    private func runTest(address: String, content: String, title: String) throws {
+        let receiveAddress = try factory
             .makeExternalAssetAddress(
                 address: address,
                 label: "Label",
                 onTxCompleted: { _ in .empty() }
             )
-            .get() as? ERC20ReceiveAddress
+            .get()
+        XCTAssert(receiveAddress is ERC20ReceiveAddress)
+        XCTAssert(receiveAddress is QRCodeMetadataProvider)
+        guard let qrCodeMetadataProvider = receiveAddress as? QRCodeMetadataProvider else {
+            XCTFail("\(type(of: receiveAddress)) not QRCodeMetadataProvider")
+            return
+        }
+        XCTAssertEqual(qrCodeMetadataProvider.qrCodeMetadata.content, TestCase.address)
+        XCTAssertEqual(qrCodeMetadataProvider.qrCodeMetadata.title, TestCase.address)
     }
 }

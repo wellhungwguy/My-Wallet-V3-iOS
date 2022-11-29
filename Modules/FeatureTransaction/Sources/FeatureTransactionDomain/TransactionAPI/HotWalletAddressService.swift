@@ -77,10 +77,15 @@ final class HotWalletAddressService: HotWalletAddressServiceAPI {
 private func code(for cryptoCurrency: CryptoCurrency) -> String? {
     switch cryptoCurrency {
     case .ethereum:
-        return cryptoCurrency.code.lowercased()
-    case let model where model.assetModel.kind.erc20ParentChain == .ethereum:
-        return CryptoCurrency.ethereum.code.lowercased()
+        return Constants.ethKey
+    case let model where model.assetModel.kind.erc20ParentChain == Constants.ethParentChain:
+        return Constants.ethKey
     default:
         return nil
     }
+}
+
+private enum Constants {
+    static let ethParentChain = "ETH"
+    static let ethKey = "eth"
 }

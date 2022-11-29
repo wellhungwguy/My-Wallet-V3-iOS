@@ -128,15 +128,15 @@ private struct LoadingTransactionFlowView: View {
             VStack {
                 BlockchainProgressView()
                 if showClose {
-                    DestructivePrimaryButton(title: "Close") {
-                        app.post(event: blockchain.ux.transaction.loading.close.tap.then.close, context: context)
+                    DestructivePrimaryButton(title: LocalizationConstants.close) {
+                        app.post(event: blockchain.ux.transaction.loading.close.tap.then.close[].ref(to: context), context: context)
                     }
                 }
             }
             .padding()
         }
         .onAppear {
-            app.post(event: blockchain.ux.transaction.loading, context: context)
+            app.post(event: blockchain.ux.transaction.loading[].ref(to: context), context: context)
         }
         .task {
             do {

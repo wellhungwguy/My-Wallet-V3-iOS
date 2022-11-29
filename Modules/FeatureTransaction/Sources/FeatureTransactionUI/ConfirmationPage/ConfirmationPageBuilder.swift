@@ -7,6 +7,7 @@ import ComposableArchitecture
 import DIKit
 import Extensions
 import FeatureCheckoutUI
+import FeaturePlaidDomain
 import FeatureTransactionDomain
 import Localization
 import MoneyKit
@@ -82,16 +83,16 @@ final class ConfirmationPageBuilder: ConfirmationPageBuildable {
 
 extension ConfirmationPageBuilder {
 
-    func pendingTransactions(for transactionModel: TransactionModel) -> AnyPublisher<TransactionState, Never> {
-        transactionModel.state.publisher
-            .ignoreFailure(setFailureType: Never.self)
-            .removeDuplicates(by: { old, new in old.pendingTransaction == new.pendingTransaction })
-            .eraseToAnyPublisher()
-    }
-
     private func buildBuyCheckout(for transactionModel: TransactionModel) -> UIViewController {
 
-        let publisher = pendingTransactions(for: transactionModel).compactMap(\.buyCheckout)
+        let publisher = transactionModel.state.publisher
+            .ignoreFailure(setFailureType: Never.self)
+            .compactMap { [app] state in
+                app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled)
+                    ? state.buyCheckout
+                    : state.pendingTransactionBuyCheckout
+            }
+            .removeDuplicates()
 
         let viewController = UIHostingController(
             rootView: BuyCheckoutView(publisher: publisher)
@@ -111,6 +112,8 @@ extension ConfirmationPageBuilder {
                 )
                 .app(app)
         )
+        viewController.title = " "
+        viewController.navigationItem.leftBarButtonItem = .init(customView: UIView())
         viewController.isModalInPresentation = true
 
         app.on(blockchain.ux.transaction.checkout.confirmed) { _ in
@@ -124,7 +127,9 @@ extension ConfirmationPageBuilder {
 
     private func buildSwapCheckout(for transactionModel: TransactionModel) -> UIViewController {
 
-        let publisher = pendingTransactions(for: transactionModel)
+        let publisher = transactionModel.state.publisher
+            .ignoreFailure(setFailureType: Never.self)
+            .removeDuplicates(by: { old, new in old.pendingTransaction == new.pendingTransaction })
             .task { [app, priceService] state -> SwapCheckout? in
                 guard var checkout = state.swapCheckout else { return nil }
                 do {
@@ -173,6 +178,8 @@ extension ConfirmationPageBuilder {
                 )
                 .app(app)
         )
+        viewController.title = " "
+        viewController.navigationItem.leftBarButtonItem = .init(customView: UIView())
         viewController.isModalInPresentation = true
 
         app.on(blockchain.ux.transaction.checkout.confirmed) { _ in
@@ -196,6 +203,29 @@ extension Publisher where Output == PriceQuoteAtTime {
 extension TransactionState {
 
     var buyCheckout: BuyCheckout? {
+        guard let source, let quote, let result = quote.result else { return nil }
+        do {
+            let fee = try quote.fee
+            return try BuyCheckout(
+                buyType: .simpleBuy,
+                input: quote.amount,
+                purchase: result,
+                fee: .init(value: fee.withoutPromotion, promotion: fee.value),
+                total: quote.amount.fiatValue.or(throw: "Expected fiat"),
+                paymentMethod: source.checkoutPaymentMethod(),
+                quoteExpiration: quote.date.expiresAt,
+                depositTerms: .init(
+                    availableToTrade: quote.depositTerms?.formattedAvailableToTrade,
+                    availableToWithdraw: quote.depositTerms?.formattedAvailableToWithdraw,
+                    withdrawalLockInDays: quote.depositTerms?.withdrawalLockDays.map { "\($0)" }
+                )
+            )
+        } catch {
+            return nil
+        }
+    }
+
+    var pendingTransactionBuyCheckout: BuyCheckout? {
         guard let pendingTransaction, let source else { return nil }
         do {
             let value = try pendingTransaction.confirmations.lazy
@@ -220,13 +250,13 @@ extension TransactionState {
                 name = card.type.name
                 detail = card.displaySuffix
             case .applePay(let apple):
-                name = "Apple Pay"
+                name = LocalizationConstants.Checkout.applePay
                 detail = apple.displaySuffix
             case .account:
-                name = "Funds"
+                name = LocalizationConstants.Checkout.funds
                 detail = nil
             case .linkedBank(let bank):
-                name = bank.account?.bankName ?? "Bank"
+                name = bank.account?.bankName ?? LocalizationConstants.Checkout.bank
                 detail = bank.account?.number
             case _:
                 name = paymentMethod.name
@@ -234,12 +264,13 @@ extension TransactionState {
             }
 
             return try BuyCheckout(
+                buyType: .simpleBuy,
                 input: value.baseValue,
                 purchase: MoneyValuePair(
                     fiatValue: purchase.fiatValue.or(throw: "Amount is not fiat"),
                     exchangeRate: exchangeRate.baseValue.fiatValue.or(throw: "No exchange rate"),
                     cryptoCurrency: CryptoCurrency(code: value.baseValue.code).or(throw: "Input is not a crypto value"),
-                    usesFiatAsBase: false
+                    usesFiatAsBase: true
                 ),
                 fee: .init(
                     value: fee.fee.fiatValue.or(throw: "Fee is not in fiat"),
@@ -249,7 +280,8 @@ extension TransactionState {
                 paymentMethod: .init(
                     name: name,
                     detail: detail,
-                    isApplePay: paymentMethodAccount?.paymentMethod.type.isApplePay == true
+                    isApplePay: paymentMethodAccount?.paymentMethod.type.isApplePay == true,
+                    isACH: paymentMethodAccount?.paymentMethod.type.isACH == true
                 ),
                 quoteExpiration: pendingTransaction.confirmations.lazy
                     .filter(TransactionConfirmations.QuoteExpirationTimer.self).first?.expirationDate
@@ -299,5 +331,52 @@ extension TransactionState {
             ),
             quoteExpiration: quoteExpiration
         )
+    }
+}
+
+extension BlockchainAccount {
+
+    var isACH: Bool {
+        (self as? PaymentMethodAccount)?.paymentMethod.type.isACH ?? false
+    }
+
+    func checkoutPaymentMethod() -> BuyCheckout.PaymentMethod {
+        switch (self as? PaymentMethodAccount)?.paymentMethodType {
+        case .card(let card):
+            return BuyCheckout.PaymentMethod(
+                name: card.type.name,
+                detail: card.displaySuffix,
+                isApplePay: false,
+                isACH: isACH
+            )
+        case .applePay(let apple):
+            return BuyCheckout.PaymentMethod(
+                name: LocalizationConstants.Checkout.applePay,
+                detail: apple.displaySuffix,
+                isApplePay: true,
+                isACH: isACH
+            )
+        case .account:
+            return BuyCheckout.PaymentMethod(
+                name: LocalizationConstants.Checkout.funds,
+                detail: nil,
+                isApplePay: false,
+                isACH: isACH
+            )
+        case .linkedBank(let bank):
+            return BuyCheckout.PaymentMethod(
+                name: bank.account?.bankName ?? LocalizationConstants.Checkout.bank,
+                detail: bank.account?.number,
+                isApplePay: false,
+                isACH: isACH
+            )
+        case _:
+            return BuyCheckout.PaymentMethod(
+                name: label,
+                detail: nil,
+                isApplePay: false,
+                isACH: isACH
+            )
+        }
     }
 }

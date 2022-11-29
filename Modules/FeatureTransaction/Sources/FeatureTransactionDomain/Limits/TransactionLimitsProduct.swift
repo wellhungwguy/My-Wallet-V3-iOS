@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public enum TransactionLimitsProduct {
+public enum TransactionLimitsProduct: Hashable {
     case simplebuy
     case swap(OrderDirection)
     case sell(OrderDirection)

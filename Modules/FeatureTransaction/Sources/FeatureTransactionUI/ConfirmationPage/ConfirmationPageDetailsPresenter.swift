@@ -145,13 +145,29 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             }
             .asDriverCatchError()
 
+        let showACHDepositTermsTapped = contentReducer
+            .showACHDepositTermsTapped
+            .map { value -> ConfirmationPageInteractor.Effects in
+                    .showACHDepositTerms(termsDescription: value)
+            }
+            .asDriverCatchError()
+
+        let availableToWithdrawDateInfoTapped = contentReducer
+            .availableToWithdrawDateInfoTapped
+            .map { _ -> ConfirmationPageInteractor.Effects in
+                    .showAvailableToWithdrawDateInfo
+            }
+            .asDriverCatchError()
+
         return .merge(
             cancelTapped,
             backTapped,
             memoChanged,
             transferAgreementChanged,
             termsChanged,
-            hyperlinkTapped
+            hyperlinkTapped,
+            showACHDepositTermsTapped,
+            availableToWithdrawDateInfoTapped
         )
     }
 

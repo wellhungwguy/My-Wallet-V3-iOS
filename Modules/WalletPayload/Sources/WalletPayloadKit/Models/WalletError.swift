@@ -79,12 +79,12 @@ public enum WalletInitializationError: LocalizedError, Equatable {
         case .metadataInitialization(let underlyingError):
             return String(
                 format: LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.metadataInitialization,
-                underlyingError.localizedDescription
+                underlyingError.errorDescription ?? "unknown error occurred"
             )
         case .metadataInitializationRecovery(let underlyingError):
             return String(
                 format: LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.metadataInitialization,
-                underlyingError.localizedDescription
+                underlyingError.errorDescription ?? "unknown error occurred"
             )
         case .needsSecondPassword:
             return LocalizationConstants.WalletPayloadKit.WalletInitializationConstants.needsSecondPassword

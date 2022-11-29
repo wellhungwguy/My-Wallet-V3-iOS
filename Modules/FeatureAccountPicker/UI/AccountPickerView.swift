@@ -14,12 +14,14 @@ public struct AccountPickerView<
 >: View {
 
     // MARK: - Internal properties
+
     @State var toggleIsOn: Bool
     let store: Store<AccountPickerState, AccountPickerAction>
     @ViewBuilder let badgeView: (AnyHashable) -> BadgeView
     @ViewBuilder let iconView: (AnyHashable) -> IconView
     @ViewBuilder let multiBadgeView: (AnyHashable) -> MultiBadgeView
     @ViewBuilder let withdrawalLocksView: () -> WithdrawalLocksView
+
     // MARK: - Private properties
 
     @State private var isSearching: Bool = false
@@ -38,7 +40,7 @@ public struct AccountPickerView<
         self.iconView = iconView
         self.multiBadgeView = multiBadgeView
         self.withdrawalLocksView = withdrawalLocksView
-        self.toggleIsOn = false
+        toggleIsOn = false
     }
 
     public init(
@@ -158,7 +160,6 @@ public struct AccountPickerView<
                                     let indices = Set(viewStore.content.indices)
                                     ViewStore(store)
                                         .send(.prefetching(.requeue(indices: indices)))
-
                                 })
                             }
                         }

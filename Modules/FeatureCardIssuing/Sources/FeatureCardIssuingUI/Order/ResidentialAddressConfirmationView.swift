@@ -89,7 +89,7 @@ struct ResidentialAddressConfirmation_Previews: PreviewProvider {
 #endif
 
 extension Card.Address {
-    fileprivate var shortDisplayTitleString: String {
+    var shortDisplayTitleString: String {
         [
             line1,
             line2
@@ -99,7 +99,7 @@ extension Card.Address {
             .joined(separator: " ")
     }
 
-    fileprivate var shortDisplaySubtitleString: String {
+    var shortDisplaySubtitleString: String {
         let firstPart: String = [
             city,
             state?

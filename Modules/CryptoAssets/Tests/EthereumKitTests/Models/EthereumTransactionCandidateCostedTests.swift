@@ -10,7 +10,7 @@ import XCTest
 final class EthereumTransactionCandidateCostedTests: XCTestCase {
 
     func test_build_transaction_transfer() {
-        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
+        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535", network: .ethereum)!
         let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.precision)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
@@ -55,9 +55,9 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
     }
 
     func test_build_transaction_erc20Transfer() throws {
-        let toAddress = EthereumAddress(address: "0x5322b34c88ed0691971bf52a7047448f0f4efc84")!
-        let tokenContract = EthereumAddress(address: "0x6b175474e89094c44da98b954eedeac495271d0f")!
-        let addressReference = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
+        let toAddress = EthereumAddress(address: "0x5322b34c88ed0691971bf52a7047448f0f4efc84", network: .ethereum)!
+        let tokenContract = EthereumAddress(address: "0x6b175474e89094c44da98b954eedeac495271d0f", network: .ethereum)!
+        let addressReference = EthereumAddress(address: "0x3535353535353535353535353535353535353535", network: .ethereum)!
 
         let transaction = EthereumTransactionCandidate(
             to: toAddress,
@@ -96,7 +96,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
     }
 
     func test_build_transaction_failure_gas_limit() {
-        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
+        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535", network: .ethereum)!
         let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.precision)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice: BigUInt = MockEthereumWalletTestData.Transaction.gasPrice
@@ -124,7 +124,7 @@ final class EthereumTransactionCandidateCostedTests: XCTestCase {
     }
 
     func test_build_transaction_failure_gas_price() {
-        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
+        let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535", network: .ethereum)!
         let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.precision)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice: BigUInt = 0

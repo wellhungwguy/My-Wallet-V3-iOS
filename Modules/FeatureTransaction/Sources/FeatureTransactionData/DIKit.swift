@@ -14,6 +14,15 @@ extension DependencyContainer {
 
         // MARK: - Data
 
+        single { BrokerageQuoteService(repository: DIKit.resolve()) }
+
+        factory {
+            BrokerageQuoteRepository(
+                requestBuilder: DIKit.resolve(tag: DIKitContext.retail),
+                network: DIKit.resolve(tag: DIKitContext.retail)
+            ) as BrokerageQuoteRepositoryProtocol
+        }
+
         factory { FiatWithdrawRepository() as FiatWithdrawRepositoryAPI }
 
         factory { CustodialTransferRepository() as CustodialTransferRepositoryAPI }

@@ -8,44 +8,85 @@ extension AssetModel {
     /// Creates an AssetModel asset.
     ///
     /// - Parameters:
-    ///   - assetResponse: A supported SupportedAssetsResponse.Asset object.
+    ///   - assetResponse: A supported AssetsResponse.Asset object.
     ///   - sortIndex:     A sorting index.
-    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int, sanitizeEVMAssets: Bool) {
+    init?(assetResponse: AssetsResponse.Asset, sortIndex: Int, sanitizeEVMAssets: Bool) {
         let code = assetResponse.symbol
         let displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         let name = Self.name(assetResponse, sanitizeEVMAssets: sanitizeEVMAssets)
         let precision = assetResponse.precision
-        let products = assetResponse.products.compactMap(AssetModelProduct.init).unique
         let logoPngUrl = assetResponse.type.logoPngUrl.flatMap(URL.init)
         let spotColor = assetResponse.type.spotColor
 
         guard let assetModelType = assetResponse.type.assetModelType else {
             return nil
         }
-        let kind = assetModelType
         let sortIndex = assetModelType.baseSortIndex + sortIndex
+
+        var products = assetResponse.products.compactMap(AssetModelProduct.init)
+        if assetModelType.isCoin, ERC20ParentChainName.allCases.map(\.nativeAsset).contains(code) {
+            products.append(.privateKey)
+        }
+
         self.init(
             code: code,
             displayCode: displayCode,
-            kind: kind,
+            kind: assetModelType,
             name: name,
             precision: precision,
-            products: products,
+            products: products.unique,
             logoPngUrl: logoPngUrl,
             spotColor: spotColor,
             sortIndex: sortIndex
         )
     }
 
+    /// Used only for name sanitizing while UI is not ready.
+    private enum ERC20ParentChainName: String, CaseIterable {
+        case avax = "AVAX"
+        case bnb = "BNB"
+        case ethereum = "ETH"
+        case polygon = "MATIC"
+
+        var name: String {
+            switch self {
+            case .avax:
+                return "Avalanche C-Chain"
+            case .bnb:
+                return "Binance Smart Chain"
+            case .ethereum:
+                return "Ethereum"
+            case .polygon:
+                return "Polygon"
+            }
+        }
+
+        var nativeAsset: String {
+            switch self {
+            case .avax:
+                return "AVAX"
+            case .bnb:
+                return "BNB"
+            case .ethereum:
+                return "ETH"
+            case .polygon:
+                return "MATIC.MATIC"
+            }
+        }
+    }
+
     static func name(
-        _ response: SupportedAssetsResponse.Asset,
+        _ response: AssetsResponse.Asset,
         sanitizeEVMAssets: Bool
     ) -> String {
         let name = response.name
         guard sanitizeEVMAssets else {
             return name
         }
-        guard let network = response.type.parentChain.flatMap(AssetModelType.ERC20ParentChain.init) else {
+        guard response.type.name == AssetsResponse.Asset.AssetType.Name.erc20.rawValue else {
+            return name
+        }
+        guard let network = response.type.parentChain.flatMap(ERC20ParentChainName.init(rawValue:)) else {
             return name
         }
         guard network != .ethereum else {
@@ -59,7 +100,7 @@ extension AssetModel {
     }
 }
 
-extension SupportedAssetsResponse.Asset.AssetType {
+extension AssetsResponse.Asset.AssetType {
     fileprivate var assetModelType: AssetModelType? {
         switch name {
         case Self.Name.fiat.rawValue:
@@ -74,9 +115,7 @@ extension SupportedAssetsResponse.Asset.AssetType {
             guard let erc20Address else {
                 return nil
             }
-            guard let parentChain = parentChain
-                .flatMap(AssetModelType.ERC20ParentChain.init(rawValue:))
-            else {
+            guard let parentChain else {
                 return nil
             }
             return .erc20(

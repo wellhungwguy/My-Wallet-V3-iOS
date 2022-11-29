@@ -2,10 +2,21 @@
 
 import Foundation
 
-public enum DecryptMetadataError: Error {
+public enum DecryptMetadataError: LocalizedError {
     case invalidPayload
     case failedToDecryptWithRegularKey(payload: Data, validationError: JSONValidationError)
     case failedToDecrypt(Error)
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidPayload:
+            return "Invalid Payload"
+        case .failedToDecryptWithRegularKey:
+            return "Invalid JSON found after decryption"
+        case .failedToDecrypt(let error):
+            return error.localizedDescription
+        }
+    }
 }
 
 func decryptMetadata(

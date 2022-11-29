@@ -2,6 +2,11 @@
 
 import DIKit
 
+public enum CardIssuingTag: String {
+    case residentialAddress
+    case shippingAddress
+}
+
 extension DependencyContainer {
 
     // MARK: - FeatureCardIssuingDomain Module
@@ -32,10 +37,16 @@ extension DependencyContainer {
             ) as RewardsServiceAPI
         }
 
-        factory {
-            ResidentialAddressService(
-                repository: DIKit.resolve()
-            ) as ResidentialAddressServiceAPI
+        factory(tag: CardIssuingTag.residentialAddress) {
+            AddressService(
+                repository: DIKit.resolve(tag: CardIssuingTag.residentialAddress)
+            ) as CardIssuingAddressServiceAPI
+        }
+
+        factory(tag: CardIssuingTag.shippingAddress) {
+            AddressService(
+                repository: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
+            ) as CardIssuingAddressServiceAPI
         }
 
         factory {

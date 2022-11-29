@@ -9,7 +9,8 @@ extension DependencyContainer {
 
         factory { () -> TransactionDetailServiceAPI in
             TransactionDetailService(
-                blockchainAPI: DIKit.resolve()
+                blockchainAPI: DIKit.resolve(),
+                enabledCurrenciesService: DIKit.resolve()
             )
         }
 

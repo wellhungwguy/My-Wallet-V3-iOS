@@ -24,6 +24,7 @@ extension ObservableConvertibleType {
 
 extension Observable {
 
+    @dynamicMemberLookup
     public struct Publisher<Upstream: ObservableConvertibleType>: Combine.Publisher {
 
         public typealias Output = Upstream.Element
@@ -44,6 +45,10 @@ extension Observable {
                     downstream: subscriber
                 )
             )
+        }
+
+        public subscript<T>(dynamicMember keyPath: KeyPath<Output, T>) -> Publishers.MapKeyPath<Self, T> {
+            map(keyPath)
         }
     }
 

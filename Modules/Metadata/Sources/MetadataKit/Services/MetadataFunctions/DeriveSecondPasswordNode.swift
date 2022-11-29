@@ -7,9 +7,15 @@ import MetadataHDWalletKit
 typealias DeriveSecondPasswordNode =
     (Credentials) -> Result<SecondPasswordNode, DeriveSecondPasswordNodeError>
 
-public enum DeriveSecondPasswordNodeError: Error, Equatable {
-    case digestDataEncodingFailed
+public enum DeriveSecondPasswordNodeError: LocalizedError, Equatable {
     case privateKeyInstantiationFailed
+
+    public var errorDescription: String? {
+        switch self {
+        case .privateKeyInstantiationFailed:
+            return "Private Key couldn't not be retrieved"
+        }
+    }
 }
 
 func deriveSecondPasswordNode(

@@ -8,6 +8,7 @@ import MoneyKit
 import PlatformKit
 import ToolKit
 
+/// A ERC20 Activity Repository for Ethereum network only.
 final class ERC20ActivityRepository: ERC20ActivityRepositoryAPI {
 
     private struct Key: Hashable {
@@ -31,36 +32,26 @@ final class ERC20ActivityRepository: ERC20ActivityRepositoryAPI {
 
         cachedValue = CachedValueNew(
             cache: cache,
-            fetch: { [client] key in
+            fetch: { [client] key -> AnyPublisher<[ERC20HistoricalTransaction], NetworkError> in
                 guard let contractAddress = key.erc20Asset.kind.erc20ContractAddress else {
                     return .just([])
                 }
-                guard let network = key.erc20Asset.evmNetwork else {
-                    return .just([])
-                }
-                switch network {
-                case .ethereum:
-                    return client
-                        .ethereumERC20Activity(
-                            from: key.address.publicKey,
-                            contractAddress: contractAddress
-                        )
-                        .map(\.transfers)
-                        .map { transfers -> [ERC20HistoricalTransaction] in
-                            transfers.map { item in
-                                ERC20HistoricalTransaction(
-                                    response: item,
-                                    cryptoCurrency: key.erc20Asset.cryptoCurrency!,
-                                    source: key.address
-                                )
-                            }
+                return client
+                    .ethereumERC20Activity(
+                        from: key.address.publicKey,
+                        contractAddress: contractAddress
+                    )
+                    .map(\.transfers)
+                    .map { transfers -> [ERC20HistoricalTransaction] in
+                        transfers.map { item in
+                            ERC20HistoricalTransaction(
+                                response: item,
+                                cryptoCurrency: key.erc20Asset.cryptoCurrency!,
+                                source: key.address
+                            )
                         }
-                        .eraseToAnyPublisher()
-                case .avalanceCChain,
-                     .binanceSmartChain,
-                     .polygon:
-                    fatalError("Shouldn't use ERC20ActivityRepository for polygon.")
-                }
+                    }
+                    .eraseToAnyPublisher()
             }
         )
     }
@@ -82,7 +73,7 @@ extension ERC20HistoricalTransaction {
     ) {
         let createdAt: Date = Double(response.timestamp)
             .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
-        let fromAddress = EthereumAddress(address: response.from)!
+        let fromAddress = EthereumAddress(address: response.from, network: .ethereum)!
         let amount = CryptoValue.create(
             minor: response.value,
             currency: cryptoCurrency
@@ -90,7 +81,7 @@ extension ERC20HistoricalTransaction {
 
         self.init(
             fromAddress: fromAddress,
-            toAddress: EthereumAddress(address: response.to)!,
+            toAddress: EthereumAddress(address: response.to, network: .ethereum)!,
             direction: fromAddress == source ? .credit : .debit,
             amount: amount,
             transactionHash: response.transactionHash,

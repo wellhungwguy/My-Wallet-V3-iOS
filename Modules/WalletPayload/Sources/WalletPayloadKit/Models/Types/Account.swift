@@ -13,6 +13,15 @@ public struct Account: Equatable {
         derivations.first(where: { $0.type == defaultDerivation })
     }
 
+    /// Returns `true` if any of derivations
+    var needsReplenishment: Bool {
+        derivations.isEmpty || derivationMissing || derivations.any(\.needsReplenishment)
+    }
+
+    private var derivationMissing: Bool {
+        derivations.count < DerivationType.defaultDerivations.count
+    }
+
     public init(
         index: Int,
         label: String,

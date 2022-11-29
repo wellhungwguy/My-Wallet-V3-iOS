@@ -57,7 +57,7 @@ final class CardAcquirersRepository: CardAcquirersRepositoryAPI {
                         token
                             .retry(3)
                             .timeout(.seconds(3), scheduler: DispatchQueue.global(qos: .background))
-                            .mapToResult()
+                            .result()
                     }
             }
             .flatMap { $0.zip() }

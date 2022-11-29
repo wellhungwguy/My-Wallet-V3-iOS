@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeaturePlaidDomain
 import MoneyKit
 import PlatformKit
 import ToolKit
@@ -26,6 +27,7 @@ public struct PendingTransaction: Equatable {
     public var feeSelection: FeeSelection
     public var feeAmount: MoneyValue
     public var feeForFullAvailable: MoneyValue
+    public var paymentsDepositTerms: PaymentsDepositTerms?
     /// The list of `TransactionConfirmation`.
     /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
     public private(set) var confirmations: [TransactionConfirmation] = []
@@ -34,13 +36,16 @@ public struct PendingTransaction: Equatable {
     public let engineState: Atomic<[EngineStateKey: Any]> = Atomic([:])
 
     public var limits: TransactionLimits? {
-        get {
-            _limits.value
-        }
-        set {
-            _limits = Reference(newValue)
-        }
+        get { _limits.value }
+        set { _limits = Reference(newValue) }
     }
+
+    public struct Quote: Equatable {
+        let id: String
+        let amount: MoneyValue
+    }
+
+    public var quote: Quote?
 
     // this struct has become too big for Swift to handle :(
     private var _limits: Reference<TransactionLimits?>
@@ -52,6 +57,7 @@ public struct PendingTransaction: Equatable {
         feeForFullAvailable: MoneyValue,
         feeSelection: FeeSelection,
         selectedFiatCurrency: FiatCurrency,
+        paymentsDepositTerms: PaymentsDepositTerms? = nil,
         limits: TransactionLimits? = nil
     ) {
         self.amount = amount
@@ -60,12 +66,19 @@ public struct PendingTransaction: Equatable {
         self.feeForFullAvailable = feeForFullAvailable
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
+        self.paymentsDepositTerms = paymentsDepositTerms
         _limits = Reference(limits)
     }
 
     public func update(validationState: TransactionValidationState) -> PendingTransaction {
         var copy = self
         copy.validationState = validationState
+        return copy
+    }
+
+    public func update(quote: Quote) -> PendingTransaction {
+        var copy = self
+        copy.quote = quote
         return copy
     }
 
@@ -91,6 +104,12 @@ public struct PendingTransaction: Equatable {
     public func update(availableFeeLevels: Set<FeeLevel>) -> PendingTransaction {
         var copy = self
         copy.feeSelection = copy.feeSelection.update(availableFeeLevels: availableFeeLevels)
+        return copy
+    }
+
+    public func update(paymentsDepositTerms: PaymentsDepositTerms?) -> PendingTransaction {
+        var copy = self
+        copy.paymentsDepositTerms = paymentsDepositTerms
         return copy
     }
 
@@ -159,16 +178,19 @@ public struct PendingTransaction: Equatable {
     // MARK: - Equatable
 
     public static func == (lhs: PendingTransaction, rhs: PendingTransaction) -> Bool {
-        lhs.amount == rhs.amount
-            && lhs.feeAmount == rhs.feeAmount
-            && lhs.available == rhs.available
-            && lhs.feeSelection == rhs.feeSelection
-            && lhs.feeForFullAvailable == rhs.feeForFullAvailable
-            && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
-            && lhs.feeLevel == rhs.feeLevel
-            && TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations)
-            && lhs.limits == rhs.limits
-            && lhs.validationState == rhs.validationState
+        guard lhs.amount == rhs.amount else { return false }
+        guard lhs.feeAmount == rhs.feeAmount else { return false }
+        guard lhs.available == rhs.available else { return false }
+        guard lhs.feeSelection == rhs.feeSelection else { return false }
+        guard lhs.feeForFullAvailable == rhs.feeForFullAvailable else { return false }
+        guard lhs.selectedFiatCurrency == rhs.selectedFiatCurrency else { return false }
+        guard lhs.feeLevel == rhs.feeLevel else { return false }
+        guard lhs.limits == rhs.limits else { return false }
+        guard lhs.validationState == rhs.validationState else { return false }
+        guard lhs.quote == rhs.quote else { return false }
+        guard lhs.paymentsDepositTerms == rhs.paymentsDepositTerms else { return false }
+        guard TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations) else { return false }
+        return true
     }
 }
 

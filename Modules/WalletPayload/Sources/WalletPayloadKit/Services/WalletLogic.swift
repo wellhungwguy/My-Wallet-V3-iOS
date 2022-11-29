@@ -49,6 +49,7 @@ final class WalletLogic: WalletLogicAPI {
     private let logger: NativeWalletLoggerAPI
     private let payloadHealthChecker: PayloadHealthCheck
     private let checkAndSaveWalletCredentials: CheckAndSaveWalletCredentials
+    private let derivationReplenishement: DerivationReplenishement
 
     init(
         holder: WalletHolderAPI,
@@ -59,7 +60,8 @@ final class WalletLogic: WalletLogicAPI {
         notificationCenter: NotificationCenter,
         logger: NativeWalletLoggerAPI,
         payloadHealthChecker: @escaping PayloadHealthCheck,
-        checkAndSaveWalletCredentials: @escaping CheckAndSaveWalletCredentials
+        checkAndSaveWalletCredentials: @escaping CheckAndSaveWalletCredentials,
+        derivationReplenishement: @escaping DerivationReplenishement
     ) {
         self.holder = holder
         self.decoder = decoder
@@ -70,6 +72,7 @@ final class WalletLogic: WalletLogicAPI {
         self.logger = logger
         self.payloadHealthChecker = payloadHealthChecker
         self.checkAndSaveWalletCredentials = checkAndSaveWalletCredentials
+        self.derivationReplenishement = derivationReplenishement
     }
 
     func initialize(
@@ -94,6 +97,15 @@ final class WalletLogic: WalletLogicAPI {
                 upgrader: upgrader,
                 walletSync: walletSync,
                 logger: logger,
+                password: password,
+                wrapper: wrapper
+            )
+        }
+        .flatMap { [logger, walletSync, derivationReplenishement] wrapper -> AnyPublisher<Wrapper, WalletError> in
+            runAccountsReplenishmentIfNeeded(
+                walletSync: walletSync,
+                logger: logger,
+                derivationReplenishment: derivationReplenishement,
                 password: password,
                 wrapper: wrapper
             )
@@ -129,7 +141,7 @@ final class WalletLogic: WalletLogicAPI {
                 }
                 return .just(metadataState)
             }
-            .flatMap { [decoder, upgrader, walletSync, logger, payloadHealthChecker] metadataState
+            .flatMap { [decoder, upgrader, walletSync, logger, payloadHealthChecker, derivationReplenishement] metadataState
                 -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
                 decodeAndPerformHealthCheck(
                     payload: payload,
@@ -149,6 +161,19 @@ final class WalletLogic: WalletLogicAPI {
                     .map { upgradedWrapper in
                         // for clarity, we pass the upgraded wrapper.
                         (upgradedWrapper, metadataState)
+                    }
+                    .eraseToAnyPublisher()
+                }
+                .flatMap { wrapper, metadataState -> AnyPublisher<(Wrapper, MetadataState), WalletError> in
+                    runAccountsReplenishmentIfNeeded(
+                        walletSync: walletSync,
+                        logger: logger,
+                        derivationReplenishment: derivationReplenishement,
+                        password: password,
+                        wrapper: wrapper
+                    )
+                    .map { updatedWrapper in
+                        (updatedWrapper, metadataState)
                     }
                     .eraseToAnyPublisher()
                 }
@@ -302,6 +327,33 @@ private func runUpgradeAndSyncIfNeeded(
         .logMessageOnOutput(logger: logger, message: { _ in
             "Upgraded wrapper synced"
         })
+        .eraseToAnyPublisher()
+}
+
+private func runAccountsReplenishmentIfNeeded(
+    walletSync: WalletSyncAPI,
+    logger: NativeWalletLoggerAPI,
+    derivationReplenishment: DerivationReplenishement,
+    password: String,
+    wrapper: Wrapper
+) -> AnyPublisher<Wrapper, WalletError> {
+    guard let masterNode = getMasterNode(from: wrapper.wallet).success else {
+        return .failure(.initialization(.missingSeedHex))
+    }
+    guard let hdWallet = wrapper.wallet.defaultHDWallet else {
+        return .failure(.initialization(.missingWallet))
+    }
+
+    let checkAccountsHaveIncorrectAddressCache = checkAddressCacheLegitimacy(
+        masterNode: masterNode,
+        accounts: hdWallet.accounts
+    )
+
+    guard checkAccountsHaveIncorrectAddressCache || hdWallet.accountsNeedsReplenisment else {
+        return .just(wrapper)
+    }
+
+    return derivationReplenishment(wrapper, logger)
         .eraseToAnyPublisher()
 }
 

@@ -3,6 +3,7 @@
 import Combine
 import Errors
 import Foundation
+import MoneyKit
 import NetworkKit
 
 public final class PlaidClient: PlaidClientAPI {
@@ -89,6 +90,24 @@ public final class PlaidClient: PlaidClientAPI {
         let body = SettlementInfoRequest(amount: amount)
         let request = requestBuilder.post(
             path: "/payments/banktransfer/\(accountId)/update",
+            body: try? JSONEncoder().encode(body),
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    // MARK: - Get payments Deposit Terms
+
+    public func getPaymentsDepositTerms(
+        amount: MoneyValue,
+        paymentMethodId: String
+    ) -> AnyPublisher<PaymentsDepositTermsResponse, NabuError> {
+        let body = PaymentsDepositTermsRequest(
+            amount: amount,
+            paymentMethodId: paymentMethodId
+        )
+        let request = requestBuilder.put(
+            path: "/payments/deposit/terms",
             body: try? JSONEncoder().encode(body),
             authenticated: true
         )!

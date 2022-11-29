@@ -1,1 +1,63 @@
+@_exported import AsyncAlgorithms
 
+extension AsyncStream {
+
+    public init<S: AsyncSequence & Sendable>(
+        _ sequence: S,
+        bufferingPolicy limit: Continuation.BufferingPolicy = .unbounded
+    ) where S.Element == Element {
+        self.init(bufferingPolicy: limit) { (continuation: Continuation) in
+            let task = Task {
+                do {
+                    for try await element in sequence {
+                        continuation.yield(element)
+                    }
+                } catch {}
+                continuation.finish()
+            }
+            continuation.onTermination = { _ in
+                task.cancel()
+            } as @Sendable (Continuation.Termination) -> Void
+        }
+    }
+
+    public init(
+        _ elementType: Element.Type = Element.self,
+        priority: TaskPriority? = nil,
+        bufferingPolicy limit: Continuation.BufferingPolicy = .unbounded,
+        _ build: @escaping (Continuation) async -> Void
+    ) {
+        self.init(Element.self, bufferingPolicy: limit) { continuation in
+            let task = Task(priority: priority) {
+                await build(continuation)
+            }
+            continuation.onTermination = { @Sendable _ in task.cancel() }
+        }
+    }
+
+    public static var never: Self {
+        Self { _ in }
+    }
+
+    public static var finished: Self {
+        Self { $0.finish() }
+    }
+}
+
+extension Task where Failure == Never {
+
+    public static func never() async throws -> Success {
+        for await element in AsyncStream<Success>.never {
+            return element
+        }
+        throw _Concurrency.CancellationError()
+    }
+}
+
+extension Task where Success == Never, Failure == Never {
+
+    public static func never() async throws {
+        for await _ in AsyncStream<Never>.never {}
+        throw _Concurrency.CancellationError()
+    }
+}

@@ -123,6 +123,7 @@ final class TourViewTests: XCTestCase {
 
 /// This is needed in order to resolve the dependencies
 struct MockEnabledCurrenciesServiceAPI: EnabledCurrenciesServiceAPI {
+    var allEnabledEVMNetworks: [MoneyDomainKit.EVMNetwork] { [] }
     var allEnabledCurrencies: [CurrencyType] { [] }
     var allEnabledCryptoCurrencies: [CryptoCurrency] { [] }
     var allEnabledFiatCurrencies: [FiatCurrency] { [] }

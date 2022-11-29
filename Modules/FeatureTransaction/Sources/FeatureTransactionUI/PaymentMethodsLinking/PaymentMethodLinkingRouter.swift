@@ -149,6 +149,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
+        app.post(event: blockchain.ux.payment.method.link.card)
         cardLinker.presentCardLinkingFlow(from: viewController) { result in
             let flowResult: PaymentMethodsLinkingFlowResult = result == .abandoned ? .abandoned : .completed(nil)
             completion(flowResult)
@@ -160,6 +161,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
+        app.post(event: blockchain.ux.payment.method.link.bank)
         switch currency {
         case .USD, .ARS, .BRL:
             routeToDirectBankLinkingFlow(from: viewController, completion: completion)
@@ -193,6 +195,7 @@ final class PaymentMethodLinkingRouter: PaymentMethodLinkingRouterAPI {
         from viewController: UIViewController,
         completion: @escaping (PaymentMethodsLinkingFlowResult) -> Void
     ) {
+        app.post(event: blockchain.ux.payment.method.link.bank.wire)
         routeToWiringInstructionsFlow(for: currency, from: viewController, completion: completion)
     }
 

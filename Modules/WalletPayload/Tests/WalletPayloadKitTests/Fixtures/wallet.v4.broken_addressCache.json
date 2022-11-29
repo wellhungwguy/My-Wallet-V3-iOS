@@ -1,0 +1,65 @@
+{
+  "guid": "50dae286-e42e-4d67-8419-d5dcc563746c",
+  "sharedKey": "8a260b2b-5257-4357-ac56-7a7efca323ea",
+  "double_encryption": false,
+  "metadataHDNode": "xprv9tygGQP8be7uzNm5Czuy41juTK9pUKnWyZtDxgbmSEcCYa9VdvvtSknEyiKitqqm2TMv14NjXPQ68XLwSdH6Scc5GwXoZ31yRZZysxhVGU7",
+  "options": {
+    "pbkdf2_iterations": 5000,
+    "fee_per_kb": 10000,
+    "html5_notifications": false,
+    "logout_time": 600000
+  },
+  "address_book": [],
+  "tx_notes": {},
+  "tx_names": [],
+  "keys": [],
+  "hd_wallets": [
+    {
+      "seed_hex": "6a4d9524d413fdf69ca1b5664d1d6db0",
+      "passphrase": "",
+      "mnemonic_verified": false,
+      "default_account_idx": 0,
+      "accounts": [
+        {
+          "label": "Private Key Wallet",
+          "archived": false,
+          "default_derivation": "bech32",
+          "derivations": [
+            {
+              "type": "legacy",
+              "purpose": 44,
+              "xpriv": "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
+              "xpub": "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
+              "address_labels": [
+                {
+                  "index": 0,
+                  "label": "labeled_address"
+                }
+              ],
+              "cache": {
+                "receiveAccount": "xpub6F41z8MyiGqL5gxvKaWcLeedorjhZwfswGpSrXszBiE7n2k4JxAx2FkUbNwrf3Ya65adx4MuoTiR88iEKmfLzBXeJBDGbFxje6PAo51hgbY",
+                "changeAccount": "xpub6F41z8MyiGqL8CdvneKqcvjMkAFRr8T3USizhoz7XSjgn9rwWJRvGLnQ9XY2DJyewFX3SWdP5stAf2AxtwNSEmRL1QtDb9VhZkBb5FuRW3f"
+              }
+            },
+            {
+              "type": "bech32",
+              "purpose": 84,
+              "xpriv": "xprv9xyd6QiiJ9PHLpoaGZ1J2ZAit27rMoZBsg7pGfZu18Y9KYyeVsbF7fqFoKYD1yVvALxSUeLCD3LGxfk5kPPNQhx1P57ukDfoKRDqjEFTvYT",
+              "xpub": "xpub6BxyVvFc8WwaZJt3NaYJPh7TS3xLmGH3Eu3R53yWZU58CMJo3QuVfU9jedpAuVA1idn7tJX6TrLVpeifbAySPewVEdH52tSQchLwSznnyCY",
+              "address_labels": [
+                {
+                  "index": 0,
+                  "label": "labeled_address"
+                }
+              ],
+              "cache": {
+                "receiveAccount": "xpub6EMzXNjymxgb988A7TbC4vL8oKQdPBm6foMHGSKxmUumcy9LC1FmKDewP9ZboHa2oK23kxzDwM4h7hr14wVrGrG1eV33859qKev7SQv9fH6",
+                "changeAccount": "xpub6EMzXNjymxgbBahUDrykZ89ueENuztvfZ8zhLX1QcX1KbofHVC3zwvwvbXk8zoqNsVvU9Afbd63P44TTF4JLDZMPzrw8wKFeUQSJkcZeHWE"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

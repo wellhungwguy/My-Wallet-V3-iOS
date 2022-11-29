@@ -411,7 +411,7 @@ extension UserState {
 
     fileprivate var completedOnboardingChecklistItems: Set<OnboardingChecklist.Item> {
         var result = Set<OnboardingChecklist.Item>()
-        if kycStatus.canBuyCrypto {
+        if kycStatus == .verified {
             result.insert(.verifyIdentity)
         }
         if hasLinkedPaymentMethods {

@@ -178,6 +178,9 @@ final class TransactionsRouter: TransactionsRouterAPI {
                     return .just(.abandoned)
                 }
             }
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.currentRIBRouter = nil
+            })
             .eraseToAnyPublisher()
     }
 
@@ -295,14 +298,17 @@ final class TransactionsRouter: TransactionsRouterAPI {
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self else { return .empty() }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
-                            if let order = isAwaitingAction.first {
-                                return self.presentNewTransactionFlow(action, from: presenter)
-                                    .zip(
-                                        self.pendingOrdersService.cancel(order)
-                                            .receive(on: DispatchQueue.main)
-                                            .ignoreFailure()
-                                    )
-                                    .map(\.0)
+                            if isAwaitingAction.isNotEmpty {
+                                return isAwaitingAction.publisher
+                                    .flatMap { order in
+                                        self.pendingOrdersService.cancel(order).ignoreFailure()
+                                    }
+                                    .collect()
+                                    .mapToVoid()
+                                    .receive(on: DispatchQueue.main)
+                                    .flatMap {
+                                        self.presentNewTransactionFlow(action, from: presenter)
+                                    }
                                     .eraseToAnyPublisher()
                             } else {
                                 return self.presentNewTransactionFlow(action, from: presenter)

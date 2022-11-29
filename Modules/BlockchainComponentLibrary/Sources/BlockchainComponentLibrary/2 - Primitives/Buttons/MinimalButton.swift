@@ -16,7 +16,7 @@ import SwiftUI
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 public struct MinimalButton<LeadingView: View>: View {
 
-    private let title: String
+    @Binding var title: String
     private let isLoading: Bool
     private let isOpaque: Bool
     private let foregroundColor: Color
@@ -68,7 +68,23 @@ public struct MinimalButton<LeadingView: View>: View {
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
-        self.title = title
+        self._title = .constant(title)
+        self.isOpaque = isOpaque
+        self.isLoading = isLoading
+        self.foregroundColor = foregroundColor
+        self.leadingView = leadingView()
+        self.action = action
+    }
+
+    public init(
+        title: Binding<String>,
+        isLoading: Bool = false,
+        isOpaque: Bool = false,
+        foregroundColor: Color = .semantic.primary,
+        @ViewBuilder leadingView: () -> LeadingView,
+        action: @escaping () -> Void
+    ) {
+        self._title = title
         self.isOpaque = isOpaque
         self.isLoading = isLoading
         self.foregroundColor = foregroundColor

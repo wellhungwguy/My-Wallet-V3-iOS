@@ -35,7 +35,7 @@ extension Publisher where Failure: TimeoutFailure {
     /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
     public func poll(
         max attempts: Int = Int.max,
-        until: @escaping (Output) -> Bool,
+        until: @escaping (Output) -> Bool = { _ in false },
         delay: DispatchTimeInterval = .seconds(30)
     ) -> AnyPublisher<Output, Failure> {
         poll(max: attempts, until: until, delay: .constant(delay), scheduler: DispatchQueue.main)
@@ -44,7 +44,7 @@ extension Publisher where Failure: TimeoutFailure {
     /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
     public func poll(
         max attempts: Int = Int.max,
-        until: @escaping (Output) -> Bool,
+        until: @escaping (Output) -> Bool = { _ in false },
         delay: DispatchTimeInterval = .seconds(30),
         scheduler: some Scheduler
     ) -> AnyPublisher<Output, Failure> {
@@ -54,7 +54,7 @@ extension Publisher where Failure: TimeoutFailure {
     /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
     public func poll(
         max attempts: Int = Int.max,
-        until: @escaping (Output) -> Bool,
+        until: @escaping (Output) -> Bool = { _ in false },
         delay: IntervalDuration,
         scheduler: some Scheduler
     ) -> AnyPublisher<Output, Failure> {

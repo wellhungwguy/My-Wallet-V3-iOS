@@ -17,7 +17,7 @@ class CreateWalletClientTests: XCTestCase {
         let mockNetworkAdapter = NetworkAdapterMock()
         let client = CreateWalletClient(
             networkAdapter: mockNetworkAdapter,
-            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: "")),
+            requestBuilder: RequestBuilder(config: Network.Config(host: "")),
             apiCodeProvider: { "some-api-code" }
         )
 
@@ -57,7 +57,7 @@ class CreateWalletClientTests: XCTestCase {
         let mockNetworkAdapter = NetworkAdapterMock()
         let client = CreateWalletClient(
             networkAdapter: mockNetworkAdapter,
-            requestBuilder: RequestBuilder(config: Network.Config(scheme: "", host: "")),
+            requestBuilder: RequestBuilder(config: Network.Config(host: "")),
             apiCodeProvider: { "some-api-code" }
         )
 

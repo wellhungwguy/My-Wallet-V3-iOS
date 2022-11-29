@@ -48,11 +48,10 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
     }
 
     func initialize() -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
-        var publishers: [AnyPublisher<Result<Void, ERC20CryptoAssetServiceError>, Never>] = EVMNetwork
-            .allCases
-            .map(initializeEVMNetwork)
-            .map(\.resultPublisher)
-        publishers.insert(initializeEthereum.resultPublisher, at: 0)
+        let publishers: [AnyPublisher<Result<Void, ERC20CryptoAssetServiceError>, Never>] = enabledCurrenciesService
+            .allEnabledEVMNetworks
+            .map(initializeNetwork)
+            .map { $0.result() }
         return publishers
             .zip()
             .flatMap { results -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
@@ -64,65 +63,30 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    private var initializeEthereum: AnyPublisher<Void, ERC20CryptoAssetServiceError> {
-        Deferred { [coincore] in
-            Just(coincore[.ethereum])
-        }
-        .flatMap(\.defaultAccount)
-        .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
-        .flatMap { account in
-            self.initialize(account: account, network: .ethereum)
-        }
-        .eraseToAnyPublisher()
-    }
-
-    private func initializeEVMNetwork(_ evmNetwork: EVMNetwork) -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
-        guard let tokensAlwaysFetchIsEnabled = evmNetwork.tokensAlwaysFetchIsEnabled else {
-            return .just(())
-        }
-        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(evmNetwork.cryptoCurrency) else {
+    private func initializeNetwork(_ evmNetwork: EVMNetwork) -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
+        guard enabledCurrenciesService.allEnabledCryptoCurrencies.contains(evmNetwork.nativeAsset) else {
             return .just(())
         }
         return Deferred { [coincore] in
-            Just(coincore[evmNetwork.cryptoCurrency])
+            Just(coincore[evmNetwork.nativeAsset])
         }
         .flatMap(\.defaultAccount)
         .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
-        .flatMap { [app] account -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
-            app
-                .publisher(
-                    for: tokensAlwaysFetchIsEnabled,
-                    as: Bool.self
-                )
-                .first()
-                .flatMap { alwaysFetch -> AnyPublisher<Bool, Error> in
-                    alwaysFetch.value == true ? .just(true) : account.isFunded
-                }
-                .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadDefaultAccount)
-                .flatMap { isFunded -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
-                    guard isFunded else {
-                        return .just(())
-                    }
-                    return self.initialize(account: account, network: evmNetwork)
-                        .eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
+        .flatMap { account -> AnyPublisher<Void, ERC20CryptoAssetServiceError> in
+            self.initialize(account: account, network: evmNetwork.networkConfig).eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
 
     private func initialize(
         account: SingleAccount,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
         account.receiveAddress
-            .map { receiveAddress -> EthereumAddress? in
-                EthereumAddress(address: receiveAddress.address)
-            }
             .replaceError(with: ERC20CryptoAssetServiceError.failedToLoadReceiveAddress)
-            .onNil(ERC20CryptoAssetServiceError.failedToLoadReceiveAddress)
-            .flatMap { [accountsRepository] ethereumAddress in
-                accountsRepository.tokens(for: ethereumAddress, network: network)
+            .flatMap { [accountsRepository] receiveAddress in
+                accountsRepository
+                    .tokens(for: receiveAddress.address, network: network, forceFetch: false)
                     .replaceError(with: ERC20CryptoAssetServiceError.failedToFetchTokens)
             }
             .handleEvents(
@@ -136,20 +100,5 @@ final class ERC20CryptoAssetService: ERC20CryptoAssetServiceAPI {
             )
             .mapToVoid()
             .eraseToAnyPublisher()
-    }
-}
-
-extension EVMNetwork {
-    fileprivate var tokensAlwaysFetchIsEnabled: Tag.Event? {
-        switch self {
-        case .avalanceCChain:
-            return blockchain.app.configuration.evm.avax.tokens.always.fetch.is.enabled
-        case .binanceSmartChain:
-            return blockchain.app.configuration.evm.bnb.tokens.always.fetch.is.enabled
-        case .ethereum:
-            return nil
-        case .polygon:
-            return blockchain.app.configuration.evm.polygon.tokens.always.fetch.is.enabled
-        }
     }
 }

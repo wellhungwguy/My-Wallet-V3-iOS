@@ -43,7 +43,8 @@ final class StellarAsset: CryptoAsset {
             defaultAccount
         },
         exchangeAccountsProvider: exchangeAccountProvider,
-        addressFactory: addressFactory
+        addressFactory: addressFactory,
+        featureFlag: featureFlag
     )
 
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
@@ -51,6 +52,7 @@ final class StellarAsset: CryptoAsset {
     private let errorRecorder: ErrorRecording
     private let addressFactory: StellarCryptoReceiveAddressFactory
     private let kycTiersService: KYCTiersServiceAPI
+    private let featureFlag: FeatureFetching
 
     // MARK: - Setup
 
@@ -59,13 +61,15 @@ final class StellarAsset: CryptoAsset {
         errorRecorder: ErrorRecording,
         exchangeAccountProvider: ExchangeAccountsProviderAPI,
         kycTiersService: KYCTiersServiceAPI,
-        addressFactory: StellarCryptoReceiveAddressFactory
+        addressFactory: StellarCryptoReceiveAddressFactory,
+        featureFlag: FeatureFetching
     ) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.accountRepository = accountRepository
         self.errorRecorder = errorRecorder
         self.kycTiersService = kycTiersService
         self.addressFactory = addressFactory
+        self.featureFlag = featureFlag
     }
 
     // MARK: - Methods

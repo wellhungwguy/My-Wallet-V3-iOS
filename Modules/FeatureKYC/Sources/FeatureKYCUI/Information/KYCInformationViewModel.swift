@@ -10,13 +10,31 @@ struct KYCInformationViewModel {
     let title: String?
     let subtitle: String?
     let description: String?
+    let bottomDescriptionTitle: String?
+    let bottomDescription: String?
     let buttonTitle: String?
+
+    init(
+        image: UIImage?,
+        title: String?,
+        subtitle: String?,
+        description: String?,
+        bottomDescriptionTitle: String? = nil,
+        bottomDescription: String? = nil,
+        buttonTitle: String?
+    ) {
+        self.image = image
+        self.title = title
+        self.subtitle = subtitle
+        self.description = description
+        self.bottomDescriptionTitle = bottomDescriptionTitle
+        self.bottomDescription = bottomDescription
+        self.buttonTitle = buttonTitle
+    }
 }
 
 struct KYCInformationViewConfig {
-    let titleColor: UIColor
     let isPrimaryButtonEnabled: Bool
-    let imageTintColor: UIColor?
 }
 
 extension KYCInformationViewModel {
@@ -66,9 +84,11 @@ extension KYCInformationViewModel {
         case .underReview:
             return KYCInformationViewModel(
                 image: UIImage(named: "AccountInReview", in: .featureKYCUI, compatibleWith: nil),
-                title: LocalizationConstants.KYC.verificationUnderReview,
+                title: LocalizationConstants.KYC.verificationSubmitted,
                 subtitle: nil,
-                description: LocalizationConstants.KYC.verificationUnderReviewDescription,
+                description: LocalizationConstants.KYC.verificationSubmittedDescription,
+                bottomDescriptionTitle: LocalizationConstants.KYC.whatHappensNext,
+                bottomDescription: LocalizationConstants.KYC.onceYourApplicationIsApproved,
                 buttonTitle: nil
             )
         case .none:
@@ -96,10 +116,12 @@ extension KYCInformationViewModel {
         } else {
             return KYCInformationViewModel(
                 image: UIImage(named: "AccountInReview", in: .featureKYCUI, compatibleWith: nil),
-                title: LocalizationConstants.KYC.verificationInProgress,
-                subtitle: LocalizationConstants.KYC.whatHappensNext,
-                description: LocalizationConstants.KYC.verificationInProgressDescription,
-                buttonTitle: LocalizationConstants.KYC.notifyMe
+                title: LocalizationConstants.KYC.verificationSubmitted,
+                subtitle: nil,
+                description: LocalizationConstants.KYC.verificationSubmittedDescription,
+                bottomDescriptionTitle: LocalizationConstants.KYC.whatHappensNext,
+                bottomDescription: LocalizationConstants.KYC.onceYourApplicationIsApproved,
+                buttonTitle: LocalizationConstants.KYC.ok
             )
         }
     }
@@ -107,35 +129,24 @@ extension KYCInformationViewModel {
 
 extension KYCInformationViewConfig {
     static let defaultConfig = KYCInformationViewConfig(
-        titleColor: UIColor.gray5,
-        isPrimaryButtonEnabled: false,
-        imageTintColor: nil
+        isPrimaryButtonEnabled: false
     )
 
     static func create(for accountStatus: KYC.AccountStatus, isReceivingAirdrop: Bool = false) -> KYCInformationViewConfig {
-        let titleColor: UIColor
         let isPrimaryButtonEnabled: Bool
-        var tintColor: UIColor?
 
         switch accountStatus {
         case .approved:
-            titleColor = UIColor.green
             isPrimaryButtonEnabled = true
         case .failed, .expired, .none:
-            titleColor = UIColor.error
             isPrimaryButtonEnabled = false
         case .pending:
-            titleColor = isReceivingAirdrop ? UIColor.green : UIColor.pending
-            isPrimaryButtonEnabled = !UIApplication.shared.isRegisteredForRemoteNotifications
-            tintColor = isReceivingAirdrop ? UIColor.brandSecondary : nil
+            isPrimaryButtonEnabled = true
         case .underReview:
-            titleColor = .orange
-            isPrimaryButtonEnabled = false
+            isPrimaryButtonEnabled = true
         }
         return KYCInformationViewConfig(
-            titleColor: titleColor,
-            isPrimaryButtonEnabled: isPrimaryButtonEnabled,
-            imageTintColor: tintColor
+            isPrimaryButtonEnabled: isPrimaryButtonEnabled
         )
     }
 }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainNamespace
 import DIKit
 import Errors
 import FeatureCardPaymentDomain
@@ -103,6 +104,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     private let stateReducer = FormPresentationStateReducer()
     private let disposeBag = DisposeBag()
 
+    private let app: AppProtocol
     private let interactor: CardDetailsScreenInteractor
     private let eventRecorder: AnalyticsEventRecorderAPI
     private let cardNumberValidator: CardNumberValidator
@@ -111,12 +113,14 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     // MARK: - Setup
 
     init(
+        app: AppProtocol = resolve(),
         interactor: CardDetailsScreenInteractor,
         eventRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         userDataRepository: DataRepositoryAPI = resolve()
     ) {
+        self.app = app
         self.interactor = interactor
         self.eventRecorder = eventRecorder
         self.loadingViewPresenter = loadingViewPresenter
@@ -249,6 +253,12 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
         isValid
             .drive(buttonViewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+
+        buttonViewModel.tapRelay
+            .subscribe(onNext: { [app] in
+                app.post(event: blockchain.ux.transaction.payment.method.link.a.card.next.tap)
+            })
             .disposed(by: disposeBag)
 
         let buttonTapped = buttonViewModel.tapRelay

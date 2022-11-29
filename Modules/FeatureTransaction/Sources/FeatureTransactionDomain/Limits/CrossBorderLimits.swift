@@ -11,7 +11,7 @@ import PlatformKit
 ///
 /// Use `TransactionLimits` to combine data from `TradeLimits` with `CrossBorderLimits` limits.
 /// To fetch `TransactionLimits` for a specific transaction, use `TransactionLimitsServiceAPI`.
-public struct CrossBorderLimits {
+public struct CrossBorderLimits: Equatable {
 
     public let currency: CurrencyType
     public let currentLimits: PeriodicLimits? // nil means that there are no limits

@@ -9,8 +9,7 @@ extension ViewRecoveryPhraseModule {
         .init { state, action, environment in
             switch action {
             case .onAppear:
-                return
-                environment
+                return environment
                     .recoveryPhraseVerifyingService
                     .recoveryPhraseComponents()
                     .catchToEffect()

@@ -17,28 +17,28 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> SupportedAssetsFilePathProviderAPI in
-            SupportedAssetsFilePathProvider(
+        factory { () -> FilePathProviderAPI in
+            FilePathProvider(
                 fileManager: .default
             )
         }
 
-        factory { () -> SupportedAssetsServiceAPI in
-            SupportedAssetsService(
-                errorLogger: DIKit.resolve(),
-                filePathProvider: DIKit.resolve()
+        factory { () -> FileLoaderAPI in
+            FileLoader(
+                filePathProvider: DIKit.resolve(),
+                jsonDecoder: .init()
             )
         }
 
-        factory { () -> SupportedAssetsRepositoryAPI in
-            SupportedAssetsRepository(
-                localService: DIKit.resolve(),
+        factory { () -> AssetsRepositoryAPI in
+            AssetsRepository(
+                fileLoader: DIKit.resolve(),
                 evmSupport: DIKit.resolve()
             )
         }
 
-        factory { () -> SupportedAssetsRemoteServiceAPI in
-            SupportedAssetsRemoteService(
+        factory { () -> AssetsRemoteServiceAPI in
+            AssetsRemoteService(
                 client: DIKit.resolve(),
                 filePathProvider: DIKit.resolve(),
                 fileIO: DIKit.resolve(),
@@ -46,8 +46,8 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> SupportedAssetsClientAPI in
-            SupportedAssetsClient(
+        factory { () -> AssetsClientAPI in
+            AssetsClient(
                 requestBuilder: DIKit.resolve(),
                 networkAdapter: DIKit.resolve()
             )

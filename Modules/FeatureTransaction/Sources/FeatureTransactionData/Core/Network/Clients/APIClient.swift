@@ -19,7 +19,10 @@ typealias FeatureTransactionDomainClientAPI = CustodialQuoteAPI &
     BitPayClientAPI &
     BlockchainNameResolutionClientAPI &
     BankTransferClientAPI &
-    WithdrawalLocksCheckClientAPI
+    WithdrawalLocksCheckClientAPI &
+    CreateRecurringBuyClientAPI &
+    CancelRecurringBuyClientAPI &
+    RecurringBuyProviderClientAPI
 
 /// FeatureTransactionDomain network client
 final class APIClient: FeatureTransactionDomainClientAPI {
@@ -52,6 +55,12 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let bankTransfer = ["payments", "banktransfer"]
         static let transferFees = ["payments", "withdrawals", "fees"]
         static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
+        static let recurringBuyCreate = ["recurring-buy", "create"]
+        static let recurringBuyList = ["recurring-buy", "list"]
+
+        static func cancelRecurringBuy(_ id: String) -> [String] {
+            ["recurring-buy", id, "cancel"]
+        }
 
         static func updateOrder(transactionID: String) -> [String] {
             createOrder + [transactionID]
@@ -496,6 +505,60 @@ extension APIClient {
             body: try? body.data(),
             authenticated: true
         )!
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    // MARK: - CreateRecurringBuyClientAPI
+
+    func createRecurringBuyWithFiatValue(
+        _ fiatValue: FiatValue,
+        cryptoCurrency: CryptoCurrency,
+        frequency: RecurringBuy.Frequency,
+        paymentMethod: PaymentMethodType
+    ) -> AnyPublisher<RecurringBuyResponse, NabuNetworkError> {
+        let body = RecurringBuyRequest(
+            inputValue: fiatValue.minorString,
+            inputCurrency: fiatValue.code,
+            destinationCurrency: cryptoCurrency.code,
+            paymentMethod: paymentMethod.method.rawType.rawValue,
+            period: frequency.rawValue,
+            beneficiaryId: paymentMethod.id
+        )
+        let request = retailRequestBuilder.post(
+            path: Path.recurringBuyCreate,
+            body: try? body.data(),
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    // MARK: - CancelRecurringBuyClientAPI
+
+    func cancelRecurringBuyWithId(_ id: String) -> AnyPublisher<Void, NabuNetworkError> {
+        let request = retailRequestBuilder.delete(
+            path: Path.cancelRecurringBuy(id),
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    // MARK: - RecurringBuyProviderClientAPI
+
+    func fetchRecurringBuysForCryptoCurrency(
+        _ cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError> {
+        let parameters: [URLQueryItem] = [
+            URLQueryItem(name: Parameter.currency, value: cryptoCurrency.code)
+        ]
+
+        let request = retailRequestBuilder.get(
+            path: Path.recurringBuyList,
+            parameters: parameters,
+            authenticated: true
+        )!
+
         return retailNetworkAdapter.perform(request: request)
     }
 }

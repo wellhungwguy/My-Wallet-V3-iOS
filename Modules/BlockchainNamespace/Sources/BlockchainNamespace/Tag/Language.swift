@@ -51,8 +51,8 @@ extension Language {
         guard let tag = tag(id(\.id)) else {
             fatalError(
                 """
-                \(id) does not exist in the language. Check the taskpaper has been saved and generated.
-                You may have removed an id from the taskpaper but are still referencing it from the code.
+                \(id) does not exist in the language. Check the lexicon has been saved and generated.
+                You may have removed an id from the lexicon but are still referencing it from the code.
                 """
             )
         }
@@ -108,14 +108,7 @@ extension Language {
 
     // swiftlint:disable force_try
     public static let root: Tag = try! Language.root(
-        taskpaper: Data(
-            contentsOf: URL(
-                fileURLWithPath: Bundle.namespace.path(
-                    forResource: "blockchain",
-                    ofType: "taskpaper"
-                )!
-            )
-        )
+        taskpaper: Data(contentsOf: "blockchain".lexicon)
     )
 
     static var unownedLanguageReferences: [Language] = []
@@ -129,5 +122,12 @@ extension Language: Identifiable, Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+extension String {
+
+    fileprivate var lexicon: URL {
+        URL(fileURLWithPath: Bundle.namespace.path(forResource: self, ofType: "lexicon")!)
     }
 }

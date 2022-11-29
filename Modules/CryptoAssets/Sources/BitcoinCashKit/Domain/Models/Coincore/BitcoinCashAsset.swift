@@ -48,7 +48,8 @@ final class BitcoinCashAsset: CryptoAsset {
             defaultAccount
         },
         exchangeAccountsProvider: exchangeAccountProvider,
-        addressFactory: addressFactory
+        addressFactory: addressFactory,
+        featureFlag: featureFlag
     )
 
     private let addressFactory: ExternalAssetAddressFactory
@@ -56,6 +57,7 @@ final class BitcoinCashAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinCashWalletAccountRepository
     private let kycTiersService: KYCTiersServiceAPI
+    private let featureFlag: FeatureFetching
 
     // MARK: - Setup
 
@@ -66,13 +68,15 @@ final class BitcoinCashAsset: CryptoAsset {
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        repository: BitcoinCashWalletAccountRepository = resolve()
+        repository: BitcoinCashWalletAccountRepository = resolve(),
+        featureFlag: FeatureFetching = resolve()
     ) {
         self.addressFactory = addressFactory
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
         self.kycTiersService = kycTiersService
         self.repository = repository
+        self.featureFlag = featureFlag
     }
 
     // MARK: - Methods
@@ -91,28 +95,7 @@ final class BitcoinCashAsset: CryptoAsset {
     }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup?, Never> {
-        var groups: [AnyPublisher<AccountGroup?, Never>] = []
-
-        if filter.contains(.custodial) {
-            groups.append(custodialGroup)
-        }
-
-        if filter.contains(.interest) {
-            groups.append(interestGroup)
-        }
-
-        if filter.contains(.nonCustodial) {
-            groups.append(nonCustodialGroup)
-        }
-
-        if filter.contains(.exchange) {
-            groups.append(exchangeGroup)
-        }
-
-        return groups
-        .zip()
-        .eraseToAnyPublisher()
-        .flatMapAllAccountGroup()
+        cryptoAssetRepository.accountGroup(filter: filter)
     }
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
@@ -125,68 +108,6 @@ final class BitcoinCashAsset: CryptoAsset {
         onTxCompleted: @escaping (TransactionResult) -> Completable
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
-    }
-
-    // MARK: - Private methods
-
-    private var allAccountsGroup: AnyPublisher<AccountGroup?, Never> {
-        [
-            nonCustodialGroup,
-            custodialGroup,
-            interestGroup,
-            exchangeGroup
-        ]
-        .zip()
-        .eraseToAnyPublisher()
-        .flatMapAllAccountGroup()
-    }
-
-    private var exchangeGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.exchangeGroup
-    }
-
-    private var custodialAndInterestGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.custodialAndInterestGroup
-    }
-
-    private var interestGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.interestGroup
-    }
-
-    private var custodialGroup: AnyPublisher<AccountGroup?, Never> {
-        cryptoAssetRepository.custodialGroup
-    }
-
-    private var nonCustodialGroup: AnyPublisher<AccountGroup?, Never> {
-        repository.activeAccounts
-            .eraseToAnyPublisher()
-            .eraseError()
-            .flatMap { [repository] accounts -> AnyPublisher<AccountsPayload, Error> in
-                repository
-                    .defaultAccount
-                    .eraseError()
-                    .map { .init(defaultAccount: $0, accounts: accounts) }
-                    .eraseToAnyPublisher()
-            }
-            .map { accountPayload -> [SingleAccount] in
-                accountPayload.accounts.map { account in
-                    BitcoinCashCryptoAccount(
-                        xPub: account.publicKey,
-                        label: account.label,
-                        isDefault: account.publicKey == accountPayload.defaultAccount.publicKey,
-                        hdAccountIndex: account.index
-                    )
-                }
-            }
-            .map { [asset] accounts -> AccountGroup? in
-                if accounts.isEmpty {
-                    return nil
-                }
-                return CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
-            .recordErrors(on: errorRecorder)
-            .replaceError(with: nil)
-            .eraseToAnyPublisher()
     }
 }
 

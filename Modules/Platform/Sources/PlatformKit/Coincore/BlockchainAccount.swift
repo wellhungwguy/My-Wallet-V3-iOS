@@ -15,6 +15,8 @@ public protocol NonCustodialAccount {}
 
 public protocol InterestAccount {}
 
+public protocol StakingAccount {}
+
 public protocol BlockchainAccount: Account {
 
     /// A unique identifier for this `BlockchainAccount`.
@@ -159,6 +161,20 @@ extension Publisher where Output == [SingleAccount] {
     public func mapFilter(excluding identifier: AnyHashable) -> AnyPublisher<Output, Failure> {
         map { accounts in
             accounts.filter { $0.identifier != identifier }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+import BlockchainNamespace
+import DIKit
+
+extension BlockchainAccount {
+
+    public func hasSmallBalance(app: AppProtocol = resolve()) -> AnyPublisher<Bool, Error> {
+        Task<Bool, Error>.Publisher { [account = self] in
+            try await app.get(blockchain.ux.user.account.preferences.small.balances.are.hidden, as: Bool.self)
+                && { try await account.balancePair(fiatCurrency: app.get(blockchain.user.currency.preferred.fiat.display.currency)).await().quote.isDust }
         }
         .eraseToAnyPublisher()
     }

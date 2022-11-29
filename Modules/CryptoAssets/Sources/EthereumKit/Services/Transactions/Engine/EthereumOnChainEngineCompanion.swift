@@ -127,11 +127,11 @@ final class EthereumOnChainEngineCompanion: EthereumOnChainEngineCompanionAPI {
 
         return receiveAddresses
             .map { addresses -> (destination: EthereumAddress, referenceAddress: EthereumAddress?) in
-                let destination = try EthereumAddress(string: addresses.destination.address)
+                let destination = try EthereumAddress(string: addresses.destination.address, network: .ethereum)
                 guard let referenceAddress = addresses.referenceAddress else {
                     return (destination, nil)
                 }
-                return (destination, try EthereumAddress(string: referenceAddress.address))
+                return (destination, try EthereumAddress(string: referenceAddress.address, network: .ethereum))
             }
     }
 

@@ -43,11 +43,22 @@ class WalletResponseTests: XCTestCase {
             addressLabels: [AddressLabelResponse(index: 0, label: "labeled_address")],
             cache: addressCache
         )
+        let derivationSegwit = DerivationResponse(
+            type: .segwit,
+            purpose: DerivationResponse.Format.segwit.purpose,
+            xpriv: "xprv9xyd6QiiJ9PHLpoaGZ1J2ZAit27rMoZBsg7pGfZu18Y9KYyeVsbF7fqFoKYD1yVvALxSUeLCD3LGxfk5kPPNQhx1P57ukDfoKRDqjEFTvYT",
+            xpub: "xpub6BxyVvFc8WwaZJt3NaYJPh7TS3xLmGH3Eu3R53yWZU58CMJo3QuVfU9jedpAuVA1idn7tJX6TrLVpeifbAySPewVEdH52tSQchLwSznnyCY",
+            addressLabels: [AddressLabelResponse(index: 0, label: "labeled_address")],
+            cache: AddressCacheResponse(
+                receiveAccount: "xpub6EMzXNjqSJ9cwWWPhVjN9EaRnjgaYXwg8WMRcXc9SgP5RpUCFFkDwbqJoAdzBkRCQZB5AA9qh3zk8uEpyzfUDGrXGE23GnCFGoPuYVMTN6C",
+                changeAccount: "xpub6EMzXNjqSJ9czvz8pyajFSziPmvSFvhukW8T48jvWs1Zxq9aTDqhfbNzz6DnzkdnvRSxXBBcw4APsbEcsFbFF9zqU8cznBasHhijkrUVnnK"
+            )
+        )
         let expectedAccount = AccountResponse(
             label: "Private Key Wallet",
             archived: false,
             defaultDerivation: DerivationResponse.Format.segwit,
-            derivations: [derivation]
+            derivations: [derivation, derivationSegwit]
         )
         XCTAssertFalse(hdWallet.accounts.isEmpty)
         XCTAssertEqual(hdWallet.accounts.first, expectedAccount)

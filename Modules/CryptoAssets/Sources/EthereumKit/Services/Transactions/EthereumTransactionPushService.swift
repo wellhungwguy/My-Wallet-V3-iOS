@@ -2,6 +2,7 @@
 
 import Combine
 import Errors
+import MoneyKit
 
 enum EthereumTransactionPushError: Error {
     case noTransactionID
@@ -12,7 +13,7 @@ protocol EthereumTransactionPushServiceAPI {
 
     func push(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<String, EthereumTransactionPushError>
 }
 
@@ -26,7 +27,7 @@ final class EthereumTransactionPushService: EthereumTransactionPushServiceAPI {
 
     func push(
         transaction: EthereumTransactionEncoded,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<String, EthereumTransactionPushError> {
         switch network {
         case .ethereum:
@@ -34,9 +35,7 @@ final class EthereumTransactionPushService: EthereumTransactionPushServiceAPI {
                 .map(\.txHash)
                 .mapError(EthereumTransactionPushError.networkError)
                 .eraseToAnyPublisher()
-        case .avalanceCChain,
-             .binanceSmartChain,
-             .polygon:
+        default:
             return client.evmPush(
                 transaction: transaction,
                 network: network

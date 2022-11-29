@@ -92,3 +92,22 @@ extension Publisher {
         sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }
 }
+
+extension AnyPublisher {
+    init(builder: @escaping (AnySubscriber<Output, Failure>) -> any Cancellable) {
+        self.init(
+            Deferred<Publishers.HandleEvents<PassthroughSubject<Output, Failure>>> {
+                let subject = PassthroughSubject<Output, Failure>()
+                var cancellable: Cancellable?
+                cancellable = builder(AnySubscriber(subject))
+                return subject
+                    .handleEvents(
+                        receiveCancel: {
+                            cancellable?.cancel()
+                            cancellable = nil
+                        }
+                    )
+            }
+        )
+    }
+}

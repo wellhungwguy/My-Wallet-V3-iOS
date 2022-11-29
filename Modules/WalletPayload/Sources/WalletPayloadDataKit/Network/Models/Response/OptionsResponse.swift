@@ -6,7 +6,7 @@ import WalletPayloadKit
 struct OptionsResponse: Equatable, Codable {
     let pbkdf2Iterations: Int
     let html5Notifications: Bool
-    let logoutTime: Int
+    let logoutTime: Int?
     let feePerKB: Int?
 
     enum CodingKeys: String, CodingKey {
@@ -20,14 +20,14 @@ struct OptionsResponse: Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         pbkdf2Iterations = try container.decode(Int.self, forKey: .pbkdf2Iterations)
         html5Notifications = try container.decodeIfPresent(Bool.self, forKey: .html5Notifications) ?? false
-        logoutTime = try container.decode(Int.self, forKey: .logoutTime)
+        logoutTime = try container.decodeIfPresent(Int.self, forKey: .logoutTime)
         feePerKB = try container.decodeIfPresent(Int.self, forKey: .feePerKB)
     }
 
     init(
         pbkdf2Iterations: Int,
         html5Notifications: Bool,
-        logoutTime: Int,
+        logoutTime: Int?,
         feePerKB: Int?
     ) {
         self.pbkdf2Iterations = pbkdf2Iterations

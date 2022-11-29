@@ -76,7 +76,7 @@ public struct AppModeSwitcherView: View {
                     chevronIcon
                 }
             } action: {
-                viewStore.send(.onBrokerageTapped)
+                viewStore.send(.onTradingTapped)
             }
 
             PrimaryRow(

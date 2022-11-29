@@ -63,6 +63,7 @@ struct RootView: View {
             tabs(in: viewStore)
         }
         .overlay(overlay, alignment: .bottom)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .bottomSheet(
             isPresented: viewStore.binding(\.$isAppModeSwitcherPresented).animation(.spring()),
             content: {
@@ -170,14 +171,15 @@ struct RootView: View {
     }
 
     func bottomViewItems(for viewStore: ViewStore<RootViewState, RootViewAction>) -> [BottomBarItem<Tag.Reference>] {
-    let tabs = viewStore.tabs ?? []
-     return tabs
-            .map { BottomBarItem(
-                id: $0.ref,
-                selectedIcon: $0.icon.renderingMode(.original),
-                unselectedIcon: $0.unselectedIcon?.renderingMode(.original) ?? Icon.hardware,
-                title: $0.name.localized()
-            )
+        let tabs = viewStore.tabs ?? []
+        return tabs
+            .map {
+                BottomBarItem(
+                    id: $0.ref,
+                    selectedIcon: $0.icon.renderingMode(.original),
+                    unselectedIcon: $0.unselectedIcon?.renderingMode(.original) ?? Icon.hardware,
+                    title: $0.name.localized()
+                )
             }
     }
 
@@ -221,11 +223,12 @@ struct RootView: View {
             referrals()
                 .if(!viewStore.referralState.isVisible, then: { view in view.hidden() })
 
-            QR()
+                    QR()
 
-            if viewStore.appSwitcherEnabled {
-                account()
-            }
+                    if viewStore.appSwitcherEnabled
+            {
+                    account()
+                }
         }
     }
 
@@ -260,7 +263,7 @@ struct RootView: View {
             }
         )
         .if(!viewStore.appModeSeen, then: { $0.highlighted() })
-        .identity(blockchain.ux.switcher.entry)
+            .identity(blockchain.ux.switcher.entry)
     }
 
     @ViewBuilder func QR() -> some View {

@@ -19,7 +19,7 @@ final class ERC20BalancesRepositoryTests: XCTestCase {
 
     private let refreshInterval: TimeInterval = 3
     private let currency: CryptoCurrency = .mockERC20(symbol: "A", displaySymbol: "A", name: "ERC20 1", sortIndex: 0)
-    private let ethereumAddress = EthereumAddress(address: "0x0000000000000000000000000000000000000000")!
+    private let ethereumAddress = EthereumAddress(address: "0x0000000000000000000000000000000000000000", network: .ethereum)!
 
     private var fetchAccounts: ERC20TokenAccounts!
     private var client: ERC20BalancesClientMock!
@@ -46,6 +46,7 @@ final class ERC20BalancesRepositoryTests: XCTestCase {
         .eraseToAnyCache()
 
         let enabledCurrenciesService = MockEnabledCurrenciesService()
+        enabledCurrenciesService.allEnabledEVMNetworks = [.ethereum]
         enabledCurrenciesService.allEnabledCryptoCurrencies = [currency]
 
         subject = ERC20BalancesRepository(

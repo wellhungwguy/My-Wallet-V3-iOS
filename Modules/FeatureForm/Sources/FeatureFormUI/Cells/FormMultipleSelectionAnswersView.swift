@@ -9,6 +9,7 @@ struct FormMultipleSelectionAnswersView: View {
     let title: String
     @Binding var answers: [FormAnswer]
     @Binding var showAnswersState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -31,10 +32,15 @@ struct FormMultipleSelectionAnswersView: View {
             FormMultipleSelectionAnswerView(
                 title: title,
                 answer: answer,
-                showAnswerState: $showAnswersState
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
         case .openEnded:
-            FormOpenEndedAnswerView(answer: answer, showAnswerState: $showAnswersState)
+            FormOpenEndedAnswerView(
+                answer: answer,
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
+            )
         default:
             Text(answer.wrappedValue.type.value)
                 .typography(.paragraph1)
@@ -92,7 +98,8 @@ struct FormMultipleSelectionAnswersView_Previews: PreviewProvider {
             FormMultipleSelectionAnswersView(
                 title: "Title",
                 answers: $answers,
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: defaultFieldConfiguration
             )
         }
     }

@@ -4,6 +4,7 @@ import Combine
 import Foundation
 
 public enum AppMode: String, Decodable, Equatable {
+    /// aka `DeFi`
     case pkw = "PKW"
     case trading = "TRADING"
     case universal = "UNIVERSAL"
@@ -31,5 +32,17 @@ extension AppProtocol {
         } else {
             return .universal
         }
+    }
+
+    public func mode() async -> AppMode {
+           let superAppEnabled = try? await get(blockchain.app.configuration.app.superapp.is.enabled, as: Bool.self)
+           guard superAppEnabled == true else {
+               return .universal
+           }
+           do {
+               return try await get(blockchain.app.mode, as: AppMode.self)
+           } catch {
+               return .trading
+           }
     }
 }

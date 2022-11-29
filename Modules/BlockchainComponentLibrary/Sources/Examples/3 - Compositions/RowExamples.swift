@@ -10,7 +10,8 @@ struct RowExamplesView: View {
         "Rows": [
             NavigationLinkProvider(view: TableRowExamplesView(), title: "TableRow"),
             NavigationLinkProvider(view: PrimaryRowExamplesView(), title: "PrimaryRow (old)"),
-            NavigationLinkProvider(view: BalanceRowExamplesView(), title: "BalanceRow")
+            NavigationLinkProvider(view: BalanceRowExamplesView(), title: "BalanceRow"),
+            NavigationLinkProvider(view: SimpleBalanceRowExamplesView(), title: "SimpleBalanceRow")
         ]
     ]
 

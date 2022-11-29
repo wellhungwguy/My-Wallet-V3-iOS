@@ -28,6 +28,10 @@ extension Accessibility.Identifier {
                 public static let title = "\(SettingsCell.prefix)BioAuthentication"
             }
 
+            public enum SmallBalance {
+                public static let title = "\(SettingsCell.prefix)SmallBalance"
+            }
+
             public enum AccountLimits {
                 public static let title = "\(SettingsCell.prefix)AccountLimits"
             }

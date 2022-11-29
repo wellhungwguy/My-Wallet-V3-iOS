@@ -55,6 +55,12 @@ struct TransactionState: StateType {
     var errorState: TransactionErrorState = .none
     var order: TransactionOrder?
 
+    var isStreamingQuotes: Bool { step == .confirmDetail }
+    var quote: BrokerageQuote?
+
+    var isStreamingPrices: Bool { step == .enterAmount }
+    var price: BrokerageQuote.Price?
+
     var dialog: UX.Dialog?
 
     /// `userKYCStatus` is `nil` until a transaction initializes.
@@ -172,6 +178,7 @@ extension TransactionState: Equatable {
         guard lhs.availableSources?.map(\.identifier) == rhs.availableSources?.map(\.identifier) else { return false }
         guard lhs.availableTargets?.map(\.label) == rhs.availableTargets?.map(\.label) else { return false }
         guard lhs.userKYCStatus == rhs.userKYCStatus else { return false }
+        guard lhs.quote == rhs.quote else { return false }
         return true
     }
 }

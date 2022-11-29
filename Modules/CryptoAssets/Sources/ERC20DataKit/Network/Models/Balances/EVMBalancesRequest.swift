@@ -4,6 +4,6 @@ import EthereumKit
 
 struct EVMBalancesRequest: Encodable {
     let addresses: [String]
-    let network: EVMNetwork
+    let network: String
     let apiCode: String
 }

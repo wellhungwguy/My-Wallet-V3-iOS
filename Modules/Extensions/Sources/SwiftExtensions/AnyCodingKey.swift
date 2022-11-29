@@ -15,7 +15,7 @@ public struct AnyCodingKey: CodingKey {
 
 extension AnyCodingKey {
 
-    public init<K>(_ key: K) where K: CodingKey {
+    public init(_ key: some CodingKey) {
         (intValue, stringValue) = (key.intValue, key.stringValue)
     }
 

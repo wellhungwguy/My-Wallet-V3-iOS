@@ -42,51 +42,8 @@ extension DependencyContainer {
                 ),
                 errorRecorder: DIKit.resolve(),
                 exchangeAccountProvider: DIKit.resolve(),
-                kycTiersService: DIKit.resolve()
-            ) as CryptoAsset
-        }
-
-        // MARK: CoinCore
-
-        factory(tag: CryptoCurrency.polygon) {
-            EVMAsset(
-                network: .polygon,
-                repository: DIKit.resolve(),
-                addressFactory: EthereumExternalAssetAddressFactory(
-                    enabledCurrenciesService: DIKit.resolve(),
-                    network: .polygon
-                ),
-                errorRecorder: DIKit.resolve(),
-                exchangeAccountProvider: DIKit.resolve(),
-                kycTiersService: DIKit.resolve()
-            ) as CryptoAsset
-        }
-
-        factory(tag: CryptoCurrency.avax) {
-            EVMAsset(
-                network: .avalanceCChain,
-                repository: DIKit.resolve(),
-                addressFactory: EthereumExternalAssetAddressFactory(
-                    enabledCurrenciesService: DIKit.resolve(),
-                    network: .avalanceCChain
-                ),
-                errorRecorder: DIKit.resolve(),
-                exchangeAccountProvider: DIKit.resolve(),
-                kycTiersService: DIKit.resolve()
-            ) as CryptoAsset
-        }
-
-        factory(tag: CryptoCurrency.bnb) {
-            EVMAsset(
-                network: .binanceSmartChain,
-                repository: DIKit.resolve(),
-                addressFactory: EthereumExternalAssetAddressFactory(
-                    enabledCurrenciesService: DIKit.resolve(),
-                    network: .binanceSmartChain
-                ),
-                errorRecorder: DIKit.resolve(),
-                exchangeAccountProvider: DIKit.resolve(),
-                kycTiersService: DIKit.resolve()
+                kycTiersService: DIKit.resolve(),
+                featureFlag: DIKit.resolve()
             ) as CryptoAsset
         }
 
@@ -156,7 +113,7 @@ extension DependencyContainer {
                 keyPairProvider: DIKit.resolve(),
                 transactionSendingService: DIKit.resolve(),
                 recordLastTransaction: { transaction in
-                    .just(transaction)
+                        .just(transaction)
                 }
             )
         }
@@ -169,11 +126,13 @@ extension DependencyContainer {
 
         factory { GasEstimateService() as GasEstimateServiceAPI }
 
-        factory {
+        factory { () -> EthereumTransactionPushServiceAPI in
             EthereumTransactionPushService(
                 client: DIKit.resolve()
-            ) as EthereumTransactionPushServiceAPI
+            )
         }
+
+        factory { EVMAssetFactory() as EVMAssetFactoryAPI }
     }
 }
 
@@ -182,5 +141,26 @@ extension DependencyContainer {
         enum EthereumAccountService {
             static let isContractAddressCache = String(describing: Self.self)
         }
+    }
+}
+
+extension EVMNetwork {
+    public static let ethereum: EVMNetwork = .init(networkConfig: .ethereum, nativeAsset: .ethereum)
+}
+
+final class EVMAssetFactory: EVMAssetFactoryAPI {
+    func evmAsset(network: EVMNetwork) -> CryptoAsset {
+        EVMAsset(
+            network: network,
+            repository: DIKit.resolve(),
+            addressFactory: EthereumExternalAssetAddressFactory(
+                enabledCurrenciesService: DIKit.resolve(),
+                network: network
+            ),
+            errorRecorder: DIKit.resolve(),
+            exchangeAccountProvider: DIKit.resolve(),
+            kycTiersService: DIKit.resolve(),
+            featureFlag: DIKit.resolve()
+        )
     }
 }

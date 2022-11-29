@@ -74,7 +74,7 @@ struct AppDelegateEnvironment {
     var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
-    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
+    var assetsRemoteService: AssetsRemoteServiceAPI
     var featureFlagService: FeatureFlagsServiceAPI
     var observabilityService: ObservabilityServiceAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
@@ -105,20 +105,8 @@ let appDelegateReducer = Reducer<
     case .didFinishLaunching(let window, let context):
         state.window = window
         return .merge(
-            environment.supportedAssetsRemoteService
-                .refreshCustodialAssetsCache()
-                .receive(on: environment.mainQueue)
-                .eraseToEffect()
-                .fireAndForget(),
-
-            environment.supportedAssetsRemoteService
-                .refreshEthereumERC20AssetsCache()
-                .receive(on: environment.mainQueue)
-                .eraseToEffect()
-                .fireAndForget(),
-
-            environment.supportedAssetsRemoteService
-                .refreshOtherERC20AssetsCache()
+            environment.assetsRemoteService
+                .refreshCache
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),

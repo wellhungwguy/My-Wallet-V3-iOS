@@ -9,7 +9,7 @@ final class FraudIntelligenceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        app = App.test
+        app = App.debug(scheduler: .immediate)
         app.state.set(blockchain.ux.transaction.id, to: "buy")
         sut = Sardine(app, http: URLSession.test, scheduler: .immediate)
         sut.start()
@@ -17,51 +17,37 @@ final class FraudIntelligenceTests: XCTestCase {
 
     override func tearDown() {
         sut.stop()
-        sut = nil
-        app = nil
         Test.MobileIntelligence.tearDown()
         super.tearDown()
     }
 
     func initialise() {
-
         app.post(event: blockchain.app.did.finish.launching)
+        app.state.set(blockchain.api.nabu.gateway.generate.session.headers, to: ["X-Session-ID": "session-id"])
         app.remoteConfiguration.override(blockchain.app.fraud.sardine.client.identifier, with: "client-id")
     }
 
     func test_initialise() {
 
-        XCTAssertNil(Test.MobileIntelligence.options)
-
         initialise()
 
-        XCTAssertNotNil(Test.MobileIntelligence.options)
-        XCTAssertEqual(Test.MobileIntelligence.options.clientId, "client-id")
+        XCTAssertNotNil(Test.MobileIntelligence.options, "options should be not nil")
+        XCTAssertEqual(Test.MobileIntelligence.options?.clientId, "client-id", "client-id should match")
+        XCTAssertEqual(Test.MobileIntelligence.options?.sessionKey, "session-id".sha256())
     }
 
     func test_update() {
 
         initialise()
 
-        XCTAssertNil(Test.MobileIntelligence.options.userIdHash)
-        XCTAssertNil(Test.MobileIntelligence.options.sessionKey)
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
+        XCTAssertNil(Test.MobileIntelligence.options?.userIdHash)
+        XCTAssertNil(Test.MobileIntelligence.options?.flow)
 
         app.state.set(blockchain.user.id, to: "user-id")
+        app.state.set(blockchain.app.fraud.sardine.current.flow, to: "order")
 
-        XCTAssertNil(Test.MobileIntelligence.options.userIdHash)
-        XCTAssertNil(Test.MobileIntelligence.options.sessionKey)
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
-
-        app.state.transaction { state in
-            state.set(blockchain.user.id, to: "user-id")
-            state.set(blockchain.app.fraud.sardine.session, to: "session-id")
-            state.set(blockchain.app.fraud.sardine.current.flow, to: "order")
-        }
-
-        XCTAssertEqual(Test.MobileIntelligence.options.userIdHash, "user-id".sha256())
-        XCTAssertEqual(Test.MobileIntelligence.options.sessionKey, "session-id".sha256())
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.userIdHash, "user-id".sha256())
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
     }
 
     func test_flow() throws {
@@ -107,28 +93,27 @@ final class FraudIntelligenceTests: XCTestCase {
             "ach"
         ])
         XCTAssertThrowsError(try flow())
-        XCTAssertNil(Test.MobileIntelligence.options.flow)
 
         app.post(event: blockchain.session.event.will.sign.in)
         XCTAssertEqual(try flow(), "login")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "login")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "login")
 
         app.post(event: blockchain.ux.transaction.event.did.start)
         XCTAssertEqual(try flow(), "order")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
 
         app.post(event: blockchain.ux.transaction.enter.amount)
         XCTAssertEqual(try flow(), "order")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "order")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "order")
 
         app.state.set(blockchain.session.state.value, to: true)
         app.post(event: blockchain.ux.transaction.enter.amount)
         XCTAssertEqual(try flow(), "ach")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "ach")
 
         app.post(event: blockchain.ux.transaction.event.did.finish)
         XCTAssertEqual(try flow(), "ach")
-        XCTAssertEqual(Test.MobileIntelligence.options.flow, "ach")
+        XCTAssertEqual(Test.MobileIntelligence.options?.flow, "ach")
     }
 
     func test_trigger() throws {
@@ -145,17 +130,19 @@ final class FraudIntelligenceTests: XCTestCase {
         subscription.start()
         defer { subscription.stop() }
 
-        app.post(event: blockchain.session.event.will.sign.in)
-        XCTAssertEqual(count, 0)
-        XCTAssertEqual(Test.MobileIntelligence.count, 0)
+        app.state.set(blockchain.app.fraud.sardine.current.flow, to: "TEST")
 
-        app.post(event: blockchain.session.event.did.sign.in)
+        app.post(event: blockchain.session.event.will.sign.in)
         XCTAssertEqual(count, 1)
         XCTAssertEqual(Test.MobileIntelligence.count, 1)
 
-        app.post(event: blockchain.ux.transaction.event.did.finish)
+        app.post(event: blockchain.session.event.did.sign.in)
         XCTAssertEqual(count, 2)
         XCTAssertEqual(Test.MobileIntelligence.count, 2)
+
+        app.post(event: blockchain.ux.transaction.event.did.finish)
+        XCTAssertEqual(count, 3)
+        XCTAssertEqual(Test.MobileIntelligence.count, 3)
     }
 }
 
@@ -163,7 +150,7 @@ enum Test {
 
     class MobileIntelligence: MobileIntelligence_p {
 
-        static var options: Options!
+        static var options: Options?
         static var count: Int = 0
 
         static var field: [String: (focus: Bool, text: String)] = [:]
@@ -184,9 +171,10 @@ enum Test {
         }
 
         static func updateOptions(options: UpdateOptions, completion: ((Response) -> Void)?) {
-            Self.options.sessionKey = options.sessionKey
-            Self.options.flow = options.flow
-            Self.options.userIdHash = options.userIdHash
+            Self.options = Self.options ?? .init()
+            Self.options?.sessionKey = options.sessionKey
+            Self.options?.flow = options.flow
+            Self.options?.userIdHash = options.userIdHash
             completion?(Response(status: true, message: nil))
         }
 

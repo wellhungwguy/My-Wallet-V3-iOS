@@ -12,5 +12,17 @@ extension LocalizationConstants {
             "Confirm",
             comment: "Buy confirmation navigation bar title"
         )
+        static let applePay = NSLocalizedString(
+            "Apple Pay",
+            comment: "Payment Method: Apple Pay"
+        )
+        static let funds = NSLocalizedString(
+            "Funds",
+            comment: "Payment Method: Funds"
+        )
+        static let bank = NSLocalizedString(
+            "Bank",
+            comment: "Payment Method: Bank"
+        )
     }
 }

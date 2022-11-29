@@ -13,7 +13,7 @@ import SwiftUI
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=6%3A2955)
 public struct SmallMinimalButton: View {
 
-    private let title: String
+    @Binding var title: String
     private let isLoading: Bool
     private let action: () -> Void
 
@@ -22,14 +22,39 @@ public struct SmallMinimalButton: View {
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
-        self.title = title
+        self._title = .constant(title)
         self.isLoading = isLoading
         self.action = action
     }
 
+    public init(
+        title: Binding<String>,
+        isLoading: Bool = false,
+        action: @escaping () -> Void
+    ) {
+        self._title = title
+        self.isLoading = isLoading
+        self.action = action
+    }
+
+    public init(
+        title: String,
+        isLoading: Bool = false,
+        action: @escaping () async -> Void
+    ) {
+        self._title = .constant(title)
+        self.isLoading = isLoading
+        self.action = { Task(priority: .userInitiated) { @MainActor in await action() } }
+    }
+
     public var body: some View {
-        MinimalButton(title: title, isLoading: isLoading, action: action)
-            .pillButtonSize(.small)
+        MinimalButton(
+            title: $title,
+            isLoading: isLoading,
+            leadingView: { EmptyView() },
+            action: action
+        )
+        .pillButtonSize(.small)
     }
 }
 

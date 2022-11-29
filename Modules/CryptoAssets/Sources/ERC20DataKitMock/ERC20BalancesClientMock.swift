@@ -46,7 +46,7 @@ final class ERC20BalancesClientMock: ERC20BalancesClientAPI {
 
     func evmTokensBalances(
         for address: String,
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<EVMBalancesResponse, NetworkError> {
         switch behaviour {
         case .succeed:

@@ -22,7 +22,7 @@ extension Tag {
             set { dictionary[reference.key()] = newValue }
         }
 
-        public subscript<K: TaggedEvent>(reference: K) -> Value? {
+        public subscript(reference: some TaggedEvent) -> Value? {
             get { dictionary[reference.key()] }
             set { dictionary[reference.key()] = newValue }
         }

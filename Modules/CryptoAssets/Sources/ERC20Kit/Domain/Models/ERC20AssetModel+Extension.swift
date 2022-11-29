@@ -4,16 +4,16 @@ import EthereumKit
 import MoneyKit
 
 extension AssetModel {
-    var contractAddress: EthereumAddress? {
-        kind.contractAddress
+    func contractAddress(network: EVMNetwork) -> EthereumAddress? {
+        kind.contractAddress(network: network)
     }
 }
 
 extension AssetModelType {
-    var contractAddress: EthereumAddress? {
+    fileprivate func contractAddress(network: EVMNetwork) -> EthereumAddress? {
         switch self {
-        case .erc20(let contractAddress, let network):
-            return EthereumAddress(address: contractAddress, network: network.evmNetwork)
+        case .erc20(let contractAddress, _):
+            return EthereumAddress(address: contractAddress, network: network)
         case .coin, .fiat, .celoToken:
             return nil
         }

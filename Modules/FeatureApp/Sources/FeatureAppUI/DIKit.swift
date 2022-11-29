@@ -6,6 +6,7 @@ import Embrace
 import FeatureAddressSearchDomain
 import FeatureAddressSearchUI
 import FeatureAuthenticationDomain
+import FeatureCardIssuingDomain
 import FeatureCardIssuingUI
 import FeatureCoinData
 import FeatureCoinDomain
@@ -20,11 +21,6 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 import UIKit
-
-private enum AddressSearchTag: String {
-    case cardOrder
-    case kyc
-}
 
 extension DependencyContainer {
 
@@ -102,39 +98,58 @@ extension DependencyContainer {
             ) as TopUpRouterAPI
         }
 
-        factory {
+        factory(tag: CardIssuingTag.residentialAddress) {
             CardIssuingAddressSearchRouter(
-                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.cardOrder)
+                addressSearchRouterRouter: DIKit.resolve(tag: CardIssuingTag.residentialAddress)
             ) as FeatureCardIssuingUI.AddressSearchRouterAPI
         }
 
-        factory(tag: AddressSearchTag.cardOrder) {
+        factory(tag: CardIssuingTag.shippingAddress) {
+            CardIssuingAddressSearchRouter(
+                addressSearchRouterRouter: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
+            ) as FeatureCardIssuingUI.AddressSearchRouterAPI
+        }
+
+        factory(tag: CardIssuingTag.residentialAddress) {
             AddressSearchRouter(
                 topMostViewControllerProvider: DIKit.resolve(),
-                addressService: DIKit.resolve(tag: AddressSearchTag.cardOrder)
+                addressService: DIKit.resolve(tag: CardIssuingTag.residentialAddress)
             ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
         }
 
-        factory(tag: AddressSearchTag.cardOrder) {
+        factory(tag: CardIssuingTag.shippingAddress) {
+            AddressSearchRouter(
+                topMostViewControllerProvider: DIKit.resolve(),
+                addressService: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
+            ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
+        }
+
+        factory(tag: CardIssuingTag.residentialAddress) {
             AddressService(
-                repository: DIKit.resolve()
+                repository: DIKit.resolve(tag: CardIssuingTag.residentialAddress)
+            ) as FeatureAddressSearchDomain.AddressServiceAPI
+        }
+
+        factory(tag: CardIssuingTag.shippingAddress) {
+            AddressService(
+                repository: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
             ) as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
         factory { () -> AddressSearchFlowPresenterAPI in
             AddressSearchFlowPresenter(
-                addressSearchRouterRouter: DIKit.resolve(tag: AddressSearchTag.kyc)
+                addressSearchRouterRouter: DIKit.resolve()
             ) as AddressSearchFlowPresenterAPI
         }
 
-        factory(tag: AddressSearchTag.kyc) {
+        factory {
             AddressSearchRouter(
                 topMostViewControllerProvider: DIKit.resolve(),
-                addressService: DIKit.resolve(tag: AddressSearchTag.kyc)
+                addressService: DIKit.resolve()
             ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
         }
 
-        factory(tag: AddressSearchTag.kyc) {
+        factory {
             AddressKYCService() as FeatureAddressSearchDomain.AddressServiceAPI
         }
 

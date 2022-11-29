@@ -70,6 +70,8 @@ extension Account.AccountType {
             return .private
         case .trading:
             return .trade
+        case .staking:
+            return .walletStaking
         }
     }
 
@@ -83,6 +85,8 @@ extension Account.AccountType {
             return Localization.privateKey.subtitle
         case .trading:
             return Localization.trading.subtitle
+        case .staking:
+            return Localization.interest.subtitle
         }
     }
 }
@@ -103,7 +107,8 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatCurrency: .USD,
                         actions: [],
                         crypto: .one(currency: .bitcoin),
-                        fiat: .one(currency: .USD)
+                        fiat: .one(currency: .USD),
+                        isComingSoon: false
                     ),
                     assetColor: .orange,
                     interestRate: nil
@@ -120,7 +125,8 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatCurrency: .USD,
                         actions: [],
                         crypto: .one(currency: .bitcoin),
-                        fiat: .one(currency: .USD)
+                        fiat: .one(currency: .USD),
+                        isComingSoon: false
                     ),
                     assetColor: .orange,
                     interestRate: nil
@@ -137,7 +143,26 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatCurrency: .USD,
                         actions: [],
                         crypto: .one(currency: .bitcoin),
-                        fiat: .one(currency: .USD)
+                        fiat: .one(currency: .USD),
+                        isComingSoon: false
+                    ),
+                    assetColor: .orange,
+                    interestRate: 2.5
+                )
+
+                PrimaryDivider()
+
+                AccountRow(
+                    account: .init(
+                        id: "",
+                        name: "Staking Account",
+                        accountType: .staking,
+                        cryptoCurrency: .ethereum,
+                        fiatCurrency: .USD,
+                        actions: [],
+                        crypto: .one(currency: .ethereum),
+                        fiat: .one(currency: .USD),
+                        isComingSoon: false
                     ),
                     assetColor: .orange,
                     interestRate: 2.5
@@ -154,13 +179,12 @@ struct AccountRow_PreviewProvider: PreviewProvider {
                         fiatCurrency: .USD,
                         actions: [],
                         crypto: .one(currency: .bitcoin),
-                        fiat: .one(currency: .USD)
+                        fiat: .one(currency: .USD),
+                        isComingSoon: false
                     ),
                     assetColor: .orange,
                     interestRate: nil
                 )
-
-                PrimaryDivider()
             }
         }
     }

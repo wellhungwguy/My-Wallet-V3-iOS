@@ -10,7 +10,7 @@ public enum Network {
 
     public struct Config {
 
-        let apiScheme: String
+        let apiScheme: String?
         let apiHost: String
         let apiCode: String
         let pathComponents: [String]
@@ -59,7 +59,7 @@ public enum Network {
 
         public static let websocketConfig = Config(
             apiScheme: "wss",
-            apiHost: InfoDictionaryHelper.value(for: .websocketConversionURL),
+            apiHost: InfoDictionaryHelper.value(for: .websocketURL),
             apiCode: "",
             pathComponents: []
         )
@@ -69,7 +69,7 @@ public enum Network {
 extension Network.Config {
 
     public init(
-        scheme: String,
+        scheme: String? = nil,
         host: String,
         code: String = BlockchainAPI.Parameters.apiCode,
         components: [String] = []

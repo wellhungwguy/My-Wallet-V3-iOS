@@ -8,27 +8,35 @@ struct FormQuestionView: View {
 
     @Binding var question: FormQuestion
     @Binding var showAnswersState: Bool
+    let fieldConfiguration: PrimaryFormFieldConfiguration
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.padding2) {
+        VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: Spacing.textSpacing) {
                 Text(question.text)
                     .typography(.paragraph2)
                     .foregroundColor(.semantic.title)
             }
 
-            makeAnswersView()
-
             if let instructions = question.instructions {
+                Spacer(minLength: Spacing.padding1)
                 Text(instructions)
                     .typography(.caption1)
                     .foregroundColor(.semantic.body)
             }
+
+            Spacer(minLength: Spacing.padding1)
+
+            makeAnswersView(
+                fieldConfiguration: fieldConfiguration
+            )
         }
     }
 
     @ViewBuilder
-    private func makeAnswersView() -> some View {
+    private func makeAnswersView(
+        fieldConfiguration: @escaping PrimaryFormFieldConfiguration
+    ) -> some View {
         switch question.type {
 
         case .multipleSelection where question.isDropdown == true:
@@ -37,14 +45,16 @@ struct FormQuestionView: View {
                 subtitle: question.instructions,
                 selectionMode: .multi,
                 answers: $question.children,
-                showAnswerState: $showAnswersState
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
 
         case .multipleSelection:
             FormMultipleSelectionAnswersView(
                 title: question.text,
                 answers: $question.children,
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
 
         case .singleSelection where question.isDropdown == true:
@@ -53,28 +63,32 @@ struct FormQuestionView: View {
                 subtitle: question.instructions,
                 selectionMode: .single,
                 answers: $question.children,
-                showAnswerState: $showAnswersState
+                showAnswerState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
 
         case .singleSelection:
             FormSingleSelectionAnswersView(
                 title: question.text,
                 answers: $question.children,
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
 
         case .openEnded where question.children.isNotEmpty:
             FormSingleSelectionAnswersView(
                 title: question.text,
                 answers: $question.children,
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
 
         case .openEnded:
             FormSingleSelectionAnswersView(
                 title: question.text,
                 answers: $question.own.transform(get: { [$0] }, set: { $0[0] }),
-                showAnswersState: $showAnswersState
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: fieldConfiguration
             )
         }
     }
@@ -88,7 +102,11 @@ struct FormQuestionView_Previews: PreviewProvider {
         @State var showAnswersState: Bool
 
         var body: some View {
-            FormQuestionView(question: $question, showAnswersState: $showAnswersState)
+            FormQuestionView(
+                question: $question,
+                showAnswersState: $showAnswersState,
+                fieldConfiguration: defaultFieldConfiguration
+            )
         }
     }
 

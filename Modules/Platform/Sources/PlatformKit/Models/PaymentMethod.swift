@@ -77,6 +77,15 @@ public struct PaymentMethod: Equatable, Comparable {
             }
         }
 
+        public var isACH: Bool {
+            switch self {
+            case .bankTransfer(let currency):
+                return currency == .USD
+            case _:
+                return false
+            }
+        }
+
         public var rawType: PaymentMethodPayloadType {
             switch self {
             case .card:

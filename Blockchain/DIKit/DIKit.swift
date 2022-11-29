@@ -23,6 +23,8 @@ import FeatureCoinData
 import FeatureCoinDomain
 import FeatureCryptoDomainData
 import FeatureCryptoDomainDomain
+import FeatureDashboardData
+import FeatureDashboardDomain
 import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
@@ -53,6 +55,7 @@ import FirebaseRemoteConfig
 import MoneyKit
 import NetworkKit
 import ObservabilityKit
+import PermissionsKit
 import PlatformDataKit
 import PlatformKit
 import PlatformUIKit
@@ -72,7 +75,7 @@ extension UIApplication: PlatformKit.AppStoreOpening {}
 extension DependencyContainer {
 
     // swiftlint:disable closure_body_length
-    static var blockchain = module {
+    static var blockchainApp = module {
 
         factory { NavigationRouter() as NavigationRouterAPI }
 
@@ -442,7 +445,7 @@ extension DependencyContainer {
         }
 
         single { () -> HistoricalPriceRepositoryAPI in
-            HistoricalPriceRepository(DIKit.resolve())
+            HistoricalPriceRepository(DIKit.resolve(), prices: DIKit.resolve())
         }
 
         single { () -> RatesClientAPI in
@@ -635,7 +638,7 @@ extension DependencyContainer {
         factory(tag: NetworkKit.HTTPHeaderTag) { () -> () -> HTTPHeaders in
             let app: AppProtocol = DIKit.resolve()
             return {
-                app.state.result(for: BlockchainNamespace.blockchain.api.nabu.gateway.generate.session.headers)
+                app.state.result(for: blockchain.api.nabu.gateway.generate.session.headers)
                     .decode(HTTPHeaders.self)
                     .value
                     .or([:])
@@ -679,6 +682,19 @@ extension DependencyContainer {
                  topViewController: DIKit.resolve(),
                  recoveryStatusProviding: DIKit.resolve()
              ) as RecoveryPhraseBackupRouterAPI
+        }
+
+        factory { () -> AllCryptoAssetsServiceAPI in
+            AllCryptoAssetsService(
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                priceService: DIKit.resolve()
+            ) as AllCryptoAssetsServiceAPI
+        }
+
+        single { () -> AllCryptoAssetsRepositoryAPI in
+            AllCryptoAssetsRepository(allCryptoAssetService: DIKit.resolve())
         }
     }
 }

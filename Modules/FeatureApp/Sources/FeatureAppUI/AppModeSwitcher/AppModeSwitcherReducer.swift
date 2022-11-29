@@ -37,15 +37,15 @@ extension AppModeSwitcherModule {
 
                 return .merge(
                     .fireAndForget {
-                        environment.app.state.set(blockchain.app.mode, to: AppMode.pkw.rawValue)
+                        environment.app.post(value: AppMode.pkw.rawValue, of: blockchain.app.mode)
                     },
                     Effect(value: .dismiss)
                 )
 
-            case .onBrokerageTapped:
+            case .onTradingTapped:
                 return .merge(
                     .fireAndForget {
-                        environment.app.state.set(blockchain.app.mode, to: AppMode.trading.rawValue)
+                        environment.app.post(value: AppMode.trading.rawValue, of: blockchain.app.mode)
                     },
                     Effect(value: .dismiss)
                 )
@@ -98,45 +98,5 @@ extension AppModeSwitcherModule {
             }
         }
         .binding()
-        .analytics()
-    }
-}
-
-extension Reducer where
-    Action == AppModeSwitcherAction,
-    State == AppModeSwitcherState,
-    Environment == AppModeSwitcherEnvironment
-{
-    /// Helper reducer for analytics tracking
-    fileprivate func analytics() -> Self {
-        combined(
-            with: Reducer<
-                AppModeSwitcherState,
-                AppModeSwitcherAction,
-                AppModeSwitcherEnvironment
-            > { _, action, environment in
-                switch action {
-                case .onBrokerageTapped:
-                    environment.analyticsRecorder.record(
-                        event: AnalyticsEvents.New.AppModeSwitcher.switchedToTrading
-                    )
-                    return .none
-
-                case .onDefiTapped:
-                    environment.analyticsRecorder.record(
-                        event: AnalyticsEvents.New.AppModeSwitcher.switchedToDefi
-                    )
-                    return .none
-
-                case .defiWalletIntro(.onEnableDefiTap):
-                    environment.analyticsRecorder.record(
-                        event: AnalyticsEvents.New.DefiWalletIntro.enableDefiClicked
-                    )
-                    return .none
-                default:
-                    return .none
-                }
-            }
-        )
     }
 }

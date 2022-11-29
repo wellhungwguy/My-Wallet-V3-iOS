@@ -3,9 +3,10 @@
 import BigInt
 import Combine
 import Errors
+import MoneyKit
 
 public protocol LatestBlockRepositoryAPI {
     func latestBlock(
-        network: EVMNetwork
+        network: EVMNetworkConfig
     ) -> AnyPublisher<BigInt, NetworkError>
 }

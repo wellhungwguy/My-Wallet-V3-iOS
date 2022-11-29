@@ -19,9 +19,9 @@ struct AccountResponse: Equatable, Codable {
     init(from decoder: Decoder) throws {
         let keyed = try decoder.container(keyedBy: CodingKeys.self)
         label = try keyed.decode(String.self, forKey: .label)
-        // some clients might not send the `archived` key/value, so we check this and default to `false`
+        // some clients might not send various properties, so we check and provide a default value
         archived = try keyed.decodeIfPresent(Bool.self, forKey: .archived) ?? false
-        defaultDerivation = try keyed.decode(DerivationResponse.Format.self, forKey: .defaultDerivation)
+        defaultDerivation = try keyed.decodeIfPresent(DerivationResponse.Format.self, forKey: .defaultDerivation) ?? .segwit
         derivations = try keyed.decode([DerivationResponse].self, forKey: .derivations)
     }
 
@@ -44,7 +44,7 @@ extension WalletPayloadKit.Account {
             index: index,
             label: model.label,
             archived: model.archived,
-            defaultDerivation: DerivationResponse.Format.create(from: model.defaultDerivation),
+            defaultDerivation: model.defaultDerivation.toType,
             derivations: model.derivations.map(WalletPayloadKit.Derivation.from(model:))
         )
     }
@@ -53,7 +53,7 @@ extension WalletPayloadKit.Account {
         AccountResponse(
             label: label,
             archived: archived,
-            defaultDerivation: DerivationResponse.Format.create(type: defaultDerivation),
+            defaultDerivation: defaultDerivation.toDerivationFormat,
             derivations: derivations.map(\.derivationResponse)
         )
     }

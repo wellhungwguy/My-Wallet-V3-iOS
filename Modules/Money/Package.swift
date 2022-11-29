@@ -70,9 +70,11 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool")
             ],
             resources: [
+                .copy("Resources/local-currencies-coin.json"),
                 .copy("Resources/local-currencies-custodial.json"),
                 .copy("Resources/local-currencies-ethereum-erc20.json"),
-                .copy("Resources/local-currencies-other-erc20.json")
+                .copy("Resources/local-currencies-other-erc20.json"),
+                .copy("Resources/local-network-config.json")
             ]
         ),
         .target(

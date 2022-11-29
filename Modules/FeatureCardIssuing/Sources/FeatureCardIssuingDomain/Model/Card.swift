@@ -125,7 +125,8 @@ extension Card {
 extension Card.Fulfillment {
 
     public enum Status: String, Codable {
-        case ordered = "PROCESSING"
+        case processing = "PROCESSING"
+        case processed = "PROCESSED"
         case shipped = "SHIPPED"
         case delivered = "DELIVERED"
     }

@@ -67,6 +67,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let messageRecorder: MessageRecording
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
+    let showACHDepositTermsTapped = PublishRelay<String>()
+    let availableToWithdrawDateInfoTapped = PublishRelay<Void>()
     let hyperlinkTapped = PublishRelay<TitledLink>()
     let memoUpdated = PublishRelay<(String, TransactionConfirmations.Memo)>()
     private let memoModel: TextFieldViewModel
@@ -149,18 +151,21 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .store(in: &cancellables)
                 disclaimers.append(disclaimerViewModel)
             } else {
-                disclaimers.append(
-                    DisclaimerViewModel(
-                        text: TransactionFlowDescriptor
-                            .confirmDisclaimerText(
-                                action: state.action,
-                                currencyCode: state.asset.code,
-                                accountLabel: state.destination?.label ?? "",
-                                isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
-                                    || (state.source as? LinkedBankAccount)?.data.partner == .yapily
-                            )
+                let text = TransactionFlowDescriptor
+                    .confirmDisclaimerText(
+                        action: state.action,
+                        currencyCode: state.asset.code,
+                        accountLabel: state.destination?.label ?? "",
+                        isSafeConnect: (state.source as? PaymentMethodAccount)?.isYapily == true
+                        || (state.source as? LinkedBankAccount)?.data.partner == .yapily
                     )
-                )
+                if text.string.isNotEmpty {
+                    disclaimers.append(
+                        DisclaimerViewModel(
+                            text: text
+                        )
+                    )
+                }
             }
         }
         return disclaimers
@@ -331,6 +336,20 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             }
             .first
 
+        let depositACHTerms: TransactionConfirmations.DepositTerms? = confirmations
+            .filter(\.isDepositACHTerms)
+            .compactMap { confirmation -> TransactionConfirmations.DepositTerms? in
+                confirmation as? TransactionConfirmations.DepositTerms
+            }
+            .first
+
+        let availableToWithdrawDate: TransactionConfirmations.AvailableToWithdrawDate? = confirmations
+            .filter(\.isAvailableToWithdrawDate)
+            .compactMap { confirmation -> TransactionConfirmations.AvailableToWithdrawDate? in
+                confirmation as? TransactionConfirmations.AvailableToWithdrawDate
+            }
+            .first
+
         var memoModels: [DetailsScreen.CellType] = []
         if let memo {
             let subtitle = memo.formatted?.subtitle ?? ""
@@ -378,9 +397,48 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
         }
 
+        var depositTermsModels: [DetailsScreen.CellType] = []
+        if let depositACHTerms {
+            let depositACHTermsViewModel = TermsViewCellModel(
+                text: .init(string: depositACHTerms.formatted?.subtitle ?? ""),
+                readMoreButtonTitle: depositACHTerms.readMoreButtonTitle,
+                detailsDescription: depositACHTerms.detailsDesription
+            )
+            depositACHTermsViewModel
+                .tapRelay
+                .asObservable()
+                .bind(to: showACHDepositTermsTapped)
+                .disposed(by: disposeBag)
+            depositTermsModels.append(
+                contentsOf: [
+                    .terms(depositACHTermsViewModel)
+                ]
+            )
+        }
+
+        var availableToWithdrawDateModels: [DetailsScreen.CellType] = []
+        if let availableToWithdrawDate {
+            let cellModel = LabelInfoViewCellModel(
+                title: availableToWithdrawDate.formatted?.title,
+                subtitle: availableToWithdrawDate.formatted?.subtitle,
+                isInfoButtonVisible: true
+            )
+            cellModel
+                .tapInfoRelay
+                .asObservable()
+                .bind(to: availableToWithdrawDateInfoTapped)
+                .disposed(by: disposeBag)
+            availableToWithdrawDateModels.append(
+                contentsOf: [
+                    .labelInfo(cellModel)
+                ]
+            )
+        }
+
         let topCells: [DetailsScreen.CellType] = imageNoticeModels + noticeModels
-        let midCells: [DetailsScreen.CellType] = bitpayItemIfNeeded + confirmationLineItems + memoModels
-        let bottomCells: [DetailsScreen.CellType] = errorModels + checkboxModels
+        let midCells: [DetailsScreen.CellType] = bitpayItemIfNeeded
+        + confirmationLineItems + memoModels + availableToWithdrawDateModels
+        let bottomCells: [DetailsScreen.CellType] = errorModels + checkboxModels + depositTermsModels
         return topCells + [.separator] + midCells + bottomCells
     }
 
@@ -454,7 +512,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isQuoteExpirationTimer || isErrorNotice || isNotice || isMemo || isBitPay || isCheckbox
+        isQuoteExpirationTimer || isErrorNotice || isNotice || isMemo || isBitPay
+        || isCheckbox || isDepositACHTerms || isAvailableToWithdrawDate
     }
 
     var isCheckbox: Bool {
@@ -491,6 +550,14 @@ extension TransactionConfirmation {
 
     var isTransferAgreement: Bool {
         (self as? TransactionConfirmations.AnyBoolOption<Bool>)?.type == .agreementInterestTransfer
+    }
+
+    var isDepositACHTerms: Bool {
+        (self as? TransactionConfirmations.DepositTerms)?.type == .depositACHTerms
+    }
+
+    var isAvailableToWithdrawDate: Bool {
+        self is TransactionConfirmations.AvailableToWithdrawDate
     }
 
     var isMemo: Bool {

@@ -19,9 +19,10 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/thousandyears/Lexicon.git",
-            from: "0.6.1"
+            from: "0.6.3"
         ),
         .package(path: "../Extensions"),
+        .package(path: "../Keychain"),
         .package(path: "../AnyCoding")
     ],
     targets: [
@@ -31,10 +32,11 @@ let package = Package(
                 .target(name: "FirebaseProtocol"),
                 .product(name: "Lexicon", package: "Lexicon"),
                 .product(name: "AnyCoding", package: "AnyCoding"),
-                .product(name: "Extensions", package: "Extensions")
+                .product(name: "Extensions", package: "Extensions"),
+                .product(name: "KeychainKit", package: "Keychain")
             ],
             resources: [
-                .copy("blockchain.taskpaper")
+                .copy("blockchain.lexicon")
             ]
         ),
         .target(
@@ -44,7 +46,7 @@ let package = Package(
             name: "BlockchainNamespaceTests",
             dependencies: ["BlockchainNamespace"],
             resources: [
-                .copy("test.taskpaper")
+                .copy("test.lexicon")
             ]
         )
     ]

@@ -7,14 +7,15 @@ extension AssetModel {
         symbol: String,
         displaySymbol: String,
         name: String,
-        erc20Address: String = "ETH",
+        erc20Address: String,
+        parentChain: String = "ETH",
         precision: Int = 18,
         sortIndex: Int = 0
     ) -> AssetModel {
         AssetModel(
             code: symbol,
             displayCode: displaySymbol,
-            kind: .erc20(contractAddress: erc20Address, parentChain: .ethereum),
+            kind: .erc20(contractAddress: erc20Address, parentChain: parentChain),
             name: name,
             precision: precision,
             products: [],

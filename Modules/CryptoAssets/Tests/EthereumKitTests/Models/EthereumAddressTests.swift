@@ -10,9 +10,9 @@ class EthereumAddressTests: XCTestCase {
         var address = MockEthereumWalletTestData.account
         address.removeLast()
 
-        XCTAssertNil(EthereumAddress(address: address))
+        XCTAssertNil(EthereumAddress(address: address, network: .ethereum))
 
-        XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
+        XCTAssertThrowsError(try EthereumAddress(string: address, network: .ethereum)) { error in
             XCTAssertEqual(error as? AddressValidationError, .invalidLength)
         }
     }
@@ -25,8 +25,8 @@ class EthereumAddressTests: XCTestCase {
         }
 
         for address in invalidAddresses {
-            XCTAssertNil(EthereumAddress(address: address))
-            XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
+            XCTAssertNil(EthereumAddress(address: address, network: .ethereum))
+            XCTAssertThrowsError(try EthereumAddress(string: address, network: .ethereum)) { error in
                 XCTAssertEqual(error as? AddressValidationError, .containsInvalidCharacters)
             }
         }
@@ -34,12 +34,12 @@ class EthereumAddressTests: XCTestCase {
 
     func test_address_validation_succeeds_for_prefixed_address() {
         let address = "ethereum:0x829B325036EE8F6B6ec80311d2699505505696eF"
-        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:")))
+        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:"), network: .ethereum))
     }
 
     func test_address_validation_succeeds_for_non_prefixed_address() {
         let address = "0x829B325036EE8F6B6ec80311d2699505505696eF"
-        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:")))
+        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:"), network: .ethereum))
     }
 
     func test_address_validation_fails_for_invalid_length() {
@@ -50,8 +50,8 @@ class EthereumAddressTests: XCTestCase {
         }
 
         for address in invalidAddresses {
-            XCTAssertNil(EthereumAddress(address: address))
-            XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
+            XCTAssertNil(EthereumAddress(address: address, network: .ethereum))
+            XCTAssertThrowsError(try EthereumAddress(string: address, network: .ethereum)) { error in
                 XCTAssertEqual(error as? AddressValidationError, .invalidLength)
             }
         }

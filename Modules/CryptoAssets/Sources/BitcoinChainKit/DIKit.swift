@@ -120,7 +120,6 @@ extension DependencyContainer {
         factory { () -> SyncPubKeysAddressesProviderAPI in
             SyncPubKeysAddressesProvider(
                 addressProvider: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
-                mnemonicProvider: DIKit.resolve(),
                 fetchMultiAddressFor: DIKit.resolve(tag: BitcoinChainCoin.bitcoin)
             )
         }

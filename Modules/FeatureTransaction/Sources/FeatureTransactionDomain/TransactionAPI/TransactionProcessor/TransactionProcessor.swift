@@ -76,6 +76,12 @@ public final class TransactionProcessor {
         } catch {}
     }
 
+    public func refresh() {
+        do {
+            try updatePendingTx(pendingTransaction())
+        } catch {}
+    }
+
     // Set the option to the passed option value. If the option is not supported, it will not be
     // in the original list when the pendingTx is created. And if it is not supported, then trying to
     // update it will cause an error.
@@ -85,7 +91,7 @@ public final class TransactionProcessor {
             let pendingTx = try pendingTransaction()
             if !pendingTx.confirmations.contains(where: {
                 String(describing: Swift.type(of: $0)) == String(describing: Swift.type(of: transactionConfirmation))
-                    && $0.type == transactionConfirmation.type
+                && $0.type == transactionConfirmation.type
             }) {
                 let error = PlatformKitError.illegalStateException(
                     message: "Unsupported TransactionConfirmation: \(transactionConfirmation)"
@@ -108,7 +114,20 @@ public final class TransactionProcessor {
                 .ignoreElements()
                 .asCompletable()
         } catch {
-            return .just(event: .error(error))
+          return .just(event: .error(error))
+        }
+    }
+
+    public func updateQuote(_ quote: BrokerageQuote) -> Completable {
+        .create(weak: self) { (self, fulfill) in
+            do {
+                let pendingTransaction = try self.pendingTransaction()
+                self.updatePendingTx(pendingTransaction.update(quote: .init(id: quote.id, amount: quote.amount)))
+                fulfill(.completed)
+            } catch {
+                fulfill(.error(error))
+            }
+            return Disposables.create()
         }
     }
 

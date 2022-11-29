@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import Combine
 
 /// Useful for injecting recorders
 public protocol Recordable {
@@ -23,4 +23,26 @@ public protocol ErrorRecording {
 /// Records any illegal UI operation
 public protocol UIOperationRecording {
     func recordIllegalUIOperationIfNeeded()
+}
+
+extension Publisher {
+
+    public func recordErrors(on recorder: ErrorRecording?) -> AnyPublisher<Output, Failure> {
+        handleEvents(
+            receiveCompletion: { completion in
+                guard case .failure(let error) = completion else {
+                    return
+                }
+                recorder?.error(error)
+            }
+        )
+        .eraseToAnyPublisher()
+    }
+
+    public func recordErrors(on recorder: ErrorRecording?, enabled: Bool) -> AnyPublisher<Output, Failure> {
+        guard enabled else {
+            return eraseToAnyPublisher()
+        }
+        return recordErrors(on: recorder)
+    }
 }

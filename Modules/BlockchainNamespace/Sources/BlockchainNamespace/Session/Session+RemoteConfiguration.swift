@@ -38,8 +38,8 @@ extension Session {
         private var experiments: Experiments!
         private unowned var app: AppProtocol!
 
-        public init<Remote: RemoteConfiguration_p>(
-            remote: Remote,
+        public init(
+            remote: some RemoteConfiguration_p,
             session: URLSessionProtocol = URLSession.shared,
             preferences: Preferences = UserDefaults.standard,
             scheduler: AnySchedulerOf<DispatchQueue> = .main,
@@ -243,6 +243,12 @@ extension Session {
 extension Session.RemoteConfiguration {
 
     @inlinable public func yes(
+        if ifs: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        yes(if: ifs, unless: [])
+    }
+
+    @inlinable public func yes(
         if ifs: L & I_blockchain_db_type_boolean...,
         unless buts: L & I_blockchain_db_type_boolean...
     ) -> Bool {
@@ -251,9 +257,15 @@ extension Session.RemoteConfiguration {
 
     @inlinable public func yes(
         if ifs: [L & I_blockchain_db_type_boolean],
-        unless buts: [L & I_blockchain_db_type_boolean]
+        unless buts: [L & I_blockchain_db_type_boolean] = []
     ) -> Bool {
         ifs.allSatisfy { result(for: $0).isYes } && buts.none { result(for: $0).isYes }
+    }
+
+    @inlinable public func no(
+        if ifs: L & I_blockchain_db_type_boolean...
+    ) -> Bool {
+        no(if: ifs, unless: [])
     }
 
     @inlinable public func no(
@@ -265,7 +277,7 @@ extension Session.RemoteConfiguration {
 
     @inlinable public func no(
         if ifs: [L & I_blockchain_db_type_boolean],
-        unless buts: [L & I_blockchain_db_type_boolean]
+        unless buts: [L & I_blockchain_db_type_boolean] = []
     ) -> Bool {
         yes(if: ifs, unless: buts) ? false : true
     }
@@ -291,7 +303,7 @@ extension Tag.Reference {
             else {
                 return [tag.name]
             }
-            return [tag.name, id.description]
+            return [tag.name, id.description.replacingOccurrences(of: ".", with: "_")]
         }
     }
 
@@ -369,8 +381,22 @@ extension Session.RemoteConfiguration {
 
     public struct Default: ExpressibleByDictionaryLiteral {
         let dictionary: [Tag.Reference: Any?]
+        public init(_  dictionary: [Tag.Reference: Any?]) {
+            self.dictionary = dictionary
+        }
         public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
             dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
+        }
+        public init(_ json: Any) throws {
+            dictionary = try BlockchainNamespaceDecoder()
+                .decode([String: AnyJSON?].self, from: json)
+                .mapKeysAndValues(
+                    key: { try Tag.Reference(id: $0, in: Language.root.language) },
+                    value: \.?.wrapped
+                )
+        }
+        public static func + (lhs: Self, rhs: Self) -> Self {
+            Self(lhs.dictionary + rhs.dictionary)
         }
     }
 }

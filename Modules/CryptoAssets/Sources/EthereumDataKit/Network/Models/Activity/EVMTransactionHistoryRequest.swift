@@ -4,7 +4,7 @@ import EthereumKit
 
 struct EVMTransactionHistoryRequest: Encodable {
     let addresses: [String]
-    let network: EVMNetwork
+    let network: String
     let apiCode: String
     let identifier: String?
 }

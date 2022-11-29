@@ -5,6 +5,7 @@ import Combine
 import DIKit
 import Errors
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -829,6 +830,9 @@ extension TransactionFlowInteractor {
                     default:
                         break
                     }
+                    if tx.pendingTransaction?.amount.isZero ?? true {
+                        state.clear(blockchain.ux.transaction.source.target.quote.price)
+                    }
                     switch action {
                     case .sourceAccountSelected(let source):
                         state.set(blockchain.ux.transaction.source.id, to: source.currencyType.code)
@@ -880,6 +884,17 @@ extension TransactionFlowInteractor {
                             blockchain.ux.transaction.source.target.count.of.completed,
                             to: (try? state.get(blockchain.ux.transaction.source.target.count.of.completed)).or(0) + 1
                         )
+                    case .updateAmount:
+                        state.clear(blockchain.ux.transaction.source.target.quote.price)
+                    case .updateQuote(let quote):
+                        state.set(blockchain.ux.transaction.source.target.quote.value, to: quote)
+                    case .updatePrice(let price):
+                        if let target = tx.destination?.currencyType {
+                            state.set(
+                                blockchain.ux.transaction.source.target.quote.price,
+                                to: price.flatMap { MoneyValue.create(minor: $0.result, currency: target) }
+                            )
+                        }
                     default:
                         break
                     }
@@ -978,12 +993,7 @@ extension TransactionFlowInteractor {
                 case .linkPaymentMethod:
                     app.post(event: blockchain.ux.transaction.event.link.payment.method)
                 case .selectSource:
-                    app.post(
-                        event: blockchain.ux.transaction.event.select.source,
-                        context: [
-                            blockchain.ux.transaction.event.select.source: state.source?.identifier as AnyHashable
-                        ]
-                    )
+                    app.post(event: blockchain.ux.transaction.event.select.source)
                 case .selectTarget:
                     app.post(event: blockchain.ux.transaction.event.select.target)
                 case .error:

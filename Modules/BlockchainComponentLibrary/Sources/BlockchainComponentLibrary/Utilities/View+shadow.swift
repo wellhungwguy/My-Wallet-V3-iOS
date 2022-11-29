@@ -1,0 +1,33 @@
+import SwiftUI
+
+extension View {
+
+    @warn_unqualified_access public func backgroundWithShadow(
+        _ edges: Edge.Set,
+        fill: Color = .semantic.background,
+        color shadow: Color = .semantic.dark.opacity(0.5),
+        radius: CGFloat = 8
+    ) -> some View {
+        background(
+            Rectangle()
+                .fill(fill)
+                .shadow(color: shadow, radius: radius)
+        )
+        .mask(Rectangle().padding(edges, -20))
+    }
+
+    @warn_unqualified_access public func overlayWithShadow(
+        _ alignment: Alignment,
+        startPoint: UnitPoint = .top,
+        endPoint: UnitPoint = .bottom,
+        color shadow: Color = .semantic.dark.opacity(0.5),
+        radius: CGFloat = 8
+    ) -> some View {
+        overlay(
+            LinearGradient(colors: [shadow, .clear], startPoint: startPoint, endPoint: endPoint)
+                .frame(maxWidth: .infinity, maxHeight: radius)
+                .allowsHitTesting(false),
+            alignment: alignment
+        )
+    }
+}

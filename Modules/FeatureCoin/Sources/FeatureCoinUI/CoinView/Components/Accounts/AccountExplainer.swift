@@ -71,6 +71,8 @@ extension Account.AccountType {
             return .privateKey
         case .exchange:
             return .exchange
+        case .staking:
+            return .rewards
         }
     }
 }

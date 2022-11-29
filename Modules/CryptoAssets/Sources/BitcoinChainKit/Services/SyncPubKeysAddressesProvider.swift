@@ -10,25 +10,24 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
     private static let defaultLookAheadCount: UInt32 = 10
 
     private let addressProvider: BitcoinChainReceiveAddressProviderAPI
-    private let mnemonicProvider: WalletMnemonicProvider
     private let fetchMultiAddressFor: FetchMultiAddressFor
 
     init(
         addressProvider: BitcoinChainReceiveAddressProviderAPI,
-        mnemonicProvider: @escaping WalletMnemonicProvider,
         fetchMultiAddressFor: @escaping FetchMultiAddressFor
     ) {
         self.addressProvider = addressProvider
-        self.mnemonicProvider = mnemonicProvider
         self.fetchMultiAddressFor = fetchMultiAddressFor
     }
 
     // swiftlint:disable reduce_into
     func provideAddresses(
+        mnemonic: String,
         active: [String],
         accounts: [Account]
     ) -> AnyPublisher<String, SyncPubKeysAddressesProviderError> {
         hdAccountAddresses(
+            mnemonic: mnemonic,
             accounts: accounts,
             coin: .bitcoin,
             lookupAheadCount: Self.defaultLookAheadCount
@@ -42,17 +41,18 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
     }
 
     private func hdAccountAddresses(
+        mnemonic: String,
         accounts: [Account],
         coin: BitcoinChainCoin,
         lookupAheadCount: UInt32
     ) -> AnyPublisher<[String], SyncPubKeysAddressesProviderError> {
         accounts.publisher
-            .flatMap { [mnemonicProvider, fetchMultiAddressFor] account
+            .flatMap { [fetchMultiAddressFor] account
                 -> AnyPublisher<[String], SyncPubKeysAddressesProviderError> in
                 receiveIndex(
                     account: account,
                     coin: coin,
-                    mnemonicProvider: mnemonicProvider,
+                    mnemonicProvider: mnemonicProvider(mnemonic: mnemonic),
                     fetchMultiAddressFor: fetchMultiAddressFor
                 )
                 .map { context, receivedIndex -> (AccountKeyContext, Range<UInt32>) in
@@ -75,9 +75,18 @@ final class SyncPubKeysAddressesProvider: SyncPubKeysAddressesProviderAPI {
             .reduce([String]()) { previous, new in
                 previous + new
             }
-            .mapError { _ in SyncPubKeysAddressesProviderError.failureProvidingAddresses }
+            .mapError { error in
+                SyncPubKeysAddressesProviderError.failureProvidingAddresses(error)
+            }
             .eraseToAnyPublisher()
     }
+}
+
+/// Returns a `WalletMnemonicProvider`
+private func mnemonicProvider(
+    mnemonic: String
+) -> WalletMnemonicProvider {
+    { .just(Mnemonic(words: mnemonic)) }
 }
 
 /// Retrieves the receive index of a given account
@@ -114,6 +123,8 @@ private func receiveIndex(
             }
             .eraseToAnyPublisher()
     }
-    .mapError { _ in SyncPubKeysAddressesProviderError.failureProvidingAddresses }
+    .mapError { error in
+        SyncPubKeysAddressesProviderError.failureProvidingAddresses(error)
+    }
     .eraseToAnyPublisher()
 }

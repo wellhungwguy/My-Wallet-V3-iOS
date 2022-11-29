@@ -23,6 +23,8 @@ import FeatureDebugUI
 import FeatureInterestData
 import FeatureNotificationPreferencesDomain
 import FeatureSettingsDomain
+import FeatureStakingData
+import FeatureStakingDomain
 import FeatureTransactionData
 import FeatureWalletConnectData
 import FeatureWalletConnectUI
@@ -135,9 +137,12 @@ func defineDependencies() {
         DependencyContainer.featureAddressSearchUI
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
-        DependencyContainer.blockchain
+        DependencyContainer.blockchainApp
+        DependencyContainer.blockchainNetworkRequestInterceptor
         DependencyContainer.featureSettingsDomain
         DependencyContainer.featureSettingsUI
+        DependencyContainer.featureStakingDataKit
+        DependencyContainer.featureStakingDomainKit
         DependencyContainer.remoteNotificationsKit
         DependencyContainer.featureAuthenticationData
         DependencyContainer.featureAuthenticationDomain

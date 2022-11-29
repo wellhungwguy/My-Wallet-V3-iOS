@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import FeatureKYCDomain
 import Localization
+import PermissionsKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit

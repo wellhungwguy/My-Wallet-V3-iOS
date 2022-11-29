@@ -11,8 +11,10 @@ let package = Package(
         .tvOS(.v14)
     ],
     products: [
-        .library(name: "FeatureDashboard", targets: ["FeatureDashboardUI"]),
-        .library(name: "FeatureDashboardUI", targets: ["FeatureDashboardUI"])
+        .library(name: "FeatureDashboard", targets: ["FeatureDashboardUI", "FeatureDashboardDomain", "FeatureDashboardData"]),
+        .library(name: "FeatureDashboardUI", targets: ["FeatureDashboardUI"]),
+        .library(name: "FeatureDashboardDomain", targets: ["FeatureDashboardDomain"]),
+        .library(name: "FeatureDashboardData", targets: ["FeatureDashboardData"])
     ],
     dependencies: [
         .package(
@@ -36,6 +38,7 @@ let package = Package(
         .target(
             name: "FeatureDashboardUI",
             dependencies: [
+                .target(name: "FeatureDashboardDomain"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "FeaturePlaidUI", package: "FeaturePaymentsIntegration"),
                 .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
@@ -49,6 +52,21 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase")
+            ]
+        ),
+        .target(
+            name: "FeatureDashboardDomain",
+            dependencies: [
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "FeatureDashboardData",
+            dependencies: [
+                .target(name: "FeatureDashboardDomain"),
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .testTarget(

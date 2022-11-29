@@ -13,7 +13,7 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
         let start: Condition?
     }
 
-    unowned let app: AppProtocol
+    let app: AppProtocol
     let scheduler: AnySchedulerOf<DispatchQueue>
 
     var http: URLSessionProtocol
@@ -37,18 +37,18 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
     public func start() {
 
         app.on(blockchain.app.did.finish.launching)
-            .combineLatest(client)
+            .combineLatest(client, session)
             .prefix(1)
             .receive(on: scheduler)
-            .sink { [weak self] event, client in
-                self?.initialise(event: event, clientId: client)
+            .sink { [weak self] event, client, session in
+                self?.initialise(event: event, clientId: client, sessionKey: session)
             }
             .store(in: &bag)
 
-        user.combineLatest(session, flow)
+        user.combineLatest(flow)
             .receive(on: scheduler)
-            .sink { [weak self] user, session, flow in
-                self?.update(userId: user, sessionKey: session, flow: flow)
+            .sink { [weak self] user, flow in
+                self?.update(userId: user, flow: flow)
             }
             .store(in: &bag)
 
@@ -59,8 +59,8 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             }
             .withLatestFrom(app.publisher(for: blockchain.app.fraud.sardine.supported.flows, as: Set<String>.self).compactMap(\.value)) { ($0, $1) }
             .sink { [app] flow, supported in
-                guard supported.contains(flow.name) else { return }
-                guard flow.start.or(.yes).check(in: app) else { return }
+                guard supported.contains(flow.name) else { flow.name.peek("🐟 ❌ Flow Blocked"); return }
+                guard flow.start.or(.yes).check(in: app) else { flow.name.peek("🐟 ⚠️ Flow Ignored"); return }
                 app.post(value: flow.name, of: blockchain.app.fraud.sardine.current.flow)
             }
             .store(in: &bag)
@@ -70,8 +70,10 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
             .flatMap { [app] tags in
                 tags.compacted().map { tag in app.on(tag) }.merge()
             }
+            .withLatestFrom(flow) { ($0, $1) }
             .receive(on: scheduler)
-            .sink { [app] _ in
+            .sink { [app] _, flow in
+                guard flow.isNotNil else { return }
                 app.post(event: blockchain.app.fraud.sardine.submit)
             }
             .store(in: &bag)
@@ -133,38 +135,56 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Session.Ob
         .compactMap(\.value)
 
     lazy var user = app.publisher(for: blockchain.user.id, as: String.self)
-        .compactMap(\.value)
+        .map(\.value)
 
     lazy var flow = app.publisher(for: blockchain.app.fraud.sardine.current.flow, as: String.self)
-        .compactMap(\.value)
+        .map(\.value)
 
-    lazy var event = app.on(blockchain.app.fraud.sardine.submit) { event in
-        MobileIntelligence.submitData { response in
-            #if DEBUG
-            print("🐟 \(response.status == true ? "✅" : "‼️")", response.message ?? event.date.description)
-            #endif
+    lazy var event = app.on(blockchain.app.fraud.sardine.submit) { [app, scheduler] event in
+        scheduler.schedule {
+            MobileIntelligence.submitData { response in
+                if response.status == true {
+                    app.post(
+                        event: blockchain.app.fraud.sardine.submit.success,
+                        context: event.context + [blockchain.app.fraud.sardine.submit.success: response.message]
+                    )
+                } else {
+                    app.post(
+                        event: blockchain.app.fraud.sardine.submit.failure,
+                        context: event.context + [blockchain.app.fraud.sardine.submit.failure: response.message]
+                    )
+                }
+            }
         }
     }
 
     // MARK: Sardine Integration
 
-    func initialise(event: Session.Event, clientId: String) {
-        var options = MobileIntelligence.Options()
-        options.clientId = clientId
-        #if DEBUG
-        options.environment = MobileIntelligence.Options.ENV_SANDBOX
-        #else
-        options.environment = MobileIntelligence.Options.ENV_PRODUCTION
-        #endif
-        MobileIntelligence.start(options)
+    func initialise(event: Session.Event, clientId: String, sessionKey: String) {
+        scheduler.schedule {
+            var options = MobileIntelligence.Options()
+            options.clientId = clientId
+            options.sessionKey = sessionKey.sha256()
+            #if DEBUG
+            options.environment = MobileIntelligence.Options.ENV_SANDBOX
+            #else
+            options.environment = MobileIntelligence.Options.ENV_PRODUCTION
+            #endif
+            MobileIntelligence.start(options)
+        }
     }
 
-    func update(userId: String, sessionKey: String, flow: String) {
-        var options = MobileIntelligence.UpdateOptions()
-        options.sessionKey = sessionKey.sha256()
-        options.userIdHash = userId.sha256()
-        options.flow = flow
-        MobileIntelligence.updateOptions(options: options, completion: nil)
+    func update(userId: String?, flow: String?) {
+        scheduler.schedule { [app] in
+            var options = MobileIntelligence.UpdateOptions()
+            options.userIdHash = userId?.sha256()
+            if let flow {
+                options.flow = flow
+            }
+            MobileIntelligence.updateOptions(options: options) { [app] _ in
+                app.post(event: blockchain.app.fraud.sardine.submit)
+            }
+        }
     }
 }
 

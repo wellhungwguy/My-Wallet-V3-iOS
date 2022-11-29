@@ -16,12 +16,14 @@ extension DependencyContainer {
                 cardService: DIKit.resolve(),
                 legalService: DIKit.resolve(),
                 productService: DIKit.resolve(),
-                addressService: DIKit.resolve(),
+                residentialAddressService: DIKit.resolve(tag: CardIssuingTag.residentialAddress),
+                shippingAddressService: DIKit.resolve(tag: CardIssuingTag.shippingAddress),
                 transactionService: DIKit.resolve(),
                 supportRouter: DIKit.resolve(),
                 userInfoProvider: DIKit.resolve(),
                 topUpRouter: DIKit.resolve(),
-                addressSearchRouter: DIKit.resolve()
+                addressSearchRouter: DIKit.resolve(tag: CardIssuingTag.residentialAddress),
+                shippingAddressSearchRouter: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
             ) as CardIssuingBuilderAPI
         }
     }
