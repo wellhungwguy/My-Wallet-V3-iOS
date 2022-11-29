@@ -517,10 +517,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .loggedIn(.deleteWallet):
 
         NotificationCenter.default.post(name: .logout, object: nil)
-        environment.analyticsRecorder.record(
-            event: AnalyticsEvents.New.Navigation.signedOut
-        )
-
         environment.siftService.removeUserId()
         environment.sharedContainer.reset()
         environment.blockchainSettings.reset()
@@ -566,10 +562,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // reset
 
         NotificationCenter.default.post(name: .logout, object: nil)
-        environment.analyticsRecorder.record(
-            event: AnalyticsEvents.New.Navigation.signedOut
-        )
-
         environment.siftService.removeUserId()
         environment.sharedContainer.reset()
         environment.blockchainSettings.reset()

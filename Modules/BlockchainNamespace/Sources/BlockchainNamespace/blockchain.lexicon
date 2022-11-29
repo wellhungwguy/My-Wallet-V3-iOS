@@ -2281,9 +2281,6 @@ blockchain:
 				authenticated:
 					pin:
 					+ blockchain.ux.type.analytics.event
-				signed:
-					in:
-					+ blockchain.ux.type.analytics.event
 			experiments:
 				is:
 					enabled:

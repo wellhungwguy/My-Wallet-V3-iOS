@@ -322,6 +322,7 @@ let createAccountStepTwoReducer = Reducer<
                     .map(CreateAccountStepTwoAction.walletFetched)
             )
         )
+        
 
     case .walletFetched(.success(.left(.noValue))):
         // do nothing, this for the legacy JS, to be removed
@@ -484,11 +485,6 @@ extension Reducer where
                             event: .importWalletConfirmed
                         )
                     }
-                    return .none
-                case .accountCreation(.success):
-                    environment.analyticsRecorder.record(
-                        event: AnalyticsEvents.New.SignUpFlow.walletSignedUp
-                    )
                     return .none
                 default:
                     return .none
