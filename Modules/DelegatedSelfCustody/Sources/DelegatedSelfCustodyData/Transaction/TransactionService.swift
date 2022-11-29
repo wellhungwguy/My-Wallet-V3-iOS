@@ -35,7 +35,7 @@ final class TransactionService: DelegatedCustodyTransactionServiceAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 15)
         ).eraseToAnyCache()
-        cachedBuildTransaction = CachedValueNew(
+        self.cachedBuildTransaction = CachedValueNew(
             cache: cacheBuildTransaction,
             fetch: { [authenticationDataRepository, client] transaction in
                 authenticationDataRepository.authenticationData

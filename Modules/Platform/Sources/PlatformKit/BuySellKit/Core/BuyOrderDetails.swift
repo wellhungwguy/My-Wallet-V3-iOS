@@ -55,26 +55,26 @@ public struct BuyOrderDetails: Equatable {
             return nil
         }
 
-        identifier = response.id
+        self.identifier = response.id
 
         if let processingErrorType = response.processingErrorType {
             switch processingErrorType {
             case "ISSUER":
-                paymentProcessorErrorType = .issuer
+                self.paymentProcessorErrorType = .issuer
             default:
-                paymentProcessorErrorType = .unknown
+                self.paymentProcessorErrorType = .unknown
             }
         } else {
-            paymentProcessorErrorType = nil
+            self.paymentProcessorErrorType = nil
         }
 
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
-        recurringBuyId = response.recurringBuyId
-        paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
-        paymentMethodId = response.paymentMethodId
-        authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
+        self.recurringBuyId = response.recurringBuyId
+        self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
+        self.paymentMethodId = response.paymentMethodId
+        self.authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
 
         if let price = response.price {
             self.price = FiatValue.create(minor: price, currency: fiatCurrency)
@@ -84,13 +84,13 @@ public struct BuyOrderDetails: Equatable {
             self.fee = FiatValue.create(minor: fee, currency: fiatCurrency)
         }
 
-        creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
+        self.creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
         if creationDate == nil {
             recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }
 
-        error = response.paymentError ?? response.attributes?.error
-        ux = response.ux
+        self.error = response.paymentError ?? response.attributes?.error
+        self.ux = response.ux
     }
 }
 

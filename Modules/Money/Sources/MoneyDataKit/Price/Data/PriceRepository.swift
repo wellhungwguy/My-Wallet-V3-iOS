@@ -35,7 +35,7 @@ final class PriceRepository: PriceRepositoryAPI {
             refreshControl: refreshControl
         )
         .eraseToAnyCache()
-        indexMultiCachedValue = CachedValueNew(
+        self.indexMultiCachedValue = CachedValueNew(
             cache: indexMultiCache,
             fetch: { key in
                 client
@@ -60,7 +60,7 @@ final class PriceRepository: PriceRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         )
         .eraseToAnyCache()
-        symbolsCachedValue = CachedValueNew(
+        self.symbolsCachedValue = CachedValueNew(
             cache: symbolsCache,
             fetch: { _ in
                 client.symbols()

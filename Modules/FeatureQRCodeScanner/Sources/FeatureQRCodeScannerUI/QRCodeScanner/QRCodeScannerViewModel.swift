@@ -137,18 +137,18 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         self.cacheSuite = cacheSuite
         self.urlOpener = urlOpener
 
-        cryptoTargetParser = CryptoTargetQRCodeParser(
+        self.cryptoTargetParser = CryptoTargetQRCodeParser(
             account: sourceAccount,
             adapter: adapter
         )
-        deepLinkParser = DeepLinkQRCodeParser(deepLinkQRCodeRouter: deepLinkQRCodeRouter)
-        secureChannelParser = SecureChannelQRCodeParser(secureChannelService: secureChannelService)
-        walletConnectParser = WalletConnectQRCodeParser()
+        self.deepLinkParser = DeepLinkQRCodeParser(deepLinkQRCodeRouter: deepLinkQRCodeRouter)
+        self.secureChannelParser = SecureChannelQRCodeParser(secureChannelService: secureChannelService)
+        self.walletConnectParser = WalletConnectQRCodeParser()
 
         self.types = types
         self.scanner = scanner
         self.completed = completed
-        overlayViewModel = QRCodeScannerOverlayViewModel(
+        self.overlayViewModel = QRCodeScannerOverlayViewModel(
             supportsCameraRoll: supportsCameraRoll,
             titleText: LocalizationConstants.scanQRCode,
             walletConnectSessionRepository: walletConnectSessionRepository,

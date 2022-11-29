@@ -77,7 +77,7 @@ extension DashboardAsset.Value.Interaction {
                     let changePercentage: Decimal = (try? priceChange.percentage(in: previousPrice)) ?? .zero
                     self.changePercentage = changePercentage.doubleValue
                 } else {
-                    changePercentage = 0
+                    self.changePercentage = 0
                 }
             }
 

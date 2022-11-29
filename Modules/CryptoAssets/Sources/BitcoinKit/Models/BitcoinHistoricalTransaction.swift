@@ -34,12 +34,12 @@ struct BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactio
 
         init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            spent = try values.decode(Bool.self, forKey: .spent)
+            self.spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
-            amount = CryptoValue.create(minor: BigInt(satoshis), currency: .bitcoin)
-            address = try values.decode(String.self, forKey: .address)
+            self.amount = CryptoValue.create(minor: BigInt(satoshis), currency: .bitcoin)
+            self.address = try values.decode(String.self, forKey: .address)
             let xpub = try values.decodeIfPresent(Xpub.self, forKey: .xpub)
-            change = xpub != nil
+            self.change = xpub != nil
         }
     }
 
@@ -54,7 +54,7 @@ struct BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactio
 
         init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            previousOutput = try values.decode(Output.self, forKey: .previousOutput)
+            self.previousOutput = try values.decode(Output.self, forKey: .previousOutput)
         }
     }
 
@@ -104,14 +104,14 @@ struct BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactio
         var absoluteValue = originalValue
         absoluteValue.sign = .plus
         self.amount = CryptoValue.create(minor: absoluteValue, currency: .bitcoin)
-        direction = originalValue.sign == .minus ? .credit : .debit
-        transactionHash = try values.decode(String.self, forKey: .identifier)
-        blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
-        createdAt = try values.decode(Date.self, forKey: .time)
-        inputs = try values.decode([Input].self, forKey: .inputs)
+        self.direction = originalValue.sign == .minus ? .credit : .debit
+        self.transactionHash = try values.decode(String.self, forKey: .identifier)
+        self.blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
+        self.createdAt = try values.decode(Date.self, forKey: .time)
+        self.inputs = try values.decode([Input].self, forKey: .inputs)
         let feeValue = try values.decode(Int.self, forKey: .fee)
-        fee = CryptoValue.create(minor: BigInt(feeValue), currency: .bitcoin)
-        outputs = try values.decode([Output].self, forKey: .outputs)
+        self.fee = CryptoValue.create(minor: BigInt(feeValue), currency: .bitcoin)
+        self.outputs = try values.decode([Output].self, forKey: .outputs)
 
         guard let destinationOutput = outputs.first else {
             throw DecodingError.dataCorruptedError(
@@ -128,10 +128,10 @@ struct BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactio
                 debugDescription: "Expected a from output"
             )
         }
-        toAddress = BitcoinAssetAddress(publicKey: destinationOutput.address)
-        fromAddress = BitcoinAssetAddress(publicKey: fromOutput.address)
+        self.toAddress = BitcoinAssetAddress(publicKey: destinationOutput.address)
+        self.fromAddress = BitcoinAssetAddress(publicKey: fromOutput.address)
 
-        note = nil
+        self.note = nil
     }
 
     func applying(latestBlockHeight: Int) -> Self {

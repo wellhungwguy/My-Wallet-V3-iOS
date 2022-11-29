@@ -44,10 +44,10 @@ public final class SendAuxiliaryView: UIView {
     private var disposeBag = DisposeBag()
 
     public init() {
-        availableBalanceView = ContentLabelView()
-        networkFeeView = ContentLabelView()
-        maxButtonView = ButtonView()
-        imageView = UIImageView()
+        self.availableBalanceView = ContentLabelView()
+        self.networkFeeView = ContentLabelView()
+        self.maxButtonView = ButtonView()
+        self.imageView = UIImageView()
 
         super.init(frame: UIScreen.main.bounds)
 

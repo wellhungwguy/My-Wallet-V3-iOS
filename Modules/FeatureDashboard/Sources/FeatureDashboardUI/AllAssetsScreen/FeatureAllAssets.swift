@@ -13,7 +13,7 @@ public struct FeatureAllAssets: ReducerProtocol {
         allCryptoService: AllCryptoAssetsServiceAPI,
         app: AppProtocol
     ) {
-        allCrpyotService = allCryptoService
+        self.allCrpyotService = allCryptoService
         self.app = app
     }
 

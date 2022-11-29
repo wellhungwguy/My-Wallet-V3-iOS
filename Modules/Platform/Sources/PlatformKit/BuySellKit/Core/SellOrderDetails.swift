@@ -49,12 +49,12 @@ public struct SellOrderDetails: Equatable {
             return nil
         }
 
-        identifier = response.id
+        self.identifier = response.id
 
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
-        paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
+        self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
 
         if let price = response.price {
             self.price = FiatValue.create(minor: price, currency: fiatCurrency)
@@ -64,12 +64,12 @@ public struct SellOrderDetails: Equatable {
             self.fee = FiatValue.create(minor: fee, currency: fiatCurrency)
         }
 
-        creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
+        self.creationDate = DateFormatter.utcSessionDateFormat.date(from: response.updatedAt)
         if creationDate == nil {
             recorder.record(event: AnalyticsEvents.DebugEvent.updatedAtParsingError(date: response.updatedAt))
         }
 
-        error = response.paymentError ?? response.attributes?.error
-        ux = response.ux
+        self.error = response.paymentError ?? response.attributes?.error
+        self.ux = response.ux
     }
 }

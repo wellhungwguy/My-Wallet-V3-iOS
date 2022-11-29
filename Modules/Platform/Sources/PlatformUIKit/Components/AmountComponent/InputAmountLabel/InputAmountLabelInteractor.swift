@@ -18,10 +18,10 @@ public final class InputAmountLabelInteractor {
     // MARK: - Setup
 
     init(currency: Currency, integralPlacesLimit: Int = 10) {
-        scanner = MoneyValueInputScanner(
+        self.scanner = MoneyValueInputScanner(
             maxDigits: .init(integral: integralPlacesLimit, fractional: currency.displayPrecision)
         )
-        interactor = AmountLabelViewInteractor(currency: currency)
+        self.interactor = AmountLabelViewInteractor(currency: currency)
 
         interactor.currency
             .map { .init(integral: integralPlacesLimit, fractional: $0.displayPrecision) }

@@ -17,7 +17,7 @@ public struct AssetListViewController: UIViewControllerRepresentable {
     public init(
         assetProviderService: FeatureNFTDomain.AssetProviderServiceAPI = resolve()
     ) {
-        store = .init(
+        self.store = .init(
             initialState: .empty,
             reducer: assetListReducer,
             environment: .init(

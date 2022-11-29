@@ -34,7 +34,7 @@ final class AccountRepository: AccountRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 assetSupportService

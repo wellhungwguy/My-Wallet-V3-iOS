@@ -29,7 +29,7 @@ final class WalletRepoPersistence: WalletRepoPersistenceAPI {
         self.keychainAccess = keychainAccess
         self.encoder = encoder
         self.decoder = decoder
-        persistenceQueue = queue
+        self.persistenceQueue = queue
     }
 
     func beginPersisting() -> AnyPublisher<Void, WalletRepoPersistenceError> {

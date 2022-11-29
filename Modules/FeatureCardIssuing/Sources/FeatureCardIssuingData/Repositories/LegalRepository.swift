@@ -32,7 +32,7 @@ final class LegalRepository: LegalRepositoryAPI {
 
         self.cache = cache
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client.fetchLegalItems()

@@ -30,7 +30,7 @@ public final class PaymentMethodCellPresenter {
     public init(account: PaymentMethodAccount, action: AssetAction) {
         self.account = account
 
-        multiBadgeViewModel = badgeFactory
+        self.multiBadgeViewModel = badgeFactory
             .badge(account: account, action: action)
             .map {
                 .init(
@@ -41,7 +41,7 @@ public final class PaymentMethodCellPresenter {
             }
             .asDriver(onErrorJustReturn: .init())
 
-        title = .just(
+        self.title = .just(
             .init(
                 text: account.label,
                 font: .main(.semibold, 16.0),
@@ -50,7 +50,7 @@ public final class PaymentMethodCellPresenter {
                 accessibility: .none
             )
         )
-        description = .just(
+        self.description = .just(
             .init(
                 text: account.paymentMethodType.balance.displayString,
                 font: .main(.medium, 14.0),
@@ -59,7 +59,7 @@ public final class PaymentMethodCellPresenter {
                 accessibility: .none
             )
         )
-        badgeImageViewModel = .just(.default(
+        self.badgeImageViewModel = .just(.default(
             image: account.logoResource,
             backgroundColor: account.logoBackgroundColor,
             cornerRadius: .round,

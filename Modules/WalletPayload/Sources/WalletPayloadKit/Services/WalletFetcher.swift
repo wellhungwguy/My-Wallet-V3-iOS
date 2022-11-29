@@ -61,7 +61,7 @@ final class WalletFetcher: WalletFetcherAPI {
         self.tracer = tracer
         self.logger = logger
 
-        doLoadPayload = loadPayload(
+        self.doLoadPayload = loadPayload(
             payloadCrypto: payloadCrypto,
             walletLogic: walletLogic,
             walletRepo: walletRepo,

@@ -66,7 +66,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             self.didSelect = didSelect
             self.listener = nil
         case .listener(let listener):
-            didSelect = nil
+            self.didSelect = nil
             self.listener = listener
         }
         super.init(presenter: presenter)
@@ -416,9 +416,9 @@ extension TargetSelectionPageInteractor {
 
         private init(actionButtonEnabled: Bool) {
             self.actionButtonEnabled = actionButtonEnabled
-            sourceInteractor = nil
-            inputFieldInteractor = nil
-            destinationInteractors = []
+            self.sourceInteractor = nil
+            self.inputFieldInteractor = nil
+            self.destinationInteractors = []
         }
     }
 

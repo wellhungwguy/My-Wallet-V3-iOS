@@ -15,13 +15,13 @@ struct SupportedInterestAccountRatesResponse: Decodable {
     // MARK: - Init
 
     private init() {
-        rates = []
+        self.rates = []
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let values = try container.decode([String: Double].self, forKey: .rates)
-        rates = values.map { (key: String, value: Double) in
+        self.rates = values.map { (key: String, value: Double) in
             InterestAccountRateResponse(currency: key, rate: value)
         }
     }

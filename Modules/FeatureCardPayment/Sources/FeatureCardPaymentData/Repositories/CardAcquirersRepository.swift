@@ -29,7 +29,7 @@ final class CardAcquirersRepository: CardAcquirersRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 eligibleCardAcquirersClient.paymentsCardAcquirers()

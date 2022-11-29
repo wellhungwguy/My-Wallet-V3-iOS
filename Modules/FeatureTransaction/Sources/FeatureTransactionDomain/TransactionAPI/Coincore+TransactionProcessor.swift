@@ -78,6 +78,18 @@ extension CoincoreAPI {
                         )
                 )
             )
+        case (is CryptoStakingAccount, .stakingDeposit):
+            return .just(
+                TransactionProcessor(
+                    sourceAccount: account,
+                    transactionTarget: target,
+                    engine: interestOnChainFactory
+                        .build(
+                            action: .stakingDeposit,
+                            onChainEngine: factory.build()
+                        )
+                )
+            )
         case (is WalletConnectTarget, _):
             let walletConnectEngineFactory: WalletConnectEngineFactoryAPI = resolve()
             return .just(
@@ -155,6 +167,7 @@ extension CoincoreAPI {
                 .deposit,
                 .interestTransfer,
                 .interestWithdraw,
+                .stakingDeposit,
                 .linkToDebitCard,
                 .receive,
                 .sell,
@@ -182,6 +195,8 @@ extension CoincoreAPI {
             return createTradingProcessorSell(with: account, target: target)
         case .interestTransfer:
             return createInterestTransferTradingProcessor(with: account, target: target)
+        case .stakingDeposit:
+            return createStakingDepositTradingProcessor(with: account, target: target)
         case .deposit,
              .receive,
              .sign,
@@ -260,6 +275,26 @@ extension CoincoreAPI {
                 engine: factory
                     .build(
                         action: .interestTransfer
+                    )
+            )
+        )
+    }
+
+    private func createStakingDepositTradingProcessor(
+        with account: CryptoTradingAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        guard target is CryptoStakingAccount else {
+            impossible()
+        }
+        let factory: InterestTradingTransactionEngineFactoryAPI = resolve()
+        return .just(
+            .init(
+                sourceAccount: account,
+                transactionTarget: target,
+                engine: factory
+                    .build(
+                        action: .stakingDeposit
                     )
             )
         )

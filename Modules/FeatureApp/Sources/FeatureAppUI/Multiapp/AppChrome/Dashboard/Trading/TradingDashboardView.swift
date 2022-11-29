@@ -9,7 +9,7 @@ import SwiftUI
 struct TradingDashboardView: View {
     let store: StoreOf<TradingDashboard>
 
-    public init(store: StoreOf<TradingDashboard>) {
+    init(store: StoreOf<TradingDashboard>) {
         self.store = store
     }
 
@@ -25,9 +25,9 @@ struct TradingDashboardView: View {
                             )
                         )
 
-                        DashboardActivitySectionView(
-                            store: self.store.scope(state: \.activityState, action: TradingDashboard.Action.activityAction)
-                        )
+//                        DashboardActivitySectionView(
+//                            store: self.store.scope(state: \.activityState, action: TradingDashboard.Action.activityAction)
+//                        )
                     }
                     .navigationRoute(in: store)
                     .padding(.bottom, Spacing.padding6)

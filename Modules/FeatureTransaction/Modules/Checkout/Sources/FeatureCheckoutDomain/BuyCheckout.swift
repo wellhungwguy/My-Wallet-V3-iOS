@@ -7,6 +7,7 @@ public struct BuyCheckout: Equatable {
         case simpleBuy
         case recurringBuy
     }
+
     public let buyType: BuyType
     public var input: MoneyValue
     public var purchase: MoneyValuePair

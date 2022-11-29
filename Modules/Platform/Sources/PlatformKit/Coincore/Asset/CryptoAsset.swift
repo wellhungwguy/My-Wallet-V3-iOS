@@ -85,6 +85,7 @@ extension AssetAction {
                 .deposit,
                 .interestTransfer,
                 .interestWithdraw,
+                .stakingDeposit,
                 .receive,
                 .sell,
                 .sign,

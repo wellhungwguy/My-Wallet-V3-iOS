@@ -15,6 +15,6 @@ public struct ViewRecoveryPhraseState: Equatable {
 
     public init(recoveryPhraseBackedUp: Bool) {
         self.recoveryPhraseBackedUp = recoveryPhraseBackedUp
-        blurEnabled = recoveryPhraseBackedUp
+        self.blurEnabled = recoveryPhraseBackedUp
     }
 }

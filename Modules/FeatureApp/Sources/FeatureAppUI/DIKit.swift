@@ -13,6 +13,8 @@ import FeatureCoinDomain
 import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureOpenBankingUI
+import FeatureProveDomain
+import FeatureProveUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
 import FeatureTransactionUI
@@ -154,8 +156,24 @@ extension DependencyContainer {
             ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
         }
 
+        factory { () -> KYCProveFlowPresenterAPI in
+            KYCProveFlowPresenter(
+                router: DIKit.resolve()
+            ) as KYCProveFlowPresenterAPI
+        }
+
+        factory {
+            ProveRouter(
+                topViewController: DIKit.resolve()
+            ) as FeatureProveDomain.ProveRouterAPI
+        }
+
         factory {
             AddressKYCService() as FeatureAddressSearchDomain.AddressServiceAPI
+        }
+
+        factory {
+            FlowKYCInfoService() as FeatureKYCDomain.FlowKYCInfoServiceAPI
         }
 
         single { () -> AssetInformationRepositoryAPI in

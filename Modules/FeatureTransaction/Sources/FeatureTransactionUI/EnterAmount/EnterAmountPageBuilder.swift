@@ -123,7 +123,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         case .swap,
              .send,
              .interestWithdraw,
-             .interestTransfer:
+             .interestTransfer,
+             .stakingDeposit:
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
                 fatalError("Expected a crypto as a source account.")
             }

@@ -106,15 +106,15 @@ public struct SeedPhraseState: Equatable {
         self.context = context
         self.emailAddress = emailAddress
         self.nabuInfo = nabuInfo
-        seedPhrase = ""
-        seedPhraseScore = .none
-        isResetPasswordScreenVisible = false
-        isResetAccountBottomSheetVisible = false
-        isLostFundsWarningScreenVisible = false
-        isImportWalletScreenVisible = false
-        isSecondPasswordNoticeVisible = false
-        failureAlert = nil
-        isLoading = false
+        self.seedPhrase = ""
+        self.seedPhraseScore = .none
+        self.isResetPasswordScreenVisible = false
+        self.isResetAccountBottomSheetVisible = false
+        self.isLostFundsWarningScreenVisible = false
+        self.isImportWalletScreenVisible = false
+        self.isSecondPasswordNoticeVisible = false
+        self.failureAlert = nil
+        self.isLoading = false
     }
 }
 
@@ -128,6 +128,7 @@ struct SeedPhraseEnvironment {
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
     let accountRecoveryService: AccountRecoveryServiceAPI
+    let signUpCountriesService: SignUpCountriesServiceAPI
     let errorRecorder: ErrorRecording
     let featureFlagsService: FeatureFlagsServiceAPI
     let recaptchaService: GoogleRecaptchaServiceAPI
@@ -142,6 +143,7 @@ struct SeedPhraseEnvironment {
         walletCreationService: WalletCreationService,
         walletFetcherService: WalletFetcherService,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        signUpCountriesService: SignUpCountriesServiceAPI = resolve(),
         errorRecorder: ErrorRecording,
         recaptchaService: GoogleRecaptchaServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
@@ -155,6 +157,7 @@ struct SeedPhraseEnvironment {
         self.walletCreationService = walletCreationService
         self.walletFetcherService = walletFetcherService
         self.accountRecoveryService = accountRecoveryService
+        self.signUpCountriesService = signUpCountriesService
         self.errorRecorder = errorRecorder
         self.recaptchaService = recaptchaService
         self.featureFlagsService = featureFlagsService
@@ -187,6 +190,7 @@ let seedPhraseReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
+                    signUpCountriesService: $0.signUpCountriesService,
                     featureFlagsService: $0.featureFlagsService,
                     recaptchaService: $0.recaptchaService
                 )

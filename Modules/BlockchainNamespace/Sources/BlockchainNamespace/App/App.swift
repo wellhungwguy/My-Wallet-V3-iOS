@@ -153,13 +153,20 @@ public class App: AppProtocol {
 
     private lazy var urls = on(blockchain.ui.type.action.then.launch.url) { [weak self] event throws in
         guard let self else { return }
-        let url = try event.context.decode(blockchain.ui.type.action.then.launch.url, as: URL.self)
+        let url: URL
+        do {
+            url = try event.context.decode(blockchain.ui.type.action.then.launch.url)
+        } catch {
+            url = try event.action.or(throw: "No action").data.decode()
+        }
         guard self.deepLinks.canProcess(url: url) else {
-            #if canImport(UIKit)
-            UIApplication.shared.open(url)
-            #elseif canImport(AppKit)
-            NSWorkspace.shared.open(url)
-            #endif
+            DispatchQueue.main.async {
+                #if canImport(UIKit)
+                    UIApplication.shared.open(url)
+                #elseif canImport(AppKit)
+                    NSWorkspace.shared.open(url)
+                #endif
+            }
             return
         }
         self.post(
@@ -430,11 +437,19 @@ extension AppProtocol {
         }
     }
 
-    public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
-        try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
-            .stream()
-            .next()
-            .get()
+    public func get<T: Decodable>(
+        _ event: Tag.Event,
+        waitForValue: Bool = false,
+        as _: T.Type = T.self,
+        file: String = #fileID,
+        line: Int = #line
+    ) async throws -> T {
+        let stream = publisher(for: event, as: T.self).stream() // ← Invert this, foundation API is async/await with actor
+        if waitForValue {
+            return try await stream.compactMap(\.value).next(file: file, line: line)
+        } else {
+            return try await stream.next(file: file, line: line).get()
+        }
     }
 
     public func stream(
@@ -456,27 +471,35 @@ extension AppProtocol {
 
 extension AppProtocol {
 
+    public func transaction(_ body: (Self) async throws -> Void) async rethrows {
+        try await local.transaction { _ in
+            try await body(self)
+        }
+    }
+
+    public func batch(updates sets: [(Tag.Event, Any?)], in context: Tag.Context = [:]) async throws {
+        var updates = Any?.Store.BatchUpdates()
+        for (event, value) in sets {
+            let reference = event.key(to: context).in(self)
+            try updates.append((reference.route, value))
+        }
+        await local.batch(updates)
+    }
+
     public func set(_ event: Tag.Event, to value: Any?) async throws {
         let reference = event.key().in(self)
-        switch reference.tag {
-        case blockchain.session.state.value, blockchain.db.collection.id:
-            state.set(reference, to: value)
-        case blockchain.session.configuration.value:
-            remoteConfiguration.override(reference, with: value as Any)
-        default:
-            if
-                let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
-                !reference.indices.map(\.key).contains(collectionId)
-            {
-                guard let map = value as? [String: Any] else { throw "Not a collection" }
-                var updates = Any?.Store.BatchUpdates()
-                for (key, value) in map {
-                    try updates.append((reference.key(to: [collectionId: key]).route, value))
-                }
-                await local.batch(updates)
-            } else {
-                try await local.set(reference.route, to: value)
+        if
+            let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
+            !reference.indices.map(\.key).contains(collectionId)
+        {
+            guard let map = value as? [String: Any] else { throw "Not a collection" }
+            var updates = Any?.Store.BatchUpdates()
+            for (key, value) in map {
+                try updates.append((reference.key(to: [collectionId: key]).route, value))
             }
+            await local.batch(updates)
+        } else {
+            try await local.set(reference.route, to: value)
         }
         #if DEBUG
         if isInTest { await Task.megaYield(count: 20) }
@@ -562,17 +585,21 @@ extension App {
         public var description: String { "Test App" }
 
         public func wait(
-            _ event: Tag.Event
+            _ event: Tag.Event,
+            file: String = #fileID,
+            line: Int = #line
         ) async throws {
-            _ = try await on(event, bufferingPolicy: .unbounded).next()
+            _ = try await on(event, bufferingPolicy: .unbounded).next(file: file, line: line)
         }
 
         public func wait<S: Scheduler>(
             _ event: Tag.Event,
             timeout: S.SchedulerTimeType.Stride,
-            scheduler: S = DispatchQueue.main
+            scheduler: S = DispatchQueue.main,
+            file: String = #fileID,
+            line: Int = #line
         ) async throws {
-            _ = try await on(event).timeout(timeout, scheduler: scheduler).stream().next()
+            _ = try await on(event).timeout(timeout, scheduler: scheduler).stream().next(file: file, line: line)
             await Task.megaYield(count: 20)
         }
 

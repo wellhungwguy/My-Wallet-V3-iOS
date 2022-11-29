@@ -35,6 +35,7 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
                 walletRecoveryService: .mock(),
                 walletCreationService: .mock(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
+                signUpCountriesService: MockSignUpCountriesService(),
                 featureFlagsService: mockFeatureFlagService,
                 recaptchaService: MockRecaptchaService()
             )
@@ -93,6 +94,7 @@ final class CreateAccountStepOneReducerTests: XCTestCase {
                 walletRecoveryService: .mock(),
                 walletCreationService: .failing(),
                 walletFetcherService: WalletFetcherServiceMock().mock(),
+                signUpCountriesService: MockSignUpCountriesService(),
                 featureFlagsService: MockFeatureFlagsService(),
                 recaptchaService: MockRecaptchaService()
             )

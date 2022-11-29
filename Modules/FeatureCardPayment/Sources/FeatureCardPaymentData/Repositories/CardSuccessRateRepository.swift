@@ -25,7 +25,7 @@ class CardSuccessRateRepository: CardSuccessRateRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 cardSuccessRateClient

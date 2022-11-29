@@ -7,8 +7,8 @@ extension LocalizationConstants.CardIssuing {
     public enum Manage {
 
         static let title = NSLocalizedString(
-            "My Cards",
-            comment: "Card Issuing: title My Cards"
+            "My Card",
+            comment: "Card Issuing: title My Card"
         )
 
         static let disclaimer = NSLocalizedString(
@@ -191,6 +191,18 @@ extension LocalizationConstants.CardIssuing {
                 static let view = NSLocalizedString(
                     "View",
                     comment: "Card Issuing: View Card"
+                )
+            }
+
+            enum MaxCardNumber {
+                static let title = NSLocalizedString(
+                    "How many cards can I have?",
+                    comment: "Card Issuing: How many cards can I have?"
+                )
+
+                static let message = NSLocalizedString(
+                    "Only one physical and one virtual card can be active at any given time.",
+                    comment: "Card Issuing: Max number of card for type of product"
                 )
             }
         }

@@ -82,6 +82,15 @@ struct AccountSheet: View {
                 }
             }
         }
+        .task {
+            let id = account.cryptoCurrency.code
+            do {
+                try await app.set(
+                    blockchain.ux.asset.account.staking.summary.then.enter.into[].ref(to: context),
+                    to: blockchain.ux.earn.staking[id].summary
+                )
+            } catch { /* ignored */ }
+        }
     }
 }
 
@@ -102,7 +111,7 @@ extension Account.Snapshot {
         case .exchange:
             return [.exchange.withdraw, .exchange.deposit]
         case .staking:
-            return []
+            return [.staking.deposit, .staking.summary, .activity]
         }
     }
 
@@ -110,6 +119,8 @@ extension Account.Snapshot {
         switch accountType {
         case .interest:
             return [.rewards.withdraw, .rewards.deposit, .rewards.summary]
+        case .staking:
+            return [.staking.deposit, .staking.summary]
         default:
             return []
         }

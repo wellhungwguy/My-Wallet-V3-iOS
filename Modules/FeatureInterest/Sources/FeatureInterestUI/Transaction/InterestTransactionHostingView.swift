@@ -15,8 +15,8 @@ final class InterestTransactionHostingView: UIViewControllerRepresentable {
     init(
         state: InterestTransactionState
     ) {
-        account = state.account
-        action = state.action
+        self.account = state.account
+        self.action = state.action
     }
 
     func makeUIViewController(context: Context) -> some UIViewController {

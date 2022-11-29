@@ -17,12 +17,12 @@ extension Tag {
             set { dictionary[keyPath: keyPath] = newValue }
         }
 
-        public subscript(reference: TaggedEvent) -> Value? {
+        public subscript(reference: Tag.Event) -> Value? {
             get { dictionary[reference.key()] }
             set { dictionary[reference.key()] = newValue }
         }
 
-        public subscript(reference: some TaggedEvent) -> Value? {
+        public subscript(reference: some Tag.Event) -> Value? {
             get { dictionary[reference.key()] }
             set { dictionary[reference.key()] = newValue }
         }
@@ -40,7 +40,7 @@ extension Tag.Context: Collection {
 
 extension Tag.Context: ExpressibleByDictionaryLiteral {
 
-    public init(dictionaryLiteral elements: (TaggedEvent, Wrapped.Value)...) {
+    public init(dictionaryLiteral elements: (Tag.Event, Wrapped.Value)...) {
         dictionary = Dictionary(elements.map { tag, value in
             (tag.key(), value)
         }, uniquingKeysWith: { $1 })

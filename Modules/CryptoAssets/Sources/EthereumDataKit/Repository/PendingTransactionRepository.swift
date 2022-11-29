@@ -34,7 +34,7 @@ final class PendingTransactionRepository: PendingTransactionRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 5)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [evmClient, ethereumClient] key in
                 switch key.network {

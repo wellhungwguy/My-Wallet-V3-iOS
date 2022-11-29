@@ -93,7 +93,7 @@ public struct SimpleBalanceRow<Leading: View>: View {
         self.trailingDescriptionColor = trailingDescriptionColor ?? Color.WalletSemantic.body
         self.inlineTagView = inlineTagView
         self.tags = tags
-        isSelectable = isSelected != nil
+        self.isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
         self.action = action
         self.leading = leading()

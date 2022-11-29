@@ -16,6 +16,9 @@ class EmbraceObserver: Client.Observer {
     var bag: Set<AnyCancellable> = []
 
     func start() {
+        #if DEBUG
+        return
+        #else
 
         app.publisher(for: blockchain.user.id, as: String.self)
             .receive(on: DispatchQueue.main)
@@ -51,18 +54,21 @@ class EmbraceObserver: Client.Observer {
             }
             .store(in: &bag)
 
-        app.on(blockchain.ux.type.analytics.error).receive(on: DispatchQueue.main).sink { [embrace] event in
-            struct E: Error { let message: String }
-            embrace.logHandledError(
-                E(message: event.context[blockchain.ux.type.analytics.error.message].description),
-                screenshot: false,
-                properties: [
-                    "file": event.context[blockchain.ux.type.analytics.error.source.file].description.prefix(256).string,
-                    "line": event.context[blockchain.ux.type.analytics.error.source.line].description.prefix(256).string
-                ]
-            )
-        }
-        .store(in: &bag)
+        app.on(blockchain.ux.type.analytics.error)
+            .receive(on: DispatchQueue.main)
+            .sink { [embrace] event in
+                struct E: Error { let message: String }
+                embrace.logHandledError(
+                    E(message: event.context[blockchain.ux.type.analytics.error.message].description),
+                    screenshot: false,
+                    properties: [
+                        "file": event.context[blockchain.ux.type.analytics.error.source.file].description.prefix(256).string,
+                        "line": event.context[blockchain.ux.type.analytics.error.source.line].description.prefix(256).string
+                    ]
+                )
+            }
+            .store(in: &bag)
+        #endif
     }
 
     func stop() { bag.removeAll() }

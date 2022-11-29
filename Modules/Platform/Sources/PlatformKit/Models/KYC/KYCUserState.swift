@@ -22,9 +22,9 @@ extension KYC {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            current = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
-            selected = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
-            next = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
+            self.current = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
+            self.selected = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
+            self.next = try values.decodeIfPresent(KYC.Tier.self, forKey: .current) ?? .tier0
         }
     }
 }

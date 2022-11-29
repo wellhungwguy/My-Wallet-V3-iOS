@@ -32,8 +32,8 @@ public struct Tag {
     private var lazy = Lazy()
 
     init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
-        parentID = parent
-        id = parent?.dot(node.name) ?? node.name
+        self.parentID = parent
+        self.id = parent?.dot(node.name) ?? node.name
         self.node = .init(graph: node)
         self.language = language
     }
@@ -574,12 +574,18 @@ extension Tag {
 extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
 
     public var description: String { id(\.id) }
-    public func key(to context: Tag.Context) -> Tag.Reference {
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)
     }
 
     public subscript() -> Tag {
         id[]
+    }
+
+    public func callAsFunction(
+        in context: Tag.Context = [:]
+    ) -> Tag.Reference {
+        key(to: context)
     }
 
     public func callAsFunction<Value>(

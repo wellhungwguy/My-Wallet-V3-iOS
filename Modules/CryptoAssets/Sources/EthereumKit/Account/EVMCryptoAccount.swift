@@ -188,6 +188,9 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
+        case .stakingDeposit:
+            guard asset.supports(product: .stakingBalance) else { return .just(false) }
+            return isFunded
         case .sell, .swap:
             guard asset.supports(product: .custodialWalletBalance) else {
                 return .just(false)
@@ -201,6 +204,17 @@ final class EVMCryptoAccount: CryptoNonCustodialAccount {
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

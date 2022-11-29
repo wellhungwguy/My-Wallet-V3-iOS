@@ -124,6 +124,14 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     public var description: String {
         String(describing: __unwrapped)
     }
+
+    public func dictionary() -> [String: Any]? {
+        wrapped as? [String: Any]
+    }
+
+    public func array() -> [Any]? {
+        wrapped as? [Any]
+    }
 }
 
 extension AnyJSON: ExpressibleByNilLiteral {

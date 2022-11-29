@@ -44,14 +44,14 @@ public final class WalletBalanceViewPresenter {
             with value: WalletBalanceViewInteractor.WalletBalance,
             descriptors: Descriptors = .default
         ) {
-            fiatBalance = LabelContent(
+            self.fiatBalance = LabelContent(
                 text: value.fiatValue.displayString,
                 font: descriptors.fiatFont,
                 color: descriptors.fiatTextColor,
                 accessibility: .id(AccessibilityId.fiatBalance)
             )
 
-            currencyCode = LabelContent(
+            self.currencyCode = LabelContent(
                 text: value.fiatCurrency.displayCode,
                 font: descriptors.descriptionFont,
                 color: descriptors.descriptionTextColor,

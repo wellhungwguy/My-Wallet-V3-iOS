@@ -19,25 +19,25 @@ struct SimpleActivityDetailsViewModel: Equatable {
     let memo: String
 
     init(with event: SimpleTransactionalActivityItemEvent, price: FiatValue?) {
-        statusBadge = .init(type: .verified, description: LocalizedString.completed)
-        dateCreated = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
-        to = event.sourceAddress ?? ""
-        from = event.destinationAddress ?? ""
+        self.statusBadge = .init(type: .verified, description: LocalizedString.completed)
+        self.dateCreated = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
+        self.to = event.sourceAddress ?? ""
+        self.from = event.destinationAddress ?? ""
 
-        cryptoAmount = event.amount.displayString
+        self.cryptoAmount = event.amount.displayString
         if let price {
-            value = event.amount.convert(using: price).displayString
+            self.value = event.amount.convert(using: price).displayString
         } else {
-            value = ""
+            self.value = ""
         }
 
         if let price {
             let feeFiat = event.fee.convert(using: price)
-            fee = "\(event.fee.displayString) / \(feeFiat.displayString)"
+            self.fee = "\(event.fee.displayString) / \(feeFiat.displayString)"
         } else {
-            fee = event.fee.displayString
+            self.fee = event.fee.displayString
         }
 
-        memo = event.memo ?? LocalizedString.noDescription
+        self.memo = event.memo ?? LocalizedString.noDescription
     }
 }

@@ -92,6 +92,14 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        /// Exchange API does not return a balance.
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
+    }
+
     public func invalidateAccountBalance() {
         // NO-OP
     }
@@ -116,10 +124,10 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
-        label = response.assetType.defaultExchangeWalletName
-        asset = response.assetType
-        address = response.address
-        state = .init(state: response.state)
+        self.label = response.assetType.defaultExchangeWalletName
+        self.asset = response.assetType
+        self.address = response.address
+        self.state = .init(state: response.state)
         self.featureFlagsService = featureFlagsService
         self.exchangeAccountProvider = exchangeAccountProvider
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory

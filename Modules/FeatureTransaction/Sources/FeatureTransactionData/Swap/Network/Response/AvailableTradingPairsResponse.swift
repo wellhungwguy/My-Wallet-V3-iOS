@@ -8,6 +8,6 @@ struct AvailableTradingPairsResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        pairs = try container.decode([String].self)
+        self.pairs = try container.decode([String].self)
     }
 }

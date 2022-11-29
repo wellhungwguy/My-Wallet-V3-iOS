@@ -14,12 +14,12 @@ public struct StellarActivityItemEventDetails {
     public let transactionHash: String
 
     init(transaction: StellarHistoricalTransaction) {
-        transactionHash = transaction.transactionHash
-        cryptoAmount = transaction.amount
-        createdAt = transaction.createdAt
-        from = transaction.fromAddress.publicKey
-        to = transaction.toAddress.publicKey
-        fee = transaction.fee
-        memo = transaction.memo
+        self.transactionHash = transaction.transactionHash
+        self.cryptoAmount = transaction.amount
+        self.createdAt = transaction.createdAt
+        self.from = transaction.fromAddress.publicKey
+        self.to = transaction.toAddress.publicKey
+        self.fee = transaction.fee
+        self.memo = transaction.memo
     }
 }

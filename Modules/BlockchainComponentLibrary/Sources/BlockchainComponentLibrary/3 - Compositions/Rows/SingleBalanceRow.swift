@@ -71,7 +71,7 @@ public struct SingleBalanceRow<Leading: View>: View {
     ) {
         self.leadingTitle = leadingTitle
         self.trailingTitle = trailingTitle
-        isSelectable = isSelected != nil
+        self.isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
         self.action = action
         self.leading = leading()

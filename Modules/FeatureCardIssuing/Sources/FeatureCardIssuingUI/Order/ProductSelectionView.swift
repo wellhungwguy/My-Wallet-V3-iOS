@@ -12,6 +12,7 @@ struct ProductSelectionView: View {
     private typealias L10n = LocalizationConstants.CardIssuing.Order
 
     private let store: Store<CardOrderingState, CardOrderingAction>
+    @State private var currentIndex = ""
 
     init(store: Store<CardOrderingState, CardOrderingAction>) {
         self.store = store
@@ -21,7 +22,7 @@ struct ProductSelectionView: View {
         WithViewStore(store) { viewStore in
             VStack(spacing: Spacing.padding3) {
                 if !viewStore.state.products.isEmpty {
-                    TabView {
+                    TabView(selection: $currentIndex) {
                         ForEach(viewStore.state.products) { product in
                             ProductView(
                                 product: product,
@@ -29,16 +30,34 @@ struct ProductSelectionView: View {
                                     viewStore.send(.binding(.set(\.$isProductDetailsVisible, true)))
                                 }
                             )
-                            .onAppear {
-                                viewStore.send(.selectProduct(product))
-                            }
                         }
                     }
-                    .tabViewStyle(PageTabViewStyle())
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .onChange(of: currentIndex) { index in
+                        guard let product = viewStore.state.products.first(where: { product in
+                            product.id == index
+                        }) else {
+                            return
+                        }
+                        viewStore.send(.selectProduct(product))
+                    }
+                    .onAppear {
+                        currentIndex = viewStore.selectedProduct?.id ?? ""
+                    }
                 }
-                PrimaryButton(title: L10n.Selection.Button.Title.continue) {
+                if let index = viewStore.state.products.firstIndex(where: { product in
+                    product.id == currentIndex
+                }) {
+                    PageControl(currentPage: index, numberOfPages: viewStore.state.products.count)
+                }
+                PrimaryButton(
+                    title: viewStore.state.selectedProduct?.hasRemainingCards ?? true ?
+                    L10n.Selection.Button.Title.continue
+                    : L10n.Selection.Button.Title.currentlyActive
+                ) {
                     viewStore.send(.binding(.set(\.$isReviewVisible, true)))
                 }
+                .disabled(!(viewStore.state.selectedProduct?.hasRemainingCards ?? false))
             }
             .padding(Spacing.padding3)
             .onAppear {
@@ -76,6 +95,27 @@ struct ProductSelectionView: View {
     }
 }
 
+struct PageControl: UIViewRepresentable {
+
+    let currentPage: Int
+    let numberOfPages: Int
+
+    func makeUIView(context: Context) -> some UIPageControl {
+        let pageControl = UIPageControl()
+        pageControl.currentPageIndicatorTintColor = UIColor(.semantic.primary)
+        pageControl.pageIndicatorTintColor = UIColor(.semantic.muted)
+        pageControl.hidesForSinglePage = true
+        pageControl.numberOfPages = numberOfPages
+        pageControl.currentPage = currentPage
+        return pageControl
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.numberOfPages = numberOfPages
+        uiView.currentPage = currentPage
+    }
+}
+
 struct ProductView: View {
 
     private typealias L10n = LocalizationConstants.CardIssuing.Order
@@ -109,8 +149,8 @@ struct ProductView: View {
                 title: L10n.Selection.Button.Title.details,
                 action: action
             )
-            .padding(.bottom, Spacing.padding4)
         }
+        .tag(product.id)
     }
 }
 

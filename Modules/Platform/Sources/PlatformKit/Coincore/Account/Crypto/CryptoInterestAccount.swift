@@ -127,7 +127,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         interestActivityEventRepository: InterestActivityItemEventRepositoryAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
-        label = asset.defaultInterestWalletName
+        self.label = asset.defaultInterestWalletName
         self.interestActivityEventRepository = interestActivityEventRepository
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.receiveAddressRepository = receiveAddressRepository
@@ -136,7 +136,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         self.balanceService = balanceService
         self.priceService = priceService
         self.interestEligibilityRepository = interestEligibilityRepository
-        featureFlagsService = featureFlagService
+        self.featureFlagsService = featureFlagService
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
@@ -153,6 +153,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         case .buy,
              .deposit,
              .interestTransfer,
+             .stakingDeposit,
              .receive,
              .sell,
              .send,
@@ -169,6 +170,17 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

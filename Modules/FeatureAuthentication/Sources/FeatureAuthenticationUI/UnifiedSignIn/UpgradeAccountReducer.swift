@@ -51,7 +51,7 @@ public struct UpgradeAccountState: NavigationState {
     ) {
         self.walletInfo = walletInfo
         self.base64Str = base64Str
-        currentMessage = ""
+        self.currentMessage = ""
     }
 }
 

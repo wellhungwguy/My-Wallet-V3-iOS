@@ -18,7 +18,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
     private let stateRelay: BehaviorRelay<State>
 
     init(initialState: State, performAction: @escaping (State, Action) -> Disposable?) {
-        stateRelay = BehaviorRelay(value: initialState)
+        self.stateRelay = BehaviorRelay(value: initialState)
         actions // TODO: Inject // actions.distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)
             .scan(initialState) { oldState, action -> State in

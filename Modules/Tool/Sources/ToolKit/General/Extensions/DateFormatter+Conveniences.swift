@@ -37,6 +37,15 @@ extension DateFormatter {
         return formatter
     }()
 
+    public static var shortWithoutYear: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        formatter.isLenient = true
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter
+    }
+
     public static var elegantDateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium

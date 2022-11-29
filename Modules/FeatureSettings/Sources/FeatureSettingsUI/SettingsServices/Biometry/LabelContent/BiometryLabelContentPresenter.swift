@@ -27,7 +27,7 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
         provider: BiometryProviding,
         descriptors: LabelContent.Value.Presentation.Content.Descriptors
     ) {
-        interactor = BiometryLabelContentInteractor(biometryProviding: provider)
+        self.interactor = BiometryLabelContentInteractor(biometryProviding: provider)
         interactor.state
             .map { .init(with: $0, descriptors: descriptors) }
             .bindAndCatch(to: stateRelay)

@@ -46,7 +46,7 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         app: AppProtocol = resolve()
     ) {
-        account = .asset(cryptoAsset)
+        self.account = .asset(cryptoAsset)
         self.fiatCurrencyService = fiatCurrencyService
         self.app = app
     }
@@ -72,14 +72,39 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         }
     }
 
+    private func mainBalanceToDisplayPair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
+        switch account {
+        case .account(let account):
+            return account.mainBalanceToDisplayPair(fiatCurrency: fiatCurrency)
+        case .asset(let cryptoAsset):
+            return app
+                .modePublisher()
+                .flatMap { appMode in
+                    cryptoAsset
+                        .accountGroup(filter: appMode.filter)
+                }
+                .compactMap { $0 }
+                .flatMap { accountGroup in
+                    accountGroup.mainBalanceToDisplayPair(fiatCurrency: fiatCurrency)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     private lazy var setup: Void = Observable
         .combineLatest(
             fiatCurrencyService.displayCurrencyPublisher.asObservable(),
             refreshRelay.asObservable()
         )
         .map(\.0)
-        .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
-            self.balancePair(fiatCurrency: fiatCurrency).asObservable()
+        .flatMapLatest(weak: self) { [app] (self, fiatCurrency) -> Observable<MoneyValuePair> in
+            if app.remoteConfiguration.yes(
+                if: blockchain.app.configuration.ui.payments.improvements.assets.balances.is.enabled
+            ) {
+                return self.mainBalanceToDisplayPair(fiatCurrency: fiatCurrency).asObservable()
+            } else {
+                return self.balancePair(fiatCurrency: fiatCurrency).asObservable()
+            }
         }
         .map { moneyValuePair -> InteractionState in
             InteractionState.loaded(

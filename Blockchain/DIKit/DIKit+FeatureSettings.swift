@@ -228,7 +228,7 @@ final class CryptoDomainsDetailsPresenter: DetailsScreenPresenterAPI {
     )
 
     init(domains: [String]) {
-        cells = domains
+        self.cells = domains
             .map { domain in
                 DetailsScreen.CellType
                     .label(

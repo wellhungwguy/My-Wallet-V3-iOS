@@ -19,7 +19,7 @@ final class ReferralSectionPresenter: SettingsSectionPresenting {
             items: []
         )
 
-        state = refferalAdapter
+        self.state = refferalAdapter
             .hasReferral()
             .map { referral -> SettingsSectionLoadingState in
                 if let referral {

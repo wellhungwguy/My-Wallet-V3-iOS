@@ -45,12 +45,12 @@ public final class SingleAmountInteractor: AmountViewInteracting {
         currencyService: CurrencyServiceAPI,
         inputCurrency: Currency
     ) {
-        activeInput = .just(inputCurrency.isFiatCurrency ? .fiat : .crypto)
+        self.activeInput = .just(inputCurrency.isFiatCurrency ? .fiat : .crypto)
         self.currencyService = currencyService
         self.inputCurrency = inputCurrency
-        currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
+        self.currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
 
-        amount = currencyInteractor
+        self.amount = currencyInteractor
             .scanner
             .input
             .compactMap { [inputCurrency] input -> MoneyValue? in

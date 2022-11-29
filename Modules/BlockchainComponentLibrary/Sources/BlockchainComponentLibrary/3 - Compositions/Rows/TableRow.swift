@@ -109,15 +109,15 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> some StringProtocol,
-        byline: @autoclosure () -> some StringProtocol,
+        title: some StringProtocol,
+        byline: some StringProtocol,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline {
         self.init(
             leading: leading,
-            title: .init(title()),
-            byline: .init(byline()),
+            title: TableRowTitle(title),
+            byline: TableRowByline(byline),
             trailing: trailing,
             footer: footer
         )
@@ -125,15 +125,15 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
-        byline: @autoclosure () -> TableRowByline,
+        title: TableRowTitle,
+        byline: TableRowByline,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline {
         self.init(
             leading: leading,
-            title: title,
-            byline: byline,
+            title: { title },
+            byline: { byline },
             trailing: trailing,
             footer: footer
         )
@@ -141,14 +141,14 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> some StringProtocol,
+        title: some StringProtocol,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == EmptyView {
         self.init(
             leading: leading,
-            title: .init(title()),
+            title: TableRowTitle(title),
             byline: byline,
             trailing: trailing,
             footer: footer
@@ -157,14 +157,14 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle {
         self.init(
             leading: leading,
-            title: title,
+            title: { title },
             byline: byline,
             trailing: trailing,
             footer: footer
@@ -173,16 +173,16 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
-        byline: @autoclosure () -> TableRowByline,
-        trailingTitle: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
+        byline: TableRowByline,
+        trailingTitle: TableRowTitle,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline, Trailing == TableRowTitle {
         self.init(
             leading: leading,
             title: title,
             byline: byline,
-            trailing: trailingTitle,
+            trailing: { trailingTitle },
             footer: footer
         )
     }
@@ -191,37 +191,37 @@ extension TableRow {
         @ViewBuilder leading: () -> Leading = EmptyView.init,
         @ViewBuilder title: () -> Title,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
-        trailingTitle: @autoclosure () -> TableRowTitle,
+        trailingTitle: TableRowTitle,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Trailing == TableRowTitle {
         self.init(
             leading: leading,
             title: title,
             byline: byline,
-            trailing: trailingTitle,
+            trailing: { trailingTitle },
             footer: footer
         )
     }
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
-        trailingTitle: @autoclosure () -> TableRowTitle,
+        trailingTitle: TableRowTitle,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Trailing == TableRowTitle {
         self.init(
             leading: leading,
             title: title,
             byline: byline,
-            trailing: trailingTitle,
+            trailing: { trailingTitle },
             footer: footer
         )
     }
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         inlineTitleButton: IconButton,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
@@ -230,7 +230,7 @@ extension TableRow {
             leading: leading,
             title: {
                 HStack {
-                    title()
+                    title
                     inlineTitleButton
                 }
             },
@@ -242,9 +242,9 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         inlineTitleButton: IconButton,
-        byline: @autoclosure () -> TableRowByline,
+        byline: TableRowByline,
         @ViewBuilder trailing: () -> Trailing = EmptyView.init,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == HStack<TupleView<(TableRowTitle, IconButton)>>, Byline == TableRowByline {
@@ -252,11 +252,11 @@ extension TableRow {
             leading: leading,
             title: {
                 HStack {
-                    title()
+                    title
                     inlineTitleButton
                 }
             },
-            byline: byline,
+            byline: { byline },
             trailing: trailing,
             footer: footer
         )
@@ -280,7 +280,7 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
         isOn: Binding<Bool>,
         @ViewBuilder footer: () -> Footer = EmptyView.init
@@ -296,8 +296,8 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
-        byline: @autoclosure () -> TableRowByline,
+        title: TableRowTitle,
+        byline: TableRowByline,
         isOn: Binding<Bool>,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline, Trailing == Toggle<EmptyView> {
@@ -328,7 +328,7 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
         @ViewBuilder tag: () -> TagView,
         @ViewBuilder footer: () -> Footer = EmptyView.init
@@ -344,8 +344,8 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
-        byline: @autoclosure () -> TableRowByline,
+        title: TableRowTitle,
+        byline: TableRowByline,
         @ViewBuilder tag: () -> TagView,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Byline == TableRowByline, Trailing == TagView {
@@ -362,8 +362,8 @@ extension TableRow {
         @ViewBuilder leading: () -> Leading = EmptyView.init,
         @ViewBuilder title: () -> Title,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
-        trailingTitle: @autoclosure () -> TableRowTitle,
-        trailingByline: @autoclosure () -> TableRowByline,
+        trailingTitle: TableRowTitle,
+        trailingByline: TableRowByline,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Trailing == HStack<VStack<TupleView<(TableRowTitle, TableRowByline)>>> {
         self.init(
@@ -373,8 +373,8 @@ extension TableRow {
             trailing: {
                 HStack(alignment: .center) {
                     VStack(alignment: .trailing, spacing: 4.pt) {
-                        trailingTitle()
-                        trailingByline()
+                        trailingTitle
+                        trailingByline
                     }
                 }
             },
@@ -384,10 +384,10 @@ extension TableRow {
 
     public init(
         @ViewBuilder leading: () -> Leading = EmptyView.init,
-        title: @autoclosure () -> TableRowTitle,
+        title: TableRowTitle,
         @ViewBuilder byline: () -> Byline = EmptyView.init,
-        trailingTitle: @autoclosure () -> TableRowTitle,
-        trailingByline: @autoclosure () -> TableRowByline,
+        trailingTitle: TableRowTitle,
+        trailingByline: TableRowByline,
         @ViewBuilder footer: () -> Footer = EmptyView.init
     ) where Title == TableRowTitle, Trailing == HStack<VStack<TupleView<(TableRowTitle, TableRowByline)>>> {
         self.init(
@@ -397,8 +397,8 @@ extension TableRow {
             trailing: {
                 HStack(alignment: .center) {
                     VStack(alignment: .trailing) {
-                        trailingTitle()
-                        trailingByline()
+                        trailingTitle
+                        trailingByline
                     }
                 }
             },
@@ -481,7 +481,7 @@ public protocol TableRowLabelView: View, ExpressibleByStringLiteral, Expressible
 extension TableRowLabelView {
     public init(_ string: some StringProtocol) { self.init(Text(string)) }
     public init(_ key: LocalizedStringKey) { self.init(Text(key)) }
-    public init(@ViewBuilder label: () -> Text) { self.init(label()) }
+    public init(@ViewBuilder label: () throws -> Text) rethrows { try self.init(label()) }
     public init(stringLiteral value: String) { self.init(Text(value)) }
     public init(stringInterpolation: DefaultStringInterpolation) {
         self.init(Text(stringInterpolation.description))

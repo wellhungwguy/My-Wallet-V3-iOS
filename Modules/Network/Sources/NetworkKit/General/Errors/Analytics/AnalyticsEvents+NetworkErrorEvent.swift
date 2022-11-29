@@ -31,7 +31,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
                 return nil
             }
             self.host = host
-            path = url.path
+            self.path = url.path
             self.message = message
         }
     }

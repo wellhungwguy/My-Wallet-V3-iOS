@@ -41,7 +41,7 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
         dismiss: @escaping CardAnnouncementAction
     ) {
         self.type = type
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: MockErrorRecorder())
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: MockErrorRecorder())
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
     }

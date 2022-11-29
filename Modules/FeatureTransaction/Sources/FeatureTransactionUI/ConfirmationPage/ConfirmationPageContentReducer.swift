@@ -87,9 +87,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         self.messageRecorder = messageRecorder
         self.withdrawalLocksCheckRepository = withdrawalLocksCheckRepository
         self.analyticsRecorder = analyticsRecorder
-        cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
-        continueButtonViewModel = .primary(with: "")
-        memoModel = TextFieldViewModel(
+        self.cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
+        self.continueButtonViewModel = .primary(with: "")
+        self.memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
@@ -190,13 +190,25 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         // this `setup(for state:)` function is called. So, we check to
         // see if this is `nil` prior to initializing it.
         if transferCheckboxViewModel == nil {
+
+            let message: String
+
+            switch (state.action, state.pendingTransaction?.limits?.earn?.bondingDays) {
+            case (.stakingDeposit, 0):
+                message = LocalizedString.Staking.transferAgreementNoBonding
+            case (.stakingDeposit, 1):
+                message = LocalizedString.Staking.transferAgreementDayBonding
+            case (.stakingDeposit, _):
+                message = LocalizedString.Staking.transferAgreementDaysBonding
+            case _:
+                message = LocalizedString.Transfer.transferAgreement
+            }
+
             transferCheckboxViewModel = .init(
                 inputs: [
                     .text(
                         string: String(
-                            format: LocalizedString.Transfer.transferAgreement,
-                            value.displayString,
-                            sourceLabel
+                            format: message, value.displayString, "\(state.pendingTransaction?.limits?.earn?.bondingDays ?? 7)"
                         )
                     )
                 ]
@@ -480,6 +492,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return LocalizedString.Deposit.depositNow
         case .interestTransfer:
             return LocalizedString.Transfer.transferNow
+        case .stakingDeposit:
+            return LocalizedString.Deposit.depositNow
         case .withdraw,
              .interestWithdraw:
             return LocalizedString.Withdraw.withdrawNow

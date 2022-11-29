@@ -27,7 +27,7 @@ public struct Do<Success: View, Failure: View>: View {
 
     public init(
         @ViewBuilder try success: @escaping () throws -> Success,
-        @ViewBuilder catch failure: @escaping (Error) -> Failure
+        @ViewBuilder catch failure: @escaping (Error) -> Failure = EmptyView.init(ignored:)
     ) {
         self.success = success
         self.failure = failure

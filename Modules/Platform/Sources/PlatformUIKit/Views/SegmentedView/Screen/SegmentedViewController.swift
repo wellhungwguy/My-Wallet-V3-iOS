@@ -22,7 +22,7 @@ public final class SegmentedViewController: BaseScreenViewController {
     ) {
         self.presenter = presenter
         _selectedSegmentBinding = selectedSegmentBinding
-        rootViewController = SegmentedTabViewController(items: presenter.items)
+        self.rootViewController = SegmentedTabViewController(items: presenter.items)
         super.init(nibName: nil, bundle: nil)
     }
 

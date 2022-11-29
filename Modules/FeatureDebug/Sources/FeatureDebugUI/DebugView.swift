@@ -204,7 +204,11 @@ extension DebugView {
                 .flatMap { events in events.compacted().map(app.publisher(for:)).combineLatest() }
                 .map { results in
                     results.reduce(into: [:]) { sum, result in
-                        sum[result.metadata.ref] = try? result.value.decode(JSON.self)
+                        do {
+                            sum[result.metadata.ref] = try result.value.decode(JSON.self)
+                        } catch {
+                            result.error.peek("❌ \(error)")
+                        }
                     }
                 }
                 .receive(on: DispatchQueue.main)
@@ -220,18 +224,28 @@ extension DebugView {
         @State var data: [AppFeature: JSON] = [:]
         @State var filter: String = ""
 
+        @State var isExpanded: Bool = false
+
         var body: some View {
             ScrollView {
                 VStack {
                     namespace
-                    Section(header: Text("Remote").typography(.title2)) {
+                    PrimaryButton(title: "Reset to default") {
+                        app.remoteConfiguration.clear()
+                    }
+                    .padding()
+                    PrimaryDivider()
+                    MinimalButton(
+                        title: isExpanded ? "Hide Legacy" : "Show Legacy",
+                        action: {
+                            withAnimation { isExpanded.toggle() }
+                        }
+                    )
+                    .padding()
+                    if isExpanded {
                         remote
                     }
                 }
-                PrimaryButton(title: "Reset to default") {
-                    app.remoteConfiguration.clear()
-                }
-                .padding()
             }
             .listRowInsets(
                 EdgeInsets(

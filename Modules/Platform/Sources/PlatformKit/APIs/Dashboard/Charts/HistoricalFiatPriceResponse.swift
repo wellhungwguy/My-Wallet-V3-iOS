@@ -27,8 +27,8 @@ public struct HistoricalFiatPriceResponse {
     ///   - prices:      A historical price series.
     ///   - priceWindow: A price window associated with `prices`.
     public init(fiatValue: FiatValue, prices: HistoricalPriceSeries, priceWindow: PriceWindow) {
-        currentFiatValue = fiatValue
-        historicalPrices = prices
+        self.currentFiatValue = fiatValue
+        self.historicalPrices = prices
         self.priceWindow = priceWindow
     }
 }

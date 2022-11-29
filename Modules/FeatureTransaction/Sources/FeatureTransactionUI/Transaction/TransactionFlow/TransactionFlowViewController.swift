@@ -66,7 +66,7 @@ final class TransactionFlowViewController: UINavigationController,
         setViewControllers([viewController.uiviewController], animated: animated)
     }
 
-    func present(viewController: ViewControllable?, animated: Bool) {
+    func present(viewController: ViewControllable?, animated: Bool, completion: (() -> Void)? = nil) {
         guard let viewController else {
             return
         }
@@ -76,7 +76,7 @@ final class TransactionFlowViewController: UINavigationController,
         } else {
             navigationController = UINavigationController(rootViewController: viewController.uiviewController)
         }
-        present(navigationController, animated: animated, completion: nil)
+        present(navigationController, animated: animated, completion: completion)
     }
 
     func push(viewController: ViewControllable?) {

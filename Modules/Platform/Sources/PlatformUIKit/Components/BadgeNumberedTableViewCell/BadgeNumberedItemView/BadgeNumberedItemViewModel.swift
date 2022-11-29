@@ -23,20 +23,20 @@ public struct BadgeNumberedItemViewModel {
         description: String,
         descriptors: Descriptors
     ) {
-        badgeViewModel = .default(
+        self.badgeViewModel = .default(
             with: "\(number)",
             font: .main(.semibold, 20.0),
             cornerRadius: Sizing.badge / 2.0,
             accessibilityId: descriptors.badgeAccessibilitySuffix
         )
-        titleLabelContent = .init(
+        self.titleLabelContent = .init(
             text: title,
             font: descriptors.titleFont,
             color: descriptors.titleTextColor,
             alignment: .left,
             accessibility: descriptors.titleAccessibility
         )
-        descriptionLabelContent = .init(
+        self.descriptionLabelContent = .init(
             text: description,
             font: descriptors.descriptionFont,
             color: .textFieldText,

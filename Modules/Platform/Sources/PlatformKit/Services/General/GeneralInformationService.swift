@@ -31,7 +31,7 @@ final class GeneralInformationService: GeneralInformationServiceAPI {
             configuration: .onLoginLogout(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60 * 60)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client.countries

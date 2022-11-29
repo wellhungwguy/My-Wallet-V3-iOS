@@ -21,20 +21,12 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture",
-            exact: "0.42.0"
-        ),
-        .package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
             branch: "safe-property-wrappers-locks"
         ),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Errors"),
-        .package(path: "../Platform"),
-        .package(path: "../Tool"),
-        .package(path: "../Money"),
-        .package(path: "../Analytics")
+        .package(path: "../Blockchain")
     ],
     targets: [
         .target(
@@ -42,24 +34,23 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureStakingDomain"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "Errors", package: "Errors"),
-                .product(name: "NetworkKit", package: "Network")
+                .product(name: "Blockchain", package: "Blockchain")
             ]
         ),
         .target(
             name: "FeatureStakingDomain",
             dependencies: [
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "Errors", package: "Errors"),
-                .product(name: "NetworkKit", package: "Network"),
-                .product(name: "MoneyKit", package: "Money")
+                .product(name: "Blockchain", package: "Blockchain"),
+                .product(name: "NetworkKit", package: "Network")
             ]
         ),
         .target(
             name: "FeatureStakingUI",
             dependencies: [
-                .target(name: "FeatureStakingDomain")
+                .target(name: "FeatureStakingDomain"),
+                .product(name: "BlockchainUI", package: "Blockchain"),
+                .product(name: "Localization", package: "Localization")
             ]
         ),
         .testTarget(

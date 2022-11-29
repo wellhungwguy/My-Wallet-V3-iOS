@@ -100,7 +100,7 @@ struct RecurringBuyFrequencySelectorView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(eligibleRecurringBuyFrequenciesAndNextDates: []),
                 reducer: recurringBuyFrequencySelectorReducer,
-                environment: RecurringBuyFrequencySelectorEnvironment.init(app: App.preview, dismiss: {})
+                environment: RecurringBuyFrequencySelectorEnvironment(app: App.preview, dismiss: {})
             )
         )
     }
@@ -119,9 +119,11 @@ struct RecurringBuyFrequencySelectorState: Equatable {
     var recurringBuyFrequencies: [RecurringBuy.Frequency] {
         [.once] + eligibleRecurringBuyFrequenciesAndNextDates.map(\.frequency)
     }
+
     var items: [EligibleAndNextPaymentRecurringBuy] {
         [.oneTime] + eligibleRecurringBuyFrequenciesAndNextDates
     }
+
     @BindableState var eligibleRecurringBuyFrequenciesAndNextDates: [EligibleAndNextPaymentRecurringBuy] = []
     @BindableState var recurringBuyFrequency: RecurringBuy.Frequency?
 }
@@ -140,13 +142,13 @@ enum RecurringBuyFrequencySelectorAction: Equatable, BindableAction {
 // MARK: - Reducer
 
 let recurringBuyFrequencySelectorReducer = Reducer<
-RecurringBuyFrequencySelectorState,
-RecurringBuyFrequencySelectorAction,
-RecurringBuyFrequencySelectorEnvironment
+    RecurringBuyFrequencySelectorState,
+    RecurringBuyFrequencySelectorAction,
+    RecurringBuyFrequencySelectorEnvironment
 > { state, action, environment in
     switch action {
     case .refresh:
-        return  .merge(
+        return .merge(
             environment
                 .app.publisher(for: blockchain.ux.transaction.checkout.recurring.buy.frequency, as: String.self)
                 .receive(on: DispatchQueue.main)

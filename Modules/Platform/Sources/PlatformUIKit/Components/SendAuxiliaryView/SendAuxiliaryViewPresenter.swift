@@ -74,9 +74,9 @@ public final class SendAuxiliaryViewPresenter {
         // MARK: Setting up
 
         self.interactor = interactor
-        stateRelay = .init(value: initialState)
+        self.stateRelay = .init(value: initialState)
 
-        networkFeeContentViewPresenter = ContentLabelViewPresenter(
+        self.networkFeeContentViewPresenter = ContentLabelViewPresenter(
             title: LocalizationId.networkFee,
             alignment: .right,
             adjustsFontSizeToFitWidth: .true(factor: 0.60),
@@ -84,12 +84,12 @@ public final class SendAuxiliaryViewPresenter {
             accessibilityPrefix: "NetworkFee"
         )
 
-        maxButtonViewModel = ButtonViewModel.secondary(
+        self.maxButtonViewModel = ButtonViewModel.secondary(
             with: initialState.maxButtonTitle,
             font: .main(.semibold, 14)
         )
 
-        availableBalanceContentViewPresenter = ContentLabelViewPresenter(
+        self.availableBalanceContentViewPresenter = ContentLabelViewPresenter(
             title: initialState.availableBalanceTitle,
             alignment: .left,
             adjustsFontSizeToFitWidth: .true(factor: 0.60),
@@ -97,7 +97,7 @@ public final class SendAuxiliaryViewPresenter {
             accessibilityPrefix: "AvailableBalance"
         )
 
-        imageContent = interactor
+        self.imageContent = interactor
             .imageRelay
             .asDriverCatchError()
 

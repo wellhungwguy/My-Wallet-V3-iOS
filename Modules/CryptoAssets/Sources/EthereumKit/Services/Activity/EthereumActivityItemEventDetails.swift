@@ -23,14 +23,14 @@ public struct EthereumActivityItemEventDetails: Equatable {
     public let to: EthereumAddress
 
     init(transaction: EthereumHistoricalTransaction) {
-        amount = transaction.amount
-        createdAt = transaction.createdAt
-        data = transaction.data
-        fee = transaction.fee ?? .zero(currency: .ethereum)
-        from = transaction.fromAddress
-        identifier = transaction.transactionHash
-        to = transaction.toAddress
-        confirmation = Confirmation(
+        self.amount = transaction.amount
+        self.createdAt = transaction.createdAt
+        self.data = transaction.data
+        self.fee = transaction.fee ?? .zero(currency: .ethereum)
+        self.from = transaction.fromAddress
+        self.identifier = transaction.transactionHash
+        self.to = transaction.toAddress
+        self.confirmation = Confirmation(
             needConfirmation: transaction.state == .pending,
             confirmations: transaction.confirmations,
             requiredConfirmations: EthereumHistoricalTransaction.requiredConfirmations,

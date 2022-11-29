@@ -63,12 +63,12 @@ public struct PaymentAccount {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
             let value = try values.decode(String.self, forKey: .currency)
-            currency = try CurrencyType(code: value)
-            id = try values.decode(String.self, forKey: .id)
-            address = try values.decode(String.self, forKey: .address)
-            agent = try values.decode(Agent.self, forKey: .agent)
-            state = try values.decode(PaymentAccountProperty.State.self, forKey: .state)
-            partner = try values.decodeIfPresent(String.self, forKey: .partner)
+            self.currency = try CurrencyType(code: value)
+            self.id = try values.decode(String.self, forKey: .id)
+            self.address = try values.decode(String.self, forKey: .address)
+            self.agent = try values.decode(Agent.self, forKey: .agent)
+            self.state = try values.decode(PaymentAccountProperty.State.self, forKey: .state)
+            self.partner = try values.decodeIfPresent(String.self, forKey: .partner)
         }
 
         init(
@@ -106,17 +106,17 @@ public struct PaymentAccount {
         public let bankName: String?
 
         init(agent: Response.Agent) {
-            account = agent.account
-            accountType = agent.accountType
-            address = agent.address
-            code = agent.code
-            country = agent.country
-            name = agent.name
-            recipient = agent.recipient
-            routingNumber = agent.routingNumber
-            label = agent.label
-            holderDocument = agent.holderDocument
-            bankName = agent.bankName
+            self.account = agent.account
+            self.accountType = agent.accountType
+            self.address = agent.address
+            self.code = agent.code
+            self.country = agent.country
+            self.name = agent.name
+            self.recipient = agent.recipient
+            self.routingNumber = agent.routingNumber
+            self.label = agent.label
+            self.holderDocument = agent.holderDocument
+            self.bankName = agent.bankName
         }
     }
 
@@ -128,11 +128,11 @@ public struct PaymentAccount {
     public let partner: String?
 
     init(response: Response) {
-        id = response.id
-        address = response.address
-        agent = .init(agent: response.agent)
-        currency = response.currency
-        state = response.state
-        partner = response.partner
+        self.id = response.id
+        self.address = response.address
+        self.agent = .init(agent: response.agent)
+        self.currency = response.currency
+        self.state = response.state
+        self.partner = response.partner
     }
 }

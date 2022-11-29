@@ -79,7 +79,7 @@ enum RecurringBuyButtonAction: Equatable, BindableAction {
 let recurringBuyButtonReducer = Reducer<
     RecurringBuyButtonState,
     RecurringBuyButtonAction,
-RecurringBuyButtonEnvironment
+    RecurringBuyButtonEnvironment
 > { _, action, environment in
     switch action {
     case .refresh:

@@ -32,8 +32,8 @@ struct CustodialTransferResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try values.decode(String.self, forKey: .id)
-        userId = try values.decode(String.self, forKey: .user)
+        self.identifier = try values.decode(String.self, forKey: .id)
+        self.userId = try values.decode(String.self, forKey: .user)
         let amountContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .amount)
         let symbol = try amountContainer.decode(String.self, forKey: .symbol)
         guard let currency = CryptoCurrency(code: symbol) else {
@@ -44,6 +44,6 @@ struct CustodialTransferResponse: Decodable {
             )
         }
         let value = try amountContainer.decode(String.self, forKey: .value)
-        cryptoValue = CryptoValue.create(major: value, currency: currency) ?? .zero(currency: currency)
+        self.cryptoValue = CryptoValue.create(major: value, currency: currency) ?? .zero(currency: currency)
     }
 }

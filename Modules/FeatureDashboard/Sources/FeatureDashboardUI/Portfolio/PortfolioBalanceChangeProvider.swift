@@ -80,6 +80,7 @@ final class PortfolioBalanceChangeProvider {
     }
 
     private static func fetch(
+        app: AppProtocol = resolve(),
         coincore: CoincoreAPI,
         fiatCurrency: FiatCurrency,
         appMode: AppMode
@@ -87,12 +88,22 @@ final class PortfolioBalanceChangeProvider {
         coincore
             .allAccounts(filter: appMode.filter)
             .eraseError()
-            .flatMap { accountGroup in
-                accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
-                    .zip(accountGroup.fiatBalance(fiatCurrency: fiatCurrency,
-                                                  at: .oneDay))
-                    .eraseToAnyPublisher()
-                    .eraseError()
+            .flatMap { [app] accountGroup in
+                if app.remoteConfiguration.yes(
+                    if: blockchain.app.configuration.ui.payments.improvements.wallet.balances.is.enabled
+                ) {
+                    return accountGroup.fiatMainBalanceToDisplay(fiatCurrency: fiatCurrency)
+                        .zip(accountGroup.fiatMainBalanceToDisplay(fiatCurrency: fiatCurrency,
+                                                                   at: .oneDay))
+                        .eraseToAnyPublisher()
+                        .eraseError()
+                } else {
+                    return accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
+                        .zip(accountGroup.fiatBalance(fiatCurrency: fiatCurrency,
+                                                      at: .oneDay))
+                        .eraseToAnyPublisher()
+                        .eraseError()
+                }
             }
             .tryMap { currentBalance, previousBalance in
                 guard appMode != .pkw else {

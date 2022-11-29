@@ -93,17 +93,17 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         self.action = action
         self.app = app
         self.transactionModel = transactionModel
-        amountViewInteractor = amountInteractor
+        self.amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
         self.restrictionsProvider = restrictionsProvider
         self.analyticsHook = analyticsHook
         self.eventsRecorder = eventsRecorder
-        sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
-        sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+        self.sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
+        self.sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: sendAuxiliaryViewInteractor
         )
-        accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
-        accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
+        self.accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
+        self.accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
             interactor: accountAuxiliaryViewInteractor
         )
         super.init(presenter: presenter)
@@ -273,9 +273,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                             currency: CurrencyType(code: code.or(throw: "No input currency"))
                         ).or(throw: "Failed to initialise MoneyValue")
                     )
-                } catch {
-                    app.post(error: error)
-                }
+                } catch { /* ignore */ }
             }
 
             app.state.transaction { state in
@@ -328,7 +326,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 switch state.action {
                 case .buy,
                      .deposit,
-                     .interestTransfer:
+                     .interestTransfer,
+                     .stakingDeposit:
                     return state.source
                 case .sell,
                      .withdraw,
@@ -497,7 +496,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         app.publisher(for: blockchain.ux.transaction.action.select.recurring.buy.frequency, as: String.self)
             .compactMap(\.value)
-            .compactMap(RecurringBuy.Frequency.init(rawValue: ))
+            .compactMap(RecurringBuy.Frequency.init(rawValue:))
             .removeDuplicates()
             .sink { [model = transactionModel] frequency in
                 model.process(action: .updateRecurringBuyFrequency(frequency))

@@ -53,12 +53,12 @@ extension BillingAddress {
             return nil
         }
         self.country = country
-        state = response.state ?? ""
-        postCode = response.postCode
-        city = response.city
-        addressLine1 = response.line1
-        addressLine2 = response.line2 ?? ""
-        fullName = ""
+        self.state = response.state ?? ""
+        self.postCode = response.postCode
+        self.city = response.city
+        self.addressLine1 = response.line1
+        self.addressLine2 = response.line2 ?? ""
+        self.fullName = ""
     }
 
     public var requestPayload: CardPayload.BillingAddress {

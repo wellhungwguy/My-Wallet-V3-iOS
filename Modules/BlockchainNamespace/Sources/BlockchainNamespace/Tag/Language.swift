@@ -21,7 +21,7 @@ public final class Language {
 
     private init(graph: Lexicon.Graph) throws {
         self.graph = graph
-        root = Tag.add(parent: nil, node: graph.root, to: self)
+        self.root = Tag.add(parent: nil, node: graph.root, to: self)
         Self.unownedLanguageReferences.append(self)
     }
 }

@@ -21,7 +21,8 @@ extension CustodialAccountBalance {
             currency: currency,
             available: MoneyValue.create(minor: balance, currency: currency) ?? zero,
             withdrawable: withdrawable ?? zero,
-            pending: response.moneyPendingDeposit ?? zero
+            pending: response.moneyPendingDeposit ?? zero,
+            mainBalanceToDisplay: response.moneyMainBalanceToDisplay ?? zero
         )
     }
 }

@@ -13,8 +13,8 @@ public struct Limit: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        limit = try values.decodeIfPresentDecimalFromString(forKey: .limit) ?? 0
-        available = try values.decodeIfPresentDecimalFromString(forKey: .available) ?? 0
-        used = try values.decodeIfPresentDecimalFromString(forKey: .used) ?? 0
+        self.limit = try values.decodeIfPresentDecimalFromString(forKey: .limit) ?? 0
+        self.available = try values.decodeIfPresentDecimalFromString(forKey: .available) ?? 0
+        self.used = try values.decodeIfPresentDecimalFromString(forKey: .used) ?? 0
     }
 }

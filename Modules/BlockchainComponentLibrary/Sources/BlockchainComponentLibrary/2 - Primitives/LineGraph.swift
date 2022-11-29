@@ -68,7 +68,7 @@ public struct LineGraph<Title: View, Minimum: View, Maximum: View>: View {
         self.minimumTitle = minimumTitle
         self.maximumTitle = maximumTitle
         self.isLive = isLive
-        memoized = LineShape.Memoized[
+        self.memoized = LineShape.Memoized[
             raw: data,
             tolerance: tolerance,
             density: density
@@ -318,7 +318,7 @@ struct LineShape: Shape {
         self.density = density
         self.isClosed = isClosed
         self.vertices = vertices
-        (min, max) = minMax()
+        (self.min, self.max) = minMax()
     }
 
     static func vertices(of y: [Double], tolerance: Int, density: Int = 300) -> [CGPoint] {

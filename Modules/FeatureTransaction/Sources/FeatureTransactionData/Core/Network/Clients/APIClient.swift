@@ -571,7 +571,7 @@ extension APIClient {
         _ date: Date?
     ) -> AnyPublisher<EligiblePaymentMethodsRecurringBuyResponse, NabuNetworkError> {
         var parameters: [URLQueryItem] = []
-        if let date = date {
+        if let date {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.date,

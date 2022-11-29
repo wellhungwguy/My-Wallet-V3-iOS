@@ -210,8 +210,8 @@ public struct ApplicationPushNotificationParamaters: AnalyticsEventParameters, E
 
 extension ApplicationSystemEventParamaters {
     init(app: App = .init()) {
-        version = app.version ?? "<unknown>"
-        build = app.build ?? "<unknown>"
+        self.version = app.version ?? "<unknown>"
+        self.build = app.build ?? "<unknown>"
     }
 }
 
@@ -226,11 +226,11 @@ public struct ApplicationOpenedSystemEventParamaters: AnalyticsEventParameters, 
 extension ApplicationOpenedSystemEventParamaters {
 
     init(app: App = .init(), notification: Notification) {
-        version = app.version ?? "<unknown>"
-        build = app.build ?? "<unknown>"
-        fromBackground = notification.name == UIApplication.willEnterForegroundNotification
-        referringApplication = notification.userInfo?[UIApplication.LaunchOptionsKey.sourceApplication] as? String
-        url = notification.userInfo?[UIApplication.LaunchOptionsKey.url] as? String
+        self.version = app.version ?? "<unknown>"
+        self.build = app.build ?? "<unknown>"
+        self.fromBackground = notification.name == UIApplication.willEnterForegroundNotification
+        self.referringApplication = notification.userInfo?[UIApplication.LaunchOptionsKey.sourceApplication] as? String
+        self.url = notification.userInfo?[UIApplication.LaunchOptionsKey.url] as? String
     }
 }
 
@@ -249,11 +249,11 @@ extension ApplicationUpdatedSystemEventParamaters {
     static let previousBuild = "ApplicationUpdatedSystemEventParamaterPreviousBuild"
 
     init(app: App = .init(), userDefaults: UserDefaults = .standard) {
-        version = app.version ?? "<unknown>"
-        build = app.build ?? "<unknown>"
-        installedVersion = userDefaults.string(forKey: Self.installedVersion)
-        previousVersion = userDefaults.string(forKey: Self.previousVersion)
-        previousBuild = userDefaults.string(forKey: Self.previousBuild)
+        self.version = app.version ?? "<unknown>"
+        self.build = app.build ?? "<unknown>"
+        self.installedVersion = userDefaults.string(forKey: Self.installedVersion)
+        self.previousVersion = userDefaults.string(forKey: Self.previousVersion)
+        self.previousBuild = userDefaults.string(forKey: Self.previousBuild)
     }
 }
 

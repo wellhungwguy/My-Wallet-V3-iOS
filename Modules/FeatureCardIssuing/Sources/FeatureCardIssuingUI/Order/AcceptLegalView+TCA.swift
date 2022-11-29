@@ -33,8 +33,8 @@ struct AcceptLegalState: Equatable {
         items: [LegalItem]
     ) {
         self.items = items
-        current = items.first
-        hasNext = items.count > 1
+        self.current = items.first
+        self.hasNext = items.count > 1
     }
 }
 

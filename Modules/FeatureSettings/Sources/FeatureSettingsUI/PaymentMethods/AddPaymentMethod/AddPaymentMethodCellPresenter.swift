@@ -52,15 +52,15 @@ final class AddPaymentMethodCellPresenter: AsyncPresenting {
 
     init(interactor: AddPaymentMethodInteractor) {
         self.interactor = interactor
-        localizedStrings = AddPaymentMethodLocalizedStrings(interactor.paymentMethod)
+        self.localizedStrings = AddPaymentMethodLocalizedStrings(interactor.paymentMethod)
 
-        labelContentPresenter = AddPaymentMethodLabelContentPresenter(
+        self.labelContentPresenter = AddPaymentMethodLabelContentPresenter(
             interactor: AddPaymentMethodLabelContentInteractor(
                 interactor: interactor,
                 localizedStrings: localizedStrings
             )
         )
-        badgeImagePresenter = AddPaymenMethodBadgePresenter(
+        self.badgeImagePresenter = AddPaymenMethodBadgePresenter(
             interactor: interactor
         )
 

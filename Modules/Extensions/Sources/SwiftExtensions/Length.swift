@@ -60,8 +60,8 @@ public struct Size: Hashable {
     }
 
     public init(length: Length) {
-        width = length
-        height = length
+        self.width = length
+        self.height = length
     }
 }
 
@@ -371,7 +371,7 @@ extension HStack {
     ) {
         self.init(
             alignment: alignment,
-            spacing: parent.map { spacing.in(parent: $0, screen: .screen) },
+            spacing: parent.map { spacing.in(parent: $0, screen: .screen) } ?? spacing.in(.screen),
             content: content
         )
     }
@@ -387,7 +387,7 @@ extension VStack {
     ) {
         self.init(
             alignment: alignment,
-            spacing: parent.map { spacing.in(parent: $0, screen: .screen) },
+            spacing: parent.map { spacing.in(parent: $0, screen: .screen) } ?? spacing.in(.screen),
             content: content
         )
     }

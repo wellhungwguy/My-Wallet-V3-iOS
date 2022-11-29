@@ -29,7 +29,7 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] _ in
 

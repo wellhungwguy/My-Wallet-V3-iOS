@@ -20,7 +20,7 @@ public final class InputAmountLabelPresenter {
         currencyCodeSide: AmountLabelViewPresenter.CurrencyCodeSide,
         isFocused: Bool = false
     ) {
-        presenter = .init(
+        self.presenter = .init(
             interactor: interactor.interactor,
             currencyCodeSide: currencyCodeSide,
             isFocused: isFocused

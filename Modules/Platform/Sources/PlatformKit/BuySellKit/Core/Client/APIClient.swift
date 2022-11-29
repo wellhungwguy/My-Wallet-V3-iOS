@@ -229,13 +229,13 @@ final class APIClient: SimpleBuyClientAPI {
                 init(from decoder: Decoder) throws {
                     let values = try decoder.container(keyedBy: CodingKeys.self)
                     let rawAmount = try values.decode(Amount.self, forKey: .amount)
-                    amount = try (
+                    self.amount = try (
                         MoneyValue.create(
                             major: rawAmount.value,
                             currency: CurrencyType(code: rawAmount.symbol)
                         )
                     ) ?? .zero(currency: CurrencyType(code: rawAmount.symbol))
-                    period = try values.decode(AccumulatedTradeDetails.TimePeriod.self, forKey: .period)
+                    self.period = try values.decode(AccumulatedTradeDetails.TimePeriod.self, forKey: .period)
                 }
             }
 

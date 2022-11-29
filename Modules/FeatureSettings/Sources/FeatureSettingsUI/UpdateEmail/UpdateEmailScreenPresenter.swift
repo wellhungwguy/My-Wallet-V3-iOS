@@ -62,14 +62,14 @@ final class UpdateEmailScreenPresenter {
         loadingViewPresenting: LoadingViewPresenting = resolve(),
         analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        interactor = emailScreenInteractor
-        textField = .init(
+        self.interactor = emailScreenInteractor
+        self.textField = .init(
             with: .email,
             validator: TextValidationFactory.Info.email,
             messageRecorder: resolve()
         )
 
-        descriptionContent = .init(
+        self.descriptionContent = .init(
             text: LocalizationIDs.description,
             font: .main(.medium, 14.0),
             color: .textFieldText,
@@ -77,11 +77,11 @@ final class UpdateEmailScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
 
-        updateButtonViewModel = .primary(
+        self.updateButtonViewModel = .primary(
             with: LocalizationIDs.update,
             accessibilityId: AccessibilityIDs.updateEmailButton
         )
-        resendButtonViewModel = .secondary(
+        self.resendButtonViewModel = .secondary(
             with: LocalizationIDs.resend,
             accessibilityId: AccessibilityIDs.resendEmailButton
         )

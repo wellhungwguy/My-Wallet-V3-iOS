@@ -19,7 +19,7 @@ public class StripeClient: CardAcquirerClientAPI {
 
     init(_ apiKey: String) {
         self.apiKey = apiKey
-        client = STPAPIClient(publishableKey: apiKey)
+        self.client = STPAPIClient(publishableKey: apiKey)
     }
 
     public func tokenize(_ card: CardData, accounts: [String]) -> AnyPublisher<CardTokenizationResponse, CardAcquirerError> {

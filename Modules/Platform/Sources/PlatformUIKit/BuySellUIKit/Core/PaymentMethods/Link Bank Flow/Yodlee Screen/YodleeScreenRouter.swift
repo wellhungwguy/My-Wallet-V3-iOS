@@ -25,7 +25,7 @@ final class YodleeScreenRouter: ViewableRouter<YodleeScreenInteractable, YodleeS
         viewController: YodleeScreenViewControllable,
         webViewServiceAPI: WebViewServiceAPI = resolve()
     ) {
-        webViewService = webViewServiceAPI
+        self.webViewService = webViewServiceAPI
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }

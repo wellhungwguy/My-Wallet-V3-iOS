@@ -66,7 +66,7 @@ extension Observable {
         private var disposable: Disposable?
 
         init(upstream: Upstream, downstream: Downstream) {
-            observable = upstream.asObservable()
+            self.observable = upstream.asObservable()
             self.downstream = downstream
         }
 

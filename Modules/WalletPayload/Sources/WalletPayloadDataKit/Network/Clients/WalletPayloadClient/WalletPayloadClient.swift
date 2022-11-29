@@ -31,13 +31,13 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             guard let guid = response.guid else {
                 throw ClientError.missingGuid
             }
-            payload = try? WalletPayloadWrapper(string: response.payload)
+            self.payload = try? WalletPayloadWrapper(string: response.payload)
             self.guid = guid
-            authType = response.authType
-            language = response.language
-            shouldSyncPubkeys = response.shouldSyncPubkeys
-            payloadChecksum = response.payloadChecksum
-            time = Date(timeIntervalSince1970: response.serverTime / 1000)
+            self.authType = response.authType
+            self.language = response.language
+            self.shouldSyncPubkeys = response.shouldSyncPubkeys
+            self.payloadChecksum = response.payloadChecksum
+            self.time = Date(timeIntervalSince1970: response.serverTime / 1000)
         }
     }
 
@@ -102,11 +102,11 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            isEmailAuthorizationRequired = try container.decodeIfPresent(
+            self.isEmailAuthorizationRequired = try container.decodeIfPresent(
                 Bool.self,
                 forKey: .isEmailAuthorizationRequired
             ) ?? false
-            errorMessage = try container.decode(String.self, forKey: .errorMessage)
+            self.errorMessage = try container.decode(String.self, forKey: .errorMessage)
         }
 
         private init(
@@ -261,7 +261,7 @@ extension WalletPayloadClient.Response: Decodable {
         authType = try container.decode(Int.self, forKey: .authType)
         language = try container.decode(String.self, forKey: .language)
         shouldSyncPubkeys = try container.decodeIfPresent(Bool.self, forKey: .shouldSyncPubkeys) ?? false
-        payload = try container.decodeIfPresent(String.self, forKey: .payload)
+        self.payload = try container.decodeIfPresent(String.self, forKey: .payload)
         serverTime = try container.decode(TimeInterval.self, forKey: .serverTime)
         payloadChecksum = try container.decodeIfPresent(String.self, forKey: .payloadChecksum)
     }

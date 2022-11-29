@@ -47,7 +47,7 @@ enum APIErrorEvent: AnalyticsEvent {
                 requestId = requestIdHeader
             }
             self.host = host
-            path = url.path
+            self.path = url.path
             self.errorCode = errorCode
             self.body = body
             self.requestId = requestId

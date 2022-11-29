@@ -40,6 +40,6 @@ struct OrderUpdateRequest: Encodable {
     let action: String
 
     init(success: Bool) {
-        action = success ? "DEPOSIT_SENT" : "CANCEL"
+        self.action = success ? "DEPOSIT_SENT" : "CANCEL"
     }
 }

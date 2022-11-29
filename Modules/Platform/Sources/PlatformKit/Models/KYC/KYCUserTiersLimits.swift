@@ -16,11 +16,11 @@ extension KYC.UserTier {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            currency = try values.decode(String.self, forKey: .currency)
+            self.currency = try values.decode(String.self, forKey: .currency)
             let dailyRaw = try values.decodeIfPresent(String.self, forKey: .daily) ?? ""
-            daily = Decimal(string: dailyRaw)
+            self.daily = Decimal(string: dailyRaw)
             let annualRaw = try values.decodeIfPresent(String.self, forKey: .annual) ?? ""
-            annual = Decimal(string: annualRaw)
+            self.annual = Decimal(string: annualRaw)
         }
     }
 }

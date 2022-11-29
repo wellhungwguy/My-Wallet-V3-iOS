@@ -24,7 +24,7 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] key in
                 client.fetchBalanceWithFiatCurrency(key)

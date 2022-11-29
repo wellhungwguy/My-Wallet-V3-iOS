@@ -18,7 +18,7 @@ public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
     ) {
         self.mnemonicVerificationStatusProvider = mnemonicVerificationStatusProvider
 
-        isRecoveryPhraseVerified = fetchTriggerSubject
+        self.isRecoveryPhraseVerified = fetchTriggerSubject
             .prepend(())
             .flatMap { _ -> AnyPublisher<Bool, Never> in
                 mnemonicVerificationStatusProvider()

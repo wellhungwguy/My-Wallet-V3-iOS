@@ -12,6 +12,7 @@ public enum HotWalletProduct: String {
     case exchange
     case trading = "simplebuy"
     case rewards
+    case staking
 }
 
 /// HotWalletAddressService responsible for fetching the hot wallet receive addresses

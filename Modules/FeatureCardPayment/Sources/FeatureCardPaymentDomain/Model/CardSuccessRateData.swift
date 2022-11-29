@@ -36,8 +36,8 @@ extension CardSuccessRateData {
 extension CardSuccessRateData {
 
     public init(response: CardSuccessRate.Response) {
-        block = response.block
-        ux = response.ux
-        bin = response.bin
+        self.block = response.block
+        self.ux = response.ux
+        self.bin = response.bin
     }
 }

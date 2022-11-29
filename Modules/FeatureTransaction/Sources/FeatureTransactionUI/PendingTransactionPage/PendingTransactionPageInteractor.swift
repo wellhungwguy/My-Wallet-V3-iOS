@@ -33,7 +33,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         presenter: PendingTransactionPagePresentable,
         action: AssetAction
     ) {
-        pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(
+        self.pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(
             action: action
         )
         self.transactionModel = transactionModel

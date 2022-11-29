@@ -40,7 +40,7 @@ final class HistoricalTransactionsRepository: HistoricalTransactionsRepositoryAP
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        transactionsCachedValue = CachedValueNew(
+        self.transactionsCachedValue = CachedValueNew(
             cache: transactionsCache,
             fetch: { [transactionClient] key in
                 transactionClient
@@ -70,7 +70,7 @@ final class HistoricalTransactionsRepository: HistoricalTransactionsRepositoryAP
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        transactionCachedValue = CachedValueNew(
+        self.transactionCachedValue = CachedValueNew(
             cache: transactionCache,
             fetch: { [transactionClient] key in
                 transactionClient

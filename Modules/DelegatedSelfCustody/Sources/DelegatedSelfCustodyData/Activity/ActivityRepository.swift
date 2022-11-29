@@ -26,7 +26,7 @@ final class ActivityRepository: DelegatedCustodyActivityRepositoryAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 30)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [authenticationDataRepository, client] key in
                 authenticationDataRepository.authenticationData
@@ -80,7 +80,7 @@ extension DelegatedCustodyActivity {
             .address
         let status = DelegatedCustodyActivity.Status(response: entry.status)
         let timestamp = entry.timestamp
-            .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
+            .flatMap(Date.init(timeIntervalSince1970:)) ?? .distantPast
         let zero = CryptoValue.zero(currency: cryptoCurrency)
         let value = (entry.movements.first?.amount)
             .flatMap { CryptoValue.create(minor: $0, currency: cryptoCurrency) } ?? zero

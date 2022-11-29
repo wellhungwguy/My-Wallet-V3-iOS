@@ -29,7 +29,7 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
         provider: FiatCurrencySelectionProviderAPI = DefaultFiatCurrencySelectionProvider()
     ) {
         self.provider = provider
-        selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 }
 

@@ -43,9 +43,9 @@ extension Mock {
 
         let provider: KeychainQueryProvider
 
-        public init(queryProvider: KeychainQueryProvider) { provider = queryProvider }
-        public init(service: String) { provider = GenericPasswordQuery(service: service) }
-        public init(service: String, accessGroup: String) { provider = GenericPasswordQuery(service: service, accessGroup: accessGroup) }
+        public init(queryProvider: KeychainQueryProvider) { self.provider = queryProvider }
+        public init(service: String) { self.provider = GenericPasswordQuery(service: service) }
+        public init(service: String, accessGroup: String) { self.provider = GenericPasswordQuery(service: service, accessGroup: accessGroup) }
 
         public func read(
             for key: String
@@ -65,7 +65,7 @@ extension Mock {
         ) -> Result<Void, KeychainAccessError> {
             let query = provider.writeQuery(key: key, data: value)
             guard query.isNotEmpty else { return .failure(.writeFailure(.writeFailed(account: key, status: 9999))) }
-            return .success((store[query[kSecAttrService as String] as! String, key] = value))
+            return .success(store[query[kSecAttrService as String] as! String, key] = value)
         }
 
         public func remove(
@@ -73,7 +73,7 @@ extension Mock {
         ) -> Result<Void, KeychainAccessError> {
             let query = provider.commonQuery(key: key, data: nil)
             guard query.isNotEmpty else { return .failure(.writeFailure(.removalFailed(account: key, status: 9999))) }
-            return .success((store[query[kSecAttrService as String] as! String, key] = nil))
+            return .success(store[query[kSecAttrService as String] as! String, key] = nil)
         }
     }
 }

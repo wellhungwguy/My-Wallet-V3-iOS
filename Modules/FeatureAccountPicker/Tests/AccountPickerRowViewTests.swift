@@ -79,7 +79,8 @@ class AccountPickerRowViewTests: XCTestCase {
                     currency: .fiat(.GBP),
                     available: .create(majorBigInt: 25000, currency: .fiat(.GBP)),
                     withdrawable: .create(majorBigInt: 25000, currency: .fiat(.GBP)),
-                    pending: .zero(currency: .GBP)
+                    pending: .zero(currency: .GBP),
+                    mainBalanceToDisplay: .create(majorBigInt: 25000, currency: .fiat(.GBP))
                 ),
                 max: .create(majorBigInt: 1000000, currency: .GBP)
             )

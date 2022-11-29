@@ -28,7 +28,7 @@ extension PriceResponse.IndexMulti {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
-            entries = try container.decode([String: PriceResponse.Item?].self)
+            self.entries = try container.decode([String: PriceResponse.Item?].self)
         }
     }
 }

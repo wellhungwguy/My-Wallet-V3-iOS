@@ -8,11 +8,11 @@ public final class KeychainAccess: KeychainAccessAPI {
     private let reader: KeychainReaderAPI
 
     public init(queryProvider: KeychainQueryProvider) {
-        reader = KeychainReader(
+        self.reader = KeychainReader(
             queryProvider: queryProvider,
             coreReader: keychainReader
         )
-        writer = KeychainWriter(
+        self.writer = KeychainWriter(
             queryProvider: queryProvider,
             coreWriter: keychainWriter,
             coreUpdater: keychainUpdater,

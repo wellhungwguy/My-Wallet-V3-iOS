@@ -31,7 +31,7 @@ final class BitcoinHistoricalTransactionService: BitcoinHistoricalTransactionSer
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] xPubs in
                 client

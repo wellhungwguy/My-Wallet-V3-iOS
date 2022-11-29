@@ -59,7 +59,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ -> AnyPublisher<EthereumWallet, WalletAccountRepositoryError> in
                 fetchOrCreateEthereumNatively(
@@ -87,12 +87,12 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
             }
         )
 
-        defaultAccount = cachedValue.get(key: Key())
+        self.defaultAccount = cachedValue.get(key: Key())
             .map(\.accounts)
             .compactMap(\.first)
             .eraseToAnyPublisher()
 
-        ethereumEntry = cachedValue.get(key: Key())
+        self.ethereumEntry = cachedValue.get(key: Key())
             .map(\.entry)
             .eraseToAnyPublisher()
     }

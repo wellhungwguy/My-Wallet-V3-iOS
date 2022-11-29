@@ -66,7 +66,7 @@ final class LinkBankFlowRootInteractor: Interactor,
         self.loadingViewPresenter = loadingViewPresenter
         self.beneficiariesService = beneficiariesService
         self.featureFlagsService = featureFlagsService
-        linkBankFlowEffect = bankFlowEffectRelay
+        self.linkBankFlowEffect = bankFlowEffectRelay
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
         super.init()

@@ -85,7 +85,7 @@ final class CryptoDomainKYCAnnouncement: OneTimeAnnouncement, ActionableAnnounce
         action: @escaping CardAnnouncementAction
     ) {
         self.userCanCompleteTier2 = userCanCompleteTier2
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

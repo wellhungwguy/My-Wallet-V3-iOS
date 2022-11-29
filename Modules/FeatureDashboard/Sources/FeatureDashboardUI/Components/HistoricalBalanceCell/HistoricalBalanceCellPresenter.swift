@@ -70,14 +70,14 @@ final class HistoricalBalanceCellPresenter {
         appMode: AppMode
     ) {
         self.interactor = interactor
-        sparklinePresenter = AssetSparklinePresenter(
+        self.sparklinePresenter = AssetSparklinePresenter(
             with: interactor.sparklineInteractor
         )
-        pricePresenter = AssetPriceViewPresenter(
+        self.pricePresenter = AssetPriceViewPresenter(
             interactor: interactor.priceInteractor,
             descriptors: .assetPrice(accessibilityIdSuffix: interactor.cryptoCurrency.displayCode)
         )
-        balancePresenter = AssetBalanceViewPresenter(
+        self.balancePresenter = AssetBalanceViewPresenter(
             alignment: appMode == .pkw ? .trailing : .leading,
             interactor: interactor.balanceInteractor,
             descriptors: .default(
@@ -96,6 +96,6 @@ final class HistoricalBalanceCellPresenter {
             ),
             marginOffset: 0
         )
-        badgeImageViewModel = BadgeImageViewModel(theme: theme)
+        self.badgeImageViewModel = BadgeImageViewModel(theme: theme)
     }
 }

@@ -18,7 +18,7 @@ public struct EthereumAddress: Hashable {
         guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
             throw AddressValidationError.eip55ChecksumFailed
         }
-        publicKey = eip55Address
+        self.publicKey = eip55Address
         self.network = network
     }
 

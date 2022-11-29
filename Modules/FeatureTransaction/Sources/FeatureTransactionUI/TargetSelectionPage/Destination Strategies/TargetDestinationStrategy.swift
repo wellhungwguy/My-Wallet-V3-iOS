@@ -124,6 +124,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
          .interestTransfer,
          .withdraw,
          .interestWithdraw,
+         .stakingDeposit,
          .linkToDebitCard,
          .receive,
          .buy,

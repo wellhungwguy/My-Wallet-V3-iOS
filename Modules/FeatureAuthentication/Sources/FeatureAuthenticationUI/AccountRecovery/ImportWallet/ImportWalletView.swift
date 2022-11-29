@@ -28,7 +28,7 @@ struct ImportWalletView: View {
 
     init(store: Store<ImportWalletState, ImportWalletAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {
@@ -106,6 +106,7 @@ struct ImportWalletView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
+                    signUpCountriesService: NoSignUpCountriesService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     recaptchaService: NoOpGoogleRecatpchaService()
                 )

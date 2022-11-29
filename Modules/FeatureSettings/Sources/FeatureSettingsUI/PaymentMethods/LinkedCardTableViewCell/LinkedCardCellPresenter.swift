@@ -43,7 +43,7 @@ final class LinkedCardCellPresenter {
     init(acceptsUserInteraction: Bool, cardData: CardData) {
         self.cardData = cardData
 
-        linkedCardViewModel = .init(type: cardData.type)
+        self.linkedCardViewModel = .init(type: cardData.type)
         let currencyCode = cardData.topLimit.code
         let limitAmount = cardData.topLimitDisplayValue
         let limitDisplayValue = limitAmount + " \(currencyCode) \(LocalizationIDs.limit)"
@@ -57,7 +57,7 @@ final class LinkedCardCellPresenter {
 
         self.acceptsUserInteraction = acceptsUserInteraction
 
-        expirationLabelContent = .init(
+        self.expirationLabelContent = .init(
             text: "\(LocalizationIDs.expires) " + cardData.displayExpirationDate,
             font: .main(.medium, 14.0),
             color: .descriptionText,
@@ -70,22 +70,22 @@ final class LinkedCardCellPresenter {
         let accessibilityId = "\(cardData.type).\(state.rawValue)"
         switch state {
         case .created, .pending:
-            badgeViewModel = .default(
+            self.badgeViewModel = .default(
                 with: LocalizationIDs.pending,
                 accessibilityId: accessibilityId
             )
         case .blocked, .expired:
-            badgeViewModel = .destructive(
+            self.badgeViewModel = .destructive(
                 with: LocalizationIDs.expired,
                 accessibilityId: accessibilityId
             )
         case .fraudReview, .manualReview:
-            badgeViewModel = .default(
+            self.badgeViewModel = .default(
                 with: LocalizationIDs.inReview,
                 accessibilityId: LocalizationIDs.inReview
             )
         case .none, .active:
-            badgeViewModel = .default(
+            self.badgeViewModel = .default(
                 with: LocalizationIDs.unknown,
                 accessibilityId: accessibilityId
             )
@@ -93,7 +93,7 @@ final class LinkedCardCellPresenter {
 
         badgeVisibilityRelay.accept(cardData.state == .active ? .hidden : .visible)
 
-        digitsLabelContent = .init(
+        self.digitsLabelContent = .init(
             text: cardData.displaySuffix,
             font: .main(.semibold, 16.0),
             color: .textFieldText,

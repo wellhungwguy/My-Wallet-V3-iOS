@@ -41,11 +41,11 @@ struct ResetPasswordState: Equatable {
     var isLoading: Bool
 
     init() {
-        newPassword = ""
-        confirmNewPassword = ""
-        passwordStrength = .none
-        isResetAccountFailureVisible = false
-        isLoading = false
+        self.newPassword = ""
+        self.confirmNewPassword = ""
+        self.passwordStrength = .none
+        self.isResetAccountFailureVisible = false
+        self.isLoading = false
     }
 }
 

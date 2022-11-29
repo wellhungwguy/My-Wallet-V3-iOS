@@ -59,11 +59,11 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
     ) {
         self.identifier = identifier
         self.interactor = interactor
-        titleLabelContentPresenter = DefaultLabelContentPresenter(
+        self.titleLabelContentPresenter = DefaultLabelContentPresenter(
             interactor: interactor.title,
             descriptors: .lineItemTitle(accessibilityIdPrefix: accessibilityIdPrefix)
         )
-        descriptionLabelContentPresenter = DefaultLabelContentPresenter(
+        self.descriptionLabelContentPresenter = DefaultLabelContentPresenter(
             interactor: interactor.description,
             descriptors: .lineItemDescription(accessibilityIdPrefix: accessibilityIdPrefix)
         )

@@ -69,22 +69,22 @@ final class ReceiveScreenPresenter {
     ) {
         self.interactor = interactor
         self.eventsRecorder = eventsRecorder
-        walletDomainLabelContent = LabelContent(
+        self.walletDomainLabelContent = LabelContent(
             text: LocalizedString.Text.domainName,
             font: .main(.semibold, 12),
             color: .titleText
         )
-        walletAddressLabelContent = LabelContent(
+        self.walletAddressLabelContent = LabelContent(
             text: LocalizedString.Text.walletAddress,
             font: .main(.semibold, 12),
             color: .titleText
         )
-        memoLabelContent = LabelContent(
+        self.memoLabelContent = LabelContent(
             text: LocalizedString.Text.memo,
             font: .main(.semibold, 12),
             color: .titleText
         )
-        memoNoteViewModel = InteractableTextViewModel(
+        self.memoNoteViewModel = InteractableTextViewModel(
             inputs: [
                 .text(string: LocalizedString.Text.memoNote),
                 .url(string: LocalizedString.Text.learnMore, url: Constants.Url.stellarMemo)
@@ -92,7 +92,7 @@ final class ReceiveScreenPresenter {
             textStyle: .init(color: .descriptionText, font: .main(.semibold, 12)),
             linkStyle: .init(color: .linkableText, font: .main(.semibold, 12))
         )
-        nameLabelContentPresenting = DefaultLabelContentPresenter(
+        self.nameLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: interactor.account.label,
             descriptors: .init(
                 fontWeight: .semibold,
@@ -101,7 +101,7 @@ final class ReceiveScreenPresenter {
                 accessibility: .id(AccessibilityID.walletNameLabel)
             )
         )
-        balanceLabelContentPresenting = DefaultLabelContentPresenter(
+        self.balanceLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: "  ",
             descriptors: .init(
                 fontWeight: .medium,
@@ -110,7 +110,7 @@ final class ReceiveScreenPresenter {
                 accessibility: .id(AccessibilityID.balanceLabel)
             )
         )
-        domainLabelContentPresenting = DefaultLabelContentPresenter(
+        self.domainLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: "",
             descriptors: .init(
                 fontWeight: .medium,
@@ -119,7 +119,7 @@ final class ReceiveScreenPresenter {
                 accessibility: .id(AccessibilityID.domainLabel)
             )
         )
-        addressLabelContentPresenting = DefaultLabelContentPresenter(
+        self.addressLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: "  ",
             descriptors: .init(
                 fontWeight: .medium,
@@ -128,7 +128,7 @@ final class ReceiveScreenPresenter {
                 accessibility: .id(AccessibilityID.addressLabel)
             )
         )
-        memoLabelContentPresenting = DefaultLabelContentPresenter(
+        self.memoLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: "",
             descriptors: .init(
                 fontWeight: .medium,
@@ -137,8 +137,8 @@ final class ReceiveScreenPresenter {
                 accessibility: .id(AccessibilityID.memoLabel)
             )
         )
-        copyButton = .secondary(with: LocalizedString.Button.copy)
-        shareButton = .primary(with: LocalizedString.Button.share)
+        self.copyButton = .secondary(with: LocalizedString.Button.copy)
+        self.shareButton = .primary(with: LocalizedString.Button.share)
 
         let state = interactor.state
             .asObservable()

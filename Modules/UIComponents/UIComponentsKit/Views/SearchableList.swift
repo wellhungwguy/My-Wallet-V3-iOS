@@ -159,11 +159,11 @@ struct SearchableListExample: CustomStringConvertible, Identifiable, Expressible
     var description: String
 
     init(_ value: String) {
-        description = value
+        self.description = value
     }
 
     init(stringLiteral value: String) {
-        description = value
+        self.description = value
     }
 }
 

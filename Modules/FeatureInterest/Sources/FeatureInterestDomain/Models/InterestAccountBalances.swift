@@ -18,7 +18,7 @@ public struct InterestAccountBalances: Equatable {
     }
 
     private init() {
-        balances = [:]
+        self.balances = [:]
     }
 
     // MARK: - Subscript

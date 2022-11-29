@@ -85,7 +85,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                     maximumDaily: nil,
                     maximumAnnual: nil,
                     effectiveLimit: nil,
-                    suggestedUpgrade: nil
+                    suggestedUpgrade: nil,
+                    earn: nil
                 )
             )
         }

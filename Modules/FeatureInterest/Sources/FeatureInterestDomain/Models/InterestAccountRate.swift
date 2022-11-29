@@ -15,7 +15,7 @@ public struct InterestAccountRate {
         guard let crypto = CryptoCurrency(code: currencyCode) else {
             unimplemented("This currency type is not supported")
         }
-        cryptoCurrency = crypto
+        self.cryptoCurrency = crypto
         self.rate = rate
     }
 }

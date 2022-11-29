@@ -38,7 +38,7 @@ final class BalanceRepository: DelegatedCustodyBalanceRepositoryAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [authenticationDataRepository, fiatCurrencyService, client, enabledCurrenciesService] _ in
                 authenticationDataRepository.authenticationData

@@ -33,7 +33,7 @@ public struct BuyCheckoutView<Object: LoadableObject>: View where Object.Output 
 extension BuyCheckoutView {
 
     public init<P>(publisher: P) where P: Publisher, P.Output == BuyCheckout, P.Failure == Never, Object == PublishedObject<P, DispatchQueue> {
-        viewModel = PublishedObject(publisher: publisher)
+        self.viewModel = PublishedObject(publisher: publisher)
     }
 
     public init(_ checkout: Object.Output) where Object == PublishedObject<Just<BuyCheckout>, DispatchQueue> {
@@ -195,7 +195,7 @@ extension BuyCheckoutView.Loaded {
 
     @ViewBuilder var achTermsInfoSheet: some View {
         PrimaryNavigationView {
-            VStack() {
+            VStack {
                 ScrollView {
                     Text(checkout.achTermsInfoDescriptionText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -364,7 +364,7 @@ extension BuyCheckoutView.Loaded {
 
     @ViewBuilder func disclaimer() -> some View {
         VStack(alignment: .leading) {
-            if isUIPaymentsImprovementsEnabled && checkout.paymentMethod.isACH {
+            if isUIPaymentsImprovementsEnabled, checkout.paymentMethod.isACH {
                 VStack(alignment: .leading, spacing: Spacing.padding2) {
                     Text(checkout.achTransferDisclaimerText)
                     .multilineTextAlignment(.leading)
@@ -487,7 +487,7 @@ struct ApplePayButton: View {
     var button: Button<EmptyView>
 
     init(action: @escaping () -> Void) {
-        button = Button(action: action, label: EmptyView.init)
+        self.button = Button(action: action, label: EmptyView.init)
     }
 
     var body: some View {
@@ -497,7 +497,7 @@ struct ApplePayButton: View {
 #endif
 
 extension BuyCheckout {
-    fileprivate var paymentMethodLabel: String {
+    private var paymentMethodLabel: String {
         [paymentMethod.name, paymentMethod.detail].compactMap { $0 }.joined(separator: " ")
     }
 

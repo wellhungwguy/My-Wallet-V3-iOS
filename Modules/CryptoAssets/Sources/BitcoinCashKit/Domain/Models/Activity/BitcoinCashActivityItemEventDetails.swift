@@ -45,9 +45,9 @@ public struct BitcoinCashActivityItemEventDetails: Equatable {
         to: BitcoinCashAssetAddress,
         fee: CryptoValue?
     ) {
-        identifier = transactionHash
+        self.identifier = transactionHash
         self.createdAt = createdAt
-        confirmation = .init(
+        self.confirmation = .init(
             needConfirmation: !isConfirmed,
             confirmations: confirmations,
             requiredConfirmations: requiredConfirmations,

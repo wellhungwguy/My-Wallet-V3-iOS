@@ -19,7 +19,7 @@ final class ERC20BalancesRepositoryMock: ERC20BalancesRepositoryAPI {
     ///
     /// - Parameter cryptoCurrency: An ERC-20 crypto currency.
     init(cryptoCurrency: CryptoCurrency) {
-        tokenAccounts = .stubbed(cryptoCurrency: cryptoCurrency)
+        self.tokenAccounts = .stubbed(cryptoCurrency: cryptoCurrency)
     }
 
     // MARK: - Internal Methods

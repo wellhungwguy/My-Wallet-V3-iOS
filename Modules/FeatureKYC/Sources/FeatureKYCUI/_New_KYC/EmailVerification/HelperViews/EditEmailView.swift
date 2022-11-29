@@ -17,7 +17,7 @@ struct EditEmailState: Equatable {
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
-        isEmailValid = emailAddress.isEmail
+        self.isEmailValid = emailAddress.isEmail
     }
 }
 

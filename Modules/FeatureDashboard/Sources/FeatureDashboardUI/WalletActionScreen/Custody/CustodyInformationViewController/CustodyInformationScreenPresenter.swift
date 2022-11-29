@@ -72,7 +72,7 @@ final class CustodyInformationScreenPresenter {
     init(stateService: CustodyActionStateServiceAPI) {
         self.stateService = stateService
 
-        okButtonViewModel = .primary(with: LocalizationConstants.okString, accessibilityId: AccessibilityId.okButton)
+        self.okButtonViewModel = .primary(with: LocalizationConstants.okString, accessibilityId: AccessibilityId.okButton)
         sendAnalytics()
     }
 

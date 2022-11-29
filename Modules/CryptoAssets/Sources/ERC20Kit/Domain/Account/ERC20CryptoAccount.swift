@@ -176,9 +176,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         precondition(erc20Token.kind.isERC20)
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        asset = erc20Token.cryptoCurrency!
+        self.asset = erc20Token.cryptoCurrency!
         self.network = network
-        label = asset.defaultWalletName
+        self.label = asset.defaultWalletName
         self.balanceService = balanceService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
         self.ethereumBalanceRepository = ethereumBalanceRepository
@@ -230,6 +230,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
+        case .stakingDeposit:
+            guard asset.supports(product: .stakingBalance) else { return .just(false) }
+            return isFunded
         case .deposit,
              .sign,
              .withdraw,
@@ -277,6 +280,17 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

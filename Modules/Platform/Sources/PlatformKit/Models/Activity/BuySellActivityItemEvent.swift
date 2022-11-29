@@ -89,34 +89,34 @@ extension BuySellActivityItemEvent {
     ///
     /// - Parameter swapActivityItemEvent: A swap activity item event.
     public init(swapActivityItemEvent: SwapActivityItemEvent) {
-        isBuy = false
-        isCancellable = false
-        creationDate = swapActivityItemEvent.date
-        identifier = swapActivityItemEvent.identifier
-        inputValue = swapActivityItemEvent.amounts.withdrawal
-        outputValue = swapActivityItemEvent.amounts.deposit
-        fee = swapActivityItemEvent.amounts.withdrawalFee
-        paymentMethod = .funds
-        paymentProcessorErrorOccurred = false
-        recurringBuyId = nil
+        self.isBuy = false
+        self.isCancellable = false
+        self.creationDate = swapActivityItemEvent.date
+        self.identifier = swapActivityItemEvent.identifier
+        self.inputValue = swapActivityItemEvent.amounts.withdrawal
+        self.outputValue = swapActivityItemEvent.amounts.deposit
+        self.fee = swapActivityItemEvent.amounts.withdrawalFee
+        self.paymentMethod = .funds
+        self.paymentProcessorErrorOccurred = false
+        self.recurringBuyId = nil
 
         switch swapActivityItemEvent.status {
         case .complete:
-            status = .finished
+            self.status = .finished
         case .delayed:
-            status = .pending
+            self.status = .pending
         case .expired:
-            status = .expired
+            self.status = .expired
         case .failed:
-            status = .failed
+            self.status = .failed
         case .inProgress:
-            status = .pending
+            self.status = .pending
         case .none:
-            status = .pending
+            self.status = .pending
         case .pendingRefund:
-            status = .pending
+            self.status = .pending
         case .refunded:
-            status = .cancelled
+            self.status = .cancelled
         }
     }
 }

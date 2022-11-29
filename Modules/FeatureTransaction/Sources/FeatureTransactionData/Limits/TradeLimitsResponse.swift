@@ -32,18 +32,18 @@ struct TradeLimitsResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        currency = try values.decode(FiatCurrency.self, forKey: .currency)
+        self.currency = try values.decode(FiatCurrency.self, forKey: .currency)
         let zero: FiatValue = .zero(currency: currency)
 
-        minOrder = FiatValue.create(
+        self.minOrder = FiatValue.create(
             minor: try values.decode(String.self, forKey: .minOrder),
             currency: currency
         ) ?? zero
-        maxPossibleOrder = FiatValue.create(
+        self.maxPossibleOrder = FiatValue.create(
             minor: try values.decode(String.self, forKey: .maxPossibleOrder),
             currency: currency
         ) ?? zero
-        maxOrder = FiatValue.create(
+        self.maxOrder = FiatValue.create(
             minor: try values.decode(String.self, forKey: .maxOrder),
             currency: currency
         ) ?? zero
@@ -51,17 +51,17 @@ struct TradeLimitsResponse: Decodable {
         if let daily = try values.decodeIfPresent(LimitResponse.self, forKey: .daily) {
             self.daily = .init(fiatCurrency: currency, limit: daily)
         } else {
-            daily = nil
+            self.daily = nil
         }
         if let weekly = try values.decodeIfPresent(LimitResponse.self, forKey: .weekly) {
             self.weekly = .init(fiatCurrency: currency, limit: weekly)
         } else {
-            weekly = nil
+            self.weekly = nil
         }
         if let annual = try values.decodeIfPresent(LimitResponse.self, forKey: .annual) {
             self.annual = .init(fiatCurrency: currency, limit: annual)
         } else {
-            annual = nil
+            self.annual = nil
         }
     }
 }

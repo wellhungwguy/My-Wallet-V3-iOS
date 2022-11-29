@@ -7,7 +7,7 @@ public struct UpdatePlaidAccountRequest: Encodable {
         accountId: String,
         publicToken: String
     ) {
-        attributes = Attributes(
+        self.attributes = Attributes(
             accountId: accountId,
             publicToken: publicToken
         )

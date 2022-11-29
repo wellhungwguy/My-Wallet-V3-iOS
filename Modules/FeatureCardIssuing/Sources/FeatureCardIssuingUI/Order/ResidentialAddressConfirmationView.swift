@@ -13,6 +13,7 @@ struct ResidentialAddressConfirmationView: View {
 
     private let store: Store<CardOrderingState, CardOrderingAction>
     @State private var isNextScreenVisible = false
+    @State private var isPatriotActVisible = false
 
     init(store: Store<CardOrderingState, CardOrderingAction>) {
         self.store = store
@@ -51,11 +52,19 @@ struct ResidentialAddressConfirmationView: View {
                     .foregroundColor(.WalletSemantic.body)
                     .multilineTextAlignment(.leading)
                 Spacer()
-                PrimaryButton(title: L10n.Buttons.next) {
-                    isNextScreenVisible = true
+                VStack(alignment: .center) {
+                    Text(LocalizationConstants.CardIssuing.Order.PatriotAct.button)
+                        .typography(.body2)
+                        .foregroundColor(.semantic.primary)
+                        .onTapGesture {
+                            isPatriotActVisible = true
+                        }
+                    PrimaryButton(title: L10n.Buttons.next) {
+                        isNextScreenVisible = true
+                    }
+                    .disabled(!(viewStore.state.address?.hasAllRequiredInformation ?? false))
+                    .padding(Spacing.padding1)
                 }
-                .disabled(!(viewStore.state.address?.hasAllRequiredInformation ?? false))
-                .padding(Spacing.padding2)
             }
             .padding(.vertical, Spacing.padding3)
             .padding(.horizontal, Spacing.padding2)
@@ -67,6 +76,11 @@ struct ResidentialAddressConfirmationView: View {
             PrimaryNavigationLink(
                 destination: nextView(),
                 isActive: $isNextScreenVisible,
+                label: EmptyView.init
+            )
+            PrimaryNavigationLink(
+                destination: PatriotActView(),
+                isActive: $isPatriotActVisible,
                 label: EmptyView.init
             )
         }

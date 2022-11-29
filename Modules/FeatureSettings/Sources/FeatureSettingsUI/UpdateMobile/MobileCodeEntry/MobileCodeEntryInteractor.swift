@@ -91,8 +91,8 @@ final class MobileCodeEntryInteractor {
     private let disposeBag = DisposeBag()
 
     init(service: MobileSettingsServiceAPI) {
-        verificationInteractor = VerifyCodeEntryInteractor(service: service)
-        updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
+        self.verificationInteractor = VerifyCodeEntryInteractor(service: service)
+        self.updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
 
         Observable.combineLatest(
             verificationInteractor.interactionState,

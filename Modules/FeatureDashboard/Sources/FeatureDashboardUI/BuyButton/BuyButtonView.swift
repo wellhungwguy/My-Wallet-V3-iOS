@@ -10,7 +10,7 @@ struct BuyButtonView: View {
     private let viewStore: ViewStore<BuyButtonState, BuyButtonAction>
 
     init(store: Store<BuyButtonState, BuyButtonAction>) {
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

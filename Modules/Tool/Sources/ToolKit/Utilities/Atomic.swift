@@ -35,8 +35,8 @@ public final class Atomic<Value> {
     ///
     /// - Parameter value: A value.
     public init(_ value: Value) {
-        _value = value
-        subject = CurrentValueSubject(value)
+        self._value = value
+        self.subject = CurrentValueSubject(value)
     }
 
     // MARK: - Public Methods

@@ -186,7 +186,7 @@ extension PrimaryPicker {
             @ViewBuilder _ view: @escaping (Binding<Selection?>) -> some View
         ) {
             self.inputState = inputState
-            builder = { AnyView(view($0)) }
+            self.builder = { AnyView(view($0)) }
         }
     }
 }

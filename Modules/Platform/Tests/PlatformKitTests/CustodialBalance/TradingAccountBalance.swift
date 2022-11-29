@@ -13,7 +13,8 @@ class TradingAccountBalanceTests: XCTestCase {
                 pendingDeposit: "0",
                 pendingWithdrawal: "0",
                 available: "0",
-                withdrawable: "0"
+                withdrawable: "0",
+                mainBalanceToDisplay: "0"
             )
         )
         XCTAssertEqual(bitcoin.available.minorAmount, 0, "CryptoCurrency.bitcoin available should be 0")
@@ -24,7 +25,8 @@ class TradingAccountBalanceTests: XCTestCase {
                 pendingDeposit: "0",
                 pendingWithdrawal: "0",
                 available: "100",
-                withdrawable: "0"
+                withdrawable: "0",
+                mainBalanceToDisplay: "100"
             )
         )
         XCTAssertEqual(ethereum.available.minorAmount, 100, "CryptoCurrency.ethereum available should be 100")

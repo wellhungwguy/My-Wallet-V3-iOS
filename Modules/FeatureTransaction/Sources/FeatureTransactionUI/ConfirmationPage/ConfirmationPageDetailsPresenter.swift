@@ -71,8 +71,8 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
 
-        navigationBarTrailingButtonAction = .default
-        navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
+        self.navigationBarTrailingButtonAction = .default
+        self.navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
             backButtonPressed.accept(())
         }
     }
@@ -89,7 +89,8 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
                 }
             }
 
-        details.map(\.nextEnabled)
+        Driver.combineLatest(details.map(\.nextEnabled), details.map(\.termsAndAgreementsAreValid))
+            .map { $0 && $1 }
             .drive(contentReducer.continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 

@@ -48,7 +48,7 @@ final class BillingAddressScreenInteractor: Interactor {
         self.service = service
         self.userDataRepository = userDataRepository
         self.routingInteractor = routingInteractor
-        countrySelectionService = CountrySelectionService(defaultSelectedData: Country.current ?? .US)
+        self.countrySelectionService = CountrySelectionService(defaultSelectedData: Country.current ?? .US)
     }
 
     // MARK: - Interactor

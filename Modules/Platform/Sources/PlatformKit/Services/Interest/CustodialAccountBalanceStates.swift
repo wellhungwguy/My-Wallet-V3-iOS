@@ -37,7 +37,7 @@ extension CustodialAccountBalanceStates {
         response: CustodialBalanceResponse,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
-        balances = response.balances
+        self.balances = response.balances
             .compactMap { item in
                 CustodialAccountBalance(
                     currencyCode: item.key,

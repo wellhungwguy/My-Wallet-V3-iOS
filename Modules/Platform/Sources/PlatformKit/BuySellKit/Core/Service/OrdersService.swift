@@ -88,7 +88,7 @@ final class OrdersService: OrdersServiceAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
-        cachedOrders = CachedValueNew(
+        self.cachedOrders = CachedValueNew(
             cache: cacheOrders,
             fetch: { _ in
                 client
@@ -108,7 +108,7 @@ final class OrdersService: OrdersServiceAPI {
             refreshControl: PerpetualCacheRefreshControl()
         )
         .eraseToAnyCache()
-        cachedAccumulatedTrades = CachedValueNew(
+        self.cachedAccumulatedTrades = CachedValueNew(
             cache: cacheAccumulatedTrades,
             fetch: { _ in
                 client

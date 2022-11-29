@@ -11,16 +11,19 @@ final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
 
     private let client: WithdrawalLocksClientAPI
     private let moneyValueFormatter: MoneyValueFormatterAPI
+    private let cryptoValueFormatter: CryptoValueFormatterAPI
 
     private let decodingDateFormatter = DateFormatter.sessionDateFormat
-    private let encodingDateFormatter = DateFormatter.long
+    private let encodingDateFormatter = DateFormatter.shortWithoutYear
 
     init(
         client: WithdrawalLocksClientAPI = resolve(),
-        moneyValueFormatter: MoneyValueFormatterAPI = resolve()
+        moneyValueFormatter: MoneyValueFormatterAPI = resolve(),
+        cryptoValueFormatter: CryptoValueFormatterAPI = resolve()
     ) {
         self.client = client
         self.moneyValueFormatter = moneyValueFormatter
+        self.cryptoValueFormatter = cryptoValueFormatter
     }
 
     func withdrawalLocks(
@@ -28,7 +31,7 @@ final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
     ) -> AnyPublisher<WithdrawalLocks, Never> {
         client.fetchWithdrawalLocks(currencyCode: currencyCode)
             .ignoreFailure()
-            .map { [encodingDateFormatter, decodingDateFormatter, moneyValueFormatter] withdrawalLocks in
+            .map { [encodingDateFormatter, decodingDateFormatter, moneyValueFormatter, cryptoValueFormatter] withdrawalLocks in
                 WithdrawalLocks(
                     items: withdrawalLocks.locks.compactMap { lock in
                         guard let fromDate = decodingDateFormatter.date(from: lock.expiresAt) else {
@@ -41,7 +44,15 @@ final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
                             amount: moneyValueFormatter.formatMoney(
                                 amount: lock.amount.amount,
                                 currency: lock.amount.currency
-                            )
+                            ),
+                            amountCurrency: lock.amount.currency,
+                            boughtAmount: lock.bought.map {
+                                cryptoValueFormatter.format(
+                                    amount: $0.amount,
+                                    currency: $0.currency
+                                )
+                            },
+                            boughtCryptoCurrency: lock.bought?.currency
                         )
                     },
                     amount: moneyValueFormatter.formatMoney(

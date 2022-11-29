@@ -175,6 +175,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let app: AppProtocol
 
     private var bag = Set<AnyCancellable>()
+    private var tasks = Set<Task<Void, Never>>()
 
     init(
         transactionModel: TransactionModel,
@@ -205,6 +206,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     deinit {
         transactionModel.destroy()
         bag.removeAll()
+        for task in tasks {
+            task.cancel()
+        }
+        tasks.removeAll()
     }
 
     override func didBecomeActive() {
@@ -504,6 +509,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
             case .deposit,
                  .interestTransfer,
+                 .stakingDeposit,
                  .sell,
                  .swap:
                 router?.routeToDestinationAccountPicker(
@@ -590,6 +596,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
 
             case .interestTransfer,
+                 .stakingDeposit,
                  .withdraw,
                  .buy,
                  .interestWithdraw,
@@ -605,6 +612,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action,
                     canAddMoreSources: canAddMoreSources
                 )
+
             case .sign:
                 unimplemented("Sign action does not support selectSource.")
             }
@@ -1117,5 +1125,64 @@ extension TransactionFlowInteractor {
         }
         .subscribe()
         .store(in: &bag)
+
+        tasks.insert(
+            Task {
+                do {
+                    try await actions()
+                } catch {
+                    app.post(error: error)
+                }
+            }
+        )
+    }
+
+    func actions() async throws {
+
+        try await app.transaction { app in
+            try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.then.enter.into, to: blockchain.ux.transaction.disclaimer[])
+            try await app.set(blockchain.ux.transaction.disclaimer.finish.tap.then.close, to: true)
+        }
+
+        _ = await Task<Void, Never> {
+            do {
+                guard let product = action.earnProduct, let asset = target?.currencyType.code else {
+                    try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.discard.if, to: true)
+                    return
+                }
+
+                try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.perform.when, to: false)
+
+                let disabled: Bool = try await app.get(
+                    blockchain.user.earn.product[product].asset[asset].limit.withdraw.is.disabled,
+                    waitForValue: true
+                )
+
+                let balance = try await app.get(blockchain.user.earn.product[product].asset[asset].account.balance, as: MoneyValue.self)
+
+                try await app.transaction { app in
+                    try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.perform.when, to: disabled)
+                    try await app.set(
+                        blockchain.ux.transaction.event.should.show.disclaimer.policy.discard.if,
+                        to: balance > .zero(currency: balance.currency) || !disabled
+                    )
+                }
+            } catch {
+                app.post(error: error)
+            }
+        }.value
+    }
+}
+
+extension AssetAction {
+    var earnProduct: String? {
+        switch self {
+        case .stakingDeposit:
+            return "staking"
+        case .interestTransfer, .interestWithdraw:
+            return "savings"
+        case _:
+            return nil
+        }
     }
 }

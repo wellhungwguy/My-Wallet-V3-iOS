@@ -33,6 +33,8 @@ let package = Package(
             url: "https://github.com/dchatzieleftheriou-bc/DIKit.git",
             branch: "safe-property-wrappers-locks"
         ),
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.3.1"),
+        .package(url: "https://github.com/groue/GRDBQuery.git", from: "0.5.1"),
         .package(path: "../Analytics"),
         .package(path: "../DelegatedSelfCustody"),
         .package(path: "../Errors"),
@@ -54,6 +56,8 @@ let package = Package(
             name: "UnifiedActivityData",
             dependencies: [
                 .target(name: "UnifiedActivityDomain"),
+                .product(name: "GRDB", package: "GRDB.swift"),
+                .product(name: "GRDBQuery", package: "GRDBQuery"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Errors", package: "Errors"),
                 .product(name: "DelegatedSelfCustodyDomain", package: "DelegatedSelfCustody"),

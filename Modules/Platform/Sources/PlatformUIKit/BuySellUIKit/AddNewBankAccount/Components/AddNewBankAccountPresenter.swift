@@ -63,7 +63,7 @@ final class AddNewBankAccountPagePresenter: DetailsScreenPresenterAPI, AddNewBan
         self.fiatCurrency = fiatCurrency
         self.analyticsRecorder = analyticsRecorder
 
-        navigationBarTrailingButtonAction = .custom { [navigationCloseRelay] in
+        self.navigationBarTrailingButtonAction = .custom { [navigationCloseRelay] in
             navigationCloseRelay.accept(())
         }
     }
@@ -162,12 +162,12 @@ extension AddNewBankAccountPagePresenter {
             typealias FundsString = LocalizedString.Funds
 
             if isOriginDeposit {
-                title = "\(FundsString.Title.depositPrefix) \(account.currency)"
+                self.title = "\(FundsString.Title.depositPrefix) \(account.currency)"
             } else {
-                title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
+                self.title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
             }
 
-            lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
+            self.lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             let font = UIFont.main(.medium, 12)
 
@@ -176,7 +176,7 @@ extension AddNewBankAccountPagePresenter {
             switch account.currency {
             case .ARS:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: FundsString.Notice.recipientNameARS)
                     ],
@@ -185,7 +185,7 @@ extension AddNewBankAccountPagePresenter {
                 )
             case .BRL:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: FundsString.Notice.recipientNameBRL)
                     ],
@@ -194,7 +194,7 @@ extension AddNewBankAccountPagePresenter {
                 )
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: FundsString.Notice.recipientNameUSD)
                     ],
@@ -203,7 +203,7 @@ extension AddNewBankAccountPagePresenter {
                 )
             case .GBP:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.GBP
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: FundsString.Notice.recipientNameGBPPrefix),
                         .url(string: " \(FundsString.Notice.termsAndConditions) ", url: TermsUrlLink.gbp),
@@ -214,14 +214,14 @@ extension AddNewBankAccountPagePresenter {
                 )
             case .EUR:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.EUR
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [.text(string: FundsString.Notice.recipientNameEUR)],
                     textStyle: .init(color: .descriptionText, font: font),
                     linkStyle: .init(color: .linkableText, font: font)
                 )
             default:
                 processingTimeNoticeDescription = ""
-                termsTextViewModel = nil
+                self.termsTextViewModel = nil
             }
 
             let amount = MoneyValue.one(currency: account.currency)
@@ -231,7 +231,7 @@ extension AddNewBankAccountPagePresenter {
                 account.currency.displayCode
             )
 
-            noticeViewModels = [
+            self.noticeViewModels = [
                 (
                     title: FundsString.Notice.Instructions.title,
                     description: instructions,

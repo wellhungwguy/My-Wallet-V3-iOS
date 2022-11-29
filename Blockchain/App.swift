@@ -22,6 +22,9 @@ import FeatureCardPaymentUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureNotificationPreferencesDomain
+import FeatureProveData
+import FeatureProveDomain
+import FeatureProveUI
 import FeatureSettingsDomain
 import FeatureStakingData
 import FeatureStakingDomain
@@ -140,6 +143,9 @@ func defineDependencies() {
         DependencyContainer.featureKYCUI
         DependencyContainer.blockchainApp
         DependencyContainer.blockchainNetworkRequestInterceptor
+        DependencyContainer.featureProveData
+        DependencyContainer.featureProveDomain
+        DependencyContainer.featureProveUI
         DependencyContainer.featureSettingsDomain
         DependencyContainer.featureSettingsUI
         DependencyContainer.featureStakingDataKit

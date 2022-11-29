@@ -25,11 +25,11 @@ class CloudBackupSwitchCellPresenter: SwitchCellPresenting {
     let switchViewPresenting: SwitchViewPresenting
 
     init(cloudSettings: CloudBackupConfiguring, credentialsStore: CredentialsStoreAPI) {
-        labelContentPresenting = DefaultLabelContentPresenter(
+        self.labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.cloudBackup,
             descriptors: .settings
         )
-        switchViewPresenting = CloudBackupSwitchViewPresenter(
+        self.switchViewPresenting = CloudBackupSwitchViewPresenter(
             cloudSettings: cloudSettings,
             credentialsStore: credentialsStore
         )
@@ -45,11 +45,11 @@ class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
     let switchViewPresenting: SwitchViewPresenting
 
     init(service: SMSTwoFactorSettingsServiceAPI & SettingsServiceAPI) {
-        labelContentPresenting = DefaultLabelContentPresenter(
+        self.labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.twoFactorAuthentication,
             descriptors: .settings
         )
-        switchViewPresenting = SMSSwitchViewPresenter(service: service)
+        self.switchViewPresenting = SMSSwitchViewPresenter(service: service)
     }
 }
 
@@ -66,11 +66,11 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
         appSettingsAuthenticating: AppSettingsAuthenticating,
         authenticationCoordinator: AuthenticationCoordinating
     ) {
-        labelContentPresenting = BiometryLabelContentPresenter(
+        self.labelContentPresenting = BiometryLabelContentPresenter(
             provider: biometryProviding,
             descriptors: .settings
         )
-        switchViewPresenting = BiometrySwitchViewPresenter(
+        self.switchViewPresenting = BiometrySwitchViewPresenter(
             provider: biometryProviding,
             settingsAuthenticating: appSettingsAuthenticating,
             authenticationCoordinator: authenticationCoordinator
@@ -87,11 +87,11 @@ class SmallBalancesSwitchCellPresenter: SwitchCellPresenting {
     let switchViewPresenting: SwitchViewPresenting
 
     init() {
-        labelContentPresenting = DefaultLabelContentPresenter(
+        self.labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.smallBalances,
             descriptors: .settings
         )
-        switchViewPresenting = SmallBalancesSwitchViewPresenter()
+        self.switchViewPresenting = SmallBalancesSwitchViewPresenter()
     }
 }
 
@@ -104,7 +104,7 @@ class SmallBalancesSwitchViewPresenter: SwitchViewPresenting {
 
     init(app: AppProtocol = resolve()) {
 
-        viewModel = SwitchViewModel(accessibility: .id(A18y.title), isOn: app.state.yes(if: blockchain.ux.user.account.preferences.small.balances.are.hidden))
+        self.viewModel = SwitchViewModel(accessibility: .id(A18y.title), isOn: app.state.yes(if: blockchain.ux.user.account.preferences.small.balances.are.hidden))
 
         app.publisher(for: blockchain.ux.user.account.preferences.small.balances.are.hidden, as: Bool.self)
             .replaceError(with: false)

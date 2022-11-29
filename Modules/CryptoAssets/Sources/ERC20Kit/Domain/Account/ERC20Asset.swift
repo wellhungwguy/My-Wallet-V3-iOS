@@ -61,8 +61,8 @@ final class ERC20Asset: CryptoAsset {
         enabledCurrenciesService: EnabledCurrenciesServiceAPI,
         featureFlag: FeatureFetching
     ) {
-        asset = erc20Token.cryptoCurrency!
-        addressFactory = ERC20ExternalAssetAddressFactory(
+        self.asset = erc20Token.cryptoCurrency!
+        self.addressFactory = ERC20ExternalAssetAddressFactory(
             asset: asset,
             network: network,
             enabledCurrenciesService: enabledCurrenciesService

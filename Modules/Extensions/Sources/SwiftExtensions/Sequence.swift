@@ -41,7 +41,7 @@ extension Sequence where Element: Hashable {
 
     public var set: Set<Element> { Set(self) }
 
-    public func diff<Old>(from old: Old) -> (enter: [Element], exit: [Element]) where Old: Sequence, Old.Element == Element {
+    public func diff(from old: some Sequence<Element>) -> (enter: [Element], exit: [Element]) {
         (enter: filter(old.set.doesNotContain), exit: old.filter(set.doesNotContain))
     }
 }

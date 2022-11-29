@@ -66,32 +66,32 @@ final class UpdateMobileScreenPresenter {
         loadingViewPresenting: LoadingViewPresenting = resolve()
     ) {
         self.stateService = stateService
-        textFieldViewModel = .init(
+        self.textFieldViewModel = .init(
             with: .mobile,
             validator: TextValidationFactory.Info.mobile,
             formatter: TextFormatterFactory.mobile,
             messageRecorder: resolve()
         )
 
-        descriptionLabel = .init(
+        self.descriptionLabel = .init(
             text: LocalizationIDs.description,
             font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
 
-        disable2FALabel = .init(
+        self.disable2FALabel = .init(
             text: LocalizationIDs.disableSMS2FA,
             font: .main(.medium, 14.0),
             color: .textFieldText,
             accessibility: .id(AccessibilityIDs.disable2FALabel)
         )
 
-        continueButtonViewModel = .primary(with: "Continue", accessibilityId: AccessibilityIDs.continueButton)
-        updateButtonViewModel = .primary(with: "Update", accessibilityId: AccessibilityIDs.updateButton)
+        self.continueButtonViewModel = .primary(with: "Continue", accessibilityId: AccessibilityIDs.continueButton)
+        self.updateButtonViewModel = .primary(with: "Update", accessibilityId: AccessibilityIDs.updateButton)
 
-        submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
-        setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)
+        self.submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
+        self.setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)
 
         textFieldViewModel.state
             .compactMap(\.value)

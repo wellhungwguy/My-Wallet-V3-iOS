@@ -33,12 +33,12 @@ struct PaymentAccountEUR: PaymentAccountDescribing, Equatable {
             let bankCode: String = response.agent.code
         else { return nil }
         self.bankName = bankName
-        bankCountry = response.agent.country ?? ""
-        iban = response.address
+        self.bankCountry = response.agent.country ?? ""
+        self.iban = response.address
         self.bankCode = bankCode
-        recipientName = response.agent.recipient ?? ""
-        identifier = response.id
-        state = response.state
+        self.recipientName = response.agent.recipient ?? ""
+        self.identifier = response.id
+        self.state = response.state
     }
 
     init(

@@ -91,8 +91,8 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement, ActionableAnnouncement 
         action: @escaping CardAnnouncementAction
     ) {
         self.shouldEnable2FA = shouldEnable2FA
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
-        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

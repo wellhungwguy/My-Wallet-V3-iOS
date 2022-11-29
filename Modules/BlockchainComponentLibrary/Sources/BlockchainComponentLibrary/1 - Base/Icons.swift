@@ -114,11 +114,11 @@ public struct Icon: View, Hashable, Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
-        name = try container.decode(String.self, forKey: .name)
-        isCircle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
-        renderingMode = .template
-        color = try container.decodeIfPresent(Texture.Color.self, forKey: .foreground)?.swiftUI ?? .semantic.muted
-        circleColor = try container.decodeIfPresent(Texture.Color.self, forKey: .background)?.swiftUI ?? color?.opacity(0.15)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.isCircle = (try? container.decodeIfPresent(Bool.self, forKey: .circle)) ?? false
+        self.renderingMode = .template
+        self.color = try container.decodeIfPresent(Texture.Color.self, forKey: .foreground)?.swiftUI ?? .semantic.muted
+        self.circleColor = try container.decodeIfPresent(Texture.Color.self, forKey: .background)?.swiftUI ?? color?.opacity(0.15)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -238,7 +238,7 @@ extension ErrorView where Fallback == AnyView {
         dismiss: (() -> Void)? = nil
     ) {
         self.ux = ux
-        fallback = {
+        self.fallback = {
             AnyView(
                 Icon.error.color(.semantic.warning)
             )

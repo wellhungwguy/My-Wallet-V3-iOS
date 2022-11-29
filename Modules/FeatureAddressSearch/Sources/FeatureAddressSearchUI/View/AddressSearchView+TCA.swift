@@ -59,8 +59,8 @@ struct AddressSearchState: Equatable, NavigationState {
     ) {
         self.address = address
         self.error = error
-        route = nil
-        searchText = address?.searchText ?? ""
+        self.route = nil
+        self.searchText = address?.searchText ?? ""
     }
 }
 

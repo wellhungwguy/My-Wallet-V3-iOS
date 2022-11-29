@@ -3,7 +3,7 @@
 import BigInt
 import Foundation
 
-public protocol Money: CustomDebugStringConvertible {
+public protocol Money: CustomStringConvertible, CustomDebugStringConvertible {
 
     /// The currency (`FiatCurrency` or `CryptoCurrency`) wrapped in a `CurrencyType`.
     var currencyType: CurrencyType { get }
@@ -143,6 +143,10 @@ extension Money {
 
     public func toDisplayString(includeSymbol: Bool) -> String {
         toDisplayString(includeSymbol: includeSymbol, locale: Locale.current)
+    }
+
+    public var description: String {
+        displayString
     }
 
     public var debugDescription: String {

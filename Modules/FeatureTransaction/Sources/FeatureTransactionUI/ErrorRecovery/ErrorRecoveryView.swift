@@ -121,7 +121,7 @@ struct BottomSheetModal<Content: View>: View {
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
-        closeAction = onClose
+        self.closeAction = onClose
         self.content = content
     }
 

@@ -426,7 +426,7 @@ extension Session.State.Data {
                         Most commonly, you will see this if you have mistakenly not marked a shared state value
                         as `blockchain.session.state.shared.value`.
 
-                        \(preferences.map(\.string).joined(by: ", "))
+                        \(preferences.map(\.string).array)
                         """
                     )
                 }
@@ -478,7 +478,7 @@ class SessionStateKeychainQueryProvider: KeychainQueryProvider {
 
     init(service: String?) {
         if let service {
-            generic = GenericPasswordQuery(service: service)
+            self.generic = GenericPasswordQuery(service: service)
         }
     }
 

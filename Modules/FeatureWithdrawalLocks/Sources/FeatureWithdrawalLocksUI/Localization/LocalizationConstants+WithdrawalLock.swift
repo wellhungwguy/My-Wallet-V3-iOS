@@ -9,6 +9,31 @@ extension LocalizationConstants {
             comment: "Withdrawal Locks: On Hold Title"
         )
 
+        static let totalOnHoldTitle = NSLocalizedString(
+            "Total On Hold",
+            comment: "Withdrawal Locks: Total On Hold Title"
+        )
+
+        static let okButtonTitle = NSLocalizedString(
+            "OK",
+            comment: "Withdrawal Locks: OK button"
+        )
+
+        static let availableOnTitle = NSLocalizedString(
+            "Available %@",
+            comment: "Withdrawal Locks: Available Date"
+        )
+
+        static let boughtCryptoTitle = NSLocalizedString(
+            "Bought %@",
+            comment: "Withdrawal Locks: Bought Crypto Currency"
+        )
+
+        static let depositedTitle = NSLocalizedString(
+            "Deposited %@",
+            comment: "Withdrawal Locks: Deposited Currency"
+        )
+
         static let onHoldAmountTitle = NSLocalizedString(
             "%@ On Hold",
             comment: "Withdrawal Locks: On Hold Title with the amount"

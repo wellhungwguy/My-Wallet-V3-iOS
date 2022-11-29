@@ -33,14 +33,14 @@ final class LinkedBankViewModel: LinkedBankViewModelAPI {
     init(data: LinkedBankData) {
         self.data = data
 
-        badgeImageViewModel = .primary(
+        self.badgeImageViewModel = .primary(
             image: data.icon.map(ImageResource.remote(url:)) ?? .local(name: "icon-bank", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: data.identifier
         )
         badgeImageViewModel.marginOffsetRelay.accept(6)
 
-        nameLabelContent = LabelContent(
+        self.nameLabelContent = LabelContent(
             text: data.account?.bankName ?? "",
             font: .main(.semibold, 16),
             color: .titleText,
@@ -51,14 +51,14 @@ final class LinkedBankViewModel: LinkedBankViewModelAPI {
         let accountType = data.account?.type.title ?? ""
         let accountNumber = data.account?.number ?? ""
         let detailsTitle = "\(bankName) \(accountType) \(accountNumber)"
-        limitLabelContent = LabelContent(
+        self.limitLabelContent = LabelContent(
             text: detailsTitle,
             font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.limits)\(data.identifier)")
         )
 
-        accountLabelContent = LabelContent(
+        self.accountLabelContent = LabelContent(
             text: "",
             font: .main(.semibold, 16),
             color: .titleText,

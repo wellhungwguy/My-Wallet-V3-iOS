@@ -57,7 +57,7 @@ public final class CardExpirationDateValidator: TextValidating {
     // MARK: - Setup
 
     public init() {
-        regexValidator = RegexTextValidator(
+        self.regexValidator = RegexTextValidator(
             regex: .cardExpirationDate,
             invalidReason: LocalizedString.invalidExpirationDate
         )

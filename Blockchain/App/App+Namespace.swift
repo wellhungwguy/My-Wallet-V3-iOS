@@ -50,11 +50,10 @@ extension AppProtocol {
         clientObservers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         clientObservers.insert(UserTagObserver(app: self, userTagSyncService: userTagService))
         clientObservers.insert(SuperAppIntroObserver(app: self))
-        clientObservers.insert(EmbraceObserver(app: self))
         clientObservers.insert(GenerateSession(app: self))
         clientObservers.insert(PlaidLinkObserver(app: self))
-        // observers.insert(EmbraceObserver(app: self))
         clientObservers.insert(deepLink)
+        clientObservers.insert(EmbraceObserver(app: self))
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         clientObservers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         clientObservers.insert(MultiAppViewDebuggingObserver(app: self))
@@ -89,9 +88,13 @@ extension AppProtocol {
             }
         }
 
-        if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
-            state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+        on(blockchain.session.event.did.sign.in) { [state] _ in
+            if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
+                state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+            }
         }
+        .subscribe()
+        .store(withLifetimeOf: self)
     }
 }
 

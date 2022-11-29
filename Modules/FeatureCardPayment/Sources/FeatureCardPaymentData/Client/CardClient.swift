@@ -143,7 +143,7 @@ final class CardClient: CardClientAPI {
             let useOnlyAlreadyValidatedCardRef = false
 
             init(redirectURL: String, cvv: String) {
-                everypay = .init(customerUrl: redirectURL)
+                self.everypay = .init(customerUrl: redirectURL)
                 self.cvv = cvv
                 self.redirectURL = redirectURL
             }

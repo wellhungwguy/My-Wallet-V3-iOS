@@ -140,8 +140,8 @@ public final class CompositeStatusView: UIView {
 
         let sideContainerViewSize = CGSize(edge: edge * sideContainerViewRatio)
 
-        sideContainerView = UIView(frame: CGRect(origin: .zero, size: sideContainerViewSize))
-        mainContainerView = MainContainerView(frame: CGRect(origin: .zero, size: CGSize(edge: mainContainerViewEdge)))
+        self.sideContainerView = UIView(frame: CGRect(origin: .zero, size: sideContainerViewSize))
+        self.mainContainerView = MainContainerView(frame: CGRect(origin: .zero, size: CGSize(edge: mainContainerViewEdge)))
 
         let size = CGSize(edge: edge)
 

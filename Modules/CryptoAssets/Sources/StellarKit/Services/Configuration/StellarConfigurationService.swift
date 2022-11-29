@@ -32,7 +32,7 @@ final class StellarConfigurationService: StellarConfigurationServiceAPI {
             configuration: .onLoginLogout(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ -> AnyPublisher<StellarConfiguration, Never> in
                 walletOptions.stellarConfigurationDomain

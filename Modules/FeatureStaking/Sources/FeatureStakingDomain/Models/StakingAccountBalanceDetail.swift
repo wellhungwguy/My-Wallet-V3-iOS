@@ -12,7 +12,7 @@ public struct StakingAccountBalanceDetail: Equatable {
     public let bondingDeposits: String?
     public let unbondingWithdrawals: String?
     public let locked: String?
-
+    public let mainBalanceToDisplay: String?
     private let currencyCode: String?
 
     public init(
@@ -24,6 +24,7 @@ public struct StakingAccountBalanceDetail: Equatable {
         bondingDeposits: String?,
         unbondingWithdrawals: String?,
         locked: String?,
+        mainBalanceToDisplay: String?,
         code: String?
     ) {
         self.balance = balance
@@ -34,7 +35,8 @@ public struct StakingAccountBalanceDetail: Equatable {
         self.bondingDeposits = bondingDeposits
         self.unbondingWithdrawals = unbondingWithdrawals
         self.locked = locked
-        currencyCode = code
+        self.mainBalanceToDisplay = mainBalanceToDisplay
+        self.currencyCode = code
     }
 }
 
@@ -85,5 +87,10 @@ extension StakingAccountBalanceDetail {
     public var moneyPendingDeposit: MoneyValue? {
         guard let currency = currencyType else { return nil }
         return MoneyValue.create(minor: pendingDeposit ?? "0", currency: currency)
+    }
+
+    public var moneyMainBalanceToDisplay: MoneyValue? {
+        guard let currency = currencyType else { return nil }
+        return MoneyValue.create(minor: mainBalanceToDisplay ?? "0", currency: currency)
     }
 }

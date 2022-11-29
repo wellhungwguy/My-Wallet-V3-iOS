@@ -22,7 +22,7 @@ final class AccountsRouter: AccountsRouting {
         backupRouter: FeatureBackupRecoveryPhraseUI.RecoveryPhraseBackupRouterAPI = resolve()
     ) {
         let provider = CustodyActionRouterProvider()
-        custodyActionRouterAPI = provider.create(
+        self.custodyActionRouterAPI = provider.create(
             backupRouterAPI: backupRouter,
             tabSwapping: routing
         )

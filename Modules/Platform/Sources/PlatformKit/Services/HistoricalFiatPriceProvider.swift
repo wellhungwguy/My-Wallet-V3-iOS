@@ -30,7 +30,7 @@ final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
         exchangeProvider: ExchangeProviding = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        services = Atomic([:])
+        self.services = Atomic([:])
         self.exchangeProvider = exchangeProvider
         self.fiatCurrencyService = fiatCurrencyService
     }

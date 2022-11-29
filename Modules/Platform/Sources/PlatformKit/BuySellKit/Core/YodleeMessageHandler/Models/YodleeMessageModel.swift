@@ -71,7 +71,7 @@ public struct YodleeModel: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Keys.self)
-        type = try container.decode(MessageType.self, forKey: .type)
-        data = try YodleeDataType(from: decoder)
+        self.type = try container.decode(MessageType.self, forKey: .type)
+        self.data = try YodleeDataType(from: decoder)
     }
 }

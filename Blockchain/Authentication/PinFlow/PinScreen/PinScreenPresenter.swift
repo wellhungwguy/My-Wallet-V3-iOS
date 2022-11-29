@@ -71,7 +71,7 @@ final class PinScreenPresenter {
         switch flow {
         case .authenticate(from: .background, logoutRouting: _):
             return .lightContent(ignoresStatusBar: true, background: .clear)
-        case .change(logoutRouting: _):
+        case .change:
             return .darkContent(background: .primary)
         default:
             return .lightContent(background: .clear)
@@ -175,19 +175,19 @@ final class PinScreenPresenter {
         self.legacySharedKeyRepository = legacySharedKeyRepository
         self.reachability = reachability
 
-        verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
+        self.verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
         switch flow {
         case .change:
-            contentColor = .primary
-            backgroundColor = .white
+            self.contentColor = .primary
+            self.backgroundColor = .white
             emptyPinColor = .securePinGrey
             buttonHighlightColor = UIColor.black.withAlphaComponent(0.08)
         case .authenticate, .create, .enableBiometrics, .createPin:
-            contentColor = .white
-            backgroundColor = .primary
+            self.contentColor = .white
+            self.backgroundColor = .primary
             emptyPinColor = UIColor.white.withAlphaComponent(0.12)
             buttonHighlightColor = UIColor.white.withAlphaComponent(0.08)
         }
@@ -233,13 +233,13 @@ final class PinScreenPresenter {
             securePinTitle = LocalizationConstants.Pin.confirmYourPinLabel
         }
 
-        digitPadViewModel = DigitPadViewModel(
+        self.digitPadViewModel = DigitPadViewModel(
             padType: .pin(maxCount: 4),
             customButtonViewModel: customButtonViewModel,
             contentTint: contentColor,
             buttonHighlightColor: buttonHighlightColor
         )
-        securePinViewModel = SecurePinViewModel(
+        self.securePinViewModel = SecurePinViewModel(
             title: securePinTitle,
             tint: contentColor,
             emptyPinColor: emptyPinColor
@@ -251,7 +251,7 @@ final class PinScreenPresenter {
             .disposed(by: disposeBag)
 
         // Get the pin string once it's filled, map it to `Pin`, unwrap it.
-        pinProcessingObservable = digitPadViewModel.valueInsertedObservable
+        self.pinProcessingObservable = digitPadViewModel.valueInsertedObservable
             .withLatestFrom(digitPadViewModel.valueObservable)
             .map { Pin(string: $0) }
             .filter { $0 != nil }

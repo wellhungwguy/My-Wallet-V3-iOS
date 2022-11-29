@@ -151,13 +151,16 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         guard asset.supports(product: .stakingBalance) else {
             return .just([])
         }
-        return featureFlag.isEnabled(.staking)
-            .map { [asset] isEnabled -> [SingleAccount] in
+        return app
+            .publisher(for: blockchain.app.configuration.staking.is.enabled, as: Bool.self)
+            .replaceError(with: false)
+            .map { [asset, addressFactory] isEnabled -> [SingleAccount] in
                 guard isEnabled else {
                     return []
                 }
                 let account = CryptoStakingAccount(
-                    asset: asset
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
                 ) as SingleAccount
                 return [account]
             }

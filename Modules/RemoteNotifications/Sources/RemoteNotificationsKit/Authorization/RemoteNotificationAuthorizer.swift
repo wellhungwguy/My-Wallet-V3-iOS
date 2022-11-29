@@ -164,7 +164,7 @@ extension AnalyticsEvents {
         case permissionSysNotifApprove
         case permissionSysNotifDecline
 
-        public var name: String {
+        var name: String {
             switch self {
             // Permission - remote notification system request
             case .permissionSysNotifRequest:

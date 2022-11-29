@@ -17,31 +17,31 @@ public struct Beneficiary {
     public let icon: URL?
 
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
-        type = .funds
-        identifier = response.id
-        name = response.name
+        self.type = .funds
+        self.identifier = response.id
+        self.name = response.name
         var address = response.address
         address.removeAll { $0 == "*" }
-        account = address
+        self.account = address
         self.limit = limit
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
         self.currency = currency
-        icon = nil
+        self.icon = nil
     }
 
     init(linkedBankData: LinkedBankData, topLimit: FiatValue?) {
-        identifier = linkedBankData.identifier
-        currency = linkedBankData.currency
-        type = .linkedBank
+        self.identifier = linkedBankData.identifier
+        self.currency = linkedBankData.currency
+        self.type = .linkedBank
         let bankName = linkedBankData.account?.bankName ?? ""
         let accountType = linkedBankData.account?.type.title ?? ""
         let accountNumber = linkedBankData.account?.number ?? ""
-        name = "\(bankName)"
-        account = "\(accountType) \(accountNumber)"
-        limit = topLimit
-        icon = linkedBankData.icon
+        self.name = "\(bankName)"
+        self.account = "\(accountType) \(accountNumber)"
+        self.limit = topLimit
+        self.icon = linkedBankData.icon
     }
 }
 

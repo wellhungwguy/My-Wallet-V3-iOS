@@ -19,7 +19,7 @@ public struct AssetDetailView: View {
 
     public init(store: Store<AssetDetailViewState, AssetDetailViewAction>) {
         self.store = store
-        url = ViewStore(store).asset.url
+        self.url = ViewStore(store).asset.url
     }
 
     public var body: some View {

@@ -93,8 +93,8 @@ final class SimpleBuyFinishSignupAnnouncement: PeriodicAnnouncement, ActionableA
         self.action = action
         self.dismiss = dismiss
         self.analyticsRecorder = analyticsRecorder
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
-        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
     }
 }
 

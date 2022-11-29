@@ -83,7 +83,7 @@ final class WalletConnectAnnouncement: OneTimeAnnouncement, ActionableAnnounceme
         dismiss: @escaping CardAnnouncementAction,
         action: @escaping CardAnnouncementAction
     ) {
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

@@ -35,7 +35,7 @@ class LocationSuggestionCoordinator {
         self.locationSuggestionService = locationSuggestionService
         self.delegate = delegate
         self.interface = interface
-        model = .empty
+        self.model = .empty
 
         if let controller = delegate as? KYCAddressController {
             controller.searchDelegate = self

@@ -30,7 +30,7 @@ public final class LinkedBankAccountCellPresenter {
     public init(account: LinkedBankAccount, action: AssetAction) {
         self.account = account
 
-        multiBadgeViewModel = badgeFactory
+        self.multiBadgeViewModel = badgeFactory
             .badge(account: account, action: action)
             .map {
                 .init(
@@ -41,7 +41,7 @@ public final class LinkedBankAccountCellPresenter {
             }
             .asDriver(onErrorJustReturn: .init())
 
-        title = .just(
+        self.title = .just(
             .init(
                 text: account.label,
                 font: .main(.semibold, 16.0),
@@ -50,7 +50,7 @@ public final class LinkedBankAccountCellPresenter {
                 accessibility: .none
             )
         )
-        description = .just(
+        self.description = .just(
             .init(
                 text: LocalizationConstants.accountEndingIn + " \(account.accountNumber)",
                 font: .main(.medium, 14.0),
@@ -59,7 +59,7 @@ public final class LinkedBankAccountCellPresenter {
                 accessibility: .none
             )
         )
-        badgeImageViewModel = .just(.default(
+        self.badgeImageViewModel = .just(.default(
             image: account.data.icon.map(ImageResource.remote(url:)) ?? .local(name: "icon-bank", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: ""

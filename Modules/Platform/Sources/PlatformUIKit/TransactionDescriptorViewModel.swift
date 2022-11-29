@@ -18,9 +18,9 @@ struct BadgeImageAttributes {
     )
 
     init(_ currencyType: CurrencyType) {
-        imageResource = currencyType.logoResource
-        brandColor = currencyType.brandUIColor
-        isFiat = currencyType.isFiatCurrency
+        self.imageResource = currencyType.logoResource
+        self.brandColor = currencyType.brandUIColor
+        self.isFiat = currencyType.isFiatCurrency
     }
 
     init(imageResource: ImageResource, brandColor: UIColor, isFiat: Bool) {
@@ -178,7 +178,8 @@ extension AssetAction {
     fileprivate var assetImageName: String {
         switch self {
         case .deposit,
-             .interestTransfer:
+             .interestTransfer,
+             .stakingDeposit:
             return "deposit-icon"
         case .receive:
             return "receive-icon"

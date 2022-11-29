@@ -15,18 +15,18 @@ public final class CurrentBalanceCellInteractor: CurrentBalanceCellInteracting {
     public let assetBalanceViewInteractor: AssetBalanceViewInteracting
 
     public init(account: BlockchainAccount) {
-        assetBalanceViewInteractor = AccountBalanceViewInteractor(
+        self.assetBalanceViewInteractor = AccountBalanceViewInteractor(
             account: account
         )
         switch account {
         case is CryptoInterestAccount,
              is CryptoStakingAccount:
-            accountType = .custodial(.savings)
+            self.accountType = .custodial(.savings)
         case is TradingAccount,
              is FiatAccount:
-            accountType = .custodial(.trading)
+            self.accountType = .custodial(.trading)
         case is CryptoNonCustodialAccount:
-            accountType = .nonCustodial
+            self.accountType = .nonCustodial
         default:
             unimplemented("Unsupported account type: \(String(reflecting: account))")
         }

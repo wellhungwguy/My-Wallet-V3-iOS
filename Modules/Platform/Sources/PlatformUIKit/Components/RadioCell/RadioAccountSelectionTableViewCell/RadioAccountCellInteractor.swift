@@ -17,7 +17,7 @@ public final class RadioAccountCellInteractor: Equatable {
         self.account = account
         self.radioSelectionHandler = radioSelectionHandler
 
-        isSelected = radioSelectionHandler
+        self.isSelected = radioSelectionHandler
             .selectionState
             .map { state in
                 guard let isSelected = state[account.identifier] else {

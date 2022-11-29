@@ -19,7 +19,7 @@ extension App {
         public var environmentObject: App.EnvironmentObject { self }
         public var deepLinks: DeepLink { app.deepLinks }
         public var local: Optional<Any>.Store { app.local }
-        
+
         public init(_ app: AppProtocol) {
             self.app = app
             super.init()

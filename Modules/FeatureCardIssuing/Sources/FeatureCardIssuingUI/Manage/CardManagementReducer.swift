@@ -21,6 +21,7 @@ enum CardManagementAction: Equatable, BindableAction {
     case getActivationUrl
     case getActivationUrlResponse(Result<URL, NabuNetworkError>)
     case hideActivationWebview
+    case setCanAddCard(Result<Bool, Never>)
     case getCardsResponse(Result<[Card], NabuNetworkError>)
     case getCardResponse(Result<Card?, NabuNetworkError>)
     case getDocuments
@@ -76,6 +77,7 @@ public struct CardManagementState: Equatable {
 
     var activationUrl: LoadingState<URL>?
     var selectedCard: Card?
+    var canAddCards = false
     var cards: [Card] = []
     var cardHelperUrl: URL?
     var error: NabuNetworkError?
@@ -97,13 +99,15 @@ public struct CardManagementState: Equatable {
         isLocked: Bool = false,
         cardHelperUrl: URL? = nil,
         error: NabuNetworkError? = nil,
+        cards: [Card] = [],
         legalItems: [LegalItem] = [],
         statements: [Statement] = [],
         transactions: [Card.Transaction] = [],
         isTokenisationEnabled: Bool = true,
         tokenisationCoordinator: PassTokenisationCoordinator
     ) {
-        selectedCard = card
+        self.selectedCard = card
+        self.cards = cards
         self.cardholderName = cardholderName
         self.isLocked = isLocked
         self.cardHelperUrl = cardHelperUrl
@@ -203,6 +207,14 @@ let cardManagementReducer: Reducer<
         return .merge(
             Effect(value: .refreshTransactions),
             Effect(value: .fetchFullName),
+            env.productsService
+                .fetchProducts()
+                .map {
+                    $0.filter(\.hasRemainingCards).isNotEmpty
+                }
+                .replaceError(with: false)
+                .receive(on: env.mainQueue)
+                .catchToEffect(CardManagementAction.setCanAddCard),
             env.cardService
                 .fetchCards()
                 .receive(on: env.mainQueue)
@@ -211,16 +223,7 @@ let cardManagementReducer: Reducer<
     case .onDisappear:
         return .none
     case .getCardsResponse(.success(let cards)):
-        state.cards = cards.sorted { c1, c2 in
-            switch (c1.status, c2.status) {
-            case (.unactivated, _):
-                return true
-            case (.active, _):
-                return true
-            default:
-                return false
-            }
-        }
+        state.cards = cards
         if cards.count > 1 {
             state.isCardSelectorPresented = true
         }
@@ -230,6 +233,9 @@ let cardManagementReducer: Reducer<
         return Effect(value: .getCardResponse(.success(card)))
     case .getCardsResponse(.failure(let error)):
         state.error = error
+        return .none
+    case .setCanAddCard(.success(let canAddCard)):
+        state.canAddCards = canAddCard
         return .none
     case .showManagementDetails:
         state.isDetailScreenVisible = true
@@ -286,7 +292,7 @@ let cardManagementReducer: Reducer<
         guard let card else {
             return .none
         }
-        if let row = state.cards.firstIndex(where: {$0.id == card.id}) {
+        if let row = state.cards.firstIndex(where: { $0.id == card.id }) {
             state.cards[row] = card
         }
         state.selectedCard = card
@@ -463,7 +469,8 @@ let cardManagementReducer: Reducer<
         guard state.activationUrl == nil,
              let card = state.selectedCard,
              let fulfillment = state.fulfillment,
-             fulfillment.status.canActivate else {
+             fulfillment.status.canActivate
+        else {
            return .none
         }
         state.activationUrl = .loading

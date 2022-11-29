@@ -13,6 +13,7 @@ public final class TermsViewCellModel {
         tapPublishRelay
             .asSignal()
     }
+
     let tapPublishRelay = PublishRelay<String>()
     public init(
         text: NSAttributedString?,

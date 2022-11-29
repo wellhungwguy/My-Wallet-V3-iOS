@@ -9,7 +9,7 @@ final class RadioSelectionHandler: RadioSelectionHandling {
     let selectionState: Observable<[AnyHashable: Bool]>
 
     init() {
-        selectionState = selectionAction
+        self.selectionState = selectionAction
             .distinctUntilChanged()
             .scan(into: [String: Bool](), accumulator: { state, action in
                 switch action {

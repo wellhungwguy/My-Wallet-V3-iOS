@@ -20,7 +20,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
     public init(presenter: InterestAccountDetailsScreenPresenter) {
         self.presenter = presenter
-        tableView = SelfSizingTableView()
+        self.tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
 

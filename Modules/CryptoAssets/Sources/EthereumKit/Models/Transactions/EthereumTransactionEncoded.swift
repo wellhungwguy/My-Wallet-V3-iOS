@@ -18,7 +18,7 @@ public struct EthereumTransactionEncoded {
     }
 
     init(encodedTransaction: Data) {
-        transactionHash = Hash.keccak256(data: encodedTransaction).hexString.withHex
+        self.transactionHash = Hash.keccak256(data: encodedTransaction).hexString.withHex
         self.encodedTransaction = encodedTransaction
     }
 }

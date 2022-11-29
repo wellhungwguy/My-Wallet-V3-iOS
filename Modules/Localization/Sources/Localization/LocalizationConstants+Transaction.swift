@@ -49,6 +49,7 @@ extension LocalizationConstants {
             public enum Recurring {
                 public enum FrequencySelector {}
             }
+
             public enum AmountPresenter {
                 public enum LimitView {}
             }
@@ -87,6 +88,7 @@ extension LocalizationConstants {
                 public enum Success {}
                 public enum Failure {}
             }
+
             public enum Confirmation {
                 public enum DepositACHTerms {}
                 public enum DepositACHTermsDetails {}
@@ -96,6 +98,14 @@ extension LocalizationConstants {
 
         public enum Transfer {
             public enum ToS {}
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
+        public enum Staking {
             public enum Completion {
                 public enum Pending {}
                 public enum Success {}
@@ -712,6 +722,43 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Success {
     public static let description = NSLocalizedString(
         "Your %@ has been transferred successfully.",
         comment: "Your %@ has been transferred successfully."
+    )
+    public static let action = NSLocalizedString("OK", comment: "OK")
+}
+
+// MARK: - Staking Deposit
+
+extension LocalizationConstants.Transaction.Staking {
+
+    public static let transferAgreementNoBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network."
+    )
+
+    public static let transferAgreementDayBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ day before generating rewards.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ day before generating rewards."
+    )
+
+    public static let transferAgreementDaysBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ days before generating rewards.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ days before generating rewards."
+    )
+}
+
+extension LocalizationConstants.Transaction.Staking.Completion.Pending {
+    public static let title = NSLocalizedString("Transferring %@", comment: "Transferring %@")
+    public static let description = NSLocalizedString(
+        "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed.",
+        comment: "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed."
+    )
+}
+
+extension LocalizationConstants.Transaction.Staking.Completion.Success {
+    public static let title = NSLocalizedString("Transferring %@", comment: "Transferring %@")
+    public static let description = NSLocalizedString(
+        "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed.",
+        comment: "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed."
     )
     public static let action = NSLocalizedString("OK", comment: "OK")
 }

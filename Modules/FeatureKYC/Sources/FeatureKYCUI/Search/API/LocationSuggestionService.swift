@@ -9,7 +9,7 @@ class LocationSuggestionService: NSObject, LocationSuggestionAPI {
     fileprivate let completer: MKLocalSearchCompleter
 
     override init() {
-        completer = MKLocalSearchCompleter()
+        self.completer = MKLocalSearchCompleter()
         completer.resultTypes = .address
         super.init()
         completer.delegate = self

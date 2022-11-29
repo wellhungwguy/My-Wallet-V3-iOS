@@ -114,7 +114,7 @@ public struct NetworkRequest {
         self.decoder = decoder
         self.responseHandler = responseHandler
         self.recordErrors = recordErrors
-        allowsCachingResponse = method == .get
+        self.allowsCachingResponse = method == .get
     }
 
     func adding(authenticationToken: String) -> Self {

@@ -48,7 +48,7 @@ struct RootView: View {
 
     init(store: Store<RootViewState, RootViewAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
         setupApperance()
     }
 
@@ -89,7 +89,7 @@ struct RootView: View {
                 }
             }
         }
-        .onReceive(app.on(blockchain.ux.home.tab.select)) { event in
+        .onReceive(app.on(blockchain.ux.home.tab.select).receive(on: DispatchQueue.main)) { event in
             do {
                 try viewStore.send(.tab(event.reference.context.decode(blockchain.ux.home.tab.id)))
             } catch {

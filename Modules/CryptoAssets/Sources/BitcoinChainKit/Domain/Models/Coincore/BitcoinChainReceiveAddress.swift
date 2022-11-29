@@ -24,8 +24,8 @@ public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiv
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) {
-        asset = Token.coin.cryptoCurrency
-        bip21URI = BIP21URI<Token>(address: address, amount: nil, includeScheme: true)
+        self.asset = Token.coin.cryptoCurrency
+        self.bip21URI = BIP21URI<Token>(address: address, amount: nil, includeScheme: true)
         self.address = address
         self.label = label
         self.onTxCompleted = onTxCompleted
@@ -36,8 +36,8 @@ public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiv
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) {
-        asset = Token.coin.cryptoCurrency
-        address = bip21URI.address
+        self.asset = Token.coin.cryptoCurrency
+        self.address = bip21URI.address
         self.bip21URI = bip21URI
         self.label = label
         self.onTxCompleted = onTxCompleted

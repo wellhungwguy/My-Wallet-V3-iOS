@@ -47,7 +47,7 @@ public final class WalletBalanceViewInteractor {
         account: BlockchainAccount,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        stateObservableProvider = {
+        self.stateObservableProvider = {
             fiatCurrencyService.displayCurrencyPublisher
                 .asObservable()
                 .flatMapLatest { fiatCurrency in

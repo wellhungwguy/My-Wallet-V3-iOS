@@ -64,7 +64,7 @@ final class LinkedBankActivationService: LinkedBankActivationServiceAPI {
 
     init(client: LinkedBanksClientAPI = resolve()) {
         self.client = client
-        pollService = PollService(matcher: { !$0.isPending })
+        self.pollService = PollService(matcher: { !$0.isPending })
     }
 
     func waitForActivation(

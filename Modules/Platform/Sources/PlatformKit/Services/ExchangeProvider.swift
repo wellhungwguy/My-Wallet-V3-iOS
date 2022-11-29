@@ -31,7 +31,7 @@ final class ExchangeProvider: ExchangeProviding {
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
-        services = Atomic([:])
+        self.services = Atomic([:])
         self.fiatCurrencyService = fiatCurrencyService
     }
 

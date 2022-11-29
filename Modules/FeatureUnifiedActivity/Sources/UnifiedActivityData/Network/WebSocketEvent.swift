@@ -46,15 +46,38 @@ enum WebSocketEvent: Decodable, Equatable {
 
 extension WebSocketEvent {
     struct Payload: Equatable, Decodable {
-        let seqnum: Int
         let event: EventType
         let channel: Channel
-        let data: PayloadData
+        let data: Content
     }
+}
 
-    struct PayloadData: Equatable, Decodable {
+extension WebSocketEvent.Payload {
+    struct Content: Equatable, Decodable {
+        struct Item: Equatable, Decodable {
+            let id: String
+            let externalUrl: String
+            let item: ActivityItem.CompositionView
+            let state: ActivityState
+            let timestamp: TimeInterval
+        }
+
         let network: String
         let pubKey: String
-        let activity: [ActivityEntry]
+        let activity: [Item]
+    }
+}
+
+extension ActivityEntry {
+    init(network: String, pubKey: String, item: WebSocketEvent.Payload.Content.Item) {
+        self.init(
+            id: item.id,
+            network: network,
+            pubKey: pubKey,
+            externalUrl: item.externalUrl,
+            item: item.item,
+            state: item.state,
+            timestamp: item.timestamp
+        )
     }
 }

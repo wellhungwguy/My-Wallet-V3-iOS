@@ -7,6 +7,7 @@ struct WithdrawalLocksResponse: Decodable {
     struct Lock: Decodable {
         let expiresAt: String
         let amount: Amount
+        let bought: Amount?
     }
 
     struct Amount: Decodable {

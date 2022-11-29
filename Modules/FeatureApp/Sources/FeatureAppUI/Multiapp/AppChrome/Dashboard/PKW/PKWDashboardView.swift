@@ -9,7 +9,7 @@ import SwiftUI
 struct PKWDashboardView: View {
     let store: StoreOf<PKWDashboard>
 
-    public init(store: StoreOf<PKWDashboard>) {
+    init(store: StoreOf<PKWDashboard>) {
         self.store = store
     }
 
@@ -21,7 +21,10 @@ struct PKWDashboardView: View {
                         DashboardAssetSectionView(store: self.store.scope(
                             state: \.assetsState,
                             action: PKWDashboard.Action.assetsAction
-                        )
+                        ))
+
+                        DashboardActivitySectionView(
+                            store: self.store.scope(state: \.activityState, action: PKWDashboard.Action.activityAction)
                         )
                     }
                     .navigationRoute(in: store)

@@ -17,7 +17,7 @@ final class PerformanceTracingService: PerformanceTracingServiceAPI {
         initialTraces: [TraceID: Trace] = [:],
         listenForClearTraces: @escaping PerformanceTracing.ListenForClearTraces
     ) {
-        traces = Atomic(initialTraces)
+        self.traces = Atomic(initialTraces)
         self.createTrace = createTrace
 
         listenForClearTraces { [traces] in

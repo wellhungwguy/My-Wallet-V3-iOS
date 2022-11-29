@@ -2,6 +2,7 @@
 --disable blankLinesAtStartOfScope
 --disable spaceAroundParens
 --disable redundanttype
+--disable typeSugar
 --disable redundantvoidreturntype
 --disable indent
 --allman false
@@ -48,10 +49,9 @@
 --organizetypes class,enum,struct
 --patternlet inline
 --ranges spaced
---self remove
+--self init-only
 --selfrequired 
 --semicolons inline
---shortoptionals always
 --smarttabs enabled
 --stripunusedargs closure-only
 --structthreshold 0

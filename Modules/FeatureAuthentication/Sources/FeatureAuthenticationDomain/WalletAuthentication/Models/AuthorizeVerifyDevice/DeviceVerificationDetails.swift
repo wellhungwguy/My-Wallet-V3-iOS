@@ -26,8 +26,8 @@ public struct DeviceVerificationDetails: Decodable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        originLocation = try container.decode(String.self, forKey: .location)
-        originIP = try container.decode(String.self, forKey: .ipAddress)
-        originBrowser = try container.decode(String.self, forKey: .browser)
+        self.originLocation = try container.decode(String.self, forKey: .location)
+        self.originIP = try container.decode(String.self, forKey: .ipAddress)
+        self.originBrowser = try container.decode(String.self, forKey: .browser)
     }
 }

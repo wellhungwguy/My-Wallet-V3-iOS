@@ -60,12 +60,12 @@ final class BitcoinChainTransactionBuildingService: BitcoinChainTransactionBuild
         self.unspentOutputRepository = unspentOutputRepository
         self.coinSelection = coinSelection
         self.coin = coin
-        selectCoins = { [coinSelection] selectionInputs in
+        self.selectCoins = { [coinSelection] selectionInputs in
             coinSelection.select(inputs: selectionInputs)
                 .publisher
                 .eraseToAnyPublisher()
         }
-        selectAllCoins = { [coinSelection] coins, feePerByte, singleOutputType in
+        self.selectAllCoins = { [coinSelection] coins, feePerByte, singleOutputType in
             coinSelection.select(
                 all: coins,
                 feePerByte: feePerByte,

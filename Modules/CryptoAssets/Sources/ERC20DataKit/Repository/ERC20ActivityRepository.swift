@@ -30,7 +30,7 @@ final class ERC20ActivityRepository: ERC20ActivityRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] key -> AnyPublisher<[ERC20HistoricalTransaction], NetworkError> in
                 guard let contractAddress = key.erc20Asset.kind.erc20ContractAddress else {
@@ -72,7 +72,7 @@ extension ERC20HistoricalTransaction {
         source: EthereumAddress
     ) {
         let createdAt: Date = Double(response.timestamp)
-            .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
+            .flatMap(Date.init(timeIntervalSince1970:)) ?? .distantPast
         let fromAddress = EthereumAddress(address: response.from, network: .ethereum)!
         let amount = CryptoValue.create(
             minor: response.value,

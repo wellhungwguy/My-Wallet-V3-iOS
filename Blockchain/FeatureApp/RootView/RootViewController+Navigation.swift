@@ -47,84 +47,97 @@ extension RootViewController {
 
     func setupNavigationObservers() {
         app.on(blockchain.ui.type.action.then.navigate.to)
-            .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.navigate(to:), on: self)
+            .sink { [weak self] event in
+                guard let self else { return }
+                Task(priority: .userInitiated) { await self.navigate(to: event) }
+            }
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.enter.into)
-            .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.enter(into:), on: self)
+            .sink { [weak self] event in
+                guard let self else { return }
+                Task(priority: .userInitiated) { await self.enter(into: event) }
+            }
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.close)
-            .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.close, on: self)
+            .sink { [weak self] event in
+                guard let self else { return }
+                Task(priority: .userInitiated) { self.close(event) }
+            }
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.current.stack)
-            .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.replaceCurrent(stack:), on: self)
+            .sink { [weak self] event in
+                guard let self else { return }
+                Task(priority: .userInitiated) { await self.replaceCurrent(stack: event) }
+            }
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.root.stack)
-            .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.replaceRoot(stack:), on: self)
+            .sink { [weak self] event in
+                guard let self else { return }
+                Task(priority: .userInitiated) { await self.replaceRoot(stack: event) }
+            }
             .store(in: &bag)
     }
 
-    private func hostingController(from event: Session.Event) throws -> some UIViewController {
+    @MainActor private func hostingController(from event: Session.Event) async throws -> some UIViewController {
         guard let action = event.action else {
             throw NavigationError(message: "received \(event.reference) without an action")
         }
-        return try hostingController(
+        return try await hostingController(
             from: action.data.decode(Tag.Reference.self),
             in: event.context
         )
     }
 
-    private func hostingControllers(from event: Session.Event) throws -> [UIViewController] {
+    @MainActor private func hostingControllers(from event: Session.Event) async throws -> [UIViewController] {
         guard let action = event.action else {
             throw NavigationError(message: "received \(event.reference) without an action")
         }
-        return try action.data.decode([Tag.Reference].self).map {
-            try hostingController(
-                from: $0,
-                in: event.context
+        var viewControllers: [UIViewController] = []
+        for reference in try action.data.decode([Tag.Reference].self) {
+            try await viewControllers.append(
+                hostingController(from: reference, in: event.context)
             )
         }
+        return viewControllers
     }
 
-    private func hostingController(
+    @MainActor private func hostingController(
         from story: Tag.Reference,
         in context: Tag.Context
-    ) throws -> some UIViewController {
-        try UIHostingController(
-            rootView: siteMap.view(for: story, in: context)
+    ) async throws -> some UIViewController {
+        try await UIHostingController(
+            rootView: siteMap.view(for: story.in(app), in: context)
+                .app(app)
+                .context(context)
                 .onAppear { [app] in
                     app.post(event: story, context: context)
                 }
         )
     }
 
-    func navigate(to event: Session.Event) {
+    @MainActor func navigate(to event: Session.Event) async {
         do {
-            try push(hostingController(from: event))
+            try await push(hostingController(from: event))
         } catch {
             app.post(error: error)
         }
     }
 
-    func enter(into event: Session.Event) {
+    @MainActor func enter(into event: Session.Event) async {
         do {
-            try present(hostingController(from: event))
+            try await present(hostingController(from: event))
         } catch {
             app.post(error: error)
         }
     }
 
-    func replaceRoot(stack event: Session.Event) {
+    @MainActor func replaceRoot(stack event: Session.Event) async {
         do {
-            let controllers = try hostingControllers(from: event)
+            let controllers = try await hostingControllers(from: event)
             let navigationController = try navigationController
                 .or(throw: NavigationError.noNavigationController)
             dismiss(animated: true) {
@@ -135,9 +148,9 @@ extension RootViewController {
         }
     }
 
-    func replaceCurrent(stack event: Session.Event) {
+    @MainActor func replaceCurrent(stack event: Session.Event) async {
         do {
-            try (currentNavigationController ?? topMostViewController?.navigationController)
+            try await (currentNavigationController ?? topMostViewController?.navigationController)
                 .or(throw: NavigationError.noNavigationController)
                 .setViewControllers(hostingControllers(from: event), animated: true)
         } catch {
@@ -145,7 +158,7 @@ extension RootViewController {
         }
     }
 
-    func close(_ event: Session.Event) {
+    @MainActor func close(_ event: Session.Event) {
         do {
             if let close = try? app.state.get(event.reference) as Session.State.Function {
                 try close()

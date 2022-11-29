@@ -122,7 +122,7 @@ struct CardOrderingState: Equatable {
         self.ssn = ssn
         self.error = error
         self.orderProcessingState = orderProcessingState
-        acceptLegalState = AcceptLegalState(items: legalItems)
+        self.acceptLegalState = AcceptLegalState(items: legalItems)
     }
 }
 
@@ -247,8 +247,15 @@ let cardOrderingReducer: Reducer<
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardOrderingAction.productsResponse)
         case .productsResponse(.success(let products)):
-            state.products = products
-            state.selectedProduct = products[safe: 0]
+            state.products = products.sorted(by: { lhs, rhs -> Bool in
+                switch (lhs.hasRemainingCards, rhs.hasRemainingCards) {
+                case (true, false):
+                    return true
+                default:
+                    return false
+                }
+            })
+            state.selectedProduct = state.products[safe: 0]
             return .none
         case .productsResponse(.failure(let error)):
             state.error = error
@@ -398,7 +405,8 @@ let cardOrderingReducer: Reducer<
             return .none
         case .onReviewAppear:
             guard state.selectedProduct?.type == .physical,
-                  (state.shippingAddress ?? state.address) == nil else {
+                  (state.shippingAddress ?? state.address) == nil
+            else {
                 return Effect(value: .fetchFullName)
             }
             return Effect.merge(
@@ -457,7 +465,7 @@ struct MockServices: CardServiceAPI,
     )
 
     let error = NabuError(id: "mock", code: .stateNotEligible, type: .unknown, description: "")
-    let card = Card(
+    static let card = Card(
         id: "",
         type: .virtual,
         last4: "1234",
@@ -495,19 +503,19 @@ struct MockServices: CardServiceAPI,
         product: Product,
         at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {
-        .just([card])
+        .just([Self.card])
     }
 
     func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
@@ -528,8 +536,8 @@ struct MockServices: CardServiceAPI,
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
         .just([
-            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual),
-            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical)
+            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual, remainingCards: 1),
+            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical, remainingCards: 0)
         ])
     }
 
@@ -546,11 +554,11 @@ struct MockServices: CardServiceAPI,
     }
 
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func openBuyFlow(for currency: CryptoCurrency?) {}

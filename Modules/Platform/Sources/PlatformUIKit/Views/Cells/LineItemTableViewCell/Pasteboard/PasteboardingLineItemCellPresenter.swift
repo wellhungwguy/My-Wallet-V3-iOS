@@ -94,15 +94,15 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting {
             interactionDuration: input.interactionDuration
         )
 
-        imageWidth = Driver.just(22)
+        self.imageWidth = Driver.just(22)
 
-        interactor = DefaultLineItemCellInteractor(title: titleInteractor, description: descriptionInteractor)
+        self.interactor = DefaultLineItemCellInteractor(title: titleInteractor, description: descriptionInteractor)
 
-        titleLabelContentPresenter = PasteboardLabelContentPresenter(
+        self.titleLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: titleInteractor,
             descriptors: .lineItemTitle(accessibilityIdPrefix: accessibilityIdPrefix)
         )
-        descriptionLabelContentPresenter = PasteboardLabelContentPresenter(
+        self.descriptionLabelContentPresenter = PasteboardLabelContentPresenter(
             interactor: descriptionInteractor,
             descriptors: .lineItemDescription(accessibilityIdPrefix: accessibilityIdPrefix)
         )

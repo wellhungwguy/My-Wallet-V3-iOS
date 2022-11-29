@@ -106,11 +106,11 @@ public struct ActivateCardResponse: Decodable {
         let acquirer = try values.decodeIfPresent(CardAcquirer.self, forKey: .cardProvider)
 
         if let data = try values.decodeIfPresent(Partner.EveryPayData.self, forKey: .everypay) {
-            partner = .everypay(data)
+            self.partner = .everypay(data)
         } else if let acquirer {
-            partner = .cardAcquirer(acquirer)
+            self.partner = .cardAcquirer(acquirer)
         } else {
-            partner = .unknown
+            self.partner = .unknown
         }
     }
 }

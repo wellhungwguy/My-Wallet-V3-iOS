@@ -13,6 +13,6 @@ public final class BankAccountReceiveAddress: ReceiveAddress {
         self.address = address
         self.label = label
         self.currencyType = currencyType
-        accountType = .external
+        self.accountType = .external
     }
 }

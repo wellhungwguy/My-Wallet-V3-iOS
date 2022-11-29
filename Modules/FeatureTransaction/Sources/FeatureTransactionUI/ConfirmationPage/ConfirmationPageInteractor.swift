@@ -85,7 +85,7 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             transactionModel.process(action: .modifyTransactionConfirmation(model))
         case .tappedHyperlink(let titledLink):
             router?.showWebViewWithTitledLink(titledLink)
-        case let .showACHDepositTerms(termsDescription):
+        case .showACHDepositTerms(let termsDescription):
             router?.showACHDepositTerms(termsDescription: termsDescription)
         case .showAvailableToWithdrawDateInfo:
             router?.showAvailableToWithdrawDateInfo()

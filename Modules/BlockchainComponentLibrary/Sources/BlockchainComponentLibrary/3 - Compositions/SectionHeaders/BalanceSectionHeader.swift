@@ -77,7 +77,7 @@ extension BalanceSectionHeader where Trailing == EmptyView {
         self.header = header
         self.title = title
         self.subtitle = subtitle
-        trailing = EmptyView.init
+        self.trailing = EmptyView.init
     }
 }
 

@@ -18,7 +18,7 @@ struct CreateAccountViewStepTwo: View {
 
     init(store: Store<CreateAccountStepTwoState, CreateAccountStepTwoAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

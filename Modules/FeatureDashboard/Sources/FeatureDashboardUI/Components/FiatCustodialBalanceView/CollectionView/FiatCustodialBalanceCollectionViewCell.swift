@@ -31,14 +31,14 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
     // MARK: - Setup
 
     override init(frame: CGRect) {
-        custodialBalanceView = FiatCustodialBalanceView()
+        self.custodialBalanceView = FiatCustodialBalanceView()
         custodialBalanceView.clipsToBounds = true
         custodialBalanceView.layer.cornerRadius = 16
         custodialBalanceView.layer.borderWidth = 1.0
         super.init(frame: frame)
         contentView.addSubview(custodialBalanceView)
         custodialBalanceView.layoutToSuperview(.top, .bottom, .leading, .trailing)
-        custodialBalanceViewWidthConstraint = custodialBalanceView.layout(
+        self.custodialBalanceViewWidthConstraint = custodialBalanceView.layout(
             dimension: .width,
             to: UIScreen.main.bounds.width - Spacing.outer,
             priority: .penultimateHigh

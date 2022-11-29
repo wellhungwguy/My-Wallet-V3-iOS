@@ -3,15 +3,10 @@
 import Combine
 import CombineExtensions
 
-public protocol UnifiedActivityRepositoryAPI {
-    var connect: AnyPublisher<Void, Never> { get }
-    var activity: AnyPublisher<[ActivityEntry], Never> { get }
+public protocol UnifiedActivityPersistenceServiceAPI {
+    func connect()
 }
 
-extension UnifiedActivityRepositoryAPI {
-    public var connect: AnyPublisher<Void, Never> {
-        activity
-            .mapToVoid()
-            .eraseToAnyPublisher()
-    }
+public protocol UnifiedActivityRepositoryAPI {
+    var activity: AnyPublisher<[ActivityEntry], Never> { get }
 }

@@ -58,7 +58,7 @@ public enum UX {
             self.icon = icon
             self.metadata = metadata
             self.actions = actions
-            expected = title != nil
+            self.expected = title != nil
         }
     }
 }

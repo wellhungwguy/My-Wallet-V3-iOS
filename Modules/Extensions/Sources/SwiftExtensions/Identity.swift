@@ -10,7 +10,7 @@ public struct Identity<T>: Codable, Hashable, Identifiable {
     }
 
     public init(from decoder: Decoder) throws {
-        value = try String(from: decoder)
+        self.value = try String(from: decoder)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -74,7 +74,7 @@ final class NabuUserService: NabuUserServiceAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client, siftService] _ in
                 client

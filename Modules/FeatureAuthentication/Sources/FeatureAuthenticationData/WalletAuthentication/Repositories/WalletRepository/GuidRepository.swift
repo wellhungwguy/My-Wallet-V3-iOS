@@ -18,7 +18,7 @@ final class GuidRepository: GuidRepositoryAPI {
         self.legacyGuidRepository = legacyGuidRepository
         self.walletRepo = walletRepo
 
-        guid = Deferred { [walletRepo, legacyGuidRepository] in
+        self.guid = Deferred { [walletRepo, legacyGuidRepository] in
             walletRepo
                 .get()
                 .map(\.credentials.guid)

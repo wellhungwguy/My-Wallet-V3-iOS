@@ -18,7 +18,7 @@ struct WebSocketTaskPublisher: Publisher {
     ///   - session: The URLSession to create the WebSocket task.
     ///
     init(with request: URLRequest, session: URLSession = URLSession.shared) {
-        task = session.webSocketTask(with: request)
+        self.task = session.webSocketTask(with: request)
     }
 
     func receive<S>(subscriber: S)

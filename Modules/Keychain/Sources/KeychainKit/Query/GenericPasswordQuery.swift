@@ -14,9 +14,9 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
         service: String
     ) {
         self.service = service
-        accessGroup = nil
-        permission = .whenUnlocked
-        synchronizable = false
+        self.accessGroup = nil
+        self.permission = .whenUnlocked
+        self.synchronizable = false
     }
 
     public init(
@@ -25,8 +25,8 @@ public struct GenericPasswordQuery: KeychainQueryProvider, Equatable {
     ) {
         self.service = service
         self.accessGroup = accessGroup
-        permission = .whenUnlocked
-        synchronizable = false
+        self.permission = .whenUnlocked
+        self.synchronizable = false
     }
 
     public init(

@@ -14,7 +14,7 @@ final class AuthenticatorRepository: AuthenticatorRepositoryAPI {
     ) {
         self.walletRepo = walletRepo
 
-        authenticatorType = Deferred { [walletRepo] in
+        self.authenticatorType = Deferred { [walletRepo] in
             walletRepo.get()
                 .map(\.properties.authenticatorType)
         }

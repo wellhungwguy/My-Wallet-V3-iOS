@@ -25,8 +25,8 @@ struct OrderQuoteResponse: Decodable {
 
         init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            priceTiers = try values.decode([OrderPriceTierResponse].self, forKey: .priceTiers)
-            pair = try OrderPairResponse(string: try values.decode(String.self, forKey: .pair))
+            self.priceTiers = try values.decode([OrderPriceTierResponse].self, forKey: .priceTiers)
+            self.pair = try OrderPairResponse(string: try values.decode(String.self, forKey: .pair))
         }
     }
 
@@ -86,9 +86,9 @@ struct OrderQuoteResponse: Decodable {
         let expiresAt = try values.decode(String.self, forKey: .expiresAt)
         let updatedAt = try values.decode(String.self, forKey: .updatedAt)
 
-        identifier = try values.decode(String.self, forKey: .identifier)
-        pair = try OrderPairResponse(string: try values.decode(String.self, forKey: .pair))
-        product = try values.decode(ProductResponse.self, forKey: .product)
+        self.identifier = try values.decode(String.self, forKey: .identifier)
+        self.pair = try OrderPairResponse(string: try values.decode(String.self, forKey: .pair))
+        self.product = try values.decode(ProductResponse.self, forKey: .product)
         self.createdAt = try OrderQuoteResponse.date(
             from: createdAt,
             container: values
@@ -101,13 +101,13 @@ struct OrderQuoteResponse: Decodable {
             from: updatedAt,
             container: values
         )
-        sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
+        self.sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
         let networkFeeValue = try values.decode(String.self, forKey: .networkFee)
         let staticFeeValue = try values.decode(String.self, forKey: .staticFee)
         let zeroDestination: MoneyValue = .zero(currency: pair.destinationCurrencyType)
-        networkFee = MoneyValue.create(minor: networkFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
-        staticFee = MoneyValue.create(minor: staticFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
-        quote = try values.decode(OrderQuoteResponse.OrderQuote.self, forKey: .quote)
+        self.networkFee = MoneyValue.create(minor: networkFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
+        self.staticFee = MoneyValue.create(minor: staticFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
+        self.quote = try values.decode(OrderQuoteResponse.OrderQuote.self, forKey: .quote)
     }
 }
 

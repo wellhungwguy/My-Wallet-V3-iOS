@@ -115,6 +115,16 @@ extension LocalizationConstants {
                 comment: "Coin View: rewards account subtitle"
             )
 
+            static let stakingAccountTitle = NSLocalizedString(
+                "Staking Account",
+                comment: "Coin View: rewards account title"
+            )
+
+            static let stakingAccountSubtitle = NSLocalizedString(
+                "Earn %.1f%%",
+                comment: "Coin View: rewards account subtitle"
+            )
+
             static let exchangeAccountTitle = NSLocalizedString(
                 "Exchange Account",
                 comment: "Coin View: exchange account title"
@@ -215,6 +225,21 @@ extension LocalizationConstants {
                     action: NSLocalizedString(
                         "Connect",
                         comment: "Coin View: Exchange Explainer action"
+                    )
+                )
+
+                static let staking = (
+                    title: NSLocalizedString(
+                        "Staking Account",
+                        comment: "Coin View:Staking Account Explainer title"
+                    ),
+                    body: NSLocalizedString(
+                        "Your Staking Account allows you to earn rewards on your crypto.",
+                        comment: "Coin View: Staking Account Explainer body"
+                    ),
+                    action: NSLocalizedString(
+                        "I understand",
+                        comment: "Coin View: Rewards Account Explainer action"
                     )
                 )
             }

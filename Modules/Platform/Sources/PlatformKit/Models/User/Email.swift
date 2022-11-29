@@ -11,8 +11,8 @@ public struct Email: Decodable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        address = try values.decode(String.self, forKey: .address)
-        verified = try values.decode(Bool.self, forKey: .verified)
+        self.address = try values.decode(String.self, forKey: .address)
+        self.verified = try values.decode(Bool.self, forKey: .verified)
     }
 
     public init(address: String, verified: Bool) {

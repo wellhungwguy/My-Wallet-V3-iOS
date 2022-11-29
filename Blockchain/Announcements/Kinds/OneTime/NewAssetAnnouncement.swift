@@ -96,7 +96,7 @@ final class NewAssetAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
         dismiss: @escaping CardAnnouncementAction,
         action: @escaping CardAnnouncementAction
     ) {
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.cryptoCurrency = cryptoCurrency
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

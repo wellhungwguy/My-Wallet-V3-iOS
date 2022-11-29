@@ -13,6 +13,7 @@ public struct CustodialBalanceResponse: Decodable {
         public let pendingWithdrawal: String
         public let available: String
         public let withdrawable: String
+        public let mainBalanceToDisplay: String?
 
         var totalPending: String {
             String((Int(pendingDeposit) ?? 0) - (Int(pendingWithdrawal) ?? 0))
@@ -23,7 +24,8 @@ public struct CustodialBalanceResponse: Decodable {
             pendingDeposit: "0",
             pendingWithdrawal: "0",
             available: "0",
-            withdrawable: "0"
+            withdrawable: "0",
+            mainBalanceToDisplay: "0"
         )
     }
 
@@ -39,7 +41,7 @@ public struct CustodialBalanceResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        balances = try container.decode([String: Balance].self)
+        self.balances = try container.decode([String: Balance].self)
     }
 
     // MARK: - Subscript

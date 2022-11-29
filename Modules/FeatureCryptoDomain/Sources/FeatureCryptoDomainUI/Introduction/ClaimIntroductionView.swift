@@ -126,7 +126,7 @@ public final class ClaimIntroductionHostingController: UIViewController {
         self.searchDomainRepository = searchDomainRepository
         self.orderDomainRepository = orderDomainRepository
         self.userInfoProvider = userInfoProvider
-        store = .init(
+        self.store = .init(
             initialState: ClaimIntroductionState(),
             reducer: claimIntroductionReducer,
             environment: ClaimIntroductionEnvironment(
@@ -138,8 +138,8 @@ public final class ClaimIntroductionHostingController: UIViewController {
                 userInfoProvider: userInfoProvider
             )
         )
-        viewStore = ViewStore(store)
-        contentView = UIHostingController(rootView: ClaimIntroductionView(store: store))
+        self.viewStore = ViewStore(store)
+        self.contentView = UIHostingController(rootView: ClaimIntroductionView(store: store))
         super.init(nibName: nil, bundle: nil)
     }
 

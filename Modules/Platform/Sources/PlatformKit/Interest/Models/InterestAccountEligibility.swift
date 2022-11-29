@@ -23,8 +23,8 @@ public struct InterestAccountEligibility: Equatable {
         interestEligibility: InterestEligibility
     ) {
         self.currencyType = currencyType
-        isEligible = interestEligibility.isEligible
-        ineligibilityReason = .init(ineligibilityReason: interestEligibility.ineligibilityReason)
+        self.isEligible = interestEligibility.isEligible
+        self.ineligibilityReason = .init(ineligibilityReason: interestEligibility.ineligibilityReason)
     }
 
     public static func notEligible(currencyType: CurrencyType) -> InterestAccountEligibility {

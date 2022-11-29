@@ -26,20 +26,20 @@ final class HistoricalBalanceCellInteractor {
         enabledCurrenciesService: EnabledCurrenciesServiceAPI,
         fiatCurrencyService: FiatCurrencyServiceAPI
     ) {
-        cryptoCurrency = cryptoAsset.asset
+        self.cryptoCurrency = cryptoAsset.asset
         self.historicalFiatPriceService = historicalFiatPriceService
-        sparklineInteractor = SparklineInteractor(
+        self.sparklineInteractor = SparklineInteractor(
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency
         )
-        priceInteractor = AssetPriceViewHistoricalInteractor(
+        self.priceInteractor = AssetPriceViewHistoricalInteractor(
             historicalPriceProvider: historicalFiatPriceService
         )
-        balanceInteractor = AccountAssetBalanceViewInteractor(
+        self.balanceInteractor = AccountAssetBalanceViewInteractor(
             cryptoAsset: cryptoAsset,
             fiatCurrencyService: fiatCurrencyService
         )
-        evmNetwork = cryptoCurrency.assetModel.kind.erc20ParentChain.flatMap { erc20ParentChain in
+        self.evmNetwork = cryptoCurrency.assetModel.kind.erc20ParentChain.flatMap { erc20ParentChain in
             enabledCurrenciesService.allEnabledEVMNetworks
                .first(where: { $0.networkConfig.networkTicker == erc20ParentChain })
         }

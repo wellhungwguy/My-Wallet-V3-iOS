@@ -14,7 +14,7 @@ public struct TraceID: NewTypeString, RawRepresentable {
     }
 
     public init?(rawValue: String) {
-        value = rawValue
+        self.value = rawValue
     }
 
     /// This trace should start when the PIN is enterered to the dashboard appearing

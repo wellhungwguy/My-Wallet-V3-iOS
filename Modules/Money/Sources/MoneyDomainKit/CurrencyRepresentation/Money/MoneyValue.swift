@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Extensions
 import Foundation
 
 /// A money value.
@@ -86,14 +87,14 @@ public struct MoneyValue: Money, Hashable {
     ///
     /// - Parameter cryptoValue: A crypto value.
     public init(cryptoValue: CryptoValue) {
-        _value = .crypto(cryptoValue)
+        self._value = .crypto(cryptoValue)
     }
 
     /// Creates a money value.
     ///
     /// - Parameter fiatValue: A fiat value.
     public init(fiatValue: FiatValue) {
-        _value = .fiat(fiatValue)
+        self._value = .fiat(fiatValue)
     }
 
     /// Creates a money value.
@@ -104,9 +105,9 @@ public struct MoneyValue: Money, Hashable {
     public init(storeAmount: BigInt, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
-            _value = .crypto(CryptoValue(storeAmount: storeAmount, currency: cryptoCurrency))
+            self._value = .crypto(CryptoValue(storeAmount: storeAmount, currency: cryptoCurrency))
         case .fiat(let fiatCurrency):
-            _value = .fiat(FiatValue(storeAmount: storeAmount, currency: fiatCurrency))
+            self._value = .fiat(FiatValue(storeAmount: storeAmount, currency: fiatCurrency))
         }
     }
 

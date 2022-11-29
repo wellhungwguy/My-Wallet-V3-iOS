@@ -60,6 +60,6 @@ public final class AssetBalanceViewPresenter {
     ) {
         self.interactor = interactor
         self.descriptors = descriptors
-        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }

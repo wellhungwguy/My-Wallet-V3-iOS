@@ -18,9 +18,9 @@ public struct VeriffCredentials: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let nested = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .data)
-        applicantId = try values.decode(String.self, forKey: .applicantId)
-        key = try values.decode(String.self, forKey: .key)
-        url = try nested.decode(String.self, forKey: .url)
+        self.applicantId = try values.decode(String.self, forKey: .applicantId)
+        self.key = try values.decode(String.self, forKey: .key)
+        self.url = try nested.decode(String.self, forKey: .url)
     }
 
     public func encode(to encoder: Encoder) throws {

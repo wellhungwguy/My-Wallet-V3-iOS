@@ -148,7 +148,8 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .swap,
              .interestTransfer,
-             .interestWithdraw:
+             .interestWithdraw,
+             .stakingDeposit:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
@@ -201,6 +202,12 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
+        case .stakingDeposit:
+            return stakingDepositFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .interestTransfer:
             return interestTransferFilter(
                 sourceAccount: sourceAccount,
@@ -235,6 +242,16 @@ final class Coincore: CoincoreAPI {
              .linkToDebitCard:
             return false
         }
+    }
+
+    private static func stakingDepositFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else { return false }
+        return (sourceAccount is CryptoTradingAccount || sourceAccount is CryptoNonCustodialAccount)
+            && destinationAccount is CryptoStakingAccount
     }
 
     private static func interestTransferFilter(

@@ -109,7 +109,7 @@ final class WalletCreator: WalletCreatorAPI {
         self.generateWrapper = generateWrapper
         self.checksumProvider = checksumProvider
 
-        processWalletCreation = provideProcessCreationOfWallet(
+        self.processWalletCreation = provideProcessCreationOfWallet(
             walletEncoder: walletEncoder,
             encryptor: encryptor,
             createWalletRepository: createWalletRepository,

@@ -24,7 +24,7 @@ final class SecureChannelResultPresenter: RibBridgePresenter, PendingStatePresen
     private let disposeBag = DisposeBag()
 
     init(state: State, dismiss: @escaping () -> Void) {
-        model = state.viewModel
+        self.model = state.viewModel
         model.button?.tapRelay
             .subscribe(onNext: { _ in
                 dismiss()

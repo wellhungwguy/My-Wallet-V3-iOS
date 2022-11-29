@@ -8,7 +8,7 @@ extension AnalyticsEvents.New {
         case viewFAQsClicked
         case customerSupportClicked
 
-        public var type: AnalyticsEventType { .nabu }
+        var type: AnalyticsEventType { .nabu }
     }
 }
 

@@ -66,7 +66,7 @@ public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI
         self.interactor = interactor
         self.isOriginDeposit = isOriginDeposit
 
-        navigationBarTrailingButtonAction = .custom { [backRelay] in
+        self.navigationBarTrailingButtonAction = .custom { [backRelay] in
             backRelay.accept(())
         }
     }
@@ -163,12 +163,12 @@ extension FundsTransferDetailScreenPresenter {
             typealias FundsString = LocalizedString.Funds
 
             if isOriginDeposit {
-                title = "\(FundsString.Title.depositPrefix) \(account.currency)"
+                self.title = "\(FundsString.Title.depositPrefix) \(account.currency)"
             } else {
-                title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
+                self.title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
             }
 
-            lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
+            self.lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             let font = UIFont.main(.medium, 12)
 
@@ -177,7 +177,7 @@ extension FundsTransferDetailScreenPresenter {
             switch account.currency {
             case .GBP:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.GBP
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [
                         .text(string: FundsString.Notice.recipientNameGBPPrefix),
                         .url(string: " \(FundsString.Notice.termsAndConditions) ", url: TermsUrlLink.gbp),
@@ -188,26 +188,26 @@ extension FundsTransferDetailScreenPresenter {
                 )
             case .EUR:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.EUR
-                termsTextViewModel = InteractableTextViewModel(
+                self.termsTextViewModel = InteractableTextViewModel(
                     inputs: [.text(string: FundsString.Notice.recipientNameEUR)],
                     textStyle: .init(color: .descriptionText, font: font),
                     linkStyle: .init(color: .linkableText, font: font)
                 )
             case .USD:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
-                termsTextViewModel = nil
+                self.termsTextViewModel = nil
             case .ARS:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.ARS
-                termsTextViewModel = nil
+                self.termsTextViewModel = nil
             case .BRL:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.BRL
-                termsTextViewModel = nil
+                self.termsTextViewModel = nil
             default:
                 processingTimeNoticeDescription = ""
-                termsTextViewModel = nil
+                self.termsTextViewModel = nil
             }
 
-            noticeViewModels = [
+            self.noticeViewModels = [
                 (
                     title: FundsString.Notice.BankTransferOnly.title,
                     description: FundsString.Notice.BankTransferOnly.description,

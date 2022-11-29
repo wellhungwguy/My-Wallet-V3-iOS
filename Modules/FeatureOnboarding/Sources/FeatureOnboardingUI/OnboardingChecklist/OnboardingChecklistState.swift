@@ -67,9 +67,9 @@ public enum OnboardingChecklist {
         public var route: RouteIntent<Route>?
 
         public init() {
-            items = OnboardingChecklist.allItems
-            pendingItems = []
-            completedItems = []
+            self.items = OnboardingChecklist.allItems
+            self.pendingItems = []
+            self.completedItems = []
         }
 
         func hasCompleted(_ item: Item) -> Bool {

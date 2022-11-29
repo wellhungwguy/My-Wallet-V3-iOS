@@ -15,7 +15,7 @@ final class SessionTokenRepository: SessionTokenRepositoryAPI {
     ) {
         self.walletRepo = walletRepo
 
-        sessionToken = Deferred { [walletRepo] in
+        self.sessionToken = Deferred { [walletRepo] in
             walletRepo.get()
                 .map(\.credentials.sessionToken)
                 .map { key in key.isEmpty ? nil : key }

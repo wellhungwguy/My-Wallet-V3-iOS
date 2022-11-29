@@ -44,12 +44,12 @@ extension Session {
             file: String = #fileID,
             line: Int = #line
         ) {
-            id = Self.id
+            self.id = Self.id
             self.date = date
             self.origin = origin
             self.reference = reference
             self.context = context
-            source = (file, line)
+            self.source = (file, line)
         }
 
         public func hash(into hasher: inout Hasher) {
@@ -212,12 +212,12 @@ public final class BlockchainEventSubscription: Hashable {
         line: Int,
         action: @escaping (Session.Event) throws -> Void
     ) {
-        id = Self.id
+        self.id = Self.id
         self.app = app
         self.events = events
         self.file = file
         self.line = line
-        priority = nil
+        self.priority = nil
         self.action = .sync(action)
     }
 
@@ -229,7 +229,7 @@ public final class BlockchainEventSubscription: Hashable {
         priority: TaskPriority? = nil,
         action: @escaping (Session.Event) async throws -> Void
     ) {
-        id = Self.id
+        self.id = Self.id
         self.app = app
         self.events = events
         self.file = file
