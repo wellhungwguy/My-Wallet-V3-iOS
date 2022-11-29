@@ -68,7 +68,6 @@ public struct DashboardAssetsSection: ReducerProtocol {
                 )
 
             case .onBalancesFetched(.success(let balanceInfo)):
-                print("fetched \(state.presentedAssetsType) \(balanceInfo)")
                 state.isLoading = false
                 state.seeAllButtonHidden = balanceInfo
                     .filter(\.cryptoBalance.hasPositiveDisplayableBalance)

@@ -21,25 +21,28 @@ public struct DashboardActivitySectionView: View {
             VStack(spacing: 0) {
                 sectionHeader
                     .padding(.vertical, Spacing.padding1)
-                custodialAssetsSection
+                activitySection
             }
             .task {
                 await viewStore.send(.onAppear).finish()
             }
             .padding(.horizontal, Spacing.padding2)
         })
+        .onAppear {
+            viewStore.send(.onAppear)
+        }
     }
 
-    var custodialAssetsSection: some View {
+    var activitySection: some View {
         VStack(spacing: 0) {
-//            if let activityItems = viewStore.activityItems {
-//                ForEach(activityItems) { item in
-//                    Text(item)
-//                }
-//            } else
-//            {
-//                Text("Loading")
-//            }
+            ForEachStore(
+              self.store.scope(
+                  state: \.activityRows,
+                  action: DashboardActivitySection.Action.onActivityRowTapped(id:action:)
+              )
+            ) { rowStore in
+                DashboardActivityRowView(store: rowStore)
+            }
         }
         .cornerRadius(16, corners: .allCorners)
     }

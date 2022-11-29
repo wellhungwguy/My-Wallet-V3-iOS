@@ -59,11 +59,12 @@ public struct TradingDashboard: ReducerProtocol {
             )
         }
 
-        Scope(state: \.activityState, action: /Action.activityAction) {
-            DashboardActivitySection(
-                app: app
-            )
-        }
+//        Scope(state: \.activityState, action: /Action.activityAction) {
+//            DashboardActivitySection(
+//                app: app,
+//
+//            )
+//        }
 
         Reduce { state, action in
             switch action {

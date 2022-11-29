@@ -258,7 +258,8 @@ struct MultiAppDefiView: View {
                 initialState: .init(title: tab.title),
                 reducer: PKWDashboard(
                     app: resolve(),
-                    allCryptoAssetService: resolve()
+                    allCryptoAssetService: resolve(),
+                    activityRepository: resolve()
                 )
             )
             )

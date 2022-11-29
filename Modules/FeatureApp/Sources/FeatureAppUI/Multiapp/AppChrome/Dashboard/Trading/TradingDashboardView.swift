@@ -25,9 +25,9 @@ struct TradingDashboardView: View {
                             )
                         )
 
-                        DashboardActivitySectionView(
-                            store: self.store.scope(state: \.activityState, action: TradingDashboard.Action.activityAction)
-                        )
+//                        DashboardActivitySectionView(
+//                            store: self.store.scope(state: \.activityState, action: TradingDashboard.Action.activityAction)
+//                        )
                     }
                     .navigationRoute(in: store)
                     .padding(.bottom, Spacing.padding6)

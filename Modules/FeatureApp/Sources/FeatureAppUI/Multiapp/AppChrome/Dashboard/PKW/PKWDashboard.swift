@@ -8,10 +8,12 @@ import FeatureDashboardDomain
 import FeatureDashboardUI
 import Foundation
 import SwiftUI
+import UnifiedActivityDomain
 
 public struct PKWDashboard: ReducerProtocol {
     let app: AppProtocol
     let allCryptoAssetService: AllCryptoAssetsServiceAPI
+    let activityRepository: UnifiedActivityRepositoryAPI
 
     public enum Route: NavigationRoute {
         case showAllAssets
@@ -29,12 +31,14 @@ public struct PKWDashboard: ReducerProtocol {
         case route(RouteIntent<Route>?)
         case assetsAction(DashboardAssetsSection.Action)
         case allAssetsAction(FeatureAllAssets.Action)
+        case activityAction(DashboardActivitySection.Action)
     }
 
     public struct State: Equatable, NavigationState {
         public var title: String
         public var assetsState: DashboardAssetsSection.State = .init(presentedAssetsType: .nonCustodial)
         public var allAssetsState: FeatureAllAssets.State = .init(with: .nonCustodial)
+        public var activityState: DashboardActivitySection.State = .init()
         public var route: RouteIntent<Route>?
 
         public init(title: String) {
@@ -57,12 +61,21 @@ public struct PKWDashboard: ReducerProtocol {
             )
         }
 
+        Scope(state: \.activityState, action: /Action.activityAction) {
+            DashboardActivitySection(
+                app: app,
+                activityRepository: activityRepository
+            )
+        }
+
         Reduce { state, action in
             switch action {
             case .route(let routeIntent):
                 state.route = routeIntent
                 return .none
             case .allAssetsAction:
+                return .none
+            case .activityAction:
                 return .none
             case .assetsAction(let action):
                 switch action {

@@ -3,7 +3,6 @@
 import Foundation
 
 public enum LeafItemType: Equatable, Codable {
-
     case text(ActivityItem.Text)
     case button(ActivityItem.Button)
     case badge(ActivityItem.Badge)

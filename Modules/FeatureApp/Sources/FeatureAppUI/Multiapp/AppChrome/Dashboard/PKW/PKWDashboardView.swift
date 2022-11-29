@@ -21,7 +21,10 @@ struct PKWDashboardView: View {
                         DashboardAssetSectionView(store: self.store.scope(
                             state: \.assetsState,
                             action: PKWDashboard.Action.assetsAction
-                        )
+                        ))
+
+                        DashboardActivitySectionView(
+                            store: self.store.scope(state: \.activityState, action: PKWDashboard.Action.activityAction)
                         )
                     }
                     .navigationRoute(in: store)

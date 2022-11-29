@@ -2,6 +2,7 @@
 
 import Foundation
 
+import AsyncAlgorithms
 import BlockchainNamespace
 import ComposableArchitecture
 import ComposableArchitectureExtensions
@@ -10,49 +11,61 @@ import FeatureDashboardDomain
 import MoneyKit
 import PlatformKit
 import SwiftUI
+import UnifiedActivityDomain
 
 public struct DashboardActivitySection: ReducerProtocol {
     public let app: AppProtocol
+    public let activityRepository: UnifiedActivityRepositoryAPI
     public init(
-        app: AppProtocol
+        app: AppProtocol,
+        activityRepository: UnifiedActivityRepositoryAPI
     ) {
         self.app = app
+        self.activityRepository = activityRepository
     }
 
     public enum Action: Equatable {
         case onAppear
-//        case onActivityTapped
-//        case onActivityFetched(TaskResult<>)
+        case onActivityFetched([ActivityEntry])
         case onAllActivityTapped
+        case onActivityRowTapped(
+            id: DashboardActivityRow.State.ID,
+            action: DashboardActivityRow.Action
+        )
     }
 
     public struct State: Equatable {
-//        var activityItems: []?
+        var activityRows: IdentifiedArrayOf<DashboardActivityRow.State> = []
+
         public init() {}
     }
 
     public var body: some ReducerProtocol<State, Action> {
-        Reduce { _, action in
+        Reduce { state, action in
             switch action {
             case .onAppear:
-                return .none
+                return activityRepository
+                    .activity
+                    .receive(on: DispatchQueue.main)
+                    .eraseToEffect { .onActivityFetched($0) }
+
             case .onAllActivityTapped:
                 return .none
-                //                return .merge(
-                //                    .task {
-                //                        await .onActivityFetched(
-                //                            TaskResult {
-                // Insert call here
-                //                            }
-                //                        )
-                //                    }
-                //                )
-                //            case .onActivityFetched(.success(let balanceInfo)):
-                //                return .none
-
-                //            case .onActivityFetched(.failure):
-                //                return .none
+            case .onActivityRowTapped:
+                return .none
+            case .onActivityFetched(let activity):
+                state.activityRows = IdentifiedArrayOf(uniqueElements: Array(activity.prefix(5))
+                    .map {
+                    DashboardActivityRow.State(
+                        isLastRow: $0.id == activity.last?.id,
+                        activity: $0
+                    )
+                    })
+                return .none
             }
+        }
+        .forEach(\.activityRows, action: /Action.onActivityRowTapped) {
+            DashboardActivityRow(app: self.app)
         }
     }
 }
