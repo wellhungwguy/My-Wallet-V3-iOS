@@ -3,6 +3,7 @@
 import BlockchainComponentLibrary
 import ComposableArchitecture
 import Errors
+import Extensions
 import Localization
 import SwiftUI
 
