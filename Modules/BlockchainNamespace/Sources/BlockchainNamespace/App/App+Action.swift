@@ -51,7 +51,7 @@ extension AppProtocol {
         var json = try data.then.dictionary().or(throw: "Expected [String: Any]")
         var emit: (tag: Tag, value: Tag.Reference)?
         defer {
-            if let emit = emit {
+            if let emit {
                 post(
                     event: emit.value,
                     context: event.context + [blockchain.ui.type.action: Action(tag: action, event: emit.value, data: nil)],

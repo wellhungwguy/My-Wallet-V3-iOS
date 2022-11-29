@@ -20,6 +20,8 @@ enum CardManagementAction: Equatable, BindableAction {
     case deleteCardResponse(Result<Card, NabuNetworkError>)
     case getActivationUrl
     case getActivationUrlResponse(Result<URL, NabuNetworkError>)
+    case getPinUrl
+    case getPinUrlResponse(Result<URL, NabuNetworkError>)
     case hideActivationWebview
     case setCanAddCard(Result<Bool, Never>)
     case getCardsResponse(Result<[Card], NabuNetworkError>)
@@ -74,6 +76,7 @@ public struct CardManagementState: Equatable {
     @BindableState var isDeleting = false
     @BindableState var isCardSelectorPresented = false
     @BindableState var isStatementsVisible = false
+    @BindableState var pinUrl: LoadingState<URL>?
 
     var activationUrl: LoadingState<URL>?
     var selectedCard: Card?
@@ -483,6 +486,23 @@ let cardManagementReducer: Reducer<
         return .none
     case .getActivationUrlResponse(.failure):
         state.activationUrl = nil
+        return .none
+    case .getPinUrl:
+        guard state.pinUrl == nil,
+             let card = state.selectedCard
+        else {
+           return .none
+        }
+        state.pinUrl = .loading
+        return env.cardService
+            .pinWidgetUrl(card: card)
+            .receive(on: env.mainQueue)
+            .catchToEffect(CardManagementAction.getPinUrlResponse)
+    case .getPinUrlResponse(.success(let url)):
+        state.pinUrl = .loaded(next: url)
+        return .none
+    case .getPinUrlResponse(.failure):
+        state.pinUrl = nil
         return .none
     case .hideActivationWebview:
         state.activationUrl = nil

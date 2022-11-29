@@ -368,6 +368,17 @@ extension LocalizationConstants.CardIssuing {
                 )
             }
 
+            enum PIN {
+                static let title = NSLocalizedString(
+                    "Manage PIN",
+                    comment: "Card Issuing: Manage PIN"
+                )
+                static let subtitle = NSLocalizedString(
+                    "Choose a new PIN for your card activity",
+                    comment: "Card Issuing: Choose a new PIN for your card activity"
+                )
+            }
+
             enum Statements {
                 static let title = NSLocalizedString(
                     "Statements",

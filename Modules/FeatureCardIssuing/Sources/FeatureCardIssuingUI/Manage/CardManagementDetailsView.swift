@@ -44,7 +44,7 @@ struct CardManagementDetailsView: View {
                     header
                         .padding(.bottom, Spacing.padding1)
                     if viewStore.state.selectedCard?.status != .unactivated {
-                        PrimaryRow(
+                        RowWithDivider(
                             title: L10n.Lock.title,
                             subtitle: L10n.Lock.subtitle,
                             trailing: {
@@ -55,9 +55,8 @@ struct CardManagementDetailsView: View {
                             },
                             action: {}
                         )
-                        PrimaryDivider()
                     }
-                    PrimaryRow(
+                    RowWithDivider(
                         title: L10n.Personal.title,
                         subtitle: L10n.Personal.subtitle,
                         trailing: { chevronRight },
@@ -65,8 +64,15 @@ struct CardManagementDetailsView: View {
                             viewStore.send(.editAddress)
                         }
                     )
-                    PrimaryDivider()
-                    PrimaryRow(
+                    RowWithDivider(
+                        title: L10n.PIN.title,
+                        subtitle: L10n.PIN.subtitle,
+                        trailing: { chevronRight },
+                        action: {
+                            viewStore.send(.getPinUrl)
+                        }
+                    )
+                    RowWithDivider(
                         title: L10n.Statements.title,
                         subtitle: L10n.Statements.subtitle,
                         trailing: { chevronRight },
@@ -74,7 +80,6 @@ struct CardManagementDetailsView: View {
                             viewStore.send(.binding(.set(\.$isStatementsVisible, true)))
                         }
                     )
-                    PrimaryDivider()
                     PrimaryRow(
                         title: L10n.Support.title,
                         subtitle: L10n.Support.subtitle,
@@ -111,6 +116,49 @@ struct CardManagementDetailsView: View {
                         isPresented = false
                     }
                 )
+            }
+            .sheet(
+                isPresented: viewStore.binding(
+                    get: {
+                        guard case .loaded = $0.pinUrl else {
+                            return false
+                        }
+                        return true
+                    },
+                    send: .binding(.set(\.$pinUrl, nil))
+                )
+            ) {
+                if case .loaded(let url) = viewStore.state.pinUrl {
+                    WebView(
+                        url: url,
+                        finishUrl: WebView.CallbackUrl.pin,
+                        forceFullScreen: true,
+                        onFinish: {
+                            viewStore.send(.binding(.set(\.$pinUrl, nil)))
+                        }
+                    )
+                } else {
+                    EmptyView()
+                }
+            }
+        }
+    }
+
+    struct RowWithDivider<Trailing: View>: View {
+        let title: String
+        let subtitle: String
+        @ViewBuilder let trailing: () -> Trailing
+        let action: () -> Void
+
+        var body: some View {
+            VStack {
+                PrimaryRow(
+                    title: title,
+                    subtitle: subtitle,
+                    trailing: trailing,
+                    action: action
+                )
+                PrimaryDivider()
             }
         }
     }

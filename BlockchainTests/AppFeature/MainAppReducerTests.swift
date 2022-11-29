@@ -527,7 +527,6 @@ final class MainAppReducerTests: XCTestCase {
             )
         }
 
-
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
 

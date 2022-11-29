@@ -127,7 +127,7 @@ struct EnterInformation: ReducerProtocol {
                     )
                 }
 
-            case let .onPrefillInfoFetched(.failure(error)):
+            case .onPrefillInfoFetched(.failure(let error)):
                 state.isLoading = false
                 if let error = error as? NabuError {
                     return Effect(value: .finishedWithError(error))

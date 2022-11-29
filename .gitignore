@@ -122,6 +122,7 @@ node_modules/
 npm-debug.log*
 out/
 output/
+Package.resolved
 pids
 playground.xcworkspace
 profile

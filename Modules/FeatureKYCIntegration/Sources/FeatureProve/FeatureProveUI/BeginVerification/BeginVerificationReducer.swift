@@ -82,7 +82,7 @@ struct BeginVerification: ReducerProtocol {
                     )
                 }
 
-            case let .onMobileAuthInfoFetched(.failure(error)):
+            case .onMobileAuthInfoFetched(.failure(let error)):
                 state.isLoading = false
                 if let error = error as? NabuError {
                     return Effect(value: .finishedWithError(error))

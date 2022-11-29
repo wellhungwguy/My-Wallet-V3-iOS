@@ -322,7 +322,6 @@ let createAccountStepTwoReducer = Reducer<
                     .map(CreateAccountStepTwoAction.walletFetched)
             )
         )
-        
 
     case .walletFetched(.success(.left(.noValue))):
         // do nothing, this for the legacy JS, to be removed

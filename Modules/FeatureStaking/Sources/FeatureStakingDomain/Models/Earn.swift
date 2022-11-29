@@ -291,8 +291,8 @@ extension EarnModel {
 
         public struct Withdraw: Decodable, Hashable {
 
-            public init(`is`: EarnModel.Limit.Withdraw.Is) {
-                self.`is` = `is`
+            public init(is: EarnModel.Limit.Withdraw.Is) {
+                self.is = `is`
             }
 
             public let `is`: Is; public struct Is: Decodable, Hashable {

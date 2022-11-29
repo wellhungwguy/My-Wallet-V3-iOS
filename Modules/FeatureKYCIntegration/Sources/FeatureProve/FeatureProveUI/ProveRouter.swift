@@ -117,14 +117,15 @@ public final class ProveRouter: ProveRouterAPI {
             .dismiss(animated: true)
     }
 
-    func view() -> UIViewController {
+    func view() -> UIViewController
+   {
 
        switch step {
        case .beginProve:
            let view = BeginVerificationView(store: .init(
                initialState: .init(),
                reducer: BeginVerification(
-                   app: self.app,
+                   app: app,
                    mobileAuthInfoService: resolve(),
                    dismissFlow: { [weak self] result in
                        switch result {
@@ -132,36 +133,36 @@ public final class ProveRouter: ProveRouterAPI {
                            self?.onFailed()
                        case .abandoned:
                            self?.onSkip()
-                       case let .success(mobileAuthInfo):
+                       case .success(let mobileAuthInfo):
                            self?.profileInfo.mobileAuthInfo = mobileAuthInfo
                            self?.onNext()
                        }
                    }
                )
-           )).app(self.app)
+           )).app(app)
            let viewController = UIHostingController(rootView: view)
 
            return viewController
 
        case .enterInfo:
            let reducer = EnterInformation(
-            app: app,
-            prefillInfoService: resolve(),
-            dismissFlow: { [weak self] result in
+               app: app,
+               prefillInfoService: resolve(),
+               dismissFlow: { [weak self] result in
                 switch result {
                 case .failure:
                     self?.onFailed()
                 case .abandoned:
                     self?.onSkip()
-                case let .success(prefillInfo):
+                case .success(let prefillInfo):
                     self?.profileInfo.prefillInfo = prefillInfo
                     self?.onDone()
                 }
             }
            )
            let store: StoreOf<EnterInformation> = .init(
-            initialState: .init(phone: profileInfo.mobileAuthInfo?.phone),
-            reducer: reducer
+               initialState: .init(phone: profileInfo.mobileAuthInfo?.phone),
+               reducer: reducer
            )
            let view = EnterInformationView(store: store).app(app)
 

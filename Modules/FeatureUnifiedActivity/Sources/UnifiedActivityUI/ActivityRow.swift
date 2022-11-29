@@ -41,7 +41,6 @@ public struct ActivityRow: View {
         .buttonStyle(SimpleBalanceRowStyle(isSelectable: isSelectable))
     }
 
-
     @ViewBuilder
     @MainActor
     func compositionView(with item: ActivityItem.CompositionView) -> some View {

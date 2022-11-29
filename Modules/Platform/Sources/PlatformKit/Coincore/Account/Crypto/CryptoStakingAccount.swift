@@ -91,7 +91,7 @@ public final class CryptoStakingAccount: CryptoAccount, StakingAccount {
         self.priceService = priceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
 
-        subscription = [
+        self.subscription = [
             earn.limits().mapToVoid(),
             earn.eligibility().mapToVoid(),
             earn.userRates().mapToVoid(),

@@ -654,7 +654,7 @@ final class KYCRouter: KYCRouterAPI {
             return
         }
 
-        self.isNewAddressSearchAndProveFlowEnabled(
+        isNewAddressSearchAndProveFlowEnabled(
             page: startingPage,
             proveFlowFailed: proveFlowFailed
         ) { [weak self] isNewAddressSearchEnabled, shouldShowProveFlow in
@@ -899,8 +899,8 @@ extension KYCRouter {
     private func isNewAddressSearchAndProveFlowEnabled(
         page: KYCPageType,
         proveFlowFailed: Bool,
-        onComplete: @escaping (Bool, Bool) -> Void)
-    {
+        onComplete: @escaping (Bool, Bool) -> Void
+    ) {
         Task(priority: .userInitiated) { @MainActor in
             var isNewAddressSearchEnabled: Bool?
             if page == .address {
@@ -913,7 +913,7 @@ extension KYCRouter {
             }
 
             var isProveEnabled: Bool?
-            if !proveFlowFailed && (page == .profileNew || page == .profile) {
+            if !proveFlowFailed, page == .profileNew || page == .profile {
                 isProveEnabled = try? await app.publisher(
                     for: blockchain.app.configuration.kyc.integration.prove.is.enabled,
                     as: Bool.self

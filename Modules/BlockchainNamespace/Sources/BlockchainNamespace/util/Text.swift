@@ -70,11 +70,11 @@ extension InterpolatedText {
         var tokens: [Token] = []
 
         public init(stringLiteral value: String) {
-            tokens = [.literal(value)]
+            self.tokens = [.literal(value)]
         }
 
         public init(stringInterpolation: Self) {
-            tokens = stringInterpolation.tokens
+            self.tokens = stringInterpolation.tokens
         }
     }
 
@@ -83,7 +83,7 @@ extension InterpolatedText {
         var tokens: [Token] = []
 
         public init(literalCapacity: Int, interpolationCount: Int) {
-            tokens = []
+            self.tokens = []
             tokens.reserveCapacity(literalCapacity + interpolationCount)
         }
 
@@ -100,7 +100,7 @@ extension InterpolatedText {
 
         @Published var string: Result<String, Error>?
 
-        init() { }
+        init() {}
 
         func query(_ tokens: [Token], on app: AppProtocol, in context: Tag.Context) {
 
