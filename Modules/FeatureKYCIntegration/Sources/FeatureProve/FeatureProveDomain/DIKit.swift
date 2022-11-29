@@ -21,5 +21,11 @@ extension DependencyContainer {
                 repository: DIKit.resolve()
             )
         }
+
+        factory { () -> PrefillInfoServiceAPI in
+            PrefillInfoService(
+                repository: DIKit.resolve()
+            )
+        }
     }
 }

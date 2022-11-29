@@ -54,7 +54,7 @@ public protocol AddressSearchFlowPresenterAPI {
 }
 
 public protocol KYCProveFlowPresenterAPI {
-    func presentKYCProveFlow(
+    func presentFlow(
     ) -> AnyPublisher<KYCProveResult, Never>
 }
 
@@ -114,6 +114,7 @@ final class KYCRouter: KYCRouterAPI {
 
     private var addressSearchFlowPresenter: AddressSearchFlowPresenterAPI
     private var proveFlowPresenter: KYCProveFlowPresenterAPI
+    private var proveFlowFailed = false
 
     /// KYC finsihed with `tier1` in-progress / approved
     var tier1Finished: Observable<Void> {
@@ -407,7 +408,8 @@ final class KYCRouter: KYCRouterAPI {
                     )
 
                     self.isNewAddressSearchAndProveFlowEnabled(
-                        page: nextPage
+                        page: nextPage,
+                        proveFlowFailed: self.proveFlowFailed
                     ) { isNewAddressSearchEnabled, shouldShowProveFlow in
                         if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
                             self.presentInformationController(informationController)
@@ -424,10 +426,10 @@ final class KYCRouter: KYCRouterAPI {
                             if let navController = self.navController {
                                 navController.dismiss(animated: true) {
                                     self.navController = nil
-                                    self.presentKYCProveFlow()
+                                    self.presentKYCProveFlow(page: nextPage)
                                 }
                             } else {
-                                self.presentKYCProveFlow()
+                                self.presentKYCProveFlow(page: nextPage)
                             }
                         } else {
                             self.safePushInNavController(controller)
@@ -466,18 +468,19 @@ final class KYCRouter: KYCRouterAPI {
             .store(in: &bag)
     }
 
-    private func presentKYCProveFlow() {
+    private func presentKYCProveFlow(page: KYCPageType) {
         proveFlowPresenter
-            .presentKYCProveFlow()
+            .presentFlow()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] addressResult in
                 switch addressResult {
                 case .success:
-                    self?.handle(event: .nextPageFromPageType(.accountStatus, nil))
+                    self?.handle(event: .nextPageFromPageType(.verifyIdentity, nil))
                 case .abandoned:
                     self?.stop()
                 case .failure:
-                    self?.handle(event: .nextPageFromPageType(.address, nil))
+                    self?.proveFlowFailed = true
+                    self?.handle(event: .nextPageFromPageType(.states, nil))
                 }
             })
             .store(in: &bag)
@@ -652,7 +655,8 @@ final class KYCRouter: KYCRouterAPI {
         }
 
         self.isNewAddressSearchAndProveFlowEnabled(
-            page: startingPage
+            page: startingPage,
+            proveFlowFailed: proveFlowFailed
         ) { [weak self] isNewAddressSearchEnabled, shouldShowProveFlow in
 
             guard let self else { return }
@@ -674,7 +678,7 @@ final class KYCRouter: KYCRouterAPI {
                 return
             }
             if shouldShowProveFlow {
-                self.presentKYCProveFlow()
+                self.presentKYCProveFlow(page: startingPage)
                 return
             }
             controller = self.pageFactory.createFrom(
@@ -894,6 +898,7 @@ extension KYCRouter {
 
     private func isNewAddressSearchAndProveFlowEnabled(
         page: KYCPageType,
+        proveFlowFailed: Bool,
         onComplete: @escaping (Bool, Bool) -> Void)
     {
         Task(priority: .userInitiated) { @MainActor in
@@ -908,7 +913,7 @@ extension KYCRouter {
             }
 
             var isProveEnabled: Bool?
-            if page == .profileNew || page == .profile {
+            if !proveFlowFailed && (page == .profileNew || page == .profile) {
                 isProveEnabled = try? await app.publisher(
                     for: blockchain.app.configuration.kyc.integration.prove.is.enabled,
                     as: Bool.self

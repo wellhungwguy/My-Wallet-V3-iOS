@@ -164,7 +164,7 @@ extension DependencyContainer {
 
         factory {
             ProveRouter(
-                topMostViewControllerProvider: DIKit.resolve()
+                topViewController: DIKit.resolve()
             ) as FeatureProveDomain.ProveRouterAPI
         }
 

@@ -46,3 +46,54 @@ extension LocalizationConstants {
         }
     }
 }
+
+extension LocalizationConstants {
+    public enum EnterInformation {
+
+        static let title = NSLocalizedString(
+            "Verify your account",
+            comment: "Enter Personal Information: Title"
+        )
+
+        static let loadingTitle = NSLocalizedString(
+            "Verifying your information",
+            comment: "Enter Personal Information: Verifying your information loading"
+        )
+
+        enum Body {
+
+            static let title = NSLocalizedString(
+                "Enter your information",
+                comment: "Enter Personal Information: Body title"
+            )
+
+            static let subtitle = NSLocalizedString(
+                "Please add your date of birth.",
+                comment: "Enter Personal Information: Body subtitle"
+            )
+        }
+
+        enum Buttons {
+
+            static let continueTitle = NSLocalizedString(
+                "Continue",
+                comment: "Enter Personal Information: Continue Button"
+            )
+        }
+    }
+}
+
+extension LocalizationConstants.EnterInformation.Body {
+    public enum Form {
+
+        static let dateOfBirthInputTitle = NSLocalizedString(
+            "Date of birth",
+            comment: "Enter Personal Information: Date Of Birth Input Title"
+        )
+
+        static let dateOfBirthInputHint = NSLocalizedString(
+            "You must be 18 years or older.",
+            comment: "Enter Personal Information: Date Of Birth Input Hint"
+        )
+    }
+}

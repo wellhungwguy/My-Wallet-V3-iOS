@@ -13,49 +13,42 @@ struct BeginVerificationView: View {
     private typealias LocalizedString = LocalizationConstants.BeginVerification
 
     @Environment(\.openURL) var openURL
-
-    let store: StoreOf<BeginVerification>
     @ObservedObject private var viewStore: ViewStore<BeginVerification.State, BeginVerification.Action>
 
     init(store: StoreOf<BeginVerification>) {
-        self.store = store
         self.viewStore = ViewStore(store)
     }
 
     var body: some View {
-        WithViewStore(store) { viewStore in
-            PrimaryNavigationView {
-                Group {
-                    if viewStore.isLoading {
-                        LoadingStateView(title: "")
-                    } else if let uxError = viewStore.uxError {
-                        makeError(uxError: uxError)
-                    } else {
-                        content
+        Group {
+            if viewStore.isLoading {
+                LoadingStateView(title: "")
+            } else if let uxError = viewStore.uxError {
+                makeError(uxError: uxError)
+            } else {
+                content
+            }
+        }
+        .primaryNavigation(
+            title: viewStore.title,
+            trailing: {
+                if viewStore.uxError == nil {
+                    IconButton(icon: .closeCirclev2) {
+                        viewStore.send(.onClose)
                     }
-                }
-                .primaryNavigation(
-                    title: viewStore.title,
-                    trailing: {
-                        if viewStore.uxError == nil {
-                            IconButton(icon: .closeCirclev2) {
-                                viewStore.send(.onClose)
-                            }
-                            .frame(width: 24.pt, height: 24.pt)
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                )
-                .onAppear {
-                    viewStore.send(.onAppear)
+                    .frame(width: 24.pt, height: 24.pt)
+                } else {
+                    EmptyView()
                 }
             }
+        )
+        .onAppear {
+            viewStore.send(.onAppear)
         }
     }
 
     private var content: some View {
-        WithViewStore(store) { viewStore in
+        Group {
             GeometryReader { geometry in
                 ScrollView {
                     VStack(spacing: Spacing.padding3) {
@@ -100,18 +93,29 @@ struct BeginVerificationView: View {
     }
 
     private func makeError(uxError: UX.Error) -> some View {
-        WithViewStore(store) { viewStore in
-            ErrorView(
-                ux: uxError,
-                dismiss: {
-                    viewStore.send(.onDismissError)
-                }
-            )
-        }
+        ErrorView(
+            ux: uxError,
+            dismiss: {
+                viewStore.send(.onDismissError)
+            }
+        )
     }
 
     private func openTermsUrl() {
         guard let termsUrl = viewStore.termsUrl else { return }
         openURL(termsUrl)
+    }
+}
+
+struct BeginVerificationView_Previews: PreviewProvider {
+
+    static var previews: some View {
+        let app: AppProtocol = resolve()
+        Group {
+            BeginVerificationView(store: .init(
+                initialState: .init(),
+                reducer: BeginVerification.preview(app: app)
+            )).app(app)
+        }
     }
 }

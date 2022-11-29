@@ -246,9 +246,10 @@ final class KYCProveFlowPresenter: FeatureKYCUI.KYCProveFlowPresenterAPI {
         self.router = router
     }
 
-    func presentKYCProveFlow(
+    func presentFlow(
     ) -> AnyPublisher<KYCProveResult, Never> {
-        router.presentProveFlow()
+        router.presentFlow()
+            .eraseToEffect()
             .map { KYCProveResult(result: $0) }
             .eraseToAnyPublisher()
     }

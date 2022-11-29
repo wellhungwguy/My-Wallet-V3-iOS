@@ -24,6 +24,12 @@ extension DependencyContainer {
             return FlowKYCInfoClient(networkAdapter: adapter, requestBuilder: builder)
         }
 
+        factory { () -> PrefillInfoClientAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return PrefillInfoClient(networkAdapter: adapter, requestBuilder: builder)
+        }
+
         // MARK: - Repositories
 
         factory { () -> MobileAuthInfoRepositoryAPI in
@@ -34,6 +40,12 @@ extension DependencyContainer {
 
         factory { () -> FlowKYCInfoRepositoryAPI in
             FlowKYCInfoRepository(
+                client: DIKit.resolve()
+            )
+        }
+
+        factory { () -> PrefillInfoRepositoryAPI in
+            PrefillInfoRepository(
                 client: DIKit.resolve()
             )
         }

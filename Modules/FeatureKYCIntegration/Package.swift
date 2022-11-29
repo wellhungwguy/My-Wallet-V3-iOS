@@ -27,8 +27,10 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Blockchain"),
+        .package(path: "../FeatureForm"),
         .package(path: "../Network"),
-        .package(path: "../Test")
+        .package(path: "../Test"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -43,7 +45,8 @@ let package = Package(
         .target(
             name: "FeatureProveDomain",
             dependencies: [
-                .product(name: "Blockchain", package: "Blockchain")
+                .product(name: "Blockchain", package: "Blockchain"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm")
             ],
             path: "./Sources/FeatureProve/FeatureProveDomain"
         ),
@@ -52,7 +55,10 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureProveDomain"),
                 .product(name: "Blockchain", package: "Blockchain"),
-                .product(name: "BlockchainUI", package: "Blockchain")
+                .product(name: "BlockchainUI", package: "Blockchain"),
+                .product(name: "FeatureFormDomain", package: "FeatureForm"),
+                .product(name: "FeatureFormUI", package: "FeatureForm"),
+                .product(name: "UIComponents", package: "UIComponents")
             ],
             path: "./Sources/FeatureProve/FeatureProveUI"
         ),

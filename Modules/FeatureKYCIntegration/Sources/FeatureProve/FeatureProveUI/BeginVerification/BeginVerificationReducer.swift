@@ -2,6 +2,7 @@
 
 import BlockchainNamespace
 import ComposableArchitecture
+import DIKit
 import Errors
 import FeatureProveDomain
 import Localization
@@ -9,14 +10,20 @@ import Localization
 struct BeginVerification: ReducerProtocol {
     private typealias LocalizedString = LocalizationConstants.BeginVerification
 
+    enum VerificationResult: Equatable {
+        case abandoned
+        case failure
+        case success(mobileAuthInfo: MobileAuthInfo?)
+    }
+
     let app: AppProtocol
     let mobileAuthInfoService: MobileAuthInfoServiceAPI
-    let dismissFlow: (VerificationResult) -> Void
+    let dismissFlow: (BeginVerification.VerificationResult) -> Void
 
     init(
         app: AppProtocol,
         mobileAuthInfoService: MobileAuthInfoServiceAPI,
-        dismissFlow: @escaping (VerificationResult) -> Void
+        dismissFlow: @escaping (BeginVerification.VerificationResult) -> Void
     ) {
         self.app = app
         self.mobileAuthInfoService = mobileAuthInfoService
@@ -27,7 +34,6 @@ struct BeginVerification: ReducerProtocol {
         case onAppear
         case fetchMobileAuthInfo
         case onMobileAuthInfoFetched(TaskResult<MobileAuthInfo?>)
-        case finishedWithSuccess
         case finishedWithError(NabuError?)
         case onClose
         case onContinue
@@ -87,11 +93,8 @@ struct BeginVerification: ReducerProtocol {
             case .onMobileAuthInfoFetched(.success(let mobileAuthInfo)):
                 state.isLoading = false
                 state.mobileAuthInfo = mobileAuthInfo
-                return Effect(value: .finishedWithSuccess)
-
-            case .finishedWithSuccess:
                 return .fireAndForget {
-                    dismissFlow(.success)
+                    dismissFlow(.success(mobileAuthInfo: mobileAuthInfo))
                 }
 
             case .finishedWithError(let error):
@@ -100,8 +103,26 @@ struct BeginVerification: ReducerProtocol {
                 } else {
                     state.uxError = UX.Error(error: nil)
                 }
-                return .none
+                return .fireAndForget {
+                    dismissFlow(.failure)
+                }
             }
         }
     }
+}
+
+extension BeginVerification {
+
+    static func preview(app: AppProtocol) -> BeginVerification {
+        BeginVerification(
+            app: app,
+            mobileAuthInfoService: NoMobileAuthInfoService(),
+            dismissFlow: { _ in }
+        )
+    }
+}
+
+final class NoMobileAuthInfoService: MobileAuthInfoServiceAPI {
+
+    func getMobileAuthInfo() async throws -> MobileAuthInfo? { nil }
 }
