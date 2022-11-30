@@ -131,7 +131,7 @@ extension AsyncContentView where Source.Failure == Never, ErrorView == EmptyView
 }
 
 extension EmptyView {
-    init(ignored: some Any) {
+    public init(ignored: some Any) {
         self = EmptyView()
     }
 }
