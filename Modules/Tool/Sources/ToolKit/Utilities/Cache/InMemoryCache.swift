@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
+import DIKit
 import Extensions
 import Foundation
 
@@ -34,10 +36,39 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
     /// - Parameters:
     ///   - configuration:  A cache configuration.
     ///   - refreshControl: A cache refresh control.
-    public init(
+    public convenience init(
         configuration: CacheConfiguration,
         refreshControl: CacheRefreshControl,
         notificationCenter: NotificationCenter = .default
+    ) {
+        var isInTest: Bool { NSClassFromString("XCTestCase") != nil }
+        if isInTest {
+            self.init(
+                configuration: configuration,
+                refreshControl: refreshControl,
+                notificationCenter: notificationCenter,
+                app: App.preview
+            )
+        } else {
+            self.init(
+                configuration: configuration,
+                refreshControl: refreshControl,
+                notificationCenter: notificationCenter,
+                app: resolve()
+            )
+        }
+    }
+
+    /// Creates an in-memory cache.
+    ///
+    /// - Parameters:
+    ///   - configuration:  A cache configuration.
+    ///   - refreshControl: A cache refresh control.
+    public init(
+        configuration: CacheConfiguration,
+        refreshControl: CacheRefreshControl,
+        notificationCenter: NotificationCenter = .default,
+        app: AppProtocol
     ) {
         self.refreshControl = refreshControl
 
@@ -47,6 +78,19 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
                 .flatMap { [removeAll] _ in removeAll() }
                 .subscribe()
                 .store(in: &cancellables)
+        }
+
+        for flush in configuration.flushEvents {
+            switch flush {
+            case .notification(let event):
+                app.on(event) { [weak self] _ in self?.flush() }
+                    .subscribe()
+                    .store(in: &cancellables)
+            case .binding(let event):
+                app.publisher(for: event)
+                    .sink { [weak self] _ in _ = self?.flush() }
+                    .store(in: &cancellables)
+            }
         }
     }
 
@@ -92,12 +136,16 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
     }
 
     public func removeAll() -> AnyPublisher<Void, Never> {
-        Deferred { [cacheItems] () -> AnyPublisher<Void, Never> in
-            cacheItems.mutate { $0 = [:] }
-
-            return .just(())
+        Deferred { [flush] () -> AnyPublisher<Void, Never> in
+            .just(flush())
         }
         .eraseToAnyPublisher()
+    }
+
+    private func flush() {
+        cacheItems.mutate { o in
+            o.removeAll()
+        }
     }
 
     // MARK: - Private Methods

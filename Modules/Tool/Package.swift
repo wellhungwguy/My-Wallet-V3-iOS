@@ -29,6 +29,7 @@ let package = Package(
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.3.0"
         ),
+        .package(path: "../BlockchainNamespace"),
         .package(path: "../Extensions"),
         .package(path: "../Test")
     ],
@@ -38,7 +39,8 @@ let package = Package(
             dependencies: [
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "BigInt", package: "BigInt"),
-                .product(name: "Extensions", package: "Extensions")
+                .product(name: "Extensions", package: "Extensions"),
+                .product(name: "BlockchainNamespace", package: "BlockchainNamespace")
             ]
         ),
         .target(
