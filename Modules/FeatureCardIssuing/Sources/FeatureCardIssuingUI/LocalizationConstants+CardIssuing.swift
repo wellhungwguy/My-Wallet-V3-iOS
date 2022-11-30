@@ -169,9 +169,14 @@ extension LocalizationConstants.CardIssuing {
                 comment: "Card Issuing Legal Item: Next Button"
             )
 
-            static let accept = NSLocalizedString(
-                "Accept All",
-                comment: "Card Issuing Legal Item: Accept All"
+            static let skip = NSLocalizedString(
+                "Skip All",
+                comment: "Card Issuing Legal Item: Skip All"
+            )
+
+            static let done = NSLocalizedString(
+                "Done",
+                comment: "Card Issuing Legal Item: Done"
             )
         }
 

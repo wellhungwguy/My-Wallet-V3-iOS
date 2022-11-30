@@ -24,7 +24,7 @@ struct AcceptLegalView: View {
             WithViewStore(store) { viewStore in
                 ZStack(alignment: .center) {
                     Text(viewStore.state.current?.displayName ?? "")
-                        .typography(.title3)
+                        .typography(.body2)
                         .padding([.top, .leading], Spacing.padding1)
                     HStack {
                         Spacer()
@@ -38,6 +38,13 @@ struct AcceptLegalView: View {
                 }
                 .padding(.bottom, Spacing.padding2)
             }
+            WithViewStore(store) { viewStore in
+                HStack {
+                    ProgressView(value: viewStore.state.progressPercentage).progressViewStyle(.linear)
+                    Text(viewStore.state.progressCaption).typography(.caption2).foregroundColor(.semantic.muted)
+                }
+            }
+            .padding(Spacing.padding2)
             IfLetStore(
                 store.scope(state: \.current?.url),
                 then: { store in
@@ -54,13 +61,20 @@ struct AcceptLegalView: View {
             )
             WithViewStore(store) { viewStore in
                 HStack(alignment: .center) {
-                    PrimaryButton(
-                        title: viewStore.state.hasNext ? L10n.Button.next : L10n.Button.accept,
-                        isLoading: viewStore.state.accepted == .loading || loading
-                    ) {
-                        viewStore.send(viewStore.state.hasNext ? .next : .accept)
+                    VStack {
+                        if viewStore.state.hasNext {
+                            MinimalButton(title: L10n.Button.skip) {
+                                viewStore.send(.skipAll)
+                            }
+                        }
+                        PrimaryButton(
+                            title: viewStore.state.hasNext ? L10n.Button.next : L10n.Button.done,
+                            isLoading: viewStore.state.accepted == .loading || loading
+                        ) {
+                            viewStore.send(viewStore.state.hasNext ? .next : .accept)
+                        }
+                        .disabled(viewStore.state.accepted == .loading || loading)
                     }
-                    .disabled(viewStore.state.accepted == .loading || loading)
                 }
                 .padding(Spacing.padding2)
                 .onAppear {
@@ -73,3 +87,76 @@ struct AcceptLegalView: View {
         .background(Color.semantic.background.ignoresSafeArea())
     }
 }
+
+extension AcceptLegalState {
+
+    fileprivate var progressPercentage: Float {
+        guard items.isNotEmpty,
+                let current,
+              let currentIndex = items.firstIndex(of: current)
+        else {
+            return .zero
+        }
+
+        return Float(currentIndex + 1) / Float(items.count)
+    }
+
+    fileprivate var progressCaption: String {
+        guard items.isNotEmpty else {
+            return ""
+        }
+
+        guard let current,
+              let currentIndex = items.firstIndex(of: current)
+        else {
+            return "0/\(items.count)"
+        }
+
+        return "\(currentIndex + 1)/\(items.count)"
+    }
+}
+
+#if DEBUG
+struct AcceptLegal_Previews: PreviewProvider {
+    static var previews: some View {
+            AcceptLegalView(
+                store: Store(
+                    initialState: AcceptLegalState(
+                        items: [
+                            LegalItem(
+                                url: URL(string: "https://blockchain.com/")!,
+                                version: 1,
+                                name: "TC",
+                                displayName: "Terms & Conditions",
+                                acceptedVersion: 1
+                            ),
+                            LegalItem(
+                                url: URL(string: "https://blockchain.com/")!,
+                                version: 1,
+                                name: "UC",
+                                displayName: "Not Terms & Conditions",
+                                acceptedVersion: 1
+                            ),
+                            LegalItem(
+                                url: URL(string: "https://blockchain.com/")!,
+                                version: 1,
+                                name: "VC",
+                                displayName: "Not Terms & Conditions either",
+                                acceptedVersion: 1
+                            )
+                        ],
+                        current: LegalItem(
+                            url: URL(string: "https://blockchain.com/")!,
+                            version: 1,
+                            name: "VC",
+                            displayName: "Not Terms & Conditions either",
+                            acceptedVersion: 1
+                        )
+                    ),
+                    reducer: acceptLegalReducer,
+                    environment: .init(mainQueue: .main, legalService: MockServices())
+                )
+            )
+        }
+}
+#endif

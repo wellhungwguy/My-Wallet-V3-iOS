@@ -15,6 +15,7 @@ enum AcceptLegalAction: Equatable, BindableAction {
     case accept
     case acceptResponse(Result<[LegalItem], NabuNetworkError>)
     case binding(BindingAction<AcceptLegalState>)
+    case skipAll
     case close
     case next
     case onAppear
@@ -30,10 +31,11 @@ struct AcceptLegalState: Equatable {
     var error: NabuNetworkError?
 
     init(
-        items: [LegalItem]
+        items: [LegalItem],
+        current: LegalItem? = nil
     ) {
         self.items = items
-        self.current = items.first
+        self.current = current ?? items.first
         self.hasNext = items.count > 1
     }
 }
@@ -85,6 +87,11 @@ let acceptLegalReducer = Reducer<
         }
         state.current = availableItems.first
         state.hasNext = availableItems.count > 1
+        return .none
+    case .skipAll:
+        state.viewed = Set(state.items.map(\.name))
+        state.current = state.items.last
+        state.hasNext = false
         return .none
     case .close:
         return .none
