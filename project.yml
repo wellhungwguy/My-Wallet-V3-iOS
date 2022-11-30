@@ -172,7 +172,7 @@ packages:
     version: 0.42.0
   Intercom:
     url: https://github.com/intercom/intercom-ios.git
-    version: 13.0.0
+    version: 14.0.2
   DIKit:
     url: https://github.com/dchatzieleftheriou-bc/DIKit.git
     branch: safe-property-wrappers-locks

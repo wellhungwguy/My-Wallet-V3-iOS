@@ -109,7 +109,7 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Client.Observe
 
     private func present(_ isEnabled: Bool) {
         if isEnabled {
-            sdk.presentMessenger()
+            sdk.present()
         } else {
             open(url)
         }
