@@ -27,5 +27,11 @@ extension DependencyContainer {
                 repository: DIKit.resolve()
             )
         }
+
+        factory { () -> ConfirmInfoServiceAPI in
+            ConfirmInfoService(
+                repository: DIKit.resolve()
+            )
+        }
     }
 }

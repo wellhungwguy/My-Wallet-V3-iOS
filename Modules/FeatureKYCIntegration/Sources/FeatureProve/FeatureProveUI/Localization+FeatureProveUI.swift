@@ -97,3 +97,105 @@ extension LocalizationConstants.EnterInformation.Body {
         )
     }
 }
+
+extension LocalizationConstants {
+    public enum ConfirmInformation {
+
+        static let title = NSLocalizedString(
+            "Verify your account",
+            comment: "Confirm Personal Information: Title"
+        )
+
+        static let loadingTitle = NSLocalizedString(
+            "Verifying your account",
+            comment: "Confirm Personal Information: Verifying your account loading"
+        )
+
+        enum Body {
+
+            static let title = NSLocalizedString(
+                "Confirm your information",
+                comment: "Confirm Personal Information: Body title"
+            )
+        }
+
+        enum Buttons {
+
+            static let continueTitle = NSLocalizedString(
+                "Continue",
+                comment: "Confirm Personal Information: Continue Button"
+            )
+        }
+    }
+}
+
+extension LocalizationConstants.ConfirmInformation.Body {
+    public enum Form {
+
+        static let firstNameInputTitle = NSLocalizedString(
+            "First name",
+            comment: "Confirm Personal Information: First Name Input Title"
+        )
+
+        static let lastNameInputTitle = NSLocalizedString(
+            "Last name",
+            comment: "Confirm Personal Information: Last Name Input Title"
+        )
+
+        static let addressNameInputTitle = NSLocalizedString(
+            "Address",
+            comment: "Confirm Personal Information: Address Input Title"
+        )
+
+        static let dateOfBirthInputTitle = NSLocalizedString(
+            "Date of birth",
+            comment: "Confirm Personal Information: Date Of Birth Input Title"
+        )
+
+        static let dateOfBirthInputHint = NSLocalizedString(
+            "You must be 18 years or older.",
+            comment: "Confirm Personal Information: Date Of Birth Input Hint"
+        )
+
+        static let phoneInputTitle = NSLocalizedString(
+            "Phone number",
+            comment: "Confirm Personal Information: Phone Input Title"
+        )
+
+        static let phoneInputHint = NSLocalizedString(
+            "This information cannot be modified",
+            comment: "Confirm Personal Information: Phone Input Hint"
+        )
+    }
+}
+
+extension LocalizationConstants {
+    public enum SuccessfullyVerified {
+
+        static let title = NSLocalizedString(
+            "Verify your account",
+            comment: "Successfully Verified: Title"
+        )
+
+        enum Body {
+
+            static let title = NSLocalizedString(
+                "Successfully verified",
+                comment: "Successfully Verified: Body title"
+            )
+
+            static let subtitle = NSLocalizedString(
+                "Congratulations! We successfully verified your identity. You can now buy, sell and swap cryptocurrencies at Blockchain.com",
+                comment: "Successfully Verified: Body subtitle"
+            )
+        }
+
+        enum Buttons {
+
+            static let finishTitle = NSLocalizedString(
+                "Get Started",
+                comment: "Successfully Verified: Get started Button"
+            )
+        }
+    }
+}

@@ -19,8 +19,10 @@ public struct PrefillInfoRepository: PrefillInfoRepositoryAPI {
             .getPrefillInfo(dateOfBirth: dateOfBirth)
             .map { response in
                 PrefillInfo(
-                    fullName: response.fullName,
-                    dateOfBirth: dateOfBirth,
+                    firstName: response.firstName,
+                    lastName: response.lastName,
+                    addresses: response.addresses,
+                    dateOfBirth: response.dateOfBirth,
                     phone: response.phone
                 )
             }

@@ -9,6 +9,11 @@ public enum PrimaryFormSubmitButtonMode {
     case submitButtonAlwaysEnabled // open ended answers are validated and shown in red if not valid
 }
 
+public enum SubmitButtonLocation {
+    case inTheEndOfTheForm // only visible when user scrolls to the end of form
+    case attachedToBottomOfScreen // always visible in the bottom of screen
+}
+
 public typealias PrimaryFormFieldConfiguration = (FormAnswer) -> FieldConfiguation
 public let defaultFieldConfiguration: PrimaryFormFieldConfiguration = { _ in .init() }
 
@@ -20,6 +25,7 @@ public struct PrimaryForm<Header: View>: View {
     private let submitActionLoading: Bool
     private let submitAction: () -> Void
     private let submitButtonMode: PrimaryFormSubmitButtonMode
+    private let submitButtonLocation: SubmitButtonLocation
     private let headerIcon: () -> Header
     private let fieldConfiguration: PrimaryFormFieldConfiguration
 
@@ -29,6 +35,7 @@ public struct PrimaryForm<Header: View>: View {
         submitActionLoading: Bool,
         submitAction: @escaping () -> Void,
         submitButtonMode: PrimaryFormSubmitButtonMode = .onlyEnabledWhenAllAnswersValid,
+        submitButtonLocation: SubmitButtonLocation = .inTheEndOfTheForm,
         fieldConfiguration: @escaping PrimaryFormFieldConfiguration = defaultFieldConfiguration,
         @ViewBuilder headerIcon: @escaping () -> Header
     ) {
@@ -37,11 +44,20 @@ public struct PrimaryForm<Header: View>: View {
         self.submitActionLoading = submitActionLoading
         self.submitAction = submitAction
         self.submitButtonMode = submitButtonMode
+        self.submitButtonLocation = submitButtonLocation
         self.fieldConfiguration = fieldConfiguration
         self.headerIcon = headerIcon
     }
 
     public var body: some View {
+        let isSubmitButtonDisabled: Bool = {
+            switch submitButtonMode {
+            case .onlyEnabledWhenAllAnswersValid:
+                return !form.nodes.isValidForm
+            case .submitButtonAlwaysEnabled:
+                return false
+            }
+        }()
         ScrollView {
             LazyVStack(spacing: Spacing.padding4) {
 
@@ -68,31 +84,10 @@ public struct PrimaryForm<Header: View>: View {
                         fieldConfiguration: fieldConfiguration
                     )
                 }
-
-                let isSubmitButtonDisabled: Bool = {
-                    switch submitButtonMode {
-                    case .onlyEnabledWhenAllAnswersValid:
-                        return !form.nodes.isValidForm
-                    case .submitButtonAlwaysEnabled:
-                        return false
-                    }
-                }()
-                PrimaryButton(
-                    title: submitActionTitle,
-                    isLoading: submitActionLoading,
-                    action: {
-                        switch submitButtonMode {
-                        case .onlyEnabledWhenAllAnswersValid:
-                            submitAction()
-                        case .submitButtonAlwaysEnabled:
-                            showAnswersState = true
-                            if form.nodes.isValidForm {
-                                submitAction()
-                            }
-                        }
-                    }
-                )
-                .disabled(isSubmitButtonDisabled)
+                if case .inTheEndOfTheForm = submitButtonLocation {
+                    primaryButton
+                    .disabled(isSubmitButtonDisabled)
+                }
             }
             .padding(Spacing.padding3)
             .background(Color.semantic.background)
@@ -101,6 +96,35 @@ public struct PrimaryForm<Header: View>: View {
                 stopEditing()
             }
         }
+        if case .attachedToBottomOfScreen = submitButtonLocation {
+            primaryButton
+            .disabled(isSubmitButtonDisabled)
+            .frame(alignment: .bottom)
+            .padding([.horizontal, .bottom])
+            .background(
+                Rectangle()
+                    .fill(.white)
+                    .shadow(color: .white, radius: 3, x: 0, y: -15)
+            )
+        }
+    }
+
+    private var primaryButton: some View {
+        PrimaryButton(
+            title: submitActionTitle,
+            isLoading: submitActionLoading,
+            action: {
+                switch submitButtonMode {
+                case .onlyEnabledWhenAllAnswersValid:
+                    submitAction()
+                case .submitButtonAlwaysEnabled:
+                    showAnswersState = true
+                    if form.nodes.isValidForm {
+                        submitAction()
+                    }
+                }
+            }
+        )
     }
 }
 

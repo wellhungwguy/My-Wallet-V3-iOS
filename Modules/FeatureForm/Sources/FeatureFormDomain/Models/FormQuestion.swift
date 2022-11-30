@@ -50,6 +50,7 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
 
     public let id: String
     public let type: QuestionType
+    public let isEnabled: Bool?
     public let isDropdown: Bool?
     public let text: String
     public let instructions: String?
@@ -61,6 +62,7 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
     public init(
         id: String,
         type: QuestionType,
+        isEnabled: Bool? = true,
         isDropdown: Bool?,
         text: String,
         instructions: String?,
@@ -71,6 +73,7 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
     ) {
         self.id = id
         self.type = type
+        self.isEnabled = isEnabled
         self.isDropdown = isDropdown
         self.text = text
         self.instructions = instructions
@@ -85,6 +88,7 @@ public struct FormQuestion: Codable, Identifiable, Equatable {
             FormAnswer(
                 id: id,
                 type: type.answer,
+                isEnabled: isEnabled,
                 text: nil,
                 children: children,
                 input: input,

@@ -60,7 +60,10 @@ let package = Package(
                 .product(name: "FeatureFormUI", package: "FeatureForm"),
                 .product(name: "UIComponents", package: "UIComponents")
             ],
-            path: "./Sources/FeatureProve/FeatureProveUI"
+            path: "./Sources/FeatureProve/FeatureProveUI",
+            resources: [
+                .copy("Media.xcassets")
+            ]
         ),
         .testTarget(
             name: "FeatureProveTests",

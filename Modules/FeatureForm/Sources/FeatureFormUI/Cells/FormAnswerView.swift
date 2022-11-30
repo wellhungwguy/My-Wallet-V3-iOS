@@ -36,6 +36,8 @@ struct FormOpenEndedAnswerView: View {
     @Binding var showAnswerState: Bool
     @State var isFirstResponder: Bool = false
     let fieldConfiguration: PrimaryFormFieldConfiguration
+    var isEnabled: Bool { answer.isEnabled ?? true }
+    var canHaveDisabledStyle: Bool { answer.canHaveDisabledStyle ?? true }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -49,6 +51,7 @@ struct FormOpenEndedAnswerView: View {
                 text: $answer.input ?? "",
                 isFirstResponder: $isFirstResponder,
                 shouldResignFirstResponderOnReturn: true,
+                canHaveDisabledStyle: canHaveDisabledStyle,
                 placeholder: answer.hint,
                 state: showAnswerState ? answer.inputState : .default,
                 configuration: { textField in
@@ -56,6 +59,7 @@ struct FormOpenEndedAnswerView: View {
                     textField.autocorrectionType = .init(type: config.textAutocorrectionType)
                 }
             )
+            .disabled(!isEnabled)
             .accessibilityIdentifier(answer.id)
         }
     }

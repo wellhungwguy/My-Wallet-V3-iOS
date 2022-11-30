@@ -48,6 +48,8 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
 
     public let id: String
     public let type: AnswerType
+    public let isEnabled: Bool?
+    public let canHaveDisabledStyle: Bool?
     public let validation: Validation?
     public let text: String?
     public var children: [FormAnswer]?
@@ -60,6 +62,8 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
     public init(
         id: String,
         type: AnswerType,
+        isEnabled: Bool? = true,
+        canHaveDisabledStyle: Bool? = true,
         validation: Validation? = nil,
         text: String? = nil,
         children: [FormAnswer]? = nil,
@@ -71,6 +75,8 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
     ) {
         self.id = id
         self.type = type
+        self.isEnabled = isEnabled
+        self.canHaveDisabledStyle = canHaveDisabledStyle
         self.validation = validation
         self.text = text
         self.children = children

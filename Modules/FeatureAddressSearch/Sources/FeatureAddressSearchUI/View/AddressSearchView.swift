@@ -81,6 +81,7 @@ struct AddressSearchView: View {
             SearchBar(
                 text: viewStore.binding(\.$searchText),
                 isFirstResponder: .constant(true),
+                hasAutocorrection: false,
                 cancelButtonText: "",
                 placeholder: L10n.SearchAddress.SearchBar.Placeholder.text
             )

@@ -49,6 +49,7 @@ public struct Input<Trailing: View>: View {
     private let onReturnTapped: () -> Void
     private let isEnabledAutomaticFirstResponder: Bool
     private let shouldResignFirstResponderOnReturn: Bool
+    private let canHaveDisabledStyle: Bool
 
     @Environment(\.isEnabled) private var isEnabled
 
@@ -72,6 +73,7 @@ public struct Input<Trailing: View>: View {
         isFirstResponder: Binding<Bool>,
         isEnabledAutomaticFirstResponder: Bool = true,
         shouldResignFirstResponderOnReturn: Bool = false,
+        canHaveDisabledStyle: Bool = true,
         label: String? = nil,
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
@@ -87,6 +89,7 @@ public struct Input<Trailing: View>: View {
         _isFirstResponder = isFirstResponder
         self.isEnabledAutomaticFirstResponder = isEnabledAutomaticFirstResponder
         self.shouldResignFirstResponderOnReturn = shouldResignFirstResponderOnReturn
+        self.canHaveDisabledStyle = canHaveDisabledStyle
         self.label = label
         self.subText = subText
         self.subTextStyle = subTextStyle
@@ -189,6 +192,7 @@ extension Input where Trailing == EmptyView {
         isFirstResponder: Binding<Bool>,
         isEnabledAutomaticFirstResponder: Bool = true,
         shouldResignFirstResponderOnReturn: Bool = false,
+        canHaveDisabledStyle: Bool = true,
         label: String? = nil,
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
@@ -204,6 +208,7 @@ extension Input where Trailing == EmptyView {
             isFirstResponder: isFirstResponder,
             isEnabledAutomaticFirstResponder: isEnabledAutomaticFirstResponder,
             shouldResignFirstResponderOnReturn: shouldResignFirstResponderOnReturn,
+            canHaveDisabledStyle: canHaveDisabledStyle,
             label: label,
             subText: subText,
             subTextStyle: subTextStyle,
@@ -253,7 +258,7 @@ extension Input {
     // MARK: Colors
 
     private var backgroundColor: Color {
-        if !isEnabled {
+        if !isEnabled, canHaveDisabledStyle {
             return Color(light: .semantic.medium, dark: .palette.dark800)
         } else {
             return .semantic.background
@@ -263,7 +268,7 @@ extension Input {
     private var borderColor: Color {
         if let color = state.borderColor {
             return color
-        } else if !isEnabled {
+        } else if !isEnabled, canHaveDisabledStyle {
             return .semantic.medium
         } else if isFirstResponder {
             return .semantic.primary
@@ -273,7 +278,7 @@ extension Input {
     }
 
     private var textColor: Color {
-        if !isEnabled {
+        if !isEnabled, canHaveDisabledStyle {
             return placeholderColor
         } else {
             return .semantic.title

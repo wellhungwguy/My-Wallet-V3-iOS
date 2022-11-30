@@ -27,6 +27,8 @@ public final class ProveRouter: ProveRouterAPI {
     enum Step: Int {
         case beginProve = 1
         case enterInfo = 2
+        case confirmInfo = 3
+        case verificationSuccess = 4
 
         mutating func next() {
             if let step = Step(rawValue: rawValue + 1) {
@@ -79,7 +81,7 @@ public final class ProveRouter: ProveRouterAPI {
             )
     }
 
-   @objc func onBack() {
+   func onBack() {
         step.previous()
         topViewController
             .topMostViewController?
@@ -87,19 +89,16 @@ public final class ProveRouter: ProveRouterAPI {
             .popViewController(animated: true)
     }
 
-    @objc func onFailed() {
-        exitFlow(result: .failure)
+    func onFailed(result: VerificationResult.Failure = .generic) {
+        exitFlow(result: .failure(result))
     }
 
-    @objc func onSkip() {
+     func onSkip() {
         exitFlow(result: .abandoned)
      }
 
-    @objc
     func onDone() {
-        topViewController
-            .topMostViewController?
-            .dismiss(animated: true)
+        exitFlow(result: .success)
     }
 
     private func exitFlow(result: VerificationResult) {
@@ -146,9 +145,9 @@ public final class ProveRouter: ProveRouterAPI {
 
        case .enterInfo:
            let reducer = EnterInformation(
-               app: app,
-               prefillInfoService: resolve(),
-               dismissFlow: { [weak self] result in
+            app: app,
+            prefillInfoService: resolve(),
+            dismissFlow: { [weak self] result in
                 switch result {
                 case .failure:
                     self?.onFailed()
@@ -156,15 +155,61 @@ public final class ProveRouter: ProveRouterAPI {
                     self?.onSkip()
                 case .success(let prefillInfo):
                     self?.profileInfo.prefillInfo = prefillInfo
-                    self?.onDone()
+                    self?.onNext()
                 }
             }
            )
            let store: StoreOf<EnterInformation> = .init(
-               initialState: .init(phone: profileInfo.mobileAuthInfo?.phone),
-               reducer: reducer
+            initialState: .init(phone: profileInfo.mobileAuthInfo?.phone),
+            reducer: reducer
            )
            let view = EnterInformationView(store: store).app(app)
+
+           let viewController = UIHostingController(rootView: view)
+
+           return viewController
+
+       case .confirmInfo:
+           let reducer = ConfirmInformation(
+            app: app,
+            confirmInfoService: resolve(),
+            dismissFlow: { [weak self] result in
+                switch result {
+                case .failure:
+                    self?.onFailed(result: .verification)
+                case .abandoned:
+                    self?.onSkip()
+                case .success:
+                    self?.onNext()
+                }
+            }
+           )
+           let store: StoreOf<ConfirmInformation> = .init(
+            initialState: .init(
+                firstName: profileInfo.prefillInfo?.firstName,
+                lastName: profileInfo.prefillInfo?.lastName,
+                addresses: profileInfo.prefillInfo?.addresses ?? [],
+                selectedAddress: profileInfo.prefillInfo?.addresses.first,
+                dateOfBirth: profileInfo.prefillInfo?.dateOfBirth,
+                phone: profileInfo.mobileAuthInfo?.phone
+            ),
+            reducer: reducer
+           )
+           let view = ConfirmInformationView(store: store).app(app)
+
+           let viewController = UIHostingController(rootView: view)
+
+           return viewController
+
+       case .verificationSuccess:
+           let reducer = SuccessfullyVerified() { [weak self] in
+               self?.onDone()
+           }
+           let store: StoreOf<SuccessfullyVerified> = .init(
+            initialState: .init(),
+            reducer: reducer
+           )
+           let view = SuccessfullyVerifiedView(store: store).app(app)
 
            let viewController = UIHostingController(rootView: view)
 

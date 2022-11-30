@@ -41,9 +41,13 @@ public enum UserAddressSearchResult {
 }
 
 public enum KYCProveResult {
+    public enum Failure {
+        case generic
+        case verification
+    }
     case success
     case abandoned
-    case failure
+    case failure(Failure)
 }
 
 public protocol AddressSearchFlowPresenterAPI {
@@ -475,15 +479,38 @@ final class KYCRouter: KYCRouterAPI {
             .sink(receiveValue: { [weak self] addressResult in
                 switch addressResult {
                 case .success:
-                    self?.handle(event: .nextPageFromPageType(.verifyIdentity, nil))
+                    self?.handle(event: .nextPageFromPageType(.accountStatus, nil))
                 case .abandoned:
                     self?.stop()
-                case .failure:
+                case .failure(let failure):
                     self?.proveFlowFailed = true
-                    self?.handle(event: .nextPageFromPageType(.states, nil))
+                    switch failure {
+                    case .generic:
+                        self?.handle(event: .nextPageFromPageType(.states, nil))
+                    case .verification:
+                        self?.presentVerification()
+                    }
                 }
             })
             .store(in: &bag)
+    }
+
+    private func presentVerification() {
+        tiersService.tiers
+            .asSingle()
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] response in
+                    guard let self else { return }
+                    if response.isTier1Approved {
+                        self.handle(event: .nextPageFromPageType(.confirmPhone, nil))
+                    } else {
+                        self.handle(event: .nextPageFromPageType(.states, nil))
+                    }
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     func presentInformationController(_ controller: KYCInformationController) {

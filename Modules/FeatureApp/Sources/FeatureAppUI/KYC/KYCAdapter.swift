@@ -258,12 +258,17 @@ final class KYCProveFlowPresenter: FeatureKYCUI.KYCProveFlowPresenterAPI {
 extension KYCProveResult {
     fileprivate init(result: VerificationResult) {
         switch result {
-        case .abandoned:
-            self = .abandoned
-        case .failure:
-            self = .failure
         case .success:
             self = .success
+        case .abandoned:
+            self = .abandoned
+        case .failure(let failure):
+            switch failure {
+            case .generic:
+                self = .failure(.generic)
+            case .verification:
+                self = .failure(.verification)
+            }
         }
     }
 }

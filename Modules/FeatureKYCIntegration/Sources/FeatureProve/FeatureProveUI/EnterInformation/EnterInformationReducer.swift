@@ -158,7 +158,7 @@ struct EnterInformation: ReducerProtocol {
 
 extension FormQuestion {
 
-    static func personalInfoQuestions(dateOfBirth: Date?) -> [FormQuestion] {
+    fileprivate static func personalInfoQuestions(dateOfBirth: Date?) -> [FormQuestion] {
         [
             FormQuestion(
                 id: EnterInformation.InputField.dateOfBirth.rawValue,
