@@ -48,6 +48,8 @@ import FeatureTransactionDomain
 import FeatureTransactionUI
 import FeatureUserDeletionData
 import FeatureUserDeletionDomain
+import FeatureUserTagSyncData
+import FeatureUserTagSyncDomain
 import FeatureWalletConnectData
 import FirebaseDynamicLinks
 import FirebaseMessaging
@@ -569,10 +571,6 @@ extension DependencyContainer {
             )
         }
 
-        // MARK: - Websocket
-
-        single(tag: DIKitContext.websocket) { RequestBuilder(config: Network.Config.websocketConfig) }
-
         // MARK: Feature Attribution
 
         single { () -> AttributionServiceAPI in
@@ -685,16 +683,34 @@ extension DependencyContainer {
         }
 
         factory { () -> AllCryptoAssetsServiceAPI in
-            AllCryptoAssetsService(
+            AllCryptoAssetsBalanceService(
+                allCrypoBalanceRepository: DIKit.resolve(),
+                nonCustodialBalanceRepository: DIKit.resolve(),
+                priceService: DIKit.resolve(),
+                fiatCurrencyService: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
+            ) as AllCryptoAssetsServiceAPI
+        }
+
+        single { () -> CustodialAssetsRepositoryAPI in
+            CustodialAssetsRepository(
                 coincore: DIKit.resolve(),
                 app: DIKit.resolve(),
                 fiatCurrencyService: DIKit.resolve(),
                 priceService: DIKit.resolve()
-            ) as AllCryptoAssetsServiceAPI
+            )
         }
 
-        single { () -> AllCryptoAssetsRepositoryAPI in
-            AllCryptoAssetsRepository(allCryptoAssetService: DIKit.resolve())
+        factory { () -> UserTagServiceAPI in
+            let requestBuilder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let networkAdapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+
+           return UserTagService(with: UserTagClient(
+               networkAdapter: networkAdapter,
+               requestBuilder: requestBuilder
+           )
+           ) as UserTagServiceAPI
         }
     }
 }

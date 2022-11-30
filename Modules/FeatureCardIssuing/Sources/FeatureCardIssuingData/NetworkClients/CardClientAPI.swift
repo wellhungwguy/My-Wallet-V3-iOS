@@ -47,8 +47,7 @@ protocol CardClientAPI {
 
 struct OrderCardParameters: Encodable {
     let productCode: String
-    let shippingAddress: Card.Address
-    let ssn: String
+    let shippingAddress: Card.Address?
 }
 
 struct TokeniseCardParameters: Encodable {

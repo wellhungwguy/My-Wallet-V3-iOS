@@ -280,6 +280,22 @@ extension Publisher where Output: DecodedFetchResult {
         }
         .eraseToAnyPublisher()
     }
+
+    public func assign<Root>(
+        to keyPath: ReferenceWritableKeyPath<Root, Output.Value>,
+        on object: Root,
+        onError: @escaping (FetchResult.Error) -> Void = { _ in }
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { [weak object] value in
+            guard let object else { return }
+            switch value.result {
+            case .success(let value):
+                object[keyPath: keyPath] = value
+            case .failure(let error):
+                onError(error)
+            }
+        }
+    }
 }
 
 #endif

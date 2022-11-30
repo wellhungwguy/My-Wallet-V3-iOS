@@ -200,6 +200,16 @@ extension Publisher where Output == PriceQuoteAtTime {
     }
 }
 
+extension PendingTransaction {
+    var recurringBuyDetails: BuyCheckout.RecurringBuyDetails? {
+        guard eligibleAndNextPaymentRecurringBuy != .oneTime else { return nil }
+        return .init(
+            frequency: eligibleAndNextPaymentRecurringBuy.frequency.description,
+            description: eligibleAndNextPaymentRecurringBuy.date
+        )
+    }
+}
+
 extension TransactionState {
 
     var buyCheckout: BuyCheckout? {
@@ -207,17 +217,18 @@ extension TransactionState {
         do {
             let fee = try quote.fee
             return try BuyCheckout(
-                buyType: .simpleBuy,
+                buyType: pendingTransaction?.recurringBuyFrequency == .once ? .simpleBuy : .recurringBuy,
                 input: quote.amount,
                 purchase: result,
                 fee: .init(value: fee.withoutPromotion, promotion: fee.value),
                 total: quote.amount.fiatValue.or(throw: "Expected fiat"),
                 paymentMethod: source.checkoutPaymentMethod(),
                 quoteExpiration: quote.date.expiresAt,
+                recurringBuyDetails: pendingTransaction?.recurringBuyDetails,
                 depositTerms: .init(
                     availableToTrade: quote.depositTerms?.formattedAvailableToTrade,
                     availableToWithdraw: quote.depositTerms?.formattedAvailableToWithdraw,
-                    withdrawalLockInDays: quote.depositTerms?.withdrawalLockDays.map { "\($0)" }
+                    withdrawalLockInDays: quote.depositTerms?.formattedWithdrawalLockDays
                 )
             )
         } catch {
@@ -264,7 +275,7 @@ extension TransactionState {
             }
 
             return try BuyCheckout(
-                buyType: .simpleBuy,
+                buyType: pendingTransaction.recurringBuyFrequency == .once ? .simpleBuy : .recurringBuy,
                 input: value.baseValue,
                 purchase: MoneyValuePair(
                     fiatValue: purchase.fiatValue.or(throw: "Amount is not fiat"),
@@ -284,7 +295,8 @@ extension TransactionState {
                     isACH: paymentMethodAccount?.paymentMethod.type.isACH == true
                 ),
                 quoteExpiration: pendingTransaction.confirmations.lazy
-                    .filter(TransactionConfirmations.QuoteExpirationTimer.self).first?.expirationDate
+                    .filter(TransactionConfirmations.QuoteExpirationTimer.self).first?.expirationDate,
+                recurringBuyDetails: pendingTransaction.recurringBuyDetails
             )
         } catch {
             return nil

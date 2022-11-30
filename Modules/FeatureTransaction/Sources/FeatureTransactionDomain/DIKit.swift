@@ -7,6 +7,12 @@ extension DependencyContainer {
 
     public static var featureTransactionDomain = module {
 
+        factory { () -> EligiblePaymentMethodRecurringBuyServiceAPI in
+            EligiblePaymentMethodRecurringBuyService(
+                repository: DIKit.resolve()
+            )
+        }
+
         factory { CryptoTargetPayloadFactory() as CryptoTargetPayloadFactoryAPI }
 
         factory { AvailableTradingPairsService() as AvailableTradingPairsServiceAPI }

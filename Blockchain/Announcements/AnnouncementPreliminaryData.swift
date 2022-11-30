@@ -42,6 +42,10 @@ struct AnnouncementPreliminaryData {
         country?.isKycSupported ?? false
     }
 
+    var cardIssuingWaitlistAvailable: Bool {
+        country?.code == Country.US.code
+    }
+
     var hasTwoFA: Bool {
         authenticatorType != .standard
     }

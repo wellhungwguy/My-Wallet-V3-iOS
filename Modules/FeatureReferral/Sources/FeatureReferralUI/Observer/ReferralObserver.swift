@@ -7,7 +7,7 @@ import FeatureReferralDomain
 import Foundation
 import SwiftUI
 
-public final class ReferralAppObserver: Session.Observer {
+public final class ReferralAppObserver: Client.Observer {
 
     unowned let app: AppProtocol
     let referralService: ReferralServiceAPI

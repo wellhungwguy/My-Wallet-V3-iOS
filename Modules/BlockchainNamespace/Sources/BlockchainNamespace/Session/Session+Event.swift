@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import Foundation
+import Extensions
 
 extension Session {
 
@@ -112,7 +112,7 @@ extension AppProtocol {
         _ rest: Tag.Event...,
         file: String = #fileID,
         line: Int = #line,
-        action: @escaping (Session.Event) throws -> Void
+        action: @escaping (Session.Event) throws -> Void = { _ in }
     ) -> BlockchainEventSubscription {
         on([first] + rest, file: file, line: line, action: action)
     }
@@ -123,7 +123,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line,
         priority: TaskPriority? = nil,
-        action: @escaping (Session.Event) async throws -> Void
+        action: @escaping (Session.Event) async throws -> Void = { _ in }
     ) -> BlockchainEventSubscription {
         on([first] + rest, file: file, line: line, priority: priority, action: action)
     }
@@ -132,7 +132,7 @@ extension AppProtocol {
         _ events: Events,
         file: String = #fileID,
         line: Int = #line,
-        action: @escaping (Session.Event) throws -> Void
+        action: @escaping (Session.Event) throws -> Void = { _ in }
     ) -> BlockchainEventSubscription where Events: Sequence, Events.Element: Tag.Event {
         on(events.map { $0 as Tag.Event }, file: file, line: line, action: action)
     }
@@ -142,7 +142,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line,
         priority: TaskPriority? = nil,
-        action: @escaping (Session.Event) async throws -> Void
+        action: @escaping (Session.Event) async throws -> Void = { _ in }
     ) -> BlockchainEventSubscription where Events: Sequence, Events.Element: Tag.Event {
         on(events.map { $0 as Tag.Event }, file: file, line: line, priority: priority, action: action)
     }
@@ -151,7 +151,7 @@ extension AppProtocol {
         _ events: some Sequence<Tag.Event>,
         file: String = #fileID,
         line: Int = #line,
-        action: @escaping (Session.Event) throws -> Void
+        action: @escaping (Session.Event) throws -> Void = { _ in }
     ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
             app: self,
@@ -167,7 +167,7 @@ extension AppProtocol {
         file: String = #fileID,
         line: Int = #line,
         priority: TaskPriority? = nil,
-        action: @escaping (Session.Event) async throws -> Void
+        action: @escaping (Session.Event) async throws -> Void = { _ in }
     ) -> BlockchainEventSubscription {
         BlockchainEventSubscription(
             app: self,
@@ -181,6 +181,14 @@ extension AppProtocol {
 }
 
 public final class BlockchainEventSubscription: Hashable {
+
+    private var lock: UnfairLock = UnfairLock()
+
+    private var _count: Int = 0
+    public private(set) var count: Int {
+        get { lock.withLock { _count } }
+        set { lock.withLock { _count = newValue } }
+    }
 
     enum Action {
         case sync((Session.Event) throws -> Void)
@@ -235,7 +243,7 @@ public final class BlockchainEventSubscription: Hashable {
     @discardableResult
     public func start() -> Self {
         guard subscription == nil else { return self }
-        subscription = app.on(events).sink(
+        subscription = app.on(events).handleEvents(receiveOutput: { [weak self] _ in self?.count += 1 }).sink(
             receiveValue: { [weak self] event in
                 guard let self else { return }
                 switch self.action {

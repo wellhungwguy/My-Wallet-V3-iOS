@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import SwiftUI
 import ToolKit
 
 final class PinScreenViewController: BaseScreenViewController {
@@ -22,6 +23,8 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
 
     private lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: false)
+    // swiftlint:disable weak_delegate
+    private lazy var adaptivePresentationControllerDelegate = PinScreenAdaptivePresentationControllerDelegate()
 
     private let presenter: PinScreenPresenter
     private let alertViewPresenter: AlertViewPresenterAPI
@@ -386,20 +389,50 @@ extension PinScreenViewController {
     }
 
     private func displayEnableBiometricsAlertIfNeeded(completion: @escaping () -> Void) {
-        guard let model = presenter.biometricsAlertModel else {
-            completion()
-            return
-        }
-        let alertView = AlertView.make(with: model) { action in
-            switch action.metadata {
-            case .some(.block(let block)):
-                block()
-            default:
-                break
+        if #available(iOS 15.0, *) {
+            guard let model = presenter.biometricsSheetModel else {
+                completion()
+                return
             }
-            completion()
+            let view = PinScreenEnableBiometricsInfoView(
+                viewModel: model,
+                completion: { [weak self] in
+                    self?.dismiss(animated: true, completion: completion)
+                }
+            )
+            let controller = UIHostingController(rootView: view)
+            adaptivePresentationControllerDelegate.onDidDismissCompletion = completion
+            controller.presentationController?.delegate = adaptivePresentationControllerDelegate
+            controller.modalPresentationStyle = .pageSheet
+            if let sheet = controller.sheetPresentationController {
+                if #available(iOS 16.0, *) {
+                    sheet.detents = [
+                        .custom { _ in 360 }
+                    ]
+                } else {
+                    sheet.detents = [
+                        .medium()
+                    ]
+                }
+                sheet.prefersGrabberVisible = true
+            }
+            present(controller, animated: true)
+        } else {
+            guard let model = presenter.biometricsAlertModel else {
+                completion()
+                return
+            }
+            let alertView = AlertView.make(with: model) { action in
+                switch action.metadata {
+                case .some(.block(let block)):
+                    block()
+                default:
+                    break
+                }
+                completion()
+            }
+            alertView.show()
         }
-        alertView.show()
     }
 
     /// Called after setting the pin successfully on both create & change flows
@@ -449,6 +482,14 @@ extension PinScreenViewController {
                 self?.handle(error: error)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+private final class PinScreenAdaptivePresentationControllerDelegate: NSObject, UIAdaptivePresentationControllerDelegate {
+    var onDidDismissCompletion: (() -> Void)?
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        onDidDismissCompletion?()
+        onDidDismissCompletion = nil
     }
 }
 

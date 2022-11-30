@@ -427,6 +427,7 @@ enum TransactionFlowStep: Equatable {
     case enterAddress
     case selectTarget
     case enterAmount
+    case recurringBuyFrequencySelector
     case kycChecks
     case validateSource
     case confirmDetail
@@ -472,6 +473,7 @@ extension TransactionFlowStep {
              .linkABank,
              .uxFromUserInteraction,
              .uxFromErrorState,
+             .recurringBuyFrequencySelector,
              .securityConfirmation,
              .authorizeOpenBanking:
             return false
@@ -499,6 +501,7 @@ extension TransactionFlowStep {
              .initial,
              .selectSource,
              .selectTarget,
+             .recurringBuyFrequencySelector,
              .uxFromErrorState,
              .uxFromUserInteraction,
              .validateSource:

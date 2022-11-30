@@ -29,6 +29,10 @@ public struct CandidateOrderDetails {
 
     public let paymentMethodId: String?
 
+    /// The frequency of the order. Only used for `Buy`
+    /// Can be DAILY/WEEKLY/BI_WEEKLY/MONTHLY (+EVERY_MINUTE in dev/staging).
+    public let recurringBuyFrequency: String?
+
     private init(
         quoteId: String?,
         paymentMethod: PaymentMethodType?,
@@ -37,7 +41,8 @@ public struct CandidateOrderDetails {
         fiatCurrency: FiatCurrency,
         cryptoValue: CryptoValue,
         cryptoCurrency: CryptoCurrency,
-        paymentMethodId: String?
+        paymentMethodId: String?,
+        recurringBuyFrequency: String?
     ) {
         self.quoteId = quoteId
         self.action = action
@@ -47,6 +52,7 @@ public struct CandidateOrderDetails {
         self.cryptoValue = cryptoValue
         self.cryptoCurrency = cryptoCurrency
         self.paymentMethodId = paymentMethodId
+        self.recurringBuyFrequency = recurringBuyFrequency
     }
 
     public static func buy(
@@ -54,7 +60,8 @@ public struct CandidateOrderDetails {
         paymentMethod: PaymentMethodType? = nil,
         fiatValue: FiatValue,
         cryptoValue: CryptoValue,
-        paymentMethodId: String? = nil
+        paymentMethodId: String? = nil,
+        recurringBuyFrequency: String? = nil
     ) -> CandidateOrderDetails {
         CandidateOrderDetails(
             quoteId: quoteId,
@@ -64,7 +71,8 @@ public struct CandidateOrderDetails {
             fiatCurrency: fiatValue.currency,
             cryptoValue: cryptoValue,
             cryptoCurrency: cryptoValue.currency,
-            paymentMethodId: paymentMethodId
+            paymentMethodId: paymentMethodId,
+            recurringBuyFrequency: recurringBuyFrequency
         )
     }
 
@@ -84,7 +92,8 @@ public struct CandidateOrderDetails {
             fiatCurrency: destinationFiatCurrency,
             cryptoValue: cryptoValue,
             cryptoCurrency: cryptoValue.currency,
-            paymentMethodId: paymentMethodId
+            paymentMethodId: paymentMethodId,
+            recurringBuyFrequency: nil
         )
     }
 }

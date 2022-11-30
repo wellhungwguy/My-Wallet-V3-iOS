@@ -39,6 +39,8 @@ final class BuyTransactionEngine: TransactionEngine {
     private let kycTiersService: KYCTiersServiceAPI
     // Used to fetch account statuses via settlement API
     private let plaidRepository: PlaidRepositoryAPI
+    // Used to fetch recurring buy payment windows, next payment dates, and supported payment methods
+    private let eligiblePaymentMethodRecurringBuyService: EligiblePaymentMethodRecurringBuyServiceAPI
 
     // Used as a workaround to show the correct total fee to the user during checkout.
     // This won't be needed anymore once we migrate the quotes API to v2
@@ -54,7 +56,8 @@ final class BuyTransactionEngine: TransactionEngine {
         orderCancellationService: OrderCancellationServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        plaidRepository: PlaidRepositoryAPI = resolve()
+        plaidRepository: PlaidRepositoryAPI = resolve(),
+        eligiblePaymentMethodRecurringBuyService: EligiblePaymentMethodRecurringBuyServiceAPI = resolve()
     ) {
         self.app = app
         self.currencyConversionService = currencyConversionService
@@ -66,6 +69,7 @@ final class BuyTransactionEngine: TransactionEngine {
         self.transactionLimitsService = transactionLimitsService
         self.kycTiersService = kycTiersService
         self.plaidRepository = plaidRepository
+        self.eligiblePaymentMethodRecurringBuyService = eligiblePaymentMethodRecurringBuyService
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -112,11 +116,40 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        makeTransaction()
+        app
+            .publisher(for: blockchain.app.configuration.recurring.buy.is.enabled)
+            .replaceError(with: false)
+            .asSingle()
+            .flatMap(weak: self) { (self, isRecurringBuyEnabled) in
+                guard isRecurringBuyEnabled else { return self.makeTransaction() }
+                return self.eligiblePaymentMethodRecurringBuyService
+                    .fetchEligiblePaymentMethodTypesStartingFromDate(nil)
+                    .asSingle()
+                    .flatMap(weak: self) { (self, values) -> Single<PendingTransaction> in
+                        self.makeTransaction()
+                            .map(weak: self) { (self, pendingTx) in
+                                self.app.state.transaction { state in
+                                    state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
+                                    state.set(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies, to: values)
+                                }
+                                return pendingTx
+                                    .updatePaymentMethodEligibilityAndNextPaymentDates(values)
+                                    .updateRecurringBuyFrequency(.once)
+                            }
+                    }
+                    .flatMap(weak: self) { (self, pendingTx) in
+                        self.validateIfSourceAccountCanBeUsedForCurrentRecurringBuySelection(pendingTx)
+                    }
+            }
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         makeTransaction(amount: amount)
+            .map { pendingTx -> PendingTransaction in
+                pendingTx
+                    .updatePaymentMethodEligibilityAndNextPaymentDates(pendingTransaction.eligibilityAndNextPaymentMethodRecurringBuys)
+                    .updateRecurringBuyFrequency(pendingTransaction.recurringBuyFrequency)
+            }
     }
 
     func validateAmount(
@@ -165,6 +198,9 @@ final class BuyTransactionEngine: TransactionEngine {
                 self.validateSourceBankAccountStatus(pendingTransaction: pendingTransaction)
             }
             .flatMap(weak: self) { (self, pendingTransaction) in
+                self.validateIfSourceAccountCanBeUsedForCurrentRecurringBuySelection(pendingTransaction)
+            }
+            .flatMap(weak: self) { (self, pendingTransaction) in
                 self.validateAmount(pendingTransaction: pendingTransaction)
             }
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
@@ -178,7 +214,7 @@ final class BuyTransactionEngine: TransactionEngine {
         if isQuoteRefreshEnabled && isCheckoutEnabled {
             return .just(pendingTransaction)
         }
-        return createOrder(pendingTransaction: pendingTransaction)
+        return createOrderFromPendingTransaction(pendingTransaction)
             .map { order -> OrderDetails in
                 guard let order = order as? OrderDetails else {
                     impossible("Buy transactions should only create \(OrderDetails.self) orders")
@@ -217,9 +253,9 @@ final class BuyTransactionEngine: TransactionEngine {
             }
     }
 
-    func createOrder(pendingTransaction: PendingTransaction) -> Single<TransactionOrder?> {
+    func createOrderFromPendingTransaction(_ pendingTransaction: PendingTransaction) -> Single<TransactionOrder?> {
         if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled), let quote = pendingTransaction.quote {
-            return createOrder(quote: quote)
+            return createOrderFromPendingTransaction(pendingTransaction, quote: quote)
         } else {
             guard pendingCheckoutData == nil else {
                 return .just(pendingCheckoutData?.order)
@@ -228,48 +264,60 @@ final class BuyTransactionEngine: TransactionEngine {
                 .filter(\.quoteId.isNotNilOrEmpty)
                 .timeout(.seconds(5), scheduler: MainScheduler.asyncInstance)
                 .flatMap(weak: self) { (self, quote) in
-                    self.createOrder(
+                    self.createOrderFromPendingTransaction(
+                        pendingTransaction,
                         quote: .init(id: quote.quoteId!, amount: quote.estimatedSourceAmount)
                     )
                 }
         }
     }
 
-    func createOrder(quote: PendingTransaction.Quote) -> Single<TransactionOrder?> {
-        guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
-            return .error(TransactionValidationFailure(state: .optionInvalid))
-        }
-        guard let destinationAccount = transactionTarget as? CryptoTradingAccount, let crypto = destinationAccount.currencyType.cryptoCurrency else {
-            return .error(TransactionValidationFailure(state: .optionInvalid))
-        }
-        guard let fiatValue = quote.amount.fiatValue else {
-            return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
-        }
-        let paymentMethodId: String?
-        if sourceAccount.paymentMethod.type.isFunds || sourceAccount.paymentMethod.type.isApplePay {
-            paymentMethodId = nil
-        } else {
-            paymentMethodId = sourceAccount.paymentMethodType.id
-        }
-        let orderDetails = CandidateOrderDetails.buy(
-            quoteId: quote.id,
-            paymentMethod: sourceAccount.paymentMethodType,
-            fiatValue: fiatValue,
-            cryptoValue: .zero(currency: crypto),
-            paymentMethodId: paymentMethodId
-        )
-        return orderCreationService.create(using: orderDetails)
-            .do(
-                onSuccess: { [weak self] checkoutData in
-                    Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
-                    self?.pendingCheckoutData = checkoutData
-                },
-                onError: { error in
-                    Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
+    func createOrderFromPendingTransaction(
+        _ pendingTransaction: PendingTransaction,
+        quote: PendingTransaction.Quote
+    ) -> Single<TransactionOrder?> {
+        isRecurringBuyEnabled
+            .asSingle()
+            .flatMap(weak: self) { (self, isRecurringBuyEnabled) -> Single<TransactionOrder?> in
+                guard let sourceAccount = self.sourceAccount as? PaymentMethodAccount else {
+                    return .error(TransactionValidationFailure(state: .optionInvalid))
                 }
-            )
-            .map(\.order)
-            .map(Optional.some)
+                guard let destinationAccount = self.transactionTarget as? CryptoTradingAccount else {
+                    return .error(TransactionValidationFailure(state: .optionInvalid))
+                }
+                guard let crypto = destinationAccount.currencyType.cryptoCurrency else {
+                    return .error(TransactionValidationFailure(state: .optionInvalid))
+                }
+                guard let fiatValue = quote.amount.fiatValue else {
+                    return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
+                }
+                let paymentMethodId: String?
+                if sourceAccount.paymentMethod.type.isFunds || sourceAccount.paymentMethod.type.isApplePay {
+                    paymentMethodId = nil
+                } else {
+                    paymentMethodId = sourceAccount.paymentMethodType.id
+                }
+                let orderDetails = CandidateOrderDetails.buy(
+                    quoteId: quote.id,
+                    paymentMethod: sourceAccount.paymentMethodType,
+                    fiatValue: fiatValue,
+                    cryptoValue: .zero(currency: crypto),
+                    paymentMethodId: paymentMethodId,
+                    recurringBuyFrequency: isRecurringBuyEnabled ? pendingTransaction.recurringBuyFrequency.rawValue : nil
+                )
+                return self.orderCreationService.create(using: orderDetails)
+                    .do(
+                        onSuccess: { [weak self] checkoutData in
+                            Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
+                            self?.pendingCheckoutData = checkoutData
+                        },
+                        onError: { error in
+                            Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
+                        }
+                    )
+                    .map(\.order)
+                    .map(Optional.some)
+            }
     }
 
     func cancelOrder(with identifier: String) -> Single<Void> {
@@ -307,7 +355,7 @@ final class BuyTransactionEngine: TransactionEngine {
             }
             return execute(order)
         } else {
-            return createOrder(pendingTransaction: pendingTransaction)
+            return createOrderFromPendingTransaction(pendingTransaction)
                 .flatMap { order in execute(order as! OrderDetails) }
         }
     }
@@ -336,6 +384,64 @@ extension BuyTransactionEngine {
         return app.publisher(for: event, as: Bool.self)
             .prefix(1)
             .replaceError(with: false)
+    }
+
+    private var isRecurringBuyEnabled: AnyPublisher<Bool, Never> {
+        app
+            .publisher(for: blockchain.app.configuration.recurring.buy.is.enabled)
+            .prefix(1)
+            .replaceError(with: false)
+    }
+
+    private func validateIfSourceAccountCanBeUsedForCurrentRecurringBuySelection(_ pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        isRecurringBuyEnabled
+            .asSingle()
+            .flatMap { [app, sourceAccount] isRecurringBuyEnabled -> Single<PendingTransaction> in
+                guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
+                    return .error(TransactionValidationFailure(state: .optionInvalid))
+                }
+                // Recurring buy is not enabled. We don't need to validate the source as the recurring buy button is not visible.
+                guard isRecurringBuyEnabled else { return .just(pendingTransaction) }
+                let frequency = pendingTransaction.recurringBuyFrequency
+                let paymentMethodType = sourceAccount.paymentMethodType.method.rawType
+                let eligibilityAndNextPaymentMethodRecurringBuys = pendingTransaction.eligibilityAndNextPaymentMethodRecurringBuys
+                let paymentMethodCanBeUsedForRecurringBuy = eligibilityAndNextPaymentMethodRecurringBuys
+                    .flatMap(\.eligiblePaymentMethodTypes)
+                    .contains(paymentMethodType)
+                // RecurringBuy.Frequency.Once is not included in `eligibilityAndNextPaymentMethodRecurringBuys` as a one time buy
+                // is not a recurring buy. We must handle this differently than other frequencies.
+                if frequency == .once && !paymentMethodCanBeUsedForRecurringBuy {
+                    app.state.transaction { state in
+                        state.set(blockchain.ux.transaction.payment.method.is.available.for.recurring.buy, to: false)
+                    }
+                    return .just(pendingTransaction)
+                }
+                if frequency == .once {
+                    app.state.transaction { state in
+                        state.set(blockchain.ux.transaction.payment.method.is.available.for.recurring.buy, to: true)
+                    }
+                    return .just(pendingTransaction)
+                }
+                // The recurring buy frequency is not once. We must check to see if the frequency includes a payment method equivalent
+                // to that which is selected.
+                let eligibleRecurringBuyPaymentType = eligibilityAndNextPaymentMethodRecurringBuys.first(where: { $0.frequency == frequency })
+                if let eligibleRecurringBuyPaymentType, eligibleRecurringBuyPaymentType.eligiblePaymentMethodTypes.contains(paymentMethodType) {
+                    // There is an `EligibleAndNextPaymentRecurringBuy` for the selected payment method type.
+                    // So the payment method selected is supported for the given recurring buy frequency.
+                    app.state.transaction { state in
+                        state.set(blockchain.ux.transaction.payment.method.is.available.for.recurring.buy, to: true)
+                    }
+                    return .just(pendingTransaction)
+                } else {
+                    // There is no `EligibleAndNextPaymentRecurringBuy` for the selected payment method type.
+                    // So the payment method selected is not supported for the given recurring buy frequency.
+                    app.state.transaction { state in
+                        state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
+                        state.set(blockchain.ux.transaction.payment.method.is.available.for.recurring.buy, to: false)
+                    }
+                    return .just(pendingTransaction.updateRecurringBuyFrequency(.once))
+                }
+            }
     }
 
     private func validateIfSourceAccountIsBlocked(

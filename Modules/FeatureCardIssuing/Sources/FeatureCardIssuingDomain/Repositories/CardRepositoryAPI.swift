@@ -7,11 +7,11 @@ import PassKit
 
 public protocol CardRepositoryAPI {
 
-    func orderCard(product: Product, at address: Card.Address, with ssn: String) -> AnyPublisher<Card, NabuNetworkError>
+    func orderCard(product: Product, at address: Card.Address?) -> AnyPublisher<Card, NabuNetworkError>
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError>
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError>
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError>
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError>
 

@@ -200,6 +200,8 @@ packages:
     path: Modules/BlockchainNamespace
   DelegatedSelfCustody:
     path: Modules/DelegatedSelfCustody
+  FeatureUnifiedActivity:
+    path: Modules/FeatureUnifiedActivity
   RxAnalytics:
     path: Modules/RxAnalytics
   CommonCrypto:
@@ -312,6 +314,9 @@ packages:
     path: Modules/FeatureBackupRecoveryPhrase
   FeaturePaymentsIntegration:
     path: Modules/FeaturePaymentsIntegration
+  FeatureUserTagSync:
+    path: Modules/FeatureUserTagSync
+
 
 targets:
   BlockchainApp:
@@ -438,6 +443,8 @@ targets:
       - package: BlockchainNamespace
       - package: DelegatedSelfCustody
         product: DelegatedSelfCustodyKit
+      - package: FeatureUnifiedActivity
+        product: FeatureUnifiedActivity
       - package: RxAnalytics
         product: RxAnalyticsKit
       - package: CommonCrypto
@@ -506,6 +513,9 @@ targets:
         product: MobileIntelligence
       - package: FeatureBackupRecoveryPhrase
         product: FeatureBackupRecoveryPhrase
+      - package: FeatureUserTagSync
+        product: FeatureUserTagSync
+
 
     platform: iOS
     postBuildScripts:

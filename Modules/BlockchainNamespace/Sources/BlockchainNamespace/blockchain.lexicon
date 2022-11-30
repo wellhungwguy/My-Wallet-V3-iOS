@@ -11,6 +11,13 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+				user:
+					tag:
+						service:
+							is:
+								enabled:
+								+ blockchain.db.type.boolean
+								+ blockchain.session.configuration.value
 	app:
 		configuration:
 			SSL:
@@ -19,6 +26,10 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+			action:
+			+ blockchain.db.collection
+			+ blockchain.session.configuration.value
+			+ blockchain.ux.type.action
 			addresssearch:
 				kyc:
 					is:
@@ -36,6 +47,11 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
+					v1:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 			apple:
 				pay:
 					is:
@@ -154,17 +170,6 @@ blockchain:
 						enabled:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.configuration.value
-			multiapp:
-				brokerage:
-					tabs:
-					+ blockchain.app.configuration.tabs
-				defi:
-					tabs:
-					+ blockchain.app.configuration.tabs
-				is:
-					enabled:
-					+ blockchain.db.type.boolean
-					+ blockchain.session.configuration.value
 			outbound:
 				request:
 					interceptor:
@@ -188,6 +193,12 @@ blockchain:
 					auth:
 					+ blockchain.db.type.array.of.strings
 					+ blockchain.session.state.preference.value
+			recurring:
+				buy:
+					is:
+						enabled:
+						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
 			referral:
 				is:
 					enabled:
@@ -220,6 +231,13 @@ blockchain:
 							enabled:
 							+ blockchain.db.type.boolean
 							+ blockchain.session.configuration.value
+			superapp:
+				brokerage:
+					tabs:
+					+ blockchain.app.configuration.tabs
+				defi:
+					tabs:
+					+ blockchain.app.configuration.tabs
 			swap:
 				search:
 					is:
@@ -255,6 +273,12 @@ blockchain:
 						+ blockchain.session.configuration.value
 					type:
 					+ blockchain.db.type.string
+				recurring:
+					buy:
+						is:
+							enabled:
+							+ blockchain.db.type.boolean
+							+ blockchain.session.configuration.value
 				should:
 					prefill:
 						with:
@@ -274,6 +298,11 @@ blockchain:
 					is:
 						enabled:
 						+ blockchain.db.type.boolean
+						+ blockchain.session.configuration.value
+			unspent:
+				outputs:
+					cache:
+						config:
 						+ blockchain.session.configuration.value
 			wallet:
 				country:
@@ -321,6 +350,12 @@ blockchain:
 					+ blockchain.db.type.string
 				destination:
 				+ blockchain.db.type.string
+			settings:
+				add:
+					payment:
+						method:
+							bank:
+							card:
 			walletconnect:
 				uri:
 				+ blockchain.db.type.string
@@ -332,6 +367,17 @@ blockchain:
 			+ blockchain.db.type.boolean
 			+ blockchain.session.state.preference.value
 			+ blockchain.session.state.shared.value
+		dynamic:
+		+ blockchain.db.collection
+			session:
+				state:
+				+ blockchain.session.state
+			ux:
+				action:
+				+ blockchain.session.configuration.value
+				+ blockchain.ux.type.action
+				analytics:
+				+ blockchain.ux.type.analytics
 		enter:
 			into:
 			+ blockchain.ux.type.story
@@ -693,6 +739,17 @@ blockchain:
 					static:
 			action:
 			+ blockchain.ux.type.analytics.action
+				policy:
+					discard:
+						if:
+						+ blockchain.db.type.boolean
+						when:
+						+ blockchain.db.type.boolean
+					perform:
+						if:
+						+ blockchain.db.type.boolean
+						when:
+						+ blockchain.db.type.boolean
 				then:
 					close:
 					+ blockchain.db.type.boolean
@@ -707,6 +764,13 @@ blockchain:
 					navigate:
 						to:
 						+ blockchain.db.type.tag
+					replace:
+						current:
+							stack:
+							+ blockchain.db.type.array.of.tags
+						root:
+							stack:
+							+ blockchain.db.type.array.of.tags
 					set:
 						session:
 							state:
@@ -716,6 +780,8 @@ blockchain:
 								+ blockchain.db.type.tag
 								value:
 								+ blockchain.db.type.any
+				was:
+					handled:
 			angle:
 				degrees:
 				+ blockchain.db.type.number
@@ -984,6 +1050,9 @@ blockchain:
 				fan:
 				+ blockchain.db.type.boolean
 				+ blockchain.session.state.value
+			superapp:
+				user:
+				+ blockchain.session.state.value
 			tier:
 				gold:
 				+ blockchain.db.type.boolean
@@ -1035,6 +1104,7 @@ blockchain:
 		+ blockchain.ux.type.story
 			account:
 			+ blockchain.db.collection
+			+ blockchain.ux.type.analytics.privacy.policy.obfuscate
 			+ blockchain.ux.type.story
 				activity:
 				+ blockchain.ux.type.action
@@ -1511,7 +1581,18 @@ blockchain:
 						+ blockchain.ux.type.action
 							id:
 							+ blockchain.db.type.string
+					recurring:
+						buy:
+							frequency:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
+								localized:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.value
 				show:
+					recurring:
+						buy:
+							unavailable:
 					wire:
 						transfer:
 							instructions:
@@ -1546,6 +1627,14 @@ blockchain:
 							duration:
 							+ blockchain.db.type.number
 							+ blockchain.session.configuration.value
+				recurring:
+					buy:
+						frequency:
+						+ blockchain.db.type.string
+						+ blockchain.session.state.value
+							localized:
+							+ blockchain.db.type.string
+							+ blockchain.session.state.value
 				refund:
 					policy:
 						disclaimer:
@@ -1592,8 +1681,11 @@ blockchain:
 						input:
 							amount:
 							+ blockchain.db.type.bigint
+							+ blockchain.session.state.value
 							currency:
-							+ blockchain.type.currency
+								code:
+								+ blockchain.db.type.string
+								+ blockchain.session.state.value
 					input:
 					+ blockchain.ui.type.input
 					output:
@@ -1614,6 +1706,11 @@ blockchain:
 				did:
 					error:
 					+ blockchain.ux.type.analytics.event
+					fetch:
+						recurring:
+							buy:
+								frequencies:
+								+ blockchain.session.state.value
 					finish:
 					+ blockchain.ux.type.analytics.event
 					go:
@@ -1692,6 +1789,12 @@ blockchain:
 						GooglePay:
 						+ blockchain.db.type.boolean
 						+ blockchain.session.state.value
+						available:
+							for:
+								recurring:
+									buy:
+									+ blockchain.db.type.boolean
+									+ blockchain.session.state.value
 						bank:
 							ACH:
 							+ blockchain.db.type.boolean
@@ -1826,6 +1929,17 @@ blockchain:
 					source:
 						file:
 						line:
+				privacy:
+					policy:
+						exclude:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
+						include:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
+						obfuscate:
+						+ blockchain.ux.type.analytics.privacy.policy
+						+ sky.ux.type.analytics.privacy.policy
 				state:
 				+ blockchain.ux.type.analytics.event
 			story:
@@ -1962,9 +2076,6 @@ blockchain:
 			event:
 				authenticated:
 					pin:
-					+ blockchain.ux.type.analytics.event
-				signed:
-					in:
 					+ blockchain.ux.type.analytics.event
 			experiments:
 				is:

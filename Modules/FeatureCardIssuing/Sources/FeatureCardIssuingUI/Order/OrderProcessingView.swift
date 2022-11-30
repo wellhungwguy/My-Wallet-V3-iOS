@@ -105,7 +105,7 @@ struct OrderProcessing_Previews: PreviewProvider {
         NavigationView<OrderProcessingView> {
             OrderProcessingView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(initialKyc: KYC(status: .success, errorFields: nil)),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )
@@ -138,7 +138,7 @@ extension Error {
                 .description
         }
 
-        return error.displayTitle
+        return error.displayDescription
     }
 
     fileprivate func retryAction(

@@ -5,17 +5,22 @@ import Network
 final class Reachability {
 
     private let monitor: NWPathMonitor
+    private let logger: ((String) -> Void)?
 
-    init(monitor: NWPathMonitor = .init()) {
+    init(
+        monitor: NWPathMonitor = .init(),
+        logger: ((String) -> Void)? = { $0.peek("🌎") }
+    ) {
         self.monitor = monitor
+        self.logger = logger
         monitor.pathUpdateHandler = { path in
-            print("Reachability: \(path.status).")
+            logger?("Reachability: \(path.status).")
         }
         monitor.start(queue: DispatchQueue.global(qos: .default))
     }
 
     deinit {
-        print("Reachability: Cancel.")
+        logger?("Reachability: Cancel.")
         monitor.cancel()
     }
 

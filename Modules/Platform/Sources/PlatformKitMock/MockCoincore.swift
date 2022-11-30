@@ -38,9 +38,29 @@ final class MockCoincore: CoincoreAPI {
     }
 }
 
+class MockAccountGroup: AccountGroup {
+
+    let accounts: [SingleAccount]
+    let currencyType: CurrencyType
+    let identifier: AnyHashable
+    let label: String
+
+    init(
+        accounts: [SingleAccount] = [],
+        currencyType: CurrencyType,
+        identifier: AnyHashable = "MockAccountGroup",
+        label: String = "MockAccountGroup"
+    ) {
+        self.accounts = accounts
+        self.currencyType = currencyType
+        self.identifier = identifier
+        self.label = label
+    }
+}
+
 class MockAsset: CryptoAsset {
 
-    var accountGroup: AccountGroup = CryptoAccountCustodialGroup(asset: .bitcoin)
+    var accountGroup: AccountGroup = MockAccountGroup(currencyType: .crypto(.bitcoin))
 
     var asset: CryptoCurrency {
         accountGroup.currencyType.cryptoCurrency!

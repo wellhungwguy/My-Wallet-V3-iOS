@@ -134,6 +134,36 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor
+            .recurringBuyFrequencySelected
+            .flatMap { [app] _ -> Single<Bool> in
+                app
+                    .publisher(
+                        for: blockchain.ux.transaction.payment.method.is.available.for.recurring.buy,
+                        as: Bool.self
+                    )
+                    .compactMap(\.value)
+                    .asSingle()
+            }
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe(
+                onNext: { [transactionModel] isRecurringBuyAvailableForPaymentType in
+                    if isRecurringBuyAvailableForPaymentType {
+                        transactionModel.process(action: .showRecurringBuyFrequencySelector)
+                    } else {
+                        transactionModel.process(
+                            action: .showUxDialogSuggestion(
+                                UX.Dialog(
+                                    title: LocalizationConstants.Transaction.Buy.Recurring.recurringBuyUnavailable,
+                                    message: LocalizationConstants.Transaction.Buy.Recurring.recurringBuyUnavailableDescription
+                                )
+                            )
+                        )
+                    }
+                }
+            )
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor
             .auxiliaryButtonTappedRelay
             .asObservable()
             .subscribe(on: MainScheduler.asyncInstance)
@@ -223,7 +253,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     blockchain.app.configuration.transaction.should.prefill.with.previous.amount
                 ) else { throw "Should not pre-fill previous value" }
 
-                guard try await app.get(blockchain.ux.transaction.source.target.previous.did.error) else { return }
+                guard try await app.get(blockchain.ux.transaction.source.target.previous.did.error) else { throw "try default" }
 
                 try await amountViewInteractor.set(
                     amount: MoneyValue.create(
@@ -232,12 +262,25 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     )
                 )
             } catch {
-                try await amountViewInteractor.set(
-                    amount: MoneyValue.create(
-                        minor: app.get(blockchain.ux.transaction.enter.amount.default.input.amount) as String,
-                        currency: CurrencyType(code: app.get(blockchain.ux.transaction.enter.amount.default.input.currency.code))
-                    ).or(throw: "Failed to initialise MoneyValue")
-                )
+                do {
+                    var code = try? await app.get(blockchain.ux.transaction.enter.amount.default.input.currency.code, as: String.self)
+                    if code.isNilOrEmpty, action == .buy {
+                        code = try await app.get(blockchain.user.currency.preferred.fiat.trading.currency, as: String.self)
+                    }
+                    try await amountViewInteractor.set(
+                        amount: MoneyValue.create(
+                            minor: app.get(blockchain.ux.transaction.enter.amount.default.input.amount) as String,
+                            currency: CurrencyType(code: code.or(throw: "No input currency"))
+                        ).or(throw: "Failed to initialise MoneyValue")
+                    )
+                } catch {
+                    app.post(error: error)
+                }
+            }
+
+            app.state.transaction { state in
+                state.clear(blockchain.ux.transaction.enter.amount.default.input.amount)
+                state.clear(blockchain.ux.transaction.enter.amount.default.input.currency.code)
             }
         }
 
@@ -451,6 +494,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .connect(state: interactorState)
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
+
+        app.publisher(for: blockchain.ux.transaction.action.select.recurring.buy.frequency, as: String.self)
+            .compactMap(\.value)
+            .compactMap(RecurringBuy.Frequency.init(rawValue: ))
+            .removeDuplicates()
+            .sink { [model = transactionModel] frequency in
+                model.process(action: .updateRecurringBuyFrequency(frequency))
+            }
+            .store(withLifetimeOf: self)
 
         spendable
             .map(\.cryptoMax)

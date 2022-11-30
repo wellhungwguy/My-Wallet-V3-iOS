@@ -3,9 +3,9 @@
 import Foundation
 import MoneyKit
 
-public struct CryptoAssetInfo: Equatable, Identifiable {
+public struct AssetBalanceInfo: Equatable, Identifiable {
     public var id: String {
-        currency.id
+        currency.code
     }
 
     public var hasBalance: Bool {
@@ -14,13 +14,13 @@ public struct CryptoAssetInfo: Equatable, Identifiable {
 
     public let cryptoBalance: MoneyValue
     public let fiatBalance: MoneyValuePair?
-    public let currency: CryptoCurrency
+    public let currency: CurrencyType
     public let delta: Decimal?
 
     public init(
         cryptoBalance: MoneyValue,
         fiatBalance: MoneyValuePair?,
-        currency: CryptoCurrency,
+        currency: CurrencyType,
         delta: Decimal?
     ) {
         self.cryptoBalance = cryptoBalance

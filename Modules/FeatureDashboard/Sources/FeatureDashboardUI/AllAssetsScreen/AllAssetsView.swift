@@ -15,45 +15,37 @@ public struct AllAssetsView: View {
     }
 
     public var body: some View {
-            PrimaryNavigationView {
-                VStack {
-                    searchBarSection
-                    allAssetsSection
-                }
-                .background(Color.WalletSemantic.light)
-                .primaryNavigation(leading: {
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Icon.closev2
-                    }
-                }, trailing: {
-                    Button {
-                        viewStore.send(.onFilterTapped)
-                    } label: {
-                        Icon.multiAppFilter
-                    }
-                    .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
-                })
-                .primaryNavigation(title: LocalizationConstants.MultiApp.AllAssets.title)
+        VStack {
+            searchBarSection
+            allAssetsSection
+        }
+        .background(Color.WalletSemantic.light)
+        .primaryNavigation(trailing: {
+            Button {
+                viewStore.send(.onFilterTapped)
+            } label: {
+                Icon.multiAppFilter
             }
-            .bottomSheet(
-                isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
-                content: {
+            .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
+        })
+        .primaryNavigation(title: LocalizationConstants.SuperApp.AllAssets.title)
+        .bottomSheet(
+            isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
+            content: {
                 filterSheet
-                }
-            )
-            .task {
-                await viewStore.send(.onAppear).finish()
             }
+        )
+        .task {
+            await viewStore.send(.onAppear).finish()
+        }
     }
 
     private var searchBarSection: some View {
         SearchBar(
             text: viewStore.binding(\.$searchText),
             isFirstResponder: viewStore.binding(\.$isSearching),
-            cancelButtonText: LocalizationConstants.MultiApp.AllAssets.cancelButton,
-            placeholder: LocalizationConstants.MultiApp.AllAssets.searchPlaceholder
+            cancelButtonText: LocalizationConstants.SuperApp.AllAssets.cancelButton,
+            placeholder: LocalizationConstants.SuperApp.AllAssets.searchPlaceholder
         )
         .frame(height: 48)
         .padding(.horizontal, Spacing.padding2)
@@ -66,31 +58,30 @@ public struct AllAssetsView: View {
                 if let searchResults = viewStore.searchResults {
                     if searchResults.isEmpty {
                         noResultsView
-                    } else
-                  {
-                    ForEach(searchResults) { info in
-                        SimpleBalanceRow(
-                            leadingTitle: info.currency.name,
-                            trailingTitle: info.fiatBalance?.quote.toDisplayString(includeSymbol: true),
-                            trailingDescription: info.priceChangeString,
-                            trailingDescriptionColor: info.priceChangeColor,
-                            action: {
-                                viewStore.send(.onAssetTapped(info))
-                            },
-                            leading: {
-                                AsyncMedia(
-                                    url: info.currency.assetModel.logoPngUrl
+                    } else {
+                        ForEach(searchResults) { info in
+                            SimpleBalanceRow(
+                                leadingTitle: info.currency.name,
+                                trailingTitle: info.fiatBalance?.quote.toDisplayString(includeSymbol: true),
+                                trailingDescription: info.priceChangeString,
+                                trailingDescriptionColor: info.priceChangeColor,
+                                action: {
+                                    viewStore.send(.onAssetTapped(info))
+                                },
+                                leading: {
+                                    AsyncMedia(
+                                        url: info.currency.cryptoCurrency?.assetModel.logoPngUrl
+                                    )
+                                    .resizingMode(.aspectFit)
+                                    .frame(width: 24.pt, height: 24.pt)
+                                }
                             )
-                            .resizingMode(.aspectFit)
-                            .frame(width: 24.pt, height: 24.pt)
+                            if info.id != viewStore.searchResults?.last?.id {
+                                Divider()
+                                    .foregroundColor(.WalletSemantic.light)
                             }
-                        )
-                        if info.id != viewStore.searchResults?.last?.id {
-                           Divider()
-                                .foregroundColor(.WalletSemantic.light)
                         }
                     }
-                  }
                 } else {
                     loadingSection
                 }
@@ -103,12 +94,12 @@ public struct AllAssetsView: View {
     private var filterSheet: some View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .center, content: {
-                Text(LocalizationConstants.MultiApp.AllAssets.Filter.title)
+                Text(LocalizationConstants.SuperApp.AllAssets.Filter.title)
                     .typography(.paragraph2)
                     .padding(.top, Spacing.padding1)
 
                 HStack {
-                    Text(LocalizationConstants.MultiApp.AllAssets.Filter.showSmallBalancesLabel)
+                    Text(LocalizationConstants.SuperApp.AllAssets.Filter.showSmallBalancesLabel)
                         .typography(.paragraph2)
                         .padding(.leading, Spacing.padding2)
                     Spacer()
@@ -116,14 +107,14 @@ public struct AllAssetsView: View {
                         accessibilityLabel: "",
                         isOn: viewStore.binding(\.$showSmallBalancesFilterIsOn)
                     )
-                        .padding(.trailing, Spacing.padding2)
-                        .padding(.vertical, Spacing.padding2)
+                    .padding(.trailing, Spacing.padding2)
+                    .padding(.vertical, Spacing.padding2)
                 }
                 .background(Color.WalletSemantic.light)
                 .cornerRadius(16, corners: .allCorners)
                 .padding(.horizontal, Spacing.padding2)
 
-                PrimaryButton(title: LocalizationConstants.MultiApp.AllAssets.Filter.showButton) {
+                PrimaryButton(title: LocalizationConstants.SuperApp.AllAssets.Filter.showButton) {
                     viewStore.send(.onConfirmFilterTapped)
                 }
                 .padding(.horizontal, Spacing.padding2)
@@ -134,7 +125,7 @@ public struct AllAssetsView: View {
             Button {
                 viewStore.send(.onResetTapped)
             } label: {
-                Text(LocalizationConstants.MultiApp.AllAssets.Filter.resetButton)
+                Text(LocalizationConstants.SuperApp.AllAssets.Filter.resetButton)
             }
             .typography(.body2)
             .padding(.top, Spacing.padding1)
@@ -146,17 +137,17 @@ public struct AllAssetsView: View {
         Group {
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
             Divider()
-                 .foregroundColor(.WalletSemantic.light)
+                .foregroundColor(.WalletSemantic.light)
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
             Divider()
-                 .foregroundColor(.WalletSemantic.light)
+                .foregroundColor(.WalletSemantic.light)
             SimpleBalanceRow(leadingTitle: "", trailingDescription: nil, leading: {})
         }
     }
 
     private var noResultsView: some View {
         HStack(alignment: .center, content: {
-            Text(LocalizationConstants.MultiApp.AllAssets.noResults)
+            Text(LocalizationConstants.SuperApp.AllAssets.noResults)
                 .padding(.vertical, Spacing.padding2)
         })
         .frame(maxWidth: .infinity)
@@ -164,7 +155,7 @@ public struct AllAssetsView: View {
     }
 }
 
-extension CryptoAssetInfo {
+extension AssetBalanceInfo {
     var priceChangeString: String? {
         guard let delta else {
             return nil

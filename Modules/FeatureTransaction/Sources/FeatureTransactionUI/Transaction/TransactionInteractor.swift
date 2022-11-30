@@ -277,6 +277,13 @@ final class TransactionInteractor {
         return transactionProcessor.set(transactionConfirmation: newConfirmation)
     }
 
+    func updateRecurringBuyFrequency(_ frequency: RecurringBuy.Frequency) -> Single<PendingTransaction> {
+        guard let transactionProcessor else {
+            fatalError("Tx Processor is nil")
+        }
+        return transactionProcessor.updateRecurringBuyFrequency(frequency)
+    }
+
     func reset() {
         invalidate.on(.next(()))
         transactionProcessor?.reset()

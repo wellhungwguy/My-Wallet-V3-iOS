@@ -23,6 +23,7 @@ public enum AnnouncementType: String, Codable {
     case verifyIdentity = "kyc_incomplete"
     case viewNFTWaitlist = "view_nft_waitlist"
     case walletConnect = "wallet_connect"
+    case cardIssuingWaitlist = "card_issuing_waitlist"
 
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
@@ -69,6 +70,8 @@ public enum AnnouncementType: String, Codable {
                 unimplemented("AnnouncementType.assetRename does not have a default key.")
             }
             return .assetRename(code: "")
+        case .cardIssuingWaitlist:
+            return .cardIssuingWaitlist
         }
     }
 

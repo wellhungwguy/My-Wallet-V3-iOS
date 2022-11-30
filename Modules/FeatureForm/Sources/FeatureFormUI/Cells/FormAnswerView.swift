@@ -48,6 +48,7 @@ struct FormOpenEndedAnswerView: View {
             Input(
                 text: $answer.input ?? "",
                 isFirstResponder: $isFirstResponder,
+                shouldResignFirstResponderOnReturn: true,
                 placeholder: answer.hint,
                 state: showAnswerState ? answer.inputState : .default,
                 configuration: { textField in

@@ -22,7 +22,7 @@ import ToolKit
 import UIComponentsKit
 import UIKit
 
-public final class DeepLinkCoordinator: Session.Observer {
+public final class DeepLinkCoordinator: Client.Observer {
 
     private let app: AppProtocol
     private let coincore: CoincoreAPI
@@ -31,6 +31,7 @@ public final class DeepLinkCoordinator: Session.Observer {
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
     private let window: TopMostViewControllerProviding
     private let transactionsRouter: TransactionsRouterAPI
+    private let paymentMethodLinker: PaymentMethodsLinkerAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let onboardingRouter: OnboardingRouterAPI
     private let walletConnectService: () -> WalletConnectServiceAPI
@@ -45,6 +46,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         payloadFactory: CryptoTargetPayloadFactoryAPI,
         topMostViewControllerProvider: TopMostViewControllerProviding,
         transactionsRouter: TransactionsRouterAPI,
+        paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI,
         walletConnectService: @escaping () -> WalletConnectServiceAPI,
         onboardingRouter: OnboardingRouterAPI
@@ -59,6 +61,7 @@ public final class DeepLinkCoordinator: Session.Observer {
         self.analyticsRecording = analyticsRecording
         self.walletConnectService = walletConnectService
         self.onboardingRouter = onboardingRouter
+        self.paymentMethodLinker = paymentMethodLinker
     }
 
     var observers: [AnyCancellable] {
@@ -72,7 +75,9 @@ public final class DeepLinkCoordinator: Session.Observer {
             referrals,
             walletConnect,
             onboarding,
-            promotion
+            promotion,
+            linkCard,
+            linkBank
         ]
     }
 
@@ -116,6 +121,14 @@ public final class DeepLinkCoordinator: Session.Observer {
     private lazy var referrals = app.on(blockchain.app.deep_link.referral)
         .receive(on: DispatchQueue.main)
         .sink(to: DeepLinkCoordinator.handleReferral, on: self)
+
+    private lazy var linkCard = app.on(blockchain.app.deep_link.settings.add.payment.method.card)
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.handleLinkCard, on: self)
+
+    private lazy var linkBank = app.on(blockchain.app.deep_link.settings.add.payment.method.bank)
+        .receive(on: DispatchQueue.main)
+        .sink(to: DeepLinkCoordinator.handleLinkBank, on: self)
 
     // Debouncing prevents the popup from being dismissed
     private lazy var walletConnect = app.on(blockchain.app.deep_link.walletconnect)
@@ -190,6 +203,25 @@ public final class DeepLinkCoordinator: Session.Observer {
             self.presentReferralCampaign(referral)
         })
         .store(in: &bag)
+    }
+
+    func handleLinkCard() {
+        guard let viewController = window.topMostViewController else { return }
+        paymentMethodLinker.routeToCardLinkingFlow(from: viewController) {
+            viewController.dismiss(animated: true)
+        }
+    }
+
+    func handleLinkBank() {
+        Task {
+            let currency = try await app.get(blockchain.user.currency.preferred.fiat.trading.currency, as: FiatCurrency.self)
+            await MainActor.run {
+                guard let viewController = window.topMostViewController else { return }
+                paymentMethodLinker.routeToBankLinkingFlow(for: currency, from: viewController) {
+                    viewController.dismiss(animated: true)
+                }
+            }
+        }
     }
 
     private func presentReferralCampaign(_ referral: Referral) {

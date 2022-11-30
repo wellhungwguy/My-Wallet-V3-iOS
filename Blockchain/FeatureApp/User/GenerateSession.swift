@@ -1,6 +1,6 @@
 import Blockchain
 
-final class GenerateSession: Session.Observer {
+final class GenerateSession: Client.Observer {
 
     unowned var app: AppProtocol
 

@@ -48,8 +48,7 @@ extension DependencyContainer {
 
         factory {
             AssetSupportService(
-                app: DIKit.resolve(),
-                stacksSupport: DIKit.resolve()
+                app: DIKit.resolve()
             )
         }
 
@@ -71,7 +70,7 @@ extension DependencyContainer {
             return service as DelegatedCustodyAccountRepositoryAPI
         }
 
-        factory { () -> AuthenticationDataRepositoryAPI in
+        factory { () -> DelegatedCustodyAuthenticationDataRepositoryAPI in
             AuthenticationDataRepository(
                 guidService: DIKit.resolve(),
                 sharedKeyService: DIKit.resolve()

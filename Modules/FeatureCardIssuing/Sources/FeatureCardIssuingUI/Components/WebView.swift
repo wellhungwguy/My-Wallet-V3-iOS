@@ -141,13 +141,14 @@ struct WebView: UIViewRepresentable {
         ) {
             guard let finishUrl = parent.finishUrl,
                   let loadingUrl = navigationAction.request.url,
-                  loadingUrl.absoluteString.contains(finishUrl),
+                  loadingUrl.absoluteString == finishUrl,
                   let onFinish = parent.onFinish
             else {
                 decisionHandler(.allow)
                 return
             }
 
+            decisionHandler(.cancel)
             onFinish()
         }
 

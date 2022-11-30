@@ -3,7 +3,7 @@
 @testable import BitcoinChainKit
 @testable import BitcoinChainKitMock
 @testable import WalletPayloadKit
-
+import BlockchainNamespace
 import Combine
 import Errors
 import TestKit
@@ -53,7 +53,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin, app: App.test)
 
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
@@ -151,7 +151,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin, app: App.test)
 
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,
@@ -249,7 +249,7 @@ final class SyncPubKeysAddressesProviderTests: XCTestCase {
 
         let mockClient = APIClientMock()
         mockClient.underlyingUnspentOutputs = .just(UnspentOutputsResponse(unspent_outputs: []))
-        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin)
+        let mockUnspentOutputRepo = UnspentOutputRepository(client: mockClient, coin: .bitcoin, app: App.test)
 
         let receiveAddressProviderMock = BitcoinChainReceiveAddressProvider<BitcoinToken>(
             mnemonicProvider: mockMnemonicProvider,

@@ -1,11 +1,123 @@
-public protocol SessionObserver: AnyObject, CustomStringConvertible {
+import Combine
+
+extension Session {
+
+    public struct Observer: Hashable, Codable {
+
+        public struct Event: Hashable, Codable {
+            public let tag: Tag.Reference
+            public let binding: Bool?
+            public let notification: Bool?
+            public let context: [String: String]?
+        }
+
+        public class Value {
+
+            let didChange: (AnyJSON?) -> Void
+
+            public internal(set) var current: FetchResult.Value<AnyJSON>? {
+                didSet {
+                    if case .error(.keyDoesNotExist, _) = current { return }
+                    guard oldValue?.value != current?.value else { return }
+                    didChange(current?.value)
+                }
+            }
+
+            var bindings: AnyCancellable?
+
+            init(_ value: FetchResult.Value<AnyJSON>?, handler: @escaping (AnyJSON?) -> Void) {
+                self.current = value
+                self.didChange = handler
+            }
+        }
+
+        public let event: Event
+        public let action: Tag.Reference
+    }
+
+    public class Observers {
+
+        public typealias Event = Observer.Event
+        public typealias Value = Observer.Value
+
+        private weak var app: AppProtocol?
+
+        private var subscription: AnyCancellable?
+
+        private var events: [Observer: BlockchainEventSubscription] = [:]
+        private var bindings: [Observer: Value] = [:]
+
+        public fileprivate(set) var list: Set<Observer> = [] {
+            didSet {
+                for binding in list.filter(\.event.is.binding) {
+                    let context = Tag.Context(binding.event.context?.compactMapKeys(\.tagReference) ?? [:])
+                    let value = Value(bindings[binding]?.current) { [weak self] value in
+                        guard let self = self else { return }
+                        self.app?.post(event: binding.action.ref(to: context), context: [binding.event.tag: value])
+                    }
+                    bindings[binding] = value
+                    value.bindings = app?.publisher(for: binding.event.tag.ref(to: context))
+                        .assign(to: \.current, on: value)
+                }
+
+                let (added, removed) = list.diff(from: events.keys)
+
+                for added in added.filter(\.event.is.notification) {
+                    let context = Tag.Context(added.event.context?.compactMapKeys(\.tagReference) ?? [:])
+                    events[added] = app?.on(added.event.tag) { [weak self] event in
+                        guard let self = self else { return }
+                        self.app?.post(event: added.action.ref(to: context), context: event.context + context)
+                    }
+                    .start()
+                }
+
+                for removed in removed {
+                    if removed.event.is.notification { events.removeValue(forKey: removed)?.stop() }
+                    if removed.event.is.binding { bindings.removeValue(forKey: removed) }
+                }
+            }
+        }
+
+        init(app: AppProtocol) {
+            self.app = app
+        }
+
+        deinit { clear() }
+
+        func clear() {
+            subscription = nil
+            list = []
+        }
+
+        func reset() {
+            clear()
+            subscribe()
+        }
+
+        func subscribe() {
+            subscription = app?.publisher(for: blockchain.session.state.observers)
+                .assign(to: \.list, on: self)
+        }
+    }
+}
+
+extension Session.Observer.Event {
+
+    public var `is`: (notification: Bool, binding: Bool) {
+        (notification ?? false, binding ?? false)
+    }
+}
+
+public protocol ClientObserver: AnyObject, CustomStringConvertible {
     func start()
     func stop()
 }
 
-extension Session {
+public enum Client {}
 
-    public typealias Observer = SessionObserver
+extension Client {
+
+    public typealias Observer = ClientObserver
 
     public class Observers {
 
@@ -23,11 +135,9 @@ extension Session {
     }
 }
 
-extension SessionObserver {
+extension ClientObserver {
 
-    public var description: String {
-        "\(type(of: self))"
-    }
+    public var description: String { "\(type(of: self))" }
 }
 
 private struct Box<Wrapped: AnyObject> {

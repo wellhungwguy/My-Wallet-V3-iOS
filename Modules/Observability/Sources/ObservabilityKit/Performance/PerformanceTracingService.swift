@@ -56,7 +56,7 @@ struct NamepaceTrace: Codable {
     let context: [String: Tag.Reference]
 }
 
-public final class PerformanceTracingObserver: Session.Observer {
+public final class PerformanceTracingObserver: Client.Observer {
 
     unowned let app: AppProtocol
     private let service: PerformanceTracingServiceAPI

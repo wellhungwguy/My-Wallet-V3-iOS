@@ -48,7 +48,7 @@ extension LocalizationConstants.Settings {
 
     public enum About {
         public static let version = NSLocalizedString("Wallet Version", comment: "Wallet Version")
-        public static let copyright = NSLocalizedString("© %i Blockchain Luxembourg S.A. All rights reserved.", comment: "© Blockchain Luxembourg S.A. All rights reserved.")
+        public static let copyright = NSLocalizedString("© %i Blockchain.com All rights reserved.", comment: "© Blockchain Luxembourg S.A. All rights reserved.")
     }
 
     public static let emailNotifications = NSLocalizedString("Email Notifications", comment: "Email Notifications")

@@ -27,7 +27,13 @@ public struct PendingTransaction: Equatable {
     public var feeSelection: FeeSelection
     public var feeAmount: MoneyValue
     public var feeForFullAvailable: MoneyValue
+    public var recurringBuyFrequency: RecurringBuy.Frequency = .unknown
+    public var eligibilityAndNextPaymentMethodRecurringBuys: [EligibleAndNextPaymentRecurringBuy] = []
     public var paymentsDepositTerms: PaymentsDepositTerms?
+    public var eligibleAndNextPaymentRecurringBuy: EligibleAndNextPaymentRecurringBuy {
+        eligibilityAndNextPaymentMethodRecurringBuys
+            .first(where: { $0.frequency == recurringBuyFrequency }) ?? .oneTime
+    }
     /// The list of `TransactionConfirmation`.
     /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
     public private(set) var confirmations: [TransactionConfirmation] = []
@@ -79,6 +85,20 @@ public struct PendingTransaction: Equatable {
     public func update(quote: Quote) -> PendingTransaction {
         var copy = self
         copy.quote = quote
+        return copy
+    }
+
+    public func updateRecurringBuyFrequency(_ frequency: RecurringBuy.Frequency) -> PendingTransaction {
+        var copy = self
+        copy.recurringBuyFrequency = frequency
+        return copy
+    }
+
+    public func updatePaymentMethodEligibilityAndNextPaymentDates(
+        _ eligibilityAndNextPaymentMethodRecurringBuys: [EligibleAndNextPaymentRecurringBuy]
+    ) -> PendingTransaction {
+        var copy = self
+        copy.eligibilityAndNextPaymentMethodRecurringBuys = eligibilityAndNextPaymentMethodRecurringBuys
         return copy
     }
 
@@ -188,6 +208,8 @@ public struct PendingTransaction: Equatable {
         guard lhs.limits == rhs.limits else { return false }
         guard lhs.validationState == rhs.validationState else { return false }
         guard lhs.quote == rhs.quote else { return false }
+        guard lhs.recurringBuyFrequency == rhs.recurringBuyFrequency else { return false }
+        guard lhs.eligibilityAndNextPaymentMethodRecurringBuys == rhs.eligibilityAndNextPaymentMethodRecurringBuys else { return false }
         guard lhs.paymentsDepositTerms == rhs.paymentsDepositTerms else { return false }
         guard TransactionConfirmations.areEqual(lhs.confirmations, rhs.confirmations) else { return false }
         return true

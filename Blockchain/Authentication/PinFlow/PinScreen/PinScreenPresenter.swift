@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainComponentLibrary
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import LocalAuthentication
@@ -673,6 +674,46 @@ extension PinScreenPresenter {
             actions: [okButton, cancelButton],
             image: image.withRenderingMode(.alwaysTemplate),
             style: .sheet
+        )
+        return alert
+    }
+
+    /// Enabling biometrics alert model (if biometrics is configurable)
+    var biometricsSheetModel: PinScreenEnableBiometricsInfoViewModel? {
+        let biometricsStatus = biometryProvider.configurationStatus
+
+        // Ensure bioemtrics is configurable before continuing
+        guard biometricsStatus.isConfigurable else {
+            return nil
+        }
+
+        let okButtonAction = { [unowned self] in
+            self.interactor.persist(pin: self.pin.value!)
+        }
+        let okButton = PinScreenEnableBiometricsInfoViewModel.Button(
+            title: LocalizationConstants.okString,
+            actionClosure: okButtonAction
+        )
+        let cancelButton = PinScreenEnableBiometricsInfoViewModel.Button(
+            title: LocalizationConstants.Pin.enableBiometricsNotNowButton,
+            actionClosure: {}
+        )
+        let title: String
+        let image: Icon
+        switch biometricsStatus.biometricsType {
+        case .faceID:
+            title = LocalizationConstants.Pin.enableFaceIdTitle
+            image = .faceID
+        default: // touch-id
+            title = LocalizationConstants.Pin.enableTouchIdTitle
+            image = .fingerprint
+        }
+        let alert = PinScreenEnableBiometricsInfoViewModel(
+            icon: image.color(.primary),
+            title: title,
+            subtitle: LocalizationConstants.Pin.enableBiometricsMessage,
+            acceptButton: okButton,
+            cancelButton: cancelButton
         )
         return alert
     }

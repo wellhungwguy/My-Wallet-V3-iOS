@@ -48,7 +48,7 @@ extension LocalizationConstants.BackupRecoveryPhrase.SkipConfirmScreen {
 extension LocalizationConstants.BackupRecoveryPhrase.ViewRecoveryPhraseScreen {
     public static let navigationTitle = NSLocalizedString("Secure Your Private Key Wallet", comment: "Secure Your Private Key Wallet")
     public static let title = NSLocalizedString("Your Recovery Phrase", comment: "Title")
-    public static let caption = NSLocalizedString("These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.", comment: "These 12 words give you access your Private Key Wallets. Please back them up to the cloud or write them down manually.")
+    public static let caption = NSLocalizedString("These 12 words give you access to your Private Key Wallets. Please back them up to the cloud or write them down manually.", comment: "These 12 words give you access to your Private Key Wallets. Please back them up to the cloud or write them down manually.")
     public static let doneButton = NSLocalizedString("Done", comment: "Done")
     public static let backupToIcloudButton = NSLocalizedString("Backup to iCloud", comment: "Backup to iCloud")
     public static let backupManuallyButton = NSLocalizedString("Backup Manually", comment: "Backup Manually")

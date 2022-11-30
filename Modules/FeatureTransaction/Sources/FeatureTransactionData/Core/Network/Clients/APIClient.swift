@@ -22,7 +22,8 @@ typealias FeatureTransactionDomainClientAPI = CustodialQuoteAPI &
     WithdrawalLocksCheckClientAPI &
     CreateRecurringBuyClientAPI &
     CancelRecurringBuyClientAPI &
-    RecurringBuyProviderClientAPI
+    RecurringBuyProviderClientAPI &
+    EligiblePaymentMethodRecurringBuyClientAPI
 
 /// FeatureTransactionDomain network client
 final class APIClient: FeatureTransactionDomainClientAPI {
@@ -30,6 +31,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
     fileprivate enum Parameter {
         static let minor = "minor"
         static let currency = "currency"
+        static let date = "date"
         static let inputCurrency = "inputCurrency"
         static let fromAccount = "fromAccount"
         static let outputCurrency = "outputCurrency"
@@ -57,6 +59,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
         static let recurringBuyCreate = ["recurring-buy", "create"]
         static let recurringBuyList = ["recurring-buy", "list"]
+        static let recurringBuyNextPayment = ["recurring-buy", "next-payment"]
 
         static func cancelRecurringBuy(_ id: String) -> [String] {
             ["recurring-buy", id, "cancel"]
@@ -555,6 +558,30 @@ extension APIClient {
 
         let request = retailRequestBuilder.get(
             path: Path.recurringBuyList,
+            parameters: parameters,
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    // MARK: - EligiblePaymentMethodRecurringBuyClientAPI
+
+    func fetchEligiblePaymentMethodTypesStartingFromDate(
+        _ date: Date?
+    ) -> AnyPublisher<EligiblePaymentMethodsRecurringBuyResponse, NabuNetworkError> {
+        var parameters: [URLQueryItem] = []
+        if let date = date {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameter.date,
+                    value: DateFormatter.iso8601Format.string(from: date)
+                )
+            )
+        }
+
+        let request = retailRequestBuilder.get(
+            path: Path.recurringBuyNextPayment,
             parameters: parameters,
             authenticated: true
         )!

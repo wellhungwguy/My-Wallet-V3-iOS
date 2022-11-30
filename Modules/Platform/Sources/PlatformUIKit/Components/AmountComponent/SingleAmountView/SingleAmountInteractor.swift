@@ -28,9 +28,12 @@ public final class SingleAmountInteractor: AmountViewInteracting {
     public let currencyInteractor: InputAmountLabelInteractor
     public let inputCurrency: Currency
 
-    // This interactor doesn't support min/max
+    /// This interactor doesn't support min/max
     public var minAmountSelected: Observable<Void> = .never()
     public var maxAmountSelected: Observable<Void> = .never()
+
+    /// This interactor does not support selecting a recurring buy frequency
+    public var recurringBuyFrequencySelected: Observable<Void> = .never()
 
     // MARK: - Private
 

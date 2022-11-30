@@ -37,6 +37,7 @@ import MetadataKit
 import PlatformDataKit
 import ToolKit
 import UIKit
+import UnifiedActivityData
 import WalletPayloadDataKit
 import WalletPayloadKit
 
@@ -164,6 +165,7 @@ func defineDependencies() {
         DependencyContainer.blockchainDashboard
         DependencyContainer.blockchainDelegatedSelfCustody
         DependencyContainer.blockchainSettings
+        DependencyContainer.unifiedActivityData
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

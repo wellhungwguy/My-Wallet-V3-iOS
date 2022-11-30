@@ -102,7 +102,7 @@ struct ReviewOrderView: View {
                             send: CardOrderingAction.setLegalAccepted
                         )
                     )
-                    Text(LocalizationConstants.CardIssuing.Legal.Item.title)
+                    RichText(LocalizationConstants.CardIssuing.Legal.Item.title)
                         .foregroundColor(.WalletSemantic.body)
                         .typography(.caption1)
                         .onTapGesture {
@@ -113,13 +113,12 @@ struct ReviewOrderView: View {
                     viewStore.send(.createCard)
                 }
                 .disabled(
-                    !(viewStore.state.acceptLegalState.accepted.value ?? false)
-                    || viewStore.state.products.isEmpty
+                    viewStore.state.canOrder
                 )
             }
             .padding(Spacing.padding3)
             .onAppear {
-                viewStore.send(CardOrderingAction.fetchFullName)
+                viewStore.send(.onReviewAppear)
             }
             PrimaryNavigationLink(
                 destination: OrderProcessingView(store: store),
@@ -131,12 +130,25 @@ struct ReviewOrderView: View {
     }
 }
 
+extension CardOrderingState {
+    fileprivate var canOrder: Bool {
+        !(acceptLegalState.accepted.value ?? false)
+        || (
+            selectedProduct?.type == .physical
+            && (shippingAddress ?? address) == nil
+        )
+        || products.isEmpty
+    }
+}
+
 #if DEBUG
 struct ReviewOrderView_Previews: PreviewProvider {
     static var previews: some View {
         ReviewOrderView(
             store: .init(
-                initialState: .init(),
+                initialState: .init(
+                    initialKyc: KYC(status: .success, errorFields: nil)
+                ),
                 reducer: cardOrderingReducer,
                 environment: .preview
             )

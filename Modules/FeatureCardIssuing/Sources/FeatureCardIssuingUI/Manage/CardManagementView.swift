@@ -212,7 +212,7 @@ struct CardManagementView: View {
                                 viewStore.send(CardManagementAction.showManagementDetails)
                             }
                         )
-                        .frame(width: UIScreen.main.bounds.width, height: 355)
+                        .frame(width: UIScreen.main.bounds.width, height: 320)
                     }
                 },
                 else: {
@@ -220,7 +220,7 @@ struct CardManagementView: View {
                 }
             )
         }
-        .frame(height: 355)
+        .frame(height: 320)
     }
 
     @ViewBuilder var transactionPlaceholder: some View {

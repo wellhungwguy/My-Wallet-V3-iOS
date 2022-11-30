@@ -61,6 +61,9 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let isQuickfillEnabled = app
             .remoteConfiguration
             .yes(if: blockchain.app.configuration.transaction.quickfill.is.enabled)
+        let isRecurringBuyEnabled = app
+            .remoteConfiguration
+            .yes(if: blockchain.app.configuration.recurring.buy.is.enabled)
 
         let state = transactionModel
             .state
@@ -190,7 +193,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             amountViewable = AmountTranslationView(
                 presenter: amountViewPresenting as! AmountTranslationPresenter,
                 app: app,
-                prefillButtonsEnabled: isQuickfillEnabled
+                prefillButtonsEnabled: isQuickfillEnabled,
+                shouldShowRecurringBuyFrequency: isRecurringBuyEnabled
             )
         default:
             unimplemented()

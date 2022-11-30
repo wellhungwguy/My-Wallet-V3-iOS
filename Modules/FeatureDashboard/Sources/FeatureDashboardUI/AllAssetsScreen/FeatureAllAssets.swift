@@ -7,34 +7,35 @@ import PlatformKit
 import SwiftExtensions
 
 public struct FeatureAllAssets: ReducerProtocol {
-    public let allCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI
+    public let allCrpyotService: AllCryptoAssetsServiceAPI
     public let app: AppProtocol
     public init(
-        allCryptoAssetsRepository: AllCryptoAssetsRepositoryAPI,
+        allCryptoService: AllCryptoAssetsServiceAPI,
         app: AppProtocol
     ) {
-        self.allCryptoAssetsRepository = allCryptoAssetsRepository
+        allCrpyotService = allCryptoService
         self.app = app
     }
 
     public enum Action: Equatable, BindableAction {
         case onAppear
-        case onBalancesFetched(TaskResult<[CryptoAssetInfo]>)
+        case onBalancesFetched(TaskResult<[AssetBalanceInfo]>)
         case binding(BindingAction<State>)
         case onFilterTapped
         case onConfirmFilterTapped
         case onResetTapped
-        case onAssetTapped(CryptoAssetInfo)
+        case onAssetTapped(AssetBalanceInfo)
     }
 
     public struct State: Equatable {
-        var balanceInfo: [CryptoAssetInfo]?
+        var presentedAssetType: PresentedAssetType
+        var balanceInfo: [AssetBalanceInfo]?
         @BindableState var searchText: String = ""
         @BindableState var isSearching: Bool = false
         @BindableState var filterPresented: Bool = false
         @BindableState var showSmallBalancesFilterIsOn: Bool = false
 
-        var searchResults: [CryptoAssetInfo]? {
+        var searchResults: [AssetBalanceInfo]? {
             guard let balanceInfo else {
                 return nil
             }
@@ -49,7 +50,9 @@ public struct FeatureAllAssets: ReducerProtocol {
             }
         }
 
-        public init() {}
+        public init(with presentedAssetType: PresentedAssetType) {
+            self.presentedAssetType = presentedAssetType
+        }
     }
 
     public var body: some ReducerProtocol<State, Action> {
@@ -57,10 +60,12 @@ public struct FeatureAllAssets: ReducerProtocol {
         Reduce { state, action in
             switch action {
             case .onAppear:
-                return .task {
+                return .task { [assetType = state.presentedAssetType] in
                     await .onBalancesFetched(
                         TaskResult {
-                            try await self.allCryptoAssetsRepository.assetsInfo.await()
+                            assetType == .custodial ?
+                            await self.allCrpyotService.getAllCryptoAssetsInfo() :
+                            await self.allCrpyotService.getAllNonCustodialAssets()
                         }
                     )
                 }
@@ -84,8 +89,9 @@ public struct FeatureAllAssets: ReducerProtocol {
 
             case .onAssetTapped(let assetInfo):
                 return .fireAndForget {
-                    self.app.post(
-                        event: blockchain.ux.asset[assetInfo.currency.code].select,
+                    app.post(
+                        action: blockchain.ux.asset.select.then.enter.into,
+                        value: blockchain.ux.asset[assetInfo.currency.code],
                         context: [blockchain.ux.asset.select.origin: "ASSETS"]
                     )
                 }
@@ -105,7 +111,7 @@ public struct FeatureAllAssets: ReducerProtocol {
     }
 }
 
-extension [CryptoAssetInfo] {
+extension [AssetBalanceInfo] {
     func filtered(by searchText: String, using algorithm: StringDistanceAlgorithm = FuzzyAlgorithm(caseInsensitive: true)) -> [Element] {
         filter {
             $0.currency.name.distance(between: searchText, using: algorithm) == 0 ||

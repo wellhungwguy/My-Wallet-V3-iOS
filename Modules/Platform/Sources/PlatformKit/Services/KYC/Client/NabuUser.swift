@@ -173,6 +173,10 @@ extension NabuUser {
     public var isCowboys: Bool {
         tags?.cowboys != nil
     }
+
+    public var isSuperAppUser: Bool? {
+        tags?.isSuperAppMvp
+    }
 }
 
 extension NabuUser: NabuUserBlockstackAirdropRegistering {
@@ -207,15 +211,25 @@ struct Tags: Decodable, Equatable {
     private enum CodingKeys: String, CodingKey {
         case blockstack = "BLOCKSTACK"
         case cowboys = "COWBOYS_2022"
+        case isSuperAppMvpTrue = "is_superapp_mvp_true"
+        case isSuperAppMvpFalse = "is_superapp_mvp_false"
     }
 
     let blockstack: Blockstack?
     let cowboys: CodableVoid?
+    var isSuperAppMvp: Bool?
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
         cowboys = try values.decodeIfPresent(CodableVoid.self, forKey: .cowboys)
+        let isSuperAppMvpTrue = try values.decodeIfPresent(CodableVoid.self, forKey: .isSuperAppMvpTrue)
+        let isSuperAppMvpFalse = try values.decodeIfPresent(CodableVoid.self, forKey: .isSuperAppMvpFalse)
+        if isSuperAppMvpTrue != nil {
+            isSuperAppMvp = true
+        } else if isSuperAppMvpFalse != nil {
+            isSuperAppMvp = false
+        }
     }
 
     init(blockstack: Blockstack?, cowboys: CodableVoid?) {

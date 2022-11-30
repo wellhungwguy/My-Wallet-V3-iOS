@@ -179,14 +179,14 @@ extension Card.Status {
 
     var color: Color {
         switch self {
-        case .initiated, .created, .unactivated:
+        case .initiated, .created:
             return .semantic.primaryMuted
         case .active:
             return .semantic.success
-        case .locked:
-            return .semantic.error
+        case .locked, .unactivated:
+            return .semantic.primary
         case .terminated:
-            return .semantic.body
+            return .semantic.error
         case .unsupported, .limited, .suspended:
             return .semantic.orangeBG
         }

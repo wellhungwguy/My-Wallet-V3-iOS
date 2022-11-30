@@ -127,15 +127,13 @@ final class WalletConnectService {
             .ignoreFailure(setFailureType: Never.self)
             .zip(sessionRepository.retrieve())
             .map { publicKey, sessions -> [Session] in
-                print(sessions)
-                return sessions
+                sessions
                     .compactMap { session in
                         session.session(address: publicKey)
                     }
             }
             .handleEvents(
                 receiveOutput: { [server, sessionLinks] sessions in
-                    print(sessions)
                     sessions
                         .forEach { session in
                             sessionLinks.mutate {

@@ -1,7 +1,8 @@
 {
     "blockchain.app.configuration.addresssearch.kyc.is.enabled": true,
-    "blockchain.app.configuration.multiapp.is.enabled": false,
+    "blockchain.app.configuration.app.superapp.v1.is.enabled": false,
     "blockchain.app.configuration.app.superapp.is.enabled": false,
+    "blockchain.api.nabu.gateway.user.tag.service.is.enabled": false,
     "blockchain.app.configuration.apple.pay.is.enabled": false,
     "blockchain.app.configuration.argentinalinkbank.is.enabled": false,
     "blockchain.app.configuration.card.issuing.is.enabled": false,

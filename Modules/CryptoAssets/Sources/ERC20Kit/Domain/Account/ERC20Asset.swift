@@ -29,8 +29,11 @@ final class ERC20Asset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [walletAccountRepository, erc20Token, network] in
-            walletAccountRepository.defaultAccount(erc20Token: erc20Token, network: network)
+        nonCustodialAccountsProvider: { [walletAccountRepository, erc20Token, network] in
+            walletAccountRepository
+                .defaultAccount(erc20Token: erc20Token, network: network)
+                .map { [$0] }
+                .eraseToAnyPublisher()
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,

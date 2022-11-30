@@ -49,7 +49,7 @@ final class SubscriptionsStateServiceMock: SubscriptionsStateServiceAPI {
     }
 }
 
-final class AuthenticationDataRepositoryMock: AuthenticationDataRepositoryAPI {
+final class AuthenticationDataRepositoryMock: DelegatedCustodyAuthenticationDataRepositoryAPI {
     var initialAuthenticationDataResult: Result<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError>!
     var initialAuthenticationData: AnyPublisher<InitialAuthenticationDataPayload, AuthenticationDataRepositoryError> {
         initialAuthenticationDataResult.publisher.eraseToAnyPublisher()

@@ -9,24 +9,19 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-private struct AccountsPayload {
-    let defaultAccount: BitcoinWalletAccount
-    let accounts: [BitcoinWalletAccount]
-}
-
 final class BitcoinAsset: CryptoAsset {
 
     let asset: CryptoCurrency = .bitcoin
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultAccount
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account in
                 BitcoinCryptoAccount(
                     walletAccount: account,
                     isDefault: true
                 )
             }
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()
     }
 
@@ -40,8 +35,8 @@ final class BitcoinAsset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [defaultAccount] in
-            defaultAccount
+        nonCustodialAccountsProvider: { [nonCustodialAccounts] in
+            nonCustodialAccounts
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,
@@ -102,6 +97,22 @@ final class BitcoinAsset: CryptoAsset {
         onTxCompleted: @escaping (TransactionResult) -> Completable
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
+    }
+
+    private var nonCustodialAccounts: AnyPublisher<[SingleAccount], CryptoAssetError> {
+        repository.activeAccounts
+            .zip(repository.defaultAccount)
+            .map { activeAccounts, defaultAccount -> [SingleAccount] in
+                activeAccounts.map { account in
+                    BitcoinCryptoAccount(
+                        walletAccount: account,
+                        isDefault: account.publicKeys.default == defaultAccount.publicKeys.default
+                    )
+                }
+            }
+            .recordErrors(on: errorRecorder)
+            .replaceError(with: CryptoAssetError.noDefaultAccount)
+            .eraseToAnyPublisher()
     }
 }
 

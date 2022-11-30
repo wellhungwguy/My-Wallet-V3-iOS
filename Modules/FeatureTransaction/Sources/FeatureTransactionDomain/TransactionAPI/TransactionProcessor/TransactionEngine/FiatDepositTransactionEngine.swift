@@ -248,9 +248,7 @@ extension PendingTransaction {
                 TransactionConfirmations.DepositTerms(
                     amount: amount,
                     paymentMehtod: sourceBankAccount.label + " " + sourceBankAccount.accountNumber,
-                    withdrawalLockInDays: paymentsDepositTerms?
-                        .withdrawalLockDays
-                        .map { "\($0)" } ?? ""
+                    withdrawalLockInDays: paymentsDepositTerms?.formattedWithdrawalLockDays ?? ""
                 )
             ]
         }

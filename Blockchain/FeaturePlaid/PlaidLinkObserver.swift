@@ -19,7 +19,7 @@ import UIKit
 /// Use cases B and C have the same logic.
 ///
 
-public final class PlaidLinkObserver: Session.Observer {
+public final class PlaidLinkObserver: Client.Observer {
     unowned let app: AppProtocol
     private var handler: LinkKit.Handler?
     private let topViewController: TopMostViewControllerProviding

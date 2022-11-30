@@ -11,14 +11,14 @@ final class SubscriptionsService: DelegatedCustodySubscriptionsServiceAPI {
 
     private let accountRepository: AccountRepositoryAPI
     private let authClient: AuthenticationClientAPI
-    private let authenticationDataRepository: AuthenticationDataRepositoryAPI
+    private let authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     private let subscriptionsClient: SubscriptionsClientAPI
     private let subscriptionsStateService: SubscriptionsStateServiceAPI
 
     init(
         accountRepository: AccountRepositoryAPI,
         authClient: AuthenticationClientAPI,
-        authenticationDataRepository: AuthenticationDataRepositoryAPI,
+        authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI,
         subscriptionsClient: SubscriptionsClientAPI,
         subscriptionsStateService: SubscriptionsStateServiceAPI
     ) {

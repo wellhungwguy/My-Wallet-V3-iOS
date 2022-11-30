@@ -3,15 +3,16 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum MultiApp {
+    public enum SuperApp {
         public enum AppChrome {}
+        public enum Dashboard {}
         public enum AllAssets {
             public enum Filter {}
         }
     }
 }
 
-extension LocalizationConstants.MultiApp {
+extension LocalizationConstants.SuperApp {
     public static let trading = NSLocalizedString(
         "Trading",
         comment: "Trading title"
@@ -22,14 +23,14 @@ extension LocalizationConstants.MultiApp {
     )
 }
 
-extension LocalizationConstants.MultiApp.AppChrome {
+extension LocalizationConstants.SuperApp.AppChrome {
     public static let totalBalance = NSLocalizedString(
         "Total Balance",
         comment: "Total Balance title"
     )
 }
 
-extension LocalizationConstants.MultiApp.AllAssets {
+extension LocalizationConstants.SuperApp.AllAssets {
     public static let title = NSLocalizedString(
         "All assets",
         comment: "All assets"
@@ -51,7 +52,7 @@ extension LocalizationConstants.MultiApp.AllAssets {
     )
 }
 
-extension LocalizationConstants.MultiApp.AllAssets.Filter {
+extension LocalizationConstants.SuperApp.AllAssets.Filter {
     public static let title = NSLocalizedString(
         "Filter Assets",
         comment: "Filter Assets"
@@ -70,5 +71,17 @@ extension LocalizationConstants.MultiApp.AllAssets.Filter {
     public static var resetButton = NSLocalizedString(
         "Reset",
         comment: "Reset"
+    )
+}
+
+extension LocalizationConstants.SuperApp.Dashboard {
+    public static let allAssetsLabel = NSLocalizedString(
+        "All assets",
+        comment: "All assets"
+    )
+
+    public static let seeAllLabel = NSLocalizedString(
+        "See all",
+        comment: "See all"
     )
 }

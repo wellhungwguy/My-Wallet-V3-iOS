@@ -14,6 +14,7 @@ extension DependencyContainer {
                 accountModelProvider: DIKit.resolve(),
                 app: DIKit.resolve(),
                 cardService: DIKit.resolve(),
+                kycService: DIKit.resolve(),
                 legalService: DIKit.resolve(),
                 productService: DIKit.resolve(),
                 residentialAddressService: DIKit.resolve(tag: CardIssuingTag.residentialAddress),
@@ -25,6 +26,16 @@ extension DependencyContainer {
                 addressSearchRouter: DIKit.resolve(tag: CardIssuingTag.residentialAddress),
                 shippingAddressSearchRouter: DIKit.resolve(tag: CardIssuingTag.shippingAddress)
             ) as CardIssuingBuilderAPI
+        }
+
+        single {
+            CardIssuingRouter(
+                builder: DIKit.resolve(),
+                addressProvider: DIKit.resolve(),
+                cardService: DIKit.resolve(),
+                kycService: DIKit.resolve(),
+                productService: DIKit.resolve()
+            ) as CardIssuingRouterAPI
         }
     }
 }

@@ -2,6 +2,8 @@
 
 import BlockchainComponentLibrary
 import BlockchainNamespace
+import DIKit
+import FeatureDashboardUI
 import SwiftUI
 
 @available(iOS 16.0, *)
@@ -20,6 +22,10 @@ struct InteractiveMultiAppContent: View {
     /// `True` when a pull to refresh is triggered, otherwise `false`
     @Binding var isRefreshing: Bool
 
+    @State private var hideBalanceAfterRefresh = false
+
+    private let supportedDetents = AppChromeDetents.supportedDetents
+
     var body: some View {
         MultiAppHeaderView(
             totalBalance: $totalBalance,
@@ -31,6 +37,18 @@ struct InteractiveMultiAppContent: View {
         .onChange(of: currentModeSelection, perform: { newValue in
             app.post(value: newValue.rawValue, of: blockchain.app.mode)
         })
+        .onChange(of: isRefreshing, perform: { _ in
+            if !isRefreshing {
+                hideBalanceAfterRefresh.toggle()
+            }
+        })
+        .task(id: hideBalanceAfterRefresh) {
+            // run initial "animation" and select `semiCollapsed` detent after 3 second
+            do {
+                try await Task.sleep(until: .now + .seconds(3), clock: .continuous)
+                selectedDetent = .semiCollapsed
+            } catch {}
+        }
         .refreshable {
             await tempAsyncDelayMethod()
         }
@@ -47,21 +65,23 @@ struct InteractiveMultiAppContent: View {
                     }
                 }
             )
-            .frame(maxWidth: .infinity)
             .background(
                 Color.semantic.light
-                    .ignoresSafeArea(edges: .bottom)
             )
+            .frame(maxWidth: .infinity)
             .presentationDetents(
-                [
-                    .collapsed,
-                    .expanded
-                ],
+                Set(supportedDetents.map(\.detent)),
                 selection: $selectedDetent
             )
             .presentationDragIndicator(.hidden)
-            // the "Custom:CollpsedDetent" is the name the system gives to a custom detent
-            .largestUndimmedDetentIdentifier("Custom:CollapsedDetent", modalOffset: $contentOffset)
+            .largestUndimmedDetentIdentifier(
+                AppChromeDetents.semiCollapsed.identifier,
+                modalOffset: $contentOffset
+            ) { identifier in
+                if let first = supportedDetents.first(where: { $0.identifier == identifier }) {
+                    selectedDetent = first.detent
+                }
+            }
             .interactiveDismissDisabled(true)
         })
     }
@@ -169,34 +189,18 @@ struct MultiAppTradingView: View {
 
     func dummyView(tabs: [BottomBarItem<_Tab>]) -> some View {
         ForEach(tabs) { tab in
-            DummyInnerContentView(tab: tab)
+            TradingDashboardView(store: .init(
+                initialState: .init(title: tab.title),
+                reducer: TradingDashboard(
+                    app: resolve(),
+                    allCryptoAssetService: resolve()
+                )
+            )
+            )
                 .tag(tab.id)
                 .id(tab.id)
                 .accessibilityIdentifier("tab.id.\(tab.id)")
-        }
-    }
-}
-
-struct DummyInnerContentView: View {
-    let tab: BottomBarItem<_Tab>
-
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 1) {
-                    ForEach(0..<20) { value in
-                        PrimaryRow(
-                            title: "\(tab.title) \(value)",
-                            subtitle: "Buy & Sell",
-                            action: {}
-                        )
-                    }
-                }
-                .padding(.bottom, Spacing.padding6)
-                .navigationTitle(tab.title)
-                .navigationBarTitleDisplayMode(.inline)
-                .frame(maxWidth: .infinity)
-            }
+                .background(Color.semantic.light)
         }
     }
 }
@@ -250,7 +254,14 @@ struct MultiAppDefiView: View {
 
     func dummyView(tabs: [BottomBarItem<_Tab>]) -> some View {
         ForEach(tabs) { tab in
-            DummyInnerContentView(tab: tab)
+            PKWDashboardView(store: .init(
+                initialState: .init(title: tab.title),
+                reducer: PKWDashboard(
+                    app: resolve(),
+                    allCryptoAssetService: resolve()
+                )
+            )
+            )
                 .tag(tab.id)
                 .id(tab.id)
                 .accessibilityIdentifier("tab.id.\(tab.id)")

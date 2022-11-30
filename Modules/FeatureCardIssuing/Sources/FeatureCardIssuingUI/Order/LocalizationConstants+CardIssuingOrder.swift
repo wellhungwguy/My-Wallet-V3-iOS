@@ -122,6 +122,73 @@ extension LocalizationConstants.CardIssuing {
                 )
             }
         }
+
+        enum KycPending {
+            enum Success {
+                static let title = NSLocalizedString(
+                    "KYC Updated!",
+                    comment: "Card Issuing: KYC Updated!"
+                )
+
+                static let caption = NSLocalizedString(
+                    "Your KYC was successfully updated, please press Continue below.",
+                    comment: "Card Issuing: KYC Success"
+                )
+
+                static let next = NSLocalizedString(
+                    "Continue",
+                    comment: "Card Issuing: Continue"
+                )
+            }
+
+            enum Processing {
+                static let title = NSLocalizedString(
+                    "Processing...",
+                    comment: "Card Issuing: KYC Processing"
+                )
+            }
+
+            enum Pending {
+                static let title = NSLocalizedString(
+                    "Your Account Is Under Review",
+                    comment: "Card Issuing: KYC Account Under Review"
+                )
+
+                static let caption = NSLocalizedString(
+                    """
+                    We are processing the provided information and require \
+                    some extra time to review. One of our customer support \
+                    agents will reach out via email.
+                    """,
+                    comment: "Card Issuing: KYC pending caption"
+                )
+
+                static let next = NSLocalizedString(
+                    "OK",
+                    comment: "Card Issuing: KYC Pending continue button"
+                )
+            }
+
+            enum Failed {
+                static let title = NSLocalizedString(
+                    "There Is An Error With Your Application",
+                    comment: "Card Issuing: KYC Failure title"
+                )
+
+                static let caption = NSLocalizedString(
+                    """
+                    We are processing the provided information but \
+                    there seems to be an issue.
+                    """,
+                    comment: "Card Issuing: KYC Failure caption"
+                )
+
+                static let next = NSLocalizedString(
+                    "Try Again",
+                    comment: "Card Issuing: KYC Pending continue button"
+                )
+            }
+        }
     }
 }
 

@@ -44,7 +44,7 @@ extension OpenBankingClient {
             headers: ["Authorization": "Bearer ..."]
         ),
         network: NetworkAdapter(
-            communicator: EphemeralNetworkCommunicator()
+            communicator: EphemeralNetworkCommunicator(session: .shared)
         ).network
     )
 }

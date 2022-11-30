@@ -11,11 +11,8 @@ struct CardIssuingIntroView: View {
 
     private typealias L10n = LocalizationConstants.CardIssuing.Order
 
-    private let store: Store<CardOrderingState, CardOrderingAction>
-
-    init(store: Store<CardOrderingState, CardOrderingAction>) {
-        self.store = store
-    }
+    let store: Store<CardOrderingState, CardOrderingAction>
+    @State private var isNextScreenVisible = false
 
     var body: some View {
         WithViewStore(store) { viewStore in
@@ -34,14 +31,12 @@ struct CardIssuingIntroView: View {
                     title: L10n.Intro.Button.Title.order,
                     isLoading: false,
                     action: {
-                        viewStore.send(
-                            .binding(.set(\.$isAddressConfirmationVisible, true))
-                        )
+                        isNextScreenVisible = true
                     }
                 )
                 PrimaryNavigationLink(
-                    destination: ResidentialAddressConfirmationView(store: store),
-                    isActive: viewStore.binding(\.$isAddressConfirmationVisible),
+                    destination: nextView(),
+                    isActive: $isNextScreenVisible,
                     label: EmptyView.init
                 )
                 .padding(.top, Spacing.padding2)
@@ -61,20 +56,39 @@ struct CardIssuingIntroView: View {
     }
 }
 
+extension CardIssuingIntroView {
+
+    @ViewBuilder
+    private func nextView() -> some View {
+        WithViewStore(store) { viewStore in
+            switch viewStore.state.initialKyc.status {
+            case .success:
+                ProductSelectionView(store: store)
+            default:
+                ResidentialAddressConfirmationView(store: store)
+            }
+        }
+    }
+}
+
 #if DEBUG
 struct CardIssuingIntro_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             CardIssuingIntroView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(
+                        initialKyc: KYC(status: .success, errorFields: nil)
+                    ),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )
             )
             CardIssuingIntroView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(
+                        initialKyc: KYC(status: .success, errorFields: nil)
+                    ),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )

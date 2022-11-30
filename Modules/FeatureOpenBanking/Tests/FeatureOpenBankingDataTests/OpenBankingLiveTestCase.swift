@@ -28,6 +28,7 @@ final class OpenBankingLiveTestCase: XCTestCase {
             ),
             network: NetworkAdapter(
                 communicator: EphemeralNetworkCommunicator(
+                    session: .shared,
                     isRecording: true,
                     directory: "/tmp/OpenBanking"
                 )

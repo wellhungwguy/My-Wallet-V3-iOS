@@ -266,6 +266,10 @@ final class AnnouncementPresenter {
             return viewNFTComingSoonAnnouncement()
         case .walletConnect:
             return walletConnect()
+        case .cardIssuingWaitlist:
+            return cardIssuingWaitlist(
+                eligible: preliminaryData.cardIssuingWaitlistAvailable
+            )
         }
     }
 
@@ -385,8 +389,9 @@ extension AnnouncementPresenter {
 
     private func showCoinView(for currency: CryptoCurrency) {
         app.post(
-            event: blockchain.ux.asset[currency.code].select,
-            context: [blockchain.ux.asset.select.origin: "ANNOUNCEMENT"]
+            action: blockchain.ux.asset.select.then.enter.into,
+            value: blockchain.ux.asset[currency.code],
+            context: [blockchain.ux.asset.select.origin: "ANNOUNCEMENTS"]
         )
     }
 
@@ -422,6 +427,16 @@ extension AnnouncementPresenter {
                 self?.app.state.set(blockchain.ux.transaction.previous.payment.method.id, to: "APPLE_PAY")
                 self?.handleBuyCrypto(currency: .bitcoin)
             }
+        )
+    }
+
+    private func cardIssuingWaitlist(
+        eligible: Bool
+    ) -> Announcement {
+        CardIssuingWaitlistAnnouncement(
+            cardIssuingEligible: eligible,
+            action: actionForOpening(CardIssuingWaitlistAnnouncement.waitlistUrl),
+            dismiss: announcementDismissAction
         )
     }
 

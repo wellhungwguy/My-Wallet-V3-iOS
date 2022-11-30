@@ -111,7 +111,7 @@ public struct CoinAdapterView: View {
     }
 }
 
-public final class CoinViewObserver: Session.Observer {
+public final class CoinViewObserver: Client.Observer {
 
     let app: AppProtocol
     let transactionsRouter: TransactionsRouterAPI
@@ -174,38 +174,12 @@ public final class CoinViewObserver: Session.Observer {
         }
     }
 
-    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event in
+    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event async throws in
         let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
         let origin = try event.context.decode(blockchain.ux.asset.select.origin) as String
         app.state.transaction { state in
             state.set(blockchain.ux.asset.id, to: cryptoCurrency.code)
             state.set(blockchain.ux.asset[cryptoCurrency.code].select.origin, to: origin)
-        }
-
-        let isColorEnabled: Bool = await (
-            try? app.get(blockchain.ux.asset.chart.asset.color.is.enabled)
-        ).or(
-            try? app.get(blockchain.app.configuration.asset.chart.asset.color.is.enabled)
-        ).or(false)
-
-        var vc: UIViewController?
-        vc = UIHostingController(
-            rootView: CoinAdapterView(
-                cryptoCurrency: cryptoCurrency,
-                app: app,
-                dismiss: {
-                    vc?.dismiss(animated: true)
-                }
-            )
-            .if(isColorEnabled) { coinView in
-                coinView.lineGraphColor(cryptoCurrency.color)
-            }
-        )
-        if let vc {
-            topViewController.topMostViewController?.present(
-                vc,
-                animated: true
-            )
         }
     }
 
@@ -240,7 +214,7 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(from: event) {
+        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
         default:
@@ -250,7 +224,7 @@ public final class CoinViewObserver: Session.Observer {
     }
 
     lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(from: event) {
+        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
         default:
@@ -340,6 +314,7 @@ public final class CoinViewObserver: Session.Observer {
             case .universal:
                 return try(accounts.first(where: { account in account is TradingAccount })
                            ?? accounts.first(where: { account in account is NonCustodialAccount })
+                           ?? accounts.first
                 )
                 .or(
                     throw: blockchain.ux.asset.error[]
@@ -347,11 +322,15 @@ public final class CoinViewObserver: Session.Observer {
                 )
 
             case .trading:
-                return try(accounts.first(where: { account in account is TradingAccount }))
-                    .or(
-                        throw: blockchain.ux.asset.error[]
-                            .error(message: "\(event) has no valid accounts for \(String(describing: action))")
-                    )
+                return try(
+                    accounts.first(where: { account in account is TradingAccount })
+                        ?? accounts.first(where: { account in account is InterestAccount })
+                        ?? accounts.first(where: { account in account is StakingAccount })
+                )
+                .or(
+                    throw: blockchain.ux.asset.error[]
+                        .error(message: "\(event) has no valid accounts for \(String(describing: action))")
+                )
 
             case .pkw:
                 return try(accounts.first(where: { account in account is NonCustodialAccount }))

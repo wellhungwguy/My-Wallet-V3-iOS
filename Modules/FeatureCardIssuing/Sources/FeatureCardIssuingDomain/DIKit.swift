@@ -54,5 +54,11 @@ extension DependencyContainer {
                 repository: DIKit.resolve()
             ) as TransactionServiceAPI
         }
+
+        factory {
+            KYCService(
+                repository: DIKit.resolve()
+            ) as KYCServiceAPI
+        }
     }
 }

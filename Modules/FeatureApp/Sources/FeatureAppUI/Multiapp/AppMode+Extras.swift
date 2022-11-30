@@ -9,9 +9,9 @@ extension AppMode {
     var title: String {
         switch self {
         case .trading:
-            return LocalizationConstants.MultiApp.trading
+            return LocalizationConstants.SuperApp.trading
         case .pkw:
-            return LocalizationConstants.MultiApp.pkw
+            return LocalizationConstants.SuperApp.pkw
         case .universal:
             return ""
         }

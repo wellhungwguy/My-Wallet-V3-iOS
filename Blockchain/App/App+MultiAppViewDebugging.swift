@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 import UIComponentsKit
 
-public final class MultiAppViewDebuggingObserver: Session.Observer {
+public final class MultiAppViewDebuggingObserver: Client.Observer {
     unowned let app: AppProtocol
     let topViewController: TopMostViewControllerProviding
 
@@ -50,9 +50,9 @@ public final class MultiAppViewDebuggingObserver: Session.Observer {
 
     private func presentAllAssetsScreen() {
         let view = AllAssetsView(store: .init(
-            initialState: .init(),
+            initialState: .init(with: .custodial),
             reducer: FeatureAllAssets(
-                allCryptoAssetsRepository: resolve(),
+                allCryptoService: resolve(),
                 app: resolve()
             )
         ))

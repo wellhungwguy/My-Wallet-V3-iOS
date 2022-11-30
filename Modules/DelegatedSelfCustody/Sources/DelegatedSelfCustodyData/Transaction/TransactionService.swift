@@ -9,7 +9,7 @@ import ToolKit
 
 final class TransactionService: DelegatedCustodyTransactionServiceAPI {
 
-    private let authenticationDataRepository: AuthenticationDataRepositoryAPI
+    private let authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI
     private let client: TransactionsClientAPI
     private let signingService: DelegatedCustodySigningServiceAPI
 
@@ -21,7 +21,7 @@ final class TransactionService: DelegatedCustodyTransactionServiceAPI {
 
     init(
         client: TransactionsClientAPI,
-        authenticationDataRepository: AuthenticationDataRepositoryAPI,
+        authenticationDataRepository: DelegatedCustodyAuthenticationDataRepositoryAPI,
         signingService: DelegatedCustodySigningServiceAPI
     ) {
         self.authenticationDataRepository = authenticationDataRepository

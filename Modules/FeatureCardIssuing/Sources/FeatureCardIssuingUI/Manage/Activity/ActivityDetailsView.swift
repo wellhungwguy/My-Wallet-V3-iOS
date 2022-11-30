@@ -122,7 +122,7 @@ struct ActivityDetailsView: View {
     @ViewBuilder func transactionAmount(_ transaction: Card.Transaction) -> some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(transaction.originalAmountDisplayString)
+                Text(transaction.displayString(for: transaction.displayAmount))
                     .typography(.title2)
                     .padding(.horizontal, Spacing.padding3)
                     .padding(.vertical, Spacing.padding2)

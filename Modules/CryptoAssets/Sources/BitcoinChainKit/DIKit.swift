@@ -20,7 +20,8 @@ extension DependencyContainer {
         single(tag: BitcoinChainCoin.bitcoin) { () -> UnspentOutputRepositoryAPI in
             UnspentOutputRepository(
                 client: DIKit.resolve(tag: BitcoinChainCoin.bitcoin),
-                coin: BitcoinChainCoin.bitcoin
+                coin: BitcoinChainCoin.bitcoin,
+                app: DIKit.resolve()
             )
         }
 
@@ -69,10 +70,11 @@ extension DependencyContainer {
             BitcoinChainKit.APIClient(coin: .bitcoinCash) as BitcoinChainKit.APIClientAPI
         }
 
-        factory(tag: BitcoinChainCoin.bitcoinCash) { () -> UnspentOutputRepositoryAPI in
+        single(tag: BitcoinChainCoin.bitcoinCash) { () -> UnspentOutputRepositoryAPI in
             UnspentOutputRepository(
                 client: DIKit.resolve(tag: BitcoinChainCoin.bitcoinCash),
-                coin: BitcoinChainCoin.bitcoinCash
+                coin: BitcoinChainCoin.bitcoinCash,
+                app: DIKit.resolve()
             )
         }
 

@@ -70,5 +70,14 @@ extension DependencyContainer {
                 )
             ) as LegalRepositoryAPI
         }
+
+        single {
+            KYCRepository(
+                client: KYCClient(
+                    networkAdapter: DIKit.resolve(tag: DIKitContext.retail),
+                    requestBuilder: DIKit.resolve(tag: DIKitContext.cardIssuing)
+                )
+            ) as KYCRepositoryAPI
+        }
     }
 }

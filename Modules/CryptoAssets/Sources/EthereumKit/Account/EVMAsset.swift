@@ -28,8 +28,11 @@ final class EVMAsset: CryptoAsset {
         asset: asset,
         errorRecorder: errorRecorder,
         kycTiersService: kycTiersService,
-        defaultAccountProvider: { [repository, network] in
-            repository.defaultSingleAccount(network: network)
+        nonCustodialAccountsProvider: { [repository, network] in
+            repository
+                .defaultSingleAccount(network: network)
+                .map { [$0] }
+                .eraseToAnyPublisher()
         },
         exchangeAccountsProvider: exchangeAccountProvider,
         addressFactory: addressFactory,

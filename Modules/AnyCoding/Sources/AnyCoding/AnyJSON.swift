@@ -10,17 +10,22 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
 
     public private(set) var wrapped: Any
     public var thing: Any { wrapped }
+    public var any: Any { wrapped }
 
     internal var __unwrapped: Any {
         (wrapped as? AnyJSON)?.__unwrapped ?? wrapped
     }
 
-    public init(_ any: Any) {
+    public init() {
+        self = nil
+    }
+
+    public init(_ any: Any?) {
         switch any {
         case let thing as AnyJSON:
             self = thing
         default:
-            wrapped = any
+            wrapped = any as Any
         }
     }
 
@@ -33,6 +38,11 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
         __subscript[keyPath: keyPath]
     }
 
+    public subscript(first: AnyCodingKey, rest: AnyCodingKey...) -> Any? {
+        get { __subscript[[first] + rest] }
+        set { __subscript[[first] + rest] = newValue }
+    }
+
     public subscript(path: some Collection<CodingKey>) -> Any? {
         get { __subscript[path] }
         set { __subscript[path] = newValue }
@@ -43,7 +53,11 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        isEqual(lhs.__unwrapped, rhs.__unwrapped)
+        if let lhs = lhs.__unwrapped as? AnyEquatable {
+            return isEqual(lhs, rhs.__unwrapped as? AnyEquatable as Any)
+        } else {
+            return isEqual(lhs.__unwrapped, rhs.__unwrapped)
+        }
     }
 
     public init(from decoder: Decoder) throws {
@@ -101,6 +115,10 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
                 """
             )
         }
+    }
+
+    public func `as`<T>(_ type: T.Type) throws -> T {
+        try (wrapped as? T).or(throw: Error(description: "Cannot cast \(Swift.type(of: wrapped)) to \(T.self)"))
     }
 
     public var description: String {
@@ -163,5 +181,13 @@ extension AnyJSON: AnyEquatable {
             (lhs as? AnyJSON)?.__unwrapped ?? lhs,
             (rhs as? AnyJSON)?.__unwrapped ?? rhs
         )
+    }
+}
+
+extension AnyJSON {
+
+    @_disfavoredOverload
+    @inlinable public func decode<T: Decodable>(_: T.Type = T.self, using decoder: AnyDecoderProtocol) throws -> T {
+        try decoder.decode(T.self, from: wrapped)
     }
 }

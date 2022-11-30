@@ -176,14 +176,15 @@ final class MainAppReducerTests: XCTestCase {
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 reactiveWallet: mockReactiveWallet,
+                recaptchaService: MockRecaptchaService(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
+                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
-                walletStateProvider: mockWalletStateProvider,
-                recaptchaService: MockRecaptchaService()
+                walletStateProvider: mockWalletStateProvider
             )
         )
     }
@@ -326,14 +327,15 @@ final class MainAppReducerTests: XCTestCase {
                 performanceTracing: mockPerformanceTracing,
                 pushNotificationsRepository: MockPushNotificationsRepository(),
                 reactiveWallet: mockReactiveWallet,
+                recaptchaService: MockRecaptchaService(),
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
+                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: failingWalletService,
-                walletStateProvider: mockWalletStateProvider,
-                recaptchaService: MockRecaptchaService()
+                walletStateProvider: mockWalletStateProvider
             )
         )
 
@@ -493,13 +495,6 @@ final class MainAppReducerTests: XCTestCase {
         assertDidPerformSignIn()
         logout()
 
-        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
-        XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(
-            mockAnalyticsRecorder.recordEventCalled.event!.name,
-            AnalyticsEvents.New.Navigation.signedOut.name
-        )
-
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
 
@@ -532,12 +527,6 @@ final class MainAppReducerTests: XCTestCase {
             )
         }
 
-        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
-        XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(
-            mockAnalyticsRecorder.recordEventCalled.event!.name,
-            AnalyticsEvents.New.Navigation.signedOut.name
-        )
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)

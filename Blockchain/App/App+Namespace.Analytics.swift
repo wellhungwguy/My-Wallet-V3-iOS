@@ -5,7 +5,7 @@ import FirebaseAnalytics
 import ToolKit
 import UIKit
 
-final class AppAnalyticsTraitRepository: Session.Observer, TraitRepositoryAPI {
+final class AppAnalyticsTraitRepository: Client.Observer, TraitRepositoryAPI {
 
     struct Value: Decodable, Equatable {
         let value: Either<Tag.Reference, AnyJSON>
@@ -88,7 +88,7 @@ final class AppAnalyticsTraitRepository: Session.Observer, TraitRepositoryAPI {
     }
 }
 
-final class AppAnalyticsObserver: Session.Observer {
+final class AppAnalyticsObserver: Client.Observer {
 
     typealias Analytics = [Tag.Reference: Value]
 

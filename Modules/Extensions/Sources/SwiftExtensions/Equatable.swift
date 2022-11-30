@@ -51,9 +51,26 @@ extension Array: AnyEquatable {
     }
 }
 
-extension Optional: AnyEquatable {
+extension NSNull: AnyEquatable {}
+public let null = NSNull()
+
+extension Bool: AnyEquatable {}
+extension CGFloat: AnyEquatable {}
+extension Data: AnyEquatable {}
+extension Date: AnyEquatable {}
+extension Double: AnyEquatable {}
+extension Float: AnyEquatable {}
+extension Int: AnyEquatable {}
+extension NSData: AnyEquatable {}
+extension NSNumber: AnyEquatable {}
+extension NSString: AnyEquatable {}
+extension String: AnyEquatable {}
+
+extension AnyEquatable where Self: Equatable {
 
     public static func isAnyEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-        isEqual(recursiveFlatMapOptional(lhs) as Any, recursiveFlatMapOptional(rhs) as Any)
+        guard let lhs = lhs as? Self else { return false }
+        guard let rhs = rhs as? Self else { return false }
+        return lhs == rhs
     }
 }

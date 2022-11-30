@@ -2,6 +2,7 @@
 
 @testable import BitcoinChainKit
 @testable import BitcoinChainKitMock
+import BlockchainNamespace
 import Combine
 import TestKit
 import ToolKit
@@ -15,7 +16,7 @@ class UnspentOutputRepositoryTests: XCTestCase {
     override func setUp() {
         super.setUp()
         client = APIClientMock()
-        subject = UnspentOutputRepository(client: client, coin: .bitcoin)
+        subject = UnspentOutputRepository(client: client, coin: .bitcoin, app: App.test)
     }
 
     override func tearDown() {

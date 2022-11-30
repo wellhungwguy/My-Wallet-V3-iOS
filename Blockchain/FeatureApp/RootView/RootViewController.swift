@@ -24,6 +24,9 @@ final class RootViewController: UIHostingController<RootView> {
     let global: ViewStore<LoggedIn.State, LoggedIn.Action>
 
     var defaults: CacheSuite = UserDefaults.standard
+    var application: UIApplication = .shared
+
+    lazy var siteMap: SiteMap = SiteMap(app: app)
 
     var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
@@ -69,6 +72,8 @@ final class RootViewController: UIHostingController<RootView> {
                 .sink(to: My.handleFirstFrequentActionButtonInteraction, on: self)
                 .store(in: &bag)
         }
+
+        setupNavigationObservers()
     }
 
     @objc dynamic required init?(coder aDecoder: NSCoder) {

@@ -76,12 +76,11 @@ final class CardRepository: CardRepositoryAPI {
 
     func orderCard(
         product: Product,
-        at address: Card.Address,
-        with ssn: String
+        at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
         client
             .orderCard(
-                with: .init(productCode: product.productCode, shippingAddress: address, ssn: ssn)
+                with: .init(productCode: product.productCode, shippingAddress: address)
             )
             .handleEvents(receiveOutput: { [weak self] _ in
                 self?.cachedCardValue.invalidateCache()
@@ -93,8 +92,25 @@ final class CardRepository: CardRepositoryAPI {
         cachedCardValue.get(key: #file)
     }
 
-    func fetchCard(with id: String) -> AnyPublisher<Card, NabuNetworkError> {
-        client.fetchCard(with: id)
+    func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
+        Publishers.CombineLatest(
+            client.fetchCard(with: id),
+            cachedCardValue.get(key: #file)
+        )
+        .flatMap { [cardCache] (card, cards) -> AnyPublisher<Card?, NabuNetworkError> in
+            var cards = cards
+            if let index = cards.firstIndex(where: { $0.id == card.id }) {
+                cards[index] = card
+            } else {
+                cards.append(card)
+            }
+            return cardCache
+                .set(cards, for: #file)
+                .map { _ in card }
+                .setFailureType(to: NabuNetworkError.self)
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
@@ -212,7 +228,7 @@ final class CardRepository: CardRepositoryAPI {
     ) -> URL {
         let nameParam = name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? "-"
         return URL(
-            string: "\(base)\(Self.marqetaPath)\(token)/\(card.last4)/\(nameParam)"
+            string: "\(base)\(Self.marqetaPath)?token=\(token)&last4=\(card.last4)&fullName=\(nameParam)&cardType=\(card.type.rawValue)"
         )!
     }
 }

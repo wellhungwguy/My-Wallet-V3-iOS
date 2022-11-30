@@ -22,9 +22,19 @@ extension View {
 
     @available(iOS 16, *)
     @ViewBuilder
-    func largestUndimmedDetentIdentifier(_ identifier: String?, modalOffset: Binding<ModalSheetContext>) -> some View {
+    func largestUndimmedDetentIdentifier(
+        _ identifier: String?,
+        modalOffset: Binding<ModalSheetContext>,
+        detentChanged: @escaping (String) -> Void
+    ) -> some View {
         let detentIdentifier = identifier != nil ? UISheetPresentationController.Detent.Identifier(identifier!) : nil
-        background(CustomSheetPresentation.Representable(largestUndimmedDetent: detentIdentifier, modalOffset: modalOffset))
+        background(
+            CustomSheetPresentation.Representable(
+                largestUndimmedDetent: detentIdentifier,
+                modalOffset: modalOffset,
+                detentChanged: detentChanged
+            )
+        )
     }
 }
 
@@ -34,26 +44,33 @@ extension CustomSheetPresentation {
     struct Representable: UIViewControllerRepresentable {
         let largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?
         let modalOffset: Binding<ModalSheetContext>
+        let detentChanged: ((String) -> Void)?
 
         func makeUIViewController(context: Context) -> Controller {
-            Controller(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset)
+            Controller(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset, detentChanged: detentChanged)
         }
 
         func updateUIViewController(_ controller: Controller, context: Context) {
-            controller.update(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset)
+            controller.update(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset, detentChanged: detentChanged)
         }
     }
 
     final class Controller: UIViewController, UISheetPresentationControllerDelegate {
         private var observation: NSKeyValueObservation?
 
+        private var detentChanged: ((String) -> Void)?
         private var modalOffset: Binding<ModalSheetContext>
         private var largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?
         private weak var _delegate: UISheetPresentationControllerDelegate?
 
-        init(largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?, modalOffset: Binding<ModalSheetContext>) {
+        init(
+            largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?,
+            modalOffset: Binding<ModalSheetContext>,
+            detentChanged: ((String) -> Void)?
+        ) {
             self.largestUndimmedDetent = largestUndimmedDetent
             self.modalOffset = modalOffset
+            self.detentChanged = detentChanged
             super.init(nibName: nil, bundle: nil)
         }
 
@@ -70,12 +87,20 @@ extension CustomSheetPresentation {
                     controller.delegate = self
                 }
             }
-            update(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset)
+            update(
+                largestUndimmedDetent: largestUndimmedDetent,
+                modalOffset: modalOffset,
+                detentChanged: detentChanged
+            )
         }
 
-        func update(largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?, modalOffset: Binding<ModalSheetContext>) {
+        func update(
+            largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?,
+            modalOffset: Binding<ModalSheetContext>,
+            detentChanged: ((String) -> Void)?
+        ) {
             self.largestUndimmedDetent = largestUndimmedDetent
-
+            self.detentChanged = detentChanged
             if let controller = parent?.sheetPresentationController {
                 controller.largestUndimmedDetentIdentifier = largestUndimmedDetent
                 controller.preferredCornerRadius = 24
@@ -112,8 +137,11 @@ extension CustomSheetPresentation {
         }
 
         func sheetPresentationControllerDidChangeSelectedDetentIdentifier(_ sheetPresentationController: UISheetPresentationController) {
-            // TODO: should we respond to this?
-            // it is updated when a detent change occured via gesture not when setting the `selectedDetentIdentifier` programmatically.
+            // Updated when a detent change occured via gesture not when setting the `selectedDetentIdentifier` programmatically.
+            guard let identifier = sheetPresentationController.selectedDetentIdentifier?.rawValue else {
+                return
+            }
+            detentChanged?(identifier)
         }
 
         override func responds(to aSelector: Selector!) -> Bool {

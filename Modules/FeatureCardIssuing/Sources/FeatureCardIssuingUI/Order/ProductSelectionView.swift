@@ -41,6 +41,9 @@ struct ProductSelectionView: View {
                 }
             }
             .padding(Spacing.padding3)
+            .onAppear {
+                viewStore.send(.fetchProducts)
+            }
             .bottomSheet(isPresented: viewStore.binding(\.$isProductDetailsVisible)) {
                 IfLetStore(
                     store.scope(state: \.selectedProduct),
@@ -117,7 +120,7 @@ struct ProductSelection_Previews: PreviewProvider {
         NavigationView {
             ProductSelectionView(
                 store: Store(
-                    initialState: .init(),
+                    initialState: .init(initialKyc: KYC(status: .success, errorFields: nil)),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )

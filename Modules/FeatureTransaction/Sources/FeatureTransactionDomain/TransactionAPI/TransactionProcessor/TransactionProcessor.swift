@@ -131,6 +131,22 @@ public final class TransactionProcessor {
         }
     }
 
+    public func updateRecurringBuyFrequency(_ frequency: RecurringBuy.Frequency) -> Single<PendingTransaction> {
+        .create(weak: self) { (self, fulfill) in
+            do {
+                let pendingTransaction = try self.pendingTransaction()
+                self.updatePendingTx(pendingTransaction.updateRecurringBuyFrequency(frequency))
+                fulfill(.success(pendingTransaction))
+            } catch {
+                fulfill(.error(error))
+            }
+            return Disposables.create()
+        }
+        .flatMap { [engine] pendingTx in
+            engine.doValidateAll(pendingTransaction: pendingTx)
+        }
+    }
+
     public func updateAmount(amount: MoneyValue) -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `updateAmount: \(amount.displayString)`")
         if !canTransactFiat, amount.isFiat {

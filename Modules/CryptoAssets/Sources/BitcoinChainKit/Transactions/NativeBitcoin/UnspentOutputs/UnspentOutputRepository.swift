@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
@@ -37,13 +38,31 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
         Set<XPub>, UnspentOutputs, NetworkError
     >
 
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Init
 
-    init(client: BitcoinChainKit.APIClientAPI, coin: BitcoinChainCoin) {
+    init(
+        client: BitcoinChainKit.APIClientAPI,
+        coin: BitcoinChainCoin,
+        app: AppProtocol
+    ) {
         self.client = client
+        let remoteConfigControl = RemotePeriodicCacheRefreshControl(
+            defaultConfig: .init(interval: 30, disable: false),
+            fetch: {
+                app.publisher(
+                    for: blockchain.app.configuration.unspent.outputs.cache.config,
+                    as: RemoteCacheConfig?.self
+                )
+                .compactMap(\.value)
+                .eraseError()
+                .eraseToAnyPublisher()
+            }
+        )
         let cache: AnyCache<Set<XPub>, UnspentOutputs> = InMemoryCache(
             configuration: .onLoginLogoutTransaction(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
+            refreshControl: remoteConfigControl
         ).eraseToAnyCache()
         cachedValue = CachedValueNew(
             cache: cache,

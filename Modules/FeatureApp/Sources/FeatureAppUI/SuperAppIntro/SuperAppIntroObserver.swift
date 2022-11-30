@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import UIComponentsKit
 
-public final class SuperAppIntroObserver: Session.Observer {
+public final class SuperAppIntroObserver: Client.Observer {
     unowned let app: AppProtocol
     let topViewController: TopMostViewControllerProviding
 
