@@ -804,7 +804,7 @@ extension TransactionState {
     func quoteRequest(_ app: AppProtocol) -> BrokerageQuote.Request? {
         var sourceCurrency: CurrencyType? = source?.currencyType
         if source is PaymentMethodAccount {
-            sourceCurrency = try? app.state.get(blockchain.user.currency.preferred.fiat.trading.currency)
+            sourceCurrency = try? app.state.get(blockchain.user.currency.preferred.fiat.trading.currency, as: FiatCurrency.self).currencyType
         }
         guard let sourceCurrency else { return nil }
         guard let destinationCurrency = destination?.currencyType else { return nil }
