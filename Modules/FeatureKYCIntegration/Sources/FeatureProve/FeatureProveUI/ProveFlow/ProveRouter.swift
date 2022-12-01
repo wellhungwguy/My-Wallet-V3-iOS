@@ -12,6 +12,7 @@ import SwiftUI
 
 public final class ProveRouter: ProveRouterAPI {
     private let completionSubject = PassthroughSubject<VerificationResult, Never>()
+    private var proveConfig: ProveConfig?
     private let topViewController: TopMostViewControllerProviding
     private let app: AppProtocol
 
@@ -55,7 +56,10 @@ public final class ProveRouter: ProveRouterAPI {
         self.app = app
     }
 
-    public func presentFlow() -> PassthroughSubject<VerificationResult, Never> {
+    public func presentFlow(
+        proveConfig: ProveConfig
+    ) -> PassthroughSubject<VerificationResult, Never> {
+        self.proveConfig = proveConfig
         Task {
             do {
                 step = .beginProve
@@ -118,7 +122,6 @@ public final class ProveRouter: ProveRouterAPI {
 
     func view() -> UIViewController
    {
-
        switch step {
        case .beginProve:
            let view = BeginVerificationView(store: .init(
@@ -172,7 +175,10 @@ public final class ProveRouter: ProveRouterAPI {
        case .confirmInfo:
            let reducer = ConfirmInformation(
             app: app,
+            mainQueue: .main,
+            proveConfig: proveConfig ?? .init(country: "US"),
             confirmInfoService: resolve(),
+            addressSearchFlowPresenter: resolve(),
             dismissFlow: { [weak self] result in
                 switch result {
                 case .failure:
@@ -188,7 +194,9 @@ public final class ProveRouter: ProveRouterAPI {
             initialState: .init(
                 firstName: profileInfo.prefillInfo?.firstName,
                 lastName: profileInfo.prefillInfo?.lastName,
-                addresses: profileInfo.prefillInfo?.addresses ?? [],
+                addresses: profileInfo.prefillInfo?.validAddresses(
+                    country: proveConfig?.country, state: proveConfig?.state
+                ) ?? [],
                 selectedAddress: profileInfo.prefillInfo?.addresses.first,
                 dateOfBirth: profileInfo.prefillInfo?.dateOfBirth,
                 phone: profileInfo.mobileAuthInfo?.phone
@@ -216,4 +224,11 @@ public final class ProveRouter: ProveRouterAPI {
            return viewController
        }
    }
+}
+
+extension PrefillInfo {
+    func validAddresses(country: String?, state: String?) -> [Address] {
+        guard let country = country, country == "US", let state = state else { return addresses }
+        return addresses.filter { $0.state == state }
+    }
 }

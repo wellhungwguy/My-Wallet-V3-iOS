@@ -247,11 +247,18 @@ final class KYCProveFlowPresenter: FeatureKYCUI.KYCProveFlowPresenterAPI {
     }
 
     func presentFlow(
+        country: String,
+        state: String?
     ) -> AnyPublisher<KYCProveResult, Never> {
-        router.presentFlow()
-            .eraseToEffect()
-            .map { KYCProveResult(result: $0) }
-            .eraseToAnyPublisher()
+        router.presentFlow(
+            proveConfig: .init(
+                country: country,
+                state: state
+            )
+        )
+        .eraseToEffect()
+        .map { KYCProveResult(result: $0) }
+        .eraseToAnyPublisher()
     }
 }
 

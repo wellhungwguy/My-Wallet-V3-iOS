@@ -69,6 +69,16 @@ struct FormSelectionDropdownAnswersView: View {
             case .multi:
                 EmptyView()
             }
+
+            if let answer = answers.first,
+               let bottomButton = fieldConfiguration(answer).bottomButton {
+                FormAnswerBottomButtonView(
+                    leadingPrefixText: bottomButton.leadingPrefixText,
+                    title: bottomButton.title,
+                    action: bottomButton.action
+                )
+                .padding(.top, 12.pt)
+            }
         }
         .sheet(isPresented: $selectionPanelOpened) {
             FormSelectionDropdownAnswersListView(

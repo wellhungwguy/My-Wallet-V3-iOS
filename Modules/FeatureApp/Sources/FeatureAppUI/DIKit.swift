@@ -143,10 +143,16 @@ extension DependencyContainer {
             ) as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
-        factory { () -> AddressSearchFlowPresenterAPI in
-            AddressSearchFlowPresenter(
+        factory { () -> FeatureKYCUI.AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenterCardIssuingAdapter(
                 addressSearchRouterRouter: DIKit.resolve()
-            ) as AddressSearchFlowPresenterAPI
+            ) as FeatureKYCUI.AddressSearchFlowPresenterAPI
+        }
+
+        factory { () -> FeatureProveUI.AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenterProveAdapter(
+                addressSearchRouterRouter: DIKit.resolve()
+            ) as FeatureProveUI.AddressSearchFlowPresenterAPI
         }
 
         factory {

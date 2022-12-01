@@ -225,7 +225,7 @@ final class AddressService: AddressServiceAPI {
     }
 }
 
-final class AddressSearchFlowPresenter: FeatureKYCUI.AddressSearchFlowPresenterAPI {
+final class AddressSearchFlowPresenterCardIssuingAdapter: FeatureKYCUI.AddressSearchFlowPresenterAPI {
 
     private let addressSearchRouterRouter: FeatureAddressSearchDomain.AddressSearchRouterAPI
 

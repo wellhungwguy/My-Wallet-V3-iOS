@@ -38,6 +38,23 @@ extension LocalizationConstants {
                 "Save",
                 comment: "KYC Address Verification save address button title"
             )
+
+            public static let continueButtonTitle = NSLocalizedString(
+                "Continue",
+                comment: "KYC Address Verification Continue button title"
+            )
+        }
+
+        public enum AddressProve {
+            public static let title = NSLocalizedString(
+                "Enter your address",
+                comment: "KYC Prove Address Verification title"
+            )
+
+            public static let continueButtonTitle = NSLocalizedString(
+                "Continue",
+                comment: "KYC Prove Address Verification Continue button title"
+            )
         }
 
         // MARK: - Email Verification Master View

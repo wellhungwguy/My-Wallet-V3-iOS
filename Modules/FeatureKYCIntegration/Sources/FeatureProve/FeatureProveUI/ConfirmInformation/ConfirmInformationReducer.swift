@@ -11,6 +11,22 @@ import FeatureProveDomain
 import Localization
 import ToolKit
 
+public enum AddressSearchResult: Equatable {
+    case abandoned
+    case saved(Address)
+}
+
+public protocol AddressSearchFlowPresenterAPI {
+    func openSearchAddressFlow(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<FeatureProveUI.AddressSearchResult, Never>
+
+    func openEditAddressFlow(
+        address: Address
+    ) -> AnyPublisher<FeatureProveUI.AddressSearchResult, Never>
+}
+
 private typealias LocalizedString = LocalizationConstants.ConfirmInformation
 
 struct ConfirmInformation: ReducerProtocol {
@@ -22,8 +38,12 @@ struct ConfirmInformation: ReducerProtocol {
         case dateOfBirth
         case phone
 
-        static func answerId(index: Int) -> String {
+        static func addressAnswerId(index: Int) -> String {
             "\(InputField.address.rawValue)-\(index)"
+        }
+
+        static var emptyAddressAnswerId: String {
+            "\(InputField.address.rawValue)-empty"
         }
     }
 
@@ -34,28 +54,45 @@ struct ConfirmInformation: ReducerProtocol {
     }
 
     let app: AppProtocol
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+    let proveConfig: ProveConfig
     let confirmInfoService: ConfirmInfoServiceAPI
+    let addressSearchFlowPresenter: AddressSearchFlowPresenterAPI
     let dismissFlow: (VerificationResult) -> Void
 
     init(
         app: AppProtocol,
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        proveConfig: ProveConfig,
         confirmInfoService: ConfirmInfoServiceAPI,
+        addressSearchFlowPresenter: AddressSearchFlowPresenterAPI,
         dismissFlow: @escaping (VerificationResult) -> Void
     ) {
         self.app = app
+        self.mainQueue = mainQueue
+        self.proveConfig = proveConfig
         self.confirmInfoService = confirmInfoService
+        self.addressSearchFlowPresenter = addressSearchFlowPresenter
         self.dismissFlow = dismissFlow
     }
 
     enum Action: Equatable, BindableAction {
         case binding(BindingAction<State>)
         case onAppear
+        case loadForm
         case confirmInfo
         case onConfirmInfoFetched(TaskResult<ConfirmInfo?>)
         case finishedWithError(NabuError?)
+        case searchAddress
+        case onAddressSearchCompleted(Result<AddressSearchResult, Never>)
+        case editSelectedAddress
+        case onEditSelectedAddressCompleted(Result<AddressSearchResult, Never>)
         case onClose
         case onContinue
         case onDismissError
+        case onEmptyAddressFieldTapped
+        case onEnterAddressManuallyTapped
+        case onStartEditingSelectedAddress
     }
 
     struct State: Equatable {
@@ -100,12 +137,15 @@ struct ConfirmInformation: ReducerProtocol {
                 return .none
 
             case .onAppear:
+                return Effect(value: .loadForm)
+
+            case .loadForm:
                 state.form = .init(
                     header: .init(
                         title: LocalizedString.Body.title,
                         description: ""
                     ),
-                    nodes: FormQuestion.personalInfoQuestions(
+                    nodes: FormQuestion.confirmInformation(
                         firstName: state.firstName,
                         lastName: state.lastName,
                         addresses: state.addresses,
@@ -140,7 +180,7 @@ struct ConfirmInformation: ReducerProtocol {
                         .addresses
                         .enumerated()
                         .first { index, _ in
-                            (try? state.form.nodes.answer(id: InputField.answerId(index: index))) ?? false
+                            (try? state.form.nodes.answer(id: InputField.addressAnswerId(index: index))) ?? false
                         }?
                         .element
                 }
@@ -184,6 +224,50 @@ struct ConfirmInformation: ReducerProtocol {
                     dismissFlow(.success(confirmInfo: conirmInfo))
                 }
 
+            case .searchAddress:
+                return addressSearchFlowPresenter.openSearchAddressFlow(
+                    country: proveConfig.country,
+                    state: proveConfig.state
+                )
+                .receive(on: mainQueue)
+                .catchToEffect()
+                .map { result -> Action in
+                        .onAddressSearchCompleted(result)
+                }
+
+            case .onAddressSearchCompleted(.success(let result)):
+                switch result {
+                case .abandoned:
+                    return .none
+
+                case .saved(let address):
+                    state.selectedAddress = address
+                    if !state.addresses.contains(address) {
+                        state.addresses.insert(address, at: 0)
+                    }
+                    return Effect(value: .loadForm)
+                }
+
+            case .editSelectedAddress:
+                guard let address = state.selectedAddress else { return .none }
+                return addressSearchFlowPresenter.openEditAddressFlow(address: address)
+                    .receive(on: mainQueue)
+                    .catchToEffect()
+                    .map { result -> Action in
+                            .onEditSelectedAddressCompleted(result)
+                    }
+
+            case .onEditSelectedAddressCompleted(.success(let result)):
+                switch result {
+                case .abandoned:
+                    return .none
+
+                case .saved(let address):
+                    state.selectedAddress = address
+                    state.addresses = [address]
+                    return Effect(value: .loadForm)
+                }
+
             case .finishedWithError(let error):
                 if let error {
                     state.uxError = UX.Error(nabu: error)
@@ -193,183 +277,17 @@ struct ConfirmInformation: ReducerProtocol {
                 return .fireAndForget {
                     dismissFlow(.failure)
                 }
+
+            case .onEmptyAddressFieldTapped:
+                return Effect(value: .searchAddress)
+
+            case .onStartEditingSelectedAddress:
+                return Effect(value: .editSelectedAddress)
+
+            case .onEnterAddressManuallyTapped:
+                return Effect(value: .searchAddress)
             }
         }
-    }
-}
-
-extension FormQuestion {
-
-    fileprivate static func addressQuestion(
-        addresses: [Address],
-        selectedAddress: Address?
-    ) -> FormQuestion {
-        if addresses.isEmpty {
-            return FormQuestion(
-                id: ConfirmInformation.InputField.address.rawValue,
-                type: .openEnded,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.addressNameInputTitle,
-                instructions: nil,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.address.rawValue,
-                        type: .openEnded,
-                        isEnabled: false,
-                        canHaveDisabledStyle: false,
-                        input: ""
-                    )
-                ]
-            )
-        } else if addresses.count == 1 {
-            return FormQuestion(
-                id: ConfirmInformation.InputField.address.rawValue,
-                type: .openEnded,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.addressNameInputTitle,
-                instructions: nil,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.address.rawValue,
-                        type: .openEnded,
-                        isEnabled: false,
-                        canHaveDisabledStyle: false,
-                        input: selectedAddress?.text
-                    )
-                ]
-            )
-        } else {
-            let answers: [FormAnswer] = addresses.enumerated().map { index, address in
-                FormAnswer(
-                    id: ConfirmInformation.InputField.answerId(index: index),
-                    type: .selection,
-                    text: address.text,
-                    children: nil,
-                    input: nil,
-                    hint: nil,
-                    regex: nil,
-                    checked: address == selectedAddress
-                )
-            }
-            return FormQuestion(
-                id: ConfirmInformation.InputField.address.rawValue,
-                type: .singleSelection,
-                isDropdown: true,
-                text: LocalizedString.Body.Form.addressNameInputTitle,
-                instructions: nil,
-                children: answers
-            )
-        }
-    }
-
-    fileprivate static func personalInfoQuestions(
-        firstName: String?,
-        lastName: String?,
-        addresses: [Address],
-        selectedAddress: Address?,
-        dateOfBirth: Date?,
-        phone: String?
-    ) -> [FormQuestion] {
-        [
-            FormQuestion(
-                id: ConfirmInformation.InputField.firstName.rawValue,
-                type: .openEnded,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.firstNameInputTitle,
-                instructions: nil,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.firstName.rawValue,
-                        type: .openEnded,
-                        input: firstName
-                    )
-                ]
-            ),
-            FormQuestion(
-                id: ConfirmInformation.InputField.lastName.rawValue,
-                type: .openEnded,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.lastNameInputTitle,
-                instructions: nil,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.lastName.rawValue,
-                        type: .openEnded,
-                        input: lastName
-                    )
-                ]
-            ),
-            addressQuestion(addresses: addresses, selectedAddress: selectedAddress),
-            FormQuestion(
-                id: ConfirmInformation.InputField.dateOfBirth.rawValue,
-                type: .openEnded,
-                isEnabled: false,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.dateOfBirthInputTitle,
-                instructions: LocalizedString.Body.Form.dateOfBirthInputHint,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.dateOfBirth.rawValue,
-                        type: .date,
-                        isEnabled: false,
-                        validation: FormAnswer.Validation(
-                            rule: .withinRange,
-                            metadata: [
-                                .maxValue: String(
-                                    (Calendar.current.eighteenYearsAgo ?? Date()).timeIntervalSince1970
-                                )
-                            ]
-                        ),
-                        text: nil,
-                        input: dateOfBirth?.timeIntervalSince1970.description
-                    )
-                ]
-            ),
-            FormQuestion(
-                id: ConfirmInformation.InputField.phone.rawValue,
-                type: .openEnded,
-                isEnabled: false,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.phoneInputTitle,
-                instructions: LocalizedString.Body.Form.phoneInputHint,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: ConfirmInformation.InputField.phone.rawValue,
-                        type: .openEnded,
-                        isEnabled: false,
-                        input: phone
-                    )
-                ]
-            )
-        ]
-    }
-}
-
-extension Address {
-    fileprivate var text: String {
-        let stateAndPostalCode = [
-            state,
-            postCode
-        ]
-            .compactMap { $0 }
-            .filter(\.isNotEmpty)
-            .joined(separator: " ")
-
-        return [
-            line1,
-            line2,
-            city,
-            stateAndPostalCode
-        ]
-            .compactMap { $0 }
-            .filter(\.isNotEmpty)
-            .joined(separator: ", ")
     }
 }
 
@@ -378,7 +296,10 @@ extension ConfirmInformation {
     static func preview(app: AppProtocol) -> ConfirmInformation {
         ConfirmInformation(
             app: app,
+            mainQueue: .main,
+            proveConfig: .init(country: "US"),
             confirmInfoService: NoConfirmInfoService(),
+            addressSearchFlowPresenter: NoAddressSearchFlowPresenter(),
             dismissFlow: { _ in }
         )
     }
@@ -386,4 +307,14 @@ extension ConfirmInformation {
 
 final class NoConfirmInfoService: ConfirmInfoServiceAPI {
     func confirmInfo(confirmInfo: ConfirmInfo) async throws -> ConfirmInfo? { nil }
+}
+
+final class NoAddressSearchFlowPresenter: AddressSearchFlowPresenterAPI {
+    func openSearchAddressFlow(country: String, state: String?) -> AnyPublisher<AddressSearchResult, Never> {
+        .empty()
+    }
+
+    func openEditAddressFlow(address: FeatureProveDomain.Address) -> AnyPublisher<AddressSearchResult, Never> {
+        .empty()
+    }
 }

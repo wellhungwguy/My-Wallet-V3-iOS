@@ -37,7 +37,6 @@ struct FormOpenEndedAnswerView: View {
     @State var isFirstResponder: Bool = false
     let fieldConfiguration: PrimaryFormFieldConfiguration
     var isEnabled: Bool { answer.isEnabled ?? true }
-    var canHaveDisabledStyle: Bool { answer.canHaveDisabledStyle ?? true }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -46,21 +45,50 @@ struct FormOpenEndedAnswerView: View {
                     .typography(.paragraph2)
                     .foregroundColor(.semantic.body)
             }
-
+            let fieldConfiguration = fieldConfiguration(answer)
             Input(
                 text: $answer.input ?? "",
                 isFirstResponder: $isFirstResponder,
                 shouldResignFirstResponderOnReturn: true,
-                canHaveDisabledStyle: canHaveDisabledStyle,
                 placeholder: answer.hint,
                 state: showAnswerState ? answer.inputState : .default,
                 configuration: { textField in
-                    let config = fieldConfiguration(answer)
+                    let config = fieldConfiguration
                     textField.autocorrectionType = .init(type: config.textAutocorrectionType)
-                }
+                },
+                onFieldTapped: fieldConfiguration.onFieldTapped
             )
             .disabled(!isEnabled)
             .accessibilityIdentifier(answer.id)
+
+            if let bottomButton = fieldConfiguration.bottomButton {
+                FormAnswerBottomButtonView(
+                    leadingPrefixText: bottomButton.leadingPrefixText,
+                    title: bottomButton.title,
+                    action: bottomButton.action
+                )
+                .padding(.top, 12.pt)
+            }
+        }
+    }
+}
+
+struct FormAnswerBottomButtonView: View {
+
+    let leadingPrefixText: String?
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        HStack(spacing: 2.5.pt) {
+            Spacer()
+            if let leadingPrefixText {
+                Text(leadingPrefixText)
+                    .typography(.caption1)
+            }
+            Button(title, action: action)
+                .typography(.caption1)
+            Spacer()
         }
     }
 }

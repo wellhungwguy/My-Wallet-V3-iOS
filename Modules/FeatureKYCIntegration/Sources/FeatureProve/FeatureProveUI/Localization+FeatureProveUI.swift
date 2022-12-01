@@ -125,6 +125,16 @@ extension LocalizationConstants {
                 "Continue",
                 comment: "Confirm Personal Information: Continue Button"
             )
+
+            static let enterAddressManuallyPrefix = NSLocalizedString(
+                "or",
+                comment: "Confirm Personal Information: `Or` enter address manually Button"
+            )
+
+            static let enterAddressManuallyTitle = NSLocalizedString(
+                "enter manually →",
+                comment: "Confirm Personal Information: enter address manually Button"
+            )
         }
     }
 }
@@ -137,13 +147,28 @@ extension LocalizationConstants.ConfirmInformation.Body {
             comment: "Confirm Personal Information: First Name Input Title"
         )
 
+        static let firstNameInputPlaceholder = NSLocalizedString(
+            "Enter your first name",
+            comment: "Confirm Personal Information: First Name Input placeholder"
+        )
+
         static let lastNameInputTitle = NSLocalizedString(
             "Last name",
             comment: "Confirm Personal Information: Last Name Input Title"
         )
 
+        static let lastNameInputPlaceholder = NSLocalizedString(
+            "Enter your last name",
+            comment: "Confirm Personal Information: Last Name Input placeholder"
+        )
+
         static let addressNameInputTitle = NSLocalizedString(
             "Address",
+            comment: "Confirm Personal Information: Address Input Title"
+        )
+
+        static let addressInputPlaceholder = NSLocalizedString(
+            "Enter your current address",
             comment: "Confirm Personal Information: Address Input Title"
         )
 

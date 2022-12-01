@@ -63,14 +63,51 @@ struct ConfirmInformationView: View {
                 },
                 submitButtonMode: .onlyEnabledWhenAllAnswersValid,
                 submitButtonLocation: .attachedToBottomOfScreen,
-                fieldConfiguration: { _ in
-                        .init(textAutocorrectionType: .no)
+                fieldConfiguration: { answer in
+                        .init(
+                            textAutocorrectionType: .no,
+                            onFieldTapped: onFieldTapped(answerId: answer.id),
+                            bottomButton: fieldBottomButton(answerId: answer.id)
+                        )
                 },
                 headerIcon: {
                     headerIcon
                 }
             )
         }
+    }
+
+    private func onFieldTapped(answerId: String) -> (() -> Void)? {
+        let isEmptyAddressAnswer = answerId == ConfirmInformation.InputField.emptyAddressAnswerId
+        let isSingleAddressAnswer = answerId == ConfirmInformation.InputField.address.rawValue
+        if isEmptyAddressAnswer {
+            return {
+                UIApplication.shared.endEditing()
+                viewStore.send(.onEmptyAddressFieldTapped)
+            }
+        } else if isSingleAddressAnswer {
+            return {
+                UIApplication.shared.endEditing()
+                viewStore.send(.onStartEditingSelectedAddress)
+            }
+        }
+        return nil
+    }
+
+    private func fieldBottomButton(answerId: String) -> FieldConfiguation.BottomButton? {
+        let isEmptyAddressAnswer = answerId == ConfirmInformation.InputField.emptyAddressAnswerId
+        let isSingleAddressAnswer = answerId == ConfirmInformation.InputField.address.rawValue
+        let isMultiAddressAnswer = answerId == ConfirmInformation.InputField.addressAnswerId(index: 0)
+        return isEmptyAddressAnswer || isSingleAddressAnswer || isMultiAddressAnswer
+        ? .init(
+            leadingPrefixText: LocalizedString.Buttons.enterAddressManuallyPrefix,
+            title: LocalizedString.Buttons.enterAddressManuallyTitle,
+            action: {
+                UIApplication.shared.endEditing()
+                viewStore.send(.onEnterAddressManuallyTapped)
+            }
+        )
+        : nil
     }
 
     private func makeError(uxError: UX.Error) -> some View {
@@ -99,5 +136,11 @@ struct ConfirmInformation_Previews: PreviewProvider {
                 reducer: BeginVerification.preview(app: app)
             )).app(app)
         }
+    }
+}
+
+extension UIApplication {
+    fileprivate func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

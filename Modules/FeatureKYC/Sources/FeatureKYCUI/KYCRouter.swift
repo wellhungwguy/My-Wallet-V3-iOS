@@ -59,6 +59,8 @@ public protocol AddressSearchFlowPresenterAPI {
 
 public protocol KYCProveFlowPresenterAPI {
     func presentFlow(
+        country: String,
+        state: String?
     ) -> AnyPublisher<KYCProveResult, Never>
 }
 
@@ -426,14 +428,14 @@ final class KYCRouter: KYCRouterAPI {
                             } else {
                                 self.presentAddressSearchFlow()
                             }
-                        } else if shouldShowProveFlow {
+                        } else if shouldShowProveFlow, let address = self.user?.address {
                             if let navController = self.navController {
                                 navController.dismiss(animated: true) {
                                     self.navController = nil
-                                    self.presentKYCProveFlow(page: nextPage)
+                                    self.presentKYCProveFlow(address: address, page: nextPage)
                                 }
                             } else {
-                                self.presentKYCProveFlow(page: nextPage)
+                                self.presentKYCProveFlow(address: address, page: nextPage)
                             }
                         } else {
                             self.safePushInNavController(controller)
@@ -472,9 +474,12 @@ final class KYCRouter: KYCRouterAPI {
             .store(in: &bag)
     }
 
-    private func presentKYCProveFlow(page: KYCPageType) {
+    private func presentKYCProveFlow(
+        address: UserAddress,
+        page: KYCPageType
+    ) {
         proveFlowPresenter
-            .presentFlow()
+            .presentFlow(country: address.countryCode, state: address.state)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] addressResult in
                 switch addressResult {
@@ -704,8 +709,8 @@ final class KYCRouter: KYCRouterAPI {
                 self.presentAddressSearchFlow()
                 return
             }
-            if shouldShowProveFlow {
-                self.presentKYCProveFlow(page: startingPage)
+            if shouldShowProveFlow, let address = user.address {
+                self.presentKYCProveFlow(address: address, page: startingPage)
                 return
             }
             controller = self.pageFactory.createFrom(

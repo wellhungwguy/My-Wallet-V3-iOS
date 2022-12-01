@@ -4,5 +4,7 @@ import Combine
 
 public protocol ProveRouterAPI {
 
-    func presentFlow() -> PassthroughSubject<VerificationResult, Never>
+    func presentFlow(
+        proveConfig: ProveConfig
+    ) -> PassthroughSubject<VerificationResult, Never>
 }

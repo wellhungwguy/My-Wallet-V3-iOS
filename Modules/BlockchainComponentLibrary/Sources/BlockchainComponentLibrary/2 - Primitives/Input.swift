@@ -47,9 +47,12 @@ public struct Input<Trailing: View>: View {
     private let configuration: Configuration
     private let trailing: Trailing
     private let onReturnTapped: () -> Void
+    private let onFieldTapped: (() -> Void)?
     private let isEnabledAutomaticFirstResponder: Bool
     private let shouldResignFirstResponderOnReturn: Bool
-    private let canHaveDisabledStyle: Bool
+    private var isTextFieldDisabled: Bool {
+        onFieldTapped != nil ? true : !isEnabled
+    }
 
     @Environment(\.isEnabled) private var isEnabled
 
@@ -68,12 +71,12 @@ public struct Input<Trailing: View>: View {
     ///   - configuration: Closure to configure specifics of `UITextField`
     ///   - trailing: Optional trailing view, intended to contain `Icon` or `IconButton`.
     ///   - onReturnTapped: Closure executed when the user types the return key
+    ///   - onFieldTapped: if this handler passed, the field will be disabled
     public init(
         text: Binding<String>,
         isFirstResponder: Binding<Bool>,
         isEnabledAutomaticFirstResponder: Bool = true,
         shouldResignFirstResponderOnReturn: Bool = false,
-        canHaveDisabledStyle: Bool = true,
         label: String? = nil,
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
@@ -83,13 +86,13 @@ public struct Input<Trailing: View>: View {
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
         @ViewBuilder trailing: @escaping () -> Trailing,
-        onReturnTapped: @escaping () -> Void = {}
+        onReturnTapped: @escaping () -> Void = {},
+        onFieldTapped: (() -> Void)? = nil
     ) {
         _text = text
         _isFirstResponder = isFirstResponder
         self.isEnabledAutomaticFirstResponder = isEnabledAutomaticFirstResponder
         self.shouldResignFirstResponderOnReturn = shouldResignFirstResponderOnReturn
-        self.canHaveDisabledStyle = canHaveDisabledStyle
         self.label = label
         self.subText = subText
         self.subTextStyle = subTextStyle
@@ -100,6 +103,7 @@ public struct Input<Trailing: View>: View {
         self.configuration = configuration
         self.trailing = trailing()
         self.onReturnTapped = onReturnTapped
+        self.onFieldTapped = onFieldTapped
     }
 
     public var body: some View {
@@ -140,9 +144,11 @@ public struct Input<Trailing: View>: View {
                     onReturnTapped: onReturnTapped
                 )
                 .frame(minHeight: 24)
+                .disabled(isTextFieldDisabled)
                 #else
                 TextField("", text: $text)
                     .frame(minHeight: 24)
+                    .disabled(isTextFieldDisabled)
                 #endif
 
                 trailing
@@ -169,7 +175,11 @@ public struct Input<Trailing: View>: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            isFirstResponder = true
+            if let onFieldTapped {
+                onFieldTapped()
+            } else {
+                isFirstResponder = true
+            }
         }
     }
 }
@@ -187,12 +197,12 @@ extension Input where Trailing == EmptyView {
     ///   - state: Error state overrides the border color.
     ///   - configuration: Closure to configure specifics of `UITextField`
     ///   - onReturnTapped: Closure executed when the user types the return key
+    ///   - onFieldTapped: if this handler passed, the field will be disabled
     public init(
         text: Binding<String>,
         isFirstResponder: Binding<Bool>,
         isEnabledAutomaticFirstResponder: Bool = true,
         shouldResignFirstResponderOnReturn: Bool = false,
-        canHaveDisabledStyle: Bool = true,
         label: String? = nil,
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
@@ -201,14 +211,14 @@ extension Input where Trailing == EmptyView {
         prefix: String? = nil,
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
-        onReturnTapped: @escaping () -> Void = {}
+        onReturnTapped: @escaping () -> Void = {},
+        onFieldTapped: (() -> Void)? = nil
     ) {
         self.init(
             text: text,
             isFirstResponder: isFirstResponder,
             isEnabledAutomaticFirstResponder: isEnabledAutomaticFirstResponder,
             shouldResignFirstResponderOnReturn: shouldResignFirstResponderOnReturn,
-            canHaveDisabledStyle: canHaveDisabledStyle,
             label: label,
             subText: subText,
             subTextStyle: subTextStyle,
@@ -218,7 +228,8 @@ extension Input where Trailing == EmptyView {
             state: state,
             configuration: configuration,
             trailing: { EmptyView() },
-            onReturnTapped: onReturnTapped
+            onReturnTapped: onReturnTapped,
+            onFieldTapped: onFieldTapped
         )
     }
 }
@@ -258,7 +269,7 @@ extension Input {
     // MARK: Colors
 
     private var backgroundColor: Color {
-        if !isEnabled, canHaveDisabledStyle {
+        if !isEnabled {
             return Color(light: .semantic.medium, dark: .palette.dark800)
         } else {
             return .semantic.background
@@ -268,7 +279,7 @@ extension Input {
     private var borderColor: Color {
         if let color = state.borderColor {
             return color
-        } else if !isEnabled, canHaveDisabledStyle {
+        } else if !isEnabled {
             return .semantic.medium
         } else if isFirstResponder {
             return .semantic.primary
@@ -278,7 +289,7 @@ extension Input {
     }
 
     private var textColor: Color {
-        if !isEnabled, canHaveDisabledStyle {
+        if !isEnabled {
             return placeholderColor
         } else {
             return .semantic.title

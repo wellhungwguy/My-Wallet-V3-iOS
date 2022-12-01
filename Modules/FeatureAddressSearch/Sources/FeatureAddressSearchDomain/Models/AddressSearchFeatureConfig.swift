@@ -18,15 +18,18 @@ public struct AddressSearchFeatureConfig {
         public let title: String
         public let subtitle: String?
         public let saveAddressButtonTitle: String?
+        public let shouldSaveAddressOnCompletion: Bool
 
         public init(
             title: String,
             subtitle: String? = nil,
-            saveAddressButtonTitle: String? = nil
+            saveAddressButtonTitle: String? = nil,
+            shouldSaveAddressOnCompletion: Bool = true
         ) {
             self.title = title
             self.subtitle = subtitle
             self.saveAddressButtonTitle = saveAddressButtonTitle
+            self.shouldSaveAddressOnCompletion = shouldSaveAddressOnCompletion
         }
     }
 

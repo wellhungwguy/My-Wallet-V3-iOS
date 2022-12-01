@@ -70,6 +70,21 @@ struct AddressModificationState: Equatable {
         self.stateName = state?.stateWithoutUSPrefix.map { usaStates[$0] ?? "" } ?? ""
         self.country = country ?? ""
     }
+
+    init(
+        address: Address,
+        country: String? = nil,
+        error: Nabu.Error? = nil
+    ) {
+        self.init(
+            addressDetailsId: nil,
+            country: address.country,
+            state: address.state,
+            isPresentedFromSearchView: false,
+            error: error
+        )
+        self.updateAddressInputs(address: address)
+    }
 }
 
 extension AddressModificationState {
@@ -117,20 +132,23 @@ let addressModificationReducer = Reducer<
     switch action {
     case .updateAddress:
         state.loading = true
-        return env
-            .addressService
-            .save(
-                address: Address(
-                    line1: state.line1,
-                    line2: state.line2.isEmpty ? nil : state.line2,
-                    city: state.city,
-                    postCode: state.postcode,
-                    state: state.state,
-                    country: state.country
-                )
-            )
-            .receive(on: env.mainQueue)
-            .catchToEffect(AddressModificationAction.updateAddressResponse)
+        let address = Address(
+            line1: state.line1,
+            line2: state.line2.isEmpty ? nil : state.line2,
+            city: state.city,
+            postCode: state.postcode,
+            state: state.state,
+            country: state.country
+        )
+        if env.config.shouldSaveAddressOnCompletion {
+            return env
+                .addressService
+                .save(address: address)
+                .receive(on: env.mainQueue)
+                .catchToEffect(AddressModificationAction.updateAddressResponse)
+        } else {
+            return Effect(value: .updateAddressResponse(.success(address)))
+        }
 
     case .updateAddressResponse(let result):
         state.loading = false
@@ -170,7 +188,11 @@ let addressModificationReducer = Reducer<
         switch result {
         case .success(let searchedAddress):
             let address = Address(addressDetails: searchedAddress)
-            if let state = state.state, state.isNotEmpty, state != address.state {
+            if state.country == "US",
+               let state = state.state,
+               state.isNotEmpty,
+               state != address.state
+            {
                 return Effect(value: .showStateDoesNotMatchAlert)
             } else {
                 state.updateAddressInputs(address: address)
