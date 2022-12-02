@@ -175,6 +175,32 @@ final class AppTests: XCTestCase {
             XCTAssertFalse(isFunded)
         }
     }
+
+    func test_local_store() async throws {
+
+        let input = blockchain.ux.asset["BTC"].account["CryptoInterestAccount"].staking.deposit.key()
+        let any: AnyHashable = input as AnyHashable
+        try await app.set(
+            blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap.then.emit[].ref(
+                to: [
+                    blockchain.ux.earn.portfolio.product.id: "staking",
+                    blockchain.ux.earn.portfolio.product.asset.id: "BTC"
+                ]
+            ),
+            to: any
+        )
+        let json: AnyJSON = try await app.get(
+            blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap.then.emit[].ref(
+                to: [
+                    blockchain.ux.earn.portfolio.product.id: "staking",
+                    blockchain.ux.earn.portfolio.product.asset.id: "BTC"
+                ]
+            )
+        )
+        let reference = try json.decode(Tag.Reference.self, using: BlockchainNamespaceDecoder())
+
+        XCTAssertEqual(reference.string, input.string)
+    }
 }
 
 final class AppActionTests: XCTestCase {

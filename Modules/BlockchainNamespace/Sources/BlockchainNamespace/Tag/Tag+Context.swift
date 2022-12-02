@@ -47,6 +47,23 @@ extension Tag.Context: ExpressibleByDictionaryLiteral {
     }
 }
 
+extension Tag.Context: Codable {
+
+    public init(from decoder: Decoder) throws {
+        let language = decoder.userInfo[.language] as? Language ?? Language.root.language
+        dictionary = try [String: AnyJSON](from: decoder).mapKeys { key in
+            try Tag.Reference(id: key, in: language)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        try dictionary.mapKeysAndValues(
+            key: \.string,
+            value: AnyJSON.init
+        ).encode(to: encoder)
+    }
+}
+
 extension Tag.Context {
 
     public init(_ object: [L: Wrapped.Value]) {
@@ -101,6 +118,11 @@ extension Tag.Context {
     public static func == (lhs: [L: Wrapped.Value], rhs: Tag.Context) -> Bool { Tag.Context(lhs) == rhs }
     public static func == (lhs: [Tag: Wrapped.Value], rhs: Tag.Context) -> Bool { Tag.Context(lhs) == rhs }
     public static func == (lhs: [Tag.Reference: Wrapped.Value], rhs: Tag.Context) -> Bool { lhs == rhs.dictionary }
+}
+
+extension AnyHashable {
+    public static func == (lhs: Self, rhs: some Hashable) -> Bool { lhs == rhs as AnyHashable }
+    public static func == (lhs: some Hashable, rhs: Self) -> Bool { lhs as AnyHashable == rhs }
 }
 
 extension Tag.Context {

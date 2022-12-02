@@ -44,7 +44,7 @@ final class FeatureCustomerSupportTests: XCTestCase {
         XCTAssertEqual(sdk.attributes.email, "oliver@blockchain.com")
     }
 
-    func test_sign_out() throws {
+    func test_sign_out() {
         app.signOut()
         XCTAssertTrue(sdk.did.logout)
     }

@@ -181,8 +181,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let fee = pendingTransaction.feeAmount
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
 
-        let sourceLabel = state.source?.label ?? ""
-
         // NOTE: This is not ideal. We do not know the
         // amount, fee, and total amount for the transaction
         // until we receive the `TransactionState`. That means

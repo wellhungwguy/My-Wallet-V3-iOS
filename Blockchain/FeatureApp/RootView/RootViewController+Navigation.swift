@@ -47,97 +47,118 @@ extension RootViewController {
 
     func setupNavigationObservers() {
         app.on(blockchain.ui.type.action.then.navigate.to)
-            .sink { [weak self] event in
-                guard let self else { return }
-                Task(priority: .userInitiated) { await self.navigate(to: event) }
-            }
+            .receive(on: DispatchQueue.main)
+            .sink(to: RootViewController.navigate(to:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.enter.into)
-            .sink { [weak self] event in
-                guard let self else { return }
-                Task(priority: .userInitiated) { await self.enter(into: event) }
-            }
+            .receive(on: DispatchQueue.main)
+            .sink(to: RootViewController.enter(into:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.close)
-            .sink { [weak self] event in
-                guard let self else { return }
-                Task(priority: .userInitiated) { self.close(event) }
-            }
+            .receive(on: DispatchQueue.main)
+            .sink(to: RootViewController.close, on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.current.stack)
-            .sink { [weak self] event in
-                guard let self else { return }
-                Task(priority: .userInitiated) { await self.replaceCurrent(stack: event) }
-            }
+            .receive(on: DispatchQueue.main)
+            .sink(to: RootViewController.replaceCurrent(stack:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.root.stack)
-            .sink { [weak self] event in
-                guard let self else { return }
-                Task(priority: .userInitiated) { await self.replaceRoot(stack: event) }
-            }
+            .receive(on: DispatchQueue.main)
+            .sink(to: RootViewController.replaceRoot(stack:), on: self)
             .store(in: &bag)
     }
 
-    @MainActor private func hostingController(from event: Session.Event) async throws -> some UIViewController {
+    private func hostingController(from event: Session.Event) throws -> some UIViewController {
         guard let action = event.action else {
             throw NavigationError(message: "received \(event.reference) without an action")
         }
-        return try await hostingController(
+        return try hostingController(
             from: action.data.decode(Tag.Reference.self),
             in: event.context
         )
     }
 
-    @MainActor private func hostingControllers(from event: Session.Event) async throws -> [UIViewController] {
+    private func hostingControllers(from event: Session.Event) throws -> [UIViewController] {
         guard let action = event.action else {
             throw NavigationError(message: "received \(event.reference) without an action")
         }
-        var viewControllers: [UIViewController] = []
-        for reference in try action.data.decode([Tag.Reference].self) {
-            try await viewControllers.append(
-                hostingController(from: reference, in: event.context)
+        return try action.data.decode([Tag.Reference].self).map {
+            try hostingController(
+                from: $0,
+                in: event.context
             )
         }
-        return viewControllers
     }
 
-    @MainActor private func hostingController(
+    private func hostingController(
         from story: Tag.Reference,
         in context: Tag.Context
-    ) async throws -> some UIViewController {
-        try await UIHostingController(
+    ) throws -> some UIViewController {
+        let viewController = try InvalidateDetentsHostingController(
             rootView: siteMap.view(for: story.in(app), in: context)
                 .app(app)
-                .context(context)
+                .context(context + story.context)
                 .onAppear { [app] in
                     app.post(event: story, context: context)
                 }
         )
+
+        if #available(iOS 15.0, *) {
+            if
+                let sheet = viewController.sheetPresentationController,
+                let presentation = viewController.presentationController
+            {
+                if let detents = try? context.decode(blockchain.ui.type.action.then.enter.into.detents, as: [Tag].self) {
+                    sheet.detents = detents.reduce(into: [UISheetPresentationController.Detent]()) { detents, tag in
+                        switch tag {
+                        case blockchain.ui.type.action.then.enter.into.detents.large:
+                            detents.append(.large())
+                        case blockchain.ui.type.action.then.enter.into.detents.medium:
+                            detents.append(.medium())
+                        case blockchain.ui.type.action.then.enter.into.detents.small:
+                            if #available(iOS 16.0, *) {
+                                detents.append(.custom(resolver: { _ in CGRect.screen.height / 4 }))
+                            }
+                        case blockchain.ui.type.action.then.enter.into.detents.automatic.dimension:
+                            if #available(iOS 16.0, *) {
+                                viewController.shouldInvalidateDetents = true
+                                detents.append(.custom(resolver: { [unowned presentation] context in resolution(presentation, context) }))
+                            }
+                        case _:
+                            return
+                        }
+                    }
+                }
+                sheet.prefersGrabberVisible = true
+            }
+        }
+
+        return viewController
     }
 
-    @MainActor func navigate(to event: Session.Event) async {
+    func navigate(to event: Session.Event) {
         do {
-            try await push(hostingController(from: event))
+            try push(hostingController(from: event))
         } catch {
             app.post(error: error)
         }
     }
 
-    @MainActor func enter(into event: Session.Event) async {
+    func enter(into event: Session.Event) {
         do {
-            try await present(hostingController(from: event))
+            try present(hostingController(from: event))
         } catch {
             app.post(error: error)
         }
     }
 
-    @MainActor func replaceRoot(stack event: Session.Event) async {
+    func replaceRoot(stack event: Session.Event) {
         do {
-            let controllers = try await hostingControllers(from: event)
+            let controllers = try hostingControllers(from: event)
             let navigationController = try navigationController
                 .or(throw: NavigationError.noNavigationController)
             dismiss(animated: true) {
@@ -148,9 +169,9 @@ extension RootViewController {
         }
     }
 
-    @MainActor func replaceCurrent(stack event: Session.Event) async {
+    func replaceCurrent(stack event: Session.Event) {
         do {
-            try await (currentNavigationController ?? topMostViewController?.navigationController)
+            try (currentNavigationController ?? topMostViewController?.navigationController)
                 .or(throw: NavigationError.noNavigationController)
                 .setViewControllers(hostingControllers(from: event), animated: true)
         } catch {
@@ -158,7 +179,7 @@ extension RootViewController {
         }
     }
 
-    @MainActor func close(_ event: Session.Event) {
+    func close(_ event: Session.Event) {
         do {
             if let close = try? app.state.get(event.reference) as Session.State.Function {
                 try close()
@@ -167,6 +188,40 @@ extension RootViewController {
             }
         } catch {
             app.post(error: error)
+        }
+    }
+}
+
+@available(iOS 16.0, *)
+let resolution: (UIPresentationController, UISheetPresentationControllerDetentResolutionContext) -> CGFloat = { presentationController, _ in
+    guard let containerView = presentationController.containerView else {
+        let idealHeight = presentationController.presentedViewController.view.intrinsicContentSize.height.rounded(.up)
+        return idealHeight
+    }
+    var width = min(presentationController.presentedViewController.view.frame.width, containerView.frame.width)
+    if width == 0 {
+        width = containerView.frame.width
+    }
+    var height = presentationController.presentedViewController.view
+        .systemLayoutSizeFitting(CGSize(width: width, height: .infinity))
+        .height
+    if height == 0 || height > containerView.frame.height {
+        height = presentationController.presentedViewController.view.intrinsicContentSize.height
+    }
+    let idealHeight = (height - presentationController.presentedViewController.view.safeAreaInsets.bottom).rounded(.up)
+    return min(idealHeight, containerView.frame.height)
+}
+
+class InvalidateDetentsHostingController<V: View>: UIHostingController<V> {
+
+    var shouldInvalidateDetents = false
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if #available(iOS 16.0, *) {
+            if shouldInvalidateDetents, let sheet = viewController.sheetPresentationController {
+                sheet.invalidateDetents()
+            }
         }
     }
 }

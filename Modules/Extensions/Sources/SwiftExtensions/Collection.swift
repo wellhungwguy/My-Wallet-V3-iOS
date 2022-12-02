@@ -34,6 +34,28 @@ extension Collection where Element: Equatable {
             return first < second
         }
     }
+
+    @inlinable public func sorted<Other: Collection>(
+        like other: Other,
+        other keyPath: KeyPath<Other.Element, Element>
+    ) -> [Element] where Other.Element: Equatable {
+        sorted { a, b -> Bool in
+            guard let first = other.firstIndex(where: { $0[keyPath: keyPath] == a }) else { return false }
+            guard let second = other.firstIndex(where: { $0[keyPath: keyPath] == b }) else { return true }
+            return first < second
+        }
+    }
+
+    @inlinable public func sorted<Other: Collection>(
+        like other: Other,
+        my keyPath: KeyPath<Element, Other.Element>
+    ) -> [Element] where Other.Element: Equatable {
+        sorted { a, b -> Bool in
+            guard let first = other.firstIndex(where: { $0 == a[keyPath: keyPath] }) else { return false }
+            guard let second = other.firstIndex(where: { $0 == b[keyPath: keyPath] }) else { return true }
+            return first < second
+        }
+    }
 }
 
 extension Collection {
@@ -84,5 +106,15 @@ extension Collection {
 
     @inlinable public var firstAndOnly: Element? {
         count == 1 ? first : nil
+    }
+}
+
+extension RandomAccessCollection {
+
+    @inlinable public static func * (lhs: Self, rhs: Int) -> [Element] {
+        let array = lhs.array
+        return (0..<rhs).reduce(into: []) { o, _ in
+            o.append(contentsOf: array)
+        }
     }
 }

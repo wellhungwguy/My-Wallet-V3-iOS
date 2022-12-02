@@ -82,15 +82,9 @@ struct AccountSheet: View {
                 }
             }
         }
-        .task {
-            let id = account.cryptoCurrency.code
-            do {
-                try await app.set(
-                    blockchain.ux.asset.account.staking.summary.then.enter.into[].ref(to: context),
-                    to: blockchain.ux.earn.staking[id].summary
-                )
-            } catch { /* ignored */ }
-        }
+        .batch(
+            .set(blockchain.ux.asset.account.staking.summary.then.enter.into, to: blockchain.ux.earn.portfolio.product["staking"].asset[account.cryptoCurrency.code].summary)
+        )
     }
 }
 

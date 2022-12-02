@@ -11,7 +11,7 @@ public struct InterpolatedText<Placeholder: View, Success: View, Failure: View>:
     var success: (String) -> Success
     var failure: (Error) -> Failure
 
-    @ObservedObject var object = Object()
+    @StateObject var object = Object()
 
     public init(
         _ string: DefaultString,
@@ -122,6 +122,7 @@ extension InterpolatedText {
                     return .failure(error)
                 }
             }
+            .receive(on: DispatchQueue.main)
             .assign(to: &$string)
         }
     }

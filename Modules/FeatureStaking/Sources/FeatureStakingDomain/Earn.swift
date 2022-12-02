@@ -1,5 +1,7 @@
 import Blockchain
 
+// swiftlint:disable line_length
+
 // earn/eligible
 
 public typealias EarnEligibility = [String: EarnCurrencyEligibility]
@@ -11,6 +13,19 @@ public struct EarnCurrencyEligibility: Hashable, Decodable {
 
 public struct EarnUserRates: Hashable, Decodable {
     public var rates: [String: EarnRate]
+}
+
+extension EarnUserRates {
+
+    public init(from decoder: Decoder) throws {
+        do {
+            let container = try decoder.container(keyedBy: AnyCodingKey.self)
+            rates = try container.decode([String: EarnRate].self, forKey: "rates")
+        } catch {
+            let container = try decoder.singleValueContainer()
+            rates = try container.decode([String: EarnRate].self)
+        }
+    }
 }
 
 public struct EarnRate: Hashable, Decodable {
@@ -28,7 +43,10 @@ public struct EarnRate: Hashable, Decodable {
 
 public typealias EarnLimits = [String: EarnCurrencyLimit]
 public struct EarnCurrencyLimit: Hashable, Decodable {
-    public var minDepositValue: String
+    public var minDepositValue: String?
+    public var minDepositAmount: String?
+    public var maxWithdrawalAmount: String?
+    public var lockUpDuration: Int?
     public var bondingDays: Int?
     public var unbondingDays: Int?
     public var disabledWithdrawals: Bool?

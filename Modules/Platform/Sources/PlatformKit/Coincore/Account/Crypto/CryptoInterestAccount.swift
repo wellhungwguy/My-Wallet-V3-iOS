@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import FeatureStakingDomain
 import Localization
 import MoneyKit
 import RxSwift
@@ -111,6 +112,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let interestActivityEventRepository: InterestActivityItemEventRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
+
     private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: asset)
     }

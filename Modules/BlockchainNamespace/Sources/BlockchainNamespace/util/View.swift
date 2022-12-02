@@ -1,5 +1,6 @@
 #if canImport(SwiftUI)
 
+import Extensions
 import SwiftUI
 
 public typealias BlockchainApp = EnvironmentObject<App.EnvironmentObject>

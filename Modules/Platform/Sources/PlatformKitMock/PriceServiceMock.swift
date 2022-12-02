@@ -61,4 +61,8 @@ public final class PriceServiceMock: PriceServiceAPI {
     ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError> {
         .just(stubbedResults.historicalPriceSeries)
     }
+
+    public func stream(quote: Currency) -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never> {
+        .just(.success([:]))
+    }
 }

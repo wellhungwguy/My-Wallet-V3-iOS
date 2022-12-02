@@ -2,6 +2,9 @@
 
 import Blockchain
 import Combine
+import DIKit
+
+// swiftlint:disable line_length
 
 public struct EarnProduct: NewTypeString {
     public var value: String
@@ -14,6 +17,63 @@ extension EarnProduct {
 }
 
 private let id = blockchain.user.earn.product.asset
+
+public final class EarnObserver: Client.Observer {
+
+    private let app: AppProtocol
+    private var signIn, signOut, subscription: AnyCancellable?
+
+    public init(_ app: AppProtocol) {
+        self.app = app
+    }
+
+    public func start() {
+
+        signIn = app.on(blockchain.session.event.did.sign.in)
+            .flatMap { [app] _ in
+                app.publisher(for: blockchain.ux.earn.supported.products, as: [EarnProduct].self)
+            }
+            .replaceError(with: [.staking, .savings])
+            .sink(to: My.fetched, on: self)
+
+        signOut = app.on(blockchain.session.event.did.sign.out)
+            .sink { [weak self] _ in self?.subscription = nil }
+    }
+
+    public func stop() {
+        (signIn, subscription) = (nil, nil)
+    }
+
+    func fetched(_ products: [EarnProduct]) {
+        subscription = products.map { product in resolve(tag: product) as EarnAccountService } // TODO: Do not rely on DIKit
+            .map { service in
+                [
+                    service.limits()
+                        .ignoreFailure()
+                        .mapToVoid(),
+                    service.eligibility()
+                        .ignoreFailure()
+                        .flatMap { eligibility in
+                            eligibility.keys
+                                .compactMap { CryptoCurrency(code: $0) }
+                                .map(service.activity(currency:))
+                                .merge()
+                                .ignoreFailure()
+                                .mapToVoid()
+                        }
+                        .mapToVoid(),
+                    service.userRates()
+                        .ignoreFailure()
+                        .mapToVoid(),
+                    service.balances()
+                        .ignoreFailure()
+                        .mapToVoid()
+                ].merge()
+            }
+            .merge()
+            .subscribe()
+    }
+}
 
 public final class EarnAccountService {
 
@@ -33,39 +93,36 @@ public final class EarnAccountService {
     }
 
     public func balance(for currency: CryptoCurrency) -> AnyPublisher<EarnAccount?, UX.Error> {
-        Task.Publisher { [weak self, app] () -> EarnAccount? in
-            guard let self else { return nil }
-            guard try await app.get(blockchain.user.is.tier.gold) else { return nil }
-            return try await self.balances().await()[currency.code]
-        }
-        .mapError(UX.Error.init)
-        .eraseToAnyPublisher()
+        guard app.state.yes(if: blockchain.user.is.tier.gold) else { return .just(nil) }
+        return balances().map(\.[currency.code]).eraseToAnyPublisher()
     }
 
     public func balances() -> AnyPublisher<EarnAccounts, UX.Error> {
-        Task.Publisher { [app, repository] () -> EarnAccounts in
-            try await repository.balances(in: app.get(blockchain.user.currency.preferred.fiat.display.currency)).await()
-        }
-        .handleEvents(
-            receiveOutput: { [app, context] balances in
-                Task {
-                    try await app.batch(
-                        updates: balances.reduce(into: [(Tag.Event, Any?)]()) { data, next in
-                            data.append((id[next.key].account.balance, next.value.balance?.moneyValue.data))
-                            data.append((id[next.key].account.bonding.deposits, next.value.bondingDeposits?.moneyValue.data))
-                            data.append((id[next.key].account.locked, next.value.locked?.moneyValue.data))
-                            data.append((id[next.key].account.pending.deposit, next.value.pendingDeposit?.moneyValue.data))
-                            data.append((id[next.key].account.pending.withdrawal, next.value.pendingWithdrawal?.moneyValue.data))
-                            data.append((id[next.key].account.total.rewards, next.value.totalRewards?.moneyValue.data))
-                            data.append((id[next.key].account.unbonding.withdrawals, next.value.unbondingWithdrawals?.moneyValue.data))
-                        },
-                        in: context
-                    )
+        app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency, as: FiatCurrency.self)
+            .compactMap(\.value)
+            .flatMap(repository.balances(in:))
+            .handleEvents(
+                receiveOutput: { [app, context] balances in
+                    Task {
+                        try await app.batch(
+                            updates: balances.reduce(into: [(Tag.Event, Any?)]()) { data, next in
+                                data.append((id[next.key].account.balance, next.value.balance?.moneyValue.data))
+                                data.append((id[next.key].account.bonding.deposits, next.value.bondingDeposits?.moneyValue.data))
+                                data.append((id[next.key].account.locked, next.value.locked?.moneyValue.data))
+                                data.append((id[next.key].account.pending.deposit, next.value.pendingDeposit?.moneyValue.data))
+                                data.append((id[next.key].account.pending.withdrawal, next.value.pendingWithdrawal?.moneyValue.data))
+                                data.append((id[next.key].account.total.rewards, next.value.totalRewards?.moneyValue.data))
+                                data.append((id[next.key].account.unbonding.withdrawals, next.value.unbondingWithdrawals?.moneyValue.data))
+                            } + [
+                                (blockchain.user.earn.product.has.balance, balances.isNotEmpty)
+                            ],
+                            in: context
+                        )
+                    }
                 }
-            }
-        )
-        .mapError(UX.Error.init)
-        .eraseToAnyPublisher()
+            )
+            .mapError(UX.Error.init)
+            .eraseToAnyPublisher()
     }
 
     public func invalidateBalances() {
@@ -80,7 +137,9 @@ public final class EarnAccountService {
                         try await app.batch(
                             updates: eligibility.reduce(into: [(Tag.Event, Any?)]()) { data, next in
                                 data.append((id[next.key].is.eligible, next.value.eligible))
-                            },
+                            } + [
+                                (blockchain.user.earn.product.all.assets, Array(eligibility.keys))
+                            ],
                             in: context
                         )
                     }
@@ -110,31 +169,38 @@ public final class EarnAccountService {
     }
 
     public func limits() -> AnyPublisher<EarnLimits, UX.Error> {
-        repository.limits()
-            .handleEvents(
-                receiveOutput: { [app, context] limits in
-                    Task {
-                        try await app.batch(
-                            updates: limits.reduce(into: [(Tag.Event, Any?)]()) { data, next in
-                                data.append((id[next.key].limit.days.bonding, next.value.bondingDays ?? 0))
-                                data.append((id[next.key].limit.days.unbonding, next.value.unbondingDays ?? 0))
-                                data.append((id[next.key].limit.minimum.deposit.value, next.value.minDepositValue))
-                                data.append((id[next.key].limit.withdraw.is.disabled, next.value.disabledWithdrawals ?? false))
-                                data.append((id[next.key].limit.reward.frequency, { () -> Tag? in
-                                    switch next.value.rewardFrequency?.uppercased() {
-                                    case "DAILY": return id.limit.reward.frequency.daily[]
-                                    case "WEEKLY": return id.limit.reward.frequency.weekly[]
-                                    case "MONTHLY": return id.limit.reward.frequency.monthly[]
-                                    case _: return nil
-                                    }
-                                }()))
-                            },
-                            in: context
-                        )
-                    }
-                }
-            )
-            .mapError(UX.Error.init)
+        app.publisher(for: blockchain.user.currency.preferred.fiat.display.currency, as: FiatCurrency.self)
+            .compactMap(\.value)
+            .flatMap { [app, context, repository] currency -> AnyPublisher<EarnLimits, UX.Error> in
+                repository.limits(currency: currency)
+                    .handleEvents(
+                        receiveOutput: { [app, context] limits in
+                            Task {
+                                try await app.batch(
+                                    updates: limits.reduce(into: [(Tag.Event, Any?)]()) { data, next in
+                                        data.append((id[next.key].limit.days.bonding, next.value.bondingDays ?? 0))
+                                        data.append((id[next.key].limit.days.unbonding, next.value.unbondingDays ?? 0))
+                                        data.append((id[next.key].limit.lock.up.duration, next.value.lockUpDuration))
+                                        data.append((id[next.key].limit.minimum.deposit.value, ["currency": currency.code, "amount": next.value.minDepositValue ?? next.value.minDepositAmount]))
+                                        data.append((id[next.key].limit.maximum.withdraw.value, ["currency": currency.code, "amount": next.value.maxWithdrawalAmount]))
+                                        data.append((id[next.key].limit.withdraw.is.disabled, next.value.disabledWithdrawals ?? false))
+                                        data.append((id[next.key].limit.reward.frequency, { () -> Tag? in
+                                            switch next.value.rewardFrequency?.uppercased() {
+                                            case "DAILY": return id.limit.reward.frequency.daily[]
+                                            case "WEEKLY": return id.limit.reward.frequency.weekly[]
+                                            case "MONTHLY": return id.limit.reward.frequency.monthly[]
+                                            case _: return nil
+                                            }
+                                        }()))
+                                    },
+                                    in: context
+                                )
+                            }
+                        }
+                    )
+                    .mapError(UX.Error.init)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 

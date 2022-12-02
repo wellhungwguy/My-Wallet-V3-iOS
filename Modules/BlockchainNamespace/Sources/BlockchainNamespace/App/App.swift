@@ -114,7 +114,11 @@ public class App: AppProtocol {
             let file = event.context[e.file] as? String,
             let line = event.context[e.line] as? Int
         {
-            print("🏷 ‼️", event.reference, message, "←", file, line)
+            if event.tag == blockchain.ux.type.analytics.error[] {
+                print("🏷 ‼️", message, "←", file, line)
+            } else {
+                print("🏷 ‼️", event.reference, message, "←", file, line)
+            }
         } else {
             print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
@@ -194,6 +198,7 @@ extension AppProtocol {
         state.transaction { state in
             state.clear(blockchain.user.id)
         }
+        Task { try await set(blockchain.user, to: nil) }
         post(event: blockchain.session.event.did.sign.out)
     }
 }
@@ -375,6 +380,10 @@ private let s = (
 
 extension AppProtocol {
 
+    public func publisher<Language: L>(for event: Tag.Event, as id: Language) -> AnyPublisher<FetchResult.Value<Language.JSON>, Never> {
+        publisher(for: event, as: Language.JSON.self)
+    }
+
     public func publisher<T: Equatable>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
         publisher(for: event).decode(T.self)
             .removeDuplicates(
@@ -397,7 +406,7 @@ extension AppProtocol {
                 return remoteConfiguration.publisher(for: ref)
             default:
                 return Task<AnyPublisher<FetchResult, Never>, Error>.Publisher { [local] () async throws -> AnyPublisher<FetchResult, Never> in
-                    try await local.publisher(for: ref.route).map(FetchResult.create(ref.metadata(.app))).eraseToAnyPublisher()
+                    try await local.publisher(for: ref.route()).map(FetchResult.create(ref.metadata(.app))).eraseToAnyPublisher()
                 }
                 .catch { error in .just(FetchResult.error(.other(error), ref.metadata(.app))) }
                 .switchToLatest()
@@ -471,17 +480,19 @@ extension AppProtocol {
 
 extension AppProtocol {
 
+    public typealias BatchUpdates = [(Tag.Event, Any?)]
+
     public func transaction(_ body: (Self) async throws -> Void) async rethrows {
         try await local.transaction { _ in
             try await body(self)
         }
     }
 
-    public func batch(updates sets: [(Tag.Event, Any?)], in context: Tag.Context = [:]) async throws {
+    public func batch(updates sets: BatchUpdates, in context: Tag.Context = [:]) async throws {
         var updates = Any?.Store.BatchUpdates()
         for (event, value) in sets {
             let reference = event.key(to: context).in(self)
-            try updates.append((reference.route, value))
+            try updates.append((reference.route(), value))
         }
         await local.batch(updates)
     }
@@ -492,14 +503,18 @@ extension AppProtocol {
             let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
             !reference.indices.map(\.key).contains(collectionId)
         {
-            guard let map = value as? [String: Any] else { throw "Not a collection" }
-            var updates = Any?.Store.BatchUpdates()
-            for (key, value) in map {
-                try updates.append((reference.key(to: [collectionId: key]).route, value))
+            if value == nil {
+                try await local.set(reference.route(toCollection: true), to: nil)
+            } else {
+                guard let map = value as? [String: Any] else { throw "Not a collection" }
+                var updates = Any?.Store.BatchUpdates()
+                for (key, value) in map {
+                    try updates.append((reference.key(to: [collectionId: key]).route(), value))
+                }
+                await local.batch(updates)
             }
-            await local.batch(updates)
         } else {
-            try await local.set(reference.route, to: value)
+            try await local.set(reference.route(), to: value)
         }
         #if DEBUG
         if isInTest { await Task.megaYield(count: 20) }
@@ -509,21 +524,21 @@ extension AppProtocol {
 
 extension Tag.Reference {
 
-    var route: Optional<Any>.Store.Route {
-        get throws {
-            try validated()
-                .tag.lineage
-                .reversed()
-                .flatMap { node -> [Optional<Any>.Store.Location] in
-                    guard
-                        let collectionId = node["id"],
-                        let id = indices[collectionId]
-                    else {
-                        return [.key(node.name)]
-                    }
-                    return [.key(node.name), .key(id)]
+    func route(toCollection: Bool = false) throws -> Optional<Any>.Store.Route {
+        let lineage = tag.lineage.reversed()
+        return try lineage.indexed()
+            .flatMap { index, node throws -> [Optional<Any>.Store.Location] in
+                guard let collectionId = node["id"] else {
+                    return [.key(node.name)]
                 }
-        }
+                if let id = indices[collectionId] {
+                    return [.key(node.name), .key(id)]
+                } else if toCollection && index == lineage.index(before: lineage.endIndex) {
+                    return [.key(node.name)]
+                } else {
+                    throw error(message: "Missing indices for ref to \(collectionId)")
+                }
+            }
     }
 }
 

@@ -167,10 +167,6 @@ public final class CoinViewObserver: Client.Observer {
         for observer in observers {
             observer.start()
         }
-
-        Task {
-            try await app.set(blockchain.ux.asset.account.staking.summary.then.enter.into, to: blockchain.ux.earn.staking.summary)
-        }
     }
 
     public func stop() {
@@ -221,7 +217,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+        switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
         default:
@@ -231,7 +227,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+        switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
         default:

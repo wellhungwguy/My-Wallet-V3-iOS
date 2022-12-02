@@ -9,8 +9,12 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     }
 
     public private(set) var wrapped: Any
-    public var thing: Any { wrapped }
     public var any: Any { wrapped }
+
+    public var value: Any? {
+        get { wrapped }
+        set { wrapped = newValue.flattened as Any }
+    }
 
     internal var __unwrapped: Any {
         (wrapped as? AnyJSON)?.__unwrapped ?? wrapped
@@ -53,11 +57,7 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        if let lhs = lhs.__unwrapped as? AnyEquatable {
-            return isEqual(lhs, rhs.__unwrapped as? AnyEquatable as Any)
-        } else {
-            return isEqual(lhs.__unwrapped, rhs.__unwrapped)
-        }
+        isEqual(lhs.__unwrapped, rhs.__unwrapped)
     }
 
     public init(from decoder: Decoder) throws {
@@ -132,6 +132,8 @@ public struct AnyJSON: Codable, Hashable, Equatable, CustomStringConvertible {
     public func array() -> [Any]? {
         wrapped as? [Any]
     }
+
+    public static let empty: AnyJSON = nil
 }
 
 extension AnyJSON: ExpressibleByNilLiteral {
@@ -182,20 +184,14 @@ extension AnyJSON: ExpressibleByStringInterpolation {
     }
 }
 
-extension AnyJSON: AnyEquatable {
-
-    public static func isAnyEqual(_ lhs: Any, _ rhs: Any) -> Bool {
-        isEqual(
-            (lhs as? AnyJSON)?.__unwrapped ?? lhs,
-            (rhs as? AnyJSON)?.__unwrapped ?? rhs
-        )
-    }
-}
-
 extension AnyJSON {
 
     @_disfavoredOverload
     @inlinable public func decode<T: Decodable>(_: T.Type = T.self, using decoder: AnyDecoderProtocol) throws -> T {
         try decoder.decode(T.self, from: wrapped)
     }
+}
+
+public protocol AnyJSONConvertible {
+    func toJSON() -> AnyJSON
 }

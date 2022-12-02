@@ -70,6 +70,14 @@ public protocol PriceServiceAPI {
         in quote: FiatCurrency,
         within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError>
+
+    /// Streams the quoted price of the given base `Currency` in the given quote `Currency` for now.
+    ///
+    /// - Parameters:
+    ///  - quote: The currency to get the price in.
+    ///
+    /// - Returns: A publisher that emits a `[String: PriceQuoteAtTime]` on success, or a `PriceServiceError` on failure.
+    func stream(quote: Currency) -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never>
 }
 
 final class PriceService: PriceServiceAPI {
@@ -171,5 +179,9 @@ final class PriceService: PriceServiceAPI {
             .priceSeries(of: base, in: quote, within: window)
             .mapError(PriceServiceError.networkError)
             .eraseToAnyPublisher()
+    }
+
+    func stream(quote: Currency) -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never> {
+        repository.stream(bases: enabledCurrenciesService.allEnabledCryptoCurrencies, quote: quote, at: .now)
     }
 }

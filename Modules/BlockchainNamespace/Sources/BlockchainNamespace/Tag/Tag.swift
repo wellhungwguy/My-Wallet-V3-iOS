@@ -170,6 +170,10 @@ public func ~= (lhs: Tag.Event, rhs: Tag.Event) -> Bool {
     rhs[].is(lhs[])
 }
 
+public func ~= (lhs: Tag.Event, rhs: Tag.Reference) -> Bool {
+    rhs[].is(lhs[]) && lhs.key(to: [:]).context.allSatisfy { rhs.context[$0] == $1 }
+}
+
 extension Tag {
 
     public func isAncestor(of other: Tag) -> Bool {
@@ -487,6 +491,7 @@ extension Tag: Equatable, Hashable {
 
 extension CodingUserInfoKey {
     public static let language = CodingUserInfoKey(rawValue: "com.blockchain.namespace.language")!
+    public static let context = CodingUserInfoKey(rawValue: "com.blockchain.namespace.context")!
 }
 
 extension Tag: Codable {
@@ -528,12 +533,9 @@ extension I_blockchain_db_collection where Self: L {
         Tag.KeyTo(id: self, context: [id: value])
     }
 
-    public subscript(value: some Sendable & Hashable & CustomStringConvertible) -> Tag.KeyTo<Self> {
+    @_disfavoredOverload
+    public subscript(value: some CustomStringConvertible) -> Tag.KeyTo<Self> {
         Tag.KeyTo(id: self, context: [id: value.description])
-    }
-
-    public subscript(event: Tag.Event) -> Tag.KeyTo<Self> {
-        Tag.KeyTo(id: self, context: [id: event.description])
     }
 }
 
@@ -551,7 +553,7 @@ extension Tag.KeyTo where A: I_blockchain_db_collection {
 extension Tag {
 
     @dynamicMemberLookup
-    public struct KeyTo<A: L> {
+    public struct KeyTo<A: L>: Hashable {
 
         private let id: A
         private let context: [L: AnyHashable]

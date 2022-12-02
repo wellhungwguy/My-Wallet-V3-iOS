@@ -8,6 +8,7 @@ import FeatureCoinUI
 import FeatureCustomerSupportUI
 import FeatureReferralDomain
 import FeatureReferralUI
+import FeatureStakingDomain
 import FeatureUserTagSyncDomain
 import FirebaseCore
 import FirebaseInstallations
@@ -59,6 +60,8 @@ extension AppProtocol {
         clientObservers.insert(MultiAppViewDebuggingObserver(app: self))
         #endif
         clientObservers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
+        clientObservers.insert(NabuGatewayPriceObserver(app: self))
+        clientObservers.insert(EarnObserver(self))
 
         let intercom = (
             apiKey: Bundle.main.plist.intercomAPIKey[] as String?,

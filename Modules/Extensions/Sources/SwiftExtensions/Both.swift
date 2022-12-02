@@ -34,3 +34,22 @@ extension Pair: Encodable where T: Encodable, U: Encodable {
         try container.encode(right)
     }
 }
+
+extension Pair {
+
+    public func mapLeft<A>(_ transform: (T) -> A) -> Pair<A, U> {
+        .init(transform(left), right)
+    }
+
+    public func mapRight<A>(_ transform: (T) -> A) -> Pair<A, U> {
+        .init(transform(left), right)
+    }
+
+    public func map<A, B>(_ transform: (T, U) -> (A, B)) -> Pair<A, B> {
+        .init(transform(left, right))
+    }
+
+    public func flatMap<A, B>(_ transform: (T, U) -> Pair<A, B>) -> Pair<A, B> {
+        transform(left, right)
+    }
+}

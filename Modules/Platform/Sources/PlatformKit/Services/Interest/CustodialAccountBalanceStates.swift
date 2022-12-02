@@ -13,7 +13,7 @@ public struct CustodialAccountBalanceStates: Equatable {
         CustodialAccountBalanceStates()
     }
 
-    private var balances: [CurrencyType: CustodialAccountBalanceState] = [:]
+    var balances: [CurrencyType: CustodialAccountBalanceState] = [:]
 
     // MARK: - Subscript
 

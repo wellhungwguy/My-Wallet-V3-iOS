@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Extensions
 import Foundation
 
 extension Tag {
@@ -53,27 +54,36 @@ extension Tag {
             self.context = context
             self.indices = [:]
             self.string = tag.id
-            self.error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
-                ? tag.error(message: "Missing indices for ref to \(tag.id)")
-                : nil
+            if tag.is(blockchain.db.collection.id) {
+                self.error = nil
+            } else {
+                self.error = tag.template.indices.set.subtracting(Self.volatileIndices.map(\.id)).isNotEmpty
+                    ? tag.error(message: "Missing indices for ref to \(tag.id)")
+                    : nil
+            }
         }
 
         @usableFromInline init(checked tag: Tag, context: Tag.Context, in app: AppProtocol? = nil) throws {
             self.tag = tag
             self.context = context
-            let ids = try tag.template.indices(from: context, in: app)
-            let indices = try Dictionary(
-                uniqueKeysWithValues: zip(
-                    tag.template.indices.map { try Tag(id: $0, in: tag.language) },
-                    ids
-                )
-            )
             self.app = app.map(ObjectIdentifier.init)
-            self.indices = indices
-            self.string = Self.id(
-                tag: tag,
-                to: indices
-            )
+            if tag.is(blockchain.db.collection.id) {
+                self.indices = [:]
+                self.string = tag.id
+            } else {
+                let ids = try tag.template.indices(from: context, in: app)
+                let indices = try Dictionary(
+                    uniqueKeysWithValues: zip(
+                        tag.template.indices.map { try Tag(id: $0, in: tag.language) },
+                        ids
+                    )
+                )
+                self.indices = indices
+                self.string = Self.id(
+                    tag: tag,
+                    to: indices
+                )
+            }
         }
     }
 }

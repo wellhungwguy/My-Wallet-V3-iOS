@@ -4,8 +4,6 @@ import FeatureAppUI
 import FeatureStakingUI
 import PlatformKit
 
-// swiftlint:disable line_length
-
 @MainActor
 struct SiteMap {
 
@@ -14,7 +12,7 @@ struct SiteMap {
     @ViewBuilder func view(
         for ref: Tag.Reference,
         in context: Tag.Context = [:]
-    ) async throws -> some View {
+    ) throws -> some View {
         let story = try ref.tag.as(blockchain.ux.type.story)
         switch ref.tag {
         case blockchain.ux.user.portfolio:
@@ -25,6 +23,8 @@ struct SiteMap {
             RewardsView()
         case blockchain.ux.user.activity:
             ActivityView()
+        case blockchain.ux.nft.collection:
+            AssetListViewController()
         case blockchain.ux.asset:
             let currency = try ref.context[blockchain.ux.asset.id].decode(CryptoCurrency.self)
             CoinAdapterView(
@@ -34,9 +34,9 @@ struct SiteMap {
                 }
             )
         case isDescendant(of: blockchain.ux.transaction):
-            try await transaction(for: ref, in: context)
-        case isDescendant(of: blockchain.ux.earn):
-            try await Earn(app).view(for: ref, in: context)
+            try transaction(for: ref, in: context)
+        case blockchain.ux.earn, isDescendant(of: blockchain.ux.earn):
+            try Earn(app).view(for: ref, in: context)
         default:
             throw Error(message: "No view", tag: ref, context: context)
         }
@@ -48,11 +48,24 @@ extension SiteMap {
     @MainActor @ViewBuilder func transaction(
         for ref: Tag.Reference,
         in context: Tag.Context = [:]
-    ) async throws -> some View {
+    ) throws -> some View {
         switch ref.tag {
         case blockchain.ux.transaction.disclaimer:
-            StakingConsiderationsView()
-                .context([blockchain.user.earn.product.id: "staking"])
+            switch try ref.context.decode(blockchain.ux.transaction.id, as: AssetAction.self) {
+            case .stakingDeposit:
+                EarnConsiderationsView()
+                    .context([blockchain.user.earn.product.id: "staking"])
+            case .interestTransfer:
+                EarnConsiderationsView()
+                    .context([blockchain.user.earn.product.id: "savings"])
+            case _:
+                throw Error(
+                    message: "No disclaimer for \(String(describing: ref.context[blockchain.ux.transaction.id]))",
+                    tag: ref,
+                    context: context
+                )
+            }
+
         default:
             throw Error(message: "No view", tag: ref, context: context)
         }
@@ -71,33 +84,27 @@ extension SiteMap {
         @MainActor @ViewBuilder func view(
             for ref: Tag.Reference,
             in context: Tag.Context = [:]
-        ) async throws -> some View {
-            switch ref.tag {
-            case blockchain.ux.earn.staking.summary:
-                let currency = try ref.context[blockchain.ux.earn.staking.id].decode(CryptoCurrency.self)
-                let exchangeRate = try await currency.exchangeRate(app: app)
-                StakingSummaryView(exchangeRate: exchangeRate)
+        ) throws -> some View {
+            switch ref {
+            case blockchain.ux.earn:
+                EarnDashboard()
+            case blockchain.ux.earn.portfolio.product.asset.summary:
+                try EarnSummaryView()
                     .context(
                         [
-                            blockchain.user.earn.product.id: "staking",
-                            blockchain.user.earn.product.asset.id: currency.code
-                        ] + ref.context
+                            blockchain.user.earn.product.id: ref.context[blockchain.ux.earn.portfolio.product.id].or(throw: "No product"),
+                            blockchain.user.earn.product.asset.id: ref.context[blockchain.ux.earn.portfolio.product.asset.id].or(throw: "No asset")
+                        ]
                     )
-                    .task {
-                        do {
-                            try await app.batch(
-                                updates: [
-                                    (blockchain.ux.earn.staking.summary.view.activity.paragraph.row.tap.then.emit, blockchain.ux.home.tab[blockchain.ux.user.activity].select),
-                                    (blockchain.ux.earn.staking.summary.add.paragraph.button.primary.tap.then.emit, blockchain.ux.asset.account.staking.deposit),
-                                    (blockchain.ux.earn.staking.summary.learn.more.paragraph.button.small.secondary.tap.then.launch.url, app.get(blockchain.ux.earn.staking[currency.code].summary.learn.more.url) as URL),
-                                    (blockchain.ux.earn.staking.summary.article.plain.navigation.bar.button.close.tap.then.close, true)
-                                ],
-                                in: context + ref.context
-                            )
-                        } catch {
-                            app.post(error: error)
-                        }
-                    }
+            case blockchain.ux.earn.discover.product.not.eligible:
+                try EarnProductNotEligibleView(
+                    story: ref[].as(blockchain.ux.earn.type.hub.product.not.eligible),
+                    product: ref.context[blockchain.ux.earn.discover.product.id].decode(EarnProduct.self)
+                )
+            case blockchain.ux.earn.portfolio.product.asset.no.balance, blockchain.ux.earn.discover.product.asset.no.balance:
+                try EarnProductAssetNoBalanceView(
+                    story: ref[].as(blockchain.ux.earn.type.hub.product.asset.no.balance)
+                )
             default:
                 throw Error(message: "No view", tag: ref, context: context)
             }
@@ -114,16 +121,6 @@ extension SiteMap {
     }
 }
 
-extension CryptoCurrency {
-
-    func exchangeRate(
-        with currency: L & I_blockchain_type_currency = blockchain.user.currency.preferred.fiat.display.currency,
-        using currencyService: CurrencyConversionServiceAPI = resolve(),
-        app: AppProtocol = resolve()
-    ) async throws -> MoneyValuePair {
-        try await MoneyValuePair(
-            base: .one(currency: self),
-            quote: currencyService.convert(.one(currency: self), to: .fiat(app.get(currency))).await()
-        )
-    }
+extension SiteMap.Error: LocalizedError {
+    var errorDescription: String? { "\(tag.string): \(message)" }
 }

@@ -33,6 +33,14 @@ extension NetworkError: FromNetworkError {
     }
 }
 
+extension NetworkError: ExpressibleByError {
+
+    public init<E>(_ error: E) where E: Error {
+        request = nil
+        type = error as? ErrorType ?? .serverError(.badResponse)
+    }
+}
+
 /// A simple implementation of `Equatable` for now. I might make sense to improve this, eventually.
 extension NetworkError: Equatable {
 

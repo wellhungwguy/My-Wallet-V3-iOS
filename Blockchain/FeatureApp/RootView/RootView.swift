@@ -2,12 +2,14 @@
 
 import BlockchainComponentLibrary
 import BlockchainNamespace
+import BlockchainUI
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
 import ErrorsUI
 import FeatureAppUI
 import FeatureInterestUI
+import FeatureStakingUI
 import Localization
 import MoneyKit
 import SwiftUI
@@ -41,13 +43,16 @@ extension Tab {
 
 let _app = app
 struct RootView: View {
+
     var app: AppProtocol = _app
+    var siteMap: SiteMap
 
     let store: Store<RootViewState, RootViewAction>
     @ObservedObject private var viewStore: ViewStore<RootViewState, RootViewAction>
 
-    init(store: Store<RootViewState, RootViewAction>) {
+    init(store: Store<RootViewState, RootViewAction>, siteMap: SiteMap) {
         self.store = store
+        self.siteMap = siteMap
         self.viewStore = ViewStore(store)
         setupApperance()
     }
@@ -137,38 +142,41 @@ struct RootView: View {
     func tabs(in viewStore: ViewStore<RootViewState, RootViewAction>) -> some View {
         ForEach(viewStore.tabs ?? []) { tab in
             tabItem(tab) {
-                switch tab.tag {
-                case blockchain.ux.user.portfolio:
-                    PortfolioView()
-                case blockchain.ux.prices:
-                    PricesView()
-                case blockchain.ux.frequent.action:
-                    Icon.blockchain
-                        .frame(width: 32.pt, height: 32.pt)
-                case blockchain.ux.buy_and_sell:
-                    BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
-                case blockchain.ux.user.rewards:
-                    RewardsView()
-                case blockchain.ux.user.activity:
-                    ActivityView()
-                case blockchain.ux.maintenance:
-                    maintenance(tab)
-                case blockchain.ux.nft.collection:
-                    AssetListViewController()
-                case blockchain.ux.web:
-                    if let url = tab.url {
-                        WebView(url: url)
-                    } else {
+                Do {
+                    try siteMap.view(for: tab.tag)
+                } catch: { _ in
+                    switch tab.tag {
+                    case blockchain.ux.frequent.action:
+                        Icon.blockchain
+                            .frame(width: 32.pt, height: 32.pt)
+                    case blockchain.ux.buy_and_sell:
+                        BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
+                    case blockchain.ux.maintenance:
                         maintenance(tab)
+                    case blockchain.ux.web:
+                        if let url = tab.url {
+                            WebView(url: url)
+                        } else {
+                            maintenance(tab)
+                        }
+                    default:
+                        #if DEBUG
+                        fatalError("Unhandled \(tab)")
+                        #else
+                        maintenance(tab)
+                        #endif
                     }
-                default:
-#if DEBUG
-                    fatalError("Unhandled \(tab)")
-#else
-                    maintenance(tab)
-#endif
                 }
             }
+        }
+    }
+
+    @ViewBuilder func maintenance(_ tab: Tab) -> some View {
+        if let ux = tab.ux {
+            ErrorView(
+                ux: UX.Error(nabu: ux),
+                dismiss: {}
+            )
         }
     }
 
@@ -183,15 +191,6 @@ struct RootView: View {
                     title: $0.name.localized()
                 )
             }
-    }
-
-    @ViewBuilder func maintenance(_ tab: Tab) -> some View {
-        if let ux = tab.ux {
-            ErrorView(
-                ux: UX.Error(nabu: ux),
-                dismiss: {}
-            )
-        }
     }
 
     @ViewBuilder private func tabItem(

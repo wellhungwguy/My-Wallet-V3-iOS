@@ -101,7 +101,7 @@ extension DependencyContainer {
         }
 
         single { () -> CoincoreAPI in
-            let queue = DispatchQueue(label: "coincore.op.queue", qos: .userInitiated)
+            let queue = DispatchQueue(label: "coincore.op.queue")
             return Coincore(
                 assetLoader: DIKit.resolve(),
                 fiatAsset: FiatAsset(),

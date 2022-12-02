@@ -61,12 +61,13 @@ public final class EarnClient {
         )
     }
 
-    public func limits() -> AnyPublisher<EarnLimits, Nabu.Error> {
+    public func limits(currency: FiatCurrency) -> AnyPublisher<EarnLimits, Nabu.Error> {
         let response: AnyPublisher<[String: EarnLimits], Nabu.Error> = networkAdapter.perform(
             request: requestBuilder.get(
                 path: ["earn", "limits"],
                 parameters: [
-                    URLQueryItem(name: "product", value: product)
+                    URLQueryItem(name: "product", value: product),
+                    URLQueryItem(name: "currency", value: currency.code)
                 ],
                 authenticated: true
             )!

@@ -8,7 +8,7 @@ import SwiftUI
 typealias L10n = LocalizationConstants.Staking
 
 @MainActor
-public struct StakingConsiderationsView: View {
+public struct EarnConsiderationsView: View {
 
     let story = blockchain.ux.transaction.disclaimer
 
@@ -81,7 +81,7 @@ public struct StakingConsiderationsView: View {
     }
 }
 
-extension StakingConsiderationsView {
+extension EarnConsiderationsView {
 
     @MainActor
     public struct Page: View {
@@ -103,7 +103,7 @@ extension StakingConsiderationsView {
     }
 }
 
-extension StakingConsiderationsView.Page {
+extension EarnConsiderationsView.Page {
 
     static let formatter: DateComponentsFormatter = with(DateComponentsFormatter()) { formatter in
         formatter.unitsStyle = .full
@@ -149,29 +149,23 @@ extension StakingConsiderationsView.Page {
 }
 
 public let stakingConsiderations = [
-    StakingConsiderationsView.Page(
+    EarnConsiderationsView.Page(
         id: blockchain.ux.transaction["staking-deposit"].disclaimer.explain["welcome"].key(),
         image: "https://www.blockchain.com/static/img/prices/prices-eth.svg",
         title: L10n.title,
         message: L10n.page.0
     ),
-    StakingConsiderationsView.Page(
+    EarnConsiderationsView.Page(
         id: blockchain.ux.transaction["staking-deposit"].disclaimer.explain["information"].key(),
         image: "https://www.blockchain.com/static/img/prices/prices-eth.svg",
         title: L10n.title,
         message: L10n.page.1
-    ),
-    StakingConsiderationsView.Page(
-        id: blockchain.ux.transaction["staking-deposit"].disclaimer.explain["final"].key(),
-        image: "https://www.blockchain.com/static/img/prices/prices-eth.svg",
-        title: L10n.title,
-        message: L10n.page.2
     )
 ]
 
-struct StakingConsiderationsView_Previews: PreviewProvider {
+struct EarnConsiderationsView_Previews: PreviewProvider {
     static var previews: some View {
-        StakingConsiderationsView(pages: stakingConsiderations)
+        EarnConsiderationsView(pages: stakingConsiderations)
             .app(App.preview)
             .context(
                 [

@@ -527,7 +527,7 @@ extension Session.RemoteConfiguration {
                                         throw "Expected 1 experiment, got \(experiment.keys.count)"
                                     }
                                     let any = try nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'"
-                                    return (k, any.thing)
+                                    return (k, any.wrapped)
                                 } catch {
                                     if let defaultValue = v[Compute.CodingKey.default] {
                                         return (k, defaultValue)

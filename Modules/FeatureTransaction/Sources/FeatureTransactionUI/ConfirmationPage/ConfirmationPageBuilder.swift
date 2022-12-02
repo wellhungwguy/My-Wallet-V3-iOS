@@ -181,10 +181,9 @@ extension ConfirmationPageBuilder {
         viewController.navigationItem.leftBarButtonItem = .init(customView: UIView())
         viewController.isModalInPresentation = true
 
-        app.on(blockchain.ux.transaction.checkout.confirmed) { _ in
+        app.on(blockchain.ux.transaction.checkout.confirmed).first().sink { _ in
             transactionModel.process(action: .executeTransaction)
         }
-        .subscribe()
         .store(withLifetimeOf: viewController)
 
         return viewController

@@ -26,7 +26,7 @@ final class RootViewController: UIHostingController<RootView> {
     var defaults: CacheSuite = UserDefaults.standard
     var application: UIApplication = .shared
 
-    lazy var siteMap: SiteMap = SiteMap(app: app)
+    var siteMap: SiteMap
 
     var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
@@ -58,8 +58,9 @@ final class RootViewController: UIHostingController<RootView> {
         )
 
         self.viewStore = ViewStore(store)
+        self.siteMap = SiteMap(app: app)
 
-        super.init(rootView: RootView(store: store))
+        super.init(rootView: RootView(store: store, siteMap: siteMap))
 
         subscribe(to: viewStore)
         subscribe(to: ViewStore(global))

@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Blockchain
+import DIKit
 import FeatureStakingDomain
+import NetworkKit
 import ToolKit
 
 public final class EarnRepository: EarnRepositoryAPI {
@@ -11,12 +13,12 @@ public final class EarnRepository: EarnRepositoryAPI {
     private let client: EarnClient
 
     private lazy var cache = (
-        balances: cache(client.balances(in:)),
-        eligibility: cache(client.eligibility),
+        balances: cache(client.balances(in:), reset: .onLoginLogoutTransaction()),
+        eligibility: cache(client.eligibility, reset: .onLoginLogoutKYCChanged()),
         userRates: cache(client.userRates),
         limits: cache(client.limits),
         address: cache(client.address(currency:)),
-        activity: cache(client.activity(currency:))
+        activity: cache(client.activity(currency:), reset: .onLoginLogoutTransaction())
     )
 
     public init(client: EarnClient) {
@@ -41,8 +43,8 @@ public final class EarnRepository: EarnRepositoryAPI {
         cache.userRates.get(key: #line)
     }
 
-    public func limits() -> AnyPublisher<EarnLimits, Nabu.Error> {
-        cache.limits.get(key: #line)
+    public func limits(currency: FiatCurrency) -> AnyPublisher<EarnLimits, Nabu.Error> {
+        cache.limits.get(key: currency)
     }
 
     public func address(currency: CryptoCurrency) -> AnyPublisher<EarnAddress, Nabu.Error> {
@@ -64,17 +66,21 @@ public final class EarnRepository: EarnRepositoryAPI {
 
 extension EarnRepository {
 
-    private func cache<Value>(_ publisher: @escaping () -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Int, Value, Nabu.Error> {
-        cache { _ in publisher() }
+    fileprivate func cache<Value>(
+        _ publisher: @escaping () -> AnyPublisher<Value, Nabu.Error>,
+        reset configuration: CacheConfiguration = .onLoginLogout(),
+        refreshControl: CacheRefreshControl = PerpetualCacheRefreshControl()
+    ) -> CachedValueNew<Int, Value, Nabu.Error> {
+        cache({ _  in publisher() }, refreshControl: refreshControl)
     }
 
-    private func cache<Key, Value>(_ publisher: @escaping (Key) -> AnyPublisher<Value, Nabu.Error>) -> CachedValueNew<Key, Value, Nabu.Error> {
+    fileprivate func cache<Key, Value>(
+        _ publisher: @escaping (Key) -> AnyPublisher<Value, Nabu.Error>,
+        reset configuration: CacheConfiguration = .onLoginLogout(),
+        refreshControl: CacheRefreshControl = PerpetualCacheRefreshControl()
+    ) -> CachedValueNew<Key, Value, Nabu.Error> {
         CachedValueNew(
-            cache: InMemoryCache(
-                configuration: .onLoginLogoutTransactionAndDashboardRefresh(),
-                refreshControl: PeriodicCacheRefreshControl(refreshInterval: 180)
-            )
-            .eraseToAnyCache(),
+            cache: InMemoryCache(configuration: configuration, refreshControl: refreshControl).eraseToAnyCache(),
             fetch: publisher
         )
     }

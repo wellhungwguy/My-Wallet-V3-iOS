@@ -3,6 +3,50 @@
 import SwiftExtensions
 import SwiftUI
 
+public struct BindingPrint: OptionSet {
+    public let rawValue: UInt
+    public init(rawValue: UInt) { self.rawValue = rawValue }
+    public static let get = BindingPrint(rawValue: 1 << 0)
+    public static let set = BindingPrint(rawValue: 1 << 1)
+}
+
+extension Binding where Value: CustomStringConvertible {
+
+    @inlinable public func print(
+        _ message: String = "",
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) -> Binding {
+        print([.get, .set], message, function: function, file: file, line: line)
+    }
+
+    @inlinable public func print(
+        _ print: BindingPrint,
+        _ message: String = "",
+        function: String = #function,
+        file: String = #file,
+        line: Int = #line
+    ) -> Binding {
+        Binding(
+            get: {
+                if print.contains(.get) {
+                    return wrappedValue.peek("get: \(message)", function: function, file: file, line: line)
+                } else {
+                    return wrappedValue
+                }
+            },
+            set: { newValue in
+                if print.contains(.set) {
+                    transaction(transaction).wrappedValue = newValue.peek("set \(message)", function: function, file: file, line: line)
+                } else {
+                    transaction(transaction).wrappedValue = newValue
+                }
+            }
+        )
+    }
+}
+
 extension Binding where Value: Equatable {
 
     @inlinable public func equals(
@@ -37,6 +81,23 @@ extension Binding where Value: Equatable, Value: OptionalProtocol {
             set: { newValue in
                 guard !newValue else { return }
                 transaction(transaction).wrappedValue = nil
+            }
+        )
+    }
+
+    @inlinable public func `when`(
+        _ condition: @escaping (Value.Wrapped) -> Bool
+    ) -> Binding<Value> {
+        Binding<Value>(
+            get: {
+                if let wrapped = wrappedValue.wrapped, condition(wrapped) {
+                    return wrappedValue
+                } else {
+                    return nil
+                }
+            },
+            set: { newValue in
+                transaction(transaction).wrappedValue = newValue
             }
         )
     }
