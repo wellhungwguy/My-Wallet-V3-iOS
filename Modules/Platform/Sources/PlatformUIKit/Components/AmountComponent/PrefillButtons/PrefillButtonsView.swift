@@ -7,9 +7,9 @@ import Combine
 import ComposableArchitecture
 import Localization
 import MoneyKit
-import OrderedCollections
 import PlatformKit
 import SwiftUI
+import ToolKit
 
 // MARK: State
 
@@ -29,19 +29,19 @@ public struct PrefillButtonsState: Equatable {
                 .compactMap(\.baseValueConfiguration)
                 .suggestedFiatAmountsWithBaseValue(previousTxAmount, maxLimit: maxLimit)
                 .sorted(by: <)
+                .orderedAndWithoutDuplicates
         }
 
         // Actions other than buy use
         // the user's max spendable amount which is the same as `maxLimit`.
         // Swap and sell do not use `previousTxAmount`
-        let majorValues = configurations
+        return configurations
             .enumerated()
             .map { $0.element.suggestedFiatAmountWithBaseValue(maxLimit, maxLimit: maxLimit, index: $0.offset) }
             .compactMap { $0 }
         // Remove duplicates.
         // In some cases you may have duplicate prefill amounts like when the maxLimit is a very small number.
-        return OrderedSet(majorValues)
-            .array
+            .orderedAndWithoutDuplicates
     }
 
     private func baseMultipliedBy(_ by: BigInt) -> FiatValue? {

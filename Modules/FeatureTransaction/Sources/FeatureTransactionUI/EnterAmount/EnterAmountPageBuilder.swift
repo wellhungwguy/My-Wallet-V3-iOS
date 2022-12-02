@@ -54,7 +54,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         action: AssetAction,
         navigationModel: ScreenNavigationModel
     ) -> EnterAmountPageRouter {
-        let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
+        let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount, destinationAccount: destinationAccount)
         let amountViewable: AmountViewable
         let amountViewInteracting: AmountViewInteracting
         let amountViewPresenting: AmountViewPresenting

@@ -408,6 +408,10 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if value.status == .failed {
                 return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             }
+            if value.isBuy && value.recurringBuyId != nil {
+                return .local(name: Icon.repeat.name, bundle: .componentLibrary)
+            }
+
             let imageName = value.isBuy ? "plus-icon" : "minus-icon"
             return .local(name: imageName, bundle: .platformUIKit)
         case .fiat(let event):

@@ -31,6 +31,7 @@ public enum TransactionalLineItem: Hashable {
     case memo(_ content: String? = nil)
     case availableToTrade(_ content: String? = nil)
     case cryptoPrice(_ content: String? = nil)
+    case recurringBuyFrequency(_ content: String? = nil)
 
     public var accessibilityID: String {
         switch self {
@@ -58,6 +59,8 @@ public enum TransactionalLineItem: Hashable {
             return field.accessibilityID
         case .paymentMethod:
             return AccessibilityID.paymentMethod
+        case .recurringBuyFrequency:
+            return AccessibilityID.recurringBuyFrequency
         case .sendingTo:
             return AccessibilityID.sendingTo
         case .status:
@@ -103,7 +106,8 @@ public enum TransactionalLineItem: Hashable {
              .totalCost(let content),
              .total(let content),
              .availableToTrade(let content),
-             .cryptoPrice(let content):
+             .cryptoPrice(let content),
+             .recurringBuyFrequency(let content):
             return content
         case .paymentAccountField(let field):
             return field.content
@@ -120,6 +124,8 @@ public enum TransactionalLineItem: Hashable {
             return LocalizedString.fee
         case .for:
             return LocalizedString.for
+        case .recurringBuyFrequency:
+            return LocalizedString.frequency
         case .buyingFee:
             return LocalizedString.buyingFee
         case .networkFee:

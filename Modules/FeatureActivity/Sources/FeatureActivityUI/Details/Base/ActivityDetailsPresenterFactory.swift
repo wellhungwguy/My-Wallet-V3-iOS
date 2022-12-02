@@ -2,6 +2,7 @@
 
 import DIKit
 import ERC20Kit
+import FeatureTransactionDomain
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
@@ -28,7 +29,8 @@ enum ActivityDetailsPresenterFactory {
         case .buySell(let event):
             let interactor = BuySellActivityDetailsInteractor(
                 cardDataService: resolve(),
-                ordersService: resolve()
+                ordersService: resolve(),
+                recurringBuyProviderRepository: resolve()
             )
             return BuySellActivityDetailsPresenter(
                 event: event,

@@ -39,7 +39,8 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../Errors"),
         .package(path: "../Tool"),
-        .package(path: "../Test")
+        .package(path: "../Test"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -126,6 +127,10 @@ let package = Package(
                 .product(
                     name: "ComposableArchitectureExtensions",
                     package: "ComposableArchitectureExtensions"
+                ),
+                .product(
+                    name: "UIComponents",
+                    package: "UIComponents"
                 )
             ]
         ),

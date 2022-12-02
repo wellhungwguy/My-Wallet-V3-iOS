@@ -17,13 +17,11 @@ public final class InputAmountLabelPresenter {
 
     init(
         interactor: InputAmountLabelInteractor,
-        currencyCodeSide: AmountLabelViewPresenter.CurrencyCodeSide,
-        isFocused: Bool = false
+        currencyCodeSide: AmountLabelViewPresenter.CurrencyCodeSide
     ) {
         self.presenter = .init(
             interactor: interactor.interactor,
-            currencyCodeSide: currencyCodeSide,
-            isFocused: isFocused
+            currencyCodeSide: currencyCodeSide
         )
         self.interactor = interactor
 

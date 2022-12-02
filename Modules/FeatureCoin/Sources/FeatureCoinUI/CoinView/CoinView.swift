@@ -31,6 +31,9 @@ public struct CoinView: View {
             ScrollView {
                 header()
                 accounts()
+                if viewStore.shouldShowRecurringBuy {
+                    recurringBuys()
+                }
                 about()
                 Color.clear
                     .frame(height: Spacing.padding2)
@@ -49,6 +52,13 @@ public struct CoinView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisappear) }
+        .sheet(
+            item: viewStore.binding(\.$recurringBuy),
+            onDismiss: {
+                viewStore.send(.set(\.$recurringBuy, nil))
+            },
+            content: { RecurringBuySummaryView(buy: $0) }
+        )
         .bottomSheet(
             item: viewStore.binding(\.$account).animation(.spring()),
             content: { account in
@@ -118,6 +128,10 @@ public struct CoinView: View {
         )
     }
 
+    @ViewBuilder func recurringBuys() -> some View {
+        RecurringBuyListView(buys: viewStore.recurringBuys)
+    }
+
     @ViewBuilder func accounts() -> some View {
         VStack {
             if viewStore.error == .failedToLoad {
@@ -131,6 +145,10 @@ public struct CoinView: View {
             } else if viewStore.currency.isTradable {
                 totalBalance()
                 if let status = viewStore.kycStatus {
+                    if viewStore.shouldShowRecurringBuy {
+                        SectionHeader(title: Localization.Header.walletsAndAccounts)
+                            .padding([.top], 8.pt)
+                    }
                     AccountListView(
                         accounts: viewStore.accounts,
                         currency: viewStore.currency,

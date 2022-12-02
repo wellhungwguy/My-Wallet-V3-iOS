@@ -995,6 +995,13 @@ extension TransactionFlowInteractor {
                     app.state.transaction { state in
                         state.clear(blockchain.ux.error.context.action)
                         state.clear(blockchain.ux.error.context.type)
+                        // Clear the latest recurring buy frequency selected by the user
+                        // Clear the eligible payment methods for recurring buy
+                        // Clear the localized recurring buy frequency as well as the currently selected recurring buy frequency.
+                        state.clear(blockchain.ux.transaction.action.select.recurring.buy.frequency)
+                        state.clear(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies)
+                        state.clear(blockchain.ux.transaction.checkout.recurring.buy.frequency.localized)
+                        state.clear(blockchain.ux.transaction.checkout.recurring.buy.frequency)
                     }
                 case .inProgress:
                     app.post(event: blockchain.ux.transaction.event.in.progress)

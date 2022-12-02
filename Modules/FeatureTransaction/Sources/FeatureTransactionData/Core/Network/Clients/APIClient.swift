@@ -44,6 +44,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let swap = "SWAP"
         static let sell = "SELL"
         static let `default` = "DEFAULT"
+        static let id = "id"
     }
 
     private enum Path {
@@ -554,6 +555,22 @@ extension APIClient {
     ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError> {
         let parameters: [URLQueryItem] = [
             URLQueryItem(name: Parameter.currency, value: cryptoCurrency.code)
+        ]
+
+        let request = retailRequestBuilder.get(
+            path: Path.recurringBuyList,
+            parameters: parameters,
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    func fetchRecurringBuysWithRecurringBuyId(
+        _ recurringBuyId: String
+    ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError> {
+        let parameters: [URLQueryItem] = [
+            URLQueryItem(name: Parameter.id, value: recurringBuyId)
         ]
 
         let request = retailRequestBuilder.get(

@@ -20,4 +20,11 @@ final class RecurringBuyProviderService: RecurringBuyProviderServiceAPI {
         repository
             .fetchRecurringBuysForCryptoCurrency(cryptoCurrency)
     }
+
+    func fetchRecurringBuyWithRecurringBuyId(
+        _ recurringBuyId: String
+    ) -> AnyPublisher<RecurringBuy, NabuNetworkError> {
+        repository
+            .fetchRecurringBuyWithRecurringBuyId(recurringBuyId)
+    }
 }

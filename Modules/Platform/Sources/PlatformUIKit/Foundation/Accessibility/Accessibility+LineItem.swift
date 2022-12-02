@@ -45,6 +45,7 @@ extension Accessibility.Identifier.LineItem.Transactional {
     public static let networkFee = "\(prefix)networkFee"
     public static let exchangeRate = "\(prefix)exchangeRate"
     public static let paymentMethod = "\(prefix)paymentMethod"
+    public static let recurringBuyFrequency = "\(prefix)recurringBuyFrequency"
     public static let orderId = "\(prefix)orderId"
     public static let sendingTo = "\(prefix)sendingTo"
     public static let status = "\(prefix)status"

@@ -128,13 +128,21 @@ final class BuyTransactionEngine: TransactionEngine {
                     .flatMap(weak: self) { (self, values) -> Single<PendingTransaction> in
                         self.makeTransaction()
                             .map(weak: self) { (self, pendingTx) in
-                                self.app.state.transaction { state in
-                                    state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
-                                    state.set(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies, to: values)
+                                let frequency: RecurringBuy.Frequency
+                                // If the user has selected a recurring buy frequency already, then we want to use that value and not
+                                // default to `.once`
+                                if let f = try? self.app.state.get(blockchain.ux.transaction.action.select.recurring.buy.frequency) as RecurringBuy.Frequency {
+                                    frequency = f
+                                } else {
+                                    frequency = .once
+                                    self.app.state.transaction { state in
+                                        state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
+                                        state.set(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies, to: values)
+                                    }
                                 }
                                 return pendingTx
                                     .updatePaymentMethodEligibilityAndNextPaymentDates(values)
-                                    .updateRecurringBuyFrequency(.once)
+                                    .updateRecurringBuyFrequency(frequency)
                             }
                     }
                     .flatMap(weak: self) { (self, pendingTx) in

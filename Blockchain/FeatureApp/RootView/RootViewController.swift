@@ -147,7 +147,9 @@ extension RootViewController {
                 self.handleWithdraw()
             },
             app.on(blockchain.ux.frequent.action.buy) { [unowned self] _ in
-                self.handleBuyCrypto(currency: .bitcoin)
+                // No longer including an asset or account here so the user
+                // can select what they want to buy prior to proceeding to the enter amount screen.
+                self.handleBuyCrypto(account: nil)
             },
             app.on(blockchain.ux.frequent.action.sell) { [unowned self] _ in
                 self.handleSellCrypto(account: nil)

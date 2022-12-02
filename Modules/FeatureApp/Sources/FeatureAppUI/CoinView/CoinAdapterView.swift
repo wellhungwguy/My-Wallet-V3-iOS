@@ -15,7 +15,9 @@ import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureKYCUI
 import FeatureNFTUI
+import FeatureTransactionDomain
 import FeatureTransactionUI
+import Localization
 import MoneyKit
 import NetworkKit
 import PlatformKit
@@ -39,6 +41,8 @@ public struct CoinAdapterView: View {
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
         ratesRepository: RatesRepositoryAPI = resolve(),
         watchlistRepository: WatchlistRepositoryAPI = resolve(),
+        recurringBuyProviderRepository: RecurringBuyProviderRepositoryAPI = resolve(),
+        cancelRecurringBuyRepository: CancelRecurringBuyRepositoryAPI = resolve(),
         dismiss: @escaping () -> Void
     ) {
         self.cryptoCurrency = cryptoCurrency
@@ -79,6 +83,26 @@ public struct CoinAdapterView: View {
                                 }
                                 .eraseToAnyPublisher()
                         }
+                        .eraseToAnyPublisher()
+                },
+                recurringBuyProvider: {
+                    app
+                        .publisher(for: blockchain.app.configuration.recurring.buy.is.enabled)
+                        .replaceError(with: false)
+                        .flatMap { [recurringBuyProviderRepository] (isRecurringBuyEnabled) -> AnyPublisher<[FeatureCoinDomain.RecurringBuy], Error> in
+                            guard isRecurringBuyEnabled else { return .just([]) }
+                            return recurringBuyProviderRepository
+                                .fetchRecurringBuysForCryptoCurrency(cryptoCurrency)
+                                .map { $0.map(RecurringBuy.init) }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                },
+                cancelRecurringBuyService: { (recurringBuyId) -> AnyPublisher<Void, Error> in
+                    cancelRecurringBuyRepository
+                        .cancelRecurringBuyWithId(recurringBuyId)
+                        .eraseError()
                         .eraseToAnyPublisher()
                 },
                 assetInformationService: AssetInformationService(
@@ -159,7 +183,8 @@ public final class CoinViewObserver: Client.Observer {
             sell,
             send,
             swap,
-            website
+            website,
+            recurringBuyLearnMore
         ]
     }
 
@@ -286,6 +311,10 @@ public final class CoinViewObserver: Client.Observer {
         try application.open(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
     }
 
+    lazy var recurringBuyLearnMore = app.on(blockchain.ux.asset.recurring.buy.visit.website) { [application] event async throws in
+        try application.open(event.context.decode(blockchain.ux.asset.recurring.buy.visit.website.url, as: URL.self))
+    }
+
     lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { [defaults] _ in
         defaults.removeObject(forKey: blockchain.ux.asset.account.explainer(\.id))
     }
@@ -352,6 +381,37 @@ public final class CoinViewObserver: Client.Observer {
                             .error(message: "\(event) has no valid accounts for \(String(describing: action))")
                     )
             }
+        }
+    }
+}
+
+extension FeatureCoinDomain.RecurringBuy {
+    init(_ recurringBuy: FeatureTransactionDomain.RecurringBuy) {
+        self.init(
+            id: recurringBuy.id,
+            recurringBuyFrequency: recurringBuy.recurringBuyFrequency.description,
+            // Should never be nil as nil is only for one time payments and unknown
+            nextPaymentDate: recurringBuy.nextPaymentDateDescription ?? "",
+            paymentMethodType: recurringBuy.paymentMethodTypeDescription,
+            amount: recurringBuy.amount.displayString,
+            asset: recurringBuy.asset.displayCode
+        )
+    }
+}
+
+extension FeatureTransactionDomain.RecurringBuy {
+    private typealias L01n = LocalizationConstants.Transaction.Buy.Recurring.PaymentMethod
+    fileprivate var paymentMethodTypeDescription: String {
+        switch paymentMethodType {
+        case .bankTransfer,
+                .bankAccount:
+            return L01n.bankTransfer
+        case .card:
+            return L01n.creditOrDebitCard
+        case .applePay:
+            return L01n.applePay
+        case .funds:
+            return amount.currency.name + " \(L01n.account)"
         }
     }
 }

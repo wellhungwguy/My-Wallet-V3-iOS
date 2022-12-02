@@ -64,6 +64,7 @@ struct RecurringBuyFrequencySelectorView: View {
                                     }
                                     Spacer()
                                     Radio(isOn: .constant(viewStore.recurringBuyFrequency == value.frequency))
+                                        .allowsHitTesting(false)
                                 }
                                 .padding([.top, .bottom], 16.pt)
 
@@ -189,26 +190,6 @@ let recurringBuyFrequencySelectorReducer = Reducer<
     }
 }
 .binding()
-
-extension RecurringBuy.Frequency {
-    typealias LocalizationId = LocalizationConstants.Transaction.Buy.Recurring
-    var description: String {
-        switch self {
-        case .unknown:
-            return LocalizationConstants.unknown
-        case .once:
-            return LocalizationId.oneTimeBuy
-        case .daily:
-            return LocalizationId.daily
-        case .weekly:
-            return LocalizationId.weekly
-        case .biweekly:
-            return LocalizationId.twiceAMonth
-        case .monthly:
-            return LocalizationId.monthly
-        }
-    }
-}
 
 extension EligibleAndNextPaymentRecurringBuy {
     typealias LocalizationId = LocalizationConstants.Transaction.Buy.Recurring

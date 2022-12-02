@@ -47,6 +47,7 @@ extension LocalizationConstants {
 
         public enum Buy {
             public enum Recurring {
+                public enum PaymentMethod {}
                 public enum FrequencySelector {}
             }
 
@@ -207,6 +208,16 @@ extension LocalizationConstants.Transaction.Buy.Recurring {
     public static let on = NSLocalizedString("On", comment: "On")
     public static let recurringBuyUnavailable = NSLocalizedString("Recurring buy unavailable", comment: "Recurring buy unavailable")
     public static let recurringBuyUnavailableDescription = NSLocalizedString("Please use a different payment method to setup recurring buy", comment: "Please use a different payment method to setup recurring buy")
+}
+
+extension LocalizationConstants.Transaction.Buy.Recurring.PaymentMethod {
+    public static let bankTransfer = NSLocalizedString(
+        "Bank Transfer",
+        comment: "Bank Transfer"
+    )
+    public static let creditOrDebitCard = NSLocalizedString("Credit or Debit Card", comment: "Credit or Debit Card")
+    public static let applePay = NSLocalizedString("Apple Pay", comment: "Apple Pay")
+    public static let account = NSLocalizedString("Account", comment: "Account")
 }
 
 extension LocalizationConstants.Transaction.Buy.Recurring.FrequencySelector {
@@ -1013,6 +1024,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
+    public static let recurringBuyDescription = NSLocalizedString(
+        "You will buy %@ of %@ %@ at that moment's market price. You can cancel this recurring buy at anytime.",
+        comment: "You will buy [amount] of [coin] [frequency] at that moment's market price. You can cancel this recurring buy at anytime."
+    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
@@ -1023,6 +1038,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
     public static let description = NSLocalizedString(
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
+    )
+    public static let recurringBuyDescription = NSLocalizedString(
+        "The initial %@ order of %@ is being processed, we will let you know when its done. Your %@ buy of %@ of %@ is being set up.",
+        comment: "The initial [amount] order of [coin] is being processed, we will let you know when its done. Your [frequency] buy of [amount] of [coin] is being set up."
     )
 }
 

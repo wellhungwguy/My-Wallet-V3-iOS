@@ -10,6 +10,7 @@ public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction
     case onDisappear
     case update(Result<(KYCStatus, [Account.Snapshot]), Error>)
     case fetchInterestRate
+    case fetchedRecurringBuys(Result<[RecurringBuy], Error>)
     case fetchedInterestRate(Result<EarnRates, NetworkError>)
     case fetchedAssetInformation(Result<AssetInformation, NetworkError>)
     case refresh
@@ -18,6 +19,7 @@ public enum CoinViewAction: BlockchainNamespaceObservationAction, BindableAction
     case observation(BlockchainNamespaceObservation)
     case binding(BindingAction<CoinViewState>)
     case isOnWatchlist(Bool)
+    case isRecurringBuyEnabled(Bool)
     case addToWatchlist
     case removeFromWatchlist
     case dismiss

@@ -44,11 +44,7 @@ public final class SingleAmountPresenter: AmountViewPresenting {
 
         self.amountPresenter = InputAmountLabelPresenter(
             interactor: interactor.currencyInteractor,
-            currencyCodeSide: .leading,
-            /// There is only one amount,
-            /// so the label should appear as
-            /// focused (larger font).
-            isFocused: true
+            currencyCodeSide: .leading
         )
 
         interactor.auxiliaryViewEnabledRelay

@@ -14,14 +14,22 @@ public enum CoinViewError: Error, Equatable {
 public struct CoinViewState: Equatable {
     public let currency: CryptoCurrency
     public var accounts: [Account.Snapshot]
+    public var recurringBuys: [RecurringBuy]?
     public var error: CoinViewError?
     public var assetInformation: AssetInformation?
+    public var isRecurringBuyEnabled: Bool
     public var earnRates: EarnRates?
     public var kycStatus: KYCStatus?
     public var isFavorite: Bool?
     public var graph: GraphViewState
 
     var appMode: AppMode?
+
+    /// Recurring buy should only be shown when the `AppMode` is `.trading` or `.universal`.
+    var shouldShowRecurringBuy: Bool {
+        guard let appMode = appMode else { return false }
+        return appMode.isRecurringBuyViewSupported && isRecurringBuyEnabled
+    }
 
     var swapButton: ButtonAction? {
         guard appMode != .universal else {
@@ -33,6 +41,7 @@ public struct CoinViewState: Equatable {
         return action
     }
 
+    @BindableState public var recurringBuy: RecurringBuy?
     @BindableState public var account: Account.Snapshot?
     @BindableState public var explainer: Account.Snapshot?
 
@@ -89,6 +98,8 @@ public struct CoinViewState: Equatable {
         currency: CryptoCurrency,
         kycStatus: KYCStatus? = nil,
         accounts: [Account.Snapshot] = [],
+        recurringBuys: [RecurringBuy]? = nil,
+        isRecurringBuyEnabled: Bool = false,
         assetInformation: AssetInformation? = nil,
         earnRates: EarnRates? = nil,
         error: CoinViewError? = nil,
@@ -103,6 +114,8 @@ public struct CoinViewState: Equatable {
         self.error = error
         self.isFavorite = isFavorite
         self.graph = graph
+        self.recurringBuys = recurringBuys
+        self.isRecurringBuyEnabled = isRecurringBuyEnabled
     }
 }
 
@@ -110,5 +123,17 @@ extension CryptoCurrency {
 
     var isTradable: Bool {
         supports(product: .custodialWalletBalance) || supports(product: .privateKey)
+    }
+}
+
+extension AppMode {
+    var isRecurringBuyViewSupported: Bool {
+        switch self {
+        case .universal,
+                .trading:
+            return true
+        case .pkw:
+            return false
+        }
     }
 }

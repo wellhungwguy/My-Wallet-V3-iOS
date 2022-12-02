@@ -43,12 +43,21 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         guard let destinationCurrency = state.destination?.currencyType else {
             impossible("Expected a destination to there for a transaction that has succeeded")
         }
+        var subtitle = String(
+            format: LocalizationIds.Success.description,
+            destinationCurrency.name
+        )
+        if let frequency = state.pendingTransaction?.recurringBuyFrequency, frequency.isValidRecurringBuyFrequency {
+            subtitle = String(
+                format: LocalizationIds.Success.recurringBuyDescription,
+                state.amount.displayString,
+                (state.destination as? CryptoAccount)?.currencyType.code ?? "",
+                frequency.description
+            )
+        }
         return .init(
             title: LocalizationIds.Success.title,
-            subtitle: String(
-                format: LocalizationIds.Success.description,
-                destinationCurrency.name
-            ),
+            subtitle: subtitle,
             compositeViewType: .composite(
                 .init(
                     baseViewType: coreBuyIcon,
@@ -68,20 +77,25 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
 
     private func inProgress(state: TransactionState) -> PendingTransactionPageState {
         let fiat = state.amount
-        let crypto = state.pendingTransaction?.confirmations.compactMap { confirmation -> MoneyValue? in
-            guard let buyCryptoValue = confirmation as? TransactionConfirmations.BuyCryptoValue else {
-                return nil
-            }
-            return buyCryptoValue.baseValue
-        }.first
         let title = String(
             format: LocalizationIds.InProgress.title,
-            crypto?.displayString ?? "",
+            (state.destination as? CryptoAccount)?.currencyType.code ?? "",
             fiat.displayString
         )
+        var subtitle = LocalizationIds.InProgress.description
+        if let frequency = state.pendingTransaction?.recurringBuyFrequency, frequency.isValidRecurringBuyFrequency {
+            subtitle = String(
+                format: LocalizationIds.InProgress.recurringBuyDescription,
+                fiat.displayString,
+                (state.destination as? CryptoAccount)?.currencyType.code ?? "",
+                frequency.description.lowercased(),
+                fiat.displayString,
+                (state.destination as? CryptoAccount)?.currencyType.code ?? ""
+            )
+        }
         return .init(
             title: title,
-            subtitle: LocalizationIds.InProgress.description,
+            subtitle: subtitle,
             compositeViewType: .composite(
                 .init(
                     baseViewType: coreBuyIcon,

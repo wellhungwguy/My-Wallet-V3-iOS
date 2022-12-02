@@ -8,4 +8,8 @@ protocol RecurringBuyProviderClientAPI {
     func fetchRecurringBuysForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency
     ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError>
+
+    func fetchRecurringBuysWithRecurringBuyId(
+        _ recurringBuyId: String
+    ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError>
 }

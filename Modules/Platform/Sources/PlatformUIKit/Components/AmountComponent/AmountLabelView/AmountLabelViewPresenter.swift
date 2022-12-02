@@ -62,8 +62,6 @@ public final class AmountLabelViewPresenter {
     /// The state of the component
     public let inputRelay = BehaviorRelay<MoneyValueInputScanner.Input>(value: .empty)
 
-    public let focusRelay = BehaviorRelay<Bool>(value: false)
-
     // MARK: - Injected
 
     private let currencyCodeSide: CurrencyCodeSide
@@ -71,23 +69,20 @@ public final class AmountLabelViewPresenter {
 
     private let disposeBag = DisposeBag()
 
-    public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide, isFocused: Bool = false) {
-        focusRelay.accept(isFocused)
+    public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide) {
         self.interactor = interactor
         self.currencyCodeSide = currencyCodeSide
 
         Observable
             .combineLatest(
                 interactor.currency,
-                inputRelay,
-                focusRelay
+                inputRelay
             )
-            .map { currency, input, hasFocus in
+            .map { currency, input in
                 AmountLabelContent(
                     input: input,
                     currencyCode: currency.displayCode,
-                    currencySymbol: currency.displaySymbol,
-                    hasFocus: hasFocus
+                    currencySymbol: currency.displaySymbol
                 )
             }
             .map { labelContent in
@@ -114,7 +109,7 @@ extension AmountLabelViewPresenter {
         // MARK: - Properties
 
         fileprivate static var empty: AmountLabelContent {
-            .init(input: .empty, currencyCode: "", currencySymbol: "", hasFocus: false)
+            .init(input: .empty, currencyCode: "", currencySymbol: "")
         }
 
         /// Returns the attributed string
@@ -139,8 +134,7 @@ extension AmountLabelViewPresenter {
         init(
             input: MoneyValueInputScanner.Input,
             currencyCode: String,
-            currencySymbol: String,
-            hasFocus: Bool
+            currencySymbol: String
         ) {
             var amount = ""
             let formatter = NumberFormatter(
@@ -160,17 +154,15 @@ extension AmountLabelViewPresenter {
                 amount += "\(decimalSeparator)\(amountComponents[1])"
             }
 
-            let font: UIFont = hasFocus ? .main(.medium, 48) : .main(.semibold, 14)
-
             self.currencyCode = LabelContent(
                 text: currencySymbol,
-                font: font,
+                font: .main(.medium, 48),
                 color: .titleText
             )
 
             self.amount = LabelContent(
                 text: amount,
-                font: font,
+                font: .main(.medium, 48),
                 color: .titleText
             )
 
@@ -186,7 +178,7 @@ extension AmountLabelViewPresenter {
 
             self.placeholder = LabelContent(
                 text: padding,
-                font: font,
+                font: .main(.medium, 48),
                 color: .mutedText
             )
         }

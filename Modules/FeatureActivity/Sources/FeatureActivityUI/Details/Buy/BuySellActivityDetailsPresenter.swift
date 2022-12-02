@@ -44,6 +44,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: Private Properties (Model Relay)
 
     private let cardDataRelay: BehaviorRelay<String?> = .init(value: nil)
+    private let recurringBuyNextPaymentDateRelay: BehaviorRelay<String?> = .init(value: nil)
     private let buyExchangeRateRelay: BehaviorRelay<MoneyValue?> = .init(value: nil)
 
     // MARK: Private Properties (LabelContentPresenting)
@@ -65,6 +66,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let fromPresenter: LineItemCellPresenting
     private let feePresenter: LineItemCellPresenting
     private let paymentMethodPresenter: LineItemCellPresenting
+    private let recurringBuyFrequencyPresenter: LineItemCellPresenting
 
     // swiftlint:disable function_body_length
     init(
@@ -82,15 +84,15 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .pending:
             badgeType = .default(accessibilitySuffix: description)
             let title = event.isBuy ? LocalizedString.Title.buying : LocalizedString.Title.selling
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         case .finished:
             badgeType = .verified
             let title = event.isBuy ? LocalizedString.Title.bought : LocalizedString.Title.sold
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         default:
             badgeType = .destructive
             let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         }
         statusBadge.interactor.stateRelay.accept(
             .loaded(
@@ -106,6 +108,10 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             knownValue: amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
+
+        self.recurringBuyFrequencyPresenter = TransactionalLineItem
+            .recurringBuyFrequency()
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
 
         self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
@@ -156,6 +162,14 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
+        if event.recurringBuyId != nil {
+            recurringBuyNextPaymentDateRelay
+                .compactMap { $0 }
+                .map { .loaded(next: .init(text: $0)) }
+                .bindAndCatch(to: recurringBuyFrequencyPresenter.interactor.description.stateRelay)
+                .disposed(by: disposeBag)
+        }
+
         cardDataRelay
             .compactMap { $0 }
             .map { .loaded(next: .init(text: $0)) }
@@ -187,7 +201,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         switch event.isBuy {
         case true:
-            self.cells = [
+            var items: [DetailsScreen.CellType] = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .lineItem(orderIDPresenter),
@@ -202,6 +216,11 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .separator,
                 .lineItem(paymentMethodPresenter)
             ]
+            if event.recurringBuyId != nil {
+                items.append(.separator)
+                items.append(.lineItem(recurringBuyFrequencyPresenter))
+            }
+            cells = items
         case false:
             self.cells = [
                 .label(cryptoAmountLabelPresenter),
@@ -248,6 +267,18 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                     receiveCompletion: { _ in },
                     receiveValue: { [weak self] value in
                         self?.cardDataRelay.accept(value)
+                    }
+                )
+                .store(in: &cancellables)
+        }
+
+        if let recurringBuyId = event.recurringBuyId {
+            interactor
+                .fetchRecurringBuyFrequencyForId(recurringBuyId)
+                .sink(
+                    receiveCompletion: { _ in },
+                    receiveValue: { [recurringBuyNextPaymentDateRelay] value in
+                        recurringBuyNextPaymentDateRelay.accept(value)
                     }
                 )
                 .store(in: &cancellables)

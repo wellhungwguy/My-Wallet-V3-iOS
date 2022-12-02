@@ -94,6 +94,12 @@ blockchain:
 								app:
 									url:
 									+ blockchain.session.configuration.value
+				recurring:
+					buy:
+						learn:
+							more:
+								url:
+								+ blockchain.session.configuration.value
 			card:
 				issuing:
 					is:
@@ -1332,6 +1338,11 @@ blockchain:
 				+ blockchain.ux.type.action
 				buy:
 				+ blockchain.ux.type.action
+					recurring:
+					+ blockchain.ux.type.action
+						summary:
+						+ blockchain.db.type.string
+						+ blockchain.session.configuration.value
 				coming:
 					soon:
 						visit:
@@ -1428,8 +1439,15 @@ blockchain:
 					+ blockchain.db.collection
 					+ blockchain.ux.type.story
 						cancel:
-				buys:
-					notification:
+						+ blockchain.ux.type.story
+							tapped:
+							+ blockchain.ux.type.action
+					visit:
+						website:
+						+ blockchain.db.type.url
+							url:
+							+ blockchain.db.type.url
+							+ blockchain.session.configuration.value
 			refresh:
 			+ blockchain.ux.type.analytics.action
 			select:

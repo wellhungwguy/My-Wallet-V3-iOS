@@ -6,7 +6,7 @@ import SwiftUI
 /// Represents a `LoadingButton` in the Design System
 public struct ActionableViewButtonState: Hashable {
     public enum Style: Hashable {
-        case primary, secondary
+        case primary, secondary, destructive
     }
 
     public let title: String
@@ -73,6 +73,14 @@ public struct ActionableView<Content: View>: View {
                         .frame(maxWidth: .infinity)
                     case .secondary:
                         MinimalButton(
+                            title: button.title,
+                            isLoading: button.loading,
+                            action: button.action
+                        )
+                        .disabled(!button.enabled)
+                        .frame(maxWidth: .infinity)
+                    case .destructive:
+                        DestructiveMinimalButton(
                             title: button.title,
                             isLoading: button.loading,
                             action: button.action

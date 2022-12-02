@@ -1,14 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import MoneyKit
 import PlatformKit
 
 public struct RecurringBuy {
 
     public enum State: String {
-        case active
-        case inactive
-        case uninitialised
+        case active = "ACTIVE"
+        case inactive = "INACTIVE"
+        case uninitialised = "UNINITIALISED"
     }
 
     public enum Frequency: String, CaseIterable, Identifiable, Decodable {
@@ -21,6 +22,11 @@ public struct RecurringBuy {
 
         public var id: String {
             rawValue
+        }
+
+        /// The `RecurringBuy.Frequency` is valid for a recurring buy
+        public var isValidRecurringBuyFrequency: Bool {
+            self != .unknown && self != .once
         }
     }
 
@@ -54,5 +60,55 @@ public struct RecurringBuy {
         self.amount = amount
         self.asset = asset
         self.createDate = createDate
+    }
+}
+
+extension RecurringBuy.Frequency {
+    typealias LocalizationId = LocalizationConstants.Transaction.Buy.Recurring
+    public var description: String {
+        switch self {
+        case .unknown:
+            return LocalizationConstants.unknown
+        case .once:
+            return LocalizationId.oneTimeBuy
+        case .daily:
+            return LocalizationId.daily
+        case .weekly:
+            return LocalizationId.weekly
+        case .biweekly:
+            return LocalizationId.twiceAMonth
+        case .monthly:
+            return LocalizationId.monthly
+        }
+    }
+}
+
+extension RecurringBuy {
+    typealias LocalizationId = LocalizationConstants.Transaction.Buy.Recurring
+
+    public var nextPaymentDateDescription: String? {
+        switch recurringBuyFrequency {
+        case .unknown,
+                .once:
+            return nil
+        case .daily:
+            return LocalizationId.daily
+        case .weekly:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE"
+            return LocalizationId.on + " \(formatter.string(from: nextPaymentDate))"
+        case .monthly:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "d"
+            let day = formatter.string(from: nextPaymentDate)
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .ordinal
+            guard let next = numberFormatter.string(from: NSNumber(value: Int(day) ?? 0)) else { return nil }
+            return LocalizationId.onThe + " " + next
+        case .biweekly:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE"
+            return LocalizationId.everyOther + " \(formatter.string(from: nextPaymentDate))"
+        }
     }
 }
