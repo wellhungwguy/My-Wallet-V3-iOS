@@ -6,6 +6,7 @@ import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
 import FeatureCustomerSupportUI
+import FeatureProductsDomain
 import FeatureReferralDomain
 import FeatureReferralUI
 import FeatureStakingDomain
@@ -37,7 +38,8 @@ extension AppProtocol {
         attributionService: AttributionServiceAPI = resolve(),
         performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve(),
-        userTagService: UserTagServiceAPI = resolve()
+        userTagService: UserTagServiceAPI = resolve(),
+        productsService: ProductsServiceAPI = resolve()
     ) {
         clientObservers.insert(ApplicationStateObserver(app: self))
         clientObservers.insert(AppHapticObserver(app: self))
@@ -53,6 +55,7 @@ extension AppProtocol {
         clientObservers.insert(SuperAppIntroObserver(app: self))
         clientObservers.insert(GenerateSession(app: self))
         clientObservers.insert(PlaidLinkObserver(app: self))
+        clientObservers.insert(DefaultAppModeObserver(app: self, productsService: resolve()))
         clientObservers.insert(deepLink)
         clientObservers.insert(EmbraceObserver(app: self))
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD

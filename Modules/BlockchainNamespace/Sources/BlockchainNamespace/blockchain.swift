@@ -1979,6 +1979,48 @@ public final class L_blockchain_app_mode: L, I_blockchain_app_mode {
 	public override class var localized: String { NSLocalizedString("blockchain.app.mode", comment: "") }
 }
 public protocol I_blockchain_app_mode: I_blockchain_session_state_preference_value {}
+public extension I_blockchain_app_mode {
+	var `has`: L_blockchain_app_mode_has { .init("\(__).has") }
+}
+public final class L_blockchain_app_mode_has: L, I_blockchain_app_mode_has {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has", comment: "") }
+}
+public protocol I_blockchain_app_mode_has: I {}
+public extension I_blockchain_app_mode_has {
+	var `been`: L_blockchain_app_mode_has_been { .init("\(__).been") }
+}
+public final class L_blockchain_app_mode_has_been: L, I_blockchain_app_mode_has_been {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has.been", comment: "") }
+}
+public protocol I_blockchain_app_mode_has_been: I {}
+public extension I_blockchain_app_mode_has_been {
+	var `force`: L_blockchain_app_mode_has_been_force { .init("\(__).force") }
+}
+public final class L_blockchain_app_mode_has_been_force: L, I_blockchain_app_mode_has_been_force {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has.been.force", comment: "") }
+}
+public protocol I_blockchain_app_mode_has_been_force: I {}
+public extension I_blockchain_app_mode_has_been_force {
+	var `defaulted`: L_blockchain_app_mode_has_been_force_defaulted { .init("\(__).defaulted") }
+}
+public final class L_blockchain_app_mode_has_been_force_defaulted: L, I_blockchain_app_mode_has_been_force_defaulted {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has.been.force.defaulted", comment: "") }
+}
+public protocol I_blockchain_app_mode_has_been_force_defaulted: I_blockchain_db_type_boolean, I_blockchain_session_state_preference_value {}
+public extension I_blockchain_app_mode_has_been_force_defaulted {
+	var `to`: L_blockchain_app_mode_has_been_force_defaulted_to { .init("\(__).to") }
+}
+public final class L_blockchain_app_mode_has_been_force_defaulted_to: L, I_blockchain_app_mode_has_been_force_defaulted_to {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has.been.force.defaulted.to", comment: "") }
+}
+public protocol I_blockchain_app_mode_has_been_force_defaulted_to: I {}
+public extension I_blockchain_app_mode_has_been_force_defaulted_to {
+	var `mode`: L_blockchain_app_mode_has_been_force_defaulted_to_mode { .init("\(__).mode") }
+}
+public final class L_blockchain_app_mode_has_been_force_defaulted_to_mode: L, I_blockchain_app_mode_has_been_force_defaulted_to_mode {
+	public override class var localized: String { NSLocalizedString("blockchain.app.mode.has.been.force.defaulted.to.mode", comment: "") }
+}
+public protocol I_blockchain_app_mode_has_been_force_defaulted_to_mode: I_blockchain_session_state_preference_value {}
 public final class L_blockchain_app_number: L, I_blockchain_app_number {
 	public override class var localized: String { NSLocalizedString("blockchain.app.number", comment: "") }
 }

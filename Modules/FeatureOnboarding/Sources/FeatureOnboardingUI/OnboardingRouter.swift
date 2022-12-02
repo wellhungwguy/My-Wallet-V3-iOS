@@ -67,6 +67,11 @@ public final class OnboardingRouter: OnboardingRouterAPI {
                         return .just(.abandoned)
                     }
                 }
+
+                guard app.currentMode != .pkw else {
+                    return .just(.abandoned)
+                }
+
                 return self.presentUITour(from: presenter)
             }
             .eraseToAnyPublisher()
@@ -131,6 +136,7 @@ public final class OnboardingRouter: OnboardingRouterAPI {
                 guard case .completed = result else {
                     return .just(.abandoned)
                 }
+
                 return Deferred {
                     Future { completion in
                         presenter.dismiss(animated: true) {

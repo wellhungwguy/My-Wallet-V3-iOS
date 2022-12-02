@@ -30,7 +30,6 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var appMode: AppMode?
     @BindableState var isAppModeSwitcherPresented: Bool = false
     @BindableState var appModeSeen: Bool = false
-
     @BindableState var superAppIsEnabled: Bool = false
 
     var appSwitcherEnabled: Bool {
