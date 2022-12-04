@@ -333,27 +333,32 @@ private func runUpgradeAndSyncIfNeeded(
 private func runAccountsReplenishmentIfNeeded(
     walletSync: WalletSyncAPI,
     logger: NativeWalletLoggerAPI,
-    derivationReplenishment: DerivationReplenishement,
+    derivationReplenishment: @escaping DerivationReplenishement,
     password: String,
     wrapper: Wrapper
 ) -> AnyPublisher<Wrapper, WalletError> {
-    guard let masterNode = getMasterNode(from: wrapper.wallet).success else {
-        return .failure(.initialization(.missingSeedHex))
+    guard !wrapper.wallet.doubleEncrypted else {
+        return .failure(.initialization(.needsSecondPassword))
     }
-    guard let hdWallet = wrapper.wallet.defaultHDWallet else {
-        return .failure(.initialization(.missingWallet))
-    }
+    return getMasterNode(from: wrapper.wallet)
+        .publisher
+        .flatMap { masterNode -> AnyPublisher<Wrapper, WalletError> in
+            guard let hdWallet = wrapper.wallet.defaultHDWallet else {
+                return .failure(.initialization(.missingWallet))
+            }
 
-    let checkAccountsHaveIncorrectAddressCache = checkAddressCacheLegitimacy(
-        masterNode: masterNode,
-        accounts: hdWallet.accounts
-    )
+            let checkAccountsHaveIncorrectAddressCache = checkAddressCacheLegitimacy(
+                masterNode: masterNode,
+                accounts: hdWallet.accounts
+            )
 
-    guard checkAccountsHaveIncorrectAddressCache || hdWallet.accountsNeedsReplenisment else {
-        return .just(wrapper)
-    }
+            guard checkAccountsHaveIncorrectAddressCache || hdWallet.accountsNeedsReplenisment else {
+                return .just(wrapper)
+            }
 
-    return derivationReplenishment(wrapper, logger)
+            return derivationReplenishment(wrapper, logger)
+                .eraseToAnyPublisher()
+        }
         .eraseToAnyPublisher()
 }
 
