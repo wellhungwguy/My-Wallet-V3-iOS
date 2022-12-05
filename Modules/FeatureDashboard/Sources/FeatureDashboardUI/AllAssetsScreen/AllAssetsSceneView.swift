@@ -4,12 +4,11 @@ import FeatureDashboardDomain
 import Localization
 import SwiftUI
 
-public struct AllAssetsView: View {
-    @ObservedObject var viewStore: ViewStoreOf<FeatureAllAssets>
-    let store: StoreOf<FeatureAllAssets>
-    @Environment(\.presentationMode) private var presentationMode
+public struct AllAssetsSceneView: View {
+    @ObservedObject var viewStore: ViewStoreOf<AllAssetsScene>
+    let store: StoreOf<AllAssetsScene>
 
-    public init(store: StoreOf<FeatureAllAssets>) {
+    public init(store: StoreOf<AllAssetsScene>) {
         self.store = store
         self.viewStore = ViewStore(store)
     }
@@ -28,7 +27,15 @@ public struct AllAssetsView: View {
             }
             .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
         })
-        .primaryNavigation(title: LocalizationConstants.SuperApp.AllAssets.title)
+        .primaryNavigation(
+            title: LocalizationConstants.SuperApp.AllAssets.title,
+            trailing: {
+            IconButton(icon: .closev2.circle()) {
+                viewStore.send(.onCloseTapped)
+            }
+            .frame(width: 24.pt, height: 24.pt)
+        }
+        )
         .bottomSheet(
             isPresented: viewStore.binding(\.$filterPresented).animation(.spring()),
             content: {

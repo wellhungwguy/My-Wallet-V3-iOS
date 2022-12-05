@@ -28,6 +28,6 @@ struct ActivityEntityRequest: Queryable {
     // This method is not required by Queryable, but it makes it easier
     // to test PlayerRequest.
     func fetchValue(_ db: Database) throws -> [ActivityEntity] {
-        try ActivityEntity.all().fetchAll(db)
+        try ActivityEntity.order(Column("timestamp").desc).fetchAll(db)
     }
 }

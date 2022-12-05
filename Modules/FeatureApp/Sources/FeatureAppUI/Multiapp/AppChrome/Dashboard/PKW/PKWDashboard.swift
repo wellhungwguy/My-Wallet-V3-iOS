@@ -17,12 +17,17 @@ public struct PKWDashboard: ReducerProtocol {
 
     public enum Route: NavigationRoute {
         case showAllAssets
+        case showAllActivity
 
+        @ViewBuilder
         public func destination(in store: Store<State, Action>) -> some View {
             switch self {
 
             case .showAllAssets:
-                return AllAssetsView(store: store.scope(state: \.allAssetsState, action: Action.allAssetsAction))
+                AllAssetsSceneView(store: store.scope(state: \.allAssetsState, action: Action.allAssetsAction))
+
+            case .showAllActivity:
+                AllActivitySceneView(store: store.scope(state: \.allActivityState, action: Action.allActivityAction))
             }
         }
     }
@@ -30,14 +35,16 @@ public struct PKWDashboard: ReducerProtocol {
     public enum Action: Equatable, NavigationAction {
         case route(RouteIntent<Route>?)
         case assetsAction(DashboardAssetsSection.Action)
-        case allAssetsAction(FeatureAllAssets.Action)
+        case allAssetsAction(AllAssetsScene.Action)
         case activityAction(DashboardActivitySection.Action)
+        case allActivityAction(AllActivityScene.Action)
     }
 
     public struct State: Equatable, NavigationState {
         public var title: String
         public var assetsState: DashboardAssetsSection.State = .init(presentedAssetsType: .nonCustodial)
-        public var allAssetsState: FeatureAllAssets.State = .init(with: .nonCustodial)
+        public var allAssetsState: AllAssetsScene.State = .init(with: .nonCustodial)
+        public var allActivityState: AllActivityScene.State = .init()
         public var activityState: DashboardActivitySection.State = .init()
         public var route: RouteIntent<Route>?
 
@@ -55,12 +62,15 @@ public struct PKWDashboard: ReducerProtocol {
         }
 
         Scope(state: \.allAssetsState, action: /Action.allAssetsAction) {
-            FeatureAllAssets(
+            AllAssetsScene(
                 allCryptoService: allCryptoAssetService,
                 app: app
             )
         }
 
+        Scope(state: \.allActivityState, action: /Action.allActivityAction) {
+            AllActivityScene(activityRepository: activityRepository, app: app)
+        }
         Scope(state: \.activityState, action: /Action.activityAction) {
             DashboardActivitySection(
                 app: app,
@@ -73,7 +83,21 @@ public struct PKWDashboard: ReducerProtocol {
             case .route(let routeIntent):
                 state.route = routeIntent
                 return .none
-            case .allAssetsAction:
+            case .allAssetsAction(let action):
+                switch action {
+                case .onCloseTapped:
+                    state.route = nil
+                    return .none
+                default:
+                    return .none
+                }
+            case .activityAction(let action):
+                switch action {
+                case .onAllActivityTapped:
+                    state.route = .enter(into: .showAllActivity)
+                default:
+                    return .none
+                }
                 return .none
             case .activityAction:
                 return .none
@@ -81,6 +105,14 @@ public struct PKWDashboard: ReducerProtocol {
                 switch action {
                 case .onAllAssetsTapped:
                     state.route = .navigate(to: .showAllAssets)
+                    return .none
+                default:
+                    return .none
+                }
+            case .allActivityAction(let action):
+                switch action {
+                case .onCloseTapped:
+                    state.route = nil
                     return .none
                 default:
                     return .none

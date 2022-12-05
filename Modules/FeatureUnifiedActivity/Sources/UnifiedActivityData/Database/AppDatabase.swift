@@ -33,6 +33,7 @@ struct AppDatabase: AppDatabaseAPI {
                 t.column("identifier", .text).notNull()
                 t.column("json", .integer).notNull()
                 t.column("networkIdentifier", .text).notNull()
+                t.column("timestamp", .date).notNull()
             }
         }
         return migrator

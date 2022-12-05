@@ -49,9 +49,9 @@ public final class MultiAppViewDebuggingObserver: Client.Observer {
     }
 
     private func presentAllAssetsScreen() {
-        let view = AllAssetsView(store: .init(
+        let view = AllAssetsSceneView(store: .init(
             initialState: .init(with: .custodial),
-            reducer: FeatureAllAssets(
+            reducer: AllAssetsScene(
                 allCryptoService: resolve(),
                 app: resolve()
             )

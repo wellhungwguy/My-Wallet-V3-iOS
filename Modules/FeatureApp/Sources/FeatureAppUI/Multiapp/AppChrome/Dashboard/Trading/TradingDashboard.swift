@@ -20,14 +20,14 @@ public struct TradingDashboard: ReducerProtocol {
             switch self {
 
             case .showAllAssets:
-                return AllAssetsView(store: store.scope(state: \.allAssetsState, action: Action.allAssetsAction))
+                return AllAssetsSceneView(store: store.scope(state: \.allAssetsState, action: Action.allAssetsAction))
             }
         }
     }
 
     public enum Action: Equatable, NavigationAction {
         case route(RouteIntent<Route>?)
-        case allAssetsAction(FeatureAllAssets.Action)
+        case allAssetsAction(AllAssetsScene.Action)
         case assetsAction(DashboardAssetsSection.Action)
         case activityAction(DashboardActivitySection.Action)
     }
@@ -35,7 +35,7 @@ public struct TradingDashboard: ReducerProtocol {
     public struct State: Equatable, NavigationState {
         public var title: String
         public var assetsState: DashboardAssetsSection.State = .init(presentedAssetsType: .custodial)
-        public var allAssetsState: FeatureAllAssets.State = .init(with: .custodial)
+        public var allAssetsState: AllAssetsScene.State = .init(with: .custodial)
         public var activityState: DashboardActivitySection.State = .init()
         public var route: RouteIntent<Route>?
 
@@ -53,7 +53,7 @@ public struct TradingDashboard: ReducerProtocol {
         }
 
         Scope(state: \.allAssetsState, action: /Action.allAssetsAction) {
-            FeatureAllAssets(
+            AllAssetsScene(
                 allCryptoService: allCryptoAssetService,
                 app: app
             )

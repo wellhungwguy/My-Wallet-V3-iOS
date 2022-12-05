@@ -15,7 +15,7 @@ struct PKWDashboardView: View {
 
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            PrimaryNavigationView {
+//            PrimaryNavigationView {
                 ScrollView {
                     VStack(spacing: 32) {
                         DashboardAssetSectionView(store: self.store.scope(
@@ -34,7 +34,7 @@ struct PKWDashboardView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .background(Color.semantic.light.ignoresSafeArea(edges: .bottom))
-            }
         }
+//        }
     }
 }

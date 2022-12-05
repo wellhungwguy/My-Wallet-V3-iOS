@@ -6,7 +6,7 @@ import MoneyKit
 import PlatformKit
 import SwiftExtensions
 
-public struct FeatureAllAssets: ReducerProtocol {
+public struct AllAssetsScene: ReducerProtocol {
     public let allCrpyotService: AllCryptoAssetsServiceAPI
     public let app: AppProtocol
     public init(
@@ -25,6 +25,7 @@ public struct FeatureAllAssets: ReducerProtocol {
         case onConfirmFilterTapped
         case onResetTapped
         case onAssetTapped(AssetBalanceInfo)
+        case onCloseTapped
     }
 
     public struct State: Equatable {
@@ -105,6 +106,9 @@ public struct FeatureAllAssets: ReducerProtocol {
                 return .none
 
             case .binding:
+                return .none
+
+            case .onCloseTapped:
                 return .none
             }
         }

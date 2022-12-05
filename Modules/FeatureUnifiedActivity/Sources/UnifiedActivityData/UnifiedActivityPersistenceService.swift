@@ -38,7 +38,7 @@ final class UnifiedActivityPersistenceService: UnifiedActivityPersistenceService
                     guard let json = String(data: data, encoding: .utf8) else {
                         return nil
                     }
-                    return ActivityEntity(identifier: entry.id, json: json, networkIdentifier: entry.network)
+                    return ActivityEntity(identifier: entry.id, json: json, networkIdentifier: entry.network, timestamp: entry.timestamp)
                 }
             }
             .sink { [appDatabase] activities in
