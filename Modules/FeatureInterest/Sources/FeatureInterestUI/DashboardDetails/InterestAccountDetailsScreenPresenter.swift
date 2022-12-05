@@ -17,11 +17,11 @@ public final class InterestAccountDetailsScreenPresenter {
     // MARK: - Navigation Properties
 
     var trailingButton: Screen.Style.TrailingButton {
-        .none
+        .close
     }
 
     var leadingButton: Screen.Style.LeadingButton {
-        .close
+        .none
     }
 
     var titleView: Screen.Style.TitleView {

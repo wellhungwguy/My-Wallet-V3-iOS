@@ -103,12 +103,15 @@ extension EarnSummaryView {
         }
 
         var title: some View {
-            HStack {
-                AsyncMedia(url: currency.logoURL)
-                    .frame(width: 32.pt, height: 32.pt)
-                Text(L10n.summaryTitle.interpolating(currency.code, product.title))
-                    .typography(.body2)
-                    .foregroundColor(.semantic.title)
+            HStack(alignment: .top) {
+                Group {
+                    AsyncMedia(url: currency.logoURL)
+                        .frame(width: 32.pt, height: 32.pt)
+                    Text(L10n.summaryTitle.interpolating(currency.code, product.title))
+                        .typography(.body2)
+                        .foregroundColor(.semantic.title)
+                }
+                .padding([.top, .bottom])
                 Spacer()
                 IconButton(icon: .closeCirclev2) {
                     app.post(event: id.article.plain.navigation.bar.button.close.tap[].ref(to: context), context: context)
@@ -130,7 +133,7 @@ extension EarnSummaryView {
                             .typography(.title3)
                             .foregroundColor(.semantic.title)
                     } catch: { _ in
-                        ProgressView()
+                        EmptyView()
                     }
                     Text(moneyValue.displayString)
                         .typography(.caption2)
@@ -180,15 +183,17 @@ extension EarnSummaryView {
                         EmptyView()
                     }
                     Do {
-                        try TableRow(
-                            title: TableRowTitle(L10n.bonding),
-                            trailingTitle: TableRowTitle(
-                                my.account.bonding.deposits(MoneyValue.self)
-                                    .convert(using: exchangeRate.or(throw: "No exchange rate")).displayString
-                            ),
-                            trailingByline: TableRowByline(my.account.bonding.deposits(MoneyValue.self).displayString)
-                        )
-                        PrimaryDivider()
+                        let bonding = try my.account.bonding.deposits(MoneyValue.self)
+                        if bonding.isPositive {
+                            try TableRow(
+                                title: TableRowTitle(L10n.bonding),
+                                trailingTitle: TableRowTitle(
+                                    bonding.convert(using: exchangeRate.or(throw: "No exchange rate")).displayString
+                                ),
+                                trailingByline: TableRowByline(bonding.displayString)
+                            )
+                            PrimaryDivider()
+                        }
                     } catch: { _ in
                         EmptyView()
                     }

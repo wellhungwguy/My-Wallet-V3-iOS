@@ -41,8 +41,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         setupTableView()
         setupNavigationBar()
         loadingViewPresenter.showCircular()
-
-        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     private func setupTableView() {
@@ -90,6 +88,11 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
             trailingButtonStyle: presenter.trailingButton
         )
         titleViewStyle = presenter.titleView
+    }
+
+    public override func navigationBarTrailingButtonPressed() {
+        super.navigationBarTrailingButtonPressed()
+        dismiss(animated: true)
     }
 }
 

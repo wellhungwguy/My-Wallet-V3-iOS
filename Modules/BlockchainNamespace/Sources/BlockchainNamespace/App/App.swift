@@ -398,19 +398,14 @@ extension AppProtocol {
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
 
-        func _publisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        func makePublisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
             switch ref.tag {
             case blockchain.session.state.value, blockchain.db.collection.id:
                 return state.publisher(for: ref)
             case blockchain.session.configuration.value:
                 return remoteConfiguration.publisher(for: ref)
             default:
-                return Task<AnyPublisher<FetchResult, Never>, Error>.Publisher { [local] () async throws -> AnyPublisher<FetchResult, Never> in
-                    try await local.publisher(for: ref.route()).map(FetchResult.create(ref.metadata(.app))).eraseToAnyPublisher()
-                }
-                .catch { error in .just(FetchResult.error(.other(error), ref.metadata(.app))) }
-                .switchToLatest()
-                .eraseToAnyPublisher()
+                return local.publisher(for: ref)
             }
         }
 
@@ -422,17 +417,17 @@ extension AppProtocol {
                 .subtracting(ids.keys.map(\.id))
                 .map { try Tag(id: $0, in: language) }
             guard dynamicKeys.isNotEmpty else {
-                return try _publisher(ref.validated())
+                return try makePublisher(ref.validated())
             }
             let context = Tag.Context(ids)
             return try dynamicKeys.map { try $0.ref(to: context, in: self).validated() }
-                .map(_publisher)
+                .map(makePublisher)
                 .combineLatest()
                 .flatMap { output -> AnyPublisher<FetchResult, Never> in
                     do {
                         let values = try output.map { try $0.decode(String.self).get() }
                         let indices = zip(dynamicKeys, values).reduce(into: [:]) { $0[$1.0] = $1.1 }
-                        return try _publisher(ref.ref(to: context + Tag.Context(indices)).validated())
+                        return try makePublisher(ref.ref(to: context + Tag.Context(indices)).validated())
                             .eraseToAnyPublisher()
                     } catch {
                         return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
@@ -669,5 +664,46 @@ extension App {
             app.post(event: event, reference: reference, context: context, file: file, line: line)
             await Task.megaYield(count: 20)
         }
+    }
+}
+
+extension Optional.Store {
+
+    nonisolated func publisher(for ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        let subject = CurrentValueSubject<FetchResult?, Never>(nil)
+        let task = Task {
+            do {
+                let route = try ref.route()
+                for await value in await stream(route) where !Task.isCancelled {
+                    if value.isNil, await !data.contains(route) {
+                        subject.send(FetchResult.error(.keyDoesNotExist(ref), ref.metadata(.app)))
+                    } else {
+                        subject.send(FetchResult(value as Any, metadata: ref.metadata(.app)))
+                    }
+                }
+            } catch {
+                subject.send(FetchResult.error(.other(error), ref.metadata(.app)))
+            }
+        }
+        return subject.compacted().handleEvents(receiveCancel: task.cancel).eraseToAnyPublisher()
+    }
+}
+
+extension Optional where Wrapped == Any {
+
+    func contains(_ location: Location) -> Bool {
+        switch (location, self) {
+        case (.key(let key), let dictionary as [String: Any]):
+            return dictionary.keys.contains(key)
+        case (.index(let index), let array as [Any]):
+            return index >= 0 && index < array.count
+        case _:
+            return false
+        }
+    }
+
+    func contains<Route>(_ route: Route) -> Bool where Route: Collection, Route.Index == Int, Route.Element == Location {
+        guard let next = route.first else { return true }
+        return contains(next) && self[next].contains(route.dropFirst())
     }
 }

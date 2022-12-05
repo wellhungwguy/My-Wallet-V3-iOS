@@ -11,11 +11,9 @@ public struct EarnProductNotEligibleView: View {
     @Environment(\.context) var context
 
     let story: L & I_blockchain_ux_earn_type_hub_product_not_eligible
-    let product: EarnProduct
 
-    public init(story: L & I_blockchain_ux_earn_type_hub_product_not_eligible, product: EarnProduct) {
+    public init(story: L & I_blockchain_ux_earn_type_hub_product_not_eligible) {
         self.story = story
-        self.product = product
     }
 
     public var body: some View {
@@ -40,11 +38,17 @@ public struct EarnProductNotEligibleView: View {
                 .typography(.title2)
                 .foregroundColor(.semantic.title)
                 .padding(.bottom)
-            Text(L10n.notEligibleMessage.interpolating(product.title))
-                .typography(.body1)
-                .foregroundColor(.semantic.text)
-                .padding(.bottom)
-                .fixedSize(horizontal: false, vertical: true)
+            Do {
+                let product: EarnProduct = try context.decode(blockchain.user.earn.product.id)
+                let currency: CryptoCurrency = try context.decode(blockchain.user.earn.product.asset.id)
+                Text(L10n.notEligibleMessage.interpolating(product.title, currency.code))
+                    .typography(.body1)
+                    .foregroundColor(.semantic.text)
+                    .padding(.bottom)
+                    .fixedSize(horizontal: false, vertical: true)
+            } catch: { _ in
+                EmptyView()
+            }
             Spacer()
             MinimalButton(
                 title: L10n.goBack,

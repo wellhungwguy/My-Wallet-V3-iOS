@@ -266,7 +266,7 @@ public final class CoinViewObserver: Client.Observer {
         let interactor = InterestAccountDetailsScreenInteractor(account: account)
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
         let controller = InterestAccountDetailsViewController(presenter: presenter)
-        topViewController.topMostViewController?.present(controller, animated: true, completion: nil)
+        topViewController.topMostViewController?.present(UINavigationController(rootViewController: controller), animated: true, completion: nil)
     }
 
     lazy var stakingDeposit = app.on(blockchain.ux.asset.account.staking.deposit) { @MainActor [unowned self] event in

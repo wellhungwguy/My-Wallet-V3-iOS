@@ -178,28 +178,36 @@ final class AppTests: XCTestCase {
 
     func test_local_store() async throws {
 
+        let context: Tag.Context = [
+            blockchain.ux.earn.portfolio.product.id: "staking",
+            blockchain.ux.earn.portfolio.product.asset.id: "BTC"
+        ]
+
+        let key = blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap.then.emit[].ref(
+            to: context
+        )
+
+        let before = try await app.local.data.contains(key.route())
+        XCTAssertFalse(before)
+
         let input = blockchain.ux.asset["BTC"].account["CryptoInterestAccount"].staking.deposit.key()
         let any: AnyHashable = input as AnyHashable
-        try await app.set(
-            blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap.then.emit[].ref(
-                to: [
-                    blockchain.ux.earn.portfolio.product.id: "staking",
-                    blockchain.ux.earn.portfolio.product.asset.id: "BTC"
-                ]
-            ),
-            to: any
-        )
-        let json: AnyJSON = try await app.get(
-            blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap.then.emit[].ref(
-                to: [
-                    blockchain.ux.earn.portfolio.product.id: "staking",
-                    blockchain.ux.earn.portfolio.product.asset.id: "BTC"
-                ]
-            )
-        )
+        try await app.set(key, to: any)
+
+        let after = try await app.local.data.contains(key.route())
+        XCTAssertTrue(after)
+
+        let json: AnyJSON = try await app.get(key)
         let reference = try json.decode(Tag.Reference.self, using: BlockchainNamespaceDecoder())
 
         XCTAssertEqual(reference.string, input.string)
+
+        let parent = blockchain.ux.earn.portfolio.product.asset.summary.add.paragraph.button.primary.tap[].ref(
+            to: context
+        )
+
+        let parentExists = try await app.local.data.contains(parent.route())
+        XCTAssertTrue(parentExists)
     }
 }
 

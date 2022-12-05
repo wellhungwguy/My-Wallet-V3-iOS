@@ -1568,28 +1568,30 @@ blockchain:
 			action:
 			+ blockchain.ux.type.story
 				buy:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				defi:
 					buy:
 					switch:
 						to:
 							trading:
 				deposit:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
+				earn:
+				+ blockchain.ux.type.action
 				nft:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				receive:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				rewards:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				sell:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				send:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				swap:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 				withdraw:
-				+ blockchain.ux.type.story
+				+ blockchain.ux.type.action
 		home:
 			dashboard:
 			+ blockchain.ux.type.story

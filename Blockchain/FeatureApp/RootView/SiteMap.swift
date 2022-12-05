@@ -98,8 +98,7 @@ extension SiteMap {
                     )
             case blockchain.ux.earn.discover.product.not.eligible:
                 try EarnProductNotEligibleView(
-                    story: ref[].as(blockchain.ux.earn.type.hub.product.not.eligible),
-                    product: ref.context[blockchain.ux.earn.discover.product.id].decode(EarnProduct.self)
+                    story: ref[].as(blockchain.ux.earn.type.hub.product.not.eligible)
                 )
             case blockchain.ux.earn.portfolio.product.asset.no.balance, blockchain.ux.earn.discover.product.asset.no.balance:
                 try EarnProductAssetNoBalanceView(

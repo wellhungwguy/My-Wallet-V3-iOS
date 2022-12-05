@@ -127,6 +127,10 @@ extension RootViewController {
 
     func subscribe(to app: AppProtocol) {
 
+        Task {
+            try await app.set(blockchain.ux.frequent.action.earn.then.enter.into, to: blockchain.ux.earn)
+        }
+
         let observers = [
             app.on(blockchain.ux.frequent.action.swap) { [unowned self] _ in
                 self.handleSwapCrypto(account: nil)

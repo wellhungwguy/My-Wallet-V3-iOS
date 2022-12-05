@@ -58,12 +58,8 @@ struct EarnListView<Content: View>: View {
             if model.isNotNilOrEmpty {
                 segmentedControl
             }
-            if state.value.isNotEmpty {
+            if model.isNotNilOrEmpty {
                 list
-            } else if model.isNotNil, state.value.isEmpty {
-                Spacer()
-                noResults
-                Spacer()
             } else {
                 Spacer()
                 BlockchainProgressView()
@@ -71,6 +67,7 @@ struct EarnListView<Content: View>: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.semantic.background)
         .onAppear {
             app.post(event: hub.article.plain.lifecycle.event.did.enter[].ref(to: context), context: context)
         }
@@ -112,25 +109,39 @@ struct EarnListView<Content: View>: View {
     }
 
     @ViewBuilder var list: some View {
-        ScrollView {
-            LazyVStack {
-                ForEach(filtered, id: \.self) { item in
-                    Group {
-                        content(hub.product.asset, item.product, item.asset, item.isEligible)
-                            .context(
-                                [
-                                    blockchain.user.earn.product.id: item.product.value,
-                                    blockchain.user.earn.product.asset.id: item.asset.code,
-                                    hub.product.id: item.product.value,
-                                    hub.product.asset.id: item.asset.code
-                                ]
-                            )
-                        PrimaryDivider()
-                    }
-                }
+        List {
+            ForEach(filtered, id: \.self) { item in
+                content(hub.product.asset, item.product, item.asset, item.isEligible)
+                    .context(
+                        [
+                            blockchain.user.earn.product.id: item.product.value,
+                            blockchain.user.earn.product.asset.id: item.asset.code,
+                            hub.product.id: item.product.value,
+                            hub.product.asset.id: item.asset.code
+                        ]
+                    )
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             }
         }
-        .overlay(LinearGradient(colors: [.white, .clear], startPoint: .top, endPoint: .bottom).frame(height: 10.pt), alignment: .top)
+        .listStyle(.plain)
+        .overlay(
+            LinearGradient(
+                colors: [.semantic.background, .clear],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 10.pt),
+            alignment: .top
+        )
+        .overlay(
+            VStack {
+                if model.isNotNil, filtered.isEmpty {
+                    Spacer()
+                    noResults
+                    Spacer()
+                }
+            }
+        )
     }
 
     @ViewBuilder var accessoryOverlay: some View {

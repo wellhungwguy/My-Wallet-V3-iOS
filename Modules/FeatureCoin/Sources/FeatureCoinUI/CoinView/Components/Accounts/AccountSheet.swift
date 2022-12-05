@@ -91,7 +91,10 @@ struct AccountSheet: View {
             }
         }
         .batch(
-            .set(blockchain.ux.asset.account.staking.summary.then.enter.into, to: blockchain.ux.earn.portfolio.product["staking"].asset[account.cryptoCurrency.code].summary)
+            .set(
+                blockchain.ux.asset.account.staking.summary.then.enter.into,
+                to: blockchain.ux.earn.portfolio.product["staking"].asset[account.cryptoCurrency.code].summary
+            )
         )
     }
 }
