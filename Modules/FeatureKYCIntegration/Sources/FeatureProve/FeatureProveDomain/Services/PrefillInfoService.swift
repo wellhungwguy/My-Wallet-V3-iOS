@@ -11,7 +11,7 @@ public struct PrefillInfoService: PrefillInfoServiceAPI {
 
     public func getPrefillInfo(
         dateOfBirth: Date
-    ) async throws -> PrefillInfo? {
+    ) async throws -> PrefillInfo {
         try await repository
             .getPrefillInfo(dateOfBirth: dateOfBirth)
             .await()

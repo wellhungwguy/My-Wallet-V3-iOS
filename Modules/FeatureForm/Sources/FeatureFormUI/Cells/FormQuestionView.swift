@@ -22,7 +22,7 @@ struct FormQuestionView: View {
                 Spacer(minLength: Spacing.padding1)
                 Text(instructions)
                     .typography(.caption1)
-                    .foregroundColor(.semantic.body)
+                    .foregroundColor(.semantic.text)
             }
 
             Spacer(minLength: Spacing.padding1)

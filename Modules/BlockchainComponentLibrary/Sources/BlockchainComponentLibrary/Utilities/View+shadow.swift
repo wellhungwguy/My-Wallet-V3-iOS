@@ -30,4 +30,12 @@ extension View {
             alignment: alignment
         )
     }
+
+    public var backgroundWithWhiteShadow: some View {
+        background(
+            Rectangle()
+                .fill(.white)
+                .shadow(color: .white, radius: 3, x: 0, y: -10)
+        )
+    }
 }

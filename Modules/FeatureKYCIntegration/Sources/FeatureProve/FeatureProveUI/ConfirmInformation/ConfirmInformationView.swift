@@ -62,52 +62,32 @@ struct ConfirmInformationView: View {
                     viewStore.send(.onContinue)
                 },
                 submitButtonMode: .onlyEnabledWhenAllAnswersValid,
-                submitButtonLocation: .attachedToBottomOfScreen,
-                fieldConfiguration: { answer in
-                        .init(
-                            textAutocorrectionType: .no,
-                            onFieldTapped: onFieldTapped(answerId: answer.id),
-                            bottomButton: fieldBottomButton(answerId: answer.id)
+                submitButtonLocation: .attachedToBottomOfScreen(),
+                fieldConfiguration: { fieldId in
+                    switch fieldId {
+                    case ConfirmInformation.InputField.emptyAddressAnswerId:
+                        return .emptyAddress(
+                            onFieldTapped: { viewStore.send(.onEmptyAddressFieldTapped) },
+                            onBottomButton: { viewStore.send(.onEnterAddressManuallyTapped) }
                         )
+                    case ConfirmInformation.InputField.address.rawValue:
+                        return .singleAddress(
+                            onFieldTapped: { viewStore.send(.onStartEditingSelectedAddress) },
+                            onBottomButton: { viewStore.send(.onEnterAddressManuallyTapped) }
+                        )
+                    case ConfirmInformation.InputField.addressAnswerId(index: 0):
+                        return .multiAddress(
+                            onBottomButton: { viewStore.send(.onEnterAddressManuallyTapped) }
+                        )
+                    default:
+                        return .init(textAutocorrectionType: .no)
+                    }
                 },
                 headerIcon: {
                     headerIcon
                 }
             )
         }
-    }
-
-    private func onFieldTapped(answerId: String) -> (() -> Void)? {
-        let isEmptyAddressAnswer = answerId == ConfirmInformation.InputField.emptyAddressAnswerId
-        let isSingleAddressAnswer = answerId == ConfirmInformation.InputField.address.rawValue
-        if isEmptyAddressAnswer {
-            return {
-                UIApplication.shared.endEditing()
-                viewStore.send(.onEmptyAddressFieldTapped)
-            }
-        } else if isSingleAddressAnswer {
-            return {
-                UIApplication.shared.endEditing()
-                viewStore.send(.onStartEditingSelectedAddress)
-            }
-        }
-        return nil
-    }
-
-    private func fieldBottomButton(answerId: String) -> FieldConfiguation.BottomButton? {
-        let isEmptyAddressAnswer = answerId == ConfirmInformation.InputField.emptyAddressAnswerId
-        let isSingleAddressAnswer = answerId == ConfirmInformation.InputField.address.rawValue
-        let isMultiAddressAnswer = answerId == ConfirmInformation.InputField.addressAnswerId(index: 0)
-        return isEmptyAddressAnswer || isSingleAddressAnswer || isMultiAddressAnswer
-        ? .init(
-            leadingPrefixText: LocalizedString.Buttons.enterAddressManuallyPrefix,
-            title: LocalizedString.Buttons.enterAddressManuallyTitle,
-            action: {
-                UIApplication.shared.endEditing()
-                viewStore.send(.onEnterAddressManuallyTapped)
-            }
-        )
-        : nil
     }
 
     private func makeError(uxError: UX.Error) -> some View {
@@ -142,5 +122,58 @@ struct ConfirmInformation_Previews: PreviewProvider {
 extension UIApplication {
     fileprivate func endEditing() {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+extension FieldConfiguation {
+    private typealias LocalizedString = LocalizationConstants.ConfirmInformation
+    fileprivate static func emptyAddress(
+        onFieldTapped: @escaping (() -> Void),
+        onBottomButton: @escaping (() -> Void)
+    ) -> FieldConfiguation {
+        .init(
+            textAutocorrectionType: .no,
+            onFieldTapped: {
+                UIApplication.shared.endEditing()
+                onFieldTapped()
+            },
+            bottomButton: enterAddressManuallyButton(onBottomButton: onBottomButton)
+        )
+    }
+
+    fileprivate static func singleAddress(
+        onFieldTapped: @escaping (() -> Void),
+        onBottomButton: @escaping (() -> Void)
+    ) -> FieldConfiguation {
+        .init(
+            textAutocorrectionType: .no,
+            onFieldTapped: {
+                UIApplication.shared.endEditing()
+                onFieldTapped()
+            },
+            bottomButton: enterAddressManuallyButton(onBottomButton: onBottomButton)
+        )
+    }
+
+    fileprivate static func multiAddress(
+        onBottomButton: @escaping (() -> Void)
+    ) -> FieldConfiguation {
+        .init(
+            textAutocorrectionType: .no,
+            bottomButton: enterAddressManuallyButton(onBottomButton: onBottomButton)
+        )
+    }
+
+    private static func enterAddressManuallyButton(
+        onBottomButton: @escaping (() -> Void)
+    ) -> FieldConfiguation.BottomButton? {
+        .init(
+            leadingPrefixText: LocalizedString.Buttons.enterAddressManuallyPrefix,
+            title: LocalizedString.Buttons.enterAddressManuallyTitle,
+            action: {
+                UIApplication.shared.endEditing()
+                onBottomButton()
+            }
+        )
     }
 }

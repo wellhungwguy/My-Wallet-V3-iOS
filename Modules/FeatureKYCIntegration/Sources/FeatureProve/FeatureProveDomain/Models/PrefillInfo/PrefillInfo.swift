@@ -23,3 +23,10 @@ public struct PrefillInfo: Equatable {
         self.phone = phone
     }
 }
+
+extension PrefillInfo {
+    public func validAddresses(country: String?, state: String?) -> [Address] {
+        guard let country = country, country == "US", let state = state else { return addresses }
+        return addresses.filter { $0.state == state }
+    }
+}

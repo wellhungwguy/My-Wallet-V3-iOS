@@ -20,9 +20,13 @@ public struct FieldConfiguation {
             self.action = action
         }
     }
-    let textAutocorrectionType: TextAutocorrectionType
+    let textAutocorrectionType: UITextAutocorrectionType
+    let keyboardType: UIKeyboardType
+    let textContentType: UITextContentType?
     let onFieldTapped: (() -> Void)?
     let bottomButton: BottomButton?
+    let inputPrefixConfig: InputPrefixConfig
+    let onTextChange: ((String) -> String?)?
 
     /// TextField Input Component
     /// - Parameters:
@@ -30,31 +34,20 @@ public struct FieldConfiguation {
     ///   - onFieldTapped: if this handler passed, the field will be disabled
     ///   - bottomButton: bottom button
     public init(
-        textAutocorrectionType: TextAutocorrectionType = .default,
+        textAutocorrectionType: UITextAutocorrectionType = .default,
+        keyboardType: UIKeyboardType = .default,
+        textContentType: UITextContentType? = nil,
         onFieldTapped: (() -> Void)? = nil,
-        bottomButton: BottomButton? = nil
+        bottomButton: BottomButton? = nil,
+        inputPrefixConfig: InputPrefixConfig = .default(),
+        onTextChange: ((String) -> String?)? = nil
     ) {
         self.textAutocorrectionType = textAutocorrectionType
+        self.keyboardType = keyboardType
+        self.textContentType = textContentType
         self.onFieldTapped = onFieldTapped
         self.bottomButton = bottomButton
-    }
-}
-
-public enum TextAutocorrectionType {
-    case `default`
-    case no
-    case yes
-}
-
-extension UITextAutocorrectionType {
-    init(type: TextAutocorrectionType) {
-        switch type {
-        case .default:
-            self = .default
-        case .no:
-            self = .no
-        case .yes:
-            self = .yes
-        }
+        self.inputPrefixConfig = inputPrefixConfig
+        self.onTextChange = onTextChange
     }
 }

@@ -99,6 +99,85 @@ extension LocalizationConstants.EnterInformation.Body {
 }
 
 extension LocalizationConstants {
+    public enum EnterFullInformation {
+
+        static let title = NSLocalizedString(
+            "Verify your account",
+            comment: "Enter Full Personal Information: Title"
+        )
+
+        static let loadingTitle = NSLocalizedString(
+            "Verifying your information",
+            comment: "Enter Full Personal Information: Verifying your information loading"
+        )
+
+        enum Body {
+
+            static let title = NSLocalizedString(
+                "Enter your information",
+                comment: "Enter Full Personal Information: Body title"
+            )
+
+            static let subtitle = NSLocalizedString(
+                "Please add your phone number and\ndate of birth.",
+                comment: "Enter Full Personal Information: Body subtitle"
+            )
+        }
+
+        enum Footer {
+
+            static let title = NSLocalizedString(
+                "We’ll send you a link to verify your identity.",
+                comment: "Enter Full Personal Information: Footer title"
+            )
+        }
+
+        enum Buttons {
+
+            static let continueTitle = NSLocalizedString(
+                "Continue",
+                comment: "Enter Full Personal Information: Continue Button"
+            )
+        }
+    }
+}
+
+extension LocalizationConstants.EnterFullInformation.Body {
+    public enum Form {
+
+        static let phoneInputTitle = NSLocalizedString(
+            "Phone number",
+            comment: "Enter Full Personal Information: Phone number Input Title"
+        )
+
+        static let phoneInputHint = NSLocalizedString(
+            "Verification only supports US(+1) phone numbers",
+            comment: "Enter Full Personal Information: Phone number Input Hint"
+        )
+
+        static let phoneInputPlaceholder = NSLocalizedString(
+            "Enter your phone number",
+            comment: "Enter Full Personal Information: Phone number Input Placeholder"
+        )
+
+        static let phoneInputPrefix = NSLocalizedString(
+            "+1",
+            comment: "Enter Full Personal Information: Phone number Input Phone Code Prefix"
+        )
+
+        static let dateOfBirthInputTitle = NSLocalizedString(
+            "Date of birth",
+            comment: "Enter Full Personal Information: Date Of Birth Input Title"
+        )
+
+        static let dateOfBirthInputHint = NSLocalizedString(
+            "You must be 18 years or older.",
+            comment: "Enter Full Personal Information: Date Of Birth Input Hint"
+        )
+    }
+}
+
+extension LocalizationConstants {
     public enum ConfirmInformation {
 
         static let title = NSLocalizedString(

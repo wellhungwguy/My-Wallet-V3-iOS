@@ -6,5 +6,5 @@ public protocol PrefillInfoServiceAPI {
 
     func getPrefillInfo(
         dateOfBirth: Date
-    ) async throws -> PrefillInfo?
+    ) async throws -> PrefillInfo
 }

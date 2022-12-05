@@ -11,10 +11,10 @@ public enum PrimaryFormSubmitButtonMode {
 
 public enum SubmitButtonLocation {
     case inTheEndOfTheForm // only visible when user scrolls to the end of form
-    case attachedToBottomOfScreen // always visible in the bottom of screen
+    case attachedToBottomOfScreen(footerText: String? = nil, hasDivider: Bool = false) // always visible in the bottom of screen
 }
 
-public typealias PrimaryFormFieldConfiguration = (FormAnswer) -> FieldConfiguation
+public typealias PrimaryFormFieldConfiguration = (String) -> FieldConfiguation
 public let defaultFieldConfiguration: PrimaryFormFieldConfiguration = { _ in .init() }
 
 public struct PrimaryForm<Header: View>: View {
@@ -86,7 +86,7 @@ public struct PrimaryForm<Header: View>: View {
                 }
                 if case .inTheEndOfTheForm = submitButtonLocation {
                     primaryButton
-                    .disabled(isSubmitButtonDisabled)
+                        .disabled(isSubmitButtonDisabled)
                 }
             }
             .padding(Spacing.padding3)
@@ -96,16 +96,28 @@ public struct PrimaryForm<Header: View>: View {
                 stopEditing()
             }
         }
-        if case .attachedToBottomOfScreen = submitButtonLocation {
-            primaryButton
-            .disabled(isSubmitButtonDisabled)
+        if case let .attachedToBottomOfScreen(footerText, hasDivider) = submitButtonLocation {
+            VStack(spacing: Spacing.padding2) {
+                if hasDivider {
+                    Divider()
+                }
+                VStack(spacing: Spacing.padding2) {
+                    if let footerText {
+                        Text(footerText)
+                            .multilineTextAlignment(.center)
+                            .typography(.paragraph1)
+                            .foregroundColor(.semantic.text)
+                            .padding(.bottom, Spacing.textSpacing)
+                    }
+
+                    primaryButton
+                        .disabled(isSubmitButtonDisabled)
+                }
+                .padding([.horizontal])
+            }
             .frame(alignment: .bottom)
-            .padding([.horizontal, .bottom])
-            .background(
-                Rectangle()
-                    .fill(.white)
-                    .shadow(color: .white, radius: 3, x: 0, y: -15)
-            )
+            .padding([.bottom])
+            .backgroundWithWhiteShadow
         }
     }
 

@@ -11,11 +11,12 @@ import FeatureProveDomain
 import Localization
 import ToolKit
 
-private typealias LocalizedString = LocalizationConstants.EnterInformation
+private typealias LocalizedString = LocalizationConstants.EnterFullInformation
 
-struct EnterInformation: ReducerProtocol {
+struct EnterFullInformation: ReducerProtocol {
 
     enum InputField: String {
+        case phone
         case dateOfBirth
     }
 
@@ -45,6 +46,7 @@ struct EnterInformation: ReducerProtocol {
         case fetchPrefillInfo
         case onPrefillInfoFetched(TaskResult<PrefillInfo>)
         case finishedWithError(NabuError?)
+        case loadForm(phone: String?, dateOfBirth: Date?)
         case onClose
         case onContinue
         case onDismissError
@@ -52,7 +54,6 @@ struct EnterInformation: ReducerProtocol {
 
     struct State: Equatable {
         var title: String = LocalizedString.title
-        var phone: String?
 
         @BindableState var form: Form = .init(
             header: .init(
@@ -87,12 +88,18 @@ struct EnterInformation: ReducerProtocol {
                 return .none
 
             case .onAppear:
+                return Effect(value: .loadForm(phone: nil, dateOfBirth: nil))
+
+            case let .loadForm(phone, dateOfBirth):
                 state.form = .init(
                     header: .init(
                         title: LocalizedString.Body.title,
                         description: LocalizedString.Body.subtitle
                     ),
-                    nodes: FormQuestion.personalInfoQuestions(dateOfBirth: nil),
+                    nodes: FormQuestion.enterFullInformation(
+                        phone: phone,
+                        dateOfBirth: dateOfBirth
+                    ),
                     blocking: true
                 )
                 return .none
@@ -116,7 +123,9 @@ struct EnterInformation: ReducerProtocol {
 
             case .fetchPrefillInfo:
                 state.isLoading = true
-                guard let dateOfBirth: Date = try? state.form.nodes.answer(id: InputField.dateOfBirth.rawValue) else {
+                guard
+                    let dateOfBirth: Date = try? state.form.nodes.answer(id: InputField.dateOfBirth.rawValue)
+                else {
                     return .none
                 }
                 return .task {
@@ -156,65 +165,13 @@ struct EnterInformation: ReducerProtocol {
     }
 }
 
-extension FormQuestion {
+extension EnterFullInformation {
 
-    fileprivate static func personalInfoQuestions(dateOfBirth: Date?) -> [FormQuestion] {
-        [
-            FormQuestion(
-                id: EnterInformation.InputField.dateOfBirth.rawValue,
-                type: .openEnded,
-                isDropdown: false,
-                text: LocalizedString.Body.Form.dateOfBirthInputTitle,
-                instructions: LocalizedString.Body.Form.dateOfBirthInputHint,
-                regex: TextRegex.notEmpty.rawValue,
-                children: [
-                    FormAnswer(
-                        id: EnterInformation.InputField.dateOfBirth.rawValue,
-                        type: .date,
-                        validation: FormAnswer.Validation(
-                            rule: .withinRange,
-                            metadata: [
-                                .maxValue: String(
-                                    (Calendar.current.eighteenYearsAgo ?? Date()).timeIntervalSince1970
-                                )
-                            ]
-                        ),
-                        text: nil,
-                        input: dateOfBirth?.timeIntervalSince1970.description
-                    )
-                ]
-            )
-        ]
-    }
-}
-
-extension Calendar {
-
-    var eighteenYearsAgo: Date? {
-        date(byAdding: .year, value: -18, to: Calendar.current.startOfDay(for: Date()))
-    }
-}
-
-extension EnterInformation {
-
-    static func preview(app: AppProtocol) -> EnterInformation {
-        EnterInformation(
+    static func preview(app: AppProtocol) -> EnterFullInformation {
+        EnterFullInformation(
             app: app,
             prefillInfoService: NoPrefillInfoService(),
             dismissFlow: { _ in }
-        )
-    }
-}
-
-final class NoPrefillInfoService: PrefillInfoServiceAPI {
-
-    func getPrefillInfo(dateOfBirth: Date) async throws -> PrefillInfo {
-        .init(
-            firstName: "First Name",
-            lastName: nil,
-            addresses: [],
-            dateOfBirth: Date(),
-            phone: "234"
         )
     }
 }

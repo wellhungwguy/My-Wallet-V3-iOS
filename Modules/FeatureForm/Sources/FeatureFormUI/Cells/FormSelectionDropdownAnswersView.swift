@@ -71,7 +71,7 @@ struct FormSelectionDropdownAnswersView: View {
             }
 
             if let answer = answers.first,
-               let bottomButton = fieldConfiguration(answer).bottomButton {
+               let bottomButton = fieldConfiguration(answer.id).bottomButton {
                 FormAnswerBottomButtonView(
                     leadingPrefixText: bottomButton.leadingPrefixText,
                     title: bottomButton.title,
@@ -195,7 +195,7 @@ struct FormSelectionDropdownAnswersListView: View {
         .background(
             Rectangle()
                 .fill(.white)
-                .shadow(color: .white, radius: 3, x: 0, y: -15)
+                .backgroundWithWhiteShadow
         )
     }
 }

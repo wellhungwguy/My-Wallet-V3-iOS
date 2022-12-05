@@ -11,13 +11,13 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct EnterInformationView: View {
+struct EnterFullInformationView: View {
 
-    private typealias LocalizedString = LocalizationConstants.EnterInformation
+    private typealias LocalizedString = LocalizationConstants.EnterFullInformation
 
-    @ObservedObject private var viewStore: ViewStore<EnterInformation.State, EnterInformation.Action>
+    @ObservedObject private var viewStore: ViewStore<EnterFullInformation.State, EnterFullInformation.Action>
 
-    init(store: StoreOf<EnterInformation>) {
+    init(store: StoreOf<EnterFullInformation>) {
         self.viewStore = ViewStore(store)
     }
 
@@ -62,9 +62,17 @@ struct EnterInformationView: View {
                     viewStore.send(.onContinue)
                 },
                 submitButtonMode: .onlyEnabledWhenAllAnswersValid,
-                submitButtonLocation: .attachedToBottomOfScreen(),
-                fieldConfiguration: { _ in
-                        .init(textAutocorrectionType: .no)
+                submitButtonLocation: .attachedToBottomOfScreen(
+                    footerText: LocalizedString.Footer.title,
+                    hasDivider: true
+                ),
+                fieldConfiguration: { fieldId in
+                    switch fieldId {
+                    case EnterFullInformation.InputField.phone.rawValue:
+                        return .phoneField
+                    default:
+                        return .init(textAutocorrectionType: .no)
+                    }
                 },
                 headerIcon: {
                     headerIcon
@@ -89,7 +97,7 @@ struct EnterInformationView: View {
     }
 }
 
-struct EnterInformation_Previews: PreviewProvider {
+struct EnterFullInformation_Previews: PreviewProvider {
 
     static var previews: some View {
         let app: AppProtocol = resolve()
@@ -99,5 +107,44 @@ struct EnterInformation_Previews: PreviewProvider {
                 reducer: BeginVerification.preview(app: app)
             )).app(app)
         }
+    }
+}
+
+extension FieldConfiguation {
+    fileprivate static let phoneField: FieldConfiguation = {
+        .init(
+            textAutocorrectionType: .no,
+            keyboardType: .phonePad,
+            textContentType: .telephoneNumber,
+            inputPrefixConfig: .init(typography: .bodyMono, textColor: .semantic.title, spacing: 6),
+            onTextChange: String.phoneWithoutCountryCode(phone:)
+        )
+    }()
+}
+
+extension String {
+    fileprivate static func phoneWithoutCountryCode(phone: String) -> String {
+        guard phone.contains("+") else { return phone }
+        if phone.count == 1 { return "" }
+
+        var totalCharacters: Int = 0
+        var totalDigits: Int = 0
+        // all mobile phones has 10 digits, we count 10 digits from the end
+        // add take only characters with these 10 digits using suffix
+        for element in phone.reversed() {
+            totalCharacters += 1
+            if element.isNumber {
+                totalDigits += 1
+            }
+            if totalDigits == 10 {
+                break
+            }
+        }
+        // add missing "(" if neded
+        if phone.suffix(totalCharacters + 1).first == "(" {
+            totalCharacters += 1
+        }
+
+        return String(phone.suffix(totalCharacters))
     }
 }

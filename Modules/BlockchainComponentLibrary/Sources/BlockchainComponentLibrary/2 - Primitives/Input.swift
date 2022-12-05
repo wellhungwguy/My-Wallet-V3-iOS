@@ -43,6 +43,7 @@ public struct Input<Trailing: View>: View {
     private let placeholder: String?
     private let characterLimit: Int?
     private let prefix: String?
+    private let prefixConfig: InputPrefixConfig
     private let state: InputState
     private let configuration: Configuration
     private let trailing: Trailing
@@ -83,6 +84,7 @@ public struct Input<Trailing: View>: View {
         placeholder: String? = nil,
         characterLimit: Int? = nil,
         prefix: String? = nil,
+        prefixConfig: InputPrefixConfig = .default(),
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
         @ViewBuilder trailing: @escaping () -> Trailing,
@@ -99,6 +101,7 @@ public struct Input<Trailing: View>: View {
         self.placeholder = placeholder
         self.characterLimit = characterLimit
         self.prefix = prefix
+        self.prefixConfig = prefixConfig
         self.state = state
         self.configuration = configuration
         self.trailing = trailing()
@@ -114,10 +117,10 @@ public struct Input<Trailing: View>: View {
                 .padding(.bottom, 8)
                 .padding(.top, 9)
 
-            HStack(alignment: .center, spacing: 16) {
+            HStack(alignment: .center, spacing: prefixConfig.spacing) {
                 prefix.map(Text.init)?
-                    .typography(.paragraph2)
-                    .foregroundColor(Color(light: .semantic.muted, dark: .palette.grey600))
+                    .typography(prefixConfig.typography)
+                    .foregroundColor(prefixConfig.textColor)
 
                 #if canImport(UIKit)
                 FocusableTextField(
@@ -209,6 +212,7 @@ extension Input where Trailing == EmptyView {
         placeholder: String? = nil,
         characterLimit: Int? = nil,
         prefix: String? = nil,
+        prefixConfig: InputPrefixConfig = .default(),
         state: InputState = .default,
         configuration: @escaping Configuration = { _ in },
         onReturnTapped: @escaping () -> Void = {},
@@ -225,6 +229,7 @@ extension Input where Trailing == EmptyView {
             placeholder: placeholder,
             characterLimit: characterLimit,
             prefix: prefix,
+            prefixConfig: prefixConfig,
             state: state,
             configuration: configuration,
             trailing: { EmptyView() },
@@ -298,6 +303,28 @@ extension Input {
 
     private var placeholderColor: Color {
         Color(light: .semantic.muted, dark: .palette.grey600)
+    }
+}
+
+public struct InputPrefixConfig {
+
+    public static let defaultColor = Color(light: .semantic.muted, dark: .palette.grey600)
+    let typography: Typography
+    let textColor: Color
+    let spacing: CGFloat
+
+    public init(
+        typography: Typography = .paragraph2,
+        textColor: Color = defaultColor,
+        spacing: CGFloat = Spacing.padding2
+    ) {
+        self.typography = typography
+        self.textColor = textColor
+        self.spacing = spacing
+    }
+
+    public static func `default`() -> InputPrefixConfig  {
+        self.init()
     }
 }
 

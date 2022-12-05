@@ -12,40 +12,16 @@ import SwiftUI
 
 public final class ProveRouter: ProveRouterAPI {
     private let completionSubject = PassthroughSubject<VerificationResult, Never>()
-    private var proveConfig: ProveConfig?
     private let topViewController: TopMostViewControllerProviding
     private let app: AppProtocol
 
-    struct ProfileInfo {
-        var mobileAuthInfo: MobileAuthInfo?
-        var prefillInfo: PrefillInfo?
-    }
+    var step: Step = .beginProve(proveConfig: .init(country: "US"))
 
-    private var profileInfo: ProfileInfo = .init()
-
-    var step: Step = .beginProve
-
-    enum Step: Int {
-        case beginProve = 1
-        case enterInfo = 2
-        case confirmInfo = 3
-        case verificationSuccess = 4
-
-        mutating func next() {
-            if let step = Step(rawValue: rawValue + 1) {
-                self = step
-            }
-        }
-
-        mutating func previous() {
-            if let step = Step(rawValue: rawValue - 1) {
-                self = step
-            }
-        }
-    }
-
-    enum Action {
-        case next, back
+    enum Step {
+        case beginProve(proveConfig: ProveConfig)
+        case enterInfo(phone: String?, proveConfig: ProveConfig)
+        case confirmInfo(prefillInfo: PrefillInfo, proveConfig: ProveConfig)
+        case verificationSuccess
     }
 
     public init(
@@ -59,10 +35,9 @@ public final class ProveRouter: ProveRouterAPI {
     public func presentFlow(
         proveConfig: ProveConfig
     ) -> PassthroughSubject<VerificationResult, Never> {
-        self.proveConfig = proveConfig
         Task {
             do {
-                step = .beginProve
+                step = .beginProve(proveConfig: proveConfig)
                 await MainActor.run {
                     let navigationViewController = UINavigationController(rootViewController: self.view())
                     topViewController
@@ -74,8 +49,8 @@ public final class ProveRouter: ProveRouterAPI {
         return completionSubject
     }
 
-    func onNext() {
-        step.next()
+    func goToStep(_ step: Step) {
+        self.step = step
         topViewController
             .topMostViewController?
             .navigationController?
@@ -85,21 +60,13 @@ public final class ProveRouter: ProveRouterAPI {
             )
     }
 
-   func onBack() {
-        step.previous()
-        topViewController
-            .topMostViewController?
-            .navigationController?
-            .popViewController(animated: true)
-    }
-
     func onFailed(result: VerificationResult.Failure = .generic) {
         exitFlow(result: .failure(result))
     }
 
-     func onSkip() {
+    func onSkip() {
         exitFlow(result: .abandoned)
-     }
+    }
 
     func onDone() {
         exitFlow(result: .success)
@@ -110,7 +77,7 @@ public final class ProveRouter: ProveRouterAPI {
             .topMostViewController?
             .dismiss(animated: true, completion: { [weak self] in
                 self?.completionSubject.send(result)
-        })
+            })
     }
 
     private func endFlow() {
@@ -120,115 +87,131 @@ public final class ProveRouter: ProveRouterAPI {
             .dismiss(animated: true)
     }
 
-    func view() -> UIViewController
-   {
-       switch step {
-       case .beginProve:
-           let view = BeginVerificationView(store: .init(
-               initialState: .init(),
-               reducer: BeginVerification(
-                   app: app,
-                   mobileAuthInfoService: resolve(),
-                   dismissFlow: { [weak self] result in
-                       switch result {
-                       case .failure:
-                           self?.onFailed()
-                       case .abandoned:
-                           self?.onSkip()
-                       case .success(let mobileAuthInfo):
-                           self?.profileInfo.mobileAuthInfo = mobileAuthInfo
-                           self?.onNext()
-                       }
-                   }
-               )
-           )).app(app)
-           let viewController = UIHostingController(rootView: view)
+    func view() -> UIViewController {
+        switch step {
+        case .beginProve(let proveConfig):
+            let view = BeginVerificationView(store: .init(
+                initialState: .init(),
+                reducer: BeginVerification(
+                    app: app,
+                    mobileAuthInfoService: resolve(),
+                    dismissFlow: { [weak self] result in
+                        switch result {
+                        case .failure:
+                            self?.onFailed()
+                        case .abandoned:
+                            self?.onSkip()
+                        case .success(let mobileAuthInfo):
+                            self?.goToStep(.enterInfo(phone: mobileAuthInfo?.phone, proveConfig: proveConfig))
+                        }
+                    }
+                )
+            )).app(app)
+            let viewController = UIHostingController(rootView: view)
 
-           return viewController
+            return viewController
 
-       case .enterInfo:
-           let reducer = EnterInformation(
-            app: app,
-            prefillInfoService: resolve(),
-            dismissFlow: { [weak self] result in
-                switch result {
-                case .failure:
-                    self?.onFailed()
-                case .abandoned:
-                    self?.onSkip()
-                case .success(let prefillInfo):
-                    self?.profileInfo.prefillInfo = prefillInfo
-                    self?.onNext()
-                }
+        case let .enterInfo(phone, proveConfig):
+            if let phone = phone {
+                let reducer = EnterInformation(
+                    app: app,
+                    prefillInfoService: resolve(),
+                    dismissFlow: { [weak self] result in
+                        switch result {
+                        case .failure:
+                            self?.onFailed()
+                        case .abandoned:
+                            self?.onSkip()
+                        case .success(let prefillInfo):
+                            self?.goToStep(.confirmInfo(prefillInfo: prefillInfo, proveConfig: proveConfig))
+                        }
+                    }
+                )
+                let store: StoreOf<EnterInformation> = .init(
+                    initialState: .init(phone: phone),
+                    reducer: reducer
+                )
+                let view = EnterInformationView(store: store).app(app)
+
+                let viewController = UIHostingController(rootView: view)
+
+                return viewController
+            } else {
+                let reducer = EnterFullInformation(
+                    app: app,
+                    prefillInfoService: resolve(),
+                    dismissFlow: { [weak self] result in
+                        switch result {
+                        case .failure:
+                            self?.onFailed()
+                        case .abandoned:
+                            self?.onSkip()
+                        case .success(let prefillInfo):
+                            self?.goToStep(.confirmInfo(prefillInfo: prefillInfo, proveConfig: proveConfig))
+                        }
+                    }
+                )
+                let store: StoreOf<EnterFullInformation> = .init(
+                    initialState: .init(),
+                    reducer: reducer
+                )
+                let view = EnterFullInformationView(store: store).app(app)
+
+                let viewController = UIHostingController(rootView: view)
+
+                return viewController
             }
-           )
-           let store: StoreOf<EnterInformation> = .init(
-            initialState: .init(phone: profileInfo.mobileAuthInfo?.phone),
-            reducer: reducer
-           )
-           let view = EnterInformationView(store: store).app(app)
 
-           let viewController = UIHostingController(rootView: view)
-
-           return viewController
-
-       case .confirmInfo:
-           let reducer = ConfirmInformation(
-            app: app,
-            mainQueue: .main,
-            proveConfig: proveConfig ?? .init(country: "US"),
-            confirmInfoService: resolve(),
-            addressSearchFlowPresenter: resolve(),
-            dismissFlow: { [weak self] result in
-                switch result {
-                case .failure:
-                    self?.onFailed(result: .verification)
-                case .abandoned:
-                    self?.onSkip()
-                case .success:
-                    self?.onNext()
+        case let .confirmInfo(prefillInfo, proveConfig):
+            let reducer = ConfirmInformation(
+                app: app,
+                mainQueue: .main,
+                proveConfig: proveConfig,
+                confirmInfoService: resolve(),
+                addressSearchFlowPresenter: resolve(),
+                dismissFlow: { [weak self] result in
+                    switch result {
+                    case .failure:
+                        self?.onFailed(result: .verification)
+                    case .abandoned:
+                        self?.onSkip()
+                    case .success:
+                        self?.goToStep(.verificationSuccess)
+                    }
                 }
+            )
+            let store: StoreOf<ConfirmInformation> = .init(
+                initialState: .init(
+                    firstName: prefillInfo.firstName,
+                    lastName: prefillInfo.lastName,
+                    addresses: prefillInfo.validAddresses(
+                        country: proveConfig.country, state: proveConfig.state
+                    ),
+                    selectedAddress: prefillInfo.addresses.first,
+                    dateOfBirth: prefillInfo.dateOfBirth,
+                    phone: prefillInfo.phone
+                ),
+                reducer: reducer
+            )
+            let view = ConfirmInformationView(store: store).app(app)
+
+            let viewController = UIHostingController(rootView: view)
+
+            return viewController
+
+        case .verificationSuccess:
+            let reducer = SuccessfullyVerified() { [weak self] in
+                self?.onDone()
             }
-           )
-           let store: StoreOf<ConfirmInformation> = .init(
-            initialState: .init(
-                firstName: profileInfo.prefillInfo?.firstName,
-                lastName: profileInfo.prefillInfo?.lastName,
-                addresses: profileInfo.prefillInfo?.validAddresses(
-                    country: proveConfig?.country, state: proveConfig?.state
-                ) ?? [],
-                selectedAddress: profileInfo.prefillInfo?.addresses.first,
-                dateOfBirth: profileInfo.prefillInfo?.dateOfBirth,
-                phone: profileInfo.mobileAuthInfo?.phone
-            ),
-            reducer: reducer
-           )
-           let view = ConfirmInformationView(store: store).app(app)
+            let store: StoreOf<SuccessfullyVerified> = .init(
+                initialState: .init(),
+                reducer: reducer
+            )
+            let view = SuccessfullyVerifiedView(store: store).app(app)
 
-           let viewController = UIHostingController(rootView: view)
+            let viewController = UIHostingController(rootView: view)
 
-           return viewController
-
-       case .verificationSuccess:
-           let reducer = SuccessfullyVerified() { [weak self] in
-               self?.onDone()
-           }
-           let store: StoreOf<SuccessfullyVerified> = .init(
-            initialState: .init(),
-            reducer: reducer
-           )
-           let view = SuccessfullyVerifiedView(store: store).app(app)
-
-           let viewController = UIHostingController(rootView: view)
-
-           return viewController
-       }
-   }
-}
-
-extension PrefillInfo {
-    func validAddresses(country: String?, state: String?) -> [Address] {
-        guard let country = country, country == "US", let state = state else { return addresses }
-        return addresses.filter { $0.state == state }
+            return viewController
+        }
     }
 }

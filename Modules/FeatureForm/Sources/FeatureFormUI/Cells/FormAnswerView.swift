@@ -45,16 +45,32 @@ struct FormOpenEndedAnswerView: View {
                     .typography(.paragraph2)
                     .foregroundColor(.semantic.body)
             }
-            let fieldConfiguration = fieldConfiguration(answer)
+            let fieldConfiguration = fieldConfiguration(answer.id)
+            let textBinding = Binding<String>(
+                get: {
+                    answer.input ?? ""
+                },
+                set: {
+                    answer.input = $0
+                    guard let text = fieldConfiguration.onTextChange?($0) else {
+                        return
+                    }
+                    answer.input = text
+                }
+            )
             Input(
-                text: $answer.input ?? "",
+                text: textBinding,
                 isFirstResponder: $isFirstResponder,
                 shouldResignFirstResponderOnReturn: true,
                 placeholder: answer.hint,
+                prefix: answer.prefixInputText,
+                prefixConfig: fieldConfiguration.inputPrefixConfig,
                 state: showAnswerState ? answer.inputState : .default,
                 configuration: { textField in
                     let config = fieldConfiguration
-                    textField.autocorrectionType = .init(type: config.textAutocorrectionType)
+                    textField.autocorrectionType = config.textAutocorrectionType
+                    textField.keyboardType = config.keyboardType
+                    textField.textContentType = config.textContentType
                 },
                 onFieldTapped: fieldConfiguration.onFieldTapped
             )
