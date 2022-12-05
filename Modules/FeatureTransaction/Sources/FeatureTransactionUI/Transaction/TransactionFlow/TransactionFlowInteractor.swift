@@ -1102,8 +1102,7 @@ extension TransactionFlowInteractor {
         .store(in: &bag)
 
         app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
-            guard let transactionModel = self?.transactionModel else { return }
-            transactionModel.process(action: .resetFlow)
+            self?.closeFlow()
         }
         .subscribe()
         .store(in: &bag)

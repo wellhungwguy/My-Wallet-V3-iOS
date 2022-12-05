@@ -62,7 +62,6 @@ final class RootViewController: UIHostingController<RootView> {
 
         super.init(rootView: RootView(store: store, siteMap: siteMap))
 
-        subscribe(to: viewStore)
         subscribe(to: ViewStore(global))
         subscribe(to: app)
 
@@ -160,6 +159,9 @@ extension RootViewController {
             },
             app.on(blockchain.ux.frequent.action.nft) { [unowned self] _ in
                 self.handleNFTAssetView()
+            },
+            app.on(blockchain.ux.home.tab.select) { [unowned self] _ in
+                self.dismiss(animated: true)
             }
         ]
 
@@ -173,13 +175,6 @@ extension RootViewController {
                 viewStore.send(.binding(.set(\.$fab.isOn, false)), animation: .linear)
             }
             .store(in: &bag)
-    }
-
-    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
-        viewStore.publisher.tab.sink { [weak self] _ in
-            self?.dismiss(animated: true)
-        }
-        .store(in: &bag)
     }
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {

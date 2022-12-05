@@ -334,8 +334,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         var viewable = children
         for child in Array(viewable.reversed()) {
             guard let child = child as? ViewableRouting else { continue }
-            viewable = viewable.dropLast()
             if child.viewControllable.uiviewController is T { break }
+            viewable = viewable.dropLast()
             detachChild(child as Routing)
         }
         children = viewable as [Routing]
