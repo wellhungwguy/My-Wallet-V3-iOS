@@ -4,12 +4,14 @@ import DIKit
 import FeatureSettingsUI
 import SwiftUI
 
-struct AccountView: UIViewControllerRepresentable {
+public struct AccountView: UIViewControllerRepresentable {
 
     let router: SettingsRouterAPI = resolve()
     let navigationController = UINavigationController()
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    public init() {}
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
         let viewController = router.makeViewController()
         viewController.automaticallyApplyNavigationBarStyle = false
         viewController.navigationItem.backButtonDisplayMode = .minimal
@@ -18,5 +20,5 @@ struct AccountView: UIViewControllerRepresentable {
         return navigationController
     }
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 }

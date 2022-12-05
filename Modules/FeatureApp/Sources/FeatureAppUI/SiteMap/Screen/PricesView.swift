@@ -11,11 +11,13 @@ import PlatformUIKit
 import SwiftUI
 import ToolKit
 
-struct PricesView: UIViewControllerRepresentable {
+public struct PricesView: UIViewControllerRepresentable {
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    public init() {}
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
         let provider = PricesViewControllerProvider()
         let viewController = provider.create(
             drawerRouter: NoDrawer(),
@@ -26,7 +28,9 @@ struct PricesView: UIViewControllerRepresentable {
     }
 }
 
-class NoDrawer: DrawerRouting {
-    func toggleSideMenu() {}
-    func closeSideMenu() {}
+public class NoDrawer: DrawerRouting {
+    public func toggleSideMenu() {}
+    public func closeSideMenu() {}
+
+    public init() {}
 }

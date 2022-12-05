@@ -16,7 +16,7 @@ import UIKit
 import WalletConnectSwift
 
 protocol LoggedInViewController: UIViewController, LoggedInBridge {
-    init(store: Store<LoggedIn.State, LoggedIn.Action>)
+    init(store: Store<LoggedIn.State, LoggedIn.Action>, siteMap: SiteMap)
     func clear()
 }
 
@@ -26,6 +26,8 @@ extension RootViewController: LoggedInViewController {}
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
     let viewStore: ViewStore<CoreAppState, CoreAppAction>
+
+    private let siteMap: SiteMap
 
     private weak var alertController: UIAlertController?
 
@@ -48,6 +50,7 @@ final class AppHostingController: UIViewController {
         self.viewStore = ViewStore(store)
         self.loggedInDependencyBridge = loggedInDependencyBridge
         self.featureFlagsService = featureFlagsService
+        siteMap = SiteMap(app: app)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -145,19 +148,19 @@ final class AppHostingController: UIViewController {
                 if BuildFlag.isInternal {
                     app.publisher(for: blockchain.app.configuration.app.superapp.v1.is.enabled, as: Bool.self)
                         .receive(on: DispatchQueue.main)
-                        .sink { isMultiAppEnabled in
+                        .sink { [app] isMultiAppEnabled in
                             guard let value = isMultiAppEnabled.value else {
-                                return load(RootViewController(store: store))
+                                return load(RootViewController(store: store, siteMap: self.siteMap))
                             }
                             if value {
-                                loadMultiApp(MultiAppRootController(store: store))
+                                loadMultiApp(MultiAppRootController(store: store, app: app, siteMap: self.siteMap))
                             } else {
-                                load(RootViewController(store: store))
+                                load(RootViewController(store: store, siteMap: self.siteMap))
                             }
                         }
                         .store(in: &self.cancellables)
                 } else {
-                    load(RootViewController(store: store))
+                    load(RootViewController(store: store, siteMap: self.siteMap))
                 }
             })
             .store(in: &cancellables)

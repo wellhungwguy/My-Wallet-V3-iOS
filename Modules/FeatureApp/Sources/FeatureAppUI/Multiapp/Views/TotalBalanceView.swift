@@ -5,7 +5,7 @@ import Localization
 import SwiftUI
 
 struct TotalBalanceView: View {
-    @Binding var balance: String
+    let balance: String
 
     var body: some View {
         HStack {
@@ -32,12 +32,12 @@ struct TotalBalanceView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             TotalBalanceView(
-                balance: .constant("£110000")
+                balance: "£110000"
             )
             .padding()
             .background(Color.gray)
             TotalBalanceView(
-                balance: .constant("£110000")
+                balance: "£110000"
             )
             .preferredColorScheme(.dark)
         }

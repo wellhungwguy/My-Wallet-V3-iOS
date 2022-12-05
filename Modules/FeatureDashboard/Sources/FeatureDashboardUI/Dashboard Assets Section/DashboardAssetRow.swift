@@ -67,8 +67,9 @@ public struct DashboardAssetRow: ReducerProtocol {
                 print(state.asset)
                 return .fireAndForget { [assetInfo = state.asset] in
                     print(assetInfo)
-                    self.app.post(
-                        event: blockchain.ux.asset[assetInfo.currency.code].select,
+                    app.post(
+                        action: blockchain.ux.asset.select.then.enter.into,
+                        value: blockchain.ux.asset[assetInfo.currency.code],
                         context: [blockchain.ux.asset.select.origin: "ASSETS"]
                     )
                 }

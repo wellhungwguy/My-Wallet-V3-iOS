@@ -1,15 +1,18 @@
 import BlockchainUI
 import DIKit
-import FeatureAppUI
 import FeatureStakingUI
 import PlatformKit
 
 @MainActor
-struct SiteMap {
+public struct SiteMap {
 
     let app: AppProtocol
 
-    @ViewBuilder func view(
+    public init(app: AppProtocol) {
+        self.app = app
+    }
+
+    @ViewBuilder public func view(
         for ref: Tag.Reference,
         in context: Tag.Context = [:]
     ) throws -> some View {

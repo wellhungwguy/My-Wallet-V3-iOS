@@ -55,10 +55,10 @@ public struct PKWDashboard: ReducerProtocol {
 
     public var body: some ReducerProtocol<State, Action> {
         Scope(state: \.assetsState, action: /Action.assetsAction) {
-                DashboardAssetsSection(
-                    allCryptoAssetService: allCryptoAssetService,
-                    app: app
-                )
+            DashboardAssetsSection(
+                allCryptoAssetService: allCryptoAssetService,
+                app: app
+            )
         }
 
         Scope(state: \.allAssetsState, action: /Action.allAssetsAction) {

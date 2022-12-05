@@ -40,10 +40,6 @@ extension DependencyContainer {
             KYCAdapter() as FeatureSettingsUI.KYCRouterAPI
         }
 
-        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
-            PaymentMethodsLinkingAdapter()
-        }
-
         factory { () -> FeatureSettingsUI.AuthenticationCoordinating in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveAuthenticationCoordinating() as AuthenticationCoordinating

@@ -1,11 +1,12 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import BlockchainUI
 import DIKit
 import FeatureAppDomain
-import FeatureAppUI
 import FeatureDashboardUI
 import FeatureOnboardingUI
+import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
 import SwiftUI

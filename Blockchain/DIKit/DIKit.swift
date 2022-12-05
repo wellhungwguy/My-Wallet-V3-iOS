@@ -135,16 +135,7 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> AccountsRouting in
-            let routing: TabSwapping = DIKit.resolve()
-            return AccountsRouter(
-                routing: routing
-            )
-        }
-
         factory { UIApplication.shared as AppStoreOpening }
-
-        factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
         // MARK: - AppCoordinator
 
@@ -325,42 +316,8 @@ extension DependencyContainer {
             FeatureOnboardingUI.OnboardingRouter()
         }
 
-        factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
-            TransactionsAdapter(
-                router: DIKit.resolve(),
-                coincore: DIKit.resolve(),
-                app: DIKit.resolve()
-            )
-        }
-
         factory { () -> FeatureOnboardingUI.KYCRouterAPI in
             KYCAdapter()
-        }
-
-        // MARK: Transactions Module
-
-        factory { () -> PaymentMethodsLinkingAdapterAPI in
-            PaymentMethodsLinkingAdapter()
-        }
-
-        factory { () -> TransactionsAdapterAPI in
-            TransactionsAdapter(
-                router: DIKit.resolve(),
-                coincore: DIKit.resolve(),
-                app: DIKit.resolve()
-            )
-        }
-
-        factory { () -> PlatformUIKit.KYCRouting in
-            KYCAdapter()
-        }
-
-        factory { () -> FeatureTransactionUI.UserActionServiceAPI in
-            TransactionUserActionService(userService: DIKit.resolve())
-        }
-
-        factory { () -> FeatureTransactionDomain.TransactionRestrictionsProviderAPI in
-            TransactionUserActionService(userService: DIKit.resolve())
         }
 
         // MARK: FeatureAuthentication Module
@@ -401,13 +358,6 @@ extension DependencyContainer {
         single { () -> TraitRepositoryAPI in
             let analytics: AppAnalyticsTraitRepository = DIKit.resolve()
             return analytics as TraitRepositoryAPI
-        }
-
-        // MARK: Account Picker
-
-        factory { () -> AccountPickerViewControllable in
-            let controller = FeatureAccountPickerControllableAdapter()
-            return controller as AccountPickerViewControllable
         }
 
         // MARK: Open Banking
@@ -711,6 +661,12 @@ extension DependencyContainer {
                requestBuilder: requestBuilder
            )
            ) as UserTagServiceAPI
+        }
+
+        // MARK: BuySellSegmentedViewPresenter
+
+        factory {
+            BuySellSegmentedViewPresenter() as SegmentedViewScreenPresenting
         }
     }
 }

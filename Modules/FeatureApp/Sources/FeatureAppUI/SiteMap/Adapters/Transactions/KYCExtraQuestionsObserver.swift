@@ -6,14 +6,14 @@ import FeatureFormDomain
 import FeatureKYCDomain
 import ToolKit
 
-final class KYCExtraQuestionsObserver: Client.Observer {
+public final class KYCExtraQuestionsObserver: Client.Observer {
 
     private var defaultContext = "TIER_TWO_VERIFICATION"
 
     unowned let app: AppProtocol
     let accountUsageService: KYCAccountUsageServiceAPI
 
-    init(
+    public init(
         app: AppProtocol,
         accountUsageService: KYCAccountUsageServiceAPI = resolve()
     ) {
@@ -40,7 +40,7 @@ final class KYCExtraQuestionsObserver: Client.Observer {
      }
      */
 
-    func start() {
+    public func start() {
 
         app.publisher(for: blockchain.ux.kyc.extra.questions.default.context, as: String.self)
             .compactMap(\.value)
@@ -59,7 +59,7 @@ final class KYCExtraQuestionsObserver: Client.Observer {
             .store(in: &bag)
     }
 
-    func stop() {
+    public func stop() {
         bag.removeAll()
     }
 

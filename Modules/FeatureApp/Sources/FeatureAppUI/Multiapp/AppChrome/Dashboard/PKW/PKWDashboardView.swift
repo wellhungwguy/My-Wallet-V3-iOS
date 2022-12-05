@@ -38,3 +38,29 @@ struct PKWDashboardView: View {
 //        }
     }
 }
+
+// MARK: Provider
+
+func provideDefiDashboard(
+    tab: Tab,
+    store: StoreOf<DashboardContent>
+) -> some View {
+    PKWDashboardView(
+        store: store.scope(
+            state: \.defiState.home,
+            action: DashboardContent.Action.defiHome
+        )
+    )
+    .tabItem {
+        Label(
+            title: {
+                Text(tab.name.localized())
+                    .typography(.micro)
+            },
+            icon: { tab.icon.image }
+        )
+    }
+    .tag(tab.ref)
+    .id(tab.ref.description)
+    .accessibilityIdentifier(tab.ref.description)
+}

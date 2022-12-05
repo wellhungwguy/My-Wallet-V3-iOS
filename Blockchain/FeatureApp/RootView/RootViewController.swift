@@ -31,9 +31,10 @@ final class RootViewController: UIHostingController<RootView> {
     var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
 
-    init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
+    init(store global: Store<LoggedIn.State, LoggedIn.Action>, siteMap: SiteMap) {
 
         self.global = ViewStore(global)
+        self.siteMap = siteMap
 
         let environment = RootViewEnvironment(
             app: app,

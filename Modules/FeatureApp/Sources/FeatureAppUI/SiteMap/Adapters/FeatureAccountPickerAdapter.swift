@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainComponentLibrary
+import BlockchainNamespace
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -140,9 +141,12 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
     fileprivate var models: [AccountPickerSectionViewModel] = []
 
+    let app: AppProtocol
+
     // MARK: - Lifecycle
 
-    init() {
+    init(app: AppProtocol) {
+        self.app = app
         super.init(nibName: nil, bundle: nil)
         let child = UIHostingController(
             rootView: AccountPickerView(
@@ -396,7 +400,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                             )
 
                         case .singleAccount(let presenter):
-                            let action = try? app.state.get(blockchain.ux.transaction.id) as AssetAction
+                            let action = try? self.app.state.get(blockchain.ux.transaction.id) as AssetAction
                             return .singleAccount(
                                 .init(
                                     id: item.identity,

@@ -67,7 +67,8 @@ extension EarnSummaryView {
                         app.post(
                             event: id.add.paragraph.button.primary.tap[].ref(to: context),
                             context: context + [
-                                blockchain.ui.type.action.then.enter.into.detents: [blockchain.ui.type.action.then.enter.into.detents.automatic.dimension]
+                                blockchain.ui.type.action.then.enter.into.detents: [blockchain.ui.type.action.then.enter.into.detents.automatic.dimension],
+                                blockchain.ui.type.action.then.enter.into.grabber.visible: true
                             ]
                         )
                     }

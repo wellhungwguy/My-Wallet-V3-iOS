@@ -4,21 +4,22 @@ import ComposableArchitecture
 import ComposableArchitectureExtensions
 import DIKit
 import FeatureAppDomain
-import FeatureAppUI
 import FeatureDashboardUI
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
 
-struct PortfolioView: UIViewControllerRepresentable {
+public struct PortfolioView: UIViewControllerRepresentable {
 
     private var onboardingViewsFactory = OnboardingViewsFactory()
     private var userAdapter: UserAdapterAPI = resolve()
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    public init() {}
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
         let provider = PortfolioViewControllerProvider()
         let viewController = provider.create(
             userHasCompletedOnboarding: userAdapter

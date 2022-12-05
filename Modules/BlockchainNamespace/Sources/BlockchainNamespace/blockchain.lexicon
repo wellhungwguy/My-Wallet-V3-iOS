@@ -807,6 +807,9 @@ blockchain:
 								large:
 								medium:
 								small:
+							grabber:
+								visible:
+								+ blockchain.db.type.boolean
 					launch:
 						url:
 						+ blockchain.db.type.url

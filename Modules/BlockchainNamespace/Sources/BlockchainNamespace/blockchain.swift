@@ -3310,6 +3310,7 @@ public final class L_blockchain_ui_type_action_then_enter_into: L, I_blockchain_
 public protocol I_blockchain_ui_type_action_then_enter_into: I_blockchain_db_type_tag {}
 public extension I_blockchain_ui_type_action_then_enter_into {
 	var `detents`: L_blockchain_ui_type_action_then_enter_into_detents { .init("\(__).detents") }
+	var `grabber`: L_blockchain_ui_type_action_then_enter_into_grabber { .init("\(__).grabber") }
 }
 public final class L_blockchain_ui_type_action_then_enter_into_detents: L, I_blockchain_ui_type_action_then_enter_into_detents {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.enter.into.detents", comment: "") }
@@ -3344,6 +3345,17 @@ public final class L_blockchain_ui_type_action_then_enter_into_detents_small: L,
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.enter.into.detents.small", comment: "") }
 }
 public protocol I_blockchain_ui_type_action_then_enter_into_detents_small: I {}
+public final class L_blockchain_ui_type_action_then_enter_into_grabber: L, I_blockchain_ui_type_action_then_enter_into_grabber {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.enter.into.grabber", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_enter_into_grabber: I {}
+public extension I_blockchain_ui_type_action_then_enter_into_grabber {
+	var `visible`: L_blockchain_ui_type_action_then_enter_into_grabber_visible { .init("\(__).visible") }
+}
+public final class L_blockchain_ui_type_action_then_enter_into_grabber_visible: L, I_blockchain_ui_type_action_then_enter_into_grabber_visible {
+	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.enter.into.grabber.visible", comment: "") }
+}
+public protocol I_blockchain_ui_type_action_then_enter_into_grabber_visible: I_blockchain_db_type_boolean {}
 public final class L_blockchain_ui_type_action_then_launch: L, I_blockchain_ui_type_action_then_launch {
 	public override class var localized: String { NSLocalizedString("blockchain.ui.type.action.then.launch", comment: "") }
 }

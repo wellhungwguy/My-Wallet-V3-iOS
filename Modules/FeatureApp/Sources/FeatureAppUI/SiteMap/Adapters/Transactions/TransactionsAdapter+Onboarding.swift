@@ -29,7 +29,7 @@ extension TransactionsAdapter: FeatureOnboardingUI.TransactionsRouterAPI {
 
 extension OnboardingResult {
 
-    init(_ result: TransactionResult) {
+    public init(_ result: TransactionResult) {
         switch result {
         case .abandoned:
             self = .abandoned
@@ -41,7 +41,7 @@ extension OnboardingResult {
 
 extension OnboardingResult {
 
-    init(_ result: TransactionFlowResult) {
+    public init(_ result: TransactionFlowResult) {
         switch result {
         case .abandoned:
             self = .abandoned
@@ -53,7 +53,7 @@ extension OnboardingResult {
 
 extension TransactionFlowResult {
 
-    init(_ result: OnboardingResult) {
+    public init(_ result: OnboardingResult) {
         switch result {
         case .abandoned:
             self = .abandoned

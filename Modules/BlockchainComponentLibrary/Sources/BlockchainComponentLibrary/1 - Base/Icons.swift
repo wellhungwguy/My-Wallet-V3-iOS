@@ -358,16 +358,16 @@ extension Icon {
 }
 
 extension Icon {
-    public static let `multiAppHome` = Icon(name: "MultiApp Home")
-    public static let `multiAppHomeFilled` = Icon(name: "MultiApp Home Filled")
-    public static let `multiAppPrices` = Icon(name: "MultiApp Prices")
-    public static let `multiAppPricesFilled` = Icon(name: "MultiApp Prices Filled")
-    public static let `multiAppNft` = Icon(name: "NFT")
-    public static let `multiAppNftFilled` = Icon(name: "NFT Filled")
-    public static let `multiAppCard` = Icon(name: "MultiApp Card")
-    public static let `multiAppCardFilled` = Icon(name: "MultiApp Card Filled")
-    public static let `multiAppFilterFilled` = Icon(name: "MultiApp Filter Filled")
-    public static let `multiAppFilter` = Icon(name: "MultiApp Filter")
+    public static let `superAppHome` = Icon(name: "SuperApp Home")
+    public static let `superAppHomeFilled` = Icon(name: "SuperApp Home Filled")
+    public static let `superAppPrices` = Icon(name: "SuperApp Prices")
+    public static let `superAppPricesFilled` = Icon(name: "SuperApp Prices Filled")
+    public static let `superAppNft` = Icon(name: "NFT")
+    public static let `superAppNftFilled` = Icon(name: "NFT Filled")
+    public static let `superAppCard` = Icon(name: "SuperApp Card")
+    public static let `superAppCardFilled` = Icon(name: "SuperApp Card Filled")
+    public static let `superAppFilterFilled` = Icon(name: "SuperApp Filter Filled")
+    public static let `superAppFilter` = Icon(name: "SuperApp Filter")
 }
 
 extension Icon {

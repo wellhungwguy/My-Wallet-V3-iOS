@@ -3,11 +3,13 @@
 import FeatureActivityUI
 import SwiftUI
 
-struct ActivityView: UIViewControllerRepresentable {
+public struct ActivityView: UIViewControllerRepresentable {
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    public init() {}
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+
+    public func makeUIViewController(context: Context) -> some UIViewController {
         let viewController = ActivityScreenViewController(drawerRouting: NoDrawer())
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

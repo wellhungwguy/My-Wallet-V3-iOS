@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainUI
 import Combine
 import FeatureTransactionUI
 import MoneyKit
@@ -48,7 +49,7 @@ enum TransactionType: Equatable {
 }
 
 /// Represents the possible outcomes of going through the transaction flow.
-enum TransactionResult: Equatable {
+public enum TransactionResult: Equatable {
     case abandoned
     case completed
 }

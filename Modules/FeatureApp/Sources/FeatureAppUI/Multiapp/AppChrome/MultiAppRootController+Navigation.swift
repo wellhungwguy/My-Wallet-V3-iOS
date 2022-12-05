@@ -1,8 +1,11 @@
-import BlockchainUI
-import SwiftUI
-import UIKit
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-extension RootViewController {
+import BlockchainUI
+import FeatureStakingUI
+
+// MARK: Navigation
+
+extension MultiAppRootController {
 
     struct NavigationError: Error, CustomStringConvertible {
         static var noTopMostViewController: NavigationError = .init(message: "Unable to determine the top most view controller.")
@@ -43,32 +46,32 @@ extension RootViewController {
     }
 }
 
-extension RootViewController {
+extension MultiAppRootController {
 
     func setupNavigationObservers() {
         app.on(blockchain.ui.type.action.then.navigate.to)
             .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.navigate(to:), on: self)
+            .sink(to: MultiAppRootController.navigate(to:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.enter.into)
             .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.enter(into:), on: self)
+            .sink(to: MultiAppRootController.enter(into:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.close)
             .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.close, on: self)
+            .sink(to: MultiAppRootController.close, on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.current.stack)
             .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.replaceCurrent(stack:), on: self)
+            .sink(to: MultiAppRootController.replaceCurrent(stack:), on: self)
             .store(in: &bag)
 
         app.on(blockchain.ui.type.action.then.replace.root.stack)
             .receive(on: DispatchQueue.main)
-            .sink(to: RootViewController.replaceRoot(stack:), on: self)
+            .sink(to: MultiAppRootController.replaceRoot(stack:), on: self)
             .store(in: &bag)
     }
 

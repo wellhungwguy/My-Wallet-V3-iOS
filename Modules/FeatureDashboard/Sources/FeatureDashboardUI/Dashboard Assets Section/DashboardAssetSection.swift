@@ -51,11 +51,11 @@ public struct DashboardAssetsSection: ReducerProtocol {
                 return .merge(
                     .task { [presentedAssetType = state.presentedAssetsType] in
                         await .onBalancesFetched(
-                                TaskResult {
-                                    presentedAssetType == .custodial ?
-                                    await self.allCryptoAssetService.getAllCryptoAssetsInfo() :
-                                    await self.allCryptoAssetService.getAllNonCustodialAssets()
-                                }
+                            TaskResult {
+                                presentedAssetType == .custodial ?
+                                await self.allCryptoAssetService.getAllCryptoAssetsInfo() :
+                                await self.allCryptoAssetService.getAllNonCustodialAssets()
+                            }
                         )
                     },
                     .task {

@@ -1,5 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainUI
 import ComposableArchitecture
 import DIKit
 import SwiftUI
@@ -7,13 +8,25 @@ import UIKit
 
 public final class MultiAppRootController: UIHostingController<MultiAppContainerChrome> {
 
+    let app: AppProtocol
     let global: ViewStore<LoggedIn.State, LoggedIn.Action>
 
-    public init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
+    let siteMap: SiteMap
 
+    var appStoreReview: AnyCancellable?
+    var bag: Set<AnyCancellable> = []
+
+    public init(
+        store global: Store<LoggedIn.State, LoggedIn.Action>,
+        app: AppProtocol,
+        siteMap: SiteMap
+    ) {
         self.global = ViewStore(global)
-        // TODO: pass in state, this is just for demo purposes
-        super.init(rootView: MultiAppContainerChrome(app: DIKit.resolve()))
+        self.app = app
+        self.siteMap = siteMap
+        super.init(rootView: MultiAppContainerChrome(app: app))
+
+        setupNavigationObservers()
     }
 
     @available(*, unavailable)

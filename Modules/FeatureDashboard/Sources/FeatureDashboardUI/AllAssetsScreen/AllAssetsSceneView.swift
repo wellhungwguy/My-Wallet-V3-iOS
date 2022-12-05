@@ -23,7 +23,7 @@ public struct AllAssetsSceneView: View {
             Button {
                 viewStore.send(.onFilterTapped)
             } label: {
-                Icon.multiAppFilter
+                Icon.superAppFilter
             }
             .if(viewStore.showSmallBalancesFilterIsOn) { $0.highlighted() }
         })

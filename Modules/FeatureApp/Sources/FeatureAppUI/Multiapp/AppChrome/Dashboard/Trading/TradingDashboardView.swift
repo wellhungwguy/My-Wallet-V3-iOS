@@ -14,7 +14,10 @@ struct TradingDashboardView: View {
     }
 
     var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
+        WithViewStore(
+            store,
+            observe: { $0 }
+        ) { viewStore in
             PrimaryNavigationView {
                 ScrollView {
                     VStack(spacing: 32) {
@@ -39,4 +42,22 @@ struct TradingDashboardView: View {
             }
         }
     }
+}
+
+// MARK: Provider
+
+func provideTradingDashboard(
+    tab: Tab,
+    store: StoreOf<DashboardContent>
+) -> some View {
+    TradingDashboardView(
+        store: store.scope(
+            state: \.tradingState.home,
+            action: DashboardContent.Action.tradingHome
+        )
+    )
+    .tag(tab.ref)
+    .id(tab.ref.description)
+    .accessibilityIdentifier(tab.ref.description)
+    .background(Color.semantic.light)
 }

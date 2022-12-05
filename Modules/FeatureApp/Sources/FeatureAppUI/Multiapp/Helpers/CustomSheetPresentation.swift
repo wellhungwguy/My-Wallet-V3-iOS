@@ -20,57 +20,62 @@ struct ModalSheetContext: Equatable {
 
 extension View {
 
-    @available(iOS 16, *)
+    @available(iOS 15, *)
     @ViewBuilder
-    func largestUndimmedDetentIdentifier(
-        _ identifier: String?,
-        modalOffset: Binding<ModalSheetContext>,
-        detentChanged: @escaping (String) -> Void
+    func presentationDetents(
+        selectedDetent: Binding<UISheetPresentationController.Detent.Identifier>,
+        largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier?,
+        modalOffset: Binding<ModalSheetContext>
     ) -> some View {
-        let detentIdentifier = identifier != nil ? UISheetPresentationController.Detent.Identifier(identifier!) : nil
         background(
             CustomSheetPresentation.Representable(
-                largestUndimmedDetent: detentIdentifier,
-                modalOffset: modalOffset,
-                detentChanged: detentChanged
+                selectedDetent: selectedDetent,
+                largestUndimmedDetent: largestUndimmedDetentIdentifier,
+                modalOffset: modalOffset
             )
         )
     }
 }
 
-@available(iOS 16, *)
+@available(iOS 15, *)
 extension CustomSheetPresentation {
 
     struct Representable: UIViewControllerRepresentable {
+        let selectedDetent: Binding<UISheetPresentationController.Detent.Identifier>
         let largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?
         let modalOffset: Binding<ModalSheetContext>
-        let detentChanged: ((String) -> Void)?
 
         func makeUIViewController(context: Context) -> Controller {
-            Controller(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset, detentChanged: detentChanged)
+            Controller(
+                selectedDetent: selectedDetent,
+                largestUndimmedDetent: largestUndimmedDetent,
+                modalOffset: modalOffset            )
         }
 
         func updateUIViewController(_ controller: Controller, context: Context) {
-            controller.update(largestUndimmedDetent: largestUndimmedDetent, modalOffset: modalOffset, detentChanged: detentChanged)
+            controller.update(
+                selectedDetent: selectedDetent,
+                largestUndimmedDetent: largestUndimmedDetent,
+                modalOffset: modalOffset            )
         }
     }
 
     final class Controller: UIViewController, UISheetPresentationControllerDelegate {
         private var observation: NSKeyValueObservation?
 
-        private var detentChanged: ((String) -> Void)?
+        private var selectedDetent: Binding<UISheetPresentationController.Detent.Identifier>
         private var modalOffset: Binding<ModalSheetContext>
         private var largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?
         private weak var _delegate: UISheetPresentationControllerDelegate?
 
         init(
+            selectedDetent: Binding<UISheetPresentationController.Detent.Identifier>,
             largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?,
-            modalOffset: Binding<ModalSheetContext>,
-            detentChanged: ((String) -> Void)?
+            modalOffset: Binding<ModalSheetContext>
         ) {
+            self.selectedDetent = selectedDetent
             self.largestUndimmedDetent = largestUndimmedDetent
             self.modalOffset = modalOffset
-            self.detentChanged = detentChanged
             super.init(nibName: nil, bundle: nil)
         }
 
@@ -88,24 +93,43 @@ extension CustomSheetPresentation {
                 }
             }
             update(
+                selectedDetent: selectedDetent,
                 largestUndimmedDetent: largestUndimmedDetent,
-                modalOffset: modalOffset,
-                detentChanged: detentChanged
+                modalOffset: modalOffset
             )
         }
 
         func update(
+            selectedDetent: Binding<UISheetPresentationController.Detent.Identifier>,
             largestUndimmedDetent: UISheetPresentationController.Detent.Identifier?,
-            modalOffset: Binding<ModalSheetContext>,
-            detentChanged: ((String) -> Void)?
+            modalOffset: Binding<ModalSheetContext>
         ) {
+            self.selectedDetent = selectedDetent
             self.largestUndimmedDetent = largestUndimmedDetent
-            self.detentChanged = detentChanged
-            if let controller = parent?.sheetPresentationController {
-                controller.largestUndimmedDetentIdentifier = largestUndimmedDetent
-                controller.preferredCornerRadius = 24
-                controller.prefersGrabberVisible = false
-                controller.prefersScrollingExpandsWhenScrolledToEdge = true
+            parent?.isModalInPresentation = true
+            if let controller = parent?.sheetPresentationController, let presentationController = parent?.presentationController {
+                controller.animateChanges {
+                    controller.detents = [
+                        AppChromeDetents.detent(type: .collapsed, context: { [unowned presentationController] context in
+                            let maxValue = maxHeightResolution(presentationController, context)
+                            return maxValue * AppChromeDetents.collapsed.fraction
+                        }),
+                        AppChromeDetents.detent(type: .semiCollapsed, context: { [unowned presentationController] context in
+
+                            let maxValue = maxHeightResolution(presentationController, context)
+                            return maxValue * AppChromeDetents.semiCollapsed.fraction
+                        }),
+                        AppChromeDetents.detent(type: .expanded, context: { [unowned presentationController] context in
+                            let maxValue = maxHeightResolution(presentationController, context)
+                            return maxValue * AppChromeDetents.expanded.fraction
+                        })
+                    ]
+                    controller.selectedDetentIdentifier = selectedDetent.wrappedValue
+                    controller.largestUndimmedDetentIdentifier = largestUndimmedDetent != nil ? largestUndimmedDetent! : nil
+                    controller.preferredCornerRadius = Spacing.padding3
+                    controller.prefersGrabberVisible = false
+                    controller.prefersScrollingExpandsWhenScrolledToEdge = true
+                }
 
                 // oh dear... the only way that I found to be accurate enough in order to track the position of a modal sheet
                 // is by observing its frame property.
@@ -118,14 +142,14 @@ extension CustomSheetPresentation {
 
                     let extraModalPadding = superview.safeAreaInsets.top > 20 ? 10.0 : 20.0
                     let frameHeight = superview.safeAreaLayoutGuide.layoutFrame.height - extraModalPadding
-                    let leastCollapsedHeight = frameHeight * CollapsedDetent.fraction
-                    let expandedHeight = frameHeight * ExpandedDetent.fraction
+                    let leastCollapsedHeight = frameHeight * AppChromeDetents.collapsed.fraction
+                    let expandedHeight = frameHeight * AppChromeDetents.expanded.fraction
                     let effectiveHeight = expandedHeight - leastCollapsedHeight
                     let offsetY = view.frame.minY - superview.safeAreaInsets.top - extraModalPadding
                     let percentage = offsetY / effectiveHeight
 
                     let offset = CGPoint(
-                        x: view.frame.origin.y,
+                        x: view.frame.origin.x,
                         y: view.frame.minY - superview.safeAreaInsets.top
                     )
                     modalOffset.wrappedValue = ModalSheetContext(
@@ -141,7 +165,10 @@ extension CustomSheetPresentation {
             guard let identifier = sheetPresentationController.selectedDetentIdentifier?.rawValue else {
                 return
             }
-            detentChanged?(identifier)
+            guard selectedDetent.wrappedValue.rawValue != identifier else {
+                return
+            }
+            selectedDetent.wrappedValue = .init(identifier)
         }
 
         override func responds(to aSelector: Selector!) -> Bool {
@@ -155,4 +182,32 @@ extension CustomSheetPresentation {
             return _delegate
         }
     }
+}
+
+/// returns the largest value a detent can have
+let maxHeightResolution: (UIPresentationController, NSObjectProtocol) -> CGFloat = { presentationController, context in
+    if #available(iOS 16, *) {
+        if let skata = context as? UISheetPresentationControllerDetentResolutionContext {
+            return skata.maximumDetentValue
+        } else {
+            return fallbackResolution(presentationController)
+        }
+    } else {
+        return fallbackResolution(presentationController)
+    }
+}
+
+/// returns the largest value a detent can have based on `presentationController`
+let fallbackResolution: (UIPresentationController) -> CGFloat = { presentationController in
+    guard let containerView = presentationController.containerView else {
+        return presentationController.presentedViewController.view.intrinsicContentSize.height.rounded(.up)
+    }
+    let safeAreaValueToAccountFor: CGFloat
+    if containerView.safeAreaInsets.bottom > 0 {
+        safeAreaValueToAccountFor = containerView.safeAreaInsets.top + containerView.safeAreaInsets.bottom
+    } else {
+        safeAreaValueToAccountFor = 0
+    }
+    let maxValue = containerView.frame.height - safeAreaValueToAccountFor
+    return maxValue
 }
