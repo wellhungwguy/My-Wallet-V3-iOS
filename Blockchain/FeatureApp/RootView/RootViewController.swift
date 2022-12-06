@@ -161,7 +161,7 @@ extension RootViewController {
             app.on(blockchain.ux.frequent.action.nft) { [unowned self] _ in
                 self.handleNFTAssetView()
             },
-            app.on(blockchain.ux.home.tab.select) { [unowned self] _ in
+            app.on(blockchain.ux.home.tab.select) { @MainActor [unowned self] _ async in
                 self.dismiss(animated: true)
             }
         ]
