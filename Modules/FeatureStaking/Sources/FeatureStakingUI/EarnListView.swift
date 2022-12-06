@@ -54,9 +54,13 @@ struct EarnListView<Content: View>: View {
 
     var body: some View {
         VStack {
-            searchField
-            if model.isNotNilOrEmpty {
+            if state.value.count > 5 {
+                searchField
+            }
+            if model.isNotNilOrEmpty, filters.count > 1 {
                 segmentedControl
+            } else {
+                Spacer().frame(height: 10.pt)
             }
             if model.isNotNilOrEmpty {
                 list
@@ -67,7 +71,6 @@ struct EarnListView<Content: View>: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.semantic.background)
         .onAppear {
             app.post(event: hub.article.plain.lifecycle.event.did.enter[].ref(to: context), context: context)
         }
@@ -93,12 +96,18 @@ struct EarnListView<Content: View>: View {
         .textFieldStyle(.roundedBorder)
     }
 
+    var filters: [(String, Filter)] {
+        products.reduce(into: []) { items, product in
+            if state.count[product].isNotNil {
+                items.append((product.title, .only(product)))
+            }
+        }
+    }
+
     @ViewBuilder var segmentedControl: some View {
         PrimarySegmentedControl(
-            items: [
-                .init(title: L10n.all, identifier: Filter.all)
-            ] + products.map { product in
-                .init(title: product.title, identifier: .only(product))
+            items: [.init(title: L10n.all, identifier: .all)] + filters.map { title, filter in
+                .init(title: title, identifier: filter)
             },
             selection: $filter.didSet { filter in
                 app.state.set(hub.filter.paragraph.input, to: filter)
@@ -183,6 +192,7 @@ extension EarnListView {
     class SortedData: ObservableObject {
 
         @Published var value: [Model] = []
+        @Published var count: [EarnProduct: Int] = [:]
 
         let hub: L & I_blockchain_ux_earn_type_hub
 
@@ -217,6 +227,11 @@ extension EarnListView {
             .sorted(by: { lhs, rhs in
                 lhs.isEligible && !rhs.isEligible
             })
+            count = Dictionary(
+                grouping: value,
+                by: \.product
+            )
+            .mapValues(\.count)
         }
     }
 }

@@ -195,13 +195,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .map { enabled, positiveBalance in
                 enabled && positiveBalance
             }
-            .flatMap { [disabledReason] isAvailable -> AnyPublisher<Bool, Error> in
-                guard isAvailable else {
-                    return .just(false)
-                }
-                return disabledReason.map(\.isEligible)
-                    .eraseToAnyPublisher()
-            }
             .mapError { [label, asset] error -> CryptoInterestAccountError in
                 .loadingFailed(
                     asset: asset.code,

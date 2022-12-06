@@ -43,6 +43,7 @@ public struct EarnDashboard: View {
         }
         .padding(.top)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.semantic.background)
         .onAppear {
             object.fetch(app: app)
         }
@@ -109,38 +110,36 @@ extension EarnDashboard {
                 .eraseToAnyPublisher()
             }
 
-            app.publisher(for: blockchain.ux.earn.supported.products, as: Set<EarnProduct>.self)
+            let products = app.publisher(for: blockchain.ux.earn.supported.products, as: Set<EarnProduct>.self)
                 .replaceError(with: [.staking, .savings])
                 .removeDuplicates()
-                .flatMap { products -> AnyPublisher<[Model], Never> in
-                    products.map { product -> AnyPublisher<[Model], Never> in
-                        app.publisher(for: blockchain.user.earn.product[product.value].all.assets, as: [CryptoCurrency].self)
-                            .compactMap(\.value)
-                            .flatMap { assets -> AnyPublisher<[Model], Never> in
-                                assets.map { asset in model(product, asset) }.combineLatest()
-                            }
-                            .eraseToAnyPublisher()
-                    }
-                    .combineLatest()
-                    .map { products -> [Model] in products.joined().array }
-                    .eraseToAnyPublisher()
-                }
-                .receive(on: DispatchQueue.main)
-                .assign(to: &$model)
 
-            app.publisher(for: blockchain.ux.earn.supported.products, as: Set<EarnProduct>.self)
-                .replaceError(with: [.staking, .savings])
-                .removeDuplicates()
-                .flatMap { products -> AnyPublisher<Bool, Never> in
-                    products.map { product in
-                        app.publisher(for: blockchain.user.earn.product[product.value].has.balance, as: Bool.self).replaceError(with: false)
-                    }
-                    .combineLatest()
-                    .map { balances in balances.contains(true) }
-                    .eraseToAnyPublisher()
+            products.flatMap { products -> AnyPublisher<[Model], Never> in
+                products.map { product -> AnyPublisher<[Model], Never> in
+                    app.publisher(for: blockchain.user.earn.product[product.value].all.assets, as: [CryptoCurrency].self)
+                        .replaceError(with: [])
+                        .flatMap { assets -> AnyPublisher<[Model], Never> in
+                            assets.map { asset in model(product, asset) }.combineLatest()
+                        }
+                        .eraseToAnyPublisher()
                 }
-                .receive(on: DispatchQueue.main)
-                .assign(to: &$hasBalance)
+                .combineLatest()
+                .map { products -> [Model] in products.joined().array }
+                .eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$model)
+
+            products.flatMap { products -> AnyPublisher<Bool, Never> in
+                products.map { product in
+                    app.publisher(for: blockchain.user.earn.product[product.value].has.balance, as: Bool.self).replaceError(with: false)
+                }
+                .combineLatest()
+                .map { balances in balances.contains(true) }
+                .eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$hasBalance)
         }
     }
 }

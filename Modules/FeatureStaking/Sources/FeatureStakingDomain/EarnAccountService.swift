@@ -137,9 +137,7 @@ public final class EarnAccountService {
                         try await app.batch(
                             updates: eligibility.reduce(into: [(Tag.Event, Any?)]()) { data, next in
                                 data.append((id[next.key].is.eligible, next.value.eligible))
-                            } + [
-                                (blockchain.user.earn.product.all.assets, Array(eligibility.keys))
-                            ],
+                            },
                             in: context
                         )
                     }
@@ -158,7 +156,9 @@ public final class EarnAccountService {
                             updates: user.rates.reduce(into: [(Tag.Event, Any?)]()) { data, next in
                                 data.append((id[next.key].rates.commission, next.value.commission.map { $0 / 100 }))
                                 data.append((id[next.key].rates.rate, next.value.rate / 100))
-                            },
+                            } + [
+                                (blockchain.user.earn.product.all.assets, Array(user.rates.keys))
+                            ],
                             in: context
                         )
                     }

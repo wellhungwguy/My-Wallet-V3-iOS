@@ -15,7 +15,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
     private let tableView: SelfSizingTableView
     private let presenter: InterestAccountDetailsScreenPresenter
-    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let disposeBag = DisposeBag()
 
     public init(presenter: InterestAccountDetailsScreenPresenter) {
@@ -40,7 +39,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
-        loadingViewPresenter.showCircular()
     }
 
     private func setupTableView() {
@@ -75,8 +73,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         })
 
         presenter.sectionObservable
-            .hide(loader: loadingViewPresenter)
-            .hideOnError(loader: loadingViewPresenter)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
