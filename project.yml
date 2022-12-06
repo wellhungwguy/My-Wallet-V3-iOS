@@ -194,6 +194,9 @@ packages:
   LinkKit:
     url: https://github.com/plaid/plaid-link-ios
     from: 3.1.0
+  RecaptchaEnterprise:
+    url: https://github.com/GoogleCloudPlatform/recaptcha-enterprise-mobile-sdk
+    from: 18.0.3
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -364,16 +367,6 @@ targets:
         embed: false
       - framework: Carthage/Build/PromisesObjC.xcframework
         embed: false
-      - framework: Carthage/Build/recaptcha.framework
-        embed: false
-      - framework: Carthage/Build/GoogleToolboxForMac.xcframework
-        embed: false
-      - framework: Carthage/Build/GTMSessionFetcher.xcframework
-        embed: false
-      - framework: Carthage/Build/Protobuf.xcframework
-        embed: false
-      - framework: Carthage/Build/Promises.xcframework
-        embed: false
       - framework: Carthage/Build/Sift.xcframework
 
       - package: FeatureAttribution
@@ -444,6 +437,7 @@ targets:
       - package: Pulse
       - package: Intercom
       - package: LinkKit
+      - package: RecaptchaEnterprise
 
       - package: Analytics
         product: AnalyticsKit

@@ -27,8 +27,5 @@ done
 echo "Installing LFS hooks"
 git lfs install
 
-echo "Running Recaptcha"
-sh ./scripts/recaptcha.sh
-
 echo "Generating project"
 sh ./scripts/generate_projects.sh

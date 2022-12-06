@@ -53,6 +53,8 @@
 	<string>$(EXPLORER_SERVER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>GOOGLE_RECAPTCHA_BYPASS</key>
+	<string>$(GOOGLE_RECAPTCHA_BYPASS)</string>
 	<key>GOOGLE_RECAPTCHA_SITE_KEY</key>
 	<string>$(GOOGLE_RECAPTCHA_SITE_KEY)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

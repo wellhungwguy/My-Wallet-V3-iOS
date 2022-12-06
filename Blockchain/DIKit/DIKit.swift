@@ -61,6 +61,7 @@ import PermissionsKit
 import PlatformDataKit
 import PlatformKit
 import PlatformUIKit
+import RecaptchaEnterprise
 import RemoteNotificationsKit
 import RxToolKit
 import StellarKit
@@ -322,9 +323,7 @@ extension DependencyContainer {
 
         // MARK: FeatureAuthentication Module
 
-        factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }
-
-        factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
+        single { GoogleRecaptchaService(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) as GoogleRecaptchaServiceAPI }
 
         // MARK: Analytics
 

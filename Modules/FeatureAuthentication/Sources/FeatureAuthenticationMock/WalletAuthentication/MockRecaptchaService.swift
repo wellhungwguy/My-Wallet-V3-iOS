@@ -2,8 +2,12 @@
 
 import Combine
 import FeatureAuthenticationDomain
+import RecaptchaEnterprise
 
 class MockRecaptchaService: GoogleRecaptchaServiceAPI {
+
+    func load() { }
+
     func verifyForSignup() -> AnyPublisher<String, GoogleRecaptchaError> {
         .just("")
     }

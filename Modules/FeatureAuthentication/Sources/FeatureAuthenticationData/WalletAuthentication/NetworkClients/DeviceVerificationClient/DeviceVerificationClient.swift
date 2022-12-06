@@ -67,7 +67,14 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             let siteKey: String
             let product: String
         }
-        let headers = [HttpHeaderField.authorization: "Bearer \(sessionToken)"]
+        var headers = [
+            HttpHeaderField.authorization: "Bearer \(sessionToken)"
+        ]
+        if BuildFlag.isInternal,
+           let bypass = InfoDictionaryHelper.valueIfExists(for: .recaptchaBypass, prefix: "https://")
+        {
+            headers[HttpHeaderField.origin] = bypass
+        }
         let payload = Payload(
             email: emailAddress,
             captcha: captcha,

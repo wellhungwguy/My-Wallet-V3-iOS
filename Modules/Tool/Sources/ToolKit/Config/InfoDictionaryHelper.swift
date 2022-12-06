@@ -17,11 +17,20 @@ public enum InfoDictionaryHelper {
         case swiftyBeaverAppSecret = "SWIFTY_BEAVER_APP_SECRET"
         case swiftyBeaverAppKey = "SWIFTY_BEAVER_APP_KEY"
         case websocketURL = "WEBSOCKET_SERVER"
+        case recaptchaBypass = "GOOGLE_RECAPTCHA_BYPASS"
     }
 
     private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
 
     public static func value(for key: Key) -> String! {
         infoDictionary?[key.rawValue] as? String
+    }
+
+    public static func valueIfExists(for key: Key, prefix: String? = nil) -> String? {
+        let value = infoDictionary?[key.rawValue] as? String
+        if let prefix, let value {
+            return prefix + value
+        }
+        return value
     }
 }
