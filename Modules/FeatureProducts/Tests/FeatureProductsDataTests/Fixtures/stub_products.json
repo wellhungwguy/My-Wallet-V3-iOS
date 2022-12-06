@@ -46,5 +46,9 @@
     "withdrawCrypto": {
       "id": "WITHDRAW_CRYPTO",
       "enabled": true
+    },
+    "useTradingAccount": {
+      "id": "USE_TRADING_ACCOUNT",
+      "enabled": true
     }
 }

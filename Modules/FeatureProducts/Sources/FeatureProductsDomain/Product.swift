@@ -13,7 +13,7 @@ public struct ProductIdentifier: NewTypeString {
     public static let depositInterest: Self = "DEPOSIT_INTEREST"
     public static let withdrawFiat: Self = "WITHDRAW_FIAT"
     public static let withdrawCrypto: Self = "WITHDRAW_CRYPTO"
-    public static let userTradingAccount: Self = "USE_TRADING_ACCOUNT"
+    public static let useTradingAccount: Self = "USE_TRADING_ACCOUNT"
 
     public var value: String
 

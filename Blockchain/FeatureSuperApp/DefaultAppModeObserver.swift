@@ -40,17 +40,16 @@ public final class DefaultAppModeObserver: Client.Observer {
     lazy var userDidUpdate = app.on(blockchain.user.event.did.update) { [weak self] _ in
         guard let self else { return }
         Task { [productsService = self.productsService, app = self.app] in
-            async let defaultTradingAccountIsEnabled = try? await productsService
+            async let useTradingAccountProduct = try? await productsService
                 .fetchProducts()
                 .await()
-                .filter { $0.id == ProductIdentifier.userTradingAccount }
-                .first?
-                .defaultProduct == true
+                .filter { $0.id == ProductIdentifier.useTradingAccount }
+                .first
 
             let hasBeenDefaultedAlready = (try? app.state.get(blockchain.app.mode.has.been.force.defaulted.to.mode, as: AppMode.self) == AppMode.pkw) ?? false
             guard hasBeenDefaultedAlready == false,
-                  let defaultTradingAccountIsEnabled = await defaultTradingAccountIsEnabled,
-                  defaultTradingAccountIsEnabled == false
+                  let useTradingAccountProduct = await useTradingAccountProduct,
+                  useTradingAccountProduct.defaultProduct == false || useTradingAccountProduct.enabled == false
             else {
                 return
             }
