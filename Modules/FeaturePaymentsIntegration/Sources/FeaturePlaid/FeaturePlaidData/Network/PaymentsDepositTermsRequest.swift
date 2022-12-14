@@ -23,7 +23,7 @@ extension PaymentsDepositTermsRequest {
 
         enum CodingKeys: String, CodingKey {
             case value
-            case currency
+            case symbol
         }
 
         let moneyValue: MoneyValue
@@ -31,7 +31,7 @@ extension PaymentsDepositTermsRequest {
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(moneyValue.minorString, forKey: .value)
-            try container.encode(moneyValue.code, forKey: .currency)
+            try container.encode(moneyValue.code, forKey: .symbol)
         }
     }
 }
