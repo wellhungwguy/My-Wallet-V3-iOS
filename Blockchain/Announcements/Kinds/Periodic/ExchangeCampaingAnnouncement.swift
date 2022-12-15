@@ -101,4 +101,3 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
         self.dismiss = dismiss
     }
 }
-

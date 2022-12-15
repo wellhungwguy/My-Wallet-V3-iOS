@@ -152,7 +152,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         )
         .map { $0.value ?? false }
         .zip(walletAwarenessExperiment)
-        .map { $0 ? $1 : nil}
+        .map { $0 ? $1 : nil }
         .eraseError()
         .eraseToAnyPublisher()
 

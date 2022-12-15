@@ -36,4 +36,3 @@ final class ExchangeExperimentsClient: ExchangeExperimentsClientAPI {
         return networkAdapter.perform(request: request)
     }
 }
-

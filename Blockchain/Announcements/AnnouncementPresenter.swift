@@ -11,6 +11,7 @@ import FeatureKYCDomain
 import FeatureNFTDomain
 import FeatureProductsDomain
 import MoneyKit
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -20,7 +21,6 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 import WalletPayloadKit
-import NetworkKit
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
@@ -327,7 +327,7 @@ final class AnnouncementPresenter {
         { [weak self] in
             guard let self, var urlComponents = URLComponents(string: BlockchainAPI.shared.exchangeURL) else { return }
             var queryItems = [URLQueryItem(name: "uuid", value: UUID().uuidString)]
-            if let cohort = cohort {
+            if let cohort {
                 queryItems.append(URLQueryItem(name: "cohort", value: "\(cohort)"))
             }
             urlComponents.queryItems = queryItems
@@ -502,7 +502,7 @@ extension AnnouncementPresenter {
             action: actionPresentKYC(user: user)
         )
     }
-    
+
     /// Exchange wallet awareness campaign announcement for eligible users
     private func exchangeCampaingAnnouncement(
         isEnabled: Bool,
