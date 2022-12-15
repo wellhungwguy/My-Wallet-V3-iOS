@@ -2,6 +2,7 @@ import AnalyticsKit
 import DIKit
 import FeatureCryptoDomainDomain
 import Localization
+import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
@@ -22,7 +23,7 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
             .bind { [weak self] in
                 guard let self else { return }
                 self.analyticsRecorder.record(
-                    event: AnalyticsEvents.Announcement.cardActioned(type: .exchangeCampaign)
+                    event: AnalyticsEvents.WalletAwareness.promptActioned(isSSOUser: self.user.isSSO)
                 )
                 self.markDismissed()
                 self.action()
@@ -45,7 +46,7 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
             dismissState: .dismissible { [weak self] in
                 guard let self else { return }
                 self.analyticsRecorder.record(
-                    event: AnalyticsEvents.Announcement.cardDismissed(type: .exchangeCampaign)
+                    event: AnalyticsEvents.WalletAwareness.promptDismissed(isSSOUser: self.user.isSSO)
                 )
                 self.markDismissed()
                 self.dismiss()
@@ -53,7 +54,10 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
             didAppear: { [weak self] in
                 guard let self else { return }
                 self.analyticsRecorder.record(
-                    event: AnalyticsEvents.Announcement.cardShown(type: .exchangeCampaign)
+                    event: AnalyticsEvents.WalletAwareness.promptShown(
+                        isSSOUser: self.user.isSSO,
+                        countOfPrompts: self.dismissalsSoFar + 1
+                    )
                 )
             }
         )
@@ -77,14 +81,15 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
     private let disposeBag = DisposeBag()
 
     private let isEnabled: Bool
-
     private let cohort: Int?
+    private let user: NabuUser
 
     // MARK: - Setup
 
     init(
         isEnabled: Bool,
         cohort: Int?,
+        user: NabuUser,
         cacheSuite: CacheSuite = resolve(),
         reappearanceTimeInterval: TimeInterval,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -94,6 +99,7 @@ final class ExchangeCampaingAnnouncement: PeriodicAnnouncement, ActionableAnnoun
     ) {
         self.isEnabled = isEnabled
         self.cohort = cohort
+        self.user = user
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder

@@ -279,6 +279,7 @@ final class AnnouncementPresenter {
             return exchangeCampaingAnnouncement(
                 isEnabled: preliminaryData.walletAwareness?.isEnabled ?? false,
                 cohort: preliminaryData.walletAwareness?.cohort,
+                user: preliminaryData.user,
                 reappearanceTimeInterval: metadata.interval
             )
         }
@@ -507,11 +508,13 @@ extension AnnouncementPresenter {
     private func exchangeCampaingAnnouncement(
         isEnabled: Bool,
         cohort: Int?,
+        user: NabuUser,
         reappearanceTimeInterval: TimeInterval
     ) -> Announcement {
         ExchangeCampaingAnnouncement(
             isEnabled: isEnabled,
             cohort: cohort,
+            user: user,
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: actionOpenExchange(withCohort: cohort),
             dismiss: announcementDismissAction
