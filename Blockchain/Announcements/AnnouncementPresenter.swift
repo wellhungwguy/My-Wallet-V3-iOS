@@ -11,6 +11,7 @@ import FeatureKYCDomain
 import FeatureNFTDomain
 import FeatureProductsDomain
 import MoneyKit
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -55,6 +56,8 @@ final class AnnouncementPresenter {
     private let viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI
     private let blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter
 
+    private let urlOpener: URLOpener
+
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
 
@@ -81,7 +84,8 @@ final class AnnouncementPresenter {
         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
         viewWaitlistRegistration: ViewWaitlistRegistrationRepositoryAPI = DIKit.resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve(),
-        blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter = DIKit.resolve()
+        blockchainDomainsRouterAdapter: BlockchainDomainsRouterAdapter = DIKit.resolve(),
+        urlOpener: URLOpener = DIKit.resolve()
     ) {
         self.app = app
         self.interactor = interactor
@@ -99,6 +103,7 @@ final class AnnouncementPresenter {
         self.settingsStarter = settingsStarter
         self.navigationRouter = navigationRouter
         self.blockchainDomainsRouterAdapter = blockchainDomainsRouterAdapter
+        self.urlOpener = urlOpener
 
         app.modePublisher()
             .asObservable()
@@ -270,6 +275,13 @@ final class AnnouncementPresenter {
             return cardIssuingWaitlist(
                 eligible: preliminaryData.cardIssuingWaitlistAvailable
             )
+        case .exchangeCampaign:
+            return exchangeCampaingAnnouncement(
+                isEnabled: preliminaryData.walletAwareness?.isEnabled ?? false,
+                cohort: preliminaryData.walletAwareness?.cohort,
+                user: preliminaryData.user,
+                reappearanceTimeInterval: metadata.interval
+            )
         }
     }
 
@@ -309,6 +321,19 @@ final class AnnouncementPresenter {
                 parentFlow: .announcement,
                 from: topMostViewController
             )
+        }
+    }
+
+    private func actionOpenExchange(withCohort cohort: Int?) -> CardAnnouncementAction {
+        { [weak self] in
+            guard let self, var urlComponents = URLComponents(string: BlockchainAPI.shared.exchangeURL) else { return }
+            var queryItems = [URLQueryItem(name: "uuid", value: UUID().uuidString)]
+            if let cohort {
+                queryItems.append(URLQueryItem(name: "cohort", value: "\(cohort)"))
+            }
+            urlComponents.queryItems = queryItems
+            guard let url = urlComponents.url else { return }
+            self.urlOpener.open(url)
         }
     }
 }
@@ -476,6 +501,23 @@ extension AnnouncementPresenter {
             userCanCompleteTier2: tiers.canCompleteTier2,
             dismiss: announcementDismissAction,
             action: actionPresentKYC(user: user)
+        )
+    }
+
+    /// Exchange wallet awareness campaign announcement for eligible users
+    private func exchangeCampaingAnnouncement(
+        isEnabled: Bool,
+        cohort: Int?,
+        user: NabuUser,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
+        ExchangeCampaingAnnouncement(
+            isEnabled: isEnabled,
+            cohort: cohort,
+            user: user,
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            action: actionOpenExchange(withCohort: cohort),
+            dismiss: announcementDismissAction
         )
     }
 
