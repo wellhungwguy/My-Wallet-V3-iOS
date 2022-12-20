@@ -8,7 +8,7 @@ extension LocalizationConstants {
 
     public enum AnnouncementCards {
 
-        // MARK: - Persistent
+        // MARK: - Persistent.
 
         public enum Welcome {
             public static let title = NSLocalizedString(
