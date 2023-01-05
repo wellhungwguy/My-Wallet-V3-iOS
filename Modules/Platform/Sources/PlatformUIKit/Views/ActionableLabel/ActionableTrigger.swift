@@ -7,10 +7,10 @@ public struct ActionableTrigger: Equatable {
     public let execute: () -> Void
 
     public init(text: String, CTA: String, secondary: String? = nil, executionBlock: @escaping (() -> Void)) {
-        primaryString = text
-        secondaryString = secondary
-        callToAction = CTA
-        execute = executionBlock
+        self.primaryString = text
+        self.secondaryString = secondary
+        self.callToAction = CTA
+        self.execute = executionBlock
     }
 
     public func actionRange() -> NSRange? {

@@ -17,7 +17,10 @@ public enum LoadRemoteMetadataError: LocalizedError {
         case .notYetCreated:
             return "Metadata entry not yet created"
         case .networkError(let networkError):
-            return networkError.description
+            guard let code = networkError.code else {
+                return "Unknown network error"
+            }
+            return "Error Code: \(code)"
         case .decryptionFailed(let decryptMetadataError):
             return decryptMetadataError.errorDescription
         }

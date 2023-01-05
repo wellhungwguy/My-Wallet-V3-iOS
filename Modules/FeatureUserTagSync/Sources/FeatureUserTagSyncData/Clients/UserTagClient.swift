@@ -33,7 +33,7 @@ public class UserTagClient: UserTagClientAPI {
             path: Path.tags,
             body: try? [
                 "flags": ["superapp_mvp": isEnabled]
-                ].encode(),
+            ].encode(),
             authenticated: true
         )!
 

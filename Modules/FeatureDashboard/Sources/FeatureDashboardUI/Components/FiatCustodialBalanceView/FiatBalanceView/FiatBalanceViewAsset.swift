@@ -87,7 +87,7 @@ enum FiatBalanceViewAsset {
                 let baseFont: UIFont
                 let baseColor: UIColor
                 if showsQuoteValue {
-                    quoteBalanceLabelContent = .visible(
+                    self.quoteBalanceLabelContent = .visible(
                         LabelContent(
                             text: value.quote.displayString,
                             font: descriptors.quoteFiatFont,
@@ -100,12 +100,12 @@ enum FiatBalanceViewAsset {
                     baseFont = descriptors.baseFiatFont
                     baseColor = descriptors.baseFiatTextColor
                 } else {
-                    quoteBalanceLabelContent = .hidden
+                    self.quoteBalanceLabelContent = .hidden
                     baseFont = descriptors.quoteFiatFont
                     baseColor = descriptors.quoteFiatTextColor
                 }
 
-                baseBalanceLabelContent = LabelContent(
+                self.baseBalanceLabelContent = LabelContent(
                     text: value.base.displayString,
                     font: baseFont,
                     color: baseColor,

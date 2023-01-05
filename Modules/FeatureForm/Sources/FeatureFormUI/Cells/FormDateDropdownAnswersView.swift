@@ -11,6 +11,7 @@ struct FormDateDropdownAnswersView: View {
     @Binding var answer: FormAnswer
     @State private var selectionPanelOpened: Bool = false
     @Binding var showAnswerState: Bool
+    var isEnabled: Bool { answer.isEnabled ?? true }
 
     var body: some View {
         VStack {
@@ -27,7 +28,7 @@ struct FormDateDropdownAnswersView: View {
 
                 Text(dateString ?? "")
                     .typography(.body1)
-                    .foregroundColor(.semantic.title)
+                    .foregroundColor(textColor)
 
                 Spacer()
             }
@@ -35,7 +36,7 @@ struct FormDateDropdownAnswersView: View {
             .background(
                 ZStack {
                     RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
-                        .fill(Color.semantic.background)
+                        .fill(backgroundColor)
 
                     RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                         .stroke(
@@ -47,6 +48,7 @@ struct FormDateDropdownAnswersView: View {
             )
             .contentShape(Rectangle())
             .onTapGesture {
+                guard isEnabled else { return }
                 // hide current keybaord if presented,
                 // delay needed to wait until keyboard is dismissed
                 stopEditing()
@@ -61,6 +63,26 @@ struct FormDateDropdownAnswersView: View {
                 answer: $answer,
                 selectionPanelOpened: $selectionPanelOpened
             )
+        }
+    }
+}
+
+extension FormDateDropdownAnswersView {
+    // MARK: Colors
+
+    private var backgroundColor: Color {
+        if !isEnabled {
+            return .semantic.medium
+        } else {
+            return .semantic.background
+        }
+    }
+
+    private var textColor: Color {
+        if !isEnabled {
+            return .semantic.muted
+        } else {
+            return .semantic.title
         }
     }
 }
@@ -144,7 +166,7 @@ struct FormDatePickerView: View {
         .background(
             Rectangle()
                 .fill(.white)
-                .shadow(color: .white, radius: 3, x: 0, y: -15)
+                .backgroundWithWhiteShadow
         )
     }
 }

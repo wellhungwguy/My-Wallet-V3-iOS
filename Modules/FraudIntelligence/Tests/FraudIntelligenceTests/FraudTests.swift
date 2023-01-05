@@ -222,8 +222,8 @@ extension Test.MobileIntelligence {
         var flow: String
 
         init() {
-            sessionKey = Test.MobileIntelligence.Options.last.sessionKey
-            flow = Test.MobileIntelligence.Options.last.sessionKey
+            self.sessionKey = Test.MobileIntelligence.Options.last.sessionKey
+            self.flow = Test.MobileIntelligence.Options.last.sessionKey
         }
     }
 

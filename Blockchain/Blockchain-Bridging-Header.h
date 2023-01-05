@@ -6,4 +6,4 @@
 #import "KeychainItemWrapper+Credentials.h"
 #import "UIDevice+Hardware.h"
 #import "Sift/Sift.h"
-#import <recaptcha/recaptcha.h>
+#import <RecaptchaEnterprise/RecaptchaEnterprise.h>

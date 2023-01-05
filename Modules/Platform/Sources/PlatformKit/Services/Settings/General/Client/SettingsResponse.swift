@@ -50,18 +50,18 @@ extension SettingsResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        language = try values.decode(String.self, forKey: .language)
-        currency = try values.decode(String.self, forKey: .currency)
-        email = try values.decode(String.self, forKey: .email)
-        guid = try values.decode(String.self, forKey: .guid)
-        smsNumber = try? values.decodeIfPresent(String.self, forKey: .smsNumber)
-        smsVerified = try values.decode(Int.self, forKey: .smsVerified) == 1
-        emailVerified = try values.decode(Int.self, forKey: .emailVerified) == 1
-        authenticator = try values.decode(Int.self, forKey: .authenticator)
-        countryCode = try values.decode(String.self, forKey: .countryCode)
+        self.language = try values.decode(String.self, forKey: .language)
+        self.currency = try values.decode(String.self, forKey: .currency)
+        self.email = try values.decode(String.self, forKey: .email)
+        self.guid = try values.decode(String.self, forKey: .guid)
+        self.smsNumber = try? values.decodeIfPresent(String.self, forKey: .smsNumber)
+        self.smsVerified = try values.decode(Int.self, forKey: .smsVerified) == 1
+        self.emailVerified = try values.decode(Int.self, forKey: .emailVerified) == 1
+        self.authenticator = try values.decode(Int.self, forKey: .authenticator)
+        self.countryCode = try values.decode(String.self, forKey: .countryCode)
         let notifications = try values.decode([Int].self, forKey: .notifications)
-        emailNotificationsEnabled = notifications.contains(1)
-        invited = try values
+        self.emailNotificationsEnabled = notifications.contains(1)
+        self.invited = try values
             .decode([String: Bool].self, forKey: .invited)
             .reduce(into: [Feature: Bool]()) { result, this in
                 guard let feature = Feature(rawValue: this.key) else {

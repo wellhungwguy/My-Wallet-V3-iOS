@@ -24,7 +24,7 @@ final class LatestBlockRepository: LatestBlockRepositoryAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 10)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] network in
                 client

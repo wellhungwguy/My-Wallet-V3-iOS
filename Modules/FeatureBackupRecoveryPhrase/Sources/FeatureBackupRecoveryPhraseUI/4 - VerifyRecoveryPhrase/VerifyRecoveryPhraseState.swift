@@ -30,7 +30,7 @@ public struct VerifyRecoveryPhraseState: Equatable {
     ) {
         self.selectedWords = selectedWords
         self.availableWords = availableWords
-        shuffledAvailableWords = shuffledWords
+        self.shuffledAvailableWords = shuffledWords
         self.backupPhraseStatus = backupPhraseStatus
         self.backupRemoteFailed = backupRemoteFailed
     }

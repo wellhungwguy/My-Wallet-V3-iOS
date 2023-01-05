@@ -32,7 +32,8 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents"),
-        .package(path: "../FeatureBackupRecoveryPhrase")
+        .package(path: "../FeatureBackupRecoveryPhrase"),
+        .package(path: "../FeatureUnifiedActivity")
     ],
     targets: [
         .target(
@@ -51,7 +52,9 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase")
+                .product(name: "FeatureBackupRecoveryPhraseUI", package: "FeatureBackupRecoveryPhrase"),
+                .product(name: "UnifiedActivityDomain", package: "FeatureUnifiedActivity"),
+                .product(name: "UnifiedActivityUI", package: "FeatureUnifiedActivity")
             ]
         ),
         .target(

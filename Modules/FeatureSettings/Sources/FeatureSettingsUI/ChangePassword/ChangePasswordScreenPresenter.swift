@@ -67,7 +67,7 @@ final class ChangePasswordScreenPresenter {
         self.loadingViewPresenter = loadingViewPresenter
         self.coordinator = coordinator
 
-        descriptionContent = .init(
+        self.descriptionContent = .init(
             text: LocalizationIDs.description,
             font: .main(.medium, 14.0),
             color: .textFieldText,
@@ -83,20 +83,20 @@ final class ChangePasswordScreenPresenter {
             invalidReason: LocalizationConstants.TextField.Gesture.passwordMismatch
         )
 
-        currentPasswordTextFieldViewModel = TextFieldViewModel(
+        self.currentPasswordTextFieldViewModel = TextFieldViewModel(
             with: .currentPassword,
             validator: TextValidationFactory.Password.login,
             messageRecorder: resolve()
         )
 
-        passwordTextFieldViewModel = PasswordTextFieldViewModel(
+        self.passwordTextFieldViewModel = PasswordTextFieldViewModel(
             with: .newPassword,
             passwordValidator: newPasswordValidator,
             textMatchValidator: textMatchValidator,
             messageRecorder: resolve()
         )
 
-        confirmPasswordTextFieldViewModel = PasswordTextFieldViewModel(
+        self.confirmPasswordTextFieldViewModel = PasswordTextFieldViewModel(
             with: .confirmNewPassword,
             passwordValidator: confirmNewPasswordValidator,
             textMatchValidator: textMatchValidator,

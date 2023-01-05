@@ -22,9 +22,9 @@ struct PasswordState: Equatable {
     }
 
     init() {
-        password = ""
-        isFocused = false
-        isPasswordIncorrect = false
+        self.password = ""
+        self.isFocused = false
+        self.isPasswordIncorrect = false
     }
 }
 

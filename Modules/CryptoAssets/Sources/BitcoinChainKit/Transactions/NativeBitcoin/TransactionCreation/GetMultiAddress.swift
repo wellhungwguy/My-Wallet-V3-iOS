@@ -27,8 +27,8 @@ struct AddressItem: Hashable {
 extension AddressItem {
 
     init(response: BitcoinChainAddressResponse) {
-        xpub = response.address
-        accountIndex = response.accountIndex
-        changeIndex = response.changeIndex
+        self.xpub = response.address
+        self.accountIndex = response.accountIndex
+        self.changeIndex = response.changeIndex
     }
 }

@@ -99,7 +99,7 @@ public struct Asset: Equatable, Identifiable {
             self.name = name
             self.isVerified = isVerified
             self.bannerImageURL = bannerImageURL
-            collectionImageUrl = collectionImageURL
+            self.collectionImageUrl = collectionImageURL
             self.collectionDescription = collectionDescription
         }
     }

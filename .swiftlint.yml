@@ -64,7 +64,6 @@ only_rules:
 - nsobject_prefer_isequal
 - operator_whitespace
 - operator_usage_whitespace
-- optional_enum_case_matching
 - orphaned_doc_comment
 - overridden_super_call
 - override_in_extension
@@ -90,7 +89,6 @@ only_rules:
 - statement_position
 - superfluous_disable_command
 - switch_case_alignment
-- syntactic_sugar
 - toggle_bool
 - trailing_comma
 - trailing_newline

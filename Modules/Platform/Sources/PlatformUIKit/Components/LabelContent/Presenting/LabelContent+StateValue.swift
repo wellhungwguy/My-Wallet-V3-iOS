@@ -84,7 +84,7 @@ extension LabelContent.Value.Presentation {
         public let labelContent: LabelContent
 
         public init(with value: LabelContent.Value.Interaction.Content, descriptors: Descriptors) {
-            labelContent = LabelContent(
+            self.labelContent = LabelContent(
                 text: value.text,
                 font: .main(descriptors.fontWeight, descriptors.fontSize),
                 color: descriptors.contentColor,

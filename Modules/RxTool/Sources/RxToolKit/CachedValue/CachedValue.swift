@@ -80,7 +80,7 @@ public class CachedValue<Value> {
         configuration: CachedValueConfiguration
     ) {
         self.configuration = configuration
-        refreshControl = CachedValueRefreshControl(configuration: configuration)
+        self.refreshControl = CachedValueRefreshControl(configuration: configuration)
     }
 
     private func flush() {

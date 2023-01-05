@@ -34,12 +34,12 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            spent = try values.decode(Bool.self, forKey: .spent)
+            self.spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
-            amount = CryptoValue.create(minor: BigInt(satoshis), currency: .bitcoinCash)
-            address = try values.decode(String.self, forKey: .address)
+            self.amount = CryptoValue.create(minor: BigInt(satoshis), currency: .bitcoinCash)
+            self.address = try values.decode(String.self, forKey: .address)
             let xpub = try values.decodeIfPresent(Xpub.self, forKey: .xpub)
-            change = xpub != nil
+            self.change = xpub != nil
         }
     }
 
@@ -54,7 +54,7 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            previousOutput = try values.decode(Output.self, forKey: .previousOutput)
+            self.previousOutput = try values.decode(Output.self, forKey: .previousOutput)
         }
     }
 
@@ -102,14 +102,14 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
         let amount = try values.decode(Int64.self, forKey: .amount)
         let value = BigInt(amount)
         self.amount = CryptoValue.create(minor: abs(value), currency: .bitcoinCash)
-        direction = value.sign == .minus ? .credit : .debit
-        transactionHash = try values.decode(String.self, forKey: .identifier)
-        blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
-        createdAt = try values.decode(Date.self, forKey: .time)
-        inputs = try values.decode([Input].self, forKey: .inputs)
+        self.direction = value.sign == .minus ? .credit : .debit
+        self.transactionHash = try values.decode(String.self, forKey: .identifier)
+        self.blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
+        self.createdAt = try values.decode(Date.self, forKey: .time)
+        self.inputs = try values.decode([Input].self, forKey: .inputs)
         let feeValue = try values.decode(Int.self, forKey: .fee)
-        fee = CryptoValue.create(minor: BigInt(feeValue), currency: .bitcoinCash)
-        outputs = try values.decode([Output].self, forKey: .outputs)
+        self.fee = CryptoValue.create(minor: BigInt(feeValue), currency: .bitcoinCash)
+        self.outputs = try values.decode([Output].self, forKey: .outputs)
 
         guard let destinationOutput = outputs.first else {
             throw DecodingError.dataCorruptedError(
@@ -126,10 +126,10 @@ public struct BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorica
                 debugDescription: "Expected a from output"
             )
         }
-        toAddress = BitcoinCashAssetAddress(publicKey: destinationOutput.address)
-        fromAddress = BitcoinCashAssetAddress(publicKey: fromOutput.address)
+        self.toAddress = BitcoinCashAssetAddress(publicKey: destinationOutput.address)
+        self.fromAddress = BitcoinCashAssetAddress(publicKey: fromOutput.address)
 
-        note = nil
+        self.note = nil
     }
 
     // MARK: - BitcoinChainHistoricalTransaction

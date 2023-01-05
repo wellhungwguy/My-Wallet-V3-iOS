@@ -44,8 +44,6 @@ public struct CreateAccountStepTwoState: Equatable, NavigationState {
     public enum InputValidationError: Equatable {
         case invalidEmail
         case weakPassword
-        case noCountrySelected
-        case noCountryStateSelected
         case termsNotAccepted
     }
 
@@ -112,10 +110,10 @@ public struct CreateAccountStepTwoState: Equatable, NavigationState {
         self.country = country
         self.countryState = countryState
         self.referralCode = referralCode
-        emailAddress = ""
-        password = ""
-        passwordStrength = .none
-        inputValidationState = .unknown
+        self.emailAddress = ""
+        self.password = ""
+        self.passwordStrength = .none
+        self.inputValidationState = .unknown
     }
 }
 
@@ -324,7 +322,6 @@ let createAccountStepTwoReducer = Reducer<
                     .map(CreateAccountStepTwoAction.walletFetched)
             )
         )
-        
 
     case .walletFetched(.success(.left(.noValue))):
         // do nothing, this for the legacy JS, to be removed

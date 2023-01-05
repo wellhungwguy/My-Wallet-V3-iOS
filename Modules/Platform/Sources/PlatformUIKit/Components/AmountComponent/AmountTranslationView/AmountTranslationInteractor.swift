@@ -201,18 +201,18 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         initialActiveInput: ActiveAmountInput
     ) {
         self.app = app
-        activeInputRelay = BehaviorRelay(value: initialActiveInput)
-        maxActionableFiatAmountRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
-        accountBalanceFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
-        transactionFeeFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
-        cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
-        fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
-        cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
-        transactionIsFeeLessRelay = BehaviorRelay(value: true)
+        self.activeInputRelay = BehaviorRelay(value: initialActiveInput)
+        self.maxActionableFiatAmountRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
+        self.accountBalanceFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
+        self.transactionFeeFiatValueRelay = BehaviorRelay(value: .zero(currency: defaultFiatCurrency))
+        self.cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
+        self.fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
+        self.cryptoInteractor = InputAmountLabelInteractor(currency: defaultCryptoCurrency)
+        self.transactionIsFeeLessRelay = BehaviorRelay(value: true)
         self.fiatCurrencyClosure = fiatCurrencyClosure
         self.cryptoCurrencyService = cryptoCurrencyService
         self.priceProvider = priceProvider
-        fiatAmountRelay = BehaviorRelay<MoneyValue>(
+        self.fiatAmountRelay = BehaviorRelay<MoneyValue>(
             value: .zero(currency: defaultFiatCurrency)
         )
 

@@ -36,7 +36,7 @@ public struct WalletPayload: Equatable, Codable {
         self.language = language
         self.shouldSyncPubKeys = shouldSyncPubKeys
         self.time = time
-        payloadWrapper = payload
+        self.payloadWrapper = payload
         self.payloadChecksum = payloadChecksum
     }
 }

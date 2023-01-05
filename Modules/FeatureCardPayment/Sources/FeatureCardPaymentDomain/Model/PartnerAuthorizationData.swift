@@ -29,7 +29,7 @@ public struct PartnerAuthorizationData: Equatable {
                 self.paymentLink = paymentLink
                 self.clientSecret = clientSecret
                 self.publishableApiKey = publishableApiKey
-                exitLink = URL(string: PartnerAuthorizationData.exitLink)!
+                self.exitLink = URL(string: PartnerAuthorizationData.exitLink)!
             }
         }
 
@@ -79,6 +79,6 @@ extension PartnerAuthorizationData {
             return nil
         }
         self.paymentMethodId = paymentMethodId
-        state = orderPayloadResponse.authorizationState
+        self.state = orderPayloadResponse.authorizationState
     }
 }

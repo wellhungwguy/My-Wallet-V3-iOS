@@ -140,6 +140,9 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
                 .eraseToAnyPublisher()
+        case .stakingDeposit:
+            guard asset.supports(product: .stakingBalance) else { return .just(false) }
+            return isFunded
         case .sell, .swap:
             return hasPositiveDisplayableBalance
         }
@@ -155,6 +158,17 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

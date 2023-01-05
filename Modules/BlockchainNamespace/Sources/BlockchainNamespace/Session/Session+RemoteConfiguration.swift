@@ -49,7 +49,7 @@ extension Session {
             self.scheduler = scheduler
             self.session = session
             let backoff = ExponentialBackoff()
-            fetch = { [unowned self] app, isStale in
+            self.fetch = { [unowned self] app, isStale in
 
                 let cached = preferences.object(
                     forKey: blockchain.session.configuration(\.id)
@@ -381,20 +381,23 @@ extension Session.RemoteConfiguration {
 
     public struct Default: ExpressibleByDictionaryLiteral {
         let dictionary: [Tag.Reference: Any?]
-        public init(_  dictionary: [Tag.Reference: Any?]) {
+        public init(_ dictionary: [Tag.Reference: Any?]) {
             self.dictionary = dictionary
         }
+
         public init(dictionaryLiteral elements: (Tag.Event, Any?)...) {
-            dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
+            self.dictionary = Dictionary(uniqueKeysWithValues: elements.map { ($0.0.key(), $0.1) })
         }
+
         public init(_ json: Any) throws {
-            dictionary = try BlockchainNamespaceDecoder()
+            self.dictionary = try BlockchainNamespaceDecoder()
                 .decode([String: AnyJSON?].self, from: json)
                 .mapKeysAndValues(
                     key: { try Tag.Reference(id: $0, in: Language.root.language) },
                     value: \.?.wrapped
                 )
         }
+
         public static func + (lhs: Self, rhs: Self) -> Self {
             Self(lhs.dictionary + rhs.dictionary)
         }
@@ -456,7 +459,7 @@ extension Session.RemoteConfiguration {
             self.app = app
             self.session = session
 
-            subscription = app.on(
+            self.subscription = app.on(
                 blockchain.session.event.did.sign.in,
                 blockchain.session.event.did.sign.out
             ) { [unowned self] event in
@@ -524,7 +527,7 @@ extension Session.RemoteConfiguration {
                                         throw "Expected 1 experiment, got \(experiment.keys.count)"
                                     }
                                     let any = try nabu[experiments[id] ??^ "No experiment for '\(id)'"] ??^ "No experiment config for '\(id)'"
-                                    return (k, any.thing)
+                                    return (k, any.wrapped)
                                 } catch {
                                     if let defaultValue = v[Compute.CodingKey.default] {
                                         return (k, defaultValue)

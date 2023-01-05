@@ -38,10 +38,10 @@ struct PaymentAccountBRL: PaymentAccountDescribing, Equatable {
         self.routingNumber = routingNumber
         self.accountNumber = accountNumber
         self.recipientName = recipientName
-        bankCountry = country
-        bankName = name
-        bankCode = code
-        identifier = response.id
-        state = response.state
+        self.bankCountry = country
+        self.bankName = name
+        self.bankCode = code
+        self.identifier = response.id
+        self.state = response.state
     }
 }

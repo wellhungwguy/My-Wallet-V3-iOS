@@ -64,7 +64,7 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amount.displayString,
             descriptors: .h1(accessibilityIdPrefix: "")
         )
@@ -92,25 +92,25 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
             )
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.date)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let total = event.amount.convert(using: event.price).displayString
-        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let fee = """
         \(event.fee.displayString) / \(event.fee.convert(using: event.price).displayString)
         """
-        networkFeePresenter = TransactionalLineItem.networkFee(fee).defaultPresenter(
+        self.networkFeePresenter = TransactionalLineItem.networkFee(fee).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -123,11 +123,11 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         switch event.receivingAddress {
         case .none:
-            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         case .some:
-            toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
+            self.toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
                 analyticsRecorder: analyticsRecorder,
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
@@ -140,13 +140,13 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .withdrawal:
             source = "\(event.amount.displayCode) \(LocalizedLineItem.tradingWallet)"
         }
-        fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+        self.fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         switch event.type {
         case .deposit:
-            cells = [
+            self.cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .separator,
@@ -161,7 +161,7 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .lineItem(fromPresenter)
             ]
         case .withdrawal:
-            cells = [
+            self.cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .separator,

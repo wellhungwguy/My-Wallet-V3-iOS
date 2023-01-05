@@ -86,7 +86,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             )
             .catchAndReturn([])
 
-        beneficiaries = beneficiariesRelay
+        self.beneficiaries = beneficiariesRelay
             .withLatestFrom(beneficiariesServiceUpdater.shouldRefresh) { ($0, $1) }
             .flatMap { beneficiaries, shouldUpdate -> Observable<[Beneficiary]> in
                 guard !shouldUpdate else {
@@ -100,13 +100,13 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .distinctUntilChanged()
             .share(replay: 1, scope: .whileConnected)
 
-        availableCurrenciesForBankLinkage = paymentMethodsShared
+        self.availableCurrenciesForBankLinkage = paymentMethodsShared
             .map { methodTypes in
                 Set(methodTypes.suggestedFunds)
             }
             .share(replay: 1, scope: .whileConnected)
 
-        hasLinkedBank = beneficiaries
+        self.hasLinkedBank = beneficiaries
             .map { !$0.isEmpty }
     }
 

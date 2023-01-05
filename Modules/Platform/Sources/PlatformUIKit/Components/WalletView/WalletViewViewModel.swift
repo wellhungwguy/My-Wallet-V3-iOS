@@ -22,7 +22,7 @@ final class WalletViewViewModel {
 
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
-        identifier = account.identifier
+        self.identifier = account.identifier
 
         let image: ImageResource
         if let account = account as? LinkedBankAccount {
@@ -31,12 +31,12 @@ final class WalletViewViewModel {
             image = currency.logoResource
         }
 
-        badgeImageViewModel = .default(
+        self.badgeImageViewModel = .default(
             image: image,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )
-        nameLabelContent = .init(
+        self.nameLabelContent = .init(
             text: account.label,
             font: .main(.semibold, 16.0),
             color: .textFieldText,
@@ -47,11 +47,11 @@ final class WalletViewViewModel {
         switch (account, currency) {
         case (is NonCustodialAccount, .fiat),
              (is TradingAccount, .fiat):
-            accountTypeBadge = .empty
+            self.accountTypeBadge = .empty
         case (is LinkedBankAccount, .fiat):
-            accountTypeBadge = .empty
+            self.accountTypeBadge = .empty
         case (is ExchangeAccount, .crypto):
-            accountTypeBadge = .template(
+            self.accountTypeBadge = .template(
                 image: .local(name: "ic-exchange-account", bundle: .platformUIKit),
                 templateColor: currency.brandUIColor,
                 backgroundColor: .white,
@@ -59,7 +59,7 @@ final class WalletViewViewModel {
                 accessibilityIdSuffix: ""
             )
         case (is NonCustodialAccount, .crypto):
-            accountTypeBadge = .template(
+            self.accountTypeBadge = .template(
                 image: .local(name: "ic-private-account", bundle: .platformUIKit),
                 templateColor: currency.brandUIColor,
                 backgroundColor: .white,
@@ -67,7 +67,7 @@ final class WalletViewViewModel {
                 accessibilityIdSuffix: ""
             )
         case (is TradingAccount, .crypto):
-            accountTypeBadge = .template(
+            self.accountTypeBadge = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: currency.brandUIColor,
                 backgroundColor: .white,
@@ -75,7 +75,7 @@ final class WalletViewViewModel {
                 accessibilityIdSuffix: ""
             )
         case (is CryptoInterestAccount, .crypto):
-            accountTypeBadge = .template(
+            self.accountTypeBadge = .template(
                 image: .local(name: "ic-interest-account", bundle: .platformUIKit),
                 templateColor: currency.brandUIColor,
                 backgroundColor: .white,
@@ -92,10 +92,10 @@ final class WalletViewViewModel {
         guard !(account is CryptoExchangeAccount) else {
             // Exchange accounts don't have a balance
             // that we can readily access at this time.
-            descriptionLabelContent = .empty()
+            self.descriptionLabelContent = .empty()
             return
         }
-        descriptionLabelContent = account
+        self.descriptionLabelContent = account
             .balance
             .map(\.displayString)
             .map { value in

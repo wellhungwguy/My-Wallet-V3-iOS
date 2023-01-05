@@ -44,6 +44,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let swap = "SWAP"
         static let sell = "SELL"
         static let `default` = "DEFAULT"
+        static let id = "id"
     }
 
     private enum Path {
@@ -565,13 +566,29 @@ extension APIClient {
         return retailNetworkAdapter.perform(request: request)
     }
 
+    func fetchRecurringBuysWithRecurringBuyId(
+        _ recurringBuyId: String
+    ) -> AnyPublisher<[RecurringBuyResponse], NabuNetworkError> {
+        let parameters: [URLQueryItem] = [
+            URLQueryItem(name: Parameter.id, value: recurringBuyId)
+        ]
+
+        let request = retailRequestBuilder.get(
+            path: Path.recurringBuyList,
+            parameters: parameters,
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter.perform(request: request)
+    }
+
     // MARK: - EligiblePaymentMethodRecurringBuyClientAPI
 
     func fetchEligiblePaymentMethodTypesStartingFromDate(
         _ date: Date?
     ) -> AnyPublisher<EligiblePaymentMethodsRecurringBuyResponse, NabuNetworkError> {
         var parameters: [URLQueryItem] = []
-        if let date = date {
+        if let date {
             parameters.append(
                 URLQueryItem(
                     name: Parameter.date,

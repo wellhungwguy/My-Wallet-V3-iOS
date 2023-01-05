@@ -7,7 +7,7 @@ extension AnalyticsEvents.New {
         case accountDeletionSuccess
         case accountDeletionFailure(errorMessage: String)
 
-        public var type: AnalyticsEventType { .nabu }
+        var type: AnalyticsEventType { .nabu }
     }
 }
 

@@ -181,7 +181,7 @@ final class MainAppReducerTests: XCTestCase {
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
-                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
+                unifiedActivityService: UnifiedActivityPersistenceServiceMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: mockWalletService,
                 walletStateProvider: mockWalletStateProvider
@@ -332,7 +332,7 @@ final class MainAppReducerTests: XCTestCase {
                 resetPasswordService: mockResetPasswordService,
                 sharedContainer: SharedContainerUserDefaults(),
                 siftService: mockSiftService,
-                unifiedActivityRepository: UnifiedActivityRepositoryMock(),
+                unifiedActivityService: UnifiedActivityPersistenceServiceMock(),
                 walletPayloadService: mockWalletPayloadService,
                 walletService: failingWalletService,
                 walletStateProvider: mockWalletStateProvider
@@ -526,7 +526,6 @@ final class MainAppReducerTests: XCTestCase {
                 )
             )
         }
-
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)

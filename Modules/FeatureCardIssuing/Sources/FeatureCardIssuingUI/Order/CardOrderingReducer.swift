@@ -18,7 +18,7 @@ public enum CardOrderingError: Error, Equatable {
 }
 
 public enum CardOrderingResult: Equatable {
-    case created
+    case created(Card)
     case kyc
     case cancelled
 }
@@ -51,6 +51,7 @@ enum CardOrderingAction: Equatable, BindableAction {
     case editShippingAddressComplete(Result<CardAddressSearchResult, Never>)
     case showSupportFlow
     case binding(BindingAction<CardOrderingState>)
+    case none
 }
 
 struct CardOrderingState: Equatable {
@@ -76,7 +77,7 @@ struct CardOrderingState: Equatable {
         }
 
         case processing
-        case success
+        case success(Card)
         case error(Error)
         case none
     }
@@ -86,7 +87,6 @@ struct CardOrderingState: Equatable {
     @BindableState var isProductDetailsVisible = false
     @BindableState var isReviewVisible = false
     @BindableState var acceptLegalVisible = false
-
     @BindableState var ssn: String = ""
 
     var acceptLegalState: AcceptLegalState
@@ -122,7 +122,7 @@ struct CardOrderingState: Equatable {
         self.ssn = ssn
         self.error = error
         self.orderProcessingState = orderProcessingState
-        acceptLegalState = AcceptLegalState(items: legalItems)
+        self.acceptLegalState = AcceptLegalState(items: legalItems)
     }
 }
 
@@ -210,22 +210,7 @@ let cardOrderingReducer: Reducer<
                 state.orderProcessingState = .error(CardOrderingError.noProduct)
                 return .none
             }
-            let address = state.shippingAddress ?? state.address
-            if state.initialKyc.status == .unverified, state.updatedKyc == nil {
-                return env.kycService
-                    .update(address: state.address, ssn: state.ssn)
-                    .flatMap { _ in
-                        env
-                            .cardService
-                            .orderCard(
-                                product: product,
-                                at: address
-                            )
-                    }
-                    .receive(on: env.mainQueue)
-                    .catchToEffect(CardOrderingAction.cardCreationResponse)
-            } else {
-                return env
+            return env
                     .cardService
                     .orderCard(
                         product: product,
@@ -233,9 +218,8 @@ let cardOrderingReducer: Reducer<
                     )
                     .receive(on: env.mainQueue)
                     .catchToEffect(CardOrderingAction.cardCreationResponse)
-            }
         case .cardCreationResponse(.success(let card)):
-            state.orderProcessingState = .success
+            state.orderProcessingState = .success(card)
             return .none
         case .cardCreationResponse(.failure(let error)):
             state.orderProcessingState = .error(error)
@@ -247,8 +231,15 @@ let cardOrderingReducer: Reducer<
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardOrderingAction.productsResponse)
         case .productsResponse(.success(let products)):
-            state.products = products
-            state.selectedProduct = products[safe: 0]
+            state.products = products.sorted(by: { lhs, rhs -> Bool in
+                switch (lhs.hasRemainingCards, rhs.hasRemainingCards) {
+                case (true, false):
+                    return true
+                default:
+                    return false
+                }
+            })
+            state.selectedProduct = state.products[safe: 0]
             return .none
         case .productsResponse(.failure(let error)):
             state.error = error
@@ -381,10 +372,13 @@ let cardOrderingReducer: Reducer<
                 env.supportRouter.handleSupport()
             }
         case .submitKyc:
+            let unverified = state.initialKyc.status == .unverified
+            let address = state.initialKyc.hasError(.residentialAddress) || unverified ? state.address : nil
+            let ssn = state.initialKyc.hasError(.ssn) || unverified ? state.ssn : nil
             return env.kycService
                 .update(
-                    address: state.initialKyc.hasError(.residentialAddress) ? state.address : nil,
-                    ssn: state.initialKyc.hasError(.ssn) ? state.ssn : nil
+                    address: address,
+                    ssn: ssn
                 )
                 .receive(on: env.mainQueue)
                 .catchToEffect(CardOrderingAction.kycResponse)
@@ -398,13 +392,16 @@ let cardOrderingReducer: Reducer<
             return .none
         case .onReviewAppear:
             guard state.selectedProduct?.type == .physical,
-                  (state.shippingAddress ?? state.address) == nil else {
+                  (state.shippingAddress ?? state.address) == nil
+            else {
                 return Effect(value: .fetchFullName)
             }
             return Effect.merge(
                 Effect(value: .fetchFullName),
                 Effect(value: .fetchAddress)
             )
+        case .none:
+            return .none
         }
     }
     .binding()
@@ -457,7 +454,7 @@ struct MockServices: CardServiceAPI,
     )
 
     let error = NabuError(id: "mock", code: .stateNotEligible, type: .unknown, description: "")
-    let card = Card(
+    static let card = Card(
         id: "",
         type: .virtual,
         last4: "1234",
@@ -495,19 +492,19 @@ struct MockServices: CardServiceAPI,
         product: Product,
         at address: Card.Address?
     ) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func fetchCards() -> AnyPublisher<[Card], NabuNetworkError> {
-        .just([card])
+        .just([Self.card])
     }
 
     func fetchCard(with id: String) -> AnyPublisher<Card?, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func delete(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func helperUrl(for card: Card) -> AnyPublisher<URL, NabuNetworkError> {
@@ -528,8 +525,8 @@ struct MockServices: CardServiceAPI,
 
     func fetchProducts() -> AnyPublisher<[Product], NabuNetworkError> {
         .just([
-            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual),
-            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical)
+            Product(productCode: "0", price: .init(value: "0.0", symbol: "BTC"), brand: .visa, type: .virtual, remainingCards: 1),
+            Product(productCode: "1", price: .init(value: "0.1", symbol: "BTC"), brand: .visa, type: .physical, remainingCards: 0)
         ])
     }
 
@@ -546,11 +543,11 @@ struct MockServices: CardServiceAPI,
     }
 
     func lock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func unlock(card: Card) -> AnyPublisher<Card, NabuNetworkError> {
-        .just(card)
+        .just(Self.card)
     }
 
     func openBuyFlow(for currency: CryptoCurrency?) {}

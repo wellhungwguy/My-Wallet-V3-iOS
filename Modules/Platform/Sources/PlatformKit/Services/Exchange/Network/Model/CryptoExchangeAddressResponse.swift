@@ -50,7 +50,7 @@ struct CryptoExchangeAddressResponse: Decodable, Equatable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        address = try values.decode(String.self, forKey: .address)
+        self.address = try values.decode(String.self, forKey: .address)
         guard !address.isEmpty else {
             throw ResponseError.address
         }

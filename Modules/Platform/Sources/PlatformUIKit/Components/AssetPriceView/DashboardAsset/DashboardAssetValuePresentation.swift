@@ -52,15 +52,15 @@ extension DashboardAsset.Value.Presentation {
 
         public init(with value: DashboardAsset.Value.Interaction.AssetPrice, descriptors: Descriptors) {
             let fiatPrice = value.currentPrice.toDisplayString(includeSymbol: true)
-            changeAccessibility = .id("\(AccessibilityId.changeLabelFormat)\(descriptors.accessibilityIdSuffix)")
-            price = LabelContent(
+            self.changeAccessibility = .id("\(AccessibilityId.changeLabelFormat)\(descriptors.accessibilityIdSuffix)")
+            self.price = LabelContent(
                 text: fiatPrice,
                 font: descriptors.priceFont,
                 color: .dashboardAssetTitle,
                 accessibility: .id("\(AccessibilityId.marketFiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
             )
 
-            change = value.historicalPrice
+            self.change = value.historicalPrice
                 .flatMap { historicalPrice in
                     Self.changeAttributeString(with: historicalPrice, descriptors: descriptors)
                 }

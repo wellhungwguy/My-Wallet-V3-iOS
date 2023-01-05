@@ -101,7 +101,7 @@ public struct CredentialsView: View {
     public init(context: CredentialsContext, store: Store<CredentialsState, CredentialsAction>) {
         self.context = context
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {

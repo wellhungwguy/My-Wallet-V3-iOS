@@ -86,4 +86,37 @@ public final class AddressSearchRouter: AddressSearchRouterAPI {
             }
         }.eraseToAnyPublisher()
     }
+
+    public func presentEditAddressFlow(
+        address: Address,
+        config: AddressSearchFeatureConfig.AddressEditScreenConfig
+    ) -> AnyPublisher<AddressResult, Never> {
+        Deferred {
+            Future { [weak self] promise in
+
+                guard let self else { return }
+
+                let presenter = self.topMostViewControllerProvider.topMostViewController
+                let env = AddressModificationEnvironment(
+                    mainQueue: .main,
+                    config: config,
+                    addressService: self.addressService,
+                    addressSearchService: resolve(),
+                    onComplete: { addressResult in
+                        presenter?.dismiss(animated: true) {
+                            promise(.success(addressResult))
+                        }
+                    }
+                )
+                let view = AddressModificationView(
+                    store: .init(
+                        initialState: .init(address: address),
+                        reducer: addressModificationReducer,
+                        environment: env
+                    )
+                )
+                presenter?.present(view)
+            }
+        }.eraseToAnyPublisher()
+    }
 }

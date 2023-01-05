@@ -72,14 +72,14 @@ extension UnspentOutput {
 
 extension UnspentOutput {
     init(response: UnspentOutputResponse, coin: BitcoinChainCoin) {
-        confirmations = response.confirmations
-        hash = response.tx_hash
-        hashBigEndian = response.tx_hash_big_endian
-        outputIndex = response.tx_output_n
-        script = response.script
-        transactionIndex = response.tx_index
-        value = CryptoValue.create(minor: response.value, currency: coin.cryptoCurrency)
-        xpub = XPub(responseXPub: response.xpub)
+        self.confirmations = response.confirmations
+        self.hash = response.tx_hash
+        self.hashBigEndian = response.tx_hash_big_endian
+        self.outputIndex = response.tx_output_n
+        self.script = response.script
+        self.transactionIndex = response.tx_index
+        self.value = CryptoValue.create(minor: response.value, currency: coin.cryptoCurrency)
+        self.xpub = XPub(responseXPub: response.xpub)
     }
 }
 

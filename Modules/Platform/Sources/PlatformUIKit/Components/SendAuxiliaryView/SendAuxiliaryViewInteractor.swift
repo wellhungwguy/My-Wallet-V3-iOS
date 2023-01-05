@@ -71,7 +71,7 @@ public final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
         availableBalance: ContentLabelViewInteractorAPI,
         networkFee: ContentLabelViewInteractorAPI = EmptyNetworkFeeContentInteractor()
     ) {
-        availableBalanceContentViewInteractor = availableBalance
-        networkFeeContentViewInteractor = networkFee
+        self.availableBalanceContentViewInteractor = availableBalance
+        self.networkFeeContentViewInteractor = networkFee
     }
 }

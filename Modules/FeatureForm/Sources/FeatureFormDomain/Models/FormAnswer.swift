@@ -48,10 +48,12 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
 
     public let id: String
     public let type: AnswerType
+    public let isEnabled: Bool?
     public let validation: Validation?
     public let text: String?
     public var children: [FormAnswer]?
     public var input: String?
+    public var prefixInputText: String?
     public var hint: String?
     public var instructions: String?
     public let regex: String?
@@ -60,10 +62,12 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
     public init(
         id: String,
         type: AnswerType,
+        isEnabled: Bool? = true,
         validation: Validation? = nil,
         text: String? = nil,
         children: [FormAnswer]? = nil,
         input: String? = nil,
+        prefixInputText: String? = nil,
         hint: String? = nil,
         regex: String? = nil,
         checked: Bool? = nil,
@@ -71,10 +75,12 @@ public struct FormAnswer: Codable, Hashable, Identifiable {
     ) {
         self.id = id
         self.type = type
+        self.isEnabled = isEnabled
         self.validation = validation
         self.text = text
         self.children = children
         self.input = input
+        self.prefixInputText = prefixInputText
         self.hint = hint
         self.regex = regex
         self.checked = checked

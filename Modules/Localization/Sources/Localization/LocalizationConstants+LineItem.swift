@@ -98,6 +98,7 @@ extension LocalizationConstants.LineItem.Transactional {
         "Fee",
         comment: "Fee"
     )
+    public static let frequency = NSLocalizedString("Frequency", comment: "Frequency")
     public static let buyingFee = NSLocalizedString(
         "Fees",
         comment: "Buying Fee"

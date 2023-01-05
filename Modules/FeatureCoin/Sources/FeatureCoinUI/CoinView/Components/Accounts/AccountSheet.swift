@@ -45,10 +45,18 @@ struct AccountSheet: View {
             }
             .padding([.leading, .trailing])
             Group {
-                BalanceSectionHeader(
-                    title: account.fiat?.displayString ?? "",
-                    subtitle: account.crypto?.displayString ?? ""
-                )
+                if let fiat = account.fiat, let crypto = account.crypto {
+                    BalanceSectionHeader(
+                        title: fiat.displayString,
+                        subtitle: crypto.displayString
+                    )
+                } else {
+                    BalanceSectionHeader(
+                        title: "......",
+                        subtitle: "............"
+                    )
+                    .redacted(reason: .placeholder)
+                }
             }
             .padding([.top, .bottom], 8.pt)
             let resolved = isNotVerified && account.isPrivateKey
@@ -82,6 +90,12 @@ struct AccountSheet: View {
                 }
             }
         }
+        .batch(
+            .set(
+                blockchain.ux.asset.account.staking.summary.then.enter.into,
+                to: blockchain.ux.earn.portfolio.product["staking"].asset[account.cryptoCurrency.code].summary
+            )
+        )
     }
 }
 
@@ -102,7 +116,7 @@ extension Account.Snapshot {
         case .exchange:
             return [.exchange.withdraw, .exchange.deposit]
         case .staking:
-            return []
+            return [.staking.deposit, .staking.summary, .activity]
         }
     }
 
@@ -110,6 +124,8 @@ extension Account.Snapshot {
         switch accountType {
         case .interest:
             return [.rewards.withdraw, .rewards.deposit, .rewards.summary]
+        case .staking:
+            return [.staking.deposit, .staking.summary]
         default:
             return []
         }

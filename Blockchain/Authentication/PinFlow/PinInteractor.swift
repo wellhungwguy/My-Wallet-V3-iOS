@@ -49,7 +49,7 @@ final class PinInteractor: PinInteracting {
         cacheSuite: CacheSuite = resolve(),
         walletCryptoService: WalletCryptoServiceAPI = resolve()
     ) {
-        loginService = PinLoginService(
+        self.loginService = PinLoginService(
             settings: appSettings,
             service: DIKit.resolve()
         )

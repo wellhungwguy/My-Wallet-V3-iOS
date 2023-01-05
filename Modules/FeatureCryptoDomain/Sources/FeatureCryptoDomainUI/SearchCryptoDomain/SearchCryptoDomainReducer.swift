@@ -86,7 +86,7 @@ struct SearchCryptoDomainState: Equatable, NavigationState {
         self.selectedPremiumDomain = selectedPremiumDomain
         self.isSearchResultsLoading = isSearchResultsLoading
         self.searchResults = searchResults
-        selectedDomains = OrderedSet([])
+        self.selectedDomains = OrderedSet([])
         self.route = route
         self.checkoutState = checkoutState
     }

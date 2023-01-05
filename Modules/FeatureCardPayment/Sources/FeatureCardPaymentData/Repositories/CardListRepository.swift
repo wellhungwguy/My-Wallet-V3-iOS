@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BlockchainNamespace
 import Combine
 import DIKit
 import Errors
@@ -35,11 +36,11 @@ class CardListRepository: CardListRepositoryAPI {
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         let cache: AnyCache<Key, [CardData]> = InMemoryCache(
-            configuration: .onLoginLogout(),
+            configuration: .on(blockchain.session.event.did.sign.in, blockchain.session.event.did.sign.out),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 featureFlagsService.isEnabled(.newCardAcquirers)

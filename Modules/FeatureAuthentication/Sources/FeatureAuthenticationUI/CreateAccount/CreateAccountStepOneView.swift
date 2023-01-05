@@ -18,7 +18,7 @@ struct CreateAccountStepOneView: View {
 
     init(store: Store<CreateAccountStepOneState, CreateAccountStepOneAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {
@@ -201,6 +201,7 @@ struct CreateAccountStepOneView_Previews: PreviewProvider {
                     walletRecoveryService: .noop,
                     walletCreationService: .noop,
                     walletFetcherService: .noop,
+                    signUpCountriesService: NoSignUpCountriesService(),
                     featureFlagsService: NoOpFeatureFlagsService(),
                     recaptchaService: NoOpGoogleRecatpchaService()
                 )
@@ -208,4 +209,14 @@ struct CreateAccountStepOneView_Previews: PreviewProvider {
         )
     }
 }
+
+class NoSignUpCountriesService: SignUpCountriesServiceAPI {
+
+    init() {}
+
+    var countries: AnyPublisher<[Country], Error> {
+        .empty()
+    }
+}
+
 #endif

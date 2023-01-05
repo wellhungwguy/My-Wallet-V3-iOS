@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Blockchain
 import Combine
 import DIKit
 import MoneyKit
@@ -28,6 +29,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Private Properties
 
+    private let app: AppProtocol
     private let client: TradingBalanceClientAPI
     private let cachedValue: CachedValueNew<
         Key,
@@ -37,7 +39,8 @@ class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Setup
 
-    init(client: TradingBalanceClientAPI = resolve()) {
+    init(app: AppProtocol = resolve(), client: TradingBalanceClientAPI = resolve()) {
+        self.app = app
         self.client = client
 
         let cache: AnyCache<Key, CustodialAccountBalanceStates> = InMemoryCache(
@@ -45,7 +48,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] _ in
                 client
@@ -56,6 +59,32 @@ class TradingBalanceService: TradingBalanceServiceAPI {
                         }
                         return CustodialAccountBalanceStates(response: response)
                     }
+                    .handleEvents(receiveOutput: { [app] states in
+                        Task {
+                            for (currency, state) in states.balances {
+                                switch state {
+                                case .absent:
+                                    try await app.set(blockchain.user.trading[currency.code].account.balance, to: nil)
+                                case .present(let value):
+                                    try await app.batch(
+                                        updates: [
+                                            (blockchain.user.trading[currency.code].account.balance.available.amount, value.available.minorString),
+                                            (blockchain.user.trading[currency.code].account.balance.available.currency, value.available.currency.code),
+
+                                            (blockchain.user.trading[currency.code].account.balance.pending.amount, value.pending.minorString),
+                                            (blockchain.user.trading[currency.code].account.balance.pending.currency, value.pending.currency.code),
+
+                                            (blockchain.user.trading[currency.code].account.balance.withdrawable.amount, value.withdrawable.minorString),
+                                            (blockchain.user.trading[currency.code].account.balance.withdrawable.currency, value.available.currency.code),
+
+                                            (blockchain.user.trading[currency.code].account.balance.display.amount, value.mainBalanceToDisplay.minorString),
+                                            (blockchain.user.trading[currency.code].account.balance.display.currency, value.mainBalanceToDisplay.currency.code)
+                                        ]
+                                    )
+                                }
+                            }
+                        }
+                    })
                     .eraseError()
             }
         )

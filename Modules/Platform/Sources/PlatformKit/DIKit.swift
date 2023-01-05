@@ -45,6 +45,8 @@ extension DependencyContainer {
 
         factory { ExchangeAccountsClient() as ExchangeAccountsClientAPI }
 
+        factory { ExchangeExperimentsClient() as ExchangeExperimentsClientAPI }
+
         // MARK: CustodialClient
 
         factory { CustodialClient() as CustodialPaymentAccountClientAPI }
@@ -90,6 +92,8 @@ extension DependencyContainer {
 
         factory { ExchangeAccountStatusService() as ExchangeAccountStatusServiceAPI }
 
+        factory { ExchangeExperimentsService() as ExchangeExperimentsServiceAPI }
+
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
         factory { () -> AssetLoader in
@@ -101,7 +105,7 @@ extension DependencyContainer {
         }
 
         single { () -> CoincoreAPI in
-            let queue = DispatchQueue(label: "coincore.op.queue", qos: .userInitiated)
+            let queue = DispatchQueue(label: "coincore.op.queue")
             return Coincore(
                 assetLoader: DIKit.resolve(),
                 fiatAsset: FiatAsset(),

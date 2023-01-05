@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum DetailType: Equatable, Decodable {
+public enum DetailType: Equatable, Codable {
 
     case groupedItems(ActivityDetail.GroupedItems)
 
@@ -22,6 +22,15 @@ public enum DetailType: Equatable, Decodable {
                 in: container,
                 debugDescription: "Unkown type \(name)"
             )
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .groupedItems(let content):
+            try container.encode("GROUPED_ITEMS", forKey: .type)
+            try content.encode(to: encoder)
         }
     }
 }

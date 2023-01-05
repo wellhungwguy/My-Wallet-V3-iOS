@@ -44,12 +44,12 @@ public struct PrimaryDoubleButton: View {
         trailingIsLoading: Bool = false,
         trailingAction: @escaping () -> Void
     ) {
-        leadingButton = ButtonData(
+        self.leadingButton = ButtonData(
             title: leadingTitle,
             isLoading: leadingIsLoading,
             action: leadingAction
         )
-        trailingButton = ButtonData(
+        self.trailingButton = ButtonData(
             title: trailingTitle,
             isLoading: trailingIsLoading,
             action: trailingAction

@@ -28,7 +28,8 @@ extension CustodialBalanceResponse {
                 pendingDeposit: "0",
                 pendingWithdrawal: "0",
                 available: "2000",
-                withdrawable: "0"
+                withdrawable: "0",
+                mainBalanceToDisplay: "2000"
             ),
             "PAX": .zero,
             "XLM": .zero,

@@ -26,12 +26,12 @@ public struct LinkedBankData {
 
         init(response: LinkedBankResponse) {
             let accountNumber = (response.accountNumber?.replacingOccurrences(of: "x", with: "") ?? "")
-            name = (response.accountName ?? response.name)
-            type = LinkedBankAccountType(from: response.bankAccountType)
-            bankName = response.name
-            routingNumber = response.routingNumber
-            sortCode = response.agentRef
-            number = accountNumber
+            self.name = (response.accountName ?? response.name)
+            self.type = LinkedBankAccountType(from: response.bankAccountType)
+            self.bankName = response.name
+            self.routingNumber = response.routingNumber
+            self.sortCode = response.agentRef
+            self.number = accountNumber
         }
     }
 
@@ -65,24 +65,24 @@ public struct LinkedBankData {
     }
 
     init?(response: LinkedBankResponse) {
-        identifier = response.id
-        account = Account(response: response)
-        state = response.state
-        error = LinkageError(from: response.error)
-        errorCode = response.errorCode
-        entity = response.attributes?.entity
-        paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
-        partner = Partner(response.partner)
+        self.identifier = response.id
+        self.account = Account(response: response)
+        self.state = response.state
+        self.error = LinkageError(from: response.error)
+        self.errorCode = response.errorCode
+        self.entity = response.attributes?.entity
+        self.paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
+        self.partner = Partner(response.partner)
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
         self.currency = currency
-        topLimit = .zero(currency: .USD)
-        icon = (response.attributes?.media?.first(where: { $0.type == "icon" })?.source).flatMap(URL.init(string:))
-        logo = (response.attributes?.media?.first(where: { $0.type == "logo" })?.source).flatMap(URL.init(string:))
+        self.topLimit = .zero(currency: .USD)
+        self.icon = (response.attributes?.media?.first(where: { $0.type == "icon" })?.source).flatMap(URL.init(string:))
+        self.logo = (response.attributes?.media?.first(where: { $0.type == "logo" })?.source).flatMap(URL.init(string:))
 
-        isBankAccount = response.isBankAccount
-        isBankTransferAccount = response.isBankTransferAccount
+        self.isBankAccount = response.isBankAccount
+        self.isBankTransferAccount = response.isBankTransferAccount
     }
 }
 

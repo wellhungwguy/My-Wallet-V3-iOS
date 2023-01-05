@@ -9,6 +9,6 @@ struct GetBalanceRequest: Encodable {
     let params: [String]
 
     init(address: String) {
-        params = [address, "latest"]
+        self.params = [address, "latest"]
     }
 }

@@ -43,7 +43,7 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
 
     init(interactor: CardSettingsSectionInteractor) {
         self.interactor = interactor
-        addPaymentMethodCellPresenter = AddPaymentMethodCellPresenter(
+        self.addPaymentMethodCellPresenter = AddPaymentMethodCellPresenter(
             interactor: interactor.addPaymentMethodInteractor
         )
     }

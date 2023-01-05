@@ -13,6 +13,7 @@ public final class LabelInfoViewCellModel {
         tapInfoPublishRelay
             .asSignal()
     }
+
     let tapInfoPublishRelay = PublishRelay<Void>()
     public init(
         title: String?,

@@ -71,12 +71,12 @@ struct ActivityRow: View {
 extension ActivityRow {
 
     init(_ transaction: Card.Transaction, action: @escaping () -> Void) {
-        merchant = transaction.displayTitle
-        amount = transaction.displayString(for: transaction.displayAmount)
-        counterAmount = transaction.displayString(for: transaction.counterAmount)
-        date = transaction.displayDate
-        icon = transaction.icon
-        tag = transaction.tag
+        self.merchant = transaction.displayTitle
+        self.amount = transaction.displayString(for: transaction.displayAmount)
+        self.counterAmount = transaction.displayString(for: transaction.counterAmount)
+        self.date = transaction.displayDate
+        self.icon = transaction.icon
+        self.tag = transaction.tag
         self.action = action
     }
 }

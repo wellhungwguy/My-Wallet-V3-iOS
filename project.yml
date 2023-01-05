@@ -172,7 +172,7 @@ packages:
     version: 0.42.0
   Intercom:
     url: https://github.com/intercom/intercom-ios.git
-    version: 13.0.0
+    version: 14.0.2
   DIKit:
     url: https://github.com/dchatzieleftheriou-bc/DIKit.git
     branch: safe-property-wrappers-locks
@@ -190,10 +190,13 @@ packages:
     version: 2.0.3
   Sardine:
     url: https://github.com/oliveratkinson-bc/swift-sardine.git
-    version: 1.0.17
+    version: 1.0.19
   LinkKit:
     url: https://github.com/plaid/plaid-link-ios
     from: 3.1.0
+  RecaptchaEnterprise:
+    url: https://github.com/GoogleCloudPlatform/recaptcha-enterprise-mobile-sdk
+    from: 18.0.3
   Analytics:
     path: Modules/Analytics
   BlockchainNamespace:
@@ -316,7 +319,8 @@ packages:
     path: Modules/FeaturePaymentsIntegration
   FeatureUserTagSync:
     path: Modules/FeatureUserTagSync
-
+  FeatureKYCIntegration:
+    path: Modules/FeatureKYCIntegration
 
 targets:
   BlockchainApp:
@@ -363,16 +367,6 @@ targets:
         embed: false
       - framework: Carthage/Build/PromisesObjC.xcframework
         embed: false
-      - framework: Carthage/Build/recaptcha.framework
-        embed: false
-      - framework: Carthage/Build/GoogleToolboxForMac.xcframework
-        embed: false
-      - framework: Carthage/Build/GTMSessionFetcher.xcframework
-        embed: false
-      - framework: Carthage/Build/Protobuf.xcframework
-        embed: false
-      - framework: Carthage/Build/Promises.xcframework
-        embed: false
       - framework: Carthage/Build/Sift.xcframework
 
       - package: FeatureAttribution
@@ -394,6 +388,12 @@ targets:
       - package: FeatureInterest
       - package: FeatureNotificationPreferences
       - package: FeatureKYC
+      - package: FeatureKYCIntegration
+        product: FeatureProveData
+      - package: FeatureKYCIntegration
+        product: FeatureProveDomain
+      - package: FeatureKYCIntegration
+        product: FeatureProveUI
       - package: FeatureNFT
       - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
@@ -437,6 +437,7 @@ targets:
       - package: Pulse
       - package: Intercom
       - package: LinkKit
+      - package: RecaptchaEnterprise
 
       - package: Analytics
         product: AnalyticsKit
@@ -515,7 +516,6 @@ targets:
         product: FeatureBackupRecoveryPhrase
       - package: FeatureUserTagSync
         product: FeatureUserTagSync
-
 
     platform: iOS
     postBuildScripts:

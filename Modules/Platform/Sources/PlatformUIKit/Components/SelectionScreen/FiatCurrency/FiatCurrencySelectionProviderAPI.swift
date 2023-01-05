@@ -13,7 +13,7 @@ public final class DefaultFiatCurrencySelectionProvider: FiatCurrencySelectionPr
     public let currencies: Observable<[FiatCurrency]>
 
     public init(availableCurrencies: [FiatCurrency] = FiatCurrency.supported) {
-        currencies = .just(availableCurrencies)
+        self.currencies = .just(availableCurrencies)
     }
 }
 
@@ -21,6 +21,6 @@ public final class FiatTradingCurrencySelectionProvider: FiatCurrencySelectionPr
     public let currencies: Observable<[FiatCurrency]>
 
     public init(userService: NabuUserServiceAPI = resolve()) {
-        currencies = userService.fetchUser().map(\.currencies.usableFiatCurrencies).asObservable()
+        self.currencies = userService.fetchUser().map(\.currencies.usableFiatCurrencies).asObservable()
     }
 }

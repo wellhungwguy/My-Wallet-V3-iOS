@@ -13,6 +13,6 @@ public struct SettlementInfoRequest: Encodable {
     public let attributes: Attributes
 
     public init(amount: String) {
-        attributes = .init(settlementRequest: .init(amount: amount))
+        self.attributes = .init(settlementRequest: .init(amount: amount))
     }
 }

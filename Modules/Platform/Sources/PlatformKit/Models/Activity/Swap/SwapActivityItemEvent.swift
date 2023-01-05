@@ -189,9 +189,9 @@ public struct SwapActivityItemEvent: Decodable {
         // use the same format as what we use for establishing a
         // secure session, some use ISO8601.
         if let value = formatter.date(from: createdAt) {
-            date = value
+            self.date = value
         } else if let value = legacyFormatter.date(from: createdAt) {
-            date = value
+            self.date = value
         } else {
             throw DecodingError.dataCorruptedError(
                 forKey: .createdAt,
@@ -200,14 +200,14 @@ public struct SwapActivityItemEvent: Decodable {
             )
         }
 
-        identifier = try values.decode(String.self, forKey: .identifier)
+        self.identifier = try values.decode(String.self, forKey: .identifier)
         let pairValue = try values.decode(String.self, forKey: .pair)
 
         let statusValue = try values.decode(String.self, forKey: .status)
-        status = EventStatus(value: statusValue)
-        pair = try Pair(string: pairValue, values: values)
-        kind = try values.decode(SwapKind.self, forKey: .kind)
-        priceFunnel = try values.decode(PriceFunnel.self, forKey: .priceFunnel)
+        self.status = EventStatus(value: statusValue)
+        self.pair = try Pair(string: pairValue, values: values)
+        self.kind = try values.decode(SwapKind.self, forKey: .kind)
+        self.priceFunnel = try values.decode(PriceFunnel.self, forKey: .priceFunnel)
 
         let fiatAmount = try values.decode(String.self, forKey: .fiatValue)
         let fiatCurrency = try values.decode(FiatCurrency.self, forKey: .fiatCurrency)
@@ -241,7 +241,7 @@ public struct SwapActivityItemEvent: Decodable {
             )
         }
 
-        amounts = Amounts(
+        self.amounts = Amounts(
             deposit: deposit,
             withdrawal: withdrawal,
             withdrawalFee: fee,

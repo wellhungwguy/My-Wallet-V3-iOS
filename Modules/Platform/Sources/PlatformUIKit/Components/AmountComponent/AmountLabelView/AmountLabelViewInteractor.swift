@@ -26,6 +26,6 @@ public final class AmountLabelViewInteractor {
     }
 
     public init(currency: Currency) {
-        currencyRelay = BehaviorRelay(value: currency)
+        self.currencyRelay = BehaviorRelay(value: currency)
     }
 }

@@ -47,10 +47,10 @@ final class CardRepository: CardRepositoryAPI {
 
         let cardCache: AnyCache<String, [Card]> = InMemoryCache(
             configuration: .onLoginLogout(),
-            refreshControl: PerpetualCacheRefreshControl()
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
-        cachedCardValue = CachedValueNew(
+        self.cachedCardValue = CachedValueNew(
             cache: cardCache,
             fetch: { _ in
                 client.fetchCards()
@@ -64,7 +64,7 @@ final class CardRepository: CardRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedAccountValue = CachedValueNew(
+        self.cachedAccountValue = CachedValueNew(
             cache: accountCache,
             fetch: { accountKey in
                 client.fetchLinkedAccount(with: accountKey.id)
@@ -97,7 +97,7 @@ final class CardRepository: CardRepositoryAPI {
             client.fetchCard(with: id),
             cachedCardValue.get(key: #file)
         )
-        .flatMap { [cardCache] (card, cards) -> AnyPublisher<Card?, NabuNetworkError> in
+        .flatMap { [cardCache] card, cards -> AnyPublisher<Card?, NabuNetworkError> in
             var cards = cards
             if let index = cards.firstIndex(where: { $0.id == card.id }) {
                 cards[index] = card

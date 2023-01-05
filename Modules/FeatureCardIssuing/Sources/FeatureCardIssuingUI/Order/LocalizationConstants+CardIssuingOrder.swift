@@ -66,6 +66,11 @@ extension LocalizationConstants.CardIssuing {
                         "Continue",
                         comment: "Card Issuing: Continue button"
                     )
+
+                    static let currentlyActive = NSLocalizedString(
+                        "Currently Active",
+                        comment: "Card Issuing: Currently Active button"
+                    )
                 }
             }
         }
@@ -99,15 +104,32 @@ extension LocalizationConstants.CardIssuing {
 
         enum Processing {
             enum Success {
-                static let title = NSLocalizedString(
-                    "Card Successfully Created!",
-                    comment: "Card Issuing: Card Successfully Created!"
-                )
+                enum Virtual {
+                    static let title = NSLocalizedString(
+                        "Card Successfully Created!",
+                        comment: "Card Issuing: Card Successfully virtual created!"
+                    )
 
-                static let caption = NSLocalizedString(
-                    "Welcome to the club, to view your card dashboard please press Continue below.",
-                    comment: "Card Issuing: Order success caption"
-                )
+                    static let caption = NSLocalizedString(
+                        "Continue to view your card dashboard.",
+                        comment: "Card Issuing: Order success virtual caption"
+                    )
+                }
+
+                enum Physical {
+                    static let title = NSLocalizedString(
+                        "Card Successfully Ordered!",
+                        comment: "Card Issuing: Card Successfully physical ordered!"
+                    )
+
+                    static let caption = NSLocalizedString(
+                        """
+                        You are done! We are getting your card shipped out. \
+                        In the mean time, spend using your card details or via Apple Pay.
+                        """,
+                        comment: "Card Issuing: Order success physical caption"
+                    )
+                }
 
                 static let goToDashboard = NSLocalizedString(
                     "Go To Dashboard",
@@ -124,6 +146,31 @@ extension LocalizationConstants.CardIssuing {
         }
 
         enum KycPending {
+            enum Error {
+                static let title = NSLocalizedString(
+                    "There Is An Error With Your Application",
+                    comment: "Card Issuing: KYC Error - There Is An Error With Your Application"
+                )
+
+                static let description = NSLocalizedString(
+                    """
+                    We are processing the provided information and \
+                    there seems to be an issue with the following below.
+                    """,
+                    comment: "Card Issuing: KYC Error Description"
+                )
+
+                static let ssn = NSLocalizedString(
+                    "SSN Does Not Match Our Records",
+                    comment: "Card Issuing: KYC SSN Error"
+                )
+
+                static let address = NSLocalizedString(
+                    "Residential Address Invalid",
+                    comment: "Card Issuing: KYC Residential Address Error"
+                )
+            }
+
             enum Success {
                 static let title = NSLocalizedString(
                     "KYC Updated!",
@@ -150,7 +197,7 @@ extension LocalizationConstants.CardIssuing {
 
             enum Pending {
                 static let title = NSLocalizedString(
-                    "Your Account Is Under Review",
+                    "Your Account Is Pending Approval",
                     comment: "Card Issuing: KYC Account Under Review"
                 )
 
@@ -186,6 +233,54 @@ extension LocalizationConstants.CardIssuing {
                 static let next = NSLocalizedString(
                     "Try Again",
                     comment: "Card Issuing: KYC Pending continue button"
+                )
+            }
+        }
+
+        enum PatriotAct {
+
+            static let navigationTitle = NSLocalizedString(
+                "US Patriot Act",
+                comment: "Card Issuing: Patriot Act Navigation title"
+            )
+
+            static let title = NSLocalizedString(
+                "US Patriot Act Disclosure",
+                comment: "Card Issuing: Patriot Act title"
+            )
+
+            static let button = NSLocalizedString(
+                "Why Do I Need To Do This",
+                comment: "Card Issuing: Patriot Act Button title"
+            )
+
+            enum Article1 {
+                static let title = NSLocalizedString(
+                    "USA PATRIOT ACT Section 326 - Customer Identification Program",
+                    comment: "Card Issuing: Patriot Act Article 1 title"
+                )
+                static let description = NSLocalizedString(
+                    """
+                    To help the government fight the funding of terrorism and money laundering activities, \
+                    Federal law requires all financial institutions to obtain, verify, \
+                    and record information that identifies each person who opens an account.
+                    """,
+                    comment: "Card Issuing: Patriot Act Article 1 description"
+                )
+            }
+
+            enum Article2 {
+                static let title = NSLocalizedString(
+                    "What this means for you",
+                    comment: "Card Issuing: Patriot Act Article 2 title"
+                )
+                static let description = NSLocalizedString(
+                    """
+                    When you open an account, we will ask for your name, address, date of birth, \
+                    and other information that will allow us to identify you. \
+                    We may also ask to see your driver's license or other identifying documents.
+                    """,
+                    comment: "Card Issuing: Patriot Act Article 2 description"
                 )
             }
         }

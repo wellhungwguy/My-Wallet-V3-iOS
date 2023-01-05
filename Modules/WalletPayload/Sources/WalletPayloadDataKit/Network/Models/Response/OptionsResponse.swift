@@ -18,10 +18,10 @@ struct OptionsResponse: Equatable, Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        pbkdf2Iterations = try container.decode(Int.self, forKey: .pbkdf2Iterations)
-        html5Notifications = try container.decodeIfPresent(Bool.self, forKey: .html5Notifications) ?? false
-        logoutTime = try container.decodeIfPresent(Int.self, forKey: .logoutTime)
-        feePerKB = try container.decodeIfPresent(Int.self, forKey: .feePerKB)
+        self.pbkdf2Iterations = try container.decode(Int.self, forKey: .pbkdf2Iterations)
+        self.html5Notifications = try container.decodeIfPresent(Bool.self, forKey: .html5Notifications) ?? false
+        self.logoutTime = try container.decodeIfPresent(Int.self, forKey: .logoutTime)
+        self.feePerKB = try container.decodeIfPresent(Int.self, forKey: .feePerKB)
     }
 
     init(

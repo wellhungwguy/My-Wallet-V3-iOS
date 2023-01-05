@@ -31,8 +31,8 @@ final class PricesTableViewCellPresenter {
             ),
             marginOffset: 0
         )
-        imageViewModel = BadgeImageViewModel(theme: theme)
-        titleLabelContent = .init(text: cryptoCurrency.name, font: .main(.semibold, 16), color: .titleText)
+        self.imageViewModel = BadgeImageViewModel(theme: theme)
+        self.titleLabelContent = .init(text: cryptoCurrency.name, font: .main(.semibold, 16), color: .titleText)
         self.interactor = interactor
         interactor
             .state

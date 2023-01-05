@@ -22,7 +22,7 @@ public struct SmallMinimalButton: View {
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
-        self._title = .constant(title)
+        _title = .constant(title)
         self.isLoading = isLoading
         self.action = action
     }
@@ -32,7 +32,7 @@ public struct SmallMinimalButton: View {
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
-        self._title = title
+        _title = title
         self.isLoading = isLoading
         self.action = action
     }
@@ -42,7 +42,7 @@ public struct SmallMinimalButton: View {
         isLoading: Bool = false,
         action: @escaping () async -> Void
     ) {
-        self._title = .constant(title)
+        _title = .constant(title)
         self.isLoading = isLoading
         self.action = { Task(priority: .userInitiated) { @MainActor in await action() } }
     }
@@ -51,6 +51,7 @@ public struct SmallMinimalButton: View {
         MinimalButton(
             title: $title,
             isLoading: isLoading,
+            isOpaque: true,
             leadingView: { EmptyView() },
             action: action
         )

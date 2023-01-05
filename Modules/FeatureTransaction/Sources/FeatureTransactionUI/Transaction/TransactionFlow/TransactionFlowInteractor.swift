@@ -175,6 +175,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let app: AppProtocol
 
     private var bag = Set<AnyCancellable>()
+    private var tasks = Set<Task<Void, Never>>()
 
     init(
         transactionModel: TransactionModel,
@@ -205,6 +206,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     deinit {
         transactionModel.destroy()
         bag.removeAll()
+        for task in tasks {
+            task.cancel()
+        }
+        tasks.removeAll()
     }
 
     override func didBecomeActive() {
@@ -504,6 +509,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
             case .deposit,
                  .interestTransfer,
+                 .stakingDeposit,
                  .sell,
                  .swap:
                 router?.routeToDestinationAccountPicker(
@@ -590,6 +596,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
 
             case .interestTransfer,
+                 .stakingDeposit,
                  .withdraw,
                  .buy,
                  .interestWithdraw,
@@ -605,6 +612,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action,
                     canAddMoreSources: canAddMoreSources
                 )
+
             case .sign:
                 unimplemented("Sign action does not support selectSource.")
             }
@@ -987,6 +995,13 @@ extension TransactionFlowInteractor {
                     app.state.transaction { state in
                         state.clear(blockchain.ux.error.context.action)
                         state.clear(blockchain.ux.error.context.type)
+                        // Clear the latest recurring buy frequency selected by the user
+                        // Clear the eligible payment methods for recurring buy
+                        // Clear the localized recurring buy frequency as well as the currently selected recurring buy frequency.
+                        state.clear(blockchain.ux.transaction.action.select.recurring.buy.frequency)
+                        state.clear(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies)
+                        state.clear(blockchain.ux.transaction.checkout.recurring.buy.frequency.localized)
+                        state.clear(blockchain.ux.transaction.checkout.recurring.buy.frequency)
                     }
                 case .inProgress:
                     app.post(event: blockchain.ux.transaction.event.in.progress)
@@ -1087,8 +1102,7 @@ extension TransactionFlowInteractor {
         .store(in: &bag)
 
         app.on(blockchain.ux.transaction.action.reset) { @MainActor [weak self] _ async in
-            guard let transactionModel = self?.transactionModel else { return }
-            transactionModel.process(action: .resetFlow)
+            self?.closeFlow()
         }
         .subscribe()
         .store(in: &bag)
@@ -1117,5 +1131,65 @@ extension TransactionFlowInteractor {
         }
         .subscribe()
         .store(in: &bag)
+
+        tasks.insert(
+            Task {
+                do {
+                    try await actions()
+                } catch {
+                    app.post(error: error)
+                }
+            }
+        )
+    }
+
+    func actions() async throws {
+
+        try await app.transaction { app in
+            try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.then.enter.into, to: blockchain.ux.transaction.disclaimer[])
+            try await app.set(blockchain.ux.transaction.disclaimer.finish.tap.then.close, to: true)
+        }
+
+        _ = await Task<Void, Never> {
+            do {
+                guard let product = action.earnProduct, let asset = target?.currencyType.cryptoCurrency else {
+                    try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.discard.if, to: true)
+                    return
+                }
+
+                try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.perform.when, to: false)
+
+                let disabled: Bool = try await app.get(
+                    blockchain.user.earn.product[product].asset[asset.code].limit.withdraw.is.disabled,
+                    waitForValue: true
+                )
+
+                let balance = (try? await app.get(blockchain.user.earn.product[product].asset[asset].account.balance, as: MoneyValue.self))
+                    ?? .zero(currency: asset)
+
+                try await app.transaction { app in
+                    try await app.set(blockchain.ux.transaction.event.should.show.disclaimer.policy.perform.when, to: disabled)
+                    try await app.set(
+                        blockchain.ux.transaction.event.should.show.disclaimer.policy.discard.if,
+                        to: balance > .zero(currency: balance.currency) || !disabled
+                    )
+                }
+            } catch {
+                app.post(error: error)
+            }
+        }.value
+    }
+}
+
+extension AssetAction {
+    var earnProduct: String? {
+        switch self {
+        case .stakingDeposit:
+            return "staking"
+        case .interestTransfer, .interestWithdraw:
+            return "savings"
+        case _:
+            return nil
+        }
     }
 }

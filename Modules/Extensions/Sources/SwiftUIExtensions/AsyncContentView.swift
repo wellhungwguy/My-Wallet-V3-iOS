@@ -21,7 +21,7 @@ public struct AsyncContentView<
     Content: View
 >: View {
 
-    @ObservedObject var source: Source
+    @StateObject var source: Source
     var loadingView: LoadingView
     var errorView: (Source.Failure) -> ErrorView
     var content: (Source.Output) -> Content
@@ -32,7 +32,7 @@ public struct AsyncContentView<
         @ViewBuilder errorView: @escaping (Source.Failure) -> ErrorView,
         @ViewBuilder content: @escaping (Source.Output) -> Content
     ) {
-        self.source = source
+        _source = .init(wrappedValue: source)
         self.loadingView = loadingView
         self.errorView = errorView
         self.content = content
@@ -48,6 +48,37 @@ public struct AsyncContentView<
             errorView(error)
         case .loaded(let output):
             content(output)
+        }
+    }
+}
+
+public class ConcurrencyLoadableObject<Success>: LoadableObject {
+
+    @Published public private(set) var state = LoadingState<Success, Error>.idle
+
+    private var create: () -> Task<Success, Error>
+    private var subscription: Task<Void, Never>?
+
+    private let animation: Animation?
+
+    public init(create: @escaping () -> Task<Success, Error>, animation: Animation? = .linear) {
+        self.create = create
+        self.animation = animation
+    }
+
+    public func load() {
+        subscription = Task { @MainActor in
+            state = .loading
+            do {
+                let value = try await create().value
+                withAnimation(animation) {
+                    state = .loaded(value)
+                }
+            } catch {
+                withAnimation(animation) {
+                    state = .failed(error)
+                }
+            }
         }
     }
 }
@@ -99,6 +130,36 @@ extension AsyncContentView {
             content: content
         )
     }
+
+    public init<T>(
+        source: @escaping () -> Task<T, Error>,
+        loadingView: LoadingView = ProgressView(),
+        @ViewBuilder errorView: @escaping (Error) -> ErrorView,
+        @ViewBuilder content: @escaping (T) -> Content
+    ) where Source == ConcurrencyLoadableObject<T> {
+        self.init(
+            source: ConcurrencyLoadableObject(create: source),
+            loadingView: loadingView,
+            errorView: errorView,
+            content: content
+        )
+    }
+
+    public init<T>(
+        source: @escaping () async throws -> T,
+        loadingView: LoadingView = ProgressView(),
+        @ViewBuilder errorView: @escaping (Error) -> ErrorView,
+        @ViewBuilder content: @escaping (T) -> Content
+    ) where Source == ConcurrencyLoadableObject<T> {
+        self.init(
+            source: ConcurrencyLoadableObject {
+                Task { try await source() }
+            },
+            loadingView: loadingView,
+            errorView: errorView,
+            content: content
+        )
+    }
 }
 #endif
 
@@ -131,7 +192,7 @@ extension AsyncContentView where Source.Failure == Never, ErrorView == EmptyView
 }
 
 extension EmptyView {
-    init(ignored: some Any) {
+    public init(ignored: some Any) {
         self = EmptyView()
     }
 }

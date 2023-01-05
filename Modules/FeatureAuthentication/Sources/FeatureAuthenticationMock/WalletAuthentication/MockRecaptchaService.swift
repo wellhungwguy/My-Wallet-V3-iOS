@@ -4,6 +4,9 @@ import Combine
 import FeatureAuthenticationDomain
 
 class MockRecaptchaService: GoogleRecaptchaServiceAPI {
+
+    func load() { }
+
     func verifyForSignup() -> AnyPublisher<String, GoogleRecaptchaError> {
         .just("")
     }

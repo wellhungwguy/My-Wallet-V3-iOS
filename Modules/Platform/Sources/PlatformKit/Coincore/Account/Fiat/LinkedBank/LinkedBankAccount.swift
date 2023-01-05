@@ -78,7 +78,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.accountId = accountId
         self.bankAccountType = bankAccountType
         self.accountNumber = accountNumber
-        fiatCurrency = currency
+        self.fiatCurrency = currency
         self.paymentType = paymentType
         self.partner = partner
         self.data = data
@@ -95,6 +95,13 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
+    }
+
+    public func mainBalanceToDisplayPair(
         fiatCurrency: FiatCurrency,
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {

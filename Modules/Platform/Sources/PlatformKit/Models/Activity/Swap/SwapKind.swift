@@ -18,10 +18,10 @@ public struct SwapKind: Decodable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        direction = try values.decode(OrderDirection.self, forKey: .direction)
-        depositAddress = try values.decodeIfPresent(String.self, forKey: .depositAddress)
-        depositTxHash = try values.decodeIfPresent(String.self, forKey: .depositTxHash)
-        withdrawalAddress = try values.decodeIfPresent(String.self, forKey: .withdrawalAddress)
-        withdrawalTxHash = try values.decodeIfPresent(String.self, forKey: .withdrawalTxHash)
+        self.direction = try values.decode(OrderDirection.self, forKey: .direction)
+        self.depositAddress = try values.decodeIfPresent(String.self, forKey: .depositAddress)
+        self.depositTxHash = try values.decodeIfPresent(String.self, forKey: .depositTxHash)
+        self.withdrawalAddress = try values.decodeIfPresent(String.self, forKey: .withdrawalAddress)
+        self.withdrawalTxHash = try values.decodeIfPresent(String.self, forKey: .withdrawalTxHash)
     }
 }

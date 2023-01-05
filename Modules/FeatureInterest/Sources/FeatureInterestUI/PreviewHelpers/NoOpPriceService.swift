@@ -1,10 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Errors
 import MoneyKit
 import PlatformKit
 
 final class NoOpPriceService: PriceServiceAPI {
+
+    func stream(quote: MoneyDomainKit.Currency) -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func moneyValuePair(
         fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,

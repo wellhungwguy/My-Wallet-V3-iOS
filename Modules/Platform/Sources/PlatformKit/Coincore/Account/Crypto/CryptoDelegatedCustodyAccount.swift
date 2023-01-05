@@ -102,7 +102,7 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
         self.balanceRepository = balanceRepository
         self.priceService = priceService
         self.delegatedCustodyAccount = delegatedCustodyAccount
-        asset = delegatedCustodyAccount.coin
+        self.asset = delegatedCustodyAccount.coin
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
@@ -111,6 +111,7 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
              .deposit,
              .interestTransfer,
              .interestWithdraw,
+             .stakingDeposit,
              .sell,
              .sign,
              .swap,
@@ -131,6 +132,17 @@ public final class CryptoDelegatedCustodyAccount: CryptoAccount, NonCustodialAcc
         at time: PriceTime
     ) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(
+            priceService: priceService,
+            fiatCurrency: fiatCurrency,
+            at: time
+        )
+    }
+
+    public func mainBalanceToDisplayPair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(
             priceService: priceService,
             fiatCurrency: fiatCurrency,
             at: time

@@ -80,7 +80,7 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
         self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
                 schedulerIdentifier: "InterestWithdrawTradingTransactionEngine"
@@ -129,7 +129,8 @@ public final class InterestWithdrawTradingTransactionEngine: InterestTransaction
                     maximumDaily: nil,
                     maximumAnnual: nil,
                     effectiveLimit: nil,
-                    suggestedUpgrade: nil
+                    suggestedUpgrade: nil,
+                    earn: nil
                 )
             )
         }

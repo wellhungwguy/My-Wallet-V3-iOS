@@ -16,7 +16,7 @@ final class WithdrawalLocksService: WithdrawalLocksServiceAPI {
         repository: WithdrawalLocksRepositoryAPI = resolve(),
         fiatCurrencyCodePublisher: FiatCurrencyCodeProviderAPI = resolve()
     ) {
-        withdrawalLocks = fiatCurrencyCodePublisher.defaultFiatCurrencyCode
+        self.withdrawalLocks = fiatCurrencyCodePublisher.defaultFiatCurrencyCode
             .flatMap { currencyCode in
                 repository.withdrawalLocks(currencyCode: currencyCode)
             }

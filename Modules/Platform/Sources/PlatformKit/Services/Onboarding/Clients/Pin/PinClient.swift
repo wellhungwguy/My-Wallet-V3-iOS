@@ -118,9 +118,9 @@ extension PinClient {
         // MARK: - Setup
 
         init(payload: PinPayload, requestType: RequestType) {
-            pin = payload.pinCode
-            key = payload.pinKey
-            value = payload.pinValue
+            self.pin = payload.pinCode
+            self.key = payload.pinKey
+            self.value = payload.pinValue
             self.requestType = requestType.rawValue
         }
     }

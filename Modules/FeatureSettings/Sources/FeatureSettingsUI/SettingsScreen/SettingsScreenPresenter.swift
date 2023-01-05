@@ -63,11 +63,11 @@ final class SettingsScreenPresenter {
         interactor: SettingsScreenInteractor,
         router: SettingsRouterAPI
     ) {
-        helpSectionPresenter = HelpSectionPresenter()
+        self.helpSectionPresenter = HelpSectionPresenter()
 
-        connectPresenter = ConnectSectionPresenter()
+        self.connectPresenter = ConnectSectionPresenter()
 
-        securitySectionPresenter = .init(
+        self.securitySectionPresenter = .init(
             smsTwoFactorService: interactor.smsTwoFactorService,
             credentialsStore: interactor.credentialsStore,
             biometryProvider: interactor.biometryProviding,
@@ -76,15 +76,15 @@ final class SettingsScreenPresenter {
             authenticationCoordinator: interactor.authenticationCoordinator
         )
 
-        cardsSectionPresenter = CardsSectionPresenter(
+        self.cardsSectionPresenter = CardsSectionPresenter(
             interactor: interactor.cardSectionInteractor
         )
 
-        banksSectionPresenter = BanksSectionPresenter(
+        self.banksSectionPresenter = BanksSectionPresenter(
             interactor: interactor.bankSectionInteractor
         )
 
-        profileSectionPresenter = ProfileSectionPresenter(
+        self.profileSectionPresenter = ProfileSectionPresenter(
             tiersLimitsProvider: interactor.tiersProviding,
             emailVerificationInteractor: interactor.emailVerificationBadgeInteractor,
             mobileVerificationInteractor: interactor.mobileVerificationBadgeInteractor,
@@ -93,14 +93,14 @@ final class SettingsScreenPresenter {
             cardIssuingAdapter: interactor.cardIssuingAdapter
         )
 
-        preferencesSectionPresenter = .init(
+        self.preferencesSectionPresenter = .init(
             preferredCurrencyBadgeInteractor: interactor.preferredCurrencyBadgeInteractor,
             preferredTradingCurrencyBadgeInteractor: interactor.preferredTradingCurrencyBadgeInteractor
         )
 
-        referralSectionPresenter = ReferralSectionPresenter(refferalAdapter: interactor.referralAdapter)
+        self.referralSectionPresenter = ReferralSectionPresenter(refferalAdapter: interactor.referralAdapter)
 
-        sectionsProvider = SettingsSectionsProvider(
+        self.sectionsProvider = SettingsSectionsProvider(
             about: helpSectionPresenter,
             connect: connectPresenter,
             banks: banksSectionPresenter,

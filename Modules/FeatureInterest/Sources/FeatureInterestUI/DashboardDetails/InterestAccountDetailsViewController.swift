@@ -15,12 +15,11 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
     private let tableView: SelfSizingTableView
     private let presenter: InterestAccountDetailsScreenPresenter
-    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let disposeBag = DisposeBag()
 
     public init(presenter: InterestAccountDetailsScreenPresenter) {
         self.presenter = presenter
-        tableView = SelfSizingTableView()
+        self.tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -40,9 +39,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
-        loadingViewPresenter.showCircular()
-
-        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     private func setupTableView() {
@@ -77,8 +73,6 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         })
 
         presenter.sectionObservable
-            .hide(loader: loadingViewPresenter)
-            .hideOnError(loader: loadingViewPresenter)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
@@ -90,6 +84,11 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
             trailingButtonStyle: presenter.trailingButton
         )
         titleViewStyle = presenter.titleView
+    }
+
+    public override func navigationBarTrailingButtonPressed() {
+        super.navigationBarTrailingButtonPressed()
+        dismiss(animated: true)
     }
 }
 

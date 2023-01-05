@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import FeatureStakingDomain
 import MoneyKit
 import PlatformKit
 
@@ -14,6 +15,7 @@ public struct TransactionLimits: Equatable {
     public let maximumAnnual: MoneyValue?
     public let effectiveLimit: EffectiveLimit?
     public let suggestedUpgrade: SuggestedLimitsUpgrade?
+    public let earn: EarnCurrencyLimit?
 
     public init(
         currencyType: CurrencyType,
@@ -22,7 +24,8 @@ public struct TransactionLimits: Equatable {
         maximumDaily: MoneyValue?,
         maximumAnnual: MoneyValue?,
         effectiveLimit: EffectiveLimit?,
-        suggestedUpgrade: SuggestedLimitsUpgrade?
+        suggestedUpgrade: SuggestedLimitsUpgrade?,
+        earn: EarnCurrencyLimit?
     ) {
         self.currencyType = currencyType
         self.minimum = minimum
@@ -31,6 +34,7 @@ public struct TransactionLimits: Equatable {
         self.maximumAnnual = maximumAnnual
         self.effectiveLimit = effectiveLimit
         self.suggestedUpgrade = suggestedUpgrade
+        self.earn = earn
     }
 }
 
@@ -69,7 +73,8 @@ extension TransactionLimits {
             maximumDaily: value,
             maximumAnnual: value,
             effectiveLimit: effectiveLimit,
-            suggestedUpgrade: nil
+            suggestedUpgrade: nil,
+            earn: nil
         )
     }
 }
@@ -86,7 +91,8 @@ extension TransactionLimits {
             maximumDaily: maximumDaily?.convert(using: exchangeRate),
             maximumAnnual: maximumAnnual?.convert(using: exchangeRate),
             effectiveLimit: effectiveLimit?.convert(using: exchangeRate),
-            suggestedUpgrade: suggestedUpgrade?.convert(using: exchangeRate)
+            suggestedUpgrade: suggestedUpgrade?.convert(using: exchangeRate),
+            earn: earn
         )
     }
 }

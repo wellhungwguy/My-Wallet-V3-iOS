@@ -20,6 +20,7 @@ public enum HttpHeaderField {
     public static let bitpayPartner = "BP_PARTNER"
     public static let bitpayPartnerVersion = "BP_PARTNER_VERSION"
     public static let xPayProVersion = "x-paypro-version"
+    public static let origin = "Origin"
 }
 
 public enum HttpHeaderValue {

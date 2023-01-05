@@ -19,12 +19,12 @@ struct StellarAssetAccount: Equatable {
         sequence: Int,
         subentryCount: UInt
     ) {
-        walletIndex = 0
+        self.walletIndex = 0
         self.accountAddress = accountAddress
         self.name = name
         self.description = description
         self.sequence = sequence
         self.subentryCount = subentryCount
-        address = StellarAssetAddress(publicKey: accountAddress)
+        self.address = StellarAssetAddress(publicKey: accountAddress)
     }
 }

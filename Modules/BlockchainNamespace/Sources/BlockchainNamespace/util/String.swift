@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Extensions
 import Foundation
 
 extension StringProtocol {
@@ -23,7 +24,7 @@ extension StringProtocol {
     }
 
     public func splitIfNotEmpty(separator: Character = ".") -> [SubSequence] {
-        isEmpty ? [] : split(separator: ".", omittingEmptySubsequences: true)
+        isEmpty ? [] : split(separator: separator, omittingEmptySubsequences: true)
     }
 
     func isDotPathAncestor(of other: String) -> Bool {
@@ -34,5 +35,26 @@ extension StringProtocol {
 
     func isDotPathDescendant(of other: String) -> Bool {
         other.isDotPathAncestor(of: String(self))
+    }
+}
+
+extension String {
+
+    static var lock = UnfairLock()
+    static var memoized: [String: String] = [:]
+
+    public var tagTypeToId: String {
+        String.lock.withLock {
+            if let id = String.memoized[self] {
+                return id
+            }
+            let id = self
+                .split(separator: "_")
+                .dropFirst()
+                .joined(separator: ".")
+
+            String.memoized[self] = id
+            return id
+        }
     }
 }

@@ -32,8 +32,8 @@ public struct Tag {
     private var lazy = Lazy()
 
     init(parent: ID?, node: Lexicon.Graph.Node, in language: Language) {
-        parentID = parent
-        id = parent?.dot(node.name) ?? node.name
+        self.parentID = parent
+        self.id = parent?.dot(node.name) ?? node.name
         self.node = .init(graph: node)
         self.language = language
     }
@@ -168,6 +168,10 @@ extension Tag {
 
 public func ~= (lhs: Tag.Event, rhs: Tag.Event) -> Bool {
     rhs[].is(lhs[])
+}
+
+public func ~= (lhs: Tag.Event, rhs: Tag.Reference) -> Bool {
+    rhs[].is(lhs[]) && lhs.key(to: [:]).context.allSatisfy { rhs.context[$0] == $1 }
 }
 
 extension Tag {
@@ -487,6 +491,7 @@ extension Tag: Equatable, Hashable {
 
 extension CodingUserInfoKey {
     public static let language = CodingUserInfoKey(rawValue: "com.blockchain.namespace.language")!
+    public static let context = CodingUserInfoKey(rawValue: "com.blockchain.namespace.context")!
 }
 
 extension Tag: Codable {
@@ -528,12 +533,9 @@ extension I_blockchain_db_collection where Self: L {
         Tag.KeyTo(id: self, context: [id: value])
     }
 
-    public subscript(value: some Sendable & Hashable & CustomStringConvertible) -> Tag.KeyTo<Self> {
+    @_disfavoredOverload
+    public subscript(value: some CustomStringConvertible) -> Tag.KeyTo<Self> {
         Tag.KeyTo(id: self, context: [id: value.description])
-    }
-
-    public subscript(event: Tag.Event) -> Tag.KeyTo<Self> {
-        Tag.KeyTo(id: self, context: [id: event.description])
     }
 }
 
@@ -551,7 +553,7 @@ extension Tag.KeyTo where A: I_blockchain_db_collection {
 extension Tag {
 
     @dynamicMemberLookup
-    public struct KeyTo<A: L> {
+    public struct KeyTo<A: L>: Hashable {
 
         private let id: A
         private let context: [L: AnyHashable]
@@ -574,12 +576,18 @@ extension Tag {
 extension Tag.KeyTo: Tag.Event, CustomStringConvertible {
 
     public var description: String { id(\.id) }
-    public func key(to context: Tag.Context) -> Tag.Reference {
+    public func key(to context: Tag.Context = [:]) -> Tag.Reference {
         id[].ref(to: Tag.Context(self.context) + context)
     }
 
     public subscript() -> Tag {
         id[]
+    }
+
+    public func callAsFunction(
+        in context: Tag.Context = [:]
+    ) -> Tag.Reference {
+        key(to: context)
     }
 
     public func callAsFunction<Value>(

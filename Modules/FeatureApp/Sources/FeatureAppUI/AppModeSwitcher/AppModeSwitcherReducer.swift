@@ -19,7 +19,17 @@ extension AppModeSwitcherModule {
                         )
                         .receive(on: DispatchQueue.main)
                         .eraseToEffect()
-                        .map(AppModeSwitcherAction.onRecoveryPhraseStatusFetched)
+                        .map(AppModeSwitcherAction.onRecoveryPhraseStatusFetched),
+
+                    environment
+                        .app
+                        .publisher(for: blockchain.app.mode.has.been.force.defaulted.to.mode, as: AppMode.self)
+                        .map(\.value)
+                        .map { $0 == AppMode.pkw }
+                        .replaceNil(with: false)
+                        .receive(on: DispatchQueue.main)
+                        .eraseToEffect()
+                        .map { AppModeSwitcherAction.binding(.set(\.$userHasBeenDefaultedToPKW, $0)) }
                 )
 
             case .onRecoveryPhraseStatusFetched(let isBackedUp, let isSkipped):
@@ -32,6 +42,8 @@ extension AppModeSwitcherModule {
                    defiAccountBalance.isZero, state.shouldShowDefiModeIntro
                 {
                     return Effect(value: .binding(.set(\.$isDefiIntroPresented, true)))
+                } else if state.shouldShowRecoveryFlow {
+                    return Effect(value: .defiWalletIntro(.onEnableDefiTap))
                 } else {
                     return .concatenate(
                         .fireAndForget {

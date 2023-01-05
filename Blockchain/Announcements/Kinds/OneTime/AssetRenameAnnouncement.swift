@@ -98,7 +98,7 @@ final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement
         dismiss: @escaping CardAnnouncementAction,
         action: @escaping CardAnnouncementAction
     ) {
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.data = data
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

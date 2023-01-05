@@ -17,7 +17,7 @@ public indirect enum JSONValue: Codable, Hashable, CustomStringConvertible {
 
         let stringValue: String
 
-        init(_ string: String) { stringValue = string }
+        init(_ string: String) { self.stringValue = string }
         init?(stringValue: String) { self.stringValue = stringValue }
     }
 

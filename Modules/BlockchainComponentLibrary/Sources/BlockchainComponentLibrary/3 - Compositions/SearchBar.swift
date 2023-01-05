@@ -27,6 +27,7 @@ public struct SearchBar: View {
     private let cancelButtonText: String
     private let subText: String?
     private let subTextStyle: InputSubTextStyle
+    private let hasAutocorrection: Bool
     private let onReturnTapped: () -> Void
 
     /// Create a search bar
@@ -41,6 +42,7 @@ public struct SearchBar: View {
     public init(
         text: Binding<String>,
         isFirstResponder: Binding<Bool>,
+        hasAutocorrection: Bool = true,
         cancelButtonText: String,
         subText: String? = nil,
         subTextStyle: InputSubTextStyle = .default,
@@ -49,6 +51,7 @@ public struct SearchBar: View {
     ) {
         _text = text
         _isFirstResponder = isFirstResponder
+        self.hasAutocorrection = hasAutocorrection
         self.cancelButtonText = cancelButtonText
         self.subText = subText
         self.subTextStyle = subTextStyle
@@ -67,6 +70,7 @@ public struct SearchBar: View {
                 configuration: { textField in
                     #if canImport(UIKit)
                     textField.returnKeyType = .search
+                    textField.autocorrectionType = hasAutocorrection ? .yes : .no
                     #endif
                 },
                 trailing: {

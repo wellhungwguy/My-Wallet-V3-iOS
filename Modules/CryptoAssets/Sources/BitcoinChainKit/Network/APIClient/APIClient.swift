@@ -63,7 +63,7 @@ final class APIClient: APIClientAPI {
         let base: [String]
 
         init(coin: BitcoinChainCoin) {
-            base = [coin.rawValue.lowercased()]
+            self.base = [coin.rawValue.lowercased()]
         }
     }
 
@@ -101,7 +101,7 @@ final class APIClient: APIClientAPI {
         self.coin = coin
         self.requestBuilder = requestBuilder
         self.apicode = apicode
-        endpoint = Endpoint(coin: coin)
+        self.endpoint = Endpoint(coin: coin)
         self.networkAdapter = networkAdapter
     }
 

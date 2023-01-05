@@ -62,6 +62,7 @@ final class AddressModificationReducerTests: XCTestCase {
         testStore = .build(
             mainScheduler: mainScheduler,
             addressDetailsId: AddressDetailsSearchResult.sample().addressId,
+            country: "US",
             state: "MI"
         )
 

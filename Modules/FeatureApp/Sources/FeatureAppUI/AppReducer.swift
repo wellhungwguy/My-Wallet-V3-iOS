@@ -119,7 +119,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     resetPasswordService: env.resetPasswordService,
                     sharedContainer: env.sharedContainer,
                     siftService: env.siftService,
-                    unifiedActivityRepository: env.unifiedActivityRepository,
+                    unifiedActivityService: env.unifiedActivityService,
                     walletPayloadService: env.walletPayloadService,
                     walletService: env.walletService,
                     walletStateProvider: env.walletStateProvider

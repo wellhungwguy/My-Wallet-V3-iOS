@@ -55,7 +55,7 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
 
-        cachedValue = CachedValue(
+        self.cachedValue = CachedValue(
             configuration: .onSubscription(
                 schedulerIdentifier: "LinkedBanksService"
             )
@@ -72,7 +72,7 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
                 .asSingle()
         }
 
-        bankLinkageStartup = fiatCurrencyService.tradingCurrency
+        self.bankLinkageStartup = fiatCurrencyService.tradingCurrency
             .asSingle()
             .flatMap { currency -> Single<(CreateBankLinkageResponse, FiatCurrency)> in
                 client.createBankLinkage(for: currency)

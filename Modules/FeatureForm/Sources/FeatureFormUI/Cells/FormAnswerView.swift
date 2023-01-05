@@ -36,6 +36,7 @@ struct FormOpenEndedAnswerView: View {
     @Binding var showAnswerState: Bool
     @State var isFirstResponder: Bool = false
     let fieldConfiguration: PrimaryFormFieldConfiguration
+    var isEnabled: Bool { answer.isEnabled ?? true }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.padding1) {
@@ -44,19 +45,66 @@ struct FormOpenEndedAnswerView: View {
                     .typography(.paragraph2)
                     .foregroundColor(.semantic.body)
             }
-
+            let fieldConfiguration = fieldConfiguration(answer.id)
+            let textBinding = Binding<String>(
+                get: {
+                    answer.input ?? ""
+                },
+                set: {
+                    answer.input = $0
+                    guard let text = fieldConfiguration.onTextChange?($0) else {
+                        return
+                    }
+                    answer.input = text
+                }
+            )
             Input(
-                text: $answer.input ?? "",
+                text: textBinding,
                 isFirstResponder: $isFirstResponder,
                 shouldResignFirstResponderOnReturn: true,
                 placeholder: answer.hint,
+                prefix: answer.prefixInputText,
+                prefixConfig: fieldConfiguration.inputPrefixConfig,
                 state: showAnswerState ? answer.inputState : .default,
                 configuration: { textField in
-                    let config = fieldConfiguration(answer)
-                    textField.autocorrectionType = .init(type: config.textAutocorrectionType)
-                }
+                    let config = fieldConfiguration
+                    textField.autocorrectionType = config.textAutocorrectionType
+                    textField.keyboardType = config.keyboardType
+                    textField.textContentType = config.textContentType
+                },
+                onFieldTapped: fieldConfiguration.onFieldTapped
             )
+            .disabled(!isEnabled)
             .accessibilityIdentifier(answer.id)
+
+            if let bottomButton = fieldConfiguration.bottomButton {
+                FormAnswerBottomButtonView(
+                    leadingPrefixText: bottomButton.leadingPrefixText,
+                    title: bottomButton.title,
+                    action: bottomButton.action
+                )
+                .padding(.top, 12.pt)
+            }
+        }
+    }
+}
+
+struct FormAnswerBottomButtonView: View {
+
+    let leadingPrefixText: String?
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        HStack(spacing: 2.5.pt) {
+            Spacer()
+            if let leadingPrefixText {
+                Text(leadingPrefixText)
+                    .typography(.caption1)
+            }
+            Button(title, action: action)
+                .typography(.caption1)
+            Spacer()
         }
     }
 }

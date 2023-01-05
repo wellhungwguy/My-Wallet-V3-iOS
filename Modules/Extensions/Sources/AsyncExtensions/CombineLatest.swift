@@ -32,9 +32,9 @@ private actor CombineLatestActor<Element> {
     var isCancelled: Bool = false
 
     init(_ count: Int) {
-        values = [Element?](repeating: nil, count: count)
-        seen = .init(minimumCapacity: count)
-        completed = .init(minimumCapacity: count)
+        self.values = [Element?](repeating: nil, count: count)
+        self.seen = .init(minimumCapacity: count)
+        self.completed = .init(minimumCapacity: count)
     }
 
     @discardableResult

@@ -11,6 +11,6 @@ public class DisclaimerViewModel {
     }
 
     public init(text: NSAttributedString?) {
-        textSubject = .init(text)
+        self.textSubject = .init(text)
     }
 }

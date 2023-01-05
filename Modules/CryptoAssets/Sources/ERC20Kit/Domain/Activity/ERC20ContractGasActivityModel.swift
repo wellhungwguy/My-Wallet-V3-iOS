@@ -19,14 +19,14 @@ public struct ERC20ContractGasActivityModel {
         self.cryptoCurrency = cryptoCurrency
         switch ERC20Function(data: details.data) {
         case .transfer(to: let address, amount: let hexAmount):
-            cryptoValue = ERC20ContractGasActivityModel.gasCryptoValue(
+            self.cryptoValue = ERC20ContractGasActivityModel.gasCryptoValue(
                 hexAmount: hexAmount,
                 cryptoCurrency: cryptoCurrency
             )
-            to = EthereumAddress(address: address, network: .ethereum)
+            self.to = EthereumAddress(address: address, network: .ethereum)
         case nil:
-            cryptoValue = nil
-            to = nil
+            self.cryptoValue = nil
+            self.to = nil
         }
     }
 

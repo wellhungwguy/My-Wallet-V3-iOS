@@ -49,8 +49,8 @@ struct InterestNoEligibleWalletsState: Equatable {
     // MARK: - Init
 
     init(interestAccountRate: InterestAccountRate) {
-        isRoutingToBuy = false
-        interestRate = interestAccountRate.rate
-        cryptoCurrency = interestAccountRate.cryptoCurrency
+        self.isRoutingToBuy = false
+        self.interestRate = interestAccountRate.rate
+        self.cryptoCurrency = interestAccountRate.cryptoCurrency
     }
 }

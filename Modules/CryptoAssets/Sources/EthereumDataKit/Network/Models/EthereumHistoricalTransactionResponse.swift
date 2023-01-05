@@ -13,7 +13,7 @@ public struct EthereumHistoricalTransactionResponse: Decodable {
     public var createdAt: Date {
         timestamp
             .flatMap(TimeInterval.init)
-            .flatMap(Date.init(timeIntervalSince1970:)) ?? Date()
+            .flatMap(Date.init(timeIntervalSince1970:)) ?? .distantPast
     }
 
     public let blockNumber: String?

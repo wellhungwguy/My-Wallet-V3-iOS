@@ -13,12 +13,12 @@ public struct SavingsAccountBalanceResponse: Decodable {
     // MARK: - Init
 
     private init() {
-        balances = [:]
+        self.balances = [:]
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        balances = try container.decode([String: SavingsAccountBalanceDetails].self)
+        self.balances = try container.decode([String: SavingsAccountBalanceDetails].self)
     }
 
     // MARK: - Subscript

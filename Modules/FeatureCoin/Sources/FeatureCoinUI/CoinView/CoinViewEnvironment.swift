@@ -13,6 +13,8 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
     public let mainQueue: AnySchedulerOf<DispatchQueue>
     public let kycStatusProvider: () -> AnyPublisher<KYCStatus, Never>
     public let accountsProvider: () -> AnyPublisher<[Account], Error>
+    public let recurringBuyProvider: () -> AnyPublisher<[RecurringBuy], Error>
+    public let cancelRecurringBuyService: (String) -> AnyPublisher<Void, Error>
     public let assetInformationService: AssetInformationService
     public let historicalPriceService: HistoricalPriceService
     public let earnRatesRepository: RatesRepositoryAPI
@@ -26,6 +28,8 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         kycStatusProvider: @escaping () -> AnyPublisher<KYCStatus, Never>,
         accountsProvider: @escaping () -> AnyPublisher<[Account], Error>,
+        recurringBuyProvider: @escaping () -> AnyPublisher<[RecurringBuy], Error>,
+        cancelRecurringBuyService: @escaping (String) -> AnyPublisher<Void, Error>,
         assetInformationService: AssetInformationService,
         historicalPriceService: HistoricalPriceService,
         earnRatesRepository: RatesRepositoryAPI,
@@ -37,6 +41,8 @@ public struct CoinViewEnvironment: BlockchainNamespaceAppEnvironment {
         self.mainQueue = mainQueue
         self.kycStatusProvider = kycStatusProvider
         self.accountsProvider = accountsProvider
+        self.recurringBuyProvider = recurringBuyProvider
+        self.cancelRecurringBuyService = cancelRecurringBuyService
         self.assetInformationService = assetInformationService
         self.historicalPriceService = historicalPriceService
         self.earnRatesRepository = earnRatesRepository
@@ -51,6 +57,8 @@ extension CoinViewEnvironment {
         app: App.preview,
         kycStatusProvider: { .empty() },
         accountsProvider: { .empty() },
+        recurringBuyProvider: { .empty() },
+        cancelRecurringBuyService: { _ in .empty() },
         assetInformationService: .preview,
         historicalPriceService: .preview,
         earnRatesRepository: PreviewRatesRepository(.just(EarnRates(stakingRate: 5 / 3, interestRate: 5 / 3))),
@@ -63,6 +71,8 @@ extension CoinViewEnvironment {
         app: App.preview,
         kycStatusProvider: { .empty() },
         accountsProvider: { .empty() },
+        recurringBuyProvider: { .empty() },
+        cancelRecurringBuyService: { _ in .empty() },
         assetInformationService: .previewEmpty,
         historicalPriceService: .previewEmpty,
         earnRatesRepository: PreviewRatesRepository(),

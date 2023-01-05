@@ -12,7 +12,7 @@ public struct ViewRecoveryPhraseView: View {
 
     public init(store: Store<ViewRecoveryPhraseState, ViewRecoveryPhraseAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     public var body: some View {

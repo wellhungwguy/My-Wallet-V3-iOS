@@ -64,7 +64,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: remoteConfigControl
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] xPubs in
                 client

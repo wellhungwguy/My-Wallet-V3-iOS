@@ -23,7 +23,7 @@ struct ConfirmationPageDetailsTermsView: View {
 
     var body: some View {
         PrimaryNavigationView {
-            VStack() {
+            VStack {
                 ScrollView {
                     Text(description)
                         .fixedSize(horizontal: false, vertical: true)

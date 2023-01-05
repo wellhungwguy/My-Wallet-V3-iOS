@@ -78,24 +78,52 @@ struct OrderProcessingView: View {
                 .padding(.trailing, -8)
             }
             .padding(.top, Spacing.padding6)
-            VStack(spacing: Spacing.padding1) {
-                Text(L10n.Processing.Success.title)
-                    .typography(.title3)
-                    .multilineTextAlignment(.center)
-                Text(L10n.Processing.Success.caption)
-                    .typography(.paragraph1)
-                    .foregroundColor(.WalletSemantic.body)
-                    .multilineTextAlignment(.center)
+            WithViewStore(store) { viewStore in
+                VStack(spacing: Spacing.padding1) {
+                    Text((viewStore.state.selectedProduct?.type ?? .virtual).successTitle)
+                        .typography(.title3)
+                        .multilineTextAlignment(.center)
+                    Text((viewStore.state.selectedProduct?.type ?? .virtual).successCaption)
+                        .typography(.paragraph1)
+                        .foregroundColor(.WalletSemantic.body)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, Spacing.padding3)
             }
-            .padding(.horizontal, Spacing.padding3)
             Spacer()
             WithViewStore(store) { viewStore in
                 PrimaryButton(title: L10n.Processing.Success.goToDashboard) {
-                    viewStore.send(.close(.created))
+                    guard case .success(let card) = viewStore.orderProcessingState else {
+                        return
+                    }
+                    viewStore.send(.close(.created(card)))
                 }
             }
         }
         .padding(Spacing.padding3)
+    }
+}
+
+extension Card.CardType {
+
+    private typealias L10n = LocalizationConstants.CardIssuing.Order.Processing.Success
+
+    fileprivate var successTitle: String {
+        switch self {
+        case .physical, .shadow:
+            return L10n.Physical.title
+        case .virtual:
+            return L10n.Virtual.title
+        }
+    }
+
+    fileprivate var successCaption: String {
+        switch self {
+        case .physical, .shadow:
+            return L10n.Physical.caption
+        case .virtual:
+            return L10n.Virtual.caption
+        }
     }
 }
 
@@ -105,7 +133,17 @@ struct OrderProcessing_Previews: PreviewProvider {
         NavigationView<OrderProcessingView> {
             OrderProcessingView(
                 store: Store(
-                    initialState: .init(initialKyc: KYC(status: .success, errorFields: nil)),
+                    initialState: .init(
+                        initialKyc: KYC(status: .success, errorFields: nil),
+                        selectedProduct: Product(
+                            productCode: "42",
+                            price: Money(value: "0", symbol: "BTC"),
+                            brand: .visa,
+                            type: .physical,
+                            remainingCards: 1
+                        ),
+                        orderProcessingState: .success(MockServices.card)
+                    ),
                     reducer: cardOrderingReducer,
                     environment: .preview
                 )

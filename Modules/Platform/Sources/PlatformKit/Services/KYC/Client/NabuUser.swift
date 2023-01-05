@@ -30,7 +30,7 @@ public struct NabuUser: Decodable, Equatable {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            exchange = try values.decodeIfPresent(Bool.self, forKey: .exchange) ?? false
+            self.exchange = try values.decodeIfPresent(Bool.self, forKey: .exchange) ?? false
         }
     }
 
@@ -58,6 +58,12 @@ public struct NabuUser: Decodable, Equatable {
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     public let kycUpdateDate: String?
 
+    public let unifiedAccountWalletGuid: String?
+
+    public var isSSO: Bool {
+        unifiedAccountWalletGuid != nil
+    }
+
     // MARK: - Decodable
 
     private enum CodingKeys: String, CodingKey {
@@ -75,6 +81,7 @@ public struct NabuUser: Decodable, Equatable {
         case kycUpdateDate = "updatedAt"
         case depositAddresses = "walletAddresses"
         case currencies
+        case unifiedAccountWalletGuid
     }
 
     // MARK: - Init
@@ -96,7 +103,8 @@ public struct NabuUser: Decodable, Equatable {
         productsUsed: ProductsUsed,
         settings: NabuUserSettings,
         kycCreationDate: String? = nil,
-        kycUpdateDate: String? = nil
+        kycUpdateDate: String? = nil,
+        unifiedAccountWalletGuid: String? = nil
     ) {
         self.identifier = identifier
         self.personalDetails = personalDetails
@@ -115,33 +123,36 @@ public struct NabuUser: Decodable, Equatable {
         self.settings = settings
         self.kycCreationDate = kycCreationDate
         self.kycUpdateDate = kycUpdateDate
+        self.unifiedAccountWalletGuid = unifiedAccountWalletGuid
     }
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try values.decode(String.self, forKey: .identifier)
-        address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
-        tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
-        userName = try values.decodeIfPresent(String.self, forKey: .userName)
-        productsUsed = try values.decodeIfPresent(ProductsUsed.self, forKey: .productsUsed)
-        settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
-        personalDetails = try PersonalDetails(from: decoder)
-        email = try Email(from: decoder)
-        currencies = try values.decode(Currencies.self, forKey: .currencies)
-        mobile = try? Mobile(from: decoder)
-        status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? .none
-        state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
-        tags = try values.decodeIfPresent(Tags.self, forKey: .tags)
-        needsDocumentResubmission = try values.decodeIfPresent(DocumentResubmission.self, forKey: .needsDocumentResubmission)
-        kycCreationDate = try values.decodeIfPresent(String.self, forKey: .kycCreationDate)
-        kycUpdateDate = try values.decodeIfPresent(String.self, forKey: .kycUpdateDate)
+        self.identifier = try values.decode(String.self, forKey: .identifier)
+        self.address = try values.decodeIfPresent(UserAddress.self, forKey: .address)
+        self.tiers = try values.decodeIfPresent(KYC.UserState.self, forKey: .tiers)
+        self.userName = try values.decodeIfPresent(String.self, forKey: .userName)
+        self.productsUsed = try values.decodeIfPresent(ProductsUsed.self, forKey: .productsUsed)
+        self.settings = try values.decodeIfPresent(NabuUserSettings.self, forKey: .settings)
+        self.personalDetails = try PersonalDetails(from: decoder)
+        self.email = try Email(from: decoder)
+        self.currencies = try values.decode(Currencies.self, forKey: .currencies)
+        self.mobile = try? Mobile(from: decoder)
+        self.status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? .none
+        self.state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
+        self.tags = try values.decodeIfPresent(Tags.self, forKey: .tags)
+        self.needsDocumentResubmission = try values.decodeIfPresent(DocumentResubmission.self, forKey: .needsDocumentResubmission)
+        self.kycCreationDate = try values.decodeIfPresent(String.self, forKey: .kycCreationDate)
+        self.kycUpdateDate = try values.decodeIfPresent(String.self, forKey: .kycUpdateDate)
 
-        depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
+        self.depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
             .flatMap { data -> [DepositAddress] in
                 data.compactMap { key, value -> DepositAddress? in
                     DepositAddress(stringType: key, address: value)
                 }
             } ?? []
+
+        self.unifiedAccountWalletGuid = try values.decodeIfPresent(String.self, forKey: .unifiedAccountWalletGuid)
     }
 }
 
@@ -196,8 +207,8 @@ public struct Mobile: Decodable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        phone = try values.decode(String.self, forKey: .phone)
-        verified = try values.decodeIfPresent(Bool.self, forKey: .verified) ?? false
+        self.phone = try values.decode(String.self, forKey: .phone)
+        self.verified = try values.decodeIfPresent(Bool.self, forKey: .verified) ?? false
     }
 
     public init(phone: String, verified: Bool) {
@@ -221,14 +232,14 @@ struct Tags: Decodable, Equatable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
-        cowboys = try values.decodeIfPresent(CodableVoid.self, forKey: .cowboys)
+        self.blockstack = try values.decodeIfPresent(Blockstack.self, forKey: .blockstack)
+        self.cowboys = try values.decodeIfPresent(CodableVoid.self, forKey: .cowboys)
         let isSuperAppMvpTrue = try values.decodeIfPresent(CodableVoid.self, forKey: .isSuperAppMvpTrue)
         let isSuperAppMvpFalse = try values.decodeIfPresent(CodableVoid.self, forKey: .isSuperAppMvpFalse)
         if isSuperAppMvpTrue != nil {
-            isSuperAppMvp = true
+            self.isSuperAppMvp = true
         } else if isSuperAppMvpFalse != nil {
-            isSuperAppMvp = false
+            self.isSuperAppMvp = false
         }
     }
 

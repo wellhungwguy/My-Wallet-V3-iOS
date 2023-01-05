@@ -32,7 +32,7 @@ struct ResetAccountFailureView: View {
 
     init(store: Store<ResetAccountFailureState, ResetAccountFailureAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var body: some View {

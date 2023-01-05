@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import OrderedCollections
 
 extension Collection {
 
@@ -11,5 +12,13 @@ extension Collection {
             return nil
         }
         return self[index]
+    }
+}
+
+extension Array where Element: Hashable {
+    public var orderedAndWithoutDuplicates: [Element] {
+        var set = OrderedSet<Element>()
+        forEach { set.append($0) }
+        return set.array 
     }
 }

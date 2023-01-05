@@ -30,8 +30,8 @@ extension SecureChannelDetailsPresenter {
 
             // MARK: Buttons
 
-            denyButton = ButtonViewModel.cancel(with: LocalizedString.CTA.deny)
-            approveButton = ButtonViewModel.primary(with: LocalizedString.CTA.approve)
+            self.denyButton = ButtonViewModel.cancel(with: LocalizedString.CTA.deny)
+            self.approveButton = ButtonViewModel.primary(with: LocalizedString.CTA.approve)
 
             // MARK: Header
 
@@ -55,7 +55,7 @@ extension SecureChannelDetailsPresenter {
                 tableTitle: nil,
                 title: title
             )
-            headers = [
+            self.headers = [
                 0: AccountPickerHeaderBuilder(headerType: .default(model))
             ]
 
@@ -132,7 +132,7 @@ extension SecureChannelDetailsPresenter {
                 .separator,
                 .label(labelPresenter)
             ]
-            cells = baseCells
+            self.cells = baseCells
         }
     }
 }

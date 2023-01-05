@@ -38,7 +38,7 @@ struct CountDownView: View {
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     init(secondsRemaining: TimeInterval) {
-        initialTime = secondsRemaining
+        self.initialTime = secondsRemaining
         self.secondsRemaining = secondsRemaining
     }
 

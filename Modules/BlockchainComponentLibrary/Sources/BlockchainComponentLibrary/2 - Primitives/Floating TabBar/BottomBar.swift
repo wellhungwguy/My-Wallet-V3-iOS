@@ -23,7 +23,7 @@ public struct BottomBar<Selection>: View where Selection: Hashable {
                     }
                 }
             }
-            .padding([.horizontal])
+            .padding([.horizontal], Spacing.padding4)
             .padding(.vertical, 0)
             .background(
                 RoundedRectangle(cornerRadius: 12)

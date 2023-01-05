@@ -6,8 +6,10 @@ import FeatureAppUI
 import FeatureAttributionDomain
 import FeatureCoinUI
 import FeatureCustomerSupportUI
+import FeatureProductsDomain
 import FeatureReferralDomain
 import FeatureReferralUI
+import FeatureStakingDomain
 import FeatureUserTagSyncDomain
 import FirebaseCore
 import FirebaseInstallations
@@ -36,7 +38,8 @@ extension AppProtocol {
         attributionService: AttributionServiceAPI = resolve(),
         performanceTracing: PerformanceTracingServiceAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve(),
-        userTagService: UserTagServiceAPI = resolve()
+        userTagService: UserTagServiceAPI = resolve(),
+        productsService: ProductsServiceAPI = resolve()
     ) {
         clientObservers.insert(ApplicationStateObserver(app: self))
         clientObservers.insert(AppHapticObserver(app: self))
@@ -50,16 +53,18 @@ extension AppProtocol {
         clientObservers.insert(AttributionAppObserver(app: self, attributionService: attributionService))
         clientObservers.insert(UserTagObserver(app: self, userTagSyncService: userTagService))
         clientObservers.insert(SuperAppIntroObserver(app: self))
-        clientObservers.insert(EmbraceObserver(app: self))
         clientObservers.insert(GenerateSession(app: self))
         clientObservers.insert(PlaidLinkObserver(app: self))
-        // observers.insert(EmbraceObserver(app: self))
+        clientObservers.insert(DefaultAppModeObserver(app: self, productsService: resolve()))
         clientObservers.insert(deepLink)
+        clientObservers.insert(EmbraceObserver(app: self))
         #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
         clientObservers.insert(PulseBlockchainNamespaceEventLogger(app: self))
         clientObservers.insert(MultiAppViewDebuggingObserver(app: self))
         #endif
         clientObservers.insert(PerformanceTracingObserver(app: self, service: performanceTracing))
+        clientObservers.insert(NabuGatewayPriceObserver(app: self))
+        clientObservers.insert(EarnObserver(self))
 
         let intercom = (
             apiKey: Bundle.main.plist.intercomAPIKey[] as String?,
@@ -89,9 +94,13 @@ extension AppProtocol {
             }
         }
 
-        if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
-            state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+        on(blockchain.session.event.did.sign.in) { [state] _ in
+            if state.doesNotContain(blockchain.ux.user.account.preferences.small.balances.are.hidden) {
+                state.set(blockchain.ux.user.account.preferences.small.balances.are.hidden, to: true)
+            }
         }
+        .subscribe()
+        .store(withLifetimeOf: self)
     }
 }
 

@@ -41,9 +41,9 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
             title: title,
             subtitle: subtitle
         )
-        viewModel = .just(model)
-        identity = model.identifier
-        image = Observable
+        self.viewModel = .just(model)
+        self.identity = model.identifier
+        self.image = Observable
             .merge(selectedRelay.asObservable(), Observable.just(selected))
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)
@@ -53,7 +53,7 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
                 }
                 return nil
             }
-        isSeparatorHidden = .just(hideSeparator)
+        self.isSeparatorHidden = .just(hideSeparator)
     }
 }
 

@@ -9,6 +9,8 @@ extension LocalizationConstants {
         public enum AllAssets {
             public enum Filter {}
         }
+
+        public enum AllActivity {}
     }
 }
 
@@ -49,6 +51,28 @@ extension LocalizationConstants.SuperApp.AllAssets {
     public static var noResults = NSLocalizedString(
         "😞 No results",
         comment: "😞 No results"
+    )
+}
+
+extension LocalizationConstants.SuperApp.AllActivity {
+    public static let title = NSLocalizedString(
+        "Activity",
+        comment: "Activity"
+    )
+
+    public static let searchPlaceholder = NSLocalizedString(
+        "Search coin, type or date",
+        comment: "Search coin, type or date"
+    )
+
+    public static var noResults = NSLocalizedString(
+        "😞 No results",
+        comment: "😞 No results"
+    )
+
+    public static let cancelButton = NSLocalizedString(
+        "Cancel",
+        comment: "Cancel"
     )
 }
 

@@ -59,8 +59,8 @@ public final class Sardine<MobileIntelligence: MobileIntelligence_p>: Client.Obs
             }
             .withLatestFrom(app.publisher(for: blockchain.app.fraud.sardine.supported.flows, as: Set<String>.self).compactMap(\.value)) { ($0, $1) }
             .sink { [app] flow, supported in
-                guard supported.contains(flow.name) else { flow.name.peek("🐟 ❌ Flow Blocked"); return }
-                guard flow.start.or(.yes).check(in: app) else { flow.name.peek("🐟 ⚠️ Flow Ignored"); return }
+                guard supported.contains(flow.name) else { return }
+                guard flow.start.or(.yes).check(in: app) else { return }
                 app.post(value: flow.name, of: blockchain.app.fraud.sardine.current.flow)
             }
             .store(in: &bag)

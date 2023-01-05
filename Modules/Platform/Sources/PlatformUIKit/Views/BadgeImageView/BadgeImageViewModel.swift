@@ -84,11 +84,11 @@ public struct BadgeImageViewModel {
 
     /// - parameter cornerRadius: corner radius of the component
     public init(theme: Theme = Theme()) {
-        backgroundColorRelay = .init(value: theme.backgroundColor)
-        cornerRadiusRelay = .init(value: theme.cornerRadius)
-        imageContentRelay = .init(value: theme.imageViewContent)
-        marginOffsetRelay = .init(value: theme.marginOffset)
-        sizingTypeRelay = .init(value: theme.sizingType)
+        self.backgroundColorRelay = .init(value: theme.backgroundColor)
+        self.cornerRadiusRelay = .init(value: theme.cornerRadius)
+        self.imageContentRelay = .init(value: theme.imageViewContent)
+        self.marginOffsetRelay = .init(value: theme.marginOffset)
+        self.sizingTypeRelay = .init(value: theme.sizingType)
     }
 
     func set(theme: Theme) {

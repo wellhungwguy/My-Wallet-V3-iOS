@@ -17,11 +17,11 @@ public final class InterestAccountDetailsScreenPresenter {
     // MARK: - Navigation Properties
 
     var trailingButton: Screen.Style.TrailingButton {
-        .none
+        .close
     }
 
     var leadingButton: Screen.Style.LeadingButton {
-        .close
+        .none
     }
 
     var titleView: Screen.Style.TitleView {
@@ -113,8 +113,8 @@ public final class InterestAccountDetailsScreenPresenter {
         self.interactor = interactor
         let code = interactor.cryptoCurrency.displayCode
 
-        primaryButtonViewModel = .primary(with: LocalizationId.add + " \(code)")
-        secondaryButtonViewModel = .secondary(with: LocalizationId.withdraw + " \(code)")
+        self.primaryButtonViewModel = .primary(with: LocalizationId.add + " \(code)")
+        self.secondaryButtonViewModel = .secondary(with: LocalizationId.withdraw + " \(code)")
 
         primaryButtonViewModel
             .tapRelay

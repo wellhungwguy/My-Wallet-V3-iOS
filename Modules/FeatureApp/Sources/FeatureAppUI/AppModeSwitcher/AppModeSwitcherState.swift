@@ -13,9 +13,12 @@ public struct AppModeSwitcherState: Equatable {
     let defiAccountBalance: MoneyValue?
     let brokerageAccountBalance: MoneyValue?
     var currentAppMode: AppMode
-    var shouldShowDefiModeIntro: Bool { !(recoveryPhraseBackedUp || recoveryPhraseSkipped) }
+    var shouldShowDefiModeIntro: Bool { !(recoveryPhraseBackedUp || recoveryPhraseSkipped) && !userHasBeenDefaultedToPKW }
+    var shouldShowRecoveryFlow: Bool { !(recoveryPhraseBackedUp || recoveryPhraseSkipped) && userHasBeenDefaultedToPKW }
+
     var recoveryPhraseBackedUp: Bool = false
     var recoveryPhraseSkipped: Bool = false
+    @BindableState var userHasBeenDefaultedToPKW: Bool = false
 
     public init(
         totalAccountBalance: MoneyValue?,
@@ -28,6 +31,6 @@ public struct AppModeSwitcherState: Equatable {
         self.brokerageAccountBalance = brokerageAccountBalance
         self.currentAppMode = currentAppMode
 
-        defiWalletState = DefiWalletIntroState()
+        self.defiWalletState = DefiWalletIntroState()
     }
 }

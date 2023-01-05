@@ -194,4 +194,52 @@ final class TagBlockchainSchemaTests: XCTestCase {
             )
         }
     }
+
+    func test_json() throws {
+
+        var json = TaggedJSON(
+            ["article": ["plain": ["navigation": ["bar": ["button": ["close": ["title": ["text": "close"]]]]]]]],
+            as: blockchain.ux.type.story
+        )
+
+        XCTAssertEqual(json.article.plain.navigation.bar.button.close.title.text, "close")
+
+        json.article.plain.navigation.bar.button.close.title.text = "x"
+        json.article.plain.navigation.bar.button.close.tap.then.close = true
+
+        XCTAssertEqual(json.article.plain.navigation.bar.button.close.title.text, "x")
+        try XCTAssertTrue(json.article.plain.navigation.bar.button.close.tap.then.close.unwrap())
+
+        json.article.plain.navigation.bar.button.back.tap.policy.discard.`if` = false
+
+        XCTAssertEqual(json.article.plain.navigation.bar.button.back.tap.policy.discard.`if`, false)
+
+        do {
+            let any: Any = ["article": ["plain": ["navigation": ["bar": ["button": ["close": ["title": ["text": "decoded"]]]]]]]]
+            let decoded = try AnyDecoder().decode(L_blockchain_ux_type_story.JSON.self, from: any)
+            XCTAssertEqual(decoded.article.plain.navigation.bar.button.close.title.text, "decoded")
+        }
+    }
+
+    func test_json_2() throws {
+
+        struct Money: Codable {
+            let amount: String
+            let currency: String
+        }
+
+        var preview = L_blockchain_user_earn_product_asset.JSON(.empty)
+
+        preview.rates.rate = 0.055
+        preview.account.balance[] = Money(amount: "1", currency: "ETH")
+        preview.account.bonding.deposits[] = Money(amount: "2", currency: "ETH")
+        preview.account.locked[] = Money(amount: "3", currency: "ETH")
+        preview.account.total.rewards[] = Money(amount: "4", currency: "ETH")
+        preview.account.unbonding.withdrawals[] = Money(amount: "5", currency: "ETH")
+        preview.limit.days.bonding = 5
+        preview.limit.days.unbonding = 0
+        preview.limit.withdraw.is.disabled = true
+        preview.limit.reward.frequency = blockchain.user.earn.product.asset.limit.reward.frequency.daily[]
+        preview.activity = []
+    }
 }

@@ -37,6 +37,7 @@ public enum LocalizationConstants {
     public static let settings = NSLocalizedString("Settings", comment: "")
     public static let addNew = NSLocalizedString("+Add New", comment: "+Add New")
     public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
+    public static let stakingAccount = NSLocalizedString("Staking Account", comment: "Staking Account")
     public static let balances = NSLocalizedString(
         "Balances",
         comment: "Generic translation, may be used in multiple places."

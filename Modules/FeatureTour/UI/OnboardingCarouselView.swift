@@ -15,7 +15,7 @@ public struct OnboardingCarouselView: View {
     private init(store: Store<TourState, TourAction>, manualLoginEnabled: Bool) {
         self.store = store
         self.manualLoginEnabled = manualLoginEnabled
-        list = LivePricesList(store: store)
+        self.list = LivePricesList(store: store)
     }
 
     public init(environment: TourEnvironment, manualLoginEnabled: Bool) {

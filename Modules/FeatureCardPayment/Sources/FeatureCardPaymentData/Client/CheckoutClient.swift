@@ -21,11 +21,11 @@ class CheckoutClient: CardAcquirerClientAPI {
             .infoDictionary?[Self.envKey] as? String,
             let environment = Environment(rawValue: rawEnvironment)
         else {
-            client = CheckoutAPIClient(publicKey: apiKey, environment: .sandbox)
+            self.client = CheckoutAPIClient(publicKey: apiKey, environment: .sandbox)
             return
         }
 
-        client = CheckoutAPIClient(publicKey: apiKey, environment: environment)
+        self.client = CheckoutAPIClient(publicKey: apiKey, environment: environment)
     }
 
     func tokenize(_ card: CardData, accounts: [String]) -> AnyPublisher<CardTokenizationResponse, CardAcquirerError> {

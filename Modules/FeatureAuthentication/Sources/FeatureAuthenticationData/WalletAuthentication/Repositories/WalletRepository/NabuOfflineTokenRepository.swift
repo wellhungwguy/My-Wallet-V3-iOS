@@ -24,7 +24,7 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
         let subject = PassthroughSubject<Result<NabuOfflineToken, MissingCredentialsError>, Never>()
 
-        offlineToken = Deferred { [reactiveWallet, credentialsFetcher] in
+        self.offlineToken = Deferred { [reactiveWallet, credentialsFetcher] in
             reactiveWallet.waitUntilInitializedFirst
                 .flatMap { _ -> AnyPublisher<NabuOfflineToken, MissingCredentialsError> in
                     credentialsFetcher.fetchAccountCredentials(forceFetch: false)
@@ -55,8 +55,8 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
         )
         .eraseToAnyPublisher()
 
-        offlineTokenSubject = subject
-        offlineTokenPublisher = subject.eraseToAnyPublisher()
+        self.offlineTokenSubject = subject
+        self.offlineTokenPublisher = subject.eraseToAnyPublisher()
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {

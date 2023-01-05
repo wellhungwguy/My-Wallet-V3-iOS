@@ -63,12 +63,12 @@ public struct MinimalButton<LeadingView: View>: View {
     public init(
         title: String,
         isLoading: Bool = false,
-        isOpaque: Bool = false,
+        isOpaque: Bool = true,
         foregroundColor: Color = .semantic.primary,
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
-        self._title = .constant(title)
+        _title = .constant(title)
         self.isOpaque = isOpaque
         self.isLoading = isLoading
         self.foregroundColor = foregroundColor
@@ -84,7 +84,7 @@ public struct MinimalButton<LeadingView: View>: View {
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
-        self._title = title
+        _title = title
         self.isOpaque = isOpaque
         self.isLoading = isLoading
         self.foregroundColor = foregroundColor

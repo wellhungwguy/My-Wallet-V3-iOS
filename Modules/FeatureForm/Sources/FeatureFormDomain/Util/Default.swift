@@ -12,7 +12,7 @@ public struct Default<Default: DefaultValue>: Codable {
     }
 
     public init(value: Default.Value?) {
-        wrappedValue = value ?? Default.value
+        self.wrappedValue = value ?? Default.value
     }
 
     public func encode(to encoder: Encoder) throws {

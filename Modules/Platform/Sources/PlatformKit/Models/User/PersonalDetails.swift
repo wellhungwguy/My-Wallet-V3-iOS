@@ -36,18 +36,18 @@ public struct PersonalDetails: Decodable, Equatable {
     }
 
     public init(id: String?, first: String?, last: String?, birthday: Date?) {
-        identifier = id
-        firstName = first
-        lastName = last
+        self.identifier = id
+        self.firstName = first
+        self.lastName = last
         self.birthday = birthday
     }
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        identifier = try values.decodeIfPresent(String.self, forKey: .identifier)
-        firstName = try values.decodeIfPresent(String.self, forKey: .firstName)
-        lastName = try values.decodeIfPresent(String.self, forKey: .lastName)
-        birthday = (try values.decodeIfPresent(String.self, forKey: .birthday))
+        self.identifier = try values.decodeIfPresent(String.self, forKey: .identifier)
+        self.firstName = try values.decodeIfPresent(String.self, forKey: .firstName)
+        self.lastName = try values.decodeIfPresent(String.self, forKey: .lastName)
+        self.birthday = (try values.decodeIfPresent(String.self, forKey: .birthday))
             .flatMap { DateFormatter.birthday.date(from: $0) }
     }
 }

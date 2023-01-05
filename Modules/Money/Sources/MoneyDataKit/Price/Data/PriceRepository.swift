@@ -35,7 +35,7 @@ final class PriceRepository: PriceRepositoryAPI {
             refreshControl: refreshControl
         )
         .eraseToAnyCache()
-        indexMultiCachedValue = CachedValueNew(
+        self.indexMultiCachedValue = CachedValueNew(
             cache: indexMultiCache,
             fetch: { key in
                 client
@@ -60,7 +60,7 @@ final class PriceRepository: PriceRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         )
         .eraseToAnyCache()
-        symbolsCachedValue = CachedValueNew(
+        self.symbolsCachedValue = CachedValueNew(
             cache: symbolsCache,
             fetch: { _ in
                 client.symbols()
@@ -71,25 +71,34 @@ final class PriceRepository: PriceRepositoryAPI {
         )
     }
 
+    func stream(
+        bases: [Currency],
+        quote: Currency,
+        at time: PriceTime
+    ) -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never> {
+        let bases = Set(bases.map(\.code))
+        return symbolsCachedValue.stream(key: PriceRequest.Symbols.Key())
+            .flatMap { [indexMultiCachedValue] symbols -> AnyPublisher<Result<[String: PriceQuoteAtTime], NetworkError>, Never> in
+                indexMultiCachedValue.stream(
+                    key: PriceRequest.IndexMulti.Key(
+                        base: Set(symbols).intersection(bases),
+                        quote: quote.currencyType,
+                        time: time
+                    )
+                )
+                .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
     func prices(
         of bases: [Currency],
         in quote: Currency,
         at time: PriceTime
     ) -> AnyPublisher<[String: PriceQuoteAtTime], NetworkError> {
-        symbolsCachedValue
-            .get(key: PriceRequest.Symbols.Key())
-            .flatMap { [indexMultiCachedValue] supportedBases
-                -> AnyPublisher<[String: PriceQuoteAtTime], NetworkError> in
-                indexMultiCachedValue
-                    .get(
-                        key: PriceRequest.IndexMulti.Key(
-                            base: Set(bases.map(\.code)).intersection(supportedBases),
-                            quote: quote.currencyType,
-                            time: time
-                        )
-                    )
-                    .eraseToAnyPublisher()
-            }
+        stream(bases: bases, quote: quote, at: time)
+            .first()
+            .get()
             .eraseToAnyPublisher()
     }
 

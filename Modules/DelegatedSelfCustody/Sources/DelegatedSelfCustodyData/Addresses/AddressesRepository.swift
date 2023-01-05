@@ -25,7 +25,7 @@ final class AddressesRepository: DelegatedCustodyAddressesRepositoryAPI {
             configuration: .onLoginLogoutTransaction(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 120)
         ).eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [authenticationDataRepository, client] key in
                 authenticationDataRepository.authenticationData

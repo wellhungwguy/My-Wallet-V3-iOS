@@ -70,6 +70,21 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             default:
                 unimplemented()
             }
+        case .staking(let event):
+            switch (event.type, event.state) {
+            case (.withdraw, .complete):
+                text = LocalizationStrings.withdraw + " \(event.currency.code)"
+            case (.withdraw, .pending),
+                (.withdraw, .processing),
+                (.withdraw, .manualReview):
+                text = LocalizationStrings.withdrawing + " \(event.currency.code)"
+            case (.interestEarned, _):
+                text = event.currency.code + " \(LocalizationStrings.rewardsEarned)"
+            case (.deposit, _):
+                text = LocalizationStrings.staked + " \(event.currency.code)"
+            default:
+                unimplemented()
+            }
         case .swap(let event):
             let pair = event.pair
             switch (event.status, pair.outputCurrencyType) {
@@ -201,6 +216,31 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                         accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
                     )
                 }
+            case .staking(let state):
+                switch state {
+                case .processing,
+                        .pending,
+                        .manualReview:
+                    return .init(
+                        text: LocalizationStrings.pending,
+                        font: descriptors.secondaryFont,
+                        color: descriptors.secondaryTextColor,
+                        alignment: .left,
+                        accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
+                    )
+                case .failed,
+                        .rejected,
+                        .refunded:
+                    return failedLabelContent
+                case _:
+                    return .init(
+                        text: DateFormatter.medium.string(from: event.creationDate),
+                        font: descriptors.secondaryFont,
+                        color: descriptors.secondaryTextColor,
+                        alignment: .left,
+                        accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
+                    )
+                }
             case .buySell(let status):
                 if status == .failed {
                     return failedLabelContent
@@ -253,6 +293,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                  .complete:
                 return interest.cryptoCurrency.brandUIColor
             }
+        case .staking(let item):
+            switch item.state {
+            case .pending, .processing, .manualReview:
+                return .mutedText
+            case .failed, .rejected:
+                return .destructive
+            case _:
+                return item.currency.brandUIColor
+            }
         case .fiat(let event):
             switch event.state {
             case .failed:
@@ -296,6 +345,35 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     /// The `imageResource` for the `BadgeImageViewModel`
     public var imageResource: ImageResource {
         switch event {
+        case .staking(let staking):
+            switch staking.state {
+            case .pending,
+                    .processing,
+                    .manualReview:
+                return .local(name: "clock-icon", bundle: .platformUIKit)
+            case .failed,
+                    .rejected:
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
+            case .complete:
+                switch staking.type {
+                case .deposit:
+                    return .local(name: "plus-icon", bundle: .platformUIKit)
+                case .withdraw:
+                    return .local(name: "minus-icon", bundle: .platformUIKit)
+                case .interestEarned:
+                    return .local(name: Icon.interest.name, bundle: .componentLibrary)
+                case _:
+                    // NOTE: `.unknown` is filtered out in
+                    // the `ActivityScreenInteractor`
+                    assertionFailure("Unexpected case for interest \(staking.state)")
+                    return .local(name: Icon.question.name, bundle: .componentLibrary)
+                }
+            case .cleared:
+                return .local(name: "clock-icon", bundle: .platformUIKit)
+            case _:
+                assertionFailure("Unexpected case for interest \(staking.state)")
+                return .local(name: Icon.question.name, bundle: .componentLibrary)
+            }
         case .interest(let interest):
             switch interest.state {
             case .pending,
@@ -330,6 +408,10 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if value.status == .failed {
                 return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             }
+            if value.isBuy && value.recurringBuyId != nil {
+                return .local(name: Icon.repeat.name, bundle: .componentLibrary)
+            }
+
             let imageName = value.isBuy ? "plus-icon" : "minus-icon"
             return .local(name: imageName, bundle: .platformUIKit)
         case .fiat(let event):

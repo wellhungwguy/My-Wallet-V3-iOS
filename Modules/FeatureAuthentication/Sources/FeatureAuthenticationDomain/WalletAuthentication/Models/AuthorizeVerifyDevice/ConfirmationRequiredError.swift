@@ -18,8 +18,8 @@ struct ConfirmationRequiredError: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let epochTime = try container.decode(TimeInterval.self, forKey: .requestTime)
         // divide by 1000 to convert millseconds to seconds
-        requestTime = Date(timeIntervalSince1970: epochTime / 1000)
-        requester = try container.decode(DeviceVerificationDetails.self, forKey: .requester)
-        approver = try container.decode(DeviceVerificationDetails.self, forKey: .approver)
+        self.requestTime = Date(timeIntervalSince1970: epochTime / 1000)
+        self.requester = try container.decode(DeviceVerificationDetails.self, forKey: .requester)
+        self.approver = try container.decode(DeviceVerificationDetails.self, forKey: .approver)
     }
 }

@@ -40,11 +40,29 @@ public enum UserAddressSearchResult {
     case saved
 }
 
+public enum KYCProveResult {
+    public enum Failure {
+        case generic
+        case verification
+    }
+
+    case success
+    case abandoned
+    case failure(Failure)
+}
+
 public protocol AddressSearchFlowPresenterAPI {
     func openSearchAddressFlow(
         country: String,
         state: String?
     ) -> AnyPublisher<UserAddressSearchResult, Never>
+}
+
+public protocol KYCProveFlowPresenterAPI {
+    func presentFlow(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<KYCProveResult, Never>
 }
 
 // swiftlint:disable type_body_length
@@ -89,6 +107,7 @@ final class KYCRouter: KYCRouterAPI {
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let nabuUserService: NabuUserServiceAPI
     private let requestBuilder: RequestBuilder
+    private let flowKYCInfoService: FlowKYCInfoServiceAPI
 
     private let webViewServiceAPI: WebViewServiceAPI
 
@@ -101,6 +120,8 @@ final class KYCRouter: KYCRouterAPI {
     private var alertPresenter: AlertViewPresenterAPI
 
     private var addressSearchFlowPresenter: AddressSearchFlowPresenterAPI
+    private var proveFlowPresenter: KYCProveFlowPresenterAPI
+    private var proveFlowFailed = false
 
     /// KYC finsihed with `tier1` in-progress / approved
     var tier1Finished: Observable<Void> {
@@ -135,7 +156,9 @@ final class KYCRouter: KYCRouterAPI {
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
         addressSearchFlowPresenter: AddressSearchFlowPresenterAPI = resolve(),
+        proveFlowPresenter: KYCProveFlowPresenterAPI = resolve(),
         nabuUserService: NabuUserServiceAPI = resolve(),
+        flowKYCInfoService: FlowKYCInfoServiceAPI = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
@@ -145,8 +168,10 @@ final class KYCRouter: KYCRouterAPI {
         self.errorRecorder = errorRecorder
         self.alertPresenter = alertPresenter
         self.addressSearchFlowPresenter = addressSearchFlowPresenter
+        self.proveFlowPresenter = proveFlowPresenter
         self.analyticsRecorder = analyticsRecorder
         self.nabuUserService = nabuUserService
+        self.flowKYCInfoService = flowKYCInfoService
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
         self.kycSettings = kycSettings
@@ -389,10 +414,13 @@ final class KYCRouter: KYCRouterAPI {
                         payload: payload
                     )
 
-                    self.isNewAddressSearchEnabled { isNewAddressSearchEnabled in
+                    self.isNewAddressSearchAndProveFlowEnabled(
+                        page: nextPage,
+                        proveFlowFailed: self.proveFlowFailed
+                    ) { isNewAddressSearchEnabled, shouldShowProveFlow in
                         if let informationController = controller as? KYCInformationController, nextPage == .accountStatus {
                             self.presentInformationController(informationController)
-                        } else if isNewAddressSearchEnabled, nextPage == .address {
+                        } else if isNewAddressSearchEnabled {
                             if let navController = self.navController {
                                 navController.dismiss(animated: true) {
                                     self.navController = nil
@@ -400,6 +428,15 @@ final class KYCRouter: KYCRouterAPI {
                                 }
                             } else {
                                 self.presentAddressSearchFlow()
+                            }
+                        } else if shouldShowProveFlow, let address = self.user?.address {
+                            if let navController = self.navController {
+                                navController.dismiss(animated: true) {
+                                    self.navController = nil
+                                    self.presentKYCProveFlow(address: address, page: nextPage)
+                                }
+                            } else {
+                                self.presentKYCProveFlow(address: address, page: nextPage)
                             }
                         } else {
                             self.safePushInNavController(controller)
@@ -436,6 +473,50 @@ final class KYCRouter: KYCRouterAPI {
                 }
             })
             .store(in: &bag)
+    }
+
+    private func presentKYCProveFlow(
+        address: UserAddress,
+        page: KYCPageType
+    ) {
+        proveFlowPresenter
+            .presentFlow(country: address.countryCode, state: address.state)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] addressResult in
+                switch addressResult {
+                case .success:
+                    self?.handle(event: .nextPageFromPageType(.accountStatus, nil))
+                case .abandoned:
+                    self?.stop()
+                case .failure(let failure):
+                    self?.proveFlowFailed = true
+                    switch failure {
+                    case .generic:
+                        self?.handle(event: .nextPageFromPageType(.states, nil))
+                    case .verification:
+                        self?.presentVerification()
+                    }
+                }
+            })
+            .store(in: &bag)
+    }
+
+    private func presentVerification() {
+        tiersService.tiers
+            .asSingle()
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onSuccess: { [weak self] response in
+                    guard let self else { return }
+                    if response.isTier1Approved {
+                        self.handle(event: .nextPageFromPageType(.confirmPhone, nil))
+                    } else {
+                        self.handle(event: .nextPageFromPageType(.states, nil))
+                    }
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     func presentInformationController(_ controller: KYCInformationController) {
@@ -606,7 +687,10 @@ final class KYCRouter: KYCRouterAPI {
             return
         }
 
-        isNewAddressSearchEnabled { [weak self] isNewAddressSearchEnabled in
+        isNewAddressSearchAndProveFlowEnabled(
+            page: startingPage,
+            proveFlowFailed: proveFlowFailed
+        ) { [weak self] isNewAddressSearchEnabled, shouldShowProveFlow in
 
             guard let self else { return }
             var controller: KYCBaseViewController
@@ -620,15 +704,21 @@ final class KYCRouter: KYCRouterAPI {
                     )
                 )
                 self.navController = self.presentInNavigationController(controller, in: viewController)
-            } else if isNewAddressSearchEnabled, startingPage == .address {
-                self.presentAddressSearchFlow()
-            } else {
-                controller = self.pageFactory.createFrom(
-                    pageType: startingPage,
-                    in: self
-                )
-                self.navController = self.presentInNavigationController(controller, in: viewController)
+                return
             }
+            if isNewAddressSearchEnabled {
+                self.presentAddressSearchFlow()
+                return
+            }
+            if shouldShowProveFlow, let address = user.address {
+                self.presentKYCProveFlow(address: address, page: startingPage)
+                return
+            }
+            controller = self.pageFactory.createFrom(
+                pageType: startingPage,
+                in: self
+            )
+            self.navController = self.presentInNavigationController(controller, in: viewController)
         }
     }
 
@@ -838,27 +928,49 @@ extension KYCPageType {
 }
 
 extension KYCRouter {
-    private func isNewAddressSearchEnabled(onComplete: @escaping (Bool) -> Void) {
+
+    private func isNewAddressSearchAndProveFlowEnabled(
+        page: KYCPageType,
+        proveFlowFailed: Bool,
+        onComplete: @escaping (Bool, Bool) -> Void
+    ) {
         Task(priority: .userInitiated) { @MainActor in
-            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
-                for: blockchain.app.configuration.addresssearch.kyc.is.enabled,
-                as: Bool.self
-            )
+            var isNewAddressSearchEnabled: Bool?
+            if page == .address {
+                isNewAddressSearchEnabled = try? await app.publisher(
+                    for: blockchain.app.configuration.addresssearch.kyc.is.enabled,
+                    as: Bool.self
+                )
                 .await()
                 .value
-            onComplete(isNewAddressSearchEnabled ?? false)
+            }
+
+            var isProveEnabled: Bool?
+            if !proveFlowFailed, page == .profileNew || page == .profile {
+                isProveEnabled = try? await app.publisher(
+                    for: blockchain.app.configuration.kyc.integration.prove.is.enabled,
+                    as: Bool.self
+                )
+                .await()
+                .value
+                if isProveEnabled ?? false {
+                    isProveEnabled = try? await flowKYCInfoService.isProveFlow()
+                }
+            }
+
+            onComplete(isNewAddressSearchEnabled ?? false, isProveEnabled ?? false)
         }
     }
 
     private func isNewProfileEnabled(onComplete: @escaping (Bool) -> Void) {
         Task(priority: .userInitiated) { @MainActor in
-            let isNewAddressSearchEnabled: Bool? = try? await app.publisher(
+            let isNewProfileEnabled: Bool? = try? await app.publisher(
                 for: blockchain.app.configuration.profile.kyc.is.enabled,
                 as: Bool.self
             )
                 .await()
                 .value
-            onComplete(isNewAddressSearchEnabled ?? false)
+            onComplete(isNewProfileEnabled ?? false)
         }
     }
 }

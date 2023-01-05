@@ -17,7 +17,7 @@ public struct InstructionCellViewModel {
 
     public init(number: Int, inputs: [InteractableTextViewModel.Input]) {
         self.number = number
-        numberViewModel = .init(
+        self.numberViewModel = .init(
             text: "\(number)",
             font: .main(.bold, 20),
             color: .titleText,
@@ -25,7 +25,7 @@ public struct InstructionCellViewModel {
             accessibility: .none
         )
         let font = UIFont.main(.medium, 14)
-        textViewModel = .init(
+        self.textViewModel = .init(
             inputs: inputs,
             textStyle: .init(color: .descriptionText, font: font),
             linkStyle: .init(color: .linkableText, font: font),

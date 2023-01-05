@@ -88,8 +88,8 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
         action: @escaping CardAnnouncementAction
     ) {
         self.shouldBackupFunds = shouldBackupFunds
-        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
-        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
+        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        self.appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

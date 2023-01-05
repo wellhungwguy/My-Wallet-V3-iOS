@@ -18,11 +18,11 @@ struct AccountResponse: Equatable, Codable {
 
     init(from decoder: Decoder) throws {
         let keyed = try decoder.container(keyedBy: CodingKeys.self)
-        label = try keyed.decode(String.self, forKey: .label)
+        self.label = try keyed.decode(String.self, forKey: .label)
         // some clients might not send various properties, so we check and provide a default value
-        archived = try keyed.decodeIfPresent(Bool.self, forKey: .archived) ?? false
-        defaultDerivation = try keyed.decodeIfPresent(DerivationResponse.Format.self, forKey: .defaultDerivation) ?? .segwit
-        derivations = try keyed.decode([DerivationResponse].self, forKey: .derivations)
+        self.archived = try keyed.decodeIfPresent(Bool.self, forKey: .archived) ?? false
+        self.defaultDerivation = try keyed.decodeIfPresent(DerivationResponse.Format.self, forKey: .defaultDerivation) ?? .segwit
+        self.derivations = try keyed.decode([DerivationResponse].self, forKey: .derivations)
     }
 
     init(

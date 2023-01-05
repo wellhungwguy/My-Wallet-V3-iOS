@@ -16,7 +16,7 @@ class SMSSwitchViewPresenter: SwitchViewPresenting {
     private let disposeBag = DisposeBag()
 
     init(service: SMSTwoFactorSettingsServiceAPI & SettingsServiceAPI) {
-        interactor = SMSSwitchViewInteractor(service: service)
+        self.interactor = SMSSwitchViewInteractor(service: service)
 
         viewModel.isSwitchedOnRelay
             .bindAndCatch(to: interactor.switchTriggerRelay)

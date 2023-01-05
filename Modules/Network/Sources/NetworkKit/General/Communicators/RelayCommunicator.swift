@@ -40,9 +40,9 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
         }
 
         init(_ request: URLRequest, _ path: String) {
-            url = request.url!
-            method = request.httpMethod.or(default: "GET")
-            filePath = path
+            self.url = request.url!
+            self.method = request.httpMethod.or(default: "GET")
+            self.filePath = path
         }
     }
 

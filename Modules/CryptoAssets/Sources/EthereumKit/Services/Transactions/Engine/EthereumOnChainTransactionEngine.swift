@@ -76,7 +76,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.receiveAddressFactory = receiveAddressFactory
         self.transactionBuildingService = transactionBuildingService
         self.walletCurrencyService = walletCurrencyService
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 90,
                 schedulerIdentifier: "EthereumOnChainTransactionEngine"

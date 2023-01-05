@@ -153,14 +153,19 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .appUpgrade(AppUpgradeAction.skip):
             return Effect(value: .proceedToFlow)
         case .start:
-            return environment.appUpgradeState()
-                .eraseToEffect()
-                .map { state in
-                    guard let state else {
-                        return .proceedToFlow
+            return .merge(
+                .fireAndForget {
+                    environment.recaptchaService.load()
+                },
+                environment.appUpgradeState()
+                    .eraseToEffect()
+                    .map { state in
+                        guard let state else {
+                            return .proceedToFlow
+                        }
+                        return .showAppUpgrade(state)
                     }
-                    return .showAppUpgrade(state)
-                }
+            )
         case .proceedToFlow:
             return decideFlow(
                 state: &state,

@@ -3,9 +3,9 @@
 import Foundation
 
 extension ActivityDetail {
-    public struct GroupedItems: Equatable, Decodable {
+    public struct GroupedItems: Equatable, Codable {
 
-        public struct Item: Equatable, Decodable {
+        public struct Item: Equatable, Codable {
             public let title: String?
             public let itemGroup: [ItemType]
         }

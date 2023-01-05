@@ -77,7 +77,8 @@ struct ProductDetails_Previews: PreviewProvider {
                             productCode: "42",
                             price: .init(value: "0", symbol: "BTC"),
                             brand: .visa,
-                            type: .virtual
+                            type: .virtual,
+                            remainingCards: 1
                         ),
                         reducer: Reducer<Product, CardOrderingAction, CardOrderingEnvironment>({ _, _, _ in
                             .none

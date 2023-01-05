@@ -34,7 +34,7 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Client.Observe
         self.appId = appId
         self.open = open
         self.unreadNotificationName = unreadNotificationName
-        sdk = intercom
+        self.sdk = intercom
     }
 
     private var bag: Set<AnyCancellable> = []
@@ -109,7 +109,7 @@ public final class CustomerSupportObserver<Intercom: Intercom_p>: Client.Observe
 
     private func present(_ isEnabled: Bool) {
         if isEnabled {
-            sdk.presentMessenger()
+            sdk.present()
         } else {
             open(url)
         }

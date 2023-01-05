@@ -66,8 +66,8 @@ struct PaymentAccountARS: PaymentAccountDescribing, Equatable {
         self.name = name
         self.recipientName = recipientName
         self.code = code
-        address = response.address
-        identifier = response.id
-        state = response.state
+        self.address = response.address
+        self.identifier = response.id
+        self.state = response.state
     }
 }

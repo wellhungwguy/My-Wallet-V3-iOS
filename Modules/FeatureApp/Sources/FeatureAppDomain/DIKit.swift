@@ -49,6 +49,10 @@ extension DependencyContainer {
         }
 
         factory {
+            CryptoValueFormatterAdapter() as CryptoValueFormatterAPI
+        }
+
+        factory {
             FiatCurrencyCodeProviderAdapter(fiatCurrencyPublisher: DIKit.resolve()) as FiatCurrencyCodeProviderAPI
         }
 

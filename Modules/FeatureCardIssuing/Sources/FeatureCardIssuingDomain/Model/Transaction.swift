@@ -76,7 +76,7 @@ extension Card {
         ) {
             self.id = id
             self.cardId = cardId
-            transactionType = type
+            self.transactionType = type
             self.state = state
             self.originalAmount = originalAmount
             self.displayAmount = displayAmount
@@ -109,7 +109,7 @@ extension Card.Transaction: Decodable {
         counterAmount = try values.decodeIfPresent(Money.self, forKey: .counterAmount)
         clearedFundingAmount = try values.decode(Money.self, forKey: .clearedFundingAmount)
         let transaction = try values.decode(String.self, forKey: .userTransactionTime)
-        userTransactionTime = ISO8601DateFormatter().date(from: transaction) ?? Date()
+        userTransactionTime = ISO8601DateFormatter().date(from: transaction) ?? .distantPast
         merchantName = try values.decode(String.self, forKey: .merchantName)
         networkConversionRate = try values.decodeIfPresent(Double.self, forKey: .networkConversionRate)
         declineReason = try values.decodeIfPresent(String.self, forKey: .declineReason)

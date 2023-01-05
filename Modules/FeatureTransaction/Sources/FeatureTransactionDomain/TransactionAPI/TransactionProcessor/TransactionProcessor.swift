@@ -54,7 +54,7 @@ public final class TransactionProcessor {
     ) {
         self.engine = engine
         self.notificationCenter = notificationCenter
-        pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
+        self.pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
         engine.start(
             sourceAccount: sourceAccount,
             transactionTarget: transactionTarget,

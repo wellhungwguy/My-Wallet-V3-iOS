@@ -17,14 +17,14 @@ public final class KeyboardObserver {
             guard let rawValue else {
                 return nil
             }
-            duration = rawValue[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval
-            begin = (rawValue[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
-            end = (rawValue[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+            self.duration = rawValue[UIResponder.keyboardAnimationDurationUserInfoKey] as! TimeInterval
+            self.begin = (rawValue[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+            self.end = (rawValue[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
 
             if let curveNumber = rawValue[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber {
-                curve = UIView.AnimationCurve(rawValue: curveNumber.intValue) ?? .linear
+                self.curve = UIView.AnimationCurve(rawValue: curveNumber.intValue) ?? .linear
             } else {
-                curve = .linear
+                self.curve = .linear
             }
         }
 

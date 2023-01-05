@@ -25,15 +25,15 @@ final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI {
 
     init(coincore: CoincoreAPI, app: AppProtocol) {
         self.coincore = coincore
-        defaultValue = app
+        self.defaultValue = app
             .modePublisher()
             .asObservable()
             .flatMapLatest { appMode in
                 coincore.allAccounts(filter: appMode.filter).asObservable().share(replay: 1)
             }
 
-        selectedDataRelay = BehaviorRelay(value: nil)
-        sharedStream = selectedDataRelay
+        self.selectedDataRelay = BehaviorRelay(value: nil)
+        self.sharedStream = selectedDataRelay
             .flatMapLatest(weak: self) { (self, account) -> Observable<BlockchainAccount> in
                 guard let account else {
                     return self.defaultValue.map { $0 as BlockchainAccount }

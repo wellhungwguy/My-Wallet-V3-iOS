@@ -36,7 +36,7 @@ public final class NoticeTableViewCell: UITableViewCell {
         selectionStyle = .none
         contentView.addSubview(noticeView)
         noticeView.layoutToSuperview(axis: .horizontal, offset: 24)
-        verticalConstraints = noticeView.layoutToSuperview(
+        self.verticalConstraints = noticeView.layoutToSuperview(
             axis: .vertical,
             offset: topOffset
         )

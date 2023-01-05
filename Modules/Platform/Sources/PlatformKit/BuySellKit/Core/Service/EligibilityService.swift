@@ -41,7 +41,7 @@ final class EligibilityService: EligibilityServiceAPI {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
-        isEligibileValue = CachedValue(
+        self.isEligibileValue = CachedValue(
             configuration: .periodic(
                 seconds: 30,
                 schedulerIdentifier: "EligibilityService"

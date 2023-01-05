@@ -26,7 +26,7 @@ final class InterestActivityItemEventRepository: InterestActivityItemEventReposi
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
         )
         .eraseToAnyCache()
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { key in
                 client
@@ -66,7 +66,7 @@ extension InterestActivityItemEvent {
             value: .create(minor: response.amountMinor, currency: currency) ?? .zero(currency: currency),
             cryptoCurrency: currency,
             identifier: response.id,
-            insertedAt: DateFormatter.iso8601Format.date(from: response.insertedAt) ?? Date(),
+            insertedAt: DateFormatter.iso8601Format.date(from: response.insertedAt) ?? Date.distantPast,
             confirmations: response.extraAttributes?.confirmations ?? 0,
             accountRef: response.extraAttributes?.beneficiary?.accountRef ?? "",
             recipientAddress: response.extraAttributes?.address ?? "",

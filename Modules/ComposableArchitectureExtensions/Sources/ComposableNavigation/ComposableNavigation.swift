@@ -173,7 +173,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute, EnvironmentObj
     public init(_ store: Store<State, Action>, _ environmentObject: EnvironmentObject?) {
         self.store = store
         self.environmentObject = environmentObject
-        viewStore = ViewStore(store.scope(state: \.route))
+        self.viewStore = ViewStore(store.scope(state: \.route))
     }
 
     public func body(content: Content) -> some View {

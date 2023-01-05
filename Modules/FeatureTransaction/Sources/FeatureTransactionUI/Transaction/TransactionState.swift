@@ -58,7 +58,10 @@ struct TransactionState: StateType {
     var isStreamingQuotes: Bool { step == .confirmDetail }
     var quote: BrokerageQuote?
 
-    var isStreamingPrices: Bool { step == .enterAmount }
+    var isStreamingPrices: Bool {
+        false
+    }
+
     var price: BrokerageQuote.Price?
 
     var dialog: UX.Dialog?
@@ -82,7 +85,7 @@ struct TransactionState: StateType {
     }
 
     var termsAndAgreementsAreValid: Bool {
-        guard action == .interestTransfer else { return true }
+        guard action == .interestTransfer || action == .stakingDeposit else { return true }
         guard let pendingTx = pendingTransaction else { return false }
         return pendingTx.agreementOptionValue && pendingTx.termsOptionValue
     }

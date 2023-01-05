@@ -7,6 +7,7 @@ struct PinScreenEnableBiometricsInfoViewModel {
         let title: String
         let actionClosure: () -> Void
     }
+
     let icon: Icon
     let title: String
     let subtitle: String
@@ -74,7 +75,8 @@ struct PinScreenEnableBiometricsInfoView_Previews: PreviewProvider {
                 cancelButton: .init(
                     title: "Cancel",
                     actionClosure: {}
-                )),
+                )
+            ),
             completion: {}
         )
     }

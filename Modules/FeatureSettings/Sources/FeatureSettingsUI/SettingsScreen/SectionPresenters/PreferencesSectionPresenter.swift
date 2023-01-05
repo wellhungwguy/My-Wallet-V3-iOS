@@ -25,17 +25,17 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
         preferredTradingCurrencyBadgeInteractor: PreferredTradingCurrencyBadgeInteractor,
         featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
-        preferredCurrencyCellPresenter = DefaultBadgeCellPresenter(
+        self.preferredCurrencyCellPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Currency.title),
             interactor: preferredCurrencyBadgeInteractor,
             title: LocalizationConstants.Settings.Badge.walletDisplayCurrency
         )
-        preferredTradingCurrencyCellPresenter = DefaultBadgeCellPresenter(
+        self.preferredTradingCurrencyCellPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Currency.title),
             interactor: preferredTradingCurrencyBadgeInteractor,
             title: LocalizationConstants.Settings.Badge.tradingCurrency
         )
-        preferredSmallBalancesCellPresenter = SmallBalancesSwitchCellPresenter()
+        self.preferredSmallBalancesCellPresenter = SmallBalancesSwitchCellPresenter()
 
         let viewModel = SettingsSectionViewModel(
             sectionType: sectionType,
@@ -47,6 +47,6 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             ]
         )
 
-        state = .just(.loaded(next: .some(viewModel)))
+        self.state = .just(.loaded(next: .some(viewModel)))
     }
 }

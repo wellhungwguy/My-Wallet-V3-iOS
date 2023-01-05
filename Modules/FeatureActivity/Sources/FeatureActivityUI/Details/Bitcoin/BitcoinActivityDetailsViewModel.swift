@@ -33,23 +33,23 @@ struct BitcoinActivityDetailsViewModel: Equatable {
     let note: String
 
     init(details: BitcoinActivityItemEventDetails, price: FiatValue?, note: String?) {
-        confirmation = Confirmation(
+        self.confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
             title: "\(details.confirmation.confirmations) \(LocalizedString.of) \(details.confirmation.requiredConfirmations) \(LocalizedString.confirmations)",
             factor: details.confirmation.factor,
             statusBadge: BitcoinActivityDetailsViewModel.statusBadge(needConfirmation: details.confirmation.needConfirmation)
         )
-        dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
-        to = details.to.publicKey
-        from = details.from.publicKey
+        self.dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
+        self.to = details.to.publicKey
+        self.from = details.from.publicKey
 
-        cryptoAmount = details.amount.displayString
+        self.cryptoAmount = details.amount.displayString
         if let price {
-            value = details.amount.convert(using: price).displayString
-            fee = "\(details.fee.displayString) / \(details.fee.convert(using: price).displayString)"
+            self.value = details.amount.convert(using: price).displayString
+            self.fee = "\(details.fee.displayString) / \(details.fee.convert(using: price).displayString)"
         } else {
-            value = ""
-            fee = details.fee.displayString
+            self.value = ""
+            self.fee = details.fee.displayString
         }
 
         self.note = note ?? ""

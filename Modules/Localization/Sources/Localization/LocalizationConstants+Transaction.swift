@@ -47,8 +47,10 @@ extension LocalizationConstants {
 
         public enum Buy {
             public enum Recurring {
+                public enum PaymentMethod {}
                 public enum FrequencySelector {}
             }
+
             public enum AmountPresenter {
                 public enum LimitView {}
             }
@@ -87,6 +89,7 @@ extension LocalizationConstants {
                 public enum Success {}
                 public enum Failure {}
             }
+
             public enum Confirmation {
                 public enum DepositACHTerms {}
                 public enum DepositACHTermsDetails {}
@@ -96,6 +99,14 @@ extension LocalizationConstants {
 
         public enum Transfer {
             public enum ToS {}
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
+        public enum Staking {
             public enum Completion {
                 public enum Pending {}
                 public enum Success {}
@@ -199,8 +210,18 @@ extension LocalizationConstants.Transaction.Buy.Recurring {
     public static let recurringBuyUnavailableDescription = NSLocalizedString("Please use a different payment method to setup recurring buy", comment: "Please use a different payment method to setup recurring buy")
 }
 
+extension LocalizationConstants.Transaction.Buy.Recurring.PaymentMethod {
+    public static let bankTransfer = NSLocalizedString(
+        "Bank Transfer",
+        comment: "Bank Transfer"
+    )
+    public static let creditOrDebitCard = NSLocalizedString("Credit or Debit Card", comment: "Credit or Debit Card")
+    public static let applePay = NSLocalizedString("Apple Pay", comment: "Apple Pay")
+    public static let account = NSLocalizedString("Account", comment: "Account")
+}
+
 extension LocalizationConstants.Transaction.Buy.Recurring.FrequencySelector {
-    public static let title = NSLocalizedString("Select a frequency", comment: "")
+    public static let title = NSLocalizedString("How often do you want to buy?", comment: "")
 }
 
 extension LocalizationConstants.Transaction.Buy.AmountPresenter {
@@ -716,6 +737,43 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Success {
     public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
+// MARK: - Staking Deposit
+
+extension LocalizationConstants.Transaction.Staking {
+
+    public static let transferAgreementNoBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network."
+    )
+
+    public static let transferAgreementDayBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ day before generating rewards.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ day before generating rewards."
+    )
+
+    public static let transferAgreementDaysBonding = NSLocalizedString(
+        "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ days before generating rewards.",
+        comment: "I agree to transfer %@ to my Staking Account. I understand that I can’t unstake until withdrawals are enabled on the Ethereum network, and funds are subject to a bonding period of %@ days before generating rewards."
+    )
+}
+
+extension LocalizationConstants.Transaction.Staking.Completion.Pending {
+    public static let title = NSLocalizedString("Transferring %@", comment: "Transferring %@")
+    public static let description = NSLocalizedString(
+        "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed.",
+        comment: "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed."
+    )
+}
+
+extension LocalizationConstants.Transaction.Staking.Completion.Success {
+    public static let title = NSLocalizedString("Transferring %@", comment: "Transferring %@")
+    public static let description = NSLocalizedString(
+        "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed.",
+        comment: "We are transferring your funds to your %@ Staking account. It may take a few minutes until it’s completed."
+    )
+    public static let action = NSLocalizedString("OK", comment: "OK")
+}
+
 // MARK: - Withdraw Pending
 
 extension LocalizationConstants.Transaction.Withdraw.Completion.Pending {
@@ -966,6 +1024,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
+    public static let recurringBuyDescription = NSLocalizedString(
+        "You will buy %@ of %@ %@ at that moment's market price. You can cancel this recurring buy at anytime.",
+        comment: "You will buy [amount] of [coin] [frequency] at that moment's market price. You can cancel this recurring buy at anytime."
+    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
@@ -976,6 +1038,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
     public static let description = NSLocalizedString(
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
+    )
+    public static let recurringBuyDescription = NSLocalizedString(
+        "The initial %@ order of %@ is being processed, we will let you know when its done. Your %@ buy of %@ of %@ is being set up.",
+        comment: "The initial [amount] order of [coin] is being processed, we will let you know when its done. Your [frequency] buy of [amount] of [coin] is being set up."
     )
 }
 

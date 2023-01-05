@@ -18,8 +18,8 @@ class LocationDataProvider: NSObject {
     // MARK: Lifecycle
 
     init(with table: UITableView) {
-        tableView = table
-        locationResult = .empty
+        self.tableView = table
+        self.locationResult = .empty
         tableView?.estimatedRowHeight = 80
         super.init()
 

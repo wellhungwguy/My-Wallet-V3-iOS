@@ -28,7 +28,7 @@ final class WalletActionCellPresenter {
             templateColor = fiat.brandColor
             accentColor = fiat.brandColor.withAlphaComponent(0.15)
         }
-        badgeImageViewModel = .template(
+        self.badgeImageViewModel = .template(
             image: .local(name: action.imageName, bundle: .platformUIKit),
             templateColor: templateColor,
             backgroundColor: accentColor,
@@ -36,7 +36,7 @@ final class WalletActionCellPresenter {
             accessibilityIdSuffix: "\(action.accessibilityId)"
         )
 
-        titleLabelContent = .init(
+        self.titleLabelContent = .init(
             text: action.name,
             font: .main(.semibold, 16.0),
             color: .textFieldText,
@@ -72,7 +72,7 @@ final class WalletActionCellPresenter {
             description = LocalizationId.Sell.description
         }
 
-        descriptionLabelContent = .init(
+        self.descriptionLabelContent = .init(
             text: description,
             font: .main(.medium, 14.0),
             color: .descriptionText,

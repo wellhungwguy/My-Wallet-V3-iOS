@@ -30,7 +30,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/embrace-io/embrace-spm",
-            from: "5.8.0"
+            from: "5.12.3"
         ),
         .package(path: "../Analytics"),
         .package(path: "../BlockchainComponentLibrary"),
@@ -52,6 +52,7 @@ let package = Package(
         .package(path: "../FeatureOnboarding"),
         .package(path: "../FeatureOpenBanking"),
         .package(path: "../FeatureProducts"),
+        .package(path: "../FeatureKYCIntegration"),
         .package(path: "../FeatureQRCodeScanner"),
         .package(path: "../FeatureSettings"),
         .package(path: "../FeatureSuperAppIntro"),
@@ -84,6 +85,7 @@ let package = Package(
                 .product(name: "FeatureAccountPicker", package: "FeatureAccountPicker"),
                 .product(name: "FeatureActivityUI", package: "FeatureActivity"),
                 .product(name: "FeatureAddressSearchUI", package: "FeatureAddressSearch"),
+                .product(name: "FeatureProveUI", package: "FeatureKYCIntegration"),
                 .product(name: "FeatureAppUpgradeDomain", package: "FeatureAppUpgrade"),
                 .product(name: "FeatureAppUpgradeUI", package: "FeatureAppUpgrade"),
                 .product(name: "FeatureAttributionDomain", package: "FeatureAttribution"),

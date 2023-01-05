@@ -19,7 +19,7 @@ struct DisplayBundle {
         self.amountDisplayBundle = amountDisplayBundle
     }
 
-    static func bundle(for action: AssetAction, sourceAccount: SingleAccount) -> DisplayBundle {
+    static func bundle(for action: AssetAction, sourceAccount: SingleAccount, destinationAccount: TransactionTarget) -> DisplayBundle {
         switch action {
         case .swap:
             return .swap(sourceAccount: sourceAccount)
@@ -31,10 +31,15 @@ struct DisplayBundle {
             return .interestWithdraw(sourceAccount: sourceAccount)
         case .interestTransfer:
             return .interestTransfer(sourceAccount: sourceAccount)
+        case .stakingDeposit:
+            return .stakingDeposit(sourceAccount: sourceAccount)
         case .deposit:
             return .deposit(sourceAccount: sourceAccount)
         case .buy:
-            return .buy(sourceAccount: sourceAccount)
+            guard let account = destinationAccount as? CryptoAccount else {
+                impossible("You can only buy crypto assets.")
+            }
+            return .buy(sourceAccount: sourceAccount, destinationAccount: account)
         case .sell:
             return .sell(sourceAccount: sourceAccount)
         case .sign,

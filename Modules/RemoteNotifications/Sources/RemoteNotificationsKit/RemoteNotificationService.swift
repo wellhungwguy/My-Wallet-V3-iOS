@@ -45,7 +45,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
         self.networkService = networkService
         self.sharedKeyRepository = sharedKeyRepository
         self.guidRepository = guidRepository
-        relay = notificationRelay
+        self.relay = notificationRelay
         self.backgroundReceiver = backgroundReceiver
     }
 }

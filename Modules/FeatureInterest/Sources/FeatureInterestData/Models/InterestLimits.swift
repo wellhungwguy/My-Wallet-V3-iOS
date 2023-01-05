@@ -16,7 +16,7 @@ public struct InterestAccountLimitsResponse: Decodable {
     // MARK: - Init
 
     private init() {
-        limits = [:]
+        self.limits = [:]
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -25,7 +25,7 @@ public struct InterestAccountLimitsResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        limits = try values.decode([String: InterestLimits].self, forKey: .limits)
+        self.limits = try values.decode([String: InterestLimits].self, forKey: .limits)
     }
 
     // MARK: - Subscript

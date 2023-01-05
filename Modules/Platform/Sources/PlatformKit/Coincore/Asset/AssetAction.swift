@@ -8,6 +8,7 @@ public enum AssetAction: String, Equatable, CaseIterable, Codable {
     case deposit
     case interestTransfer = "interest_transfer"
     case interestWithdraw = "interest_withdraw"
+    case stakingDeposit = "staking_deposit"
     case receive
     case sell
     case send
@@ -30,6 +31,8 @@ extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
             return "interestTransfer"
         case .interestWithdraw:
             return "interestWithdraw"
+        case .stakingDeposit:
+            return "stakingDeposit"
         case .receive:
             return "receive"
         case .sell:

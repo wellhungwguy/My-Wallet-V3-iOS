@@ -11,6 +11,7 @@ public struct InterestAccountBalanceDetails: Equatable {
     public let totalInterest: String?
     public let pendingWithdrawal: String?
     public let pendingDeposit: String?
+    public let mainBalanceToDisplay: String?
 
     private let currencyCode: String?
 
@@ -21,6 +22,7 @@ public struct InterestAccountBalanceDetails: Equatable {
         totalInterest: String? = nil,
         pendingWithdrawal: String? = nil,
         pendingDeposit: String? = nil,
+        mainBalanceToDisplay: String? = nil,
         code: String? = nil
     ) {
         self.balance = balance
@@ -29,7 +31,8 @@ public struct InterestAccountBalanceDetails: Equatable {
         self.pendingInterest = pendingInterest
         self.totalInterest = totalInterest
         self.pendingWithdrawal = pendingWithdrawal
-        currencyCode = code
+        self.mainBalanceToDisplay = mainBalanceToDisplay
+        self.currencyCode = code
     }
 }
 
@@ -80,5 +83,10 @@ extension InterestAccountBalanceDetails {
     public var moneyPendingDeposit: MoneyValue? {
         guard let currency = currencyType else { return nil }
         return MoneyValue.create(minor: pendingDeposit ?? "0", currency: currency)
+    }
+
+    public var moneyMainBalanceToDisplay: MoneyValue? {
+        guard let currency = currencyType else { return nil }
+        return MoneyValue.create(minor: mainBalanceToDisplay ?? "0", currency: currency)
     }
 }

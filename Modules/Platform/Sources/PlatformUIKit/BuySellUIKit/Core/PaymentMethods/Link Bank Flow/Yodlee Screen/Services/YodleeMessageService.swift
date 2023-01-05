@@ -58,7 +58,7 @@ final class YodleeMessageService {
     ) {
         self.messageHandler = messageHandler
 
-        effect = messageHandler.receivedMessage
+        self.effect = messageHandler.receivedMessage
             .map(\.data)
             .map { type -> Effect in
                 switch type {

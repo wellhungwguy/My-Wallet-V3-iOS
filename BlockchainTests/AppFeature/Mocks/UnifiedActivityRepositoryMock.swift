@@ -3,6 +3,6 @@
 import Combine
 import UnifiedActivityDomain
 
-final class UnifiedActivityRepositoryMock: UnifiedActivityRepositoryAPI {
-    var activity: AnyPublisher<[ActivityEntry], Never> { .empty() }
+final class UnifiedActivityPersistenceServiceMock: UnifiedActivityPersistenceServiceAPI {
+    func connect() {}
 }

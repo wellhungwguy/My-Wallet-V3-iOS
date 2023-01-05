@@ -75,12 +75,12 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         separatorVisibility: Visibility = .visible
     ) {
         self.account = account
-        separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
-        viewAccessibilitySuffix = "\(AccessibilityId.view)"
-        titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
-        descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"
-        pendingAccessibilitySuffix = "\(AccessibilityId.pendingLabel)"
-        assetBalanceViewPresenter = AssetBalanceViewPresenter(
+        self.separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
+        self.viewAccessibilitySuffix = "\(AccessibilityId.view)"
+        self.titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
+        self.descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"
+        self.pendingAccessibilitySuffix = "\(AccessibilityId.pendingLabel)"
+        self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .trailing,
             interactor: interactor,
             descriptors: .default(
@@ -135,6 +135,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 accessibilityIdSuffix: ""
             )
         case is CryptoInterestAccount:
+            model = .template(
+                image: .local(name: "ic-interest-account", bundle: .platformUIKit),
+                templateColor: account.currencyType.brandUIColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        case is CryptoStakingAccount:
             model = .template(
                 image: .local(name: "ic-interest-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandUIColor,

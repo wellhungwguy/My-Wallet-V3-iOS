@@ -18,7 +18,7 @@ public struct ReferFriendView: View {
 
     public init(store: Store<ReferFriendState, ReferFriendAction>) {
         self.store = store
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
     }
 
     var referral: Referral { viewStore.referralInfo }

@@ -17,6 +17,6 @@ open class DefaultBadgeAssetInteractor: BadgeAssetInteracting {
     public let disposeBag = DisposeBag()
 
     public init(initialState: InteractionState = .loading) {
-        stateRelay = BehaviorRelay<InteractionState>(value: initialState)
+        self.stateRelay = BehaviorRelay<InteractionState>(value: initialState)
     }
 }

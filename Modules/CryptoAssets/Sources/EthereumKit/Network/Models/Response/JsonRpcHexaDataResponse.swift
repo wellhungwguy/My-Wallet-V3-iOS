@@ -22,9 +22,9 @@ struct JsonRpcHexaDataResponse: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let value = try container.decode(String.self, forKey: .result)
         if value.isEmpty || value == "0x" {
-            result = Data()
+            self.result = Data()
         } else {
-            result = Data(hex: value)
+            self.result = Data(hex: value)
         }
     }
 }

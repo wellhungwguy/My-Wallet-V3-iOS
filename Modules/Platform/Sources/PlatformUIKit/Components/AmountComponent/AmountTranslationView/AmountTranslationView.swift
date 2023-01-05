@@ -18,32 +18,11 @@ public final class AmountTranslationView: UIView, AmountViewable {
         self
     }
 
-    // MARK: - Types
-
-    private struct AmountLabelConstraints {
-        var top: [NSLayoutConstraint]
-        var bottom: [NSLayoutConstraint]
-
-        init(top: [NSLayoutConstraint], bottom: [NSLayoutConstraint]) {
-            self.top = top
-            self.bottom = bottom
-        }
-
-        func activate() {
-            top.forEach { $0.priority = .penultimateHigh }
-            bottom.forEach { $0.priority = .penultimateLow }
-        }
-
-        func deactivate() {
-            top.forEach { $0.priority = .penultimateLow }
-            bottom.forEach { $0.priority = .penultimateHigh }
-        }
-    }
-
     // MARK: - Properties
 
     private let app: AppProtocol
     private let fiatAmountLabelView = AmountLabelView()
+    private let labelsContainerView = UIView()
     private let cryptoAmountLabelView = AmountLabelView()
     private let auxiliaryButton = ButtonView()
     private let swapButton: UIButton = {
@@ -59,7 +38,6 @@ public final class AmountTranslationView: UIView, AmountViewable {
     private let prefillViewController: UIViewController?
     private let recurringBuyFrequencySelector: UIViewController?
     private let presenter: AmountTranslationPresenter
-    private var labelsStackView: UIStackView!
 
     private let disposeBag = DisposeBag()
 
@@ -86,7 +64,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
     ) {
         self.app = app
         self.presenter = presenter
-        availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
+        self.availableBalanceViewController = shouldShowAvailableBalanceView ? UIHostingController(
             rootView: AvailableBalanceView(
                 store: .init(
                     initialState: .init(),
@@ -104,7 +82,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
                 )
             )
         ) : nil
-        prefillViewController = prefillButtonsEnabled ? UIHostingController(
+        self.prefillViewController = prefillButtonsEnabled ? UIHostingController(
             rootView: PrefillButtonsView(
                 store: .init(
                     initialState: .init(),
@@ -129,7 +107,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
             )
         ) : nil
 
-        recurringBuyFrequencySelector = shouldShowRecurringBuyFrequency ? UIHostingController(
+        self.recurringBuyFrequencySelector = shouldShowRecurringBuyFrequency ? UIHostingController(
             rootView: RecurringBuyButton(
                 store: .init(
                     initialState: .init(),
@@ -148,12 +126,10 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
         super.init(frame: UIScreen.main.bounds)
 
-        if app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled) {
-            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, quickPriceViewController.view])
-        } else {
-            labelsStackView = UIStackView(arrangedSubviews: [fiatAmountLabelView, cryptoAmountLabelView])
-        }
-        labelsStackView.axis = .vertical
+        labelsContainerView.addSubview(fiatAmountLabelView)
+        labelsContainerView.addSubview(cryptoAmountLabelView)
+        fiatAmountLabelView.fillSuperview()
+        cryptoAmountLabelView.fillSuperview()
 
         fiatAmountLabelView.presenter = presenter.fiatPresenter.presenter
         cryptoAmountLabelView.presenter = presenter.cryptoPresenter.presenter
@@ -163,7 +139,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         let offsetView = UIView()
         offsetView.layout(size: .init(edge: 40))
 
-        let innerStackView = UIStackView(arrangedSubviews: [offsetView, labelsStackView, swapButton])
+        let innerStackView = UIStackView(arrangedSubviews: [offsetView, labelsContainerView, swapButton])
         innerStackView.axis = .horizontal
         innerStackView.alignment = .center
         innerStackView.spacing = Spacing.standard
@@ -190,7 +166,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
             offset: prefillButtonsEnabled ? -prefillViewHeight : -Spacing.standard
         )
 
-        labelsStackView.maximizeResistanceAndHuggingPriorities()
+        labelsContainerView.maximizeResistanceAndHuggingPriorities()
 
         auxiliaryButton.layoutToSuperview(.leading, relation: .greaterThanOrEqual)
         auxiliaryButton.layoutToSuperview(.trailing, relation: .lessThanOrEqual)
@@ -201,17 +177,22 @@ public final class AmountTranslationView: UIView, AmountViewable {
             availableBalanceView.heightAnchor.constraint(equalToConstant: 40).isActive = true
             availableBalanceViewController?.willMove(toParent: nil)
         }
-        if let recurringBuyButtonView = recurringBuyFrequencySelector?.view {
-            addSubview(recurringBuyButtonView)
-            recurringBuyButtonView.layoutToSuperview(.top, .leading, .trailing)
-            recurringBuyButtonView.heightAnchor.constraint(equalToConstant: 32).isActive = true
-            recurringBuyFrequencySelector?.willMove(toParent: nil)
-        }
         if let prefillView = prefillViewController?.view {
             addSubview(prefillView)
             prefillView.layoutToSuperview(.bottom, .leading, .trailing)
             prefillView.heightAnchor.constraint(equalToConstant: prefillViewHeight).isActive = true
             prefillViewController?.willMove(toParent: nil)
+        }
+        if let recurringBuyButtonView = recurringBuyFrequencySelector?.view {
+            addSubview(recurringBuyButtonView)
+            recurringBuyButtonView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            if let prefillView = prefillViewController?.view {
+                recurringBuyButtonView.layoutToSuperview(.leading, .trailing)
+                recurringBuyButtonView.layout(edge: .bottom, to: .top, of: prefillView, offset: -8.0)
+            } else {
+                recurringBuyButtonView.layoutToSuperview(.leading, .trailing, .bottom)
+            }
+            recurringBuyFrequencySelector?.willMove(toParent: nil)
         }
 
         presenter.swapButtonVisibility
@@ -220,20 +201,6 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
         swapButton.rx.tap
             .bindAndCatch(to: presenter.swapButtonTapRelay)
-            .disposed(by: disposeBag)
-
-        presenter.activeAmountInput
-            .map { input -> Bool in
-                input == .fiat
-            }
-            .drive(fiatAmountLabelView.presenter.focusRelay)
-            .disposed(by: disposeBag)
-
-        presenter.activeAmountInput
-            .map { input -> Bool in
-                input == .crypto
-            }
-            .drive(cryptoAmountLabelView.presenter.focusRelay)
             .disposed(by: disposeBag)
 
         presenter.activeAmountInput
@@ -308,33 +275,27 @@ public final class AmountTranslationView: UIView, AmountViewable {
     }
 
     private func didChangeActiveInput(to newInput: ActiveAmountInput) {
-        layoutIfNeeded()
-        UIView.animate(
-            withDuration: 0.2,
-            delay: 0,
-            usingSpringWithDamping: 0.85,
-            initialSpringVelocity: 0,
-            options: [.beginFromCurrentState, .curveEaseInOut],
+        let to = newInput == .crypto ? cryptoAmountLabelView : fiatAmountLabelView
+        let from = to == cryptoAmountLabelView ? fiatAmountLabelView : cryptoAmountLabelView
+        UIView.animateKeyframes(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: [.calculationModeCubic, .beginFromCurrentState],
             animations: {
-                switch newInput {
-                case .fiat:
-                    // remove bottom label from current position and add it back as last view in the stack
-                    if self.labelsStackView.arrangedSubviews.contains(where: { $0 === self.cryptoAmountLabelView }) {
-                        self.labelsStackView.removeArrangedSubview(self.cryptoAmountLabelView)
-                        self.labelsStackView.addArrangedSubview(self.cryptoAmountLabelView)
+                UIView.addKeyframe(
+                    withRelativeStartTime: 0.0,
+                    relativeDuration: 0.15,
+                    animations: {
+                        from.alpha = 0.0
                     }
-                    // ensure that the selected crypto can be compressed to make room for the other input on small screens
-                    self.fiatAmountLabelView.verticalContentCompressionResistancePriority = .defaultHigh
-                    self.cryptoAmountLabelView.verticalContentCompressionResistancePriority = .required
-                case .crypto:
-                    // remove bottom label from current position and add it back as last view in the stack
-                    self.labelsStackView.removeArrangedSubview(self.fiatAmountLabelView)
-                    self.labelsStackView.addArrangedSubview(self.fiatAmountLabelView)
-                    // ensure that the selected crypto can be compressed to make room for the other input on small screens
-                    self.fiatAmountLabelView.verticalContentCompressionResistancePriority = .required
-                    self.cryptoAmountLabelView.verticalContentCompressionResistancePriority = .defaultHigh
-                }
-                self.layoutIfNeeded()
+                )
+                UIView.addKeyframe(
+                    withRelativeStartTime: 0.10,
+                    relativeDuration: 0.2,
+                    animations: {
+                        to.alpha = 1.0
+                    }
+                )
             },
             completion: nil
         )

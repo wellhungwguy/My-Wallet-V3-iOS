@@ -13,6 +13,7 @@ public struct ProductIdentifier: NewTypeString {
     public static let depositInterest: Self = "DEPOSIT_INTEREST"
     public static let withdrawFiat: Self = "WITHDRAW_FIAT"
     public static let withdrawCrypto: Self = "WITHDRAW_CRYPTO"
+    public static let useTradingAccount: Self = "USE_TRADING_ACCOUNT"
 
     public var value: String
 
@@ -38,6 +39,7 @@ public struct ProductValue: Hashable, Identifiable, Codable {
     public let maxOrdersLeft: Int?
     public let suggestedUpgrade: ProductSuggestedUpgrade?
     public let reasonNotEligible: ProductIneligibility?
+    public let defaultProduct: Bool?
 
     public init(
         id: ProductIdentifier,
@@ -45,7 +47,8 @@ public struct ProductValue: Hashable, Identifiable, Codable {
         maxOrdersCap: Int? = nil,
         maxOrdersLeft: Int? = nil,
         suggestedUpgrade: ProductSuggestedUpgrade? = nil,
-        reasonNotEligible: ProductIneligibility? = nil
+        reasonNotEligible: ProductIneligibility? = nil,
+        defaultProduct: Bool? = nil
     ) {
         self.id = id
         self.enabled = enabled
@@ -53,5 +56,6 @@ public struct ProductValue: Hashable, Identifiable, Codable {
         self.maxOrdersLeft = maxOrdersLeft
         self.suggestedUpgrade = suggestedUpgrade
         self.reasonNotEligible = reasonNotEligible
+        self.defaultProduct = defaultProduct
     }
 }

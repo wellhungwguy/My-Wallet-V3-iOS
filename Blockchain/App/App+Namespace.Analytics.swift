@@ -47,7 +47,7 @@ final class AppAnalyticsTraitRepository: Client.Observer, TraitRepositoryAPI {
                             .map { (name, $0) }
                             .eraseToAnyPublisher()
                     case .right(let json):
-                        return .just((name, String(describing: json.thing)))
+                        return .just((name, String(describing: json.wrapped)))
                     }
                 }
                 .merge()
@@ -80,7 +80,7 @@ final class AppAnalyticsTraitRepository: Client.Observer, TraitRepositoryAPI {
                         try? app.remoteConfiguration.get(ref)
                     )
                 case .right(let json):
-                    traits[key] = String(describing: json.thing)
+                    traits[key] = String(describing: json.wrapped)
                 }
             }
         }
@@ -179,7 +179,7 @@ final class AppAnalyticsObserver: Client.Observer {
                                     ?? event.context[ref]
                                     ?? app.state.get(ref.in(app))
                             case .right(let any):
-                                return any.thing
+                                return any.wrapped
                             }
                         }
                     )

@@ -36,9 +36,9 @@ public class App: AppProtocol {
     public let state: Session.State
     public let remoteConfiguration: Session.RemoteConfiguration
 
-    #if canImport(SwiftUI)
+#if canImport(SwiftUI)
     public lazy var environmentObject = App.EnvironmentObject(self)
-    #endif
+#endif
 
     public let local = Any?.Store()
 
@@ -114,7 +114,11 @@ public class App: AppProtocol {
             let file = event.context[e.file] as? String,
             let line = event.context[e.line] as? Int
         {
-            print("🏷 ‼️", event.reference, message, "←", file, line)
+            if event.tag == blockchain.ux.type.analytics.error[] {
+                print("🏷 ‼️", message, "←", file, line)
+            } else {
+                print("🏷 ‼️", event.reference, message, "←", file, line)
+            }
         } else {
             print("🏷", event.reference, "←", event.source.file, event.source.line)
         }
@@ -153,13 +157,20 @@ public class App: AppProtocol {
 
     private lazy var urls = on(blockchain.ui.type.action.then.launch.url) { [weak self] event throws in
         guard let self else { return }
-        let url = try event.context.decode(blockchain.ui.type.action.then.launch.url, as: URL.self)
+        let url: URL
+        do {
+            url = try event.context.decode(blockchain.ui.type.action.then.launch.url)
+        } catch {
+            url = try event.action.or(throw: "No action").data.decode()
+        }
         guard self.deepLinks.canProcess(url: url) else {
-            #if canImport(UIKit)
-            UIApplication.shared.open(url)
-            #elseif canImport(AppKit)
-            NSWorkspace.shared.open(url)
-            #endif
+            DispatchQueue.main.async {
+                #if canImport(UIKit)
+                    UIApplication.shared.open(url)
+                #elseif canImport(AppKit)
+                    NSWorkspace.shared.open(url)
+                #endif
+            }
             return
         }
         self.post(
@@ -187,6 +198,7 @@ extension AppProtocol {
         state.transaction { state in
             state.clear(blockchain.user.id)
         }
+        Task { try await set(blockchain.user, to: nil) }
         post(event: blockchain.session.event.did.sign.out)
     }
 }
@@ -368,6 +380,10 @@ private let s = (
 
 extension AppProtocol {
 
+    public func publisher<Language: L>(for event: Tag.Event, as id: Language) -> AnyPublisher<FetchResult.Value<Language.JSON>, Never> {
+        publisher(for: event, as: Language.JSON.self)
+    }
+
     public func publisher<T: Equatable>(for event: Tag.Event, as _: T.Type = T.self) -> AnyPublisher<FetchResult.Value<T>, Never> {
         publisher(for: event).decode(T.self)
             .removeDuplicates(
@@ -382,19 +398,14 @@ extension AppProtocol {
 
     public func publisher(for event: Tag.Event) -> AnyPublisher<FetchResult, Never> {
 
-        func _publisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        func makePublisher(_ ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
             switch ref.tag {
             case blockchain.session.state.value, blockchain.db.collection.id:
                 return state.publisher(for: ref)
             case blockchain.session.configuration.value:
                 return remoteConfiguration.publisher(for: ref)
             default:
-                return Task<AnyPublisher<FetchResult, Never>, Error>.Publisher { [local] () async throws -> AnyPublisher<FetchResult, Never> in
-                    try await local.publisher(for: ref.route).map(FetchResult.create(ref.metadata(.app))).eraseToAnyPublisher()
-                }
-                .catch { error in .just(FetchResult.error(.other(error), ref.metadata(.app))) }
-                .switchToLatest()
-                .eraseToAnyPublisher()
+                return local.publisher(for: ref)
             }
         }
 
@@ -406,17 +417,17 @@ extension AppProtocol {
                 .subtracting(ids.keys.map(\.id))
                 .map { try Tag(id: $0, in: language) }
             guard dynamicKeys.isNotEmpty else {
-                return try _publisher(ref.validated())
+                return try makePublisher(ref.validated())
             }
             let context = Tag.Context(ids)
             return try dynamicKeys.map { try $0.ref(to: context, in: self).validated() }
-                .map(_publisher)
+                .map(makePublisher)
                 .combineLatest()
                 .flatMap { output -> AnyPublisher<FetchResult, Never> in
                     do {
                         let values = try output.map { try $0.decode(String.self).get() }
                         let indices = zip(dynamicKeys, values).reduce(into: [:]) { $0[$1.0] = $1.1 }
-                        return try _publisher(ref.ref(to: context + Tag.Context(indices)).validated())
+                        return try makePublisher(ref.ref(to: context + Tag.Context(indices)).validated())
                             .eraseToAnyPublisher()
                     } catch {
                         return Just(.error(.other(error), Metadata(ref: ref, source: .app)))
@@ -430,11 +441,19 @@ extension AppProtocol {
         }
     }
 
-    public func get<T: Decodable>(_ event: Tag.Event, as _: T.Type = T.self) async throws -> T {
-        try await publisher(for: event, as: T.self) // ← Invert this, foundation API is async/await with actor
-            .stream()
-            .next()
-            .get()
+    public func get<T: Decodable>(
+        _ event: Tag.Event,
+        waitForValue: Bool = false,
+        as _: T.Type = T.self,
+        file: String = #fileID,
+        line: Int = #line
+    ) async throws -> T {
+        let stream = publisher(for: event, as: T.self).stream() // ← Invert this, foundation API is async/await with actor
+        if waitForValue {
+            return try await stream.compactMap(\.value).next(file: file, line: line)
+        } else {
+            return try await stream.next(file: file, line: line).get()
+        }
     }
 
     public func stream(
@@ -456,27 +475,41 @@ extension AppProtocol {
 
 extension AppProtocol {
 
+    public typealias BatchUpdates = [(Tag.Event, Any?)]
+
+    public func transaction(_ body: (Self) async throws -> Void) async rethrows {
+        try await local.transaction { _ in
+            try await body(self)
+        }
+    }
+
+    public func batch(updates sets: BatchUpdates, in context: Tag.Context = [:]) async throws {
+        var updates = Any?.Store.BatchUpdates()
+        for (event, value) in sets {
+            let reference = event.key(to: context).in(self)
+            try updates.append((reference.route(), value))
+        }
+        await local.batch(updates)
+    }
+
     public func set(_ event: Tag.Event, to value: Any?) async throws {
         let reference = event.key().in(self)
-        switch reference.tag {
-        case blockchain.session.state.value, blockchain.db.collection.id:
-            state.set(reference, to: value)
-        case blockchain.session.configuration.value:
-            remoteConfiguration.override(reference, with: value as Any)
-        default:
-            if
-                let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
-                !reference.indices.map(\.key).contains(collectionId)
-            {
+        if
+            let collectionId = try? reference.tag.as(blockchain.db.collection).id[],
+            !reference.indices.map(\.key).contains(collectionId)
+        {
+            if value == nil {
+                try await local.set(reference.route(toCollection: true), to: nil)
+            } else {
                 guard let map = value as? [String: Any] else { throw "Not a collection" }
                 var updates = Any?.Store.BatchUpdates()
                 for (key, value) in map {
-                    try updates.append((reference.key(to: [collectionId: key]).route, value))
+                    try updates.append((reference.key(to: [collectionId: key]).route(), value))
                 }
                 await local.batch(updates)
-            } else {
-                try await local.set(reference.route, to: value)
             }
+        } else {
+            try await local.set(reference.route(), to: value)
         }
         #if DEBUG
         if isInTest { await Task.megaYield(count: 20) }
@@ -486,21 +519,21 @@ extension AppProtocol {
 
 extension Tag.Reference {
 
-    var route: Optional<Any>.Store.Route {
-        get throws {
-            try validated()
-                .tag.lineage
-                .reversed()
-                .flatMap { node -> [Optional<Any>.Store.Location] in
-                    guard
-                        let collectionId = node["id"],
-                        let id = indices[collectionId]
-                    else {
-                        return [.key(node.name)]
-                    }
-                    return [.key(node.name), .key(id)]
+    func route(toCollection: Bool = false) throws -> Optional<Any>.Store.Route {
+        let lineage = tag.lineage.reversed()
+        return try lineage.indexed()
+            .flatMap { index, node throws -> [Optional<Any>.Store.Location] in
+                guard let collectionId = node["id"] else {
+                    return [.key(node.name)]
                 }
-        }
+                if let id = indices[collectionId] {
+                    return [.key(node.name), .key(id)]
+                } else if toCollection && index == lineage.index(before: lineage.endIndex) {
+                    return [.key(node.name)]
+                } else {
+                    throw error(message: "Missing indices for ref to \(collectionId)")
+                }
+            }
     }
 }
 
@@ -559,20 +592,24 @@ extension App {
         public var deepLinks: DeepLink { app.deepLinks }
         public var local: Optional<Any>.Store { app.local }
 
-        public var description: String { "Test App" }
+        public var description: String { "Test \(app)" }
 
         public func wait(
-            _ event: Tag.Event
+            _ event: Tag.Event,
+            file: String = #fileID,
+            line: Int = #line
         ) async throws {
-            _ = try await on(event, bufferingPolicy: .unbounded).next()
+            _ = try await on(event, bufferingPolicy: .unbounded).next(file: file, line: line)
         }
 
         public func wait<S: Scheduler>(
             _ event: Tag.Event,
             timeout: S.SchedulerTimeType.Stride,
-            scheduler: S = DispatchQueue.main
+            scheduler: S = DispatchQueue.main,
+            file: String = #fileID,
+            line: Int = #line
         ) async throws {
-            _ = try await on(event).timeout(timeout, scheduler: scheduler).stream().next()
+            _ = try await on(event).timeout(timeout, scheduler: scheduler).stream().next(file: file, line: line)
             await Task.megaYield(count: 20)
         }
 
@@ -627,5 +664,46 @@ extension App {
             app.post(event: event, reference: reference, context: context, file: file, line: line)
             await Task.megaYield(count: 20)
         }
+    }
+}
+
+extension Optional.Store {
+
+    nonisolated func publisher(for ref: Tag.Reference) -> AnyPublisher<FetchResult, Never> {
+        let subject = CurrentValueSubject<FetchResult?, Never>(nil)
+        let task = Task {
+            do {
+                let route = try ref.route()
+                for await value in await stream(route) where !Task.isCancelled {
+                    if value.isNil, await !data.contains(route) {
+                        subject.send(FetchResult.error(.keyDoesNotExist(ref), ref.metadata(.app)))
+                    } else {
+                        subject.send(FetchResult(value as Any, metadata: ref.metadata(.app)))
+                    }
+                }
+            } catch {
+                subject.send(FetchResult.error(.other(error), ref.metadata(.app)))
+            }
+        }
+        return subject.compacted().handleEvents(receiveCancel: task.cancel).eraseToAnyPublisher()
+    }
+}
+
+extension Optional where Wrapped == Any {
+
+    func contains(_ location: Location) -> Bool {
+        switch (location, self) {
+        case (.key(let key), let dictionary as [String: Any]):
+            return dictionary.keys.contains(key)
+        case (.index(let index), let array as [Any]):
+            return index >= 0 && index < array.count
+        case _:
+            return false
+        }
+    }
+
+    func contains<Route>(_ route: Route) -> Bool where Route: Collection, Route.Index == Int, Route.Element == Location {
+        guard let next = route.first else { return true }
+        return contains(next) && self[next].contains(route.dropFirst())
     }
 }

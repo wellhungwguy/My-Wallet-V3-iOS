@@ -15,7 +15,9 @@ import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureKYCUI
 import FeatureNFTUI
+import FeatureTransactionDomain
 import FeatureTransactionUI
+import Localization
 import MoneyKit
 import NetworkKit
 import PlatformKit
@@ -39,11 +41,13 @@ public struct CoinAdapterView: View {
         historicalPriceRepository: HistoricalPriceRepositoryAPI = resolve(),
         ratesRepository: RatesRepositoryAPI = resolve(),
         watchlistRepository: WatchlistRepositoryAPI = resolve(),
+        recurringBuyProviderRepository: RecurringBuyProviderRepositoryAPI = resolve(),
+        cancelRecurringBuyRepository: CancelRecurringBuyRepositoryAPI = resolve(),
         dismiss: @escaping () -> Void
     ) {
         self.cryptoCurrency = cryptoCurrency
         self.app = app
-        store = Store<CoinViewState, CoinViewAction>(
+        self.store = Store<CoinViewState, CoinViewAction>(
             initialState: .init(
                 currency: cryptoCurrency
             ),
@@ -81,6 +85,26 @@ public struct CoinAdapterView: View {
                         }
                         .eraseToAnyPublisher()
                 },
+                recurringBuyProvider: {
+                    app
+                        .publisher(for: blockchain.app.configuration.recurring.buy.is.enabled)
+                        .replaceError(with: false)
+                        .flatMap { [recurringBuyProviderRepository] (isRecurringBuyEnabled) -> AnyPublisher<[FeatureCoinDomain.RecurringBuy], Error> in
+                            guard isRecurringBuyEnabled else { return .just([]) }
+                            return recurringBuyProviderRepository
+                                .fetchRecurringBuysForCryptoCurrency(cryptoCurrency)
+                                .map { $0.map(RecurringBuy.init) }
+                                .eraseError()
+                                .eraseToAnyPublisher()
+                        }
+                        .eraseToAnyPublisher()
+                },
+                cancelRecurringBuyService: { (recurringBuyId) -> AnyPublisher<Void, Error> in
+                    cancelRecurringBuyRepository
+                        .cancelRecurringBuyWithId(recurringBuyId)
+                        .eraseError()
+                        .eraseToAnyPublisher()
+                },
                 assetInformationService: AssetInformationService(
                     currency: cryptoCurrency,
                     repository: assetInformationRepository
@@ -103,11 +127,9 @@ public struct CoinAdapterView: View {
     }
 
     public var body: some View {
-        PrimaryNavigationView {
-            CoinView(store: store)
-                .app(app)
-                .context([blockchain.ux.asset.id: cryptoCurrency.code])
-        }
+        CoinView(store: store)
+            .context([blockchain.ux.asset.id: cryptoCurrency.code])
+            .app(app)
     }
 }
 
@@ -154,11 +176,13 @@ public final class CoinViewObserver: Client.Observer {
             rewardsDeposit,
             rewardsSummary,
             rewardsWithdraw,
+            stakingDeposit,
             select,
             sell,
             send,
             swap,
-            website
+            website,
+            recurringBuyLearnMore
         ]
     }
 
@@ -174,8 +198,10 @@ public final class CoinViewObserver: Client.Observer {
         }
     }
 
-    lazy var select = app.on(blockchain.ux.asset.select) { @MainActor [unowned self] event async throws in
-        let cryptoCurrency = try event.reference.context.decode(blockchain.ux.asset.id) as CryptoCurrency
+    lazy var select = app.on(blockchain.ux.asset.select.then.enter.into) { @MainActor [unowned self] event async throws in
+        guard let action = event.action else { return }
+        let destination = try action.data.decode(Tag.Reference.self)
+        let cryptoCurrency = try destination.context.decode(blockchain.ux.asset.id) as CryptoCurrency
         let origin = try event.context.decode(blockchain.ux.asset.select.origin) as String
         app.state.transaction { state in
             state.set(blockchain.ux.asset.id, to: cryptoCurrency.code)
@@ -214,7 +240,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsWithdraw = app.on(blockchain.ux.asset.account.rewards.withdraw) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+        switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestWithdraw(account))
         default:
@@ -224,7 +250,7 @@ public final class CoinViewObserver: Client.Observer {
     }
 
     lazy var rewardsDeposit = app.on(blockchain.ux.asset.account.rewards.deposit) { @MainActor [unowned self] event in
-        switch try await cryptoAccount(for: .interestWithdraw, from: event) {
+        switch try await cryptoAccount(from: event) {
         case let account as CryptoInterestAccount:
             await transactionsRouter.presentTransactionFlow(to: .interestTransfer(account))
         default:
@@ -238,7 +264,17 @@ public final class CoinViewObserver: Client.Observer {
         let interactor = InterestAccountDetailsScreenInteractor(account: account)
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
         let controller = InterestAccountDetailsViewController(presenter: presenter)
-        topViewController.topMostViewController?.present(controller, animated: true, completion: nil)
+        topViewController.topMostViewController?.present(UINavigationController(rootViewController: controller), animated: true, completion: nil)
+    }
+
+    lazy var stakingDeposit = app.on(blockchain.ux.asset.account.staking.deposit) { @MainActor [unowned self] event in
+        switch try await cryptoAccount(from: event) {
+        case let account as CryptoStakingAccount:
+            await transactionsRouter.presentTransactionFlow(to: .stakingDeposit(account))
+        default:
+            throw blockchain.ux.asset.account.error[]
+                .error(message: "Transferring to rewards requires CryptoInterestAccount")
+        }
     }
 
     lazy var exchangeWithdraw = app.on(blockchain.ux.asset.account.exchange.withdraw) { @MainActor [unowned self] event in
@@ -271,6 +307,10 @@ public final class CoinViewObserver: Client.Observer {
 
     lazy var website = app.on(blockchain.ux.asset.bio.visit.website) { [application] event async throws in
         try application.open(event.context.decode(blockchain.ux.asset.bio.visit.website.url, as: URL.self))
+    }
+
+    lazy var recurringBuyLearnMore = app.on(blockchain.ux.asset.recurring.buy.visit.website) { [application] event async throws in
+        try application.open(event.context.decode(blockchain.ux.asset.recurring.buy.visit.website.url, as: URL.self))
     }
 
     lazy var explainerReset = app.on(blockchain.ux.asset.account.explainer.reset) { [defaults] _ in
@@ -343,6 +383,37 @@ public final class CoinViewObserver: Client.Observer {
     }
 }
 
+extension FeatureCoinDomain.RecurringBuy {
+    init(_ recurringBuy: FeatureTransactionDomain.RecurringBuy) {
+        self.init(
+            id: recurringBuy.id,
+            recurringBuyFrequency: recurringBuy.recurringBuyFrequency.description,
+            // Should never be nil as nil is only for one time payments and unknown
+            nextPaymentDate: recurringBuy.nextPaymentDateDescription ?? "",
+            paymentMethodType: recurringBuy.paymentMethodTypeDescription,
+            amount: recurringBuy.amount.displayString,
+            asset: recurringBuy.asset.displayCode
+        )
+    }
+}
+
+extension FeatureTransactionDomain.RecurringBuy {
+    private typealias L01n = LocalizationConstants.Transaction.Buy.Recurring.PaymentMethod
+    fileprivate var paymentMethodTypeDescription: String {
+        switch paymentMethodType {
+        case .bankTransfer,
+                .bankAccount:
+            return L01n.bankTransfer
+        case .card:
+            return L01n.creditOrDebitCard
+        case .applePay:
+            return L01n.applePay
+        case .funds:
+            return amount.currency.name + " \(L01n.account)"
+        }
+    }
+}
+
 extension FeatureCoinDomain.Account {
     init(_ account: CryptoAccount, _ fiatCurrency: FiatCurrency) {
         self.init(
@@ -375,6 +446,8 @@ extension FeatureCoinDomain.Account.Action {
             self = .rewards.deposit
         case .interestWithdraw:
             self = .rewards.withdraw
+        case .stakingDeposit:
+            self = .staking.deposit
         case .receive:
             self = .receive
         case .sell:

@@ -76,11 +76,11 @@ public struct EmailLoginState: Equatable, NavigationState {
     var isLoading: Bool
 
     init() {
-        route = nil
-        emailAddress = ""
-        isEmailValid = false
-        isLoading = false
-        verifyDeviceState = nil
+        self.route = nil
+        self.emailAddress = ""
+        self.isEmailValid = false
+        self.isLoading = false
+        self.verifyDeviceState = nil
     }
 }
 

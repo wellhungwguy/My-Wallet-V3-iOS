@@ -78,7 +78,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.pendingTransactionRepository = pendingTransactionRepository
         self.walletCurrencyService = walletCurrencyService
 
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .onSubscription(
                 schedulerIdentifier: "ERC20OnChainTransactionEngine"
             )

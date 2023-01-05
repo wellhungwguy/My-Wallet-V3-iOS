@@ -31,6 +31,9 @@ public struct CoinView: View {
             ScrollView {
                 header()
                 accounts()
+                if viewStore.shouldShowRecurringBuy {
+                    recurringBuys()
+                }
                 about()
                 Color.clear
                     .frame(height: Spacing.padding2)
@@ -50,25 +53,11 @@ public struct CoinView: View {
         .onAppear { viewStore.send(.onAppear) }
         .onDisappear { viewStore.send(.onDisappear) }
         .sheet(
-            item: viewStore.binding(\.$comingSoonAccount),
+            item: viewStore.binding(\.$recurringBuy),
             onDismiss: {
-                viewStore.send(.set(\.$comingSoonAccount, nil))
+                viewStore.send(.set(\.$recurringBuy, nil))
             },
-            content: { account in
-                ComingSoonView(
-                    account: account,
-                    assetLogoUrl: viewStore.currency.assetModel.logoPngUrl,
-                    assetColor: viewStore.currency.color,
-                    onClose: {
-                        viewStore.send(.set(\.$comingSoonAccount, nil))
-                    }
-                )
-                .context(
-                    [
-                        blockchain.ux.asset.account.id: account.id
-                    ]
-                )
-            }
+            content: { RecurringBuySummaryView(buy: $0) }
         )
         .bottomSheet(
             item: viewStore.binding(\.$account).animation(.spring()),
@@ -139,6 +128,10 @@ public struct CoinView: View {
         )
     }
 
+    @ViewBuilder func recurringBuys() -> some View {
+        RecurringBuyListView(buys: viewStore.recurringBuys)
+    }
+
     @ViewBuilder func accounts() -> some View {
         VStack {
             if viewStore.error == .failedToLoad {
@@ -152,6 +145,10 @@ public struct CoinView: View {
             } else if viewStore.currency.isTradable {
                 totalBalance()
                 if let status = viewStore.kycStatus {
+                    if viewStore.shouldShowRecurringBuy {
+                        SectionHeader(title: Localization.Header.walletsAndAccounts)
+                            .padding([.top], 8.pt)
+                    }
                     AccountListView(
                         accounts: viewStore.accounts,
                         currency: viewStore.currency,

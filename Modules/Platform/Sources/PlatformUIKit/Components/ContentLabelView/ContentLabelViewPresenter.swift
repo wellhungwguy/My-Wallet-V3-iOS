@@ -53,8 +53,8 @@ final class ContentLabelViewPresenter {
         accessibilityPrefix: String
     ) {
         self.interactor = interactor
-        titleRelay = BehaviorRelay<String>(value: title)
-        titleLabelContent = titleRelay
+        self.titleRelay = BehaviorRelay<String>(value: title)
+        self.titleLabelContent = titleRelay
             .asDriver()
             .map { title in
                 LabelContent(
@@ -66,7 +66,7 @@ final class ContentLabelViewPresenter {
                     accessibility: .id("\(accessibilityPrefix).\(Accessibility.Identifier.ContentLabelView.title)")
                 )
             }
-        descriptionLabelContent = interactor.contentCalculationState
+        self.descriptionLabelContent = interactor.contentCalculationState
             .compactMap(\.value)
             .map {
                 LabelContent(

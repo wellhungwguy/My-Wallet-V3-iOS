@@ -41,8 +41,20 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> CancelRecurringBuyRepositoryAPI in
+            CancelRecurringBuyRepository(
+                client: DIKit.resolve()
+            )
+        }
+
         factory { () -> EligiblePaymentMethodRecurringBuyRepositoryAPI in
             EligiblePaymentMethodRecurringBuyRepository(
+                client: DIKit.resolve()
+            )
+        }
+
+        factory { () -> RecurringBuyProviderRepositoryAPI in
+            RecurringBuyProviderRepository(
                 client: DIKit.resolve()
             )
         }
@@ -68,6 +80,16 @@ extension DependencyContainer {
         factory { () -> OrderCreationClientAPI in
             let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
             return client as OrderCreationClientAPI
+        }
+
+        factory { () -> RecurringBuyProviderClientAPI in
+            let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
+            return client as RecurringBuyProviderClientAPI
+        }
+
+        factory { () -> CancelRecurringBuyClientAPI in
+            let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
+            return client as CancelRecurringBuyClientAPI
         }
 
         factory { () -> EligiblePaymentMethodRecurringBuyClientAPI in

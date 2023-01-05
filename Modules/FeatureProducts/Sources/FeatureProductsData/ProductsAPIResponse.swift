@@ -15,6 +15,7 @@ public struct ProductsAPIResponse: Codable, Hashable {
     public let depositInterest: ProductValue
     public let withdrawFiat: ProductValue
     public let withdrawCrypto: ProductValue
+    public let useTradingAccount: ProductValue
 
     var products: [ProductValue] {
         [
@@ -26,7 +27,8 @@ public struct ProductsAPIResponse: Codable, Hashable {
             depositCrypto,
             depositInterest,
             withdrawFiat,
-            withdrawCrypto
+            withdrawCrypto,
+            useTradingAccount
         ]
     }
 }

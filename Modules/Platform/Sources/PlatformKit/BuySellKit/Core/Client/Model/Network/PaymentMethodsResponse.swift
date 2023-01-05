@@ -30,9 +30,9 @@ public struct PaymentMethodsResponse: Decodable {
                 let availableValue = try values.decode(Int.self, forKey: .available)
                 let limitValue = try values.decode(Int.self, forKey: .limit)
                 let usedValue = try values.decode(Int.self, forKey: .used)
-                available = String(availableValue)
-                limit = String(limitValue)
-                used = String(usedValue)
+                self.available = String(availableValue)
+                self.limit = String(limitValue)
+                self.used = String(usedValue)
             }
         }
 
@@ -74,11 +74,11 @@ public struct PaymentMethodsResponse: Decodable {
 
             init(from decoder: Decoder) throws {
                 let values = try decoder.container(keyedBy: CodingKeys.self)
-                min = try values.decode(String.self, forKey: .min)
-                max = try values.decode(String.self, forKey: .max)
-                annual = try values.decodeIfPresent(Limits.self, forKey: .annual)
-                daily = try values.decodeIfPresent(Limits.self, forKey: .daily)
-                weekly = try values.decodeIfPresent(Limits.self, forKey: .weekly)
+                self.min = try values.decode(String.self, forKey: .min)
+                self.max = try values.decode(String.self, forKey: .max)
+                self.annual = try values.decodeIfPresent(Limits.self, forKey: .annual)
+                self.daily = try values.decodeIfPresent(Limits.self, forKey: .daily)
+                self.weekly = try values.decodeIfPresent(Limits.self, forKey: .weekly)
             }
         }
 

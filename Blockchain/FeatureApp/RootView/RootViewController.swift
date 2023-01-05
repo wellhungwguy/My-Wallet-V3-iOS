@@ -26,14 +26,15 @@ final class RootViewController: UIHostingController<RootView> {
     var defaults: CacheSuite = UserDefaults.standard
     var application: UIApplication = .shared
 
-    lazy var siteMap: SiteMap = SiteMap(app: app)
+    var siteMap: SiteMap
 
     var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
 
-    init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
+    init(store global: Store<LoggedIn.State, LoggedIn.Action>, siteMap: SiteMap) {
 
         self.global = ViewStore(global)
+        self.siteMap = siteMap
 
         let environment = RootViewEnvironment(
             app: app,
@@ -57,11 +58,11 @@ final class RootViewController: UIHostingController<RootView> {
             environment: environment
         )
 
-        viewStore = ViewStore(store)
+        self.viewStore = ViewStore(store)
+        self.siteMap = SiteMap(app: app)
 
-        super.init(rootView: RootView(store: store))
+        super.init(rootView: RootView(store: store, siteMap: siteMap))
 
-        subscribe(to: viewStore)
         subscribe(to: ViewStore(global))
         subscribe(to: app)
 
@@ -126,6 +127,10 @@ extension RootViewController {
 
     func subscribe(to app: AppProtocol) {
 
+        Task {
+            try await app.set(blockchain.ux.frequent.action.earn.then.enter.into, to: blockchain.ux.earn)
+        }
+
         let observers = [
             app.on(blockchain.ux.frequent.action.swap) { [unowned self] _ in
                 self.handleSwapCrypto(account: nil)
@@ -146,13 +151,18 @@ extension RootViewController {
                 self.handleWithdraw()
             },
             app.on(blockchain.ux.frequent.action.buy) { [unowned self] _ in
-                self.handleBuyCrypto(currency: .bitcoin)
+                // No longer including an asset or account here so the user
+                // can select what they want to buy prior to proceeding to the enter amount screen.
+                self.handleBuyCrypto(account: nil)
             },
             app.on(blockchain.ux.frequent.action.sell) { [unowned self] _ in
                 self.handleSellCrypto(account: nil)
             },
             app.on(blockchain.ux.frequent.action.nft) { [unowned self] _ in
                 self.handleNFTAssetView()
+            },
+            app.on(blockchain.ux.home.tab.select) { @MainActor [unowned self] _ async in
+                self.dismiss(animated: true)
             }
         ]
 
@@ -166,13 +176,6 @@ extension RootViewController {
                 viewStore.send(.binding(.set(\.$fab.isOn, false)), animation: .linear)
             }
             .store(in: &bag)
-    }
-
-    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
-        viewStore.publisher.tab.sink { [weak self] _ in
-            self?.presentedViewController?.dismiss(animated: true)
-        }
-        .store(in: &bag)
     }
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {

@@ -105,7 +105,7 @@ struct AssetViewRepresentable: View, UIViewRepresentable {
     let size: CGFloat
 
     init(imageURL: URL?, size: CGFloat) {
-        url = imageURL
+        self.url = imageURL
         self.size = size
     }
 

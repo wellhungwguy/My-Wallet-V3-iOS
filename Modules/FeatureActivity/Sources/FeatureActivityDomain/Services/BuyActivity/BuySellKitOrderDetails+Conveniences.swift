@@ -21,7 +21,7 @@ extension BuySellActivityItemEvent {
 
         self.init(
             identifier: orderDetails.identifier,
-            creationDate: orderDetails.creationDate ?? Date(),
+            creationDate: orderDetails.creationDate ?? .distantPast,
             status: orderDetails.eventStatus,
             inputValue: orderDetails.inputValue,
             outputValue: orderDetails.outputValue,

@@ -72,7 +72,7 @@ extension RootViewController {
             .store(in: &bag)
     }
 
-    private func hostingController(from event: Session.Event) throws -> some UIViewController {
+    private func hostingController(from event: Session.Event) throws -> UIViewController {
         guard let action = event.action else {
             throw NavigationError(message: "received \(event.reference) without an action")
         }
@@ -97,13 +97,55 @@ extension RootViewController {
     private func hostingController(
         from story: Tag.Reference,
         in context: Tag.Context
-    ) throws -> some UIViewController {
-        try UIHostingController(
-            rootView: siteMap.view(for: story, in: context)
+    ) throws -> UIViewController {
+        let viewController = try InvalidateDetentsHostingController(
+            rootView: siteMap.view(for: story.in(app), in: context)
+                .app(app)
+                .context(context + story.context)
                 .onAppear { [app] in
                     app.post(event: story, context: context)
                 }
         )
+
+        if #available(iOS 15.0, *) {
+            if
+                let sheet = viewController.sheetPresentationController,
+                let presentation = viewController.presentationController
+            {
+                if let detents = try? context.decode(blockchain.ui.type.action.then.enter.into.detents, as: [Tag].self) {
+                    sheet.detents = detents.reduce(into: [UISheetPresentationController.Detent]()) { detents, tag in
+                        switch tag {
+                        case blockchain.ui.type.action.then.enter.into.detents.large:
+                            detents.append(.large())
+                        case blockchain.ui.type.action.then.enter.into.detents.medium:
+                            detents.append(.medium())
+                        case blockchain.ui.type.action.then.enter.into.detents.small:
+                            detents.append(
+                                .heightWithContext(
+                                    context: { _ in CGRect.screen.height / 4 }
+                                )
+                            )
+                        case blockchain.ui.type.action.then.enter.into.detents.automatic.dimension:
+                            viewController.shouldInvalidateDetents = true
+                            detents.append(
+                                .heightWithContext(
+                                    context: { [unowned presentation] context in resolution(presentation, context) }
+                                )
+                            )
+                        case _:
+                            return
+                        }
+                    }
+
+                    if detents.isNotEmpty {
+                        let grabberVisible = try? context.decode(blockchain.ui.type.action.then.enter.into.grabber.visible, as: Bool.self)
+                        sheet.prefersGrabberVisible = grabberVisible ?? true
+                    }
+                }
+            }
+        }
+
+        return viewController
     }
 
     func navigate(to event: Session.Event) {
@@ -116,7 +158,15 @@ extension RootViewController {
 
     func enter(into event: Session.Event) {
         do {
-            try present(hostingController(from: event))
+            var vc = try hostingController(from: event)
+        out:
+            if vc.navigationController == nil {
+                if #available(iOS 15.0, *), let sheet = vc.sheetPresentationController, sheet.detents != [.large()] && sheet.detents.isNotEmpty {
+                    break out
+                }
+                vc = PrimaryNavigationViewController(rootViewController: vc)
+            }
+            try present(vc)
         } catch {
             app.post(error: error)
         }
@@ -154,6 +204,40 @@ extension RootViewController {
             }
         } catch {
             app.post(error: error)
+        }
+    }
+}
+
+@available(iOS 15.0, *)
+let resolution: (UIPresentationController, NSObjectProtocol) -> CGFloat = { presentationController, _ in
+    guard let containerView = presentationController.containerView else {
+        let idealHeight = presentationController.presentedViewController.view.intrinsicContentSize.height.rounded(.up)
+        return idealHeight
+    }
+    var width = min(presentationController.presentedViewController.view.frame.width, containerView.frame.width)
+    if width == 0 {
+        width = containerView.frame.width
+    }
+    var height = presentationController.presentedViewController.view
+        .systemLayoutSizeFitting(CGSize(width: width, height: .infinity))
+        .height
+    if height == 0 || height > containerView.frame.height {
+        height = presentationController.presentedViewController.view.intrinsicContentSize.height
+    }
+    let idealHeight = (height - presentationController.presentedViewController.view.safeAreaInsets.bottom).rounded(.up)
+    return min(idealHeight, containerView.frame.height)
+}
+
+class InvalidateDetentsHostingController<V: View>: UIHostingController<V> {
+
+    var shouldInvalidateDetents = false
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if #available(iOS 15.0, *) {
+            if shouldInvalidateDetents, let sheet = viewController.sheetPresentationController {
+                sheet.performDetentInvalidation()
+            }
         }
     }
 }

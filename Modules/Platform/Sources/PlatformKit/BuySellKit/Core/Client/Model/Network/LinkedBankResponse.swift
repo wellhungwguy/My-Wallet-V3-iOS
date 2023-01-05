@@ -45,26 +45,26 @@ public struct LinkedBankResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
-        currency = try container.decode(String.self, forKey: .currency)
-        partner = try container.decode(String.self, forKey: .partner)
-        state = try container.decode(State.self, forKey: .state)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.currency = try container.decode(String.self, forKey: .currency)
+        self.partner = try container.decode(String.self, forKey: .partner)
+        self.state = try container.decode(State.self, forKey: .state)
         /// The `updateBankLinkage` call in `APIClient` does not return a model that
         /// matches `LinkedBankResponse`. We can set the below properties to a default value
         /// as the caller of `updateBankLinkage` does not use any part of the `LinkedBankResponse`
         /// object except for `state`.
-        isBankAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankAccount) ?? false)
-        isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
-        name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
-        attributes = try container.decodeIfPresent(Attributes.self, forKey: .attributes)
-        error = try? container.decodeIfPresent(Error.self, forKey: .error)
-        errorCode = try container.decodeIfPresent(String.self, forKey: .error)
+        self.isBankAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankAccount) ?? false)
+        self.isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
+        self.name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
+        self.attributes = try container.decodeIfPresent(Attributes.self, forKey: .attributes)
+        self.error = try? container.decodeIfPresent(Error.self, forKey: .error)
+        self.errorCode = try container.decodeIfPresent(String.self, forKey: .error)
         let accountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
-        bankAccountType = accountType ?? .none
-        accountName = try container.decodeIfPresent(String.self, forKey: .accountName)
-        accountNumber = try container.decodeIfPresent(String.self, forKey: .accountNumber)
-        routingNumber = try container.decodeIfPresent(String.self, forKey: .routingNumber)
-        agentRef = try container.decodeIfPresent(String.self, forKey: .agentRef)
+        self.bankAccountType = accountType ?? .none
+        self.accountName = try container.decodeIfPresent(String.self, forKey: .accountName)
+        self.accountNumber = try container.decodeIfPresent(String.self, forKey: .accountNumber)
+        self.routingNumber = try container.decodeIfPresent(String.self, forKey: .routingNumber)
+        self.agentRef = try container.decodeIfPresent(String.self, forKey: .agentRef)
     }
 }
 

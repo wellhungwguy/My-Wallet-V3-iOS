@@ -26,7 +26,7 @@ public struct RatesRepository: RatesRepositoryAPI {
         )
         .eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] code -> AnyPublisher<EarnRates, NetworkError> in
                 retrieveRates(

@@ -127,6 +127,12 @@ extension DependencyContainer {
             return CheckReferralClient(networkAdapter: adapter, requestBuilder: builder)
         }
 
+        factory { () -> SignUpCountriesClientAPI in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return SignUpCountriesClient(networkAdapter: adapter, requestBuilder: builder)
+        }
+
         // MARK: - Nabu Authentication
 
         single { NabuTokenRepository() as NabuTokenRepositoryAPI }

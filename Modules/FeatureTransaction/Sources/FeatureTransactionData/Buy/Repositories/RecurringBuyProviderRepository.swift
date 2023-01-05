@@ -22,4 +22,14 @@ final class RecurringBuyProviderRepository: RecurringBuyProviderRepositoryAPI {
             .map { $0.compactMap(RecurringBuy.init) }
             .eraseToAnyPublisher()
     }
+
+    func fetchRecurringBuyWithRecurringBuyId(
+        _ recurringBuyId: String
+    ) -> AnyPublisher<RecurringBuy, NabuNetworkError> {
+        client
+            .fetchRecurringBuysWithRecurringBuyId(recurringBuyId)
+            .map { $0.compactMap(RecurringBuy.init) }
+            .compactMap(\.first)
+            .eraseToAnyPublisher()
+    }
 }

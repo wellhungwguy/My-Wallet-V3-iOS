@@ -29,22 +29,22 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
         blockchainDomainsAdapter: BlockchainDomainsAdapter,
         cardIssuingAdapter: CardIssuingAdapterAPI
     ) {
-        limitsPresenter = DefaultBadgeCellPresenter(
+        self.limitsPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.AccountLimits.title),
             interactor: TierLimitsBadgeInteractor(limitsProviding: tiersLimitsProvider),
             title: LocalizationConstants.KYC.accountLimits
         )
-        emailVerificationPresenter = DefaultBadgeCellPresenter(
+        self.emailVerificationPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Email.title),
             interactor: emailVerificationInteractor,
             title: LocalizationConstants.Settings.Badge.email
         )
-        mobileVerificationPresenter = DefaultBadgeCellPresenter(
+        self.mobileVerificationPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.Mobile.title),
             interactor: mobileVerificationInteractor,
             title: LocalizationConstants.Settings.Badge.mobileNumber
         )
-        cardIssuingPresenter = DefaultBadgeCellPresenter(
+        self.cardIssuingPresenter = DefaultBadgeCellPresenter(
             accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.CardIssuing.title),
             interactor: cardIssuingInteractor,
             title: LocalizationConstants.Settings.Badge.cardIssuing
@@ -72,7 +72,7 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
             cellType: .badge(.cardIssuing, cardIssuingPresenter)
         )
 
-        state = cardIssuingAdapter
+        self.state = cardIssuingAdapter
             .isEnabled()
             .flatMap { isEnabled -> AnyPublisher<SettingsSectionLoadingState, Never> in
 

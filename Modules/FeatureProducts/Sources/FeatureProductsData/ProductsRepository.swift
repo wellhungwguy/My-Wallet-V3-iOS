@@ -20,7 +20,7 @@ public final class ProductsRepository: ProductsRepositoryAPI {
         )
         .eraseToAnyCache()
 
-        cachedProducts = CachedValueNew(
+        self.cachedProducts = CachedValueNew(
             cache: cache,
             fetch: { _ in
                 client

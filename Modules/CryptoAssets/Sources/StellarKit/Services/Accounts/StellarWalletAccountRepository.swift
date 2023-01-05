@@ -56,7 +56,7 @@ final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { _ -> AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError> in
                 metadataEntryService.fetchEntry(type: StellarEntryPayload.self)

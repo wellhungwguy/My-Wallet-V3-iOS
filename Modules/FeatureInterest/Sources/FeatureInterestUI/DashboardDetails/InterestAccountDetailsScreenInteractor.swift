@@ -116,8 +116,8 @@ public final class InterestAccountDetailsScreenInteractor {
     ) {
         self.service = service
         self.blockchainAccountRepository = blockchainAccountRepository
-        cryptoCurrency = account.currencyType.cryptoCurrency!
-        currentBalanceCellInteractor = CurrentBalanceCellInteractor(
+        self.cryptoCurrency = account.currencyType.cryptoCurrency!
+        self.currentBalanceCellInteractor = CurrentBalanceCellInteractor(
             account: account
         )
         guard let account = account as? CryptoInterestAccount else {

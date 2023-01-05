@@ -14,7 +14,7 @@ class ViewFrame: ObservableObject {
     }
 
     init() {
-        frame = .zero
+        self.frame = .zero
     }
 }
 

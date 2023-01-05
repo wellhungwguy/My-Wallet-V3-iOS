@@ -38,10 +38,10 @@ struct RecurringBuyButton<TrailingView: View>: View {
                 }
                 .padding([.leading, .trailing], 8.pt)
             }
-            .padding()
+            .padding(8.pt)
             .background(BlockchainComponentLibrary.Color.semantic.light)
             .clipShape(Capsule())
-            .frame(maxHeight: 32.pt)
+            .frame(minHeight: 32.pt)
             .opacity(viewStore.title == nil ? 0 : 1)
             .transition(.opacity)
             .animation(.easeInOut)
@@ -79,7 +79,7 @@ enum RecurringBuyButtonAction: Equatable, BindableAction {
 let recurringBuyButtonReducer = Reducer<
     RecurringBuyButtonState,
     RecurringBuyButtonAction,
-RecurringBuyButtonEnvironment
+    RecurringBuyButtonEnvironment
 > { _, action, environment in
     switch action {
     case .refresh:

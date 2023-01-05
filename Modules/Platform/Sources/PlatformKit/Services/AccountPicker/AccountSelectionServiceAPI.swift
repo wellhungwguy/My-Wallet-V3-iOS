@@ -21,7 +21,7 @@ public final class AccountPickerSelectionService: AccountSelectionServiceAPI {
     }
 
     public init(defaultSelection: BlockchainAccount) {
-        selectedDataRelay = BehaviorRelay(value: defaultSelection)
+        self.selectedDataRelay = BehaviorRelay(value: defaultSelection)
     }
 
     public func record(selection: BlockchainAccount) {

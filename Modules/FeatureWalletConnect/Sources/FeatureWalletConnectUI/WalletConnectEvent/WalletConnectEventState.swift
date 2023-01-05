@@ -39,43 +39,43 @@ public struct WalletConnectEventState: Equatable {
         let meta = session.dAppInfo.peerMeta
 
         if let url = meta.icons.first {
-            imageResource = .remote(url: url)
+            self.imageResource = .remote(url: url)
         } else {
-            imageResource = nil
+            self.imageResource = nil
         }
 
         switch state {
         case .idle:
-            title = String(format: LocalizedString.Connection.dAppWantsToConnect, meta.name)
-            subtitle = meta.url.host
-            secondaryButtonTitle = LocalizedString.cancel
-            primaryButtonTitle = LocalizedString.confirm
-            primaryAction = .accept
-            secondaryAction = .close
+            self.title = String(format: LocalizedString.Connection.dAppWantsToConnect, meta.name)
+            self.subtitle = meta.url.host
+            self.secondaryButtonTitle = LocalizedString.cancel
+            self.primaryButtonTitle = LocalizedString.confirm
+            self.primaryAction = .accept
+            self.secondaryAction = .close
         case .fail:
-            title = String(format: LocalizedString.Connection.dAppConnectionFail, meta.name)
-            subtitle = LocalizedString.Connection.dAppConnectionFailMessage
-            primaryButtonTitle = LocalizedString.ok
-            primaryAction = .close
-            decorationImage = UIImage(named: "fail-decorator", in: .featureWalletConnectUI, with: nil)!
+            self.title = String(format: LocalizedString.Connection.dAppConnectionFail, meta.name)
+            self.subtitle = LocalizedString.Connection.dAppConnectionFailMessage
+            self.primaryButtonTitle = LocalizedString.ok
+            self.primaryAction = .close
+            self.decorationImage = UIImage(named: "fail-decorator", in: .featureWalletConnectUI, with: nil)!
         case .success:
-            title = String(format: LocalizedString.Connection.dAppConnectionSuccess, meta.name)
-            primaryButtonTitle = LocalizedString.ok
-            primaryAction = .close
-            decorationImage = UIImage(named: "success-decorator", in: .featureWalletConnectUI, with: nil)!
+            self.title = String(format: LocalizedString.Connection.dAppConnectionSuccess, meta.name)
+            self.primaryButtonTitle = LocalizedString.ok
+            self.primaryAction = .close
+            self.decorationImage = UIImage(named: "success-decorator", in: .featureWalletConnectUI, with: nil)!
         case .details:
-            title = meta.name
-            subtitle = meta.description
-            secondaryButtonTitle = LocalizedString.List.disconnect
-            secondaryAction = .disconnect
-            secondaryButtonColor = .textError
+            self.title = meta.name
+            self.subtitle = meta.description
+            self.secondaryButtonTitle = LocalizedString.List.disconnect
+            self.secondaryAction = .disconnect
+            self.secondaryButtonColor = .textError
         case .chainID(let name):
-            title = LocalizedString.ChangeChain.title(dAppName: meta.name, networkName: name)
-            subtitle = meta.url.host
-            primaryButtonTitle = LocalizedString.confirm
-            primaryAction = .accept
-            secondaryButtonTitle = LocalizedString.cancel
-            secondaryAction = .close
+            self.title = LocalizedString.ChangeChain.title(dAppName: meta.name, networkName: name)
+            self.subtitle = meta.url.host
+            self.primaryButtonTitle = LocalizedString.confirm
+            self.primaryAction = .accept
+            self.secondaryButtonTitle = LocalizedString.cancel
+            self.secondaryAction = .close
         }
     }
 

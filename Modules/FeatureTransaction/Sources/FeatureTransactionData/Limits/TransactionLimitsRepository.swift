@@ -45,7 +45,7 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
                 refreshControl: PerpetualCacheRefreshControl()
             ).eraseToAnyCache()
 
-            tradeLimitsCache = CachedValueNew(
+            self.tradeLimitsCache = CachedValueNew(
                 cache: cache,
                 fetch: { key in
                     client.fetchTradeLimits(
@@ -64,7 +64,7 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
                 refreshControl: PerpetualCacheRefreshControl()
             ).eraseToAnyCache()
 
-            crossBorderLimitsCache = CachedValueNew(
+            self.crossBorderLimitsCache = CachedValueNew(
                 cache: cache,
                 fetch: { key in
                     client

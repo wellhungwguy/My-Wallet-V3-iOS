@@ -233,7 +233,7 @@ extension PendingTransaction {
             TransactionConfirmations.FundsArrivalDate.default,
             TransactionConfirmations.Total(total: amount)
         ]
-        if hasAvailableDates, let paymentsDepositTerms = paymentsDepositTerms {
+        if hasAvailableDates, let paymentsDepositTerms {
             confimations += [
                 TransactionConfirmations.AvailableToTradeDate(
                     date: paymentsDepositTerms.formattedAvailableToTrade

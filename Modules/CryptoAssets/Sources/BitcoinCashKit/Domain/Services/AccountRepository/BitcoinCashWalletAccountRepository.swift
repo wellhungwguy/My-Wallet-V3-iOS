@@ -53,7 +53,7 @@ final class BitcoinCashWalletAccountRepository {
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [bitcoinCashFetcher] _ in
                 bitcoinCashFetcher.fetchOrCreateBitcoinCash()
@@ -67,21 +67,21 @@ final class BitcoinCashWalletAccountRepository {
             }
         )
 
-        defaultAccount = cachedValue.get(key: Key())
+        self.defaultAccount = cachedValue.get(key: Key())
             .map(\.defaultAccount)
             .eraseToAnyPublisher()
 
-        accounts = cachedValue.get(key: Key())
+        self.accounts = cachedValue.get(key: Key())
             .map(\.accounts)
             .eraseToAnyPublisher()
 
-        activeAccounts = accounts
+        self.activeAccounts = accounts
             .map { accounts in
                 accounts.filter(\.isActive)
             }
             .eraseToAnyPublisher()
 
-        bitcoinCashEntry = cachedValue.get(key: Key())
+        self.bitcoinCashEntry = cachedValue.get(key: Key())
             .map(\.entry)
             .eraseToAnyPublisher()
     }

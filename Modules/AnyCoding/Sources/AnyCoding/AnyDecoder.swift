@@ -17,6 +17,14 @@ public protocol AnyDecoderProtocol: AnyObject, Decoder {
     func convert<T>(_ any: Any, to: T.Type) throws -> Any?
 }
 
+extension AnyDecoderProtocol {
+
+    @_disfavoredOverload
+    public func decode<T>(_: T.Type, from any: Any?) throws -> T where T: Decodable {
+        try decode(T.self, from: any as Any)
+    }
+}
+
 open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
 
     public var codingPath: [CodingKey] = []
@@ -59,6 +67,8 @@ open class AnyDecoder: AnyDecoderProtocol, TopLevelDecoder {
     // swiftlint:disable cyclomatic_complexity
     open func convert<T>(_ any: Any, to type: T.Type) throws -> Any? {
         switch (any, T.self) {
+        case (let any, is AnyJSON.Type):
+            return AnyJSON(any)
         case (let any as AnyJSON, _):
             return try convert(any.wrapped, to: T.self)
         case (let time as TimeInterval, is Date.Type):
@@ -152,7 +162,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            dictionary = try (decoder.value as? [String: Any])
+            self.dictionary = try (decoder.value as? [String: Any])
                 .or(throw: Error(message: "Expected a [String: Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
 
@@ -201,7 +211,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            value = decoder.value
+            self.value = decoder.value
         }
     }
 }
@@ -235,7 +245,7 @@ extension AnyDecoder {
 
         public init(decoder: AnyDecoder) throws {
             self.decoder = decoder
-            array = try (decoder.value as? [Any])
+            self.array = try (decoder.value as? [Any])
                 .or(throw: Error(message: "Expected a [Any] but got: \(decoder.value)", at: decoder.codingPath))
         }
     }

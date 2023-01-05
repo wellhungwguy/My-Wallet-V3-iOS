@@ -89,8 +89,8 @@ public struct VerifyDeviceState: Equatable, NavigationState {
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
-        credentialsContext = .none
-        sendEmailButtonIsLoading = false
+        self.credentialsContext = .none
+        self.sendEmailButtonIsLoading = false
     }
 }
 

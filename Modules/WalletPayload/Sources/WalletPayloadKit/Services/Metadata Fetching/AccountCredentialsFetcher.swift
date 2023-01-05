@@ -75,7 +75,7 @@ final class AccountCredentialsFetcher: AccountCredentialsFetcherAPI {
         )
         .eraseToAnyCache()
 
-        cachedValue = CachedValueNew(
+        self.cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [featureFlagService, userCredentialsFetcher, metadataEntryService] _ in
                 doFetchAccountCredentials(

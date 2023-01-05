@@ -23,10 +23,10 @@ struct TransactionSizeCalculatorQuantities {
     }
 
     init(bitcoinScriptTypes: [BitcoinScriptType]) {
-        p2pkh = UInt(bitcoinScriptTypes.filter { $0 == .P2PKH }.count)
-        p2wpkh = UInt(bitcoinScriptTypes.filter { $0 == .P2WPKH }.count)
-        p2sh = UInt(bitcoinScriptTypes.filter { $0 == .P2SH }.count)
-        p2wsh = UInt(bitcoinScriptTypes.filter { $0 == .P2WSH }.count)
+        self.p2pkh = UInt(bitcoinScriptTypes.filter { $0 == .P2PKH }.count)
+        self.p2wpkh = UInt(bitcoinScriptTypes.filter { $0 == .P2WPKH }.count)
+        self.p2sh = UInt(bitcoinScriptTypes.filter { $0 == .P2SH }.count)
+        self.p2wsh = UInt(bitcoinScriptTypes.filter { $0 == .P2WSH }.count)
     }
 
     init(unspentOutputs: [UnspentOutput]) {

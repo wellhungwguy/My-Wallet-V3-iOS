@@ -152,6 +152,10 @@ final class ProductsRepositoryTests: XCTestCase {
             ProductValue(
                 id: .withdrawCrypto,
                 enabled: true
+            ),
+            ProductValue(
+                id: .useTradingAccount,
+                enabled: true
             )
         ]
     }

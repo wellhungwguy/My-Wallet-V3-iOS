@@ -75,14 +75,14 @@ public struct WalletInfo: Codable, Equatable {
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            guid = try container.decode(String.self, forKey: .guid)
-            email = try container.decodeIfPresent(String.self, forKey: .email)
-            twoFaType = try container.decodeIfPresent(WalletAuthenticatorType.self, forKey: .twoFaType)
-            emailCode = try container.decodeIfPresent(String.self, forKey: .emailCode)
-            isMobileSetup = try container.decodeIfPresent(Bool.self, forKey: .isMobileSetup)
-            hasCloudBackup = try container.decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
-            sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
-            nabu = try container.decodeIfPresent(Nabu.self, forKey: .nabu)
+            self.guid = try container.decode(String.self, forKey: .guid)
+            self.email = try container.decodeIfPresent(String.self, forKey: .email)
+            self.twoFaType = try container.decodeIfPresent(WalletAuthenticatorType.self, forKey: .twoFaType)
+            self.emailCode = try container.decodeIfPresent(String.self, forKey: .emailCode)
+            self.isMobileSetup = try container.decodeIfPresent(Bool.self, forKey: .isMobileSetup)
+            self.hasCloudBackup = try container.decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
+            self.sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+            self.nabu = try container.decodeIfPresent(Nabu.self, forKey: .nabu)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -123,9 +123,9 @@ public struct WalletInfo: Codable, Equatable {
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            userId = try container.decode(String.self, forKey: .userId)
-            recoveryToken = try container.decode(String.self, forKey: .recoveryToken)
-            recoverable = try container.decode(Bool.self, forKey: .recoverable)
+            self.userId = try container.decode(String.self, forKey: .userId)
+            self.recoveryToken = try container.decode(String.self, forKey: .recoveryToken)
+            self.recoverable = try container.decode(Bool.self, forKey: .recoverable)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -157,8 +157,8 @@ public struct WalletInfo: Codable, Equatable {
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            twoFaMode = try container.decodeIfPresent(Bool.self, forKey: .twoFaMode)
-            email = try container.decodeIfPresent(String.self, forKey: .email)
+            self.twoFaMode = try container.decodeIfPresent(Bool.self, forKey: .twoFaMode)
+            self.email = try container.decodeIfPresent(String.self, forKey: .email)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -218,15 +218,15 @@ public struct WalletInfo: Codable, Equatable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
-        product = try container.decodeIfPresent(String.self, forKey: .product)
-        exchangeAuthUrl = try container.decodeIfPresent(String.self, forKey: .exchangeAuthUrl)
-        exchange = try container.decodeIfPresent(Exchange.self, forKey: .exchange)
-        userType = try container.decodeIfPresent(UserType.self, forKey: .userType)
-        unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
-        mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
-        upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
-        wallet = try container.decodeIfPresent(Wallet.self, forKey: .wallet)
+        self.sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
+        self.product = try container.decodeIfPresent(String.self, forKey: .product)
+        self.exchangeAuthUrl = try container.decodeIfPresent(String.self, forKey: .exchangeAuthUrl)
+        self.exchange = try container.decodeIfPresent(Exchange.self, forKey: .exchange)
+        self.userType = try container.decodeIfPresent(UserType.self, forKey: .userType)
+        self.unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
+        self.mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
+        self.upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
+        self.wallet = try container.decodeIfPresent(Wallet.self, forKey: .wallet)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -12,9 +12,13 @@ import FeatureCoinData
 import FeatureCoinDomain
 import FeatureKYCDomain
 import FeatureKYCUI
+import FeatureOnboardingUI
 import FeatureOpenBankingUI
+import FeatureProveDomain
+import FeatureProveUI
 import FeatureQRCodeScannerDomain
 import FeatureSettingsUI
+import FeatureTransactionDomain
 import FeatureTransactionUI
 import ObservabilityKit
 import PlatformKit
@@ -141,10 +145,16 @@ extension DependencyContainer {
             ) as FeatureAddressSearchDomain.AddressServiceAPI
         }
 
-        factory { () -> AddressSearchFlowPresenterAPI in
-            AddressSearchFlowPresenter(
+        factory { () -> FeatureKYCUI.AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenterCardIssuingAdapter(
                 addressSearchRouterRouter: DIKit.resolve()
-            ) as AddressSearchFlowPresenterAPI
+            ) as FeatureKYCUI.AddressSearchFlowPresenterAPI
+        }
+
+        factory { () -> FeatureProveUI.AddressSearchFlowPresenterAPI in
+            AddressSearchFlowPresenterProveAdapter(
+                addressSearchRouterRouter: DIKit.resolve()
+            ) as FeatureProveUI.AddressSearchFlowPresenterAPI
         }
 
         factory {
@@ -154,8 +164,24 @@ extension DependencyContainer {
             ) as FeatureAddressSearchDomain.AddressSearchRouterAPI
         }
 
+        factory { () -> KYCProveFlowPresenterAPI in
+            KYCProveFlowPresenter(
+                router: DIKit.resolve()
+            ) as KYCProveFlowPresenterAPI
+        }
+
+        factory {
+            ProveRouter(
+                topViewController: DIKit.resolve()
+            ) as FeatureProveDomain.ProveRouterAPI
+        }
+
         factory {
             AddressKYCService() as FeatureAddressSearchDomain.AddressServiceAPI
+        }
+
+        factory {
+            FlowKYCInfoService() as FeatureKYCDomain.FlowKYCInfoServiceAPI
         }
 
         single { () -> AssetInformationRepositoryAPI in
@@ -183,5 +209,61 @@ extension DependencyContainer {
         }
 
         factory { UpdateSettingsClient(DIKit.resolve()) as UpdateSettingsClientAPI }
+
+        // MARK: Adapters
+
+        factory { () -> FeatureOnboardingUI.TransactionsRouterAPI in
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
+            )
+        }
+
+        // MARK: Transactions Module
+
+        factory { () -> PaymentMethodsLinkingAdapterAPI in
+            PaymentMethodsLinkingAdapter()
+        }
+
+        factory { () -> TransactionsAdapterAPI in
+            TransactionsAdapter(
+                router: DIKit.resolve(),
+                coincore: DIKit.resolve(),
+                app: DIKit.resolve()
+            )
+        }
+
+        factory { () -> PlatformUIKit.KYCRouting in
+            KYCAdapter()
+        }
+
+        factory { () -> FeatureTransactionUI.UserActionServiceAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
+        factory { () -> FeatureTransactionDomain.TransactionRestrictionsProviderAPI in
+            TransactionUserActionService(userService: DIKit.resolve())
+        }
+
+        factory { () -> AccountsRouting in
+            let routing: TabSwapping = DIKit.resolve()
+            return AccountsRouter(
+                routing: routing
+            )
+        }
+
+        factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
+
+        // MARK: Account Picker
+
+        factory { () -> AccountPickerViewControllable in
+            let controller = FeatureAccountPickerControllableAdapter(app: DIKit.resolve())
+            return controller as AccountPickerViewControllable
+        }
+
+        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
+            PaymentMethodsLinkingAdapter()
+        }
     }
 }

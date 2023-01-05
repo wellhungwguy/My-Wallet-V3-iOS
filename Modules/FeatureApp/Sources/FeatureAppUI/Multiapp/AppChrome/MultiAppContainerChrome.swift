@@ -1,12 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BlockchainNamespace
+import ComposableArchitecture
 import SwiftUI
 
 /// Contains the interactive or static chrome
 public struct MultiAppContainerChrome: View {
-    /// The current total balance
-    @State private var totalBalance: String = "$278,031.12"
     /// The current selected app mode
     @State private var currentModeSelection: AppMode
     /// The content offset for the modal sheet
@@ -17,30 +16,29 @@ public struct MultiAppContainerChrome: View {
     @State private var isRefreshing: Bool = false
 
     private var app: AppProtocol
+    private let store: StoreOf<SuperAppContent>
 
     init(app: AppProtocol) {
         self.app = app
+        self.store = Store(
+            initialState: .init(),
+            reducer: SuperAppContent(
+                app: app
+            )
+        )
         currentModeSelection = app.currentMode
     }
 
     public var body: some View {
-        if #available(iOS 16, *) {
+        if #available(iOS 15, *) {
             InteractiveMultiAppContent(
-                totalBalance: $totalBalance,
+                store: store,
                 currentModeSelection: $currentModeSelection,
                 contentOffset: $contentOffset,
                 scrollOffset: $scrollOffset,
                 isRefreshing: $isRefreshing
             )
             .app(app)
-        } else if #available(iOS 15, *) {
-            StaticMultiAppContent(
-                totalBalance: $totalBalance,
-                currentModeSelection: $currentModeSelection,
-                contentOffset: $contentOffset,
-                scrollOffset: $scrollOffset,
-                isRefreshing: $isRefreshing
-            )
         } else {
             // when iOS 15.0+?, no refresable on <15.0
             EmptyView()

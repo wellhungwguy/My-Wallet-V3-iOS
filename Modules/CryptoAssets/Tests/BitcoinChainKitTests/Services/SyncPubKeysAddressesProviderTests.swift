@@ -2,12 +2,12 @@
 
 @testable import BitcoinChainKit
 @testable import BitcoinChainKitMock
-@testable import WalletPayloadKit
 import BlockchainNamespace
 import Combine
 import Errors
 import TestKit
 import ToolKit
+@testable import WalletPayloadKit
 import XCTest
 
 final class SyncPubKeysAddressesProviderTests: XCTestCase {

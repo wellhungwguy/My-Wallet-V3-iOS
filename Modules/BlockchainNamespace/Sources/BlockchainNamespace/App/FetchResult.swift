@@ -39,6 +39,7 @@ extension Metadata {
         case undefined
         case state
         case remoteConfiguration
+        case bindings
     }
 }
 
@@ -50,6 +51,9 @@ extension FetchResult {
             return metadata
         }
     }
+
+    public var isSuccess: Bool { value != nil }
+    public var isFailure: Bool { error != nil }
 
     public var value: Any? {
         switch self {

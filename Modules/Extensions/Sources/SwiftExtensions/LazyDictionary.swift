@@ -10,7 +10,7 @@ public class LazyDictionary<Key, Value> where Key: Hashable {
         valueForKey ƒ: @escaping (Key) -> Value
     ) {
         self.dictionary = dictionary
-        valueForKey = ƒ
+        self.valueForKey = ƒ
     }
 
     public convenience init(

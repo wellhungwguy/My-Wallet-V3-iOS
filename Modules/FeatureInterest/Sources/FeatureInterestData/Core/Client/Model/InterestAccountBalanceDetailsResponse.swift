@@ -23,12 +23,12 @@ public struct InterestAccountBalanceDetailsResponse: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
-        balance = try values.decodeIfPresent(String.self, forKey: .balance)
-        lockedBalance = try values.decodeIfPresent(String.self, forKey: .locked)
-        pendingDeposit = try values.decodeIfPresent(String.self, forKey: .pendingDeposit)
-        pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)
-        pendingWithdrawal = try values.decodeIfPresent(String.self, forKey: .pendingWithdrawal)
-        totalInterest = try values.decodeIfPresent(String.self, forKey: .totalInterest)
+        self.balance = try values.decodeIfPresent(String.self, forKey: .balance)
+        self.lockedBalance = try values.decodeIfPresent(String.self, forKey: .locked)
+        self.pendingDeposit = try values.decodeIfPresent(String.self, forKey: .pendingDeposit)
+        self.pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)
+        self.pendingWithdrawal = try values.decodeIfPresent(String.self, forKey: .pendingWithdrawal)
+        self.totalInterest = try values.decodeIfPresent(String.self, forKey: .totalInterest)
     }
 }
 

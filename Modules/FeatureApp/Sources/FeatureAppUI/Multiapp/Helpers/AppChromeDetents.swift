@@ -1,24 +1,53 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Extensions
 import SwiftUI
+import UIKit
 
-@available(iOS 16.0, *)
+@available(iOS 15.0, *)
 enum AppChromeDetents {
     case collapsed
     case semiCollapsed
     case expanded
 
-    var identifier: String {
-        switch self {
-        case .collapsed:
-            return "Custom:\(CollapsedDetent.self)"
-        case .semiCollapsed:
-            return "Custom:\(SemiCollapsedDetent.self)"
-        case .expanded:
-            return "Custom:\(ExpandedDetent.self)"
+    var identifier: UISheetPresentationController.Detent.Identifier {
+        if #available(iOS 16, *) {
+            switch self {
+            case .collapsed:
+                return .init("Custom:\(CollapsedDetent.self)")
+            case .semiCollapsed:
+                return .init("Custom:\(SemiCollapsedDetent.self)")
+            case .expanded:
+                return .init("Custom:\(ExpandedDetent.self)")
+            }
+        } else {
+            switch self {
+            case .collapsed:
+                return .init("Custom:CollapsedDetent")
+            case .semiCollapsed:
+                return .init("Custom:SemiCollapsedDetent")
+            case .expanded:
+                return .init("Custom:ExpandedDetent")
+            }
         }
     }
 
+    var fraction: CGFloat {
+        switch self {
+        case .collapsed:
+            return 0.9
+        case .semiCollapsed:
+            return 0.95
+        case .expanded:
+            if #available(iOS 16, *) {
+                return 0.9999
+            } else {
+                return 0.985
+            }
+        }
+    }
+
+    @available(iOS 16, *)
     var detent: PresentationDetent {
         switch self {
         case .collapsed:
@@ -28,6 +57,13 @@ enum AppChromeDetents {
         case .expanded:
             return .expanded
         }
+    }
+
+    static func detent(
+        type: AppChromeDetents,
+        context: @escaping (NSObjectProtocol) -> CGFloat
+    ) -> UISheetPresentationController.Detent {
+        .heightWithContext(id: type.identifier.rawValue, context: context)
     }
 
     static var supportedDetents: [AppChromeDetents] = [

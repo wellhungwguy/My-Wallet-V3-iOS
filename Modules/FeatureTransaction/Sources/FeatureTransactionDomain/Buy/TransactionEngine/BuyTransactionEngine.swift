@@ -128,13 +128,21 @@ final class BuyTransactionEngine: TransactionEngine {
                     .flatMap(weak: self) { (self, values) -> Single<PendingTransaction> in
                         self.makeTransaction()
                             .map(weak: self) { (self, pendingTx) in
-                                self.app.state.transaction { state in
-                                    state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
-                                    state.set(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies, to: values)
+                                let frequency: RecurringBuy.Frequency
+                                // If the user has selected a recurring buy frequency already, then we want to use that value and not
+                                // default to `.once`
+                                if let f = try? self.app.state.get(blockchain.ux.transaction.action.select.recurring.buy.frequency) as RecurringBuy.Frequency {
+                                    frequency = f
+                                } else {
+                                    frequency = .once
+                                    self.app.state.transaction { state in
+                                        state.set(blockchain.ux.transaction.action.select.recurring.buy.frequency, to: RecurringBuy.Frequency.once.rawValue)
+                                        state.set(blockchain.ux.transaction.event.did.fetch.recurring.buy.frequencies, to: values)
+                                    }
                                 }
                                 return pendingTx
                                     .updatePaymentMethodEligibilityAndNextPaymentDates(values)
-                                    .updateRecurringBuyFrequency(.once)
+                                    .updateRecurringBuyFrequency(frequency)
                             }
                     }
                     .flatMap(weak: self) { (self, pendingTx) in
@@ -211,7 +219,7 @@ final class BuyTransactionEngine: TransactionEngine {
         let sourceAccountLabel = sourceAccount.label
         let isQuoteRefreshEnabled = app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.quote.refresh.is.enabled)
         let isCheckoutEnabled = app.remoteConfiguration.yes(if: blockchain.ux.transaction.checkout.is.enabled)
-        if isQuoteRefreshEnabled && isCheckoutEnabled {
+        if isQuoteRefreshEnabled, isCheckoutEnabled {
             return .just(pendingTransaction)
         }
         return createOrderFromPendingTransaction(pendingTransaction)
@@ -410,7 +418,7 @@ extension BuyTransactionEngine {
                     .contains(paymentMethodType)
                 // RecurringBuy.Frequency.Once is not included in `eligibilityAndNextPaymentMethodRecurringBuys` as a one time buy
                 // is not a recurring buy. We must handle this differently than other frequencies.
-                if frequency == .once && !paymentMethodCanBeUsedForRecurringBuy {
+                if frequency == .once, !paymentMethodCanBeUsedForRecurringBuy {
                     app.state.transaction { state in
                         state.set(blockchain.ux.transaction.payment.method.is.available.for.recurring.buy, to: false)
                     }

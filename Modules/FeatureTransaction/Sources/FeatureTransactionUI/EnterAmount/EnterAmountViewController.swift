@@ -93,8 +93,8 @@ final class EnterAmountViewController: BaseScreenViewController,
         self.app = app
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
-        amountViewable = amountViewProvider
-        continueButtonTapped = continueButtonViewModel.tap
+        self.amountViewable = amountViewProvider
+        self.continueButtonTapped = continueButtonViewModel.tap
 
         let errorRecoveryCTAModel = ErrorRecoveryCTAModel(
             buttonTitle: "", // initial state shows no error, and the button is hidden, so this is OK
@@ -102,7 +102,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         )
         self.errorRecoveryCTAModel = errorRecoveryCTAModel
         let errorRecoveryCTA = ErrorRecoveryCTA(model: errorRecoveryCTAModel)
-        errorRecoveryViewController = UIHostingController(rootView: errorRecoveryCTA)
+        self.errorRecoveryViewController = UIHostingController(rootView: errorRecoveryCTA)
         errorRecoveryViewController.view.isHidden = true // initial state shows no error
 
         super.init(nibName: nil, bundle: nil)

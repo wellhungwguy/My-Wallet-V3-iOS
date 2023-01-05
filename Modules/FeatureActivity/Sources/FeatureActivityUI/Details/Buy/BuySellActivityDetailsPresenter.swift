@@ -44,6 +44,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: Private Properties (Model Relay)
 
     private let cardDataRelay: BehaviorRelay<String?> = .init(value: nil)
+    private let recurringBuyNextPaymentDateRelay: BehaviorRelay<String?> = .init(value: nil)
     private let buyExchangeRateRelay: BehaviorRelay<MoneyValue?> = .init(value: nil)
 
     // MARK: Private Properties (LabelContentPresenting)
@@ -65,6 +66,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let fromPresenter: LineItemCellPresenting
     private let feePresenter: LineItemCellPresenting
     private let paymentMethodPresenter: LineItemCellPresenting
+    private let recurringBuyFrequencyPresenter: LineItemCellPresenting
 
     // swiftlint:disable function_body_length
     init(
@@ -82,15 +84,15 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .pending:
             badgeType = .default(accessibilitySuffix: description)
             let title = event.isBuy ? LocalizedString.Title.buying : LocalizedString.Title.selling
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         case .finished:
             badgeType = .verified
             let title = event.isBuy ? LocalizedString.Title.bought : LocalizedString.Title.sold
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         default:
             badgeType = .destructive
             let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
-            titleViewRelay.accept(.text(value: title))
+            titleViewRelay.accept(.text(value: "\(title) \(event.currencyType.name)"))
         }
         statusBadge.interactor.stateRelay.accept(
             .loaded(
@@ -102,40 +104,44 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         )
 
         let amount = event.isBuy ? event.outputValue : event.inputValue
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+        self.cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
 
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+        self.recurringBuyFrequencyPresenter = TransactionalLineItem
+            .recurringBuyFrequency()
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+
+        self.orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+        self.dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         if event.isBuy {
-            exchangeRatePresenter = TransactionalLineItem.exchangeRate().defaultPresenter(
+            self.exchangeRatePresenter = TransactionalLineItem.exchangeRate().defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         } else {
             let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
             let exchangeRate = pair.exchangeRate
             let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
-            exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+            self.exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
         }
 
         let total = event.isBuy ? event.inputValue.displayString : event.outputValue.displayString
-        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+        self.totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        feePresenter = TransactionalLineItem.fee(event.fee.displayString).defaultPresenter(
+        self.feePresenter = TransactionalLineItem.fee(event.fee.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -152,9 +158,17 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .funds:
             paymentMethod = event.inputValue.currency.name
         }
-        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
+        self.paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
+
+        if event.recurringBuyId != nil {
+            recurringBuyNextPaymentDateRelay
+                .compactMap { $0 }
+                .map { .loaded(next: .init(text: $0)) }
+                .bindAndCatch(to: recurringBuyFrequencyPresenter.interactor.description.stateRelay)
+                .disposed(by: disposeBag)
+        }
 
         cardDataRelay
             .compactMap { $0 }
@@ -170,7 +184,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         let source = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
-        fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+        self.fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -181,13 +195,13 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .fiat(let fiat):
             destination = fiat.defaultWalletName
         }
-        toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+        self.toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
         switch event.isBuy {
         case true:
-            cells = [
+            var items: [DetailsScreen.CellType] = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .lineItem(orderIDPresenter),
@@ -202,8 +216,13 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .separator,
                 .lineItem(paymentMethodPresenter)
             ]
+            if event.recurringBuyId != nil {
+                items.append(.separator)
+                items.append(.lineItem(recurringBuyFrequencyPresenter))
+            }
+            cells = items
         case false:
-            cells = [
+            self.cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
                 .lineItem(orderIDPresenter),
@@ -248,6 +267,18 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                     receiveCompletion: { _ in },
                     receiveValue: { [weak self] value in
                         self?.cardDataRelay.accept(value)
+                    }
+                )
+                .store(in: &cancellables)
+        }
+
+        if let recurringBuyId = event.recurringBuyId {
+            interactor
+                .fetchRecurringBuyFrequencyForId(recurringBuyId)
+                .sink(
+                    receiveCompletion: { _ in },
+                    receiveValue: { [recurringBuyNextPaymentDateRelay] value in
+                        recurringBuyNextPaymentDateRelay.accept(value)
                     }
                 )
                 .store(in: &cancellables)

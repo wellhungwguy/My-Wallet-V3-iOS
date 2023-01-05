@@ -10,10 +10,10 @@ private class BuyAnalyticsEvent: AnalyticsEvent {
 
 extension DisplayBundle {
 
-    static func buy(sourceAccount: SingleAccount) -> DisplayBundle {
+    static func buy(sourceAccount: SingleAccount, destinationAccount: CryptoAccount) -> DisplayBundle {
         typealias LocalizedString = LocalizationConstants.Transaction
         return DisplayBundle(
-            title: LocalizedString.Buy.title,
+            title: LocalizedString.Buy.title + " \(destinationAccount.asset.name)",
             amountDisplayBundle: .init(
                 events: .init(
                     min: BuyAnalyticsEvent(),

@@ -48,23 +48,23 @@ extension AppProtocol {
     }
 
     func perform(_ action: L_blockchain_ui_type_action, event: Session.Event, with data: ActionData) throws {
-        var json = data.then
-        var emit: (tag: Tag, value: Tag)?
+        var json = try data.then.dictionary().or(throw: "Expected [String: Any]")
+        var emit: (tag: Tag, value: Tag.Reference)?
         defer {
-            if let emit = emit {
-                let key = emit.value.key(to: event.reference.context)
+            if let emit {
                 post(
-                    event: key,
-                    context: event.context + [blockchain.ui.type.action: Action(tag: action, event: key, data: nil)],
+                    event: emit.value,
+                    context: event.context + [blockchain.ui.type.action: Action(tag: action, event: emit.value, data: nil)],
                     file: event.source.file,
                     line: event.source.line
                 )
             }
         }
-        if let tag = try? json["emit"]?.decode(Tag.self) {
-            emit = (action.then.emit[], tag)
+        if let tag = try? json["emit"].decode(Tag.Reference.self) {
+            emit = (action.then.emit[], tag.key(to: event.reference.context))
             json["emit"] = nil
         }
+        guard json.isNotEmpty else { return }
         let tag = try action.then[].lastDeclaredDescendant(in: json, policy: .throws)
         let data = try action.then[].value(in: data.then, at: tag)
         let key = tag.ref(to: event.reference.context)

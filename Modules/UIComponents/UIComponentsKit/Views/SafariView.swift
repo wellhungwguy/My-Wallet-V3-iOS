@@ -8,7 +8,7 @@ public struct SafariView: UIViewControllerRepresentable {
     let url: URL
 
     public init(destination: String) {
-        url = URL(string: destination)!
+        self.url = URL(string: destination)!
     }
 
     public func makeUIViewController(

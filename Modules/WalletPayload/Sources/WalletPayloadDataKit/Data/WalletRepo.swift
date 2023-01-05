@@ -8,8 +8,8 @@ final class WalletRepo: WalletRepoAPI {
     private let publisher: AnyPublisher<WalletRepoState, Never>
 
     init(initialState: WalletRepoState) {
-        state = CurrentValueSubject<WalletRepoState, Never>(initialState)
-        publisher = state
+        self.state = CurrentValueSubject<WalletRepoState, Never>(initialState)
+        self.publisher = state
             .eraseToAnyPublisher()
     }
 

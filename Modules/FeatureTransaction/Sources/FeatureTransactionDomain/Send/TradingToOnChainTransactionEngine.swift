@@ -63,7 +63,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
         self.transactionLimitsService = transactionLimitsService
-        feeCache = CachedValue(
+        self.feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
                 schedulerIdentifier: "TradingToOnChainTransactionEngine"
@@ -175,7 +175,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         maximumDaily: transactionLimits.maximumDaily,
                         maximumAnnual: transactionLimits.maximumAnnual,
                         effectiveLimit: transactionLimits.effectiveLimit,
-                        suggestedUpgrade: transactionLimits.suggestedUpgrade
+                        suggestedUpgrade: transactionLimits.suggestedUpgrade,
+                        earn: transactionLimits.earn
                     )
                     return pendingTransaction
                 }

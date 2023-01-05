@@ -49,6 +49,9 @@ public protocol BlockchainAccount: Account {
     /// The total balance on this account.
     var balance: AnyPublisher<MoneyValue, Error> { get }
 
+    /// The total balance to display on this account.
+    var mainBalanceToDisplay: AnyPublisher<MoneyValue, Error> { get }
+
     /// The pending balance of this account.
     var pendingBalance: AnyPublisher<MoneyValue, Error> { get }
 
@@ -66,13 +69,25 @@ public protocol BlockchainAccount: Account {
     func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
+    func fiatMainBalanceToDisplay(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error>
+
+    /// The balance of this account exchanged to the given fiat currency.
     func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error>
+
+    /// The balance of this account exchanged to the given fiat currency.
+    func fiatMainBalanceToDisplay(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
     func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error>
 
+    /// The main balance to display of this account exchanged to the given fiat currency.
+    func mainBalanceToDisplayPair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error>
+
     /// The balance of this account exchanged to the given fiat currency.
     func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error>
+
+    /// The  main balance to display of this account exchanged to the given fiat currency.
+    func mainBalanceToDisplayPair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error>
 
     /// Various `BlockchainAccount` objects fetch their balance in
     /// different ways and use different services. After completing
@@ -95,6 +110,8 @@ extension BlockchainAccount {
             .map(\.isPositive)
             .eraseToAnyPublisher()
     }
+
+    public var mainBalanceToDisplay: AnyPublisher<MoneyValue, Error> { balance }
 
     public var hasPositiveDisplayableBalance: AnyPublisher<Bool, Error> {
         balance
@@ -129,12 +146,26 @@ extension BlockchainAccount {
         balancePair(fiatCurrency: fiatCurrency, at: .now)
     }
 
+    public func mainBalanceToDisplayPair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
+        mainBalanceToDisplayPair(fiatCurrency: fiatCurrency, at: .now)
+    }
+
     public func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error> {
         fiatBalance(fiatCurrency: fiatCurrency, at: .now)
     }
 
+    public func fiatMainBalanceToDisplay(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error> {
+        fiatMainBalanceToDisplay(fiatCurrency: fiatCurrency, at: .now)
+    }
+
     public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
         balancePair(fiatCurrency: fiatCurrency, at: time)
+            .map(\.quote)
+            .eraseToAnyPublisher()
+    }
+
+    public func fiatMainBalanceToDisplay(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        mainBalanceToDisplayPair(fiatCurrency: fiatCurrency, at: time)
             .map(\.quote)
             .eraseToAnyPublisher()
     }
@@ -148,6 +179,21 @@ extension BlockchainAccount {
             .price(of: currencyType, in: fiatCurrency, at: time)
             .eraseError()
             .zip(balance)
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func mainBalanceToDisplayPair(
+        priceService: PriceServiceAPI,
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: currencyType, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(mainBalanceToDisplay)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
@@ -175,6 +221,21 @@ extension BlockchainAccount {
         Task<Bool, Error>.Publisher { [account = self] in
             try await app.get(blockchain.ux.user.account.preferences.small.balances.are.hidden, as: Bool.self)
                 && { try await account.balancePair(fiatCurrency: app.get(blockchain.user.currency.preferred.fiat.display.currency)).await().quote.isDust }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func hasSmallMainBalanceToDisplay(app: AppProtocol = resolve()) -> AnyPublisher<Bool, Error> {
+        Task<Bool, Error>.Publisher { [account = self] in
+            try await app.get(blockchain.ux.user.account.preferences.small.balances.are.hidden, as: Bool.self)
+            && {
+                try await account.mainBalanceToDisplayPair(
+                    fiatCurrency: app.get(blockchain.user.currency.preferred.fiat.display.currency)
+                )
+                .await()
+                .quote
+                .isDust
+            }
         }
         .eraseToAnyPublisher()
     }

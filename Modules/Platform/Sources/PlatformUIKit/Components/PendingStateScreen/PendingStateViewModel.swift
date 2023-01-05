@@ -69,7 +69,7 @@ public struct PendingStateViewModel {
             inputs.append(.url(string: interactableText, url: url))
         }
 
-        subtitleTextViewModel = .init(
+        self.subtitleTextViewModel = .init(
             inputs: inputs,
             textStyle: .init(
                 color: .descriptionText,

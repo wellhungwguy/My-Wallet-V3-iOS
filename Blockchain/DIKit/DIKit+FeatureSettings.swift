@@ -40,10 +40,6 @@ extension DependencyContainer {
             KYCAdapter() as FeatureSettingsUI.KYCRouterAPI
         }
 
-        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
-            PaymentMethodsLinkingAdapter()
-        }
-
         factory { () -> FeatureSettingsUI.AuthenticationCoordinating in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveAuthenticationCoordinating() as AuthenticationCoordinating
@@ -228,7 +224,7 @@ final class CryptoDomainsDetailsPresenter: DetailsScreenPresenterAPI {
     )
 
     init(domains: [String]) {
-        cells = domains
+        self.cells = domains
             .map { domain in
                 DetailsScreen.CellType
                     .label(

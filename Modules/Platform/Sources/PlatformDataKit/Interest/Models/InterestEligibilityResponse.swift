@@ -14,9 +14,9 @@ struct InterestEligibilityResponse: Decodable, Equatable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         do {
-            interestEligibilities = try container.decode([String: InterestEligibility].self)
+            self.interestEligibilities = try container.decode([String: InterestEligibility].self)
         } catch {
-            interestEligibilities = [:]
+            self.interestEligibilities = [:]
         }
     }
 

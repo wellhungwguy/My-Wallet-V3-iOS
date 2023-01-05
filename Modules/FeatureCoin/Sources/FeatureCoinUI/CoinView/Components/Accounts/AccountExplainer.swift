@@ -72,7 +72,7 @@ extension Account.AccountType {
         case .exchange:
             return .exchange
         case .staking:
-            return .rewards
+            return .staking
         }
     }
 }
@@ -103,6 +103,12 @@ extension Account.AccountType.Explainer {
         title: Localization.exchange.title,
         body: Localization.exchange.body,
         action: Localization.exchange.action
+    )
+
+    static let staking = Self(
+        title: Localization.staking.title,
+        body: Localization.staking.body,
+        action: Localization.staking.action
     )
 }
 

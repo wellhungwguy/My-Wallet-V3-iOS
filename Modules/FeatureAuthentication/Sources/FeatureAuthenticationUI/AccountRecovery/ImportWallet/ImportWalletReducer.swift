@@ -20,7 +20,7 @@ struct ImportWalletState: Equatable {
 
     init(mnemonic: String) {
         self.mnemonic = mnemonic
-        isCreateAccountScreenVisible = false
+        self.isCreateAccountScreenVisible = false
     }
 }
 
@@ -32,6 +32,7 @@ struct ImportWalletEnvironment {
     let walletRecoveryService: WalletRecoveryService
     let walletCreationService: WalletCreationService
     let walletFetcherService: WalletFetcherService
+    let signUpCountriesService: SignUpCountriesServiceAPI
     let featureFlagsService: FeatureFlagsServiceAPI
     let recaptchaService: GoogleRecaptchaServiceAPI
 }
@@ -51,6 +52,7 @@ let importWalletReducer = Reducer.combine(
                     walletRecoveryService: $0.walletRecoveryService,
                     walletCreationService: $0.walletCreationService,
                     walletFetcherService: $0.walletFetcherService,
+                    signUpCountriesService: $0.signUpCountriesService,
                     featureFlagsService: $0.featureFlagsService,
                     recaptchaService: $0.recaptchaService
                 )

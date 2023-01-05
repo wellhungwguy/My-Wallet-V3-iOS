@@ -23,6 +23,7 @@ public enum GoogleRecaptchaError: LocalizedError, Equatable {
 
 /// `GoogleRecaptchaServiceAPI` is the interface for using Google's Recaptcha Service
 public protocol GoogleRecaptchaServiceAPI {
+    func load()
     /// Sends a recaptcha request for the login workflow
     /// - Returns: A combine `Publisher` that emits a Recaptcha Token on success or GoogleRecaptchaError on failure
     func verifyForLogin() -> AnyPublisher<String, GoogleRecaptchaError>
@@ -37,6 +38,8 @@ public protocol GoogleRecaptchaServiceAPI {
 public class NoOpGoogleRecatpchaService: GoogleRecaptchaServiceAPI {
 
     public init() {}
+
+    public func load() { }
 
     public func verifyForLogin() -> AnyPublisher<String, GoogleRecaptchaError> {
         .empty()

@@ -69,8 +69,8 @@ struct TokeniseCardParameters: Encodable {
         nonce: Data,
         nonceSignature: Data
     ) {
-        deviceType = UIDevice.current.userInterfaceIdiom == .phone ? .phone : .tablet
-        provisioningAppVersion = Bundle.main.plist.version.string
+        self.deviceType = UIDevice.current.userInterfaceIdiom == .phone ? .phone : .tablet
+        self.provisioningAppVersion = Bundle.main.plist.version.string
         self.certificates = certificates.compactMap { data in
             data.base64EncodedString()
         }

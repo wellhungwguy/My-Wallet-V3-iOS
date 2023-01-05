@@ -64,7 +64,7 @@ final class CustodialCryptoAsset: CryptoAsset {
         self.errorRecorder = errorRecorder
         self.featureFetcher = featureFetcher
         self.delegatedCustodyAccountRepository = delegatedCustodyAccountRepository
-        addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
+        self.addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
         self.featureFlag = featureFlag
     }
 

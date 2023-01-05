@@ -102,7 +102,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         )
         self.inlineTagView = inlineTagView
         self.tags = tags
-        isSelectable = isSelected != nil
+        self.isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
         self.action = action
         self.leading = leading()

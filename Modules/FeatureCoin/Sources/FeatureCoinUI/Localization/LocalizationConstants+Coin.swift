@@ -6,6 +6,9 @@ import Localization
 
 extension LocalizationConstants {
     enum Coin {
+        enum Header {
+            static let walletsAndAccounts = NSLocalizedString("Wallets & Accounts", comment: "Wallets & Accounts")
+        }
         enum Label {
             enum Title {
                 static let currentCryptoPrice = NSLocalizedString(
@@ -72,6 +75,35 @@ extension LocalizationConstants {
             }
         }
 
+        enum RecurringBuy {
+            enum Header {
+                static let recurringBuys = NSLocalizedString("Recurring Buys", comment: "Recurring Buys")
+            }
+            enum LearnMore {
+                static let title = NSLocalizedString("Don't know when to buy?", comment: "Coin view: Learn more card title")
+                static let description = NSLocalizedString("Timing the market is hard, which is why many investors use Dollar Cost Averaging.", comment: "Coin view: Learn more card description")
+                static let action = NSLocalizedString("Learn More", comment: "Coin view: button")
+            }
+            enum Row {
+                static let frequency = NSLocalizedString("Next Buy: ", comment: "Coin view: describing when the next buy will occur")
+            }
+            enum Summary {
+                public static let title = NSLocalizedString("Recurring Buy", comment: "Recurring Buy")
+                public static let amount = NSLocalizedString("Amount", comment: "Amount")
+                public static let crypto = NSLocalizedString("Crypto", comment: "Crypto")
+                public static let paymentMethod = NSLocalizedString("Payment Method", comment: "Payment Method")
+                public static let frequency = NSLocalizedString("Frequency", comment: "Frequency")
+                public static let nextBuy = NSLocalizedString("Next Buy", comment: "Next Buy")
+                public static let remove = NSLocalizedString("Remove", comment: "Remove")
+
+                enum Removal {
+                    public static let title = NSLocalizedString("Are you sure you want to remove this recurring buy?", comment: "Removal modal: title")
+                    public static let remove = NSLocalizedString("Remove", comment: "Remove")
+                    public static let keep = NSLocalizedString("Keep", comment: "Keep")
+                }
+            }
+        }
+
         enum Accounts {
 
             enum Error {
@@ -112,6 +144,16 @@ extension LocalizationConstants {
 
             static let rewardsAccountSubtitle = NSLocalizedString(
                 "Earn %.1f%% APY",
+                comment: "Coin View: rewards account subtitle"
+            )
+
+            static let stakingAccountTitle = NSLocalizedString(
+                "Staking Account",
+                comment: "Coin View: rewards account title"
+            )
+
+            static let stakingAccountSubtitle = NSLocalizedString(
+                "Earn %.1f%%",
                 comment: "Coin View: rewards account subtitle"
             )
 
@@ -215,6 +257,21 @@ extension LocalizationConstants {
                     action: NSLocalizedString(
                         "Connect",
                         comment: "Coin View: Exchange Explainer action"
+                    )
+                )
+
+                static let staking = (
+                    title: NSLocalizedString(
+                        "Staking Account",
+                        comment: "Coin View:Staking Account Explainer title"
+                    ),
+                    body: NSLocalizedString(
+                        "Your Staking Account allows you to earn rewards on your crypto.",
+                        comment: "Coin View: Staking Account Explainer body"
+                    ),
+                    action: NSLocalizedString(
+                        "I understand",
+                        comment: "Coin View: Rewards Account Explainer action"
                     )
                 )
             }

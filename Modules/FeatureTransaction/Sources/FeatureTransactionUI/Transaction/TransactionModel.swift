@@ -50,8 +50,8 @@ final class TransactionModel {
         self.app = app
         self.analyticsHook = analyticsHook
         self.sendEmailNotificationService = sendEmailNotificationService
-        interactor = transactionInteractor
-        mviModel = MviModel(
+        self.interactor = transactionInteractor
+        self.mviModel = MviModel(
             initialState: initialState,
             performAction: { [weak self] state, action -> Disposable? in
                 self?.perform(previousState: state, action: action)
@@ -312,7 +312,7 @@ final class TransactionModel {
 
     func streamPrices() -> Disposable {
         state.publisher.ignoreFailure(setFailureType: Never.self)
-            .map { state in Pair(state.quoteRequest, state.isStreamingPrices) }
+            .map { [app] state in Pair(state.quoteRequest(app), state.isStreamingPrices) }
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .map(\.tuple)
@@ -337,7 +337,7 @@ final class TransactionModel {
 
     func streamQuotes() -> Disposable {
         state.publisher.ignoreFailure(setFailureType: Never.self)
-            .map { state in Pair(state.quoteRequest, state.isStreamingQuotes) }
+            .map { [app] state in Pair(state.quoteRequest(app), state.isStreamingQuotes) }
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .map(\.tuple)
@@ -802,8 +802,12 @@ extension TransactionState {
         }
     }
 
-    var quoteRequest: BrokerageQuote.Request? {
-        guard let sourceCurrency = source?.currencyType else { return nil }
+    func quoteRequest(_ app: AppProtocol) -> BrokerageQuote.Request? {
+        var sourceCurrency: CurrencyType? = source?.currencyType
+        if source is PaymentMethodAccount {
+            sourceCurrency = try? app.state.get(blockchain.user.currency.preferred.fiat.trading.currency, as: FiatCurrency.self).currencyType
+        }
+        guard let sourceCurrency else { return nil }
         guard let destinationCurrency = destination?.currencyType else { return nil }
         guard (try? amount >= minSpendable) == true else { return nil }
         guard let profile else { return nil }

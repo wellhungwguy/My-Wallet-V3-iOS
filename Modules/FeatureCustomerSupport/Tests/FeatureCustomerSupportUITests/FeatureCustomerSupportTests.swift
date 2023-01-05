@@ -44,14 +44,14 @@ final class FeatureCustomerSupportTests: XCTestCase {
         XCTAssertEqual(sdk.attributes.email, "oliver@blockchain.com")
     }
 
-    func test_sign_out() throws {
+    func test_sign_out() {
         app.signOut()
         XCTAssertTrue(sdk.did.logout)
     }
 
     func test_present_fallback_url() {
         app.post(event: blockchain.ux.customer.support.show.messenger)
-        XCTAssertFalse(sdk.did.presentMessenger)
+        XCTAssertFalse(sdk.did.present)
         XCTAssertEqual(url?.absoluteString, "https://support.blockchain.com")
     }
 
@@ -67,7 +67,7 @@ final class FeatureCustomerSupportTests: XCTestCase {
     func test_present_messenger() {
         app.remoteConfiguration.override(blockchain.app.configuration.customer.support.is.enabled, with: true)
         app.post(event: blockchain.ux.customer.support.show.messenger)
-        XCTAssertTrue(sdk.did.presentMessenger)
+        XCTAssertTrue(sdk.did.present)
     }
 }
 
@@ -79,7 +79,7 @@ enum Test {
         static var attributes: UserAttributes!
 
         static var did = (
-            presentMessenger: false,
+            present: false,
             login: false,
             logout: false
         )
@@ -106,8 +106,8 @@ enum Test {
             did.logout = true
         }
 
-        static func presentMessenger() {
-            did.presentMessenger = true
+        static func present() {
+            did.present = true
         }
 
         static func unreadConversationCount() -> UInt {

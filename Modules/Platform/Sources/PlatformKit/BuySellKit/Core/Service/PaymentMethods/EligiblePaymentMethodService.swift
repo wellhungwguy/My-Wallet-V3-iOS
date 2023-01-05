@@ -108,7 +108,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
             .distinctUntilChanged()
             .share(replay: 1, scope: .whileConnected)
 
-        paymentMethods = refreshAction
+        self.paymentMethods = refreshAction
             .startWith(())
             .asObservable()
             .flatMapLatest { _ -> Observable<[PaymentMethod]> in
@@ -116,11 +116,11 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
             }
             .share(replay: 1, scope: .whileConnected)
 
-        paymentMethodsSingle = fetch
+        self.paymentMethodsSingle = fetch
             .take(1)
             .asSingle()
 
-        supportedCardTypes = fetch
+        self.supportedCardTypes = fetch
             .take(1)
             .asSingle()
             .map { paymentMethods in

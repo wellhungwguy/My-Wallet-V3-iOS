@@ -8,7 +8,7 @@ extension LocalizationConstants {
 
     public enum AnnouncementCards {
 
-        // MARK: - Persistent
+        // MARK: - Persistent.
 
         public enum Welcome {
             public static let title = NSLocalizedString(
@@ -302,6 +302,21 @@ extension LocalizationConstants {
             public static let button = NSLocalizedString(
                 "Join The Waitlist",
                 comment: "Card Issuing Waitlist annoucement card button"
+            )
+        }
+
+        public enum WalletAwareness {
+            public static let title = NSLocalizedString(
+                "Level up your trading",
+                comment: "Exchange wallet awareness annoucement card title"
+            )
+            public static let description = NSLocalizedString(
+                "Get lower fees, more trading pairs, and 24/7 live support on the Blockchain.com Exchange.",
+                comment: "Exchange wallet awareness annoucement card description"
+            )
+            public static let button = NSLocalizedString(
+                "Get Started",
+                comment: "Exchange wallet awareness annoucement card button"
             )
         }
     }

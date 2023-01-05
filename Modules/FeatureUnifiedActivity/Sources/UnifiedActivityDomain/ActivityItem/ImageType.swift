@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum ImageType: Equatable, Decodable {
+public enum ImageType: Equatable, Codable {
     case smallTag(ActivityItem.ImageSmallTag)
 
     enum CodingKeys: CodingKey {
@@ -21,6 +21,15 @@ public enum ImageType: Equatable, Decodable {
                 in: container,
                 debugDescription: "Unkown type \(name)"
             )
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .smallTag(let content):
+            try container.encode("SMALL_TAG", forKey: .type)
+            try content.encode(to: encoder)
         }
     }
 }

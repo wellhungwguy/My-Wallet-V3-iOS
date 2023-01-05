@@ -19,17 +19,17 @@ extension KYC {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
-            tier = (try? values.decode(KYC.Tier.self, forKey: .tier)) ?? .tier0
-            name = try values.decode(String.self, forKey: .name)
-            state = try values.decode(KYC.Tier.State.self, forKey: .state)
-            limits = try values.decodeIfPresent(KYC.UserTier.Limits.self, forKey: .limits)
+            self.tier = (try? values.decode(KYC.Tier.self, forKey: .tier)) ?? .tier0
+            self.name = try values.decode(String.self, forKey: .name)
+            self.state = try values.decode(KYC.Tier.State.self, forKey: .state)
+            self.limits = try values.decodeIfPresent(KYC.UserTier.Limits.self, forKey: .limits)
         }
 
         public init(tier: KYC.Tier, state: KYC.Tier.State) {
             self.tier = tier
             self.state = state
-            name = "Tier \(tier.rawValue)"
-            limits = nil
+            self.name = "Tier \(tier.rawValue)"
+            self.limits = nil
         }
     }
 }

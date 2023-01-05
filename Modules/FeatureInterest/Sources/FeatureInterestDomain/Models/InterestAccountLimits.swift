@@ -33,11 +33,11 @@ public struct InterestAccountLimits: Equatable {
         _ response: InterestLimits,
         cryptoCurrency: CryptoCurrency
     ) {
-        interestLockupDuration = response.lockUpDuration
+        self.interestLockupDuration = response.lockUpDuration
         self.cryptoCurrency = cryptoCurrency
-        nextInterestPayment = Date()
-        minDepositAmount = response.minDepositAmount
-        maxWithdrawalAmount = response.maxWithdrawalAmount
+        self.nextInterestPayment = Date()
+        self.minDepositAmount = response.minDepositAmount
+        self.maxWithdrawalAmount = response.maxWithdrawalAmount
     }
 }
 

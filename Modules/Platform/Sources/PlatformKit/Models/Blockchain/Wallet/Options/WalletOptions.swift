@@ -33,13 +33,13 @@ public struct WalletOptions: Decodable {
 extension WalletOptions {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        domains = try values.decodeIfPresent(Domains.self, forKey: .domains)
-        xlmMetadata = try values.decodeIfPresent(XLMMetadata.self, forKey: .xlm)
+        self.domains = try values.decodeIfPresent(Domains.self, forKey: .domains)
+        self.xlmMetadata = try values.decodeIfPresent(XLMMetadata.self, forKey: .xlm)
         if let xlmExchangeAddressContainer = try? values.nestedContainer(keyedBy: CodingKeys.self, forKey: .xlmExchange) {
-            xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
+            self.xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
         } else {
-            xlmExchangeAddresses = nil
+            self.xlmExchangeAddresses = nil
         }
-        hotWalletAddresses = try values.decodeIfPresent([String: [String: String]].self, forKey: .hotWalletAddresses)
+        self.hotWalletAddresses = try values.decodeIfPresent([String: [String: String]].self, forKey: .hotWalletAddresses)
     }
 }
