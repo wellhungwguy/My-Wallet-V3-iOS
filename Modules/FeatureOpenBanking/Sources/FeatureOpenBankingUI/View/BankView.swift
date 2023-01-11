@@ -82,7 +82,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         state.showActions = false
         return .merge(
             Just(())
-                .delay(for: .seconds(10), scheduler: environment.scheduler)
+                .delay(for: .seconds(90), scheduler: environment.scheduler)
                 .eraseToEffect()
                 .map { BankAction.showActions },
             .fireAndForget {
