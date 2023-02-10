@@ -1,24 +1,24 @@
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
 
-Modules/BlockchainComponentLibrary/ @oliveratkinson-bc
-Modules/BlockchainNamespace/ @oliveratkinson-bc
-Modules/CommonCrypto/ @paulo-bc @dchatzieleftheriou-bc
-Modules/ComposableArchitectureExtensions/ @oliveratkinson-bc
-Modules/CryptoAssets/ @paulo-bc
-Modules/FeatureActivity/ @thisisalexmcgregor @oliveratkinson-bc
-Modules/FeatureApp/ @dchatzieleftheriou-bc
-Modules/FeatureAuthentication/ @dchatzieleftheriou-bc
-Modules/FeatureCardPayment/ @crucheton-bc
-Modules/FeatureCardIssuing/ @crucheton-bc
-Modules/FeatureDashboard/ @paulo-bc @dchatzieleftheriou-bc
-Modules/FeatureDebug/ @dchatzieleftheriou-bc
-Modules/FeatureInterest/ @thisisalexmcgregor
-Modules/FeatureSettings/ @thisisalexmcgregor @dchatzieleftheriou-bc
-Modules/FeatureTransaction/ @thisisalexmcgregor @oliveratkinson-bc
-Modules/Keychain/ @dchatzieleftheriou-bc
-Modules/Metadata/ @dchatzieleftheriou-bc
-Modules/FeatureOpenBanking/ @oliveratkinson-bc
-Modules/Platform/ @paulo-bc @thisisalexmcgregor @dchatzieleftheriou-bc
-Modules/RemoteNotifications/ @paulo-bc
-Modules/UIComponents/ @oliveratkinson-bc
-Modules/WalletPayload/ @dchatzieleftheriou-bc
+Modules/BlockchainComponentLibrary/ @cpjservices48-bc
+Modules/BlockchainNamespace/ @cpjservices48-bc
+Modules/CommonCrypto/ @paulo-bc @cpjservices48-bc
+Modules/ComposableArchitectureExtensions/ @cpjservices48-bc
+Modules/CryptoAssets/ @cpjservices48-bc
+Modules/FeatureActivity/@cpjservices48-bc
+Modules/FeatureApp/ @cpjservices48-bc
+Modules/FeatureAuthentication/ @cpjservices48-bc
+Modules/FeatureCardPayment/ @cpjservices48-bc
+Modules/FeatureCardIssuing/ @cpjservices48-bc
+Modules/FeatureDashboard/ @cpjservices48-bc 
+Modules/FeatureDebug/ @cpjservices48-bc
+Modules/FeatureInterest/@cpjservices48-bc 
+Modules/FeatureSettings/  @cpjservices48-bc
+Modules/FeatureTransaction/  @cpjservices48-bc
+Modules/Keychain/ @cpjservices48-bc
+Modules/Metadata/ @cpjservices48-bc
+Modules/FeatureOpenBanking/ @cpjservices48-bc
+Modules/Platform/ @cpjservices48-bc
+Modules/RemoteNotifications/ @cpjservices48-bc
+Modules/UIComponents/ @cpjservices48-bc
+Modules/WalletPayload/ @cpjservices48-bc
